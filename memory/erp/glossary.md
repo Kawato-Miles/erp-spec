@@ -1,0 +1,119 @@
+# ERP 系統術語表（完整版）
+
+印刷業 ERP 系統專用術語，涵蓋生產排程、採購、倉儲、訂單管理四大模組。
+
+---
+
+## 訂單管理術語
+
+| 術語 | 英文 / 縮寫 | 定義 |
+|------|-------------|------|
+| 銷售訂單 | SO / Sales Order | 客戶確認後的正式訂單 |
+| 報價單 | Quotation | 印前提供給客戶的價格估算 |
+| 交期 | Lead time | 從下單到交貨的總時間 |
+| 急單 | Rush order | 需優先排程、縮短交期的訂單 |
+| 訂單狀態 | Order status | 訂單當前所在流程節點（如待排程、生產中、出貨） |
+| 出貨單 | Delivery note | 附隨出貨的清單，記錄品項與數量 |
+| 退貨單 | Return Merchandise Authorization / RMA | 客戶退回貨品的授權與記錄 |
+| 訂單版本 | Order revision | 因客戶修改需求而產生的訂單版本迭代 |
+
+---
+
+## 生產排程術語
+
+| 術語 | 英文 / 縮寫 | 定義 |
+|------|-------------|------|
+| 工單 | Work Order / WO | 生產排程的基本執行單位，對應一個生產任務 |
+| 工序 | Operation | 工單內的單一生產步驟（如印刷、裁切、燙金） |
+| 排程 | Scheduling | 分配工單至機台與時段的規劃過程 |
+| 正向排程 | Forward scheduling | 從最早可開工日往後推算完成日 |
+| 逆向排程 | Backward scheduling | 從交期往前推算各工序最晚開始時間 |
+| 機台 | Machine / Resource | 生產設備（如 Heidelberg 四色印刷機） |
+| 機台產能 | Machine capacity | 機台在特定時段可處理的最大工作量 |
+| 插單 | Job insertion | 將急單插入現有排程，影響其他訂單 |
+| 在製品 | WIP（Work In Progress） | 已開工但尚未完成的半成品 |
+| 完工回報 | Job completion report | 工單各工序完成後的產出數量與時間回報 |
+| 瓶頸機台 | Bottleneck | 產能最緊張、最常造成延遲的設備 |
+| 換線時間 | Setup time | 機台從上一工單切換到下一工單的準備時間 |
+| 印版 | Printing plate | 平版印刷用的版材，每批訂單可能需重製 |
+
+---
+
+## 物料需求計畫術語
+
+| 術語 | 英文 / 縮寫 | 定義 |
+|------|-------------|------|
+| BOM | Bill of Materials | 物料清單，列出生產所需的所有原物料及用量 |
+| MRP | Material Requirements Planning | 依 BOM 與訂單需求計算物料備料時程 |
+| 物料 | Material | 生產所需的原材料（紙張、油墨、版材等） |
+| 備料 | Material preparation | 依工單需求提前準備物料的動作 |
+| 安全庫存 | Safety stock | 預防缺料的最低庫存緩衝量 |
+| 採購點 | Reorder point | 庫存降至此水位時觸發採購 |
+| 批次追蹤 | Lot tracking | 追蹤特定批次物料的使用流向 |
+
+---
+
+## 採購模組術語
+
+| 術語 | 英文 / 縮寫 | 定義 |
+|------|-------------|------|
+| 採購申請 | Purchase Requisition / PR | 內部提出採購需求的表單 |
+| 採購單 | Purchase Order / PO | 正式向供應商下的採購訂單 |
+| 供應商 | Vendor / Supplier | 提供原物料或服務的外部廠商 |
+| 詢報價 | RFQ（Request for Quotation） | 向多家供應商詢問報價的流程 |
+| 到貨驗收 | Goods Receipt / GR | 物料到廠後的數量與品質驗收 |
+| 應付帳款 | AP（Accounts Payable） | 尚未支付給供應商的款項 |
+| 採購週期 | Procurement lead time | 從發出採購單到物料入庫的時間 |
+
+---
+
+## 倉儲模組術語
+
+| 術語 | 英文 / 縮寫 | 定義 |
+|------|-------------|------|
+| 庫存 | Inventory / Stock | 倉庫中的物料或成品數量 |
+| 入庫 | Stock in / Goods receipt | 物料或成品進入倉庫的動作 |
+| 出庫 | Stock out / Goods issue | 物料從倉庫領出的動作 |
+| 盤點 | Stock-taking / Inventory count | 定期清點實際庫存與系統數量是否一致 |
+| 庫位 | Storage location | 倉庫內特定的存放位置 |
+| 先進先出 | FIFO（First In First Out） | 先入庫的物料優先使用，避免物料過期 |
+| 庫存差異 | Inventory discrepancy | 系統數量與實際數量不一致 |
+| 成品倉 | Finished goods warehouse | 存放已完成生產待出貨成品的倉庫 |
+| 原料倉 | Raw material warehouse | 存放生產所需原物料的倉庫 |
+
+---
+
+## 財務整合術語
+
+| 術語 | 英文 / 縮寫 | 定義 |
+|------|-------------|------|
+| 成本核算 | Cost accounting | 計算每張工單的實際生產成本 |
+| 標準成本 | Standard cost | 預先設定的每單位生產成本基準 |
+| 實際成本 | Actual cost | 工單完工後的真實發生成本 |
+| 成本差異 | Cost variance | 標準成本與實際成本的差額 |
+| 應收帳款 | AR（Accounts Receivable） | 客戶尚未付款的金額 |
+
+---
+
+## 系統整合術語
+
+| 術語 | 縮寫 | 定義 |
+|------|------|------|
+| API 串接 | API Integration | ERP 與其他系統（如圖編輯器、電商平台）的資料交換介面 |
+| 主資料 | Master data | 系統核心參考資料（客戶、供應商、物料、機台） |
+| 交易資料 | Transaction data | 每筆業務操作產生的動態資料（訂單、工單、入出庫） |
+| 角色權限 | Role-based Access Control / RBAC | 依使用者角色限制系統操作範圍 |
+| 稽核軌跡 | Audit trail | 記錄誰在何時做了何種操作的日誌 |
+
+---
+
+## 印刷 ERP 特有概念
+
+| 概念 | 說明 |
+|------|------|
+| 版費 | 製版成本，平版印刷每批訂單需重製版材 |
+| 廢張 | Makeready waste，開機調色時的廢紙損耗 |
+| 裁切損耗 | 拼版後邊緣裁切掉的紙張 |
+| 色組 | 印刷機的單一油墨組（CMYK 四色機 = 四個色組） |
+| 雙面印刷 | 正面與背面分別上機印刷 |
+| 套印精度 | 多色套印時各色版對位的準確度 |
