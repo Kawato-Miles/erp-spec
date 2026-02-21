@@ -160,21 +160,26 @@ tr:hover td { background: #fafafa; }
     <div class="hier-box c-demand">需求單</div>
     <span class="arr">→ 成交 →</span>
     <div class="hier-box c-order">訂單</div>
-    <span class="arr">→ 已回簽/已付款 →</span>
+    <span class="arr">→</span>
+    <div class="hier-box c-item">印件 × N</div>
+    <span class="arr">→</span>
     <div class="hier-box c-wo">工單 × N</div>
     <span class="arr">→</span>
     <div class="hier-box c-task">任務 × N</div>
     <span class="arr">→</span>
     <div class="hier-box c-ptask">生產任務 × N</div>
   </div>
-  <div class="hier-sub">
+  <div style="font-size:0.72rem;color:#94a3b8;padding:6px 4px 0;">
+    印件掛在訂單下（不同款式 / 尺寸 / 材料）；每個印件產生 1 張以上工單（打樣工單 / 大貨工單）；工單依工廠分組為任務。
+  </div>
+  <div class="hier-sub" style="margin-top:10px;">
     <div style="display:flex;flex-direction:column;gap:4px;">
-      <div class="hier-box-sm c-item">印件（橫跨訂單 / 工單層之間）</div>
-      <div style="font-size:0.72rem;color:#94a3b8; padding-left:4px;">審稿狀態 ＋ 印製狀態兩個獨立維度</div>
+      <div class="hier-box-sm c-item">印件：兩個獨立狀態維度</div>
+      <div style="font-size:0.72rem;color:#94a3b8; padding-left:4px;">審稿狀態 ＋ 印製狀態</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:4px;">
       <div class="hier-box-sm c-qc">QC 單 ＋ QC 紀錄（任務完成後觸發）</div>
-      <div style="font-size:0.72rem;color:#94a3b8; padding-left:4px;">工單完成條件由 QC 紀錄驅動</div>
+      <div style="font-size:0.72rem;color:#94a3b8; padding-left:4px;">工單完成條件由 QC 紀錄累計數量驅動</div>
     </div>
   </div>
 </div>
@@ -320,7 +325,10 @@ tr:hover td { background: #fafafa; }
       <span class="cond">任務需求異動；生管確認後恢復製作中</span>
     </div>
   </div>
-  <div class="note">工單終態由 QC 紀錄驅動，不設置 QC 狀態節點。打樣工單無「打樣不通過」狀態，打樣 OK/NG 以印件的「打樣結果」欄位管理。</div>
+  <div class="note">
+    ▸ <strong>工單已交付條件</strong>：工單下所有任務皆已完成各自交付作業。自有工廠透過系統交付；外包廠 / 中國廠商逐份印製紙本工單（僅帶出該廠商所需執行的生產任務），全部交付後工單才進入「工單已交付」。<br>
+    ▸ 工單終態由 QC 紀錄累計數量驅動，不設置 QC 狀態節點。打樣工單無「打樣不通過」狀態，打樣 OK/NG 以印件的「打樣結果」欄位管理。
+  </div>
 </div>
 
 <!-- 印件 -->
@@ -588,25 +596,29 @@ tr:hover td { background: #fafafa; }
     <span class="badge c-qc">QC 單 ＋ QC 紀錄</span>
     <span class="hint">印務 建立；QC 人員 執行；紀錄掛在任務下</span>
   </div>
+  <div class="note-blue" style="margin-bottom:10px;">
+    印件可分批出貨，QC 也分批進行。每張 QC 單只核查本次印務指定的批次數量，完成後系統更新累計入庫；後續批次另開新 QC 單。
+  </div>
   <div class="flow">
     <span class="s s-start">待執行</span>
-    <span class="cond">印務建立，指定任務 + 目標數量 + 指派QC人員</span>
+    <span class="cond">印務建立：指定任務 + 本次批次目標數量 + 指派QC人員</span>
     <span class="arr">→</span>
     <span class="s s-mid">執行中</span>
     <span class="arr">→</span>
     <span class="s s-end">已完成</span>
-    <span class="cond">QC 紀錄產生</span>
+    <span class="cond">本次指定批次核查完畢，填入通過 / 不通過數量</span>
   </div>
-  <div class="indent" style="margin-top:8px;">
+  <div class="indent" style="margin-top:10px;">
+    <div style="font-size:0.78rem;color:#475569;font-weight:600;margin-bottom:6px;">QC 單完成後，工單層計算（缺口判斷在工單層，非 QC 單層）：</div>
     <div class="flow">
-      <span class="arr">↳ 缺口 = 0</span>
+      <span class="arr">↳ 累計 QC 入庫 ≥ 工單目標</span>
       <span class="arr">→</span>
-      <span style="font-size:0.78rem;color:#15803d;font-weight:600;">工單達成「已完成」條件</span>
+      <span style="font-size:0.78rem;color:#15803d;font-weight:600;">工單 → 已完成</span>
     </div>
     <div class="flow">
-      <span class="arr">↳ 缺口 &gt; 0</span>
+      <span class="arr">↳ 累計 QC 入庫 &lt; 工單目標</span>
       <span class="arr">→</span>
-      <span style="font-size:0.78rem;color:#d97706;font-weight:600;">工單維持「製作中」，系統顯示缺口數量，印務手動建新任務補足</span>
+      <span style="font-size:0.78rem;color:#d97706;font-weight:600;">工單維持「製作中」，顯示缺口數量；印務可建新任務補生產，或等待下一批 QC</span>
     </div>
   </div>
   <div class="note-blue" style="margin-top:10px;">
@@ -667,19 +679,24 @@ tr:hover td { background: #fafafa; }
         <td><span class="t-to">工單草稿</span> 自動建立；<span class="t-to">印件（印製）</span> → 等待中啟動</td>
       </tr>
       <tr>
-        <td><span class="t-from">工單</span></td>
-        <td>→ 工單已交付</td>
-        <td><span class="t-to">印件（印製）</span> → 工單已交付；<span class="t-to">訂單</span> → 工單已交付</td>
+        <td><span class="t-from">任務（全部）</span></td>
+        <td>工單下所有任務 → 已交付</td>
+        <td><span class="t-to">工單</span> → 工單已交付；<span class="t-to">印件（印製）</span> → 工單已交付；<span class="t-to">訂單</span> → 工單已交付</td>
       </tr>
       <tr>
-        <td><span class="t-from">任務</span></td>
-        <td>任一任務 → 製作中</td>
+        <td><span class="t-from">生產任務（任一）</span></td>
+        <td>→ 製作中</td>
+        <td><span class="t-to">任務</span> → 製作中</td>
+      </tr>
+      <tr>
+        <td><span class="t-from">任務（任一）</span></td>
+        <td>→ 製作中（由生產任務 bubble-up）</td>
         <td><span class="t-to">工單</span> → 製作中；<span class="t-to">印件（印製）</span> → 製作中；<span class="t-to">訂單</span> → 製作中</td>
       </tr>
       <tr>
         <td><span class="t-from">QC 單</span></td>
-        <td>→ 已完成（缺口 = 0）</td>
-        <td><span class="t-to">工單</span> → 已完成（QC 入庫 ≥ 工單目標）</td>
+        <td>→ 已完成（本次批次核查完畢）</td>
+        <td>系統更新累計 QC 入庫；若累計 ≥ 工單目標 → <span class="t-to">工單</span> → 已完成；否則工單維持製作中並顯示缺口</td>
       </tr>
       <tr>
         <td><span class="t-from">工單（全部）</span></td>
