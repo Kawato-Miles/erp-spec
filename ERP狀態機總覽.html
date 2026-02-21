@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERP 狀態機總覽</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #f0f2f5;
+  color: #1a1a2e;
+  padding: 32px 24px;
+  line-height: 1.5;
+}
+h1 { font-size: 1.7rem; font-weight: 700; margin-bottom: 4px; }
+.subtitle { color: #64748b; font-size: 0.88rem; margin-bottom: 32px; }
+
+.section {
+  background: white;
+  border-radius: 12px;
+  padding: 22px 26px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+.section-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.badge {
+  display: inline-block; padding: 3px 12px; border-radius: 14px;
+  font-size: 0.8rem; font-weight: 700; color: white; letter-spacing: 0.02em;
+}
+.hint { font-size: 0.78rem; color: #94a3b8; }
+
+/* Entity colors */
+.c-demand  { background: #6366f1; }
+.c-order   { background: #0ea5e9; }
+.c-wo      { background: #f59e0b; }
+.c-item    { background: #10b981; }
+.c-task    { background: #f97316; }
+.c-ptask   { background: #ef4444; }
+.c-qc      { background: #8b5cf6; }
+
+/* State pills */
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin: 6px 0; }
+.s {
+  display: inline-flex; align-items: center;
+  padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500;
+  border: 1.5px solid; white-space: nowrap;
+}
+.s-start  { background: #eff6ff; border-color: #3b82f6; color: #1d4ed8; }
+.s-mid    { background: #f8fafc; border-color: #cbd5e1; color: #334155; }
+.s-end    { background: #f0fdf4; border-color: #22c55e; color: #15803d; }
+.s-term   { background: #fff1f2; border-color: #f43f5e; color: #be123c; }
+.s-branch { background: #fffbeb; border-color: #f59e0b; color: #92400e; }
+.s-special{ background: #f5f3ff; border-color: #8b5cf6; color: #6d28d9; }
+
+.arr { color: #94a3b8; font-size: 1rem; padding: 0 1px; }
+.arr-bi { color: #94a3b8; font-size: 0.9rem; }
+.cond {
+  font-size: 0.7rem; color: #64748b; background: #f8fafc;
+  padding: 2px 7px; border-radius: 4px; border: 1px solid #e2e8f0; white-space: nowrap;
+}
+.indent { padding-left: 22px; }
+.dim-label {
+  font-size: 0.75rem; font-weight: 700; color: #94a3b8;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin: 14px 0 6px;
+}
+hr.div { border: none; border-top: 1px solid #f1f5f9; margin: 14px 0; }
+
+/* Two-col grid */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 8px 0; }
+@media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+.card {
+  padding: 10px 14px; background: #f8fafc;
+  border-radius: 8px; border: 1px solid #e2e8f0;
+}
+.card-label {
+  font-size: 0.72rem; font-weight: 700; color: #64748b;
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;
+}
+
+/* Hierarchy */
+.hier {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 6px; padding: 16px; background: #f8fafc; border-radius: 8px;
+}
+.hier-box {
+  padding: 8px 16px; border-radius: 8px;
+  font-size: 0.85rem; font-weight: 700; color: white; text-align: center;
+}
+.hier-sub {
+  display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;
+}
+.hier-box-sm {
+  padding: 6px 14px; border-radius: 8px;
+  font-size: 0.78rem; font-weight: 700; color: white;
+}
+
+/* Cross-entity trigger table */
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+th {
+  background: #f8fafc; padding: 9px 12px; text-align: left;
+  border-bottom: 2px solid #e2e8f0; font-weight: 700; color: #475569;
+}
+td { padding: 9px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fafafa; }
+.t-from { color: #6366f1; font-weight: 600; }
+.t-to   { color: #10b981; font-weight: 600; }
+
+.note {
+  font-size: 0.77rem; color: #64748b; margin-top: 8px;
+  padding: 5px 10px; background: #fffbeb;
+  border-radius: 5px; border-left: 3px solid #f59e0b;
+}
+.note-blue {
+  font-size: 0.77rem; color: #1d4ed8; margin-top: 8px;
+  padding: 5px 10px; background: #eff6ff;
+  border-radius: 5px; border-left: 3px solid #3b82f6;
+}
+
+/* Legend */
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.legend-item {
+  display: flex; align-items: center; gap: 6px; font-size: 0.77rem; color: #64748b;
+}
+.legend-swatch { width: 24px; height: 14px; border-radius: 4px; border: 1.5px solid; }
+</style>
+</head>
+<body>
+
+<h1>ERP 狀態機總覽</h1>
+<p class="subtitle">六層單據 + QC 實體的狀態轉換與跨層觸發關係 ｜ state-machines.md v5 · 2026-02-22</p>
+
+<!-- Legend -->
+<div class="section">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-swatch" style="background:#eff6ff;border-color:#3b82f6;"></div> 初始狀態</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#f8fafc;border-color:#cbd5e1;"></div> 中間狀態</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#f0fdf4;border-color:#22c55e;"></div> 正常終態</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#fff1f2;border-color:#f43f5e;"></div> 取消 / 棄用終態</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#fffbeb;border-color:#f59e0b;"></div> 可逆 / 分支狀態</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#f5f3ff;border-color:#8b5cf6;"></div> 特殊資料狀態</div>
+    <div class="legend-item">→ 單向轉換 ｜ ↔ 雙向可逆</div>
+  </div>
+</div>
+
+<!-- 層級架構 -->
+<div class="section">
+  <div class="section-header">
+    <span style="font-size:1rem;font-weight:700;">層級架構</span>
+  </div>
+  <div class="hier">
+    <div class="hier-box c-demand">需求單</div>
+    <span class="arr">→ 成交 →</span>
+    <div class="hier-box c-order">訂單</div>
+    <span class="arr">→ 已回簽/已付款 →</span>
+    <div class="hier-box c-wo">工單 × N</div>
+    <span class="arr">→</span>
+    <div class="hier-box c-task">任務 × N</div>
+    <span class="arr">→</span>
+    <div class="hier-box c-ptask">生產任務 × N</div>
+  </div>
+  <div class="hier-sub">
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <div class="hier-box-sm c-item">印件（橫跨訂單 / 工單層之間）</div>
+      <div style="font-size:0.72rem;color:#94a3b8; padding-left:4px;">審稿狀態 ＋ 印製狀態兩個獨立維度</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <div class="hier-box-sm c-qc">QC 單 ＋ QC 紀錄（任務完成後觸發）</div>
+      <div style="font-size:0.72rem;color:#94a3b8; padding-left:4px;">工單完成條件由 QC 紀錄驅動</div>
+    </div>
+  </div>
+</div>
+
+<!-- 需求單 -->
+<div class="section">
+  <div class="section-header">
+    <span class="badge c-demand">需求單</span>
+    <span class="hint">業務 / 諮詢業務 建立；印務主管 評估報價</span>
+  </div>
+  <div class="flow">
+    <span class="s s-start">需求確認中</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">待評估報價</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">已評估報價</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">已提供報價</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">議價中</span>
+  </div>
+  <div class="indent">
+    <div class="flow">
+      <span class="arr">↳ 成交</span>
+      <span class="arr">→</span>
+      <span class="s s-end">成交</span>
+      <span class="arr">→</span>
+      <span style="font-size:0.78rem;color:#0ea5e9;font-weight:600;">建立訂單</span>
+    </div>
+    <div class="flow">
+      <span class="arr">↳ 流失</span>
+      <span class="arr">→</span>
+      <span class="s s-term">流失</span>
+      <span class="cond">關單，不建立訂單，保留紀錄</span>
+    </div>
+    <div class="flow">
+      <span class="arr">↳ 重新提供方案</span>
+      <span class="arr">→</span>
+      <span class="s s-mid">待評估報價</span>
+      <span class="cond">退回，與印務主管重新討論</span>
+    </div>
+  </div>
+</div>
+
+<!-- 訂單 -->
+<div class="section">
+  <div class="section-header">
+    <span class="badge c-order">訂單</span>
+    <span class="hint">業務 / 諮詢業務 建立；會計 確認款項 ｜ 線下以「回簽」驅動生產，線上以「付款」驅動</span>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-label">線下訂單（以回簽驅動）</div>
+      <div class="flow">
+        <span class="s s-start">報價待回簽</span>
+        <span class="arr">→</span>
+        <span class="s s-branch">已回簽 ↓</span>
+        <span class="cond">進入共用段</span>
+      </div>
+      <div class="dim-label" style="margin-top:10px;">付款狀態（平行追蹤，不阻塞主流程）</div>
+      <div class="flow">
+        <span class="s s-mid">等待付款</span>
+        <span class="arr">→</span>
+        <span class="s s-mid">已付款</span>
+      </div>
+      <div class="flow" style="margin-top:2px;">
+        <span class="cond">退款狀態 ⏳ 待設計</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">線上訂單（以付款驅動）</div>
+      <div class="flow">
+        <span class="s s-start">等待付款</span>
+        <span class="arr">→</span>
+        <span class="s s-branch">已付款 ↓</span>
+        <span class="cond">進入共用段</span>
+      </div>
+    </div>
+  </div>
+  <div class="dim-label">共用段（已回簽 / 已付款 後）</div>
+  <div class="flow">
+    <span class="s s-branch">已回簽 / 已付款</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">稿件未上傳</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">等待審稿</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">製作等待中</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">工單已交付</span>
+  </div>
+  <div class="flow" style="padding-left:16px;">
+    <span class="arr">→</span>
+    <span class="s s-mid">製作中</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">製作完成</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">出貨未處理</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">打包中</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">物流未完成</span>
+    <span class="arr">→</span>
+    <span class="s s-end">訂單完成</span>
+  </div>
+  <div class="dim-label">補收款（平行，不阻塞主流程）</div>
+  <div class="flow">
+    <span class="s s-mid">補收款未付款</span>
+    <span class="arr-bi">↔</span>
+    <span class="s s-mid">補收款已付款</span>
+    <span class="cond">急件費用 / 重打樣補收等</span>
+  </div>
+</div>
+
+<!-- 工單 -->
+<div class="section">
+  <div class="section-header">
+    <span class="badge c-wo">工單</span>
+    <span class="hint">type 欄位區分：打樣工單 / 大貨工單 ｜ 印務 填寫；印務主管 審核</span>
+  </div>
+  <div class="flow">
+    <span class="s s-start">草稿</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">製程確認中</span>
+    <span class="arr-bi">↔</span>
+    <span class="s s-branch">重新確認製程</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">製程審核完成</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">工單已交付</span>
+  </div>
+  <div class="flow" style="padding-left:16px;">
+    <span class="arr">→</span>
+    <span class="s s-mid">製作中</span>
+    <span class="arr">→</span>
+    <span class="s s-end">已完成</span>
+    <span class="cond">QC 入庫累計 ≥ 工單目標生產數量</span>
+  </div>
+  <div class="indent" style="padding-left:38px; margin-top:4px;">
+    <div class="flow">
+      <span class="arr-bi">↔</span>
+      <span class="s s-branch">異動</span>
+      <span class="cond">任務需求異動；生管確認後恢復製作中</span>
+    </div>
+  </div>
+  <div class="note">工單終態由 QC 紀錄驅動，不設置 QC 狀態節點。打樣工單無「打樣不通過」狀態，打樣 OK/NG 以印件的「打樣結果」欄位管理。</div>
+</div>
+
+<!-- 印件 -->
+<div class="section">
+  <div class="section-header">
+    <span class="badge c-item">印件</span>
+    <span class="hint">兩個獨立維度：審稿狀態 ＋ 印製狀態 ｜ type 欄位：打樣印件 / 大貨印件</span>
+  </div>
+
+  <div class="dim-label">維度一：審稿狀態（兩種印件共用）</div>
+  <div class="flow">
+    <span class="s s-start">稿件未上傳</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">等待審稿</span>
+    <span class="cond">上傳稿件後</span>
+  </div>
+  <div class="indent">
+    <div class="flow">
+      <span class="arr">↳ 不合格</span>
+      <span class="arr">→</span>
+      <span class="s s-branch">已補件</span>
+      <span class="arr">→</span>
+      <span class="s s-mid">等待審稿</span>
+      <span class="cond">loop，直到合格</span>
+    </div>
+    <div class="flow">
+      <span class="arr">↳ 合格</span>
+      <span class="arr">→</span>
+      <span class="s s-end">合格</span>
+      <span class="arr">→</span>
+      <span style="font-size:0.78rem;color:#f59e0b;font-weight:600;">自動建工單草稿</span>
+      <span class="cond">若有製程設定</span>
+    </div>
+  </div>
+  <div class="note" style="margin-top:8px;">
+    稿件管理：印件維護多檔案池，不以版次號管理。工單建立時鎖定特定合格稿件，生產期間不受後續上傳異動。大貨印件打樣全數 OK 後才上傳稿件進入此流程。
+  </div>
+  <div class="dim-label" style="margin-top:12px;">審稿合格後：生產任務帶入規則</div>
+  <table style="margin-top:4px;">
+    <thead>
+      <tr>
+        <th>印件類型</th>
+        <th>生產任務帶入方式</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>EC 訂單印件</td>
+        <td>✅ 自動帶入（非客製化商品，製程預先定義於 BOM）</td>
+      </tr>
+      <tr>
+        <td>線下 — 半客製品</td>
+        <td>✅ 參照對應 EC 商品帶入，印務可修改內容</td>
+      </tr>
+      <tr>
+        <td>線下 — 參考其他訂單</td>
+        <td>✅ 參照指定訂單的印件帶入，印務可修改內容</td>
+      </tr>
+      <tr>
+        <td>線下 — 全客製品</td>
+        <td>❌ 工單草稿建立，生產任務由印務手動逐一建立</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr class="div">
+
+  <div class="dim-label">維度二：印製狀態（type 控制初始狀態、欄位顯示與可用操作）</div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-label">大貨印件 — 初始狀態</div>
+      <div class="flow">
+        <span class="s s-start">等待中</span>
+        <span style="font-size:0.75rem;color:#94a3b8;margin-left:4px;">（審稿合格 → 工單草稿建立後進入）</span>
+      </div>
+      <div class="note-blue" style="margin-top:8px;">
+        打樣控制為<strong>流程層</strong>：大貨印件建立時審稿狀態停在「稿件未上傳」，直到打樣 OK 後業務才開放稿件上傳 → 進入審稿 → 建立工單草稿。無「等待打樣確認」狀態。
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">打樣印件 — 初始狀態 ＋ 打樣結果</div>
+      <div class="flow">
+        <span class="s s-start">等待中</span>
+        <span style="font-size:0.75rem;color:#94a3b8;margin-left:4px;">（工單草稿建立後進入）</span>
+      </div>
+      <div class="indent" style="margin-top:6px;">
+        <div class="flow">
+          <span class="arr">↳ 打樣結果欄位</span>
+          <span class="s s-special">待確認 / OK / NG-製程 / NG-稿件</span>
+        </div>
+        <div class="flow" style="margin-top:4px;">
+          <span class="arr">↳ NG-稿件問題 → 製作完成後</span>
+          <span class="arr">→</span>
+          <span class="s s-term">已棄用</span>
+          <span class="cond">手動觸發</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dim-label">共用段（等待中以後，兩種印件相同）</div>
+  <div class="flow">
+    <span class="s s-mid">等待中</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">工單已交付</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">製作中</span>
+    <span class="cond">含：部分已出貨（出貨數 &gt; 0）</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">製作完成</span>
+    <span class="cond">所有工單已完成</span>
+  </div>
+  <div class="flow" style="padding-left:16px;">
+    <span class="arr">→</span>
+    <span class="s s-mid">打包中</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">待出貨</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">出貨中</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">已出貨</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">運送中</span>
+    <span class="arr">→</span>
+    <span class="s s-end">已送達</span>
+  </div>
+  <div class="note">打樣印件出貨 = 樣品交客戶確認；大貨印件出貨 = 正式交貨。兩種印件共用出貨流程。</div>
+</div>
+
+<!-- 任務 -->
+<div class="section">
+  <div class="section-header">
+    <span class="badge c-task">任務（紙本工單）</span>
+    <span class="hint">印務 交付；生管 分派；依工廠類型走不同終態路徑</span>
+  </div>
+  <div class="flow">
+    <span class="s s-start">待交付</span>
+    <span class="arr">→</span>
+    <span class="s s-term">已作廢</span>
+    <span class="cond">尚未交付前取消</span>
+  </div>
+  <div class="flow" style="margin-top:4px;">
+    <span class="s s-start">待交付</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">已交付</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">製作中</span>
+    <span class="arr-bi">↔</span>
+    <span class="s s-branch">異動</span>
+    <span class="cond">印務發起</span>
+    <span class="arr">→</span>
+    <span class="s s-branch">已確認異動內容</span>
+    <span class="cond">生管確認</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">製作中</span>
+  </div>
+
+  <div class="dim-label">製作中後（依工廠類型）</div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-label">自有工廠 / 加工廠</div>
+      <div class="flow">
+        <span class="s s-mid">製作中</span>
+        <span class="arr">→</span>
+        <span class="s s-end">已完成</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">外包廠</div>
+      <div class="flow">
+        <span class="s s-mid">製作中</span>
+        <span class="arr">→</span>
+        <span class="s s-mid">運送中</span>
+        <span class="arr">→</span>
+        <span class="s s-mid">已抵達</span>
+        <span class="arr">→</span>
+        <span class="s s-end">已完成</span>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:10px;" class="card">
+    <div class="card-label">中國廠商</div>
+    <div class="flow">
+      <span class="s s-mid">製作中</span>
+      <span class="arr">→</span>
+      <span class="s s-mid">已送集運商</span>
+      <span class="arr">→</span>
+      <span class="s s-mid">運送中</span>
+      <span class="arr">→</span>
+      <span class="s s-mid">已抵達</span>
+      <span class="arr">→</span>
+      <span class="s s-end">已完成</span>
+    </div>
+  </div>
+</div>
+
+<!-- 生產任務 -->
+<div class="section">
+  <div class="section-header">
+    <span class="badge c-ptask">生產任務</span>
+    <span class="hint">最小追蹤單位；師傅 / 工廠 報工；QC 紀錄掛在此層</span>
+  </div>
+  <div class="flow">
+    <span class="s s-start">待處理</span>
+    <span class="arr">→</span>
+    <span class="s s-term">已作廢</span>
+    <span class="cond">尚未進入生產即取消</span>
+  </div>
+  <div class="flow" style="margin-top:4px;">
+    <span class="s s-start">待處理</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">製作中</span>
+  </div>
+
+  <div class="dim-label">製作中後（依工廠類型）</div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-label">自有工廠 / 加工廠</div>
+      <div class="flow">
+        <span class="s s-mid">製作中</span>
+        <span class="arr">→</span>
+        <span class="s s-end">已完成</span>
+        <span class="cond">報工完成數 = 任務數量</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">外包廠</div>
+      <div class="flow">
+        <span class="s s-mid">製作中</span>
+        <span class="arr">→</span>
+        <span class="s s-mid">運送中</span>
+        <span class="arr">→</span>
+        <span class="s s-end">已完成</span>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:10px;" class="two-col">
+    <div class="card">
+      <div class="card-label">中國廠商</div>
+      <div class="flow">
+        <span class="s s-mid">製作中</span>
+        <span class="arr">→</span>
+        <span class="s s-mid">已送集運商</span>
+        <span class="arr">→</span>
+        <span class="s s-mid">運送中</span>
+        <span class="arr">→</span>
+        <span class="s s-end">已完成</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">報廢（任何工廠）</div>
+      <div class="flow">
+        <span class="s s-mid">製作中</span>
+        <span class="arr">→</span>
+        <span class="s s-term">報廢</span>
+        <span class="cond">已進入生產後取消；費用仍計算</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QC 單 -->
+<div class="section">
+  <div class="section-header">
+    <span class="badge c-qc">QC 單 ＋ QC 紀錄</span>
+    <span class="hint">印務 建立；QC 人員 執行；紀錄掛在任務下</span>
+  </div>
+  <div class="flow">
+    <span class="s s-start">待執行</span>
+    <span class="cond">印務建立，指定任務 + 目標數量 + 指派QC人員</span>
+    <span class="arr">→</span>
+    <span class="s s-mid">執行中</span>
+    <span class="arr">→</span>
+    <span class="s s-end">已完成</span>
+    <span class="cond">QC 紀錄產生</span>
+  </div>
+  <div class="indent" style="margin-top:8px;">
+    <div class="flow">
+      <span class="arr">↳ 缺口 = 0</span>
+      <span class="arr">→</span>
+      <span style="font-size:0.78rem;color:#15803d;font-weight:600;">工單達成「已完成」條件</span>
+    </div>
+    <div class="flow">
+      <span class="arr">↳ 缺口 &gt; 0</span>
+      <span class="arr">→</span>
+      <span style="font-size:0.78rem;color:#d97706;font-weight:600;">工單維持「製作中」，系統顯示缺口數量，印務手動建新任務補足</span>
+    </div>
+  </div>
+  <div class="note-blue" style="margin-top:10px;">
+    QC 紀錄結構：per 影響成品的生產任務，含 生產數量 / QC通過數量 / QC不通過數量。
+    不影響成品的生產任務（如採購、開版）不建 QC 紀錄，不計入工單完成判斷。
+  </div>
+  <div class="dim-label" style="margin-top:12px;">QC 完成判斷（層級傳遞，由下往上）</div>
+  <div class="flow" style="flex-direction:column; align-items:flex-start; gap:6px;">
+    <div class="flow">
+      <span class="badge c-ptask" style="font-size:0.72rem;padding:2px 8px;">生產任務</span>
+      <span style="font-size:0.82rem;color:#334155;">QC 通過數 ≥ 生產任務目標</span>
+      <span class="arr">→</span>
+      <span style="font-size:0.82rem;color:#15803d;font-weight:600;">該生產任務 QC 達標</span>
+    </div>
+    <div class="flow">
+      <span class="badge c-task" style="font-size:0.72rem;padding:2px 8px;">任務</span>
+      <span style="font-size:0.82rem;color:#334155;">所有「影響成品」生產任務 QC 達標</span>
+      <span class="arr">→</span>
+      <span style="font-size:0.82rem;color:#15803d;font-weight:600;">該任務 QC 達標</span>
+    </div>
+    <div class="flow">
+      <span class="badge c-wo" style="font-size:0.72rem;padding:2px 8px;">工單</span>
+      <span style="font-size:0.82rem;color:#334155;">累計所有任務 QC 入庫數量 ≥ 工單目標生產數量</span>
+      <span class="arr">→</span>
+      <span style="font-size:0.82rem;color:#15803d;font-weight:600;">工單 → 已完成</span>
+    </div>
+  </div>
+</div>
+
+<!-- 跨實體觸發關係 -->
+<div class="section">
+  <div class="section-header">
+    <span style="font-size:1rem;font-weight:700;">跨實體觸發關係</span>
+    <span class="hint">狀態如何向上 / 向下傳遞</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th width="20%">觸發來源</th>
+        <th width="28%">觸發條件</th>
+        <th>影響 → 狀態變化</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="t-from">需求單</span></td>
+        <td>議價中 → 成交</td>
+        <td><span class="t-to">訂單</span> 建立（進入報價待回簽 / 等待付款）</td>
+      </tr>
+      <tr>
+        <td><span class="t-from">訂單</span></td>
+        <td>線下 → 已回簽 ／ 線上 → 已付款</td>
+        <td><span class="t-to">訂單</span> 進入共用段（稿件未上傳）；可開始稿件上傳 → 審稿流程</td>
+      </tr>
+      <tr>
+        <td><span class="t-from">印件（審稿）</span></td>
+        <td>→ 合格</td>
+        <td><span class="t-to">工單草稿</span> 自動建立；<span class="t-to">印件（印製）</span> → 等待中啟動</td>
+      </tr>
+      <tr>
+        <td><span class="t-from">工單</span></td>
+        <td>→ 工單已交付</td>
+        <td><span class="t-to">印件（印製）</span> → 工單已交付；<span class="t-to">訂單</span> → 工單已交付</td>
+      </tr>
+      <tr>
+        <td><span class="t-from">任務</span></td>
+        <td>任一任務 → 製作中</td>
+        <td><span class="t-to">工單</span> → 製作中；<span class="t-to">印件（印製）</span> → 製作中；<span class="t-to">訂單</span> → 製作中</td>
+      </tr>
+      <tr>
+        <td><span class="t-from">QC 單</span></td>
+        <td>→ 已完成（缺口 = 0）</td>
+        <td><span class="t-to">工單</span> → 已完成（QC 入庫 ≥ 工單目標）</td>
+      </tr>
+      <tr>
+        <td><span class="t-from">工單（全部）</span></td>
+        <td>所有工單 → 已完成</td>
+        <td><span class="t-to">印件（印製）</span> → 製作完成</td>
+      </tr>
+      <tr>
+        <td><span class="t-from">印件（全部）</span></td>
+        <td>所有印件 → 製作完成</td>
+        <td><span class="t-to">訂單</span> → 製作完成</td>
+      </tr>
+      <tr>
+        <td><span class="t-from">業務（手動）</span></td>
+        <td>打樣結果 = OK（打樣印件欄位）</td>
+        <td><span class="t-to">大貨印件</span>：業務通知客戶上傳稿件 → 審稿狀態從「稿件未上傳」開始流程（流程層控制，非狀態轉換）</td>
+      </tr>
+      <tr>
+        <td><span class="t-from">業務 / 印務（手動）</span></td>
+        <td>打樣結果 = NG-稿件問題</td>
+        <td><span class="t-to">舊打樣印件</span> → 已棄用；<span class="t-to">新打樣印件</span> 建立（從等待中開始）</td>
+      </tr>
+      <tr>
+        <td><span class="t-from">業務 / 印務（手動）</span></td>
+        <td>打樣結果 = NG-製程問題</td>
+        <td><span class="t-to">同一打樣印件</span> 下建立新打樣工單（舊工單保留）</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="note" style="margin-top:12px;">
+    ⚠️ 待設計：訂單取消時各層單據（工單 / 任務 / 生產任務 / 印件）的作廢連鎖流程（open-questions #24）
+  </div>
+</div>
+
+<div style="text-align:center; font-size:0.76rem; color:#94a3b8; padding:16px 0 4px;">
+  ERP 狀態機總覽 ｜ 最後更新 2026-02-22 ｜ 僅供內部設計參考
+</div>
+
+</body>
+</html>
