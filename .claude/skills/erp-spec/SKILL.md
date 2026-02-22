@@ -1,78 +1,129 @@
-# ERP Spec Skill
+---
+name: erp-spec-writing
+description: Writes feature specs and PRDs for a printing industry ERP system. Use when Miles asks to write a spec, PRD, or requirements document for any ERP module — including quote requests, orders, production scheduling, purchasing, inventory, and work orders. Loads state machines, product goals, and domain principles automatically.
+---
 
-這是專為**印刷業 ERP 系統**設計的 Feature Spec 撰寫技能。
-適用於生產排程、採購、倉儲、訂單管理等模組的功能規格書撰寫。
+# ERP Spec 撰寫
+
+適用於印刷業 ERP 系統各模組的功能規格書（Spec / PRD）撰寫。
 
 ---
 
 ## 使用時機
 
-當 Miles 說以下任何一種話時，啟用此 Skill：
-
-- 「幫我寫 [功能名稱] 的 spec」
-- 「我要 PRD for [功能]」
-- 「起一個 [模組] 功能的規格書」
+- 「幫我寫 [功能] 的 spec / PRD」
+- 「起一個 [模組] 的規格書」
 - 「ERP 的 [功能] 要怎麼規格化」
 
 ---
 
-## 撰寫前的必要釐清
+## 撰寫工作流程
 
-在開始寫 spec 前，**務必先確認**以下資訊（如用戶未提供）：
-
-1. **功能核心問題**：這個功能要解決什麼痛點？誰的痛點？
-2. **使用者角色**：主要使用者是誰？（業務、排程人員、倉管、採購、系統管理員）
-3. **觸發場景**：什麼情況下用戶會使用這個功能？
-4. **範圍邊界**：哪些在 scope 內？哪些明確 out of scope？
-5. **成功標準**：怎樣算是這個功能成功了？
-6. **相關模組**：與哪些現有 ERP 模組有關聯？
-
-> 若 Miles 沒有主動提供，在撰寫時保留「TBD」並標示需確認。
-
----
-
-## 撰寫流程
+依序完成以下步驟，可在回應中附上 Checklist 讓 Miles 追蹤進度：
 
 ```
-Step 1：讀取 references/spec-template.md
-Step 2：依模板結構填入內容
-Step 3：引用 memory/erp/glossary.md 確保術語正確
-Step 4：確認印刷業脈絡（memory/shared/context/industry.md）
-Step 5：輸出 Spec 草稿，並附上「待確認項目清單」
+Spec 撰寫進度：
+- [ ] Step 1：確認範圍與問題定義
+- [ ] Step 2：載入必要背景資源
+- [ ] Step 3：觸發 product-management:feature-spec skill
+- [ ] Step 4：依模板撰寫草稿
+- [ ] Step 5：識別與同步 Open Questions
+- [ ] Step 6：Task 結束同步檢查
 ```
+
+### Step 1：確認範圍與問題定義
+
+若 Miles 未提供，**撰寫前**先確認：
+
+| 問題 | 說明 |
+|------|------|
+| 核心痛點 | 這個功能要解決什麼問題？誰的問題？ |
+| 使用者角色 | 業務、印務主管、排程、倉管、採購、系管？ |
+| 範圍邊界 | 哪些在 scope？哪些明確 out of scope？ |
+| 成功標準 | 上線後怎樣算成功？（對照 `product-goals.md` KPI） |
+| 相關模組 | 需參考哪條狀態機？ |
+
+> 若無法確認，保留 `TBD` 並標記為 OQ，不靜默跳過。
+
+### Step 2：載入必要背景資源
+
+依功能類型選取最小必要檔案：
+
+| Spec 類型 | 必讀 |
+|-----------|------|
+| 需求單 / 訂單 / 工單 / 印件 | `memory/erp/state-machines.md` |
+| 生產任務 / QC / 出貨單 | `memory/erp/state-machines-ops.md` |
+| 跨上下層流程 | 兩個 state-machines*.md |
+| 所有 ERP Spec | `memory/erp/product-goals.md`（KPI 對齊） |
+
+通用原則（OQ 管理、Spec 撰寫規範）一律參照 `memory/shared/principles.md`，無需重複載入。
+
+### Step 3：觸發 product-management:feature-spec
+
+**每次撰寫 Spec 前必須先調用此 skill**，確保 PM mindset 完整納入：
+- 問題陳述、使用者故事、成功指標（KPI）、非目標（Out of Scope）
+
+### Step 4：依模板撰寫草稿
+
+骨架使用 `references/spec-template.md`。
+
+**重要預設規則：**
+
+| 規則 | 說明 |
+|------|------|
+| Section 10 不寫 | 開發估算與里程碑由 PM 在 GitHub Issues 管理，Spec 預設跳過 |
+| Ragic = 歷史基準 | Ragic 視為遷移前系統，**不納入新系統設計**；僅用於遷移前後 KPI 對比 |
+| 需求格式 | 「系統應…（System shall）」，每條需求含可測試驗收條件 |
+| 避免模糊詞 | 不用「更好」「更快」「某些情況」，改為具體數字或行為 |
+
+### Step 5：識別與同步 Open Questions
+
+撰寫中識別到的不確定項，依層級處理：
+
+| 類型 | 處置 |
+|------|------|
+| 功能局部問題 | 留在 Spec 的 Open Questions 章節（顯示用） |
+| 跨模組 / 架構問題 | 合併至 `memory/erp/open-questions.md`（續接最大編號、標明來源） |
+
+查詢現有 OQ 狀態時，**直接讀 `memory/erp/open-questions.md`**，不需翻各 Spec 文件。
+
+### Step 6：Task 結束同步檢查
+
+Spec 完成後，確認以下連帶更新：
+
+| 修改內容 | 需同步確認 |
+|----------|------------|
+| 新增 / 修改狀態或流程 | `memory/erp/scenarios.md` 是否需補情境 |
+| 解答現有 OQ | `memory/erp/open-questions.md` 更新狀態；已解答項定期移至 archive |
+| 出現新術語 | `memory/erp/glossary.md` 是否需補充定義 |
 
 ---
 
 ## 格式與風格規範
 
-- **語言**：繁體中文（技術術語保留英文縮寫，如 WO、BOM、MRP）
-- **使用者故事格式**：`作為 [角色]，我想要 [功能]，以便 [目的]`
-- **需求寫法**：使用「系統應...」（System shall）作為功能性需求前綴
-- **驗收條件**：每個需求都應有對應的具體可測試驗收條件
-- **優先級標示**：使用 P0（必做）/ P1（重要）/ P2（Nice-to-have）
-- **避免**：模糊詞彙如「更好」「更快」「某些情況」—— 改為具體數字或行為
+- **語言**：繁體中文（技術術語保留英文，如 WO、BOM、FK、UUID、API）
+- **使用者故事**：`作為 [角色]，我想要 [功能]，以便 [目的]`
+- **優先級**：P0（必做）/ P1（重要）/ P2（Nice-to-have）
 
 ---
 
 ## 印刷 ERP 特定注意事項
 
-撰寫 ERP spec 時，記得考量以下印刷業特性：
-
 | 模組 | 特殊考量 |
 |------|----------|
 | 生產排程 | 機台換線時間、版費成本、廢張比例、急單插入邏輯 |
 | 採購 | 紙張規格多元（磅數 × 尺寸 × 類型）、供應商交期差異 |
-| 倉儲 | FIFO 紙張管理、批次追蹤、潮濕 / 保存條件 |
+| 倉儲 | FIFO 紙張管理、批次追蹤、保存條件 |
 | 訂單管理 | 稿件狀態與生產狀態連動、交期計算需扣除假日 |
-| 報表 | 印量統計（頁 / 印張 / 批次）需與財務成本對應 |
+| 需求單 | 業務報價流程、成本評估（印務主管）、成交 / 流失分流 |
 
 ---
 
 ## 輸出物
 
-1. **功能規格書（.md 格式）**：依 `spec-template.md` 產出完整文件
-2. **待確認清單**：Spec 最後附上所有標示 `TBD` 的項目
-3. **相關票券建議**（選用）：依功能大小建議 Epic / Story 拆分方式
+1. **功能規格書（.md 格式）**：依 `references/spec-template.md` 結構產出
+2. **待確認清單**：Spec 最後匯總所有 `TBD` / OQ
+3. **跨模組 OQ**（若有）：同步寫入 `memory/erp/open-questions.md`
 
 ---
 
@@ -81,6 +132,12 @@ Step 5：輸出 Spec 草稿，並附上「待確認項目清單」
 | 資源 | 路徑 |
 |------|------|
 | Spec 模板 | `references/spec-template.md` |
+| 通用工作原則 | `memory/shared/principles.md` |
+| ERP 產品目標 / KPI | `memory/erp/product-goals.md` |
+| 狀態機（上層：需求單 / 訂單 / 工單） | `memory/erp/state-machines.md` |
+| 狀態機（下層：任務 / QC / 出貨） | `memory/erp/state-machines-ops.md` |
+| 待確認事項 | `memory/erp/open-questions.md` |
+| 情境驗證 | `memory/erp/scenarios.md` |
 | ERP 術語表 | `memory/erp/glossary.md` |
-| 產業背景 | `memory/shared/context/industry.md` |
 | 共用術語 | `memory/shared/glossary.md` |
+| 產業背景 | `memory/shared/context/industry.md` |
