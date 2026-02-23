@@ -55,6 +55,7 @@ Spec 撰寫進度：
 | 生產任務 / QC / 出貨單 | `memory/erp/state-machines-ops.md` |
 | 跨上下層流程 | 兩個 state-machines*.md |
 | 所有 ERP Spec | `memory/erp/product-goals.md`（KPI 對齊） |
+| Prototype / 介面設計規格 | `memory/shared/ui-design-system.md`（Ant Design 規範、元件、版型） |
 
 通用原則（OQ 管理、Spec 撰寫規範）一律參照 `memory/shared/principles.md`，無需重複載入。
 
@@ -152,6 +153,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | Spec 模板 | `references/spec-template.md` |
 | ERP 全局資料模型 | `docs/data-model.md` |
 | 通用工作原則 | `memory/shared/principles.md` |
+| **UI 設計系統（Ant Design 規範）** | **`memory/shared/ui-design-system.md`** |
 | ERP 產品目標 / KPI | `memory/erp/product-goals.md` |
 | 狀態機（上層：需求單 / 訂單 / 工單） | `memory/erp/state-machines.md` |
 | 狀態機（下層：任務 / QC / 出貨） | `memory/erp/state-machines-ops.md` |

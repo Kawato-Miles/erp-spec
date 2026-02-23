@@ -157,6 +157,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 
 - 文件語言：**繁體中文**
 - Spec 格式：使用 `.claude/skills/erp-spec/SKILL.md` 規範
+- **Prototype / 介面設計**：使用 `memory/shared/ui-design-system.md`，框架為 Ant Design 5.x
 - 回應風格：重點優先，條列清楚，避免冗詞
 - 優先非同步溝通
 
@@ -178,6 +179,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | 術語查詢 | `glossary.md` | — |
 | 產品目標 / KPI | `product-goals.md` | — |
 | 資料模型查詢 / 欄位確認 | `docs/data-model.md` | — |
+| Prototype / 介面設計 | `memory/shared/ui-design-system.md` | — |
 
 ### ERP 資源
 | 資源 | 路徑 |
@@ -197,6 +199,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | 資源 | 路徑 |
 |------|------|
 | **角色層通用原則**（Spec 撰寫 / OQ 管理 / PM 視角） | `memory/shared/principles.md` |
+| **UI 設計系統**（Ant Design 元件 / Token / 版型規範）| `memory/shared/ui-design-system.md` |
 | 共用術語（完整） | `memory/shared/glossary.md` |
 | 產業背景 | `memory/shared/context/industry.md` |
 | 圖編術語（完整） | `memory/graphic-editor/glossary.md` |
