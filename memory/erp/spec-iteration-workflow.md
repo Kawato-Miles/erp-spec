@@ -96,7 +96,6 @@
 | **data-model.md** | 所有使用該欄位的 Spec | 欄位類型、必填性異動未反映在業務邏輯中 |
 | **test-cases.md** | scenarios.md、state-machines.md、open-questions.md | 測試無對應情境；邊界缺陷未記為 OQ |
 
-> **詳細驗證規則**見 `.claude/skills/erp-spec/SKILL.md` Step 6 ②
 
 ### 識別新問題 → 立即記錄
 
@@ -109,7 +108,7 @@
 **層級**：○ 功能局部 / ● 跨模組 / ● 架構
 **描述**：具體問題描述，包括邊界情況或依賴關係
 **影響**：涉及哪些模組
-**狀態**：⏳ 待確認
+**狀態**：⏳待確認
 ```
 
 ---

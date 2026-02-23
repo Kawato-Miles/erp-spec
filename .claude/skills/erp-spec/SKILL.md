@@ -2,7 +2,7 @@
 name: erp-spec-writing
 description: >
   印刷業 ERP 功能規格書（Spec / PRD）撰寫 skill。
-  觸發時機：Miles 說「寫 spec」「寫 PRD」「規格書」「起一個 [模組] 的需求文件」，
+  觸發時機：Miles 說「寫 ERP spec」「寫 ERP PRD」「ERP 規格書」「規劃 [模組] 的需求文件」，
   或討論任何 ERP 模組（需求單 / 訂單 / 工單 / 印件 / 生產任務 / QC / 出貨 / 採購 / 倉儲）的功能設計時。
   此 skill 自動完成：確認範圍 → 載入最小必要資源 → 觸發 product-management:feature-spec →
   依標準模板撰寫草稿 → 識別 OQ → 執行文件同步稽核 → commit。
@@ -125,13 +125,6 @@ Spec 完成時，按該檔案的清單逐項驗證即可。
 bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 ```
 
-稽核涵蓋五項：
-1. `memory/erp/*.md` → CLAUDE.md 快速索引 ERP 資源
-2. `memory/shared/*.md` → CLAUDE.md 共用資源
-3. 關鍵 ERP 資源 → 本 SKILL.md 參考資源
-4. `memory/erp/*.md` → 本 SKILL.md 中是否有任何提及
-5. 本 SKILL.md → CLAUDE.md 工具索引
-
 稽核結果若出現 ⚠️，依提示補充索引後再 commit。ℹ️ 為提示項，確認後決定是否補充。
 
 **注意**：此稽核腳本檢查「檔案索引」層面的一致性。邏輯一致性檢查見 `memory/erp/spec-iteration-workflow.md`。
@@ -166,7 +159,6 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 
 1. **功能規格書（.md 格式）**：依 `references/spec-template.md` 結構產出，Section 10 / 11 預設跳過
 2. **OQ 參照節點（Section 12）**：顯示本模組與相關跨模組 OQ 的 ID + 摘要，正本在 `memory/erp/open-questions.md`
-3. **資料模型更新**（若有欄位異動）：同步更新 `docs/data-model.md` 對應模組節
 
 ---
 
@@ -177,7 +169,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | Spec 模板 | `references/spec-template.md` |
 | ERP 全局資料模型 | `docs/data-model.md` |
 | 通用工作原則 | `memory/shared/principles.md` |
-| **UI 設計系統（Ant Design 規範）** | **`memory/shared/ui-design-system.md`** |
+| UI 設計系統（Ant Design 規範） | `memory/shared/ui-design-system.md` |
 | ERP 產品目標 / KPI | `memory/erp/product-goals.md` |
 | 狀態機（上層：需求單 / 訂單 / 工單） | `memory/erp/state-machines.md` |
 | 狀態機（下層：任務 / QC / 出貨） | `memory/erp/state-machines-ops.md` |
