@@ -49,11 +49,16 @@ Spec 撰寫進度：
 
 | Spec 類型 | 必讀 |
 |-----------|------|
-| 需求單 / 訂單 / 工單 / 印件 | `memory/erp/state-machines.md` |
-| 生產任務 / QC / 出貨單 | `memory/erp/state-machines-ops.md` |
-| 跨上下層流程 | 兩個 state-machines*.md |
+| 需求單 / 訂單 / 工單 / 印件 | `memory/erp/state-machines.md` + `memory/erp/business-process.md` + `memory/erp/user-scenarios.md` + `memory/erp/scenarios.md` |
+| 生產任務 / QC / 出貨單 | `memory/erp/state-machines-ops.md` + `memory/erp/business-process.md` + `memory/erp/user-scenarios.md` + `memory/erp/scenarios.md` |
+| 跨上下層流程 | 兩個 state-machines*.md + `memory/erp/business-process.md` + `memory/erp/user-scenarios.md` + `memory/erp/scenarios.md` |
 | 所有 ERP Spec | `memory/erp/product-goals.md`（KPI 對齊） |
 | Prototype / 介面設計規格 | `memory/shared/ui-design-system.md`（Ant Design 規範、元件、版型） |
+
+**重要**：以下三個檔案是**所有 Spec 撰寫的必讀基礎**（提供邏輯、用戶與情境背景）：
+- `memory/erp/business-process.md` → 核心業務規則與決策邏輯
+- `memory/erp/user-scenarios.md` → 角色視角與使用者故事
+- `memory/erp/scenarios.md` → PM 視角情境驗證與邊界案例
 
 通用原則（OQ 管理、Spec 撰寫規範）一律參照 `memory/shared/principles.md`，無需重複載入。
 
