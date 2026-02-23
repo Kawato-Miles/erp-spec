@@ -72,6 +72,8 @@ Spec 撰寫進度：
 | 規則 | 說明 |
 |------|------|
 | Section 10 不寫 | 開發估算與里程碑由 PM 在 GitHub Issues 管理，Spec 預設跳過 |
+| Section 11 不寫 | 測試計畫獨立維護於 `memory/erp/test-cases.md`，Spec 預設跳過；Spec 完成後在 test-cases.md 補充測試案例 |
+| Section 7 只寫差異 | 全局資料模型統一維護於 `docs/data-model.md`；Section 7 只列此 Spec 新增 / 修改的欄位，完成後同步更新 data-model.md |
 | Ragic = 歷史基準 | Ragic 視為遷移前系統，**不納入新系統設計**；僅用於遷移前後 KPI 對比 |
 | 需求格式 | 「系統應…（System shall）」，每條需求含可測試驗收條件 |
 | 避免模糊詞 | 不用「更好」「更快」「某些情況」，改為具體數字或行為 |
@@ -82,8 +84,12 @@ Spec 撰寫進度：
 
 | 類型 | 處置 |
 |------|------|
-| 功能局部問題 | 留在 Spec 的 Open Questions 章節（顯示用） |
-| 跨模組 / 架構問題 | 合併至 `memory/erp/open-questions.md`（續接最大編號、標明來源） |
+| 功能局部問題（僅影響此模組）| 寫入 `memory/erp/open-questions.md` 對應模組分類，Spec Section 12 以**參照節點**格式顯示摘要 |
+| 跨模組 / 架構問題 | 寫入 `memory/erp/open-questions.md` XM 分類（續接最大編號、標明來源），Spec Section 12「跨模組 OQ」欄標注 ID |
+
+**Section 12 格式（參照節點）**：
+- 正本為 `open-questions.md`；Section 12 只顯示摘要與 ID，不重複維護內容
+- 有 OQ 時：列出 ID 清單 + 一行摘要 + 狀態；無 OQ 時：填「本模組目前無待確認事項」
 
 查詢現有 OQ 狀態時，**直接讀 `memory/erp/open-questions.md`**，不需翻各 Spec 文件。
 
@@ -133,9 +139,9 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 
 ## 輸出物
 
-1. **功能規格書（.md 格式）**：依 `references/spec-template.md` 結構產出
-2. **待確認清單**：Spec 最後匯總所有 `TBD` / OQ
-3. **跨模組 OQ**（若有）：同步寫入 `memory/erp/open-questions.md`
+1. **功能規格書（.md 格式）**：依 `references/spec-template.md` 結構產出，Section 10 / 11 預設跳過
+2. **OQ 參照節點（Section 12）**：顯示本模組與相關跨模組 OQ 的 ID + 摘要，正本在 `memory/erp/open-questions.md`
+3. **資料模型更新**（若有欄位異動）：同步更新 `docs/data-model.md` 對應模組節
 
 ---
 
@@ -144,6 +150,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | 資源 | 路徑 |
 |------|------|
 | Spec 模板 | `references/spec-template.md` |
+| ERP 全局資料模型 | `docs/data-model.md` |
 | 通用工作原則 | `memory/shared/principles.md` |
 | ERP 產品目標 / KPI | `memory/erp/product-goals.md` |
 | 狀態機（上層：需求單 / 訂單 / 工單） | `memory/erp/state-machines.md` |
