@@ -119,7 +119,7 @@
 - 新增生產任務的 `quantity_per_work_order` 設定：
   - 建議值：參照原同工廠任務的平均倍數（系統提供建議）
   - 可覆寫：印務主管或生管確認製程變化後，可手動設定不同倍數
-  - 詳見 `docs/quantity-calculation-rules.md § 4.4` 異動流程中倍數調整的完整驗算
+  - 詳見 `quantity-calculation-rules.md § 4.4` 異動流程中倍數調整的完整驗算
 
 **異動流程的防呆規則**：
 

@@ -220,7 +220,7 @@
 
 **計算邏輯（四層聚合）**：
 
-工單完成的計算涉及四層層級，採用「木桶理論」（min() 聚合）。詳細規則見 `docs/quantity-calculation-rules.md`；以下為摘要：
+工單完成的計算涉及四層層級，採用「木桶理論」（min() 聚合）。詳細規則見 `quantity-calculation-rules.md`；以下為摘要：
 
 ```
 層級 1（生產任務層）：
@@ -279,7 +279,7 @@
 - 生管確認異動後任務返回「製作中」，系統重新計算工單完成數
 - 若異動時新增生產任務，新生產任務的 `quantity_per_work_order` 應由印務主管或生管確認設定
   - 建議值：參照原任務的平均倍數（系統可提供建議，但允許手動覆寫）
-  - 詳細見 `docs/quantity-calculation-rules.md § 4.4 異動流程：新增生產任務`
+  - 詳細見 `quantity-calculation-rules.md § 4.4 異動流程：新增生產任務`
 
 **邊界情況與防呆**：
 
@@ -299,7 +299,7 @@
 
 - QC 單完成時系統計算 `累計 QC 入庫數量 = Σ 所有 QC 單的通過數量`
 - 工單層使用此累計數與工單目標對比，判定是否達成「已完成」
-- 詳細的層級計算流程見 `docs/quantity-calculation-rules.md` 整份文件
+- 詳細的層級計算流程見 `quantity-calculation-rules.md` 整份文件
 - 測試案例對應：TC-Q001 ～ TC-Q007（見 test-cases.md）
 
 ---
