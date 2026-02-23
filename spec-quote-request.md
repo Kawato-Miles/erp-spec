@@ -5,10 +5,10 @@
 | 欄位 | 內容 |
 |------|------|
 | **功能名稱** | 需求單模組（Quote Request） |
-| **文件版本** | v0.3 |
+| **文件版本** | v0.5 |
 | **PM** | Miles |
 | **建立日期** | 2026-02-23 |
-| **最後更新** | 2026-02-23（v0.3） |
+| **最後更新** | 2026-02-23（v0.5） |
 | **狀態** | 草稿 |
 | **相關模組** | 訂單管理（下游）、廠客管理（CRM）、業務角色 |
 | **預計版本** | v1.0（Phase 1） |
@@ -226,118 +226,43 @@
 
 ## 7. 資料模型（Data Model）
 
-### 需求單（QuoteRequest）
+> 完整欄位定義見 [`docs/data-model.md`](docs/data-model.md)（需求單模組節）。
+> 本節為 **Spec 層級補充**：必填時機、業務規則與實作注意事項；欄位結構以 data-model.md 為準。
 
-| 欄位名稱 | 資料型別 | 必填 | 說明 |
-|----------|----------|------|------|
-| `id` | UUID | ✅ | 系統唯一識別碼 |
-| `quote_no` | varchar(20) | ✅ | 顯示用流水號，格式 Q-YYYYMMDD-XX，系統自動產生 |
-| `title` | varchar(200) | ✅ | 需求案名 |
-| `status` | enum | ✅ | 需求確認中 / 待評估報價 / 已評估報價 / 已提供報價 / 議價中 / 成交 / 流失 |
-| `customer_id` | FK | ✅ | 關聯**廠客管理模組**（CRM）；顯示時永遠抓最新廠客資料，不在需求單快照 |
-| `primary_contact` | varchar(100) | — | 主要聯絡人姓名（客戶端，手動填入；廠客管理若已有聯絡人可帶入選擇） |
-| `inquiry_source` | enum | ✅ | Line / Email / 電話 / 現場 / 其他 |
-| `invoice_type` | enum | — | 電子發票 / 紙本發票 / 免開 / TBD |
-| `quote_deadline` | date | — | 報價截止日 |
-| `sales_id` | FK | ✅ | 接單業務（關聯使用者資料表） |
-| `expected_delivery` | text | — | 預計交期需求（文字描述 + 可選日期） |
-| `delivery_note` | text | — | 交貨備註（轉訂單時帶入） |
-| `order_note` | text | — | 訂單備註（轉訂單時帶入） |
-| `item_type` | varchar(100) | — | 印件類型（卡類 / DM / 書冊 / TBD 完整清單） |
-| `slack_thread_url` | varchar(500) | — | 需求單建立時，ERP 透過 Slack webhook 發送通知後，由系統自動回填的訊息 permalink；失敗時業務可手動補填 |
-| `experience_note` | text | — | 報價經驗傳承（文字或 URL） |
-| `linked_order_id` | FK | — | 成交後關聯的訂單 ID；需求單與訂單**不雙向同步**，訂單獨立管理 |
-| `lost_reason` | enum | — | 流失原因（僅流失狀態填寫，TBD 清單） |
-| `lost_note` | text | — | 流失補充說明 |
-| `quote_provided_at` | datetime | — | 對外提供報價時間（系統自動記錄，不可修改） |
-| `created_at` | datetime | ✅ | 建立時間 |
-| `updated_at` | datetime | ✅ | 最後更新時間 |
-| `created_by` | FK | ✅ | 建立者 |
+### 本 Spec 新增的資料表（全新模組）
 
-### 需求單印件項目（QuoteRequestItem）
+`QuoteRequest`、`QuoteRequestItem`、`QuoteRequestItemAttachment`、`QuoteRequestPriceLog`、`QuoteRequestActivityLog`
 
-| 欄位名稱 | 資料型別 | 必填 | 說明 |
-|----------|----------|------|------|
-| `id` | UUID | ✅ | 系統唯一識別碼 |
-| `item_no` | varchar(30) | ✅ | 顯示用編號，格式為 `{quote_no}-{項次流水號}`，例：Q-20260127-02-1；系統自動產生 |
-| `quote_request_id` | FK | ✅ | 所屬需求單 |
-| `seq` | int | ✅ | 項次（排序用，可調整） |
-| `name` | varchar(200) | ✅ | 印件項目名稱 |
-| `spec_note` | text | ✅ | 規格備註（自由文字，含尺寸、紙材、印刷方式、加工等規格說明及特殊需求） |
-| `delivery_method` | varchar(100) | — | 出貨方式（整疊 / 折好 / TBD） |
-| `packaging_note` | text | — | 包裝說明 |
-| `cost_estimate` | decimal(12,2) | ✅（評估階段） | 成本預估（Cost Estimate）（由印務主管填入）；修改歷史透過報價紀錄追蹤，不另做版本管理 |
-| `markup_ratio` | decimal(5,2) | — | 倍數（加成比例，建議售價 = 成本預估 × 倍數） |
-| `unit_price_excl_tax` | decimal(12,2) | — | 報價單價（未稅），業務可覆寫 |
-| `quantity` | decimal(12,2) | — | 數量 |
-| `unit` | varchar(20) | — | 單位（批 / 張 / 個 / 冊）|
-| `amount_excl_tax` | decimal(12,2) | — | 費用（未稅）= 單價 × 數量，系統計算 |
-| `tax_amount` | decimal(12,2) | — | 稅額 = 費用 × 稅率（預設 5%），系統計算 |
-| `total_incl_tax` | decimal(12,2) | — | 總金額（含稅），系統計算 |
+### 欄位必填時機
 
-### 印件項目參考附件（QuoteRequestItemAttachment）
+| 欄位 | 資料表 | 必填時機 | 觸發 FR |
+|------|--------|---------|---------|
+| `title`、`customer_id`、`sales_id`、`inquiry_source` | QuoteRequest | 建立時（前端驗證）| FR-002 |
+| `cost_estimate` | QuoteRequestItem | 觸發「評估完成」時（所有印件項目必填）| FR-011、FR-022 |
+| `lost_reason` | QuoteRequest | 執行「流失」時（未填阻擋）| FR-025 |
+| `items_snapshot` | QuoteRequestPriceLog | 系統自動建立（印務主管執行「評估完成」快照）| FR-022 |
+| `quote_provided_at` | QuoteRequest | 系統自動記錄（執行「對外提供報價」）、不可人工修改 | FR-023 |
 
-> 業務可在每個印件項目上傳參考圖片或 PDF，供印務主管成本評估時參考。
+### 業務規則補充
 
-| 欄位名稱 | 資料型別 | 必填 | 說明 |
-|----------|----------|------|------|
-| `id` | UUID | ✅ | |
-| `item_id` | FK | ✅ | 所屬印件項目 |
-| `file_type` | enum | ✅ | image / pdf |
-| `file_url` | varchar(1000) | ✅ | 檔案儲存路徑 |
-| `filename` | varchar(200) | ✅ | 顯示用檔案名稱 |
-| `note` | text | — | 附件說明（如「客戶提供的參考樣本」） |
-| `uploaded_by` | FK | ✅ | 上傳者 |
-| `uploaded_at` | datetime | ✅ | |
-
-### 報價紀錄（QuoteRequestPriceLog）
-
-> 每次印務主管執行「評估完成」時，系統自動建立一筆快照，保留各印件項目的成本預估與報價。
-
-| 欄位名稱 | 資料型別 | 必填 | 說明 |
-|----------|----------|------|------|
-| `id` | UUID | ✅ | |
-| `quote_request_id` | FK | ✅ | 所屬需求單 |
-| `evaluated_by` | FK | ✅ | 評估者（印務主管） |
-| `evaluated_at` | datetime | ✅ | 評估完成時間 |
-| `items_snapshot` | JSON | ✅ | 各印件項目當下的成本預估、倍數、報價單價快照 |
-| `note` | text | — | 本次評估說明或調整原因 |
-
-### 活動紀錄（QuoteRequestActivityLog）
-
-> 系統自動記錄所有狀態變更與重要欄位異動，不可人工修改。
-
-| 欄位名稱 | 資料型別 | 必填 | 說明 |
-|----------|----------|------|------|
-| `id` | UUID | ✅ | |
-| `quote_request_id` | FK | ✅ | 所屬需求單 |
-| `actor_id` | FK | ✅ | 操作者（系統事件填 system） |
-| `action_type` | enum | ✅ | 狀態異動 / 欄位修改 / 系統事件 |
-| `description` | text | ✅ | 事件描述（例：「狀態從「需求確認中」變更為「待評估報價」」） |
-| `metadata` | JSON | — | 異動詳情（欄位舊值 / 新值等） |
-| `created_at` | datetime | ✅ | |
-
-### 資料關聯
-
-- `QuoteRequest` 對 `QuoteRequestItem`：一對多
-- `QuoteRequestItem` 對 `QuoteRequestItemAttachment`：一對多（每個印件項目可有多個附件）
-- `QuoteRequest` 對 `QuoteRequestPriceLog`：一對多（每次評估完成新增一筆）
-- `QuoteRequest` 對 `QuoteRequestActivityLog`：一對多（所有事件自動記錄）
-- `QuoteRequest` 對 `Customer`（廠客管理）：多對一
-- `QuoteRequest` 對 `User`（sales）：多對一
-- `QuoteRequest` 對 `Order`（成交後）：一對一
+- `customer_id` 永遠取廠客管理最新資料，**不在需求單快照**（見 FR-030）
+- `linked_order_id` 由系統在成交轉訂單時自動寫入，不可人工設定
+- `actor_id` 在系統自動事件時填 `system`（QuoteRequestActivityLog）
+- `item_type` 欄位在印件項目（QuoteRequestItem）層，不在需求單主表；待 QR-003 確認選項
+- `invoice_type` 繼承自 Customer 預設值，可於需求單層覆寫；待 QR-001 確認完整選項
+- `items_snapshot` JSON 格式快照，需記錄各印件的 `cost_estimate`、`markup_ratio`、`unit_price_excl_tax`
 
 ---
 
 ## 8. API / 整合需求
 
-| 類型 | 描述 | 相關系統 |
+> 詳細 API 規格由開發負責定義；本節僅記錄 PM 層級的整合點與注意事項。
+
+| 類型 | 說明 | 相關系統 |
 |------|------|----------|
-| 內部 API | 建立需求單、更新狀態、新增/修改印件項目 | ERP 後端 |
-| 內部 API | 狀態轉換驗證（角色 + 必填欄位前置檢查） | ERP 後端 |
-| 內部 API | 成交後轉建訂單（帶入需求單資料） | 訂單模組 |
-| 內部 API | 附件上傳（檔案儲存、權限驗證） | 檔案儲存服務 |
-| 外部串接（Outbound） | 需求單建立 / 狀態轉換時，透過 Slack Incoming Webhook 發送通知至指定頻道；通知成功後回寫 slack_thread_url | Slack |
+| 外部串接（Outbound） | 需求單建立 / 狀態轉換時，透過 Slack Incoming Webhook 推送通知至指定頻道；通知成功後自動回寫 `slack_thread_url`；失敗時記錄事件但不阻擋主流程（見 FR-005）| Slack |
+| 內部（下游）| 成交後建立訂單，帶入客戶、業務、印件基本資料（見 FR-030）| 訂單模組 |
+| 檔案儲存 | 印件附件上傳（image / pdf），存取權限需覆蓋業務與印務主管角色 | 檔案儲存服務 |
 
 ---
 
@@ -364,31 +289,8 @@
 
 ## 10. 測試計畫（Test Plan）
 
-> **與 test-cases.md 的關係**：`memory/erp/test-cases.md` 為早期的系統測試草稿，標注為「較舊、設計穩定後再清理」。本 spec 的測試計畫為**需求單模組的正式測試依據**，兩者如有重複，以本文件為準。test-cases.md 待需求單模組設計穩定後同步更新或清理。
-
-### 10.1 功能測試項目
-
-| 測試案例 | 前置條件 | 測試步驟 | 預期結果 |
-|----------|----------|----------|----------|
-| TC-001 建立需求單（必填驗證） | 使用者為業務角色 | 空白送出需求單 | 顯示必填欄位錯誤，不建立 |
-| TC-002 需求單號自動產生 | 當日已有一筆 Q-20260223-01 | 建立第二張需求單 | 需求單號自動產生為 Q-20260223-02 |
-| TC-003 印件項目編號格式 | 需求單號為 Q-20260223-01 | 新增第 2 個印件項目 | 項目編號為 Q-20260223-01-2 |
-| TC-004 狀態轉換：業務送評估 | 需求單狀態為「需求確認中」 | 業務點擊「送印務評估」 | 狀態變為「待評估報價」，Slack 發送通知，活動紀錄新增一筆 |
-| TC-005 狀態轉換：印務評估（缺成本）| 印件項目有成本預估未填 | 印務主管點擊「評估完成」 | 系統阻擋，顯示錯誤訊息 |
-| TC-006 狀態轉換：印務評估（正常）| 所有印件項目均已填成本預估 | 印務主管點擊「評估完成」 | 狀態變為「已評估報價」，自動建立一筆報價紀錄（QuoteRequestPriceLog） |
-| TC-007 狀態轉換：流失（未填原因）| 需求單狀態為「議價中」 | 業務點擊「流失」，不填原因 | 系統阻擋，不允許確認 |
-| TC-008 印件項目金額計算 | 印件項目已填報價單價 1000，數量 5 | 修改數量為 10 | 費用自動更新為 10,000，含稅更新為 10,500 |
-| TC-009 成交後狀態鎖定、欄位可異動 | 需求單狀態已轉為「成交」 | 業務嘗試修改需求案名 | 欄位可正常修改；狀態無法再轉換 |
-| TC-010 角色權限：業務不可評估 | 使用者為業務角色 | 查看「待評估報價」的需求單 | 不顯示「評估完成」按鈕 |
-| TC-011 附件上傳 | 印件項目已建立 | 上傳 PNG 圖片 | 顯示縮圖與檔案名稱；印務主管可預覽 |
-
-### 10.2 邊緣案例（Edge Cases）
-
-- [ ] 同一天建立超過 99 筆需求單時，需求單號格式溢位處理（99 → 100）
-- [ ] 印件項目中倍數為 0 時的計算行為
-- [ ] 議價中多次退回重評估時，多筆報價紀錄的展示順序
-- [ ] Slack webhook 發送失敗時，需求單建立是否正常完成（不阻塞主流程）
-- [ ] 附件上傳超過數量限制（> 10 個）時的系統行為
+> **預設跳過** — 測試案例已整理至 `memory/erp/test-cases.md`（需求單模組節）。
+> 詳見 test-cases.md「需求單模組（QR）— 功能測試」。
 
 ---
 
@@ -422,3 +324,4 @@
 | v0.2 | 2026-02-23 | Miles | 確認 OQ#6/9/10：成交後唯讀 + 不雙向同步；客戶資料改為廠客管理 FK；成本預估以異動紀錄取代版本管理；Ragic 定位為歷史指標基準 |
 | v0.3 | 2026-02-23 | Miles | 移除同事名稱改用「成本預估」；item_no 格式改為 quote_no+流水號；slack_thread_url 改為 webhook 自動回填；新增附件（QuoteRequestItemAttachment）、報價紀錄（QuoteRequestPriceLog）、活動紀錄（QuoteRequestActivityLog）三個資料實體；確認 OQ#4（Slack webhook）和 OQ#5（欄位全開放異動）；移除開發里程碑章節（改由 GitHub Issues 管理）；補充 test-cases.md 關係說明 |
 | v0.4 | 2026-02-23 | Miles | OQ 章節改為 open-questions.md 參照節點；原 OQ 遷移至集中管理（QR-001~QR-004）；跨模組 OQ（RWD / Slack Channel）移至 XM 分類 |
+| v0.5 | 2026-02-23 | Miles | Section 7 改為 data-model.md 參照 + 必填時機補充；Section 8 簡化為 PM 層級整合點；Section 10（Test Plan）改為預設跳過，測試案例移至 test-cases.md |

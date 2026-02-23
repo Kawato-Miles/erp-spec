@@ -115,8 +115,16 @@ Order
 | `invoice_type` | enum | 發票類型（繼承自 Customer，可覆蓋）| 待 QR-001 |
 | `linked_order_id` | FK → Order | 成交後關聯訂單（系統自動寫入）| 選填 |
 | `lost_reason` | enum | 流失原因 | 待 QR-002；狀態為「流失」時必填 |
+| `lost_note` | text | 流失補充說明 | 選填 |
 | `slack_thread_url` | varchar(500) | 建立時送出的 Slack Webhook URL（自動回填）| |
 | `sales_id` | FK → User | 接單業務 | |
+| `primary_contact` | varchar(100) | 主要聯絡人姓名（手動填入，可從 CRM 帶入）| 選填 |
+| `quote_deadline` | date | 報價截止日 | 選填；截止前 1 天通知業務 |
+| `expected_delivery_date` | date | 客戶期望交期 | 選填 |
+| `delivery_note` | text | 交貨備註（成交後轉訂單時帶入）| 選填 |
+| `order_note` | text | 訂單備註（成交後轉訂單時帶入）| 選填 |
+| `experience_note` | text | 報價經驗傳承（文字或 URL，供相似案件參考）| 選填 |
+| `quote_provided_at` | datetime | 對外提供報價時間（系統自動記錄，不可修改）| 執行「提供報價」時自動寫入 |
 | `notes` | text | 備註 | 選填 |
 | `created_at` | datetime | 建立時間 | |
 | `updated_at` | datetime | 最後更新時間 | |
@@ -134,9 +142,16 @@ Order
 | `item_type` | enum | 印件類型（卡類 / DM / 書冊 / 摺頁...）| 待 QR-003 確認選項 |
 | `spec_note` | text | 規格備註（尺寸、紙材、印刷方式、加工等）| |
 | `quantity` | int | 需求數量 | |
-| `cost_estimate` | decimal(12,2) | 成本預估（由印務主管填入）| 選填；歷史版本透過 PriceLog 追蹤 |
-| `price_per_unit` | decimal(10,2) | 報價單價 | 選填 |
-| `price_multiplier` | decimal(5,2) | 報價倍數（成本 × 倍數 = 定價）| 選填 |
+| `cost_estimate` | decimal(12,2) | 成本預估（由印務主管填入）| 觸發「評估完成」時必填；歷史版本透過 PriceLog 追蹤 |
+| `price_per_unit` | decimal(10,2) | 報價單價（未稅），業務可覆寫 | 選填 |
+| `price_multiplier` | decimal(5,2) | 報價倍數（成本 × 倍數 = 定價參考）| 選填 |
+| `quantity` | decimal(12,2) | 數量 | 選填 |
+| `unit` | varchar(20) | 單位（批 / 張 / 個 / 冊）| 選填 |
+| `amount_excl_tax` | decimal(12,2) | 費用未稅（= 單價 × 數量，系統計算）| 系統自動計算 |
+| `tax_amount` | decimal(12,2) | 稅額（= 費用 × 稅率，預設 5%）| 系統自動計算 |
+| `total_incl_tax` | decimal(12,2) | 含稅總金額（系統計算）| 系統自動計算 |
+| `delivery_method` | varchar(100) | 出貨方式（整疊 / 折好 / TBD）| 選填 |
+| `packaging_note` | text | 包裝說明 | 選填 |
 | `created_at` | datetime | 建立時間 | |
 | `updated_at` | datetime | 最後更新時間 | |
 
