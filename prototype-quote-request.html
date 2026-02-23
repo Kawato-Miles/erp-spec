@@ -142,25 +142,33 @@
 <script type="text/babel">
 const TAX_RATE = 0.05;
 
-/* 工序庫 */
+/* 工序庫（含單位） */
 const PROCESS_OPTIONS = [
-  { key: 'offset_4c', label: '平版印刷（四色）', unitCost: 0.48 },
-  { key: 'offset_2c', label: '平版印刷（雙色）', unitCost: 0.32 },
-  { key: 'digital',   label: '數位印刷',         unitCost: 1.55 },
-  { key: 'cut',       label: '裁切',             unitCost: 0.08 },
-  { key: 'fold',      label: '折頁',             unitCost: 0.12 },
-  { key: 'saddle',    label: '騎馬釘裝訂',       unitCost: 0.32 },
-  { key: 'glue',      label: '膠裝裝訂',         unitCost: 0.52 },
-  { key: 'varnish',   label: '上光（霧光）',     unitCost: 0.18 },
-  { key: 'foil',      label: '燙金',             unitCost: 0.68 },
-  { key: 'die_cut',   label: '模切',             unitCost: 0.38 },
+  // 紙材
+  { key: 'paper_a4',       name: 'A4 紙',             unit: '張',  category: '紙材' },
+  { key: 'paper_a3',       name: 'A3 紙',             unit: '張',  category: '紙材' },
+  { key: 'cardboard_200g', name: '特銅紙 200g',       unit: '張',  category: '紙材' },
+  { key: 'cardboard_300g', name: '特銅紙 300g',       unit: '張',  category: '紙材' },
+  // 印刷
+  { key: 'print_offset_4c',name: '平版印刷（四色）',  unit: '張',  category: '印刷' },
+  { key: 'print_offset_2c',name: '平版印刷（雙色）',  unit: '張',  category: '印刷' },
+  { key: 'print_digital',  name: '數位印刷',         unit: '張',  category: '印刷' },
+  // 加工
+  { key: 'cut',           name: '裁切',              unit: '個',  category: '加工' },
+  { key: 'fold',          name: '折頁',              unit: '本',  category: '加工' },
+  { key: 'binding_saddle',name: '騎馬釘裝訂',        unit: '本',  category: '加工' },
+  { key: 'binding_glue',  name: '膠裝裝訂',          unit: '本',  category: '加工' },
+  { key: 'varnish',       name: '上光（霧光）',      unit: '張',  category: '加工' },
+  { key: 'foil',          name: '燙金',              unit: '個',  category: '加工' },
+  { key: 'die_cut',       name: '模切',              unit: '個',  category: '加工' },
 ];
 
-function calcProcessCost(processes) {
-  if (!processes || processes.length === 0) return null;
-  return processes.reduce((sum, pk) => {
-    const p = PROCESS_OPTIONS.find(o => o.key === pk);
-    return sum + (p ? p.unitCost : 0);
+function calcProcessItemsCost(processItems) {
+  if (!processItems || processItems.length === 0) return null;
+  return processItems.reduce((sum, item) => {
+    const qty = item.qty || 0;
+    const unitPrice = item.unitPrice || 0;
+    return sum + (qty * unitPrice);
   }, 0);
 }
 
@@ -191,12 +199,23 @@ const initialData = [
     items: [
       { id: 1, no: 'Q-20260223-01-1', name: 'A4 DM 正反面',
         spec: 'A4 全彩正反面 銅版紙 105g', qty: 5000,
-        unitPrice: 2.16, costEstimate: 1.6, markup: 1.35, processes: ['offset_4c', 'cut', 'varnish'],
+        unitPrice: 2.16, costEstimate: 1.6, markup: 1.35,
+        processItems: [
+          { processKey: 'cardboard_200g', qty: 5000, unitPrice: 0.80 },
+          { processKey: 'print_offset_4c', qty: 5000, unitPrice: 0.60 },
+          { processKey: 'cut', qty: 5000, unitPrice: 0.08 },
+          { processKey: 'varnish', qty: 5000, unitPrice: 0.12 }
+        ],
         shippingMethod: '物流配送', packagingNote: '每 500 張一捆',
         attachments: ['DM設計稿_v3.pdf'] },
       { id: 2, no: 'Q-20260223-01-2', name: '名片',
         spec: '標準名片 300g 特銅 雙面印刷', qty: 200,
-        unitPrice: 0.75, costEstimate: 0.52, markup: 1.44, processes: ['offset_4c', 'cut'],
+        unitPrice: 0.75, costEstimate: 0.52, markup: 1.44,
+        processItems: [
+          { processKey: 'cardboard_300g', qty: 200, unitPrice: 0.30 },
+          { processKey: 'print_offset_4c', qty: 200, unitPrice: 0.16 },
+          { processKey: 'cut', qty: 200, unitPrice: 0.06 }
+        ],
         shippingMethod: '自取', packagingNote: '',
         attachments: [] },
     ],
@@ -264,7 +283,8 @@ const initialData = [
     items: [
       { id: 1, no: 'Q-20260223-02-1', name: 'A5 型錄 28P',
         spec: 'A5 28頁 封面 200g 特銅 + 內頁 105g 銅版', qty: 10000,
-        unitPrice: 8.0, costEstimate: null, markup: null, processes: [],
+        unitPrice: 8.0, costEstimate: null, markup: null,
+        processItems: [],
         shippingMethod: '物流配送', packagingNote: '',
         attachments: [] },
     ],
@@ -287,7 +307,12 @@ const initialData = [
     items: [
       { id: 1, no: 'Q-20260222-01-1', name: '250g 牛皮紙包裝袋',
         spec: '牛皮紙 250g 掛孔打洞 4色印刷', qty: 2000,
-        unitPrice: 4.5, costEstimate: 3.2, markup: 1.4, processes: ['offset_4c', 'die_cut'],
+        unitPrice: 4.5, costEstimate: 3.2, markup: 1.4,
+        processItems: [
+          { processKey: 'cardboard_200g', qty: 2000, unitPrice: 1.20 },
+          { processKey: 'print_offset_4c', qty: 2000, unitPrice: 1.40 },
+          { processKey: 'die_cut', qty: 2000, unitPrice: 0.60 }
+        ],
         shippingMethod: '自取', packagingNote: '每 100 個一袋',
         attachments: ['包裝袋設計稿.pdf', '材質參考圖.jpg'] },
     ],
@@ -479,20 +504,38 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role }) {
 
   const addItem = () => {
     const nextId = Math.max(...items.map(i => i.id), 0) + 1;
-    setItems([...items, { id: nextId, no: `${quoteNo}-${nextId}`, name: '', spec: '', qty: null, unitPrice: null, costEstimate: null, markup: null, processes: [], shippingMethod: '', packagingNote: '', attachments: [] }]);
+    setItems([...items, { id: nextId, no: `${quoteNo}-${nextId}`, name: '', spec: '', qty: null, unitPrice: null, costEstimate: null, markup: null, processItems: [], shippingMethod: '', packagingNote: '', attachments: [] }]);
   };
   const removeItem = id => setItems(items.filter(i => i.id !== id));
   const updateItem = (id, key, val) => setItems(items.map(i => i.id === id ? { ...i, [key]: val } : i));
 
-  const toggleProcess = (id, pk) => {
+  const addProcessItem = (itemId) => {
     setItems(prev => prev.map(item => {
-      if (item.id !== id) return item;
-      const processes = item.processes || [];
-      const newProcesses = processes.includes(pk) ? processes.filter(p => p !== pk) : [...processes, pk];
-      // Auto-compute cost from processes if selected, otherwise default to 50% of unitPrice
-      const processCost = calcProcessCost(newProcesses);
-      const newCost = processCost !== null ? processCost : (item.unitPrice != null ? item.unitPrice * 0.5 : null);
-      return { ...item, processes: newProcesses, costEstimate: newCost };
+      if (item.id !== itemId) return item;
+      const processItems = item.processItems || [];
+      const newProcessItems = [...processItems, { processKey: '', qty: 1, unitPrice: 0 }];
+      const newCost = calcProcessItemsCost(newProcessItems);
+      return { ...item, processItems: newProcessItems, costEstimate: newCost };
+    }));
+  };
+
+  const removeProcessItem = (itemId, pidx) => {
+    setItems(prev => prev.map(item => {
+      if (item.id !== itemId) return item;
+      const processItems = item.processItems || [];
+      const newProcessItems = processItems.filter((_, i) => i !== pidx);
+      const newCost = newProcessItems.length > 0 ? calcProcessItemsCost(newProcessItems) : (item.unitPrice != null ? item.unitPrice * 0.5 : null);
+      return { ...item, processItems: newProcessItems, costEstimate: newCost };
+    }));
+  };
+
+  const updateProcessItem = (itemId, pidx, key, val) => {
+    setItems(prev => prev.map(item => {
+      if (item.id !== itemId) return item;
+      const processItems = item.processItems || [];
+      const newProcessItems = processItems.map((p, i) => i === pidx ? { ...p, [key]: val } : p);
+      const newCost = calcProcessItemsCost(newProcessItems);
+      return { ...item, processItems: newProcessItems, costEstimate: newCost };
     }));
   };
 
@@ -500,9 +543,9 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role }) {
     const up = val ? Number(val) : null;
     setItems(prev => prev.map(item => {
       if (item.id !== id) return item;
-      const processes = item.processes || [];
-      // If no processes, auto-set cost to 50% of unit price
-      const newCost = processes.length === 0 && up != null ? up * 0.5 : item.costEstimate;
+      const processItems = item.processItems || [];
+      // If no process items, auto-set cost to 50% of unit price
+      const newCost = processItems.length === 0 && up != null ? up * 0.5 : item.costEstimate;
       return { ...item, unitPrice: up, costEstimate: newCost };
     }));
   };
@@ -519,8 +562,8 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role }) {
       {/* Item Cards */}
       {items.map(item => {
         const { subtotal, total } = calcItem(item);
-        const processes = item.processes || [];
-        const processCost = calcProcessCost(processes);
+        const processItems = item.processItems || [];
+        const processCost = calcProcessItemsCost(processItems);
 
         return (
           <div key={item.id} style={{ border: '1px solid #F0F0F0', borderRadius: 8, marginBottom: 16, overflow: 'hidden' }}>
@@ -561,49 +604,81 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role }) {
 
                 {/* Process & Cost Section */}
                 <div style={{ background: '#FAFAFA', borderRadius: 6, padding: '12px 16px', borderTop: '1px solid #F0F0F0', marginTop: 12 }}>
-                  <div style={{ fontSize: 12, fontWeight: 500, color: '#00000073', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>預計製程與成本評估</div>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: '#00000073', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>預計工序與成本評估</div>
 
-                  {/* Process selection */}
-                  <div style={{ marginBottom: 12 }}>
-                    <div style={{ fontSize: 12, color: '#00000073', marginBottom: 6 }}>預計工序</div>
-                    {canEditCost ? (
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                        {PROCESS_OPTIONS.map(opt => {
-                          const selected = processes.includes(opt.key);
-                          return (
-                            <button key={opt.key} onClick={() => toggleProcess(item.id, opt.key)} style={{
-                              padding: '3px 10px', borderRadius: 4, fontSize: 12, cursor: 'pointer',
-                              border: `1px solid ${selected ? '#1677FF' : '#D9D9D9'}`,
-                              background: selected ? '#E6F4FF' : '#fff',
-                              color: selected ? '#1677FF' : '#00000073',
-                              transition: 'all 0.15s'
-                            }}>
-                              {opt.label}
-                              {selected && <span style={{ marginLeft: 4, fontSize: 11 }}>$ {opt.unitCost.toFixed(2)}</span>}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div style={{ fontSize: 13 }}>
-                        {processes.length > 0 ? (
-                          processes.map((pk, i) => {
-                            const opt = PROCESS_OPTIONS.find(o => o.key === pk);
-                            return opt ? <span key={pk} style={{ marginRight: 8, display: 'inline-block', padding: '2px 8px', background: '#E6F4FF', borderRadius: 4, color: '#1677FF', fontSize: 12 }}>{opt.label}</span> : null;
-                          })
-                        ) : (
-                          <span style={{ color: '#00000040' }}>未指定工序，以售價 50% 估算</span>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  {/* Process items table */}
+                  {canEditCost ? (
+                    <div style={{ marginBottom: 12 }}>
+                      <div style={{ fontSize: 12, color: '#00000073', marginBottom: 8 }}>工序成本明細</div>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, marginBottom: 8 }}>
+                        <thead>
+                          <tr style={{ background: '#fff' }}>
+                            <th style={{ padding: '6px 8px', textAlign: 'left', fontWeight: 500, borderBottom: '1px solid #D9D9D9', width: '35%' }}>工序名稱</th>
+                            <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 500, borderBottom: '1px solid #D9D9D9', width: '15%' }}>單位</th>
+                            <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 500, borderBottom: '1px solid #D9D9D9', width: '15%' }}>數量</th>
+                            <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 500, borderBottom: '1px solid #D9D9D9', width: '20%' }}>單價</th>
+                            <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 500, borderBottom: '1px solid #D9D9D9', width: '12%' }}>小計</th>
+                            <th style={{ padding: '6px 8px', textAlign: 'center', fontWeight: 500, borderBottom: '1px solid #D9D9D9', width: '8%' }}>操作</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {processItems.map((pi, pidx) => {
+                            const processOpt = PROCESS_OPTIONS.find(o => o.key === pi.processKey);
+                            const itemCost = (pi.qty || 0) * (pi.unitPrice || 0);
+                            return (
+                              <tr key={pidx} style={{ borderBottom: '1px solid #F0F0F0' }}>
+                                <td style={{ padding: '6px 8px' }}>
+                                  <select value={pi.processKey || ''} onChange={e => updateProcessItem(item.id, pidx, 'processKey', e.target.value)} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 6px', fontSize: 12, fontFamily: 'inherit' }}>
+                                    <option value="">選擇工序</option>
+                                    {PROCESS_OPTIONS.map(opt => (
+                                      <option key={opt.key} value={opt.key}>{opt.name}</option>
+                                    ))}
+                                  </select>
+                                </td>
+                                <td style={{ padding: '6px 8px', textAlign: 'right', fontSize: 12, color: '#00000073' }}>{processOpt?.unit || '—'}</td>
+                                <td style={{ padding: '6px 8px' }}>
+                                  <input type="number" min="0" value={pi.qty ?? ''} onChange={e => updateProcessItem(item.id, pidx, 'qty', e.target.value ? Number(e.target.value) : 0)} style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 6px', fontSize: 12, fontFamily: 'inherit' }} />
+                                </td>
+                                <td style={{ padding: '6px 8px' }}>
+                                  <input type="number" step="0.01" min="0" value={pi.unitPrice ?? ''} onChange={e => updateProcessItem(item.id, pidx, 'unitPrice', e.target.value ? Number(e.target.value) : 0)} placeholder="0.00" style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 6px', fontSize: 12, fontFamily: 'inherit' }} />
+                                </td>
+                                <td style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'monospace', fontSize: 12, fontWeight: 500 }}>$ {fmtMoney(itemCost)}</td>
+                                <td style={{ padding: '6px 8px', textAlign: 'center' }}>
+                                  <button className="btn btn-danger btn-sm" onClick={() => removeProcessItem(item.id, pidx)} style={{ fontSize: 11, padding: '2px 6px' }}>刪</button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                      <button className="btn btn-default btn-sm" onClick={() => addProcessItem(item.id)} style={{ marginBottom: 12 }}>添加工序</button>
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 13, marginBottom: 12 }}>
+                      {processItems.length > 0 ? (
+                        <div>
+                          {processItems.map((pi, i) => {
+                            const opt = PROCESS_OPTIONS.find(o => o.key === pi.processKey);
+                            const cost = (pi.qty || 0) * (pi.unitPrice || 0);
+                            return (
+                              <div key={i} style={{ fontSize: 12, marginBottom: 4, padding: '4px 8px', background: '#fff', borderRadius: 4 }}>
+                                {opt?.name} {pi.qty} {opt?.unit} × ${(pi.unitPrice || 0).toFixed(2)} = ${fmtMoney(cost)}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <span style={{ color: '#00000040' }}>未指定工序，以售價 50% 估算</span>
+                      )}
+                    </div>
+                  )}
 
                   {/* Cost and Markup */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12, borderTop: '1px solid #D9D9D9', paddingTop: 12 }}>
                     <div>
                       <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>
                         成本預估
-                        {processes.length > 0 ? (
+                        {processItems.length > 0 ? (
                           <span style={{ marginLeft: 4, color: '#1677FF', fontSize: 11 }}>(工序合計)</span>
                         ) : (
                           <span style={{ marginLeft: 4, color: '#00000040', fontSize: 11 }}>(售價 50%)</span>
@@ -637,22 +712,9 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role }) {
                     </div>
                   </div>
 
-                  {/* Process cost breakdown */}
-                  {processes.length > 0 && processCost != null && (
-                    <div style={{ marginTop: 12, fontSize: 12, color: '#00000073', borderTop: '1px solid #F0F0F0', paddingTop: 8 }}>
-                      工序明細：
-                      {processes.map((pk, i) => {
-                        const opt = PROCESS_OPTIONS.find(o => o.key === pk);
-                        if (!opt) return null;
-                        return <span key={pk} style={{ marginLeft: 8 }}>{opt.label} ${opt.unitCost.toFixed(2)}{i < processes.length - 1 ? ' +' : ''}</span>;
-                      })}
-                      <span style={{ marginLeft: 8, fontWeight: 500, color: '#000000E0' }}> = $ {fmtMoney(processCost)}</span>
-                    </div>
-                  )}
-
-                  {/* Default 50% hint if no processes */}
-                  {processes.length === 0 && item.unitPrice && (
-                    <div style={{ marginTop: 8, fontSize: 12, color: '#00000040' }}>
+                  {/* Default 50% hint if no process items */}
+                  {processItems.length === 0 && item.unitPrice && (
+                    <div style={{ marginTop: 12, fontSize: 12, color: '#00000040' }}>
                       未選擇工序，成本以售價 50% 估算：$ {fmtMoney(item.unitPrice * 0.5)} / 單位
                     </div>
                   )}
