@@ -28,7 +28,7 @@ Spec 撰寫進度：
 - [ ] Step 3：觸發 product-management:feature-spec skill
 - [ ] Step 4：依模板撰寫草稿
 - [ ] Step 5：識別與同步 Open Questions
-- [ ] Step 6：Task 結束同步檢查
+- [ ] Step 6：Task 結束同步檢查 + 稽核
 ```
 
 ### Step 1：確認範圍與問題定義
@@ -87,15 +87,27 @@ Spec 撰寫進度：
 
 查詢現有 OQ 狀態時，**直接讀 `memory/erp/open-questions.md`**，不需翻各 Spec 文件。
 
-### Step 6：Task 結束同步檢查
+### Step 6：Task 結束同步檢查 + 稽核
 
-Spec 完成後，確認以下連帶更新：
+Spec 完成後，依序執行：
+
+**① 連帶更新確認**
 
 | 修改內容 | 需同步確認 |
 |----------|------------|
 | 新增 / 修改狀態或流程 | `memory/erp/scenarios.md` 是否需補情境 |
 | 解答現有 OQ | `memory/erp/open-questions.md` 更新狀態；已解答項定期移至 archive |
 | 出現新術語 | `memory/erp/glossary.md` 是否需補充定義 |
+| 新增 memory/ 資源檔案 | CLAUDE.md 快速索引、SKILL.md 參考資源 |
+| 新增 ERP 功能模組 | SKILL.md 印刷 ERP 特定注意事項、Step 2 表格 |
+
+**② 執行自我稽核腳本**
+
+```bash
+bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
+```
+
+稽核結果若出現 ⚠️，依提示補充索引後再 commit。ℹ️ 為提示項，確認後決定是否補充。
 
 ---
 
@@ -138,6 +150,8 @@ Spec 完成後，確認以下連帶更新：
 | 狀態機（下層：任務 / QC / 出貨） | `memory/erp/state-machines-ops.md` |
 | 待確認事項 | `memory/erp/open-questions.md` |
 | 情境驗證 | `memory/erp/scenarios.md` |
+| 使用者情境（角色需求故事） | `memory/erp/user-scenarios.md` |
+| 業務流程（核心規則） | `memory/erp/business-process.md` |
 | ERP 術語表 | `memory/erp/glossary.md` |
 | 共用術語 | `memory/shared/glossary.md` |
 | 產業背景 | `memory/shared/context/industry.md` |
