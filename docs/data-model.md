@@ -311,6 +311,7 @@
 | 所屬印件 | `print_item_id` | | ✓ | ✓ | FK | | FK → 印件 |
 | 工單類型 | `type` | | ✓ | | 單選（enum） | 打樣 / 大貨 | |
 | 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機設計 | 見 state-machines.md |
+| 每份印件生產數量 | `quantity_per_print_item` | | ✓ | | 小數（decimal 12,2） | 1 份印件需要多少份此工單完成；印務主管於建立工單時決定 | 例：1000（1式=1000個）、0.5；驗證：> 0；見 business-process.md §4 |
 | 負責排程人員 | `assigned_to` | | ✓ | | FK | | FK → 使用者 |
 | 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 | 更新時間 | `updated_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
@@ -350,7 +351,7 @@
 | 所屬工單 | `work_order_id` | | ✓ | ✓ | FK | | FK → 工單 |
 | 工序 | `process_id` | | ✓ | | FK | | FK → 工序 |
 | 工廠類型 | `factory_type` | | ✓ | | 單選（enum） | 自有工廠 / 加工廠 / 外包廠 | |
-| 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機 | 見 state-machines-ops.md |
+| 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機 | 見 state-machines-ops.md；需補充「異動」狀態（缺陷 2.4） |
 | 目標數量 | `target_quantity` | | ✓ | | 整數（int） | | |
 | 預計執行日 | `scheduled_date` | | ✓ | | 日期（date） | 產能優化關鍵欄位 | XM-003 |
 | 合批群組 ID | `batch_group_id` | | | | 字串（varchar 50） | 同工序合批派工時使用 | 待 XM-003 確認 |
@@ -373,6 +374,8 @@
 | 工序 | `process_id` | | ✓ | ✓ | FK | 冗餘存儲，便於查詢 | FK → 工序，系統自動帶入 |
 | 工廠類型 | `factory_type` | | ✓ | | 單選（enum） | 自有工廠 / 加工廠 / 外包廠 | |
 | 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機 | 見 state-machines-ops.md |
+| 是否影響成品 | `affects_product` | | ✓ | || 布林值（boolean） | QC 通過數是否計入工單完成數計算；實際製程工序計入，採購紙張等支援工序不計入 | 預設 TRUE；由印務主管於工單建立時確認；見 business-process.md §4.3 |
+| 每份工單需生產數量 | `quantity_per_work_order` | | ✓ | | 小數（decimal 12,2） | 完成 1 份工單需要多少份此生產任務；由印務主管於工單建立時設定 | 例：1、2、0.5；驗證：> 0；見 business-process.md §4；關鍵：一個任務內的多個生產任務各自定義倍數 |
 | 目標數量 | `target_quantity` | | ✓ | | 整數（int） | | |
 | 完成數量 | `completed_quantity` | | ✓ | ✓ | 整數（int） | 報工累計 | 系統自動計算 |
 | 預計執行日 | `scheduled_date` | | ✓ | | 日期（date） | 產能優化合批時間窗口 | |
