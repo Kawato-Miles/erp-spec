@@ -96,22 +96,25 @@ Spec 撰寫進度：
 
 Spec 完成後，依序執行：
 
-**① 連帶更新確認（完整同步規則）**
+**① 連帯更新確認（完整同步規則）**
 
-| 修改對象 | 必須連帶檢查 |
-|----------|------------|
-| `state-machines.md` 或 `state-machines-ops.md` | `scenarios.md` 附錄、`open-questions.md`（是否解決待確認項）|
-| `open-questions.md` 確認某問題 | 對應 `state-machines*.md` 是否已補設計、`scenarios.md` 是否補情境；**各 Spec 第 12 章（OQ 參照節點）狀態摘要需同步更新** |
-| `scenarios.md` 新增 / 修改情境 | `user-scenarios.md`（對應角色是否需補情境）|
-| `user-scenarios.md` | `scenarios.md` 附錄（情境索引是否同步）|
-| 任何欄位 / 狀態名稱異動 | `glossary.md`（術語是否需新增 / 修正）|
-| Task 中識別新 OQ | 跨模組 / 架構問題 → 合併至 `open-questions.md`（續接最大編號、標明來源）；局部問題可留 Spec 內顯示 |
-| `open-questions.md` 有 OQ 解答 | 定期移至 `open-questions-archive.md`，正本只保留 ⏳ 待確認項目 |
-| `docs/data-model.md` 某模組欄位異動 | 對應 Spec 第 7 章（若有欄位異動紀錄）是否需連帶更新 |
-| 新增 `memory/erp/` 或 `memory/shared/` 資源檔案 | CLAUDE.md 快速索引（ERP 資源 / 共用資源表補欄位）；本 SKILL.md 參考資源（補路徑）；執行稽核腳本確認 |
-| 新增 ERP 功能模組（新業務領域）| 本 SKILL.md「印刷 ERP 特定注意事項」（補模組行）；Step 2 表格（補對應狀態機類型）|
+修改任何檔案時，應立即檢查連帯相關檔案。詳見：
 
-**② 執行自我稽核腳本**
+**→ `memory/erp/spec-iteration-workflow.md` § 迭代中「修改任何檔案 → 連帯檢查相關檔案」**
+
+Spec 完成時，按該檔案的 10 項規則逐項驗證即可。
+
+**② 迭代驗證規則**
+
+多檔案相互驗證規則（state-machines / business-process / scenarios / user-scenarios / test-cases / open-questions 之間的邏輯一致性檢查）詳見：
+
+**→ `memory/erp/spec-iteration-workflow.md` § 迭代中「更新參考檔案 → 檢查跨檔案一致性」**
+
+Spec 完成時，按該檔案的清單逐項驗證即可。
+
+---
+
+**③ 執行自我稽核腳本**
 
 ```bash
 bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
@@ -125,7 +128,12 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 5. 本 SKILL.md → CLAUDE.md 工具索引
 
 稽核結果若出現 ⚠️，依提示補充索引後再 commit。ℹ️ 為提示項，確認後決定是否補充。
-**建議執行時機**：新增文件後、定期（每週）、或發現文件不一致時。
+
+**注意**：此稽核腳本檢查「檔案索引」層面的一致性。邏輯一致性檢查見 `memory/erp/spec-iteration-workflow.md`。
+
+**建議執行時機**：
+- 迭代驗證（邏輯層）：Spec 完成後，按 spec-iteration-workflow.md § 迭代後執行
+- 稽核腳本（索引層）：新增文件後、定期（每週）、或發現文件不一致時執行
 
 ---
 

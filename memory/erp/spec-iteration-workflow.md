@@ -1,6 +1,7 @@
 # ERP Spec / Prototype 迭代工作流（實施細節）
 
 > **目的**：在 `memory/shared/principles.md` § 五的框架基礎上，定義 ERP 專項的迭代檢查清單、檔案依賴與驗證標準。
+> **角色**：SKILL.md Step 6 的 ERP 實操版本（包含 ①③ 的完整規則）。迭代時只需查看本檔案，無需反覆切換 SKILL.md。
 > **最後更新**：2026-02-24
 
 ---
@@ -55,7 +56,24 @@
 
 ## 迭代中：邊做邊驗證（ERP 檢查清單）
 
-### 修改 Spec → 檢查關聯檔案
+### 1️⃣ 修改任何檔案 → 連帯檢查相關檔案
+
+**核心原則**：修改某檔案時，應立即檢查以下相關檔案是否需同步
+
+| 修改對象 | 必須連帶檢查 |
+|----------|------------|
+| `state-machines.md` 或 `state-machines-ops.md` | ☐ `scenarios.md` 附錄<br/>☐ `open-questions.md`（是否解決待確認項） |
+| `open-questions.md` 確認某問題 | ☐ 對應 `state-machines*.md` 是否已補設計<br/>☐ `scenarios.md` 是否補情境<br/>☐ 各 Spec 第 12 章 OQ 參照節點狀態 |
+| `scenarios.md` 新增/修改情境 | ☐ `user-scenarios.md`（對應角色是否需補情境） |
+| `user-scenarios.md` 新增/修改故事 | ☐ `scenarios.md` 附錄（情境索引是否同步） |
+| 任何欄位/狀態名稱異動 | ☐ `glossary.md`（術語是否需新增/修正） |
+| 新識別的 OQ | ☐ 跨模組/架構問題 → 合併至 `open-questions.md`<br/>☐ 局部問題可留 Spec 內顯示 |
+| `open-questions.md` 有 OQ 解答 | ☐ 定期移至 `open-questions-archive.md`<br/>☐ 正本只保留 ⏳ 待確認項目 |
+| `docs/data-model.md` 欄位異動 | ☐ 對應 Spec 第 7 章是否需連帶更新 |
+
+### 2️⃣ 修改 Spec → 檢查關聯檔案（快速版）
+
+此表是上方規則的 **ERP 實操簡化版**，迭代時快速參考：
 
 | Spec 修改項 | 立即檢查 | 原因 |
 |-----------|--------|------|
@@ -65,7 +83,9 @@
 | **新增邊界情況** | test-cases.md、open-questions.md | 邊界情況必須有測試或 OQ 記錄 |
 | **涉及角色行為** | user-scenarios.md | 角色故事必須對應 |
 
-### 更新參考檔案 → 檢查跨檔案一致性
+### 3️⃣ 更新參考檔案 → 檢查跨檔案一致性
+
+此表定義「修改某檔案時應檢查的邏輯」（邏輯層驗證）：
 
 | 修改檔案 | 檢查對象 | 常見矛盾 |
 |---------|--------|--------|
@@ -75,6 +95,8 @@
 | **business-process.md** | scenarios.md、state-machines.md | 規則異動未反映在情境或狀態機中 |
 | **data-model.md** | 所有使用該欄位的 Spec | 欄位類型、必填性異動未反映在業務邏輯中 |
 | **test-cases.md** | scenarios.md、state-machines.md、open-questions.md | 測試無對應情境；邊界缺陷未記為 OQ |
+
+> **詳細驗證規則**見 `.claude/skills/erp-spec/SKILL.md` Step 6 ②
 
 ### 識別新問題 → 立即記錄
 
