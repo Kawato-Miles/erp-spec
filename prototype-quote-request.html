@@ -142,6 +142,28 @@
 <script type="text/babel">
 const TAX_RATE = 0.05;
 
+/* 工序庫 */
+const PROCESS_OPTIONS = [
+  { key: 'offset_4c', label: '平版印刷（四色）', unitCost: 0.48 },
+  { key: 'offset_2c', label: '平版印刷（雙色）', unitCost: 0.32 },
+  { key: 'digital',   label: '數位印刷',         unitCost: 1.55 },
+  { key: 'cut',       label: '裁切',             unitCost: 0.08 },
+  { key: 'fold',      label: '折頁',             unitCost: 0.12 },
+  { key: 'saddle',    label: '騎馬釘裝訂',       unitCost: 0.32 },
+  { key: 'glue',      label: '膠裝裝訂',         unitCost: 0.52 },
+  { key: 'varnish',   label: '上光（霧光）',     unitCost: 0.18 },
+  { key: 'foil',      label: '燙金',             unitCost: 0.68 },
+  { key: 'die_cut',   label: '模切',             unitCost: 0.38 },
+];
+
+function calcProcessCost(processes) {
+  if (!processes || processes.length === 0) return null;
+  return processes.reduce((sum, pk) => {
+    const p = PROCESS_OPTIONS.find(o => o.key === pk);
+    return sum + (p ? p.unitCost : 0);
+  }, 0);
+}
+
 const STATUS_TAG = {
   '需求確認中': 'tag-draft',
   '待評估報價': 'tag-warning',
@@ -169,12 +191,12 @@ const initialData = [
     items: [
       { id: 1, no: 'Q-20260223-01-1', name: 'A4 DM 正反面',
         spec: 'A4 全彩正反面 銅版紙 105g', qty: 5000,
-        unitPrice: 2.16, costEstimate: 1.6, markup: 1.35,
+        unitPrice: 2.16, costEstimate: 1.6, markup: 1.35, processes: ['offset_4c', 'cut', 'varnish'],
         shippingMethod: '物流配送', packagingNote: '每 500 張一捆',
         attachments: ['DM設計稿_v3.pdf'] },
       { id: 2, no: 'Q-20260223-01-2', name: '名片',
         spec: '標準名片 300g 特銅 雙面印刷', qty: 200,
-        unitPrice: 0.75, costEstimate: 0.52, markup: 1.44,
+        unitPrice: 0.75, costEstimate: 0.52, markup: 1.44, processes: ['offset_4c', 'cut'],
         shippingMethod: '自取', packagingNote: '',
         attachments: [] },
     ],
@@ -242,7 +264,7 @@ const initialData = [
     items: [
       { id: 1, no: 'Q-20260223-02-1', name: 'A5 型錄 28P',
         spec: 'A5 28頁 封面 200g 特銅 + 內頁 105g 銅版', qty: 10000,
-        unitPrice: 8.0, costEstimate: null, markup: null,
+        unitPrice: 8.0, costEstimate: null, markup: null, processes: [],
         shippingMethod: '物流配送', packagingNote: '',
         attachments: [] },
     ],
@@ -265,7 +287,7 @@ const initialData = [
     items: [
       { id: 1, no: 'Q-20260222-01-1', name: '250g 牛皮紙包裝袋',
         spec: '牛皮紙 250g 掛孔打洞 4色印刷', qty: 2000,
-        unitPrice: 4.5, costEstimate: 3.2, markup: 1.4,
+        unitPrice: 4.5, costEstimate: 3.2, markup: 1.4, processes: ['offset_4c', 'die_cut'],
         shippingMethod: '自取', packagingNote: '每 100 個一袋',
         attachments: ['包裝袋設計稿.pdf', '材質參考圖.jpg'] },
     ],
@@ -450,63 +472,216 @@ function EvaluateCheckModal({ open, onClose, onSubmit, items }) {
   );
 }
 
-/* ─────────────────────────── Items Tab ─────────────────────────────── */
-function ItemsTab({ items, setItems, status, quoteNo }) {
+/* ─────────────────────────── Item Spec Tab (印件規格+成本評估合併) ─────────────────────────── */
+function ItemSpecTab({ items, setItems, status, quoteNo, role }) {
   const isLocked = status === '成交' || status === '流失';
+  const canEditCost = role === 'manager' && (status === '待評估報價' || status === '議價中');
+
   const addItem = () => {
     const nextId = Math.max(...items.map(i => i.id), 0) + 1;
-    setItems([...items, { id: nextId, no: `${quoteNo}-${nextId}`, name: '', spec: '', qty: null, unitPrice: null, costEstimate: null, markup: null, shippingMethod: '', packagingNote: '', attachments: [] }]);
+    setItems([...items, { id: nextId, no: `${quoteNo}-${nextId}`, name: '', spec: '', qty: null, unitPrice: null, costEstimate: null, markup: null, processes: [], shippingMethod: '', packagingNote: '', attachments: [] }]);
   };
   const removeItem = id => setItems(items.filter(i => i.id !== id));
   const updateItem = (id, key, val) => setItems(items.map(i => i.id === id ? { ...i, [key]: val } : i));
+
+  const toggleProcess = (id, pk) => {
+    setItems(prev => prev.map(item => {
+      if (item.id !== id) return item;
+      const processes = item.processes || [];
+      const newProcesses = processes.includes(pk) ? processes.filter(p => p !== pk) : [...processes, pk];
+      // Auto-compute cost from processes if selected, otherwise default to 50% of unitPrice
+      const processCost = calcProcessCost(newProcesses);
+      const newCost = processCost !== null ? processCost : (item.unitPrice != null ? item.unitPrice * 0.5 : null);
+      return { ...item, processes: newProcesses, costEstimate: newCost };
+    }));
+  };
+
+  const handleUnitPriceChange = (id, val) => {
+    const up = val ? Number(val) : null;
+    setItems(prev => prev.map(item => {
+      if (item.id !== id) return item;
+      const processes = item.processes || [];
+      // If no processes, auto-set cost to 50% of unit price
+      const newCost = processes.length === 0 && up != null ? up * 0.5 : item.costEstimate;
+      return { ...item, unitPrice: up, costEstimate: newCost };
+    }));
+  };
+
   const summary = calcSummary(items);
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <span style={{ fontWeight: 500 }}>印件項目清單</span>
-        {!isLocked && <button className="btn btn-default btn-sm" onClick={addItem}>新增印件項目</button>}
+        <span style={{ fontWeight: 500 }}>印件規格與成本評估</span>
+        {!isLocked && role === 'sales' && <button className="btn btn-default btn-sm" onClick={addItem}>新增印件項目</button>}
       </div>
-      <div className="items-table">
-        <table>
-          <thead>
-            <tr>
-              <th style={{ width: 160 }}>項目編號</th>
-              <th>項目名稱</th>
-              <th style={{ width: 220 }}>規格備註</th>
-              <th style={{ width: 80 }}>數量</th>
-              <th style={{ width: 120 }}>報價單價（未稅）</th>
-              <th style={{ width: 110 }}>費用（未稅）</th>
-              <th style={{ width: 110 }}>含稅金額</th>
-              <th style={{ width: 70 }}>附件</th>
-              {!isLocked && <th style={{ width: 50 }}>操作</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {items.map(item => {
-              const { subtotal, total } = calcItem(item);
-              return (
-                <tr key={item.id}>
-                  <td style={{ fontSize: 12, color: '#00000073', fontFamily: 'monospace' }}>{item.no}</td>
-                  <td>{isLocked ? item.name : <input value={item.name || ''} onChange={e => updateItem(item.id, 'name', e.target.value)} placeholder="項目名稱" />}</td>
-                  <td>{isLocked ? <span style={{ fontSize: 12 }}>{item.spec}</span> : <input value={item.spec || ''} onChange={e => updateItem(item.id, 'spec', e.target.value)} placeholder="規格說明" style={{ fontSize: 12 }} />}</td>
-                  <td>{isLocked ? item.qty?.toLocaleString() : <input type="number" value={item.qty ?? ''} onChange={e => updateItem(item.id, 'qty', e.target.value ? Number(e.target.value) : null)} style={{ textAlign: 'right' }} />}</td>
-                  <td>{isLocked ? `$ ${fmtMoney(item.unitPrice)}` : <input type="number" step="0.01" value={item.unitPrice ?? ''} onChange={e => updateItem(item.id, 'unitPrice', e.target.value ? Number(e.target.value) : null)} style={{ textAlign: 'right' }} />}</td>
-                  <td style={{ textAlign: 'right', fontFamily: 'monospace', fontSize: 13 }}>{subtotal != null ? `$ ${fmtMoney(subtotal)}` : '—'}</td>
-                  <td style={{ textAlign: 'right', fontFamily: 'monospace', fontSize: 13, fontWeight: 500 }}>{total != null ? `$ ${fmtMoney(total)}` : '—'}</td>
-                  <td style={{ textAlign: 'center' }}>
-                    {item.attachments?.length > 0
-                      ? <span style={{ fontSize: 12, color: '#1677FF', cursor: 'pointer' }}>{item.attachments.length} 個</span>
-                      : <span style={{ fontSize: 12, color: '#00000040' }}>—</span>}
-                  </td>
-                  {!isLocked && <td><button className="btn btn-danger btn-sm" onClick={() => removeItem(item.id)}>刪除</button></td>}
-                </tr>
-              );
-            })}
-            {items.length === 0 && <tr><td colSpan="9" className="empty">尚無印件項目</td></tr>}
-          </tbody>
-        </table>
-      </div>
+
+      {/* Item Cards */}
+      {items.map(item => {
+        const { subtotal, total } = calcItem(item);
+        const processes = item.processes || [];
+        const processCost = calcProcessCost(processes);
+
+        return (
+          <div key={item.id} style={{ border: '1px solid #F0F0F0', borderRadius: 8, marginBottom: 16, overflow: 'hidden' }}>
+            {/* Item Header */}
+            <div style={{ background: '#FAFAFA', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #F0F0F0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 12, color: '#00000040', fontFamily: 'monospace' }}>{item.no}</span>
+                {isLocked ? <span style={{ fontWeight: 500 }}>{item.name}</span> : <input value={item.name || ''} onChange={e => updateItem(item.id, 'name', e.target.value)} placeholder="項目名稱" style={{ fontWeight: 500, border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontSize: 14, fontFamily: 'inherit' }} />}
+              </div>
+              {!isLocked && <button className="btn btn-danger btn-sm" onClick={() => removeItem(item.id)}>刪除</button>}
+            </div>
+
+            <div style={{ padding: '16px' }}>
+              {/* Spec section: spec, qty, unit price, fees */}
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', gap: 12, marginBottom: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>規格備註</div>
+                    {isLocked ? <span style={{ fontSize: 13 }}>{item.spec || '—'}</span> : <input value={item.spec || ''} onChange={e => updateItem(item.id, 'spec', e.target.value)} placeholder="例：A4 全彩正反面 105g 銅版紙" style={{ width: '100%', fontSize: 12, border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontFamily: 'inherit' }} />}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>數量</div>
+                    {isLocked ? <span style={{ fontSize: 14 }}>{item.qty?.toLocaleString() || '—'}</span> : <input type="number" value={item.qty ?? ''} onChange={e => updateItem(item.id, 'qty', e.target.value ? Number(e.target.value) : null)} style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontFamily: 'inherit' }} />}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>報價單價</div>
+                    {isLocked ? <span style={{ fontFamily: 'monospace', fontSize: 14 }}>{item.unitPrice != null ? `$ ${fmtMoney(item.unitPrice)}` : '—'}</span> : <input type="number" step="0.01" value={item.unitPrice ?? ''} onChange={e => handleUnitPriceChange(item.id, e.target.value)} style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontFamily: 'inherit' }} />}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>費用（未稅）</div>
+                    <span style={{ fontFamily: 'monospace', fontSize: 14 }}>{subtotal != null ? `$ ${fmtMoney(subtotal)}` : '—'}</span>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>含稅金額</div>
+                    <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 500, color: '#000000E0' }}>{total != null ? `$ ${fmtMoney(total)}` : '—'}</span>
+                  </div>
+                </div>
+
+                {/* Process & Cost Section */}
+                <div style={{ background: '#FAFAFA', borderRadius: 6, padding: '12px 16px', borderTop: '1px solid #F0F0F0', marginTop: 12 }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: '#00000073', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>預計製程與成本評估</div>
+
+                  {/* Process selection */}
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 12, color: '#00000073', marginBottom: 6 }}>預計工序</div>
+                    {canEditCost ? (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                        {PROCESS_OPTIONS.map(opt => {
+                          const selected = processes.includes(opt.key);
+                          return (
+                            <button key={opt.key} onClick={() => toggleProcess(item.id, opt.key)} style={{
+                              padding: '3px 10px', borderRadius: 4, fontSize: 12, cursor: 'pointer',
+                              border: `1px solid ${selected ? '#1677FF' : '#D9D9D9'}`,
+                              background: selected ? '#E6F4FF' : '#fff',
+                              color: selected ? '#1677FF' : '#00000073',
+                              transition: 'all 0.15s'
+                            }}>
+                              {opt.label}
+                              {selected && <span style={{ marginLeft: 4, fontSize: 11 }}>$ {opt.unitCost.toFixed(2)}</span>}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: 13 }}>
+                        {processes.length > 0 ? (
+                          processes.map((pk, i) => {
+                            const opt = PROCESS_OPTIONS.find(o => o.key === pk);
+                            return opt ? <span key={pk} style={{ marginRight: 8, display: 'inline-block', padding: '2px 8px', background: '#E6F4FF', borderRadius: 4, color: '#1677FF', fontSize: 12 }}>{opt.label}</span> : null;
+                          })
+                        ) : (
+                          <span style={{ color: '#00000040' }}>未指定工序，以售價 50% 估算</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Cost and Markup */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>
+                        成本預估
+                        {processes.length > 0 ? (
+                          <span style={{ marginLeft: 4, color: '#1677FF', fontSize: 11 }}>(工序合計)</span>
+                        ) : (
+                          <span style={{ marginLeft: 4, color: '#00000040', fontSize: 11 }}>(售價 50%)</span>
+                        )}
+                      </div>
+                      {canEditCost ? (
+                        <input type="number" step="0.01" value={item.costEstimate ?? ''} onChange={e => updateItem(item.id, 'costEstimate', e.target.value ? Number(e.target.value) : null)} style={{ width: '100%', textAlign: 'right', border: item.costEstimate == null ? '1px solid #FF4D4F' : '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontFamily: 'inherit' }} />
+                      ) : (
+                        <span style={{ fontFamily: 'monospace', fontSize: 14 }}>{item.costEstimate != null ? `$ ${fmtMoney(item.costEstimate)}` : <span style={{ color: '#FF4D4F' }}>未填</span>}</span>
+                      )}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>售價 / 成本倍數</div>
+                      <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 500 }}>
+                        {item.costEstimate && item.unitPrice ? `${(item.unitPrice / item.costEstimate).toFixed(2)}×` : '—'}
+                      </span>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>出貨方式</div>
+                      {canEditCost ? (
+                        <input value={item.shippingMethod || ''} onChange={e => updateItem(item.id, 'shippingMethod', e.target.value)} placeholder="例：物流配送" style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontFamily: 'inherit' }} />
+                      ) : (
+                        <span style={{ fontSize: 13, color: '#00000073' }}>{item.shippingMethod || '—'}</span>
+                      )}
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>利潤金額</div>
+                      <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 500, color: '#389E0D' }}>
+                        {item.costEstimate && item.unitPrice ? `$ ${fmtMoney(item.unitPrice - item.costEstimate)}` : '—'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Process cost breakdown */}
+                  {processes.length > 0 && processCost != null && (
+                    <div style={{ marginTop: 12, fontSize: 12, color: '#00000073', borderTop: '1px solid #F0F0F0', paddingTop: 8 }}>
+                      工序明細：
+                      {processes.map((pk, i) => {
+                        const opt = PROCESS_OPTIONS.find(o => o.key === pk);
+                        if (!opt) return null;
+                        return <span key={pk} style={{ marginLeft: 8 }}>{opt.label} ${opt.unitCost.toFixed(2)}{i < processes.length - 1 ? ' +' : ''}</span>;
+                      })}
+                      <span style={{ marginLeft: 8, fontWeight: 500, color: '#000000E0' }}> = $ {fmtMoney(processCost)}</span>
+                    </div>
+                  )}
+
+                  {/* Default 50% hint if no processes */}
+                  {processes.length === 0 && item.unitPrice && (
+                    <div style={{ marginTop: 8, fontSize: 12, color: '#00000040' }}>
+                      未選擇工序，成本以售價 50% 估算：$ {fmtMoney(item.unitPrice * 0.5)} / 單位
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Attachments */}
+              {item.attachments?.length > 0 && (
+                <div style={{ borderTop: '1px solid #F0F0F0', paddingTop: 12 }}>
+                  <div style={{ fontSize: 12, color: '#00000073', marginBottom: 6 }}>參考附件</div>
+                  <div className="attach-list">
+                    {item.attachments.map((a, idx) => (
+                      <div key={idx} className="attach-item">
+                        <span style={{ fontSize: 11, color: '#00000040' }}>{a.endsWith('.pdf') ? 'PDF' : 'IMG'}</span>
+                        <span>{a}</span>
+                      </div>
+                    ))}
+                    {!isLocked && <div className="attach-item" style={{ cursor: 'pointer', color: '#1677FF', borderStyle: 'dashed' }}>上傳附件</div>}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      {items.length === 0 && <div className="empty">尚無印件項目</div>}
+
+      {/* Summary */}
       {items.length > 0 && (
         <div className="items-summary">
           <div className="summary-item"><span className="summary-label">小計（未稅）</span><span className="summary-value">$ {fmtMoney(summary.subtotal)}</span></div>
@@ -514,11 +689,12 @@ function ItemsTab({ items, setItems, status, quoteNo }) {
           <div className="summary-item"><span className="summary-label">含稅總金額</span><span className="summary-value" style={{ color: '#1677FF' }}>$ {fmtMoney(summary.total)}</span></div>
         </div>
       )}
-      {/* Attachments */}
+
+      {/* All attachments section */}
       {items.some(i => i.attachments?.length > 0) && (
         <div style={{ marginTop: 20 }}>
           <div className="divider" />
-          <div style={{ fontWeight: 500, marginBottom: 12 }}>參考附件</div>
+          <div style={{ fontWeight: 500, marginBottom: 12 }}>全部參考附件</div>
           {items.filter(i => i.attachments?.length > 0).map(item => (
             <div key={item.id} style={{ marginBottom: 12 }}>
               <div style={{ fontSize: 12, color: '#00000073', marginBottom: 6 }}>{item.no} — {item.name}</div>
@@ -535,78 +711,6 @@ function ItemsTab({ items, setItems, status, quoteNo }) {
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-/* ─────────────────────────── Process Tab ───────────────────────────── */
-function ProcessTab({ items, setItems, status, role }) {
-  const canEdit = role === 'manager' && (status === '待評估報價' || status === '議價中');
-  const updateItem = (id, key, val) => setItems(items.map(i => i.id !== id ? i : { ...i, [key]: val }));
-
-  if (role === 'sales') {
-    return (
-      <div style={{ padding: '32px 0', textAlign: 'center', color: '#00000040' }}>
-        <div style={{ fontSize: 28, fontWeight: 700, marginBottom: 8, color: '#D9D9D9' }}>—</div>
-        <div>此區塊由印務主管填寫。請切換角色為「印務主管」以查看。</div>
-      </div>
-    );
-  }
-  return (
-    <div>
-      {canEdit
-        ? <div className="alert alert-info" style={{ marginBottom: 16 }}>請填寫各印件項目的成本預估與倍數，完成後點擊右上角「評估完成」。</div>
-        : <div className="alert alert-warning" style={{ marginBottom: 16 }}>目前狀態（{status}）不在評估階段，欄位為唯讀。</div>}
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ background: '#FAFAFA' }}>
-            <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 500, fontSize: 14, borderBottom: '1px solid #F0F0F0' }}>項目名稱</th>
-            <th style={{ padding: '10px 16px', textAlign: 'right', fontWeight: 500, fontSize: 14, borderBottom: '1px solid #F0F0F0', width: 130 }}>成本預估</th>
-            <th style={{ padding: '10px 16px', textAlign: 'right', fontWeight: 500, fontSize: 14, borderBottom: '1px solid #F0F0F0', width: 100 }}>倍數</th>
-            <th style={{ padding: '10px 16px', textAlign: 'right', fontWeight: 500, fontSize: 14, borderBottom: '1px solid #F0F0F0', width: 130 }}>建議售價（參考）</th>
-            <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 500, fontSize: 14, borderBottom: '1px solid #F0F0F0' }}>出貨方式</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map(item => {
-            const suggested = item.costEstimate && item.markup ? (item.costEstimate * item.markup).toFixed(2) : null;
-            return (
-              <tr key={item.id} style={{ borderBottom: '1px solid #F0F0F0' }}>
-                <td style={{ padding: '12px 16px' }}>
-                  <div style={{ fontWeight: 500 }}>{item.name}</div>
-                  <div style={{ fontSize: 12, color: '#00000073' }}>{item.no}</div>
-                </td>
-                <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                  {canEdit
-                    ? <input type="number" step="0.01" value={item.costEstimate ?? ''}
-                        onChange={e => updateItem(item.id, 'costEstimate', e.target.value ? Number(e.target.value) : null)}
-                        placeholder="0.00"
-                        style={{ width: 100, textAlign: 'right', border: item.costEstimate == null ? '1px solid #FF4D4F' : '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontFamily: 'inherit' }} />
-                    : <span style={{ fontFamily: 'monospace' }}>{item.costEstimate != null ? `$ ${fmtMoney(item.costEstimate)}` : <span style={{ color: '#FF4D4F' }}>未填</span>}</span>}
-                </td>
-                <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                  {canEdit
-                    ? <input type="number" step="0.01" value={item.markup ?? ''}
-                        onChange={e => updateItem(item.id, 'markup', e.target.value ? Number(e.target.value) : null)}
-                        placeholder="1.0"
-                        style={{ width: 70, textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontFamily: 'inherit' }} />
-                    : <span>{item.markup != null ? `${item.markup}×` : '—'}</span>}
-                </td>
-                <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'monospace', color: '#1677FF', fontWeight: 500 }}>
-                  {suggested ? `$ ${fmtMoney(Number(suggested))}` : '—'}
-                </td>
-                <td style={{ padding: '12px 16px' }}>
-                  {canEdit
-                    ? <input value={item.shippingMethod || ''} onChange={e => updateItem(item.id, 'shippingMethod', e.target.value)}
-                        placeholder="出貨方式"
-                        style={{ border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontFamily: 'inherit', width: 120 }} />
-                    : <span style={{ fontSize: 13, color: '#00000073' }}>{item.shippingMethod || '—'}</span>}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
     </div>
   );
 }
@@ -847,8 +951,7 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
 
   const tabs = [
     { key: 'basic',    label: '基本資料' },
-    { key: 'items',    label: `印件規格（${items.length}）` },
-    { key: 'process',  label: '預計製程' },
+    { key: 'spec',     label: `印件規格與成本（${items.length}）` },
     { key: 'pricelog', label: `報價紀錄（${freshQR.priceLogs.length}）` },
     { key: 'activity', label: `活動紀錄（${freshQR.activityLog.length}）` },
   ];
@@ -882,8 +985,7 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
 
       <div className="tab-content">
         {activeTab === 'basic'    && <BasicInfoTab qr={freshQR} />}
-        {activeTab === 'items'    && <ItemsTab items={items} setItems={syncItems} status={freshQR.status} quoteNo={freshQR.quoteNo} />}
-        {activeTab === 'process'  && <ProcessTab items={items} setItems={syncItems} status={freshQR.status} role={role} />}
+        {activeTab === 'spec'     && <ItemSpecTab items={items} setItems={syncItems} status={freshQR.status} quoteNo={freshQR.quoteNo} role={role} />}
         {activeTab === 'pricelog' && <PriceLogTab priceLogs={freshQR.priceLogs} />}
         {activeTab === 'activity' && <ActivityTab activityLog={freshQR.activityLog} />}
       </div>
