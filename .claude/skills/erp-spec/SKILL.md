@@ -1,19 +1,17 @@
 ---
 name: erp-spec-writing
-description: Writes feature specs and PRDs for a printing industry ERP system. Use when Miles asks to write a spec, PRD, or requirements document for any ERP module — including quote requests, orders, production scheduling, purchasing, inventory, and work orders. Loads state machines, product goals, and domain principles automatically.
+description: >
+  印刷業 ERP 功能規格書（Spec / PRD）撰寫 skill。
+  觸發時機：Miles 說「寫 spec」「寫 PRD」「規格書」「起一個 [模組] 的需求文件」，
+  或討論任何 ERP 模組（需求單 / 訂單 / 工單 / 印件 / 生產任務 / QC / 出貨 / 採購 / 倉儲）的功能設計時。
+  此 skill 自動完成：確認範圍 → 載入最小必要資源 → 觸發 product-management:feature-spec →
+  依標準模板撰寫草稿 → 識別 OQ → 執行文件同步稽核 → commit。
+  不適用：純流程討論（不需輸出文件）、只查詢術語或狀態機、圖編相關功能。
 ---
 
 # ERP Spec 撰寫
 
 適用於印刷業 ERP 系統各模組的功能規格書（Spec / PRD）撰寫。
-
----
-
-## 使用時機
-
-- 「幫我寫 [功能] 的 spec / PRD」
-- 「起一個 [模組] 的規格書」
-- 「ERP 的 [功能] 要怎麼規格化」
 
 ---
 
@@ -98,15 +96,20 @@ Spec 撰寫進度：
 
 Spec 完成後，依序執行：
 
-**① 連帶更新確認**
+**① 連帶更新確認（完整同步規則）**
 
-| 修改內容 | 需同步確認 |
+| 修改對象 | 必須連帶檢查 |
 |----------|------------|
-| 新增 / 修改狀態或流程 | `memory/erp/scenarios.md` 是否需補情境 |
-| 解答現有 OQ | `memory/erp/open-questions.md` 更新狀態；已解答項定期移至 archive |
-| 出現新術語 | `memory/erp/glossary.md` 是否需補充定義 |
-| 新增 memory/ 資源檔案 | CLAUDE.md 快速索引、SKILL.md 參考資源 |
-| 新增 ERP 功能模組 | SKILL.md 印刷 ERP 特定注意事項、Step 2 表格 |
+| `state-machines.md` 或 `state-machines-ops.md` | `scenarios.md` 附錄、`open-questions.md`（是否解決待確認項）|
+| `open-questions.md` 確認某問題 | 對應 `state-machines*.md` 是否已補設計、`scenarios.md` 是否補情境；**各 Spec 第 12 章（OQ 參照節點）狀態摘要需同步更新** |
+| `scenarios.md` 新增 / 修改情境 | `user-scenarios.md`（對應角色是否需補情境）|
+| `user-scenarios.md` | `scenarios.md` 附錄（情境索引是否同步）|
+| 任何欄位 / 狀態名稱異動 | `glossary.md`（術語是否需新增 / 修正）|
+| Task 中識別新 OQ | 跨模組 / 架構問題 → 合併至 `open-questions.md`（續接最大編號、標明來源）；局部問題可留 Spec 內顯示 |
+| `open-questions.md` 有 OQ 解答 | 定期移至 `open-questions-archive.md`，正本只保留 ⏳ 待確認項目 |
+| `docs/data-model.md` 某模組欄位異動 | 對應 Spec 第 7 章（若有欄位異動紀錄）是否需連帶更新 |
+| 新增 `memory/erp/` 或 `memory/shared/` 資源檔案 | CLAUDE.md 快速索引（ERP 資源 / 共用資源表補欄位）；本 SKILL.md 參考資源（補路徑）；執行稽核腳本確認 |
+| 新增 ERP 功能模組（新業務領域）| 本 SKILL.md「印刷 ERP 特定注意事項」（補模組行）；Step 2 表格（補對應狀態機類型）|
 
 **② 執行自我稽核腳本**
 
@@ -114,7 +117,15 @@ Spec 完成後，依序執行：
 bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 ```
 
+稽核涵蓋五項：
+1. `memory/erp/*.md` → CLAUDE.md 快速索引 ERP 資源
+2. `memory/shared/*.md` → CLAUDE.md 共用資源
+3. 關鍵 ERP 資源 → 本 SKILL.md 參考資源
+4. `memory/erp/*.md` → 本 SKILL.md 中是否有任何提及
+5. 本 SKILL.md → CLAUDE.md 工具索引
+
 稽核結果若出現 ⚠️，依提示補充索引後再 commit。ℹ️ 為提示項，確認後決定是否補充。
+**建議執行時機**：新增文件後、定期（每週）、或發現文件不一致時。
 
 ---
 
