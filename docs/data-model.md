@@ -61,19 +61,19 @@
 
 ### 客戶（Customer）
 
-| 中文名稱 | 英文鍵名 | 型別 | 說明 | 備註 |
-|---------|---------|------|------|------|
-| 系統 ID | `id` | UUID | 唯一識別碼 | PK |
-| 公司名稱 | `company_name` | varchar(200) | 客戶公司名稱 | |
-| 簡稱 | `short_name` | varchar(50) | 顯示用簡稱 | 選填 |
-| 聯絡人姓名 | `contact_name` | varchar(100) | 主要聯絡人 | |
-| 聯絡電話 | `contact_phone` | varchar(30) | | |
-| 聯絡 Email | `contact_email` | varchar(200) | | 選填 |
-| 地址 | `address` | varchar(500) | | 選填 |
-| 發票類型 | `invoice_type` | enum | 電子發票 / 紙本 / 免開 | 待 QR-001 確認選項 |
-| 備註 | `notes` | text | | 選填 |
-| 建立時間 | `created_at` | datetime | | |
-| 更新時間 | `updated_at` | datetime | | |
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 公司名稱 | `company_name` | | ✓ | | 字串（varchar 200） | 客戶公司名稱 | |
+| 簡稱 | `short_name` | | | | 字串（varchar 50） | 顯示用簡稱 | |
+| 聯絡人姓名 | `contact_name` | | ✓ | | 字串（varchar 100） | 主要聯絡人 | |
+| 聯絡電話 | `contact_phone` | | ✓ | | 字串（varchar 30） | | |
+| 聯絡 Email | `contact_email` | | | | 字串（varchar 200） | | |
+| 地址 | `address` | | | | 字串（varchar 500） | | |
+| 發票類型 | `invoice_type` | | ✓ | | 單選（enum） | 電子發票 / 紙本 / 免開 | 待 QR-001 確認選項 |
+| 備註 | `notes` | | | | 文本（text） | | |
+| 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
+| 更新時間 | `updated_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 
 ---
 
@@ -121,24 +121,24 @@
 
 ### 工序（Process）
 
-| 中文名稱 | 英文鍵名 | 型別 | 說明 | 備註 |
-|---------|---------|------|------|------|
-| 系統 ID | `id` | UUID | 唯一識別碼 | PK |
-| 製程分類代碼 | `category_code` | varchar(5) | 01 / 02 / 03A / 03B / 04A / 04B / 05～16 | 對應分類代碼表 |
-| 製程分類名稱 | `category_name` | varchar(50) | 由代碼帶入，例：印前、製版、數位、燙工 | 唯讀，系統自動 |
-| 工序代碼 | `code` | varchar(30) | 內部識別碼（例：04A-數位大台小張-2025）| 唯一值 |
-| 工序名稱 | `name` | varchar(200) | 顯示名稱（例：數位印刷-大台-小張、燙銀 MS-01）| |
-| 欄位群組 | `field_group` | enum | A / B / C | 決定工單成本記錄使用的欄位組；見群組說明表 |
-| 適用工廠類型 | `factory_type` | enum | 自有工廠 / 加工廠 / 兩者皆可 | |
-| 牌價單位 | `price_unit` | varchar(20) | 張 / 份 / 批 / 件 | 與標準成本搭配使用 |
-| 標準成本 / 單位 | `standard_cost_per_unit` | decimal(10,2) | 帶入需求單報價成本預估（FR-011a）| 供印務主管評估參考；可覆寫 |
-| 換工準備時間（分）| `setup_minutes` | int | 合批計算用（⚠️ 待 XM-003 確認後啟用）| 選填 |
-| 每單位預估工時（分）| `estimated_minutes_per_unit` | int | 產能計算用 | 選填 |
-| 支援合批派工 | `can_batch_merge` | boolean | 允許同工序生產任務合批（⚠️ 待 XM-003）| |
-| 備註 | `notes` | text | | 選填 |
-| 啟用狀態 | `is_active` | boolean | | |
-| 建立時間 | `created_at` | datetime | | |
-| 更新時間 | `updated_at` | datetime | | |
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 製程分類代碼 | `category_code` | | ✓ | | 字串（varchar 5） | 01 / 02 / 03A / 03B / 04A / 04B / 05～16 | 對應分類代碼表 |
+| 製程分類名稱 | `category_name` | | ✓ | ✓ | 字串（varchar 50） | 由代碼帶入，例：印前、製版、數位、燙工 | 系統自動帶入，唯讀 |
+| 工序代碼 | `code` | | ✓ | | 字串（varchar 30） | 內部識別碼（例：04A-數位大台小張-2025） | 唯一值 |
+| 工序名稱 | `name` | | ✓ | | 字串（varchar 200） | 顯示名稱（例：數位印刷-大台-小張、燙銀 MS-01） | |
+| 欄位群組 | `field_group` | | ✓ | | 單選（enum） | A / B / C | 決定工單成本記錄使用的欄位組；見群組說明表 |
+| 適用工廠類型 | `factory_type` | | ✓ | | 單選（enum） | 自有工廠 / 加工廠 / 兩者皆可 | |
+| 牌價單位 | `price_unit` | | ✓ | | 字串（varchar 20） | 張 / 份 / 批 / 件 | 與標準成本搭配使用 |
+| 標準成本 / 單位 | `standard_cost_per_unit` | | | | 小數（decimal 10,2） | 帶入需求單報價成本預估（FR-011a） | 供印務主管評估參考；可覆寫 |
+| 換工準備時間（分） | `setup_minutes` | | | | 整數（int） | 合批計算用 | 待 XM-003 確認後啟用 |
+| 每單位預估工時（分） | `estimated_minutes_per_unit` | | | | 整數（int） | 產能計算用 | |
+| 支援合批派工 | `can_batch_merge` | | ✓ | | 布林值（boolean） | 允許同工序生產任務合批 | 待 XM-003 確認 |
+| 備註 | `notes` | | | | 文本（text） | | |
+| 啟用狀態 | `is_active` | | ✓ | | 布林值（boolean） | | |
+| 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
+| 更新時間 | `updated_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 
 ---
 
@@ -270,31 +270,31 @@
 
 ### 訂單（Order）
 
-| 中文名稱 | 英文鍵名 | 型別 | 說明 | 備註 |
-|---------|---------|------|------|------|
-| 系統 ID | `id` | UUID | PK | |
-| 訂單號 | `order_no` | varchar(20) | 系統自動產生 | |
-| 來源需求單 | `quote_request_id` | FK → 需求單 | 選填（線上訂單可無）| |
-| 客戶 | `customer_id` | FK → 客戶 | | |
-| 訂單類型 | `order_type` | enum | 線下 / 線上（EC）| |
-| 狀態 | `status` | enum | 依狀態機設計 | 見 state-machines.md |
-| 付款狀態 | `payment_status` | enum | 未付款 / 已付款 / 部分退款 / 已退款 | 待 ORD-002 |
-| 負責業務 | `sales_id` | FK → 使用者 | | |
-| 回簽時間 | `signed_at` | datetime | 線下訂單用 | |
-| 付款時間 | `paid_at` | datetime | 線上訂單用 | |
-| 建立時間 | `created_at` | datetime | | |
-| 更新時間 | `updated_at` | datetime | | |
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 訂單號 | `order_no` | | ✓ | ✓ | 字串（varchar 20） | | 系統自動產生 |
+| 來源需求單 | `quote_request_id` | | | | FK | 線上訂單可無 | FK → 需求單 |
+| 客戶 | `customer_id` | | ✓ | | FK | | FK → 客戶 |
+| 訂單類型 | `order_type` | | ✓ | | 單選（enum） | 線下 / 線上（EC） | |
+| 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機設計 | 見 state-machines.md |
+| 付款狀態 | `payment_status` | | ✓ | | 單選（enum） | 未付款 / 已付款 / 部分退款 / 已退款 | 待 ORD-002 |
+| 負責業務 | `sales_id` | | ✓ | | FK | | FK → 使用者 |
+| 回簽時間 | `signed_at` | | | | 日期時間（datetime） | 線下訂單用 | |
+| 付款時間 | `paid_at` | | | | 日期時間（datetime） | 線上訂單用 | |
+| 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
+| 更新時間 | `updated_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 
 ### 訂單項目（OrderItem）
 
-| 中文名稱 | 英文鍵名 | 型別 | 說明 | 備註 |
-|---------|---------|------|------|------|
-| 系統 ID | `id` | UUID | PK | |
-| 所屬訂單 | `order_id` | FK → 訂單 | | |
-| 來源印件項目 | `quote_request_item_id` | FK → 需求單印件項目 | 選填 | |
-| 品項名稱 | `name` | varchar(200) | | |
-| 數量 | `quantity` | int | | |
-| 成交單價 | `unit_price` | decimal(10,2) | | |
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 所屬訂單 | `order_id` | | ✓ | ✓ | FK | | FK → 訂單 |
+| 來源印件項目 | `quote_request_item_id` | | | | FK | | FK → 需求單印件項目 |
+| 品項名稱 | `name` | | ✓ | | 字串（varchar 200） | | |
+| 數量 | `quantity` | | ✓ | | 整數（int） | | |
+| 成交單價 | `unit_price` | | ✓ | | 小數（decimal 10,2） | | |
 
 ---
 
@@ -304,16 +304,16 @@
 
 ### 工單（WorkOrder）
 
-| 中文名稱 | 英文鍵名 | 型別 | 說明 | 備註 |
-|---------|---------|------|------|------|
-| 系統 ID | `id` | UUID | PK | |
-| 工單號 | `wo_no` | varchar(20) | | |
-| 所屬印件 | `print_item_id` | FK → 印件 | | |
-| 工單類型 | `type` | enum | 打樣 / 大貨 | |
-| 狀態 | `status` | enum | 依狀態機設計 | 見 state-machines.md |
-| 負責排程人員 | `assigned_to` | FK → 使用者 | | |
-| 建立時間 | `created_at` | datetime | | |
-| 更新時間 | `updated_at` | datetime | | |
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 工單號 | `wo_no` | | ✓ | ✓ | 字串（varchar 20） | | 系統自動產生 |
+| 所屬印件 | `print_item_id` | | ✓ | ✓ | FK | | FK → 印件 |
+| 工單類型 | `type` | | ✓ | | 單選（enum） | 打樣 / 大貨 | |
+| 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機設計 | 見 state-machines.md |
+| 負責排程人員 | `assigned_to` | | ✓ | | FK | | FK → 使用者 |
+| 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
+| 更新時間 | `updated_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 
 ---
 
@@ -323,18 +323,18 @@
 
 ### 印件（PrintItem）
 
-| 中文名稱 | 英文鍵名 | 型別 | 說明 | 備註 |
-|---------|---------|------|------|------|
-| 系統 ID | `id` | UUID | PK | |
-| 所屬訂單 | `order_id` | FK → 訂單 | | |
-| 對應訂單項目 | `order_item_id` | FK → 訂單項目 | | |
-| 類型 | `type` | enum | 打樣 / 大貨 | |
-| 審稿狀態 | `review_status` | enum | 依狀態機 | 見 state-machines.md |
-| 印製狀態 | `production_status` | enum | 依狀態機 | 見 state-machines.md |
-| 打樣結果 | `proof_result` | enum | OK / NG / 待確認 | 打樣印件用 |
-| 稿件鎖定工單 | `file_lock_wo_id` | FK → 工單 | 工單建立時鎖定 | |
-| 建立時間 | `created_at` | datetime | | |
-| 更新時間 | `updated_at` | datetime | | |
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 所屬訂單 | `order_id` | | ✓ | ✓ | FK | | FK → 訂單 |
+| 對應訂單項目 | `order_item_id` | | ✓ | ✓ | FK | | FK → 訂單項目 |
+| 類型 | `type` | | ✓ | | 單選（enum） | 打樣 / 大貨 | |
+| 審稿狀態 | `review_status` | | ✓ | | 單選（enum） | 依狀態機 | 見 state-machines.md |
+| 印製狀態 | `production_status` | | ✓ | | 單選（enum） | 依狀態機 | 見 state-machines.md |
+| 打樣結果 | `proof_result` | | | | 單選（enum） | OK / NG / 待確認 | 打樣印件用 |
+| 稿件鎖定工單 | `file_lock_wo_id` | | | | FK | 工單建立時鎖定 | FK → 工單 |
+| 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
+| 更新時間 | `updated_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 
 ---
 
@@ -344,19 +344,19 @@
 
 ### 任務（Task）
 
-| 中文名稱 | 英文鍵名 | 型別 | 說明 | 備註 |
-|---------|---------|------|------|------|
-| 系統 ID | `id` | UUID | PK | |
-| 所屬工單 | `work_order_id` | FK → 工單 | | |
-| 工序 | `process_id` | FK → 工序 | | |
-| 工廠類型 | `factory_type` | enum | 自有工廠 / 加工廠 / 外包廠 | |
-| 狀態 | `status` | enum | 依狀態機 | 見 state-machines-ops.md |
-| 目標數量 | `target_quantity` | int | | |
-| 預計執行日 | `scheduled_date` | date | 產能優化關鍵欄位（XM-003）| |
-| 合批群組 ID | `batch_group_id` | varchar(50) | 同工序合批派工時使用 | 待 XM-003 確認 |
-| 指派工廠 | `assigned_factory` | varchar(200) | | |
-| 建立時間 | `created_at` | datetime | | |
-| 更新時間 | `updated_at` | datetime | | |
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 所屬工單 | `work_order_id` | | ✓ | ✓ | FK | | FK → 工單 |
+| 工序 | `process_id` | | ✓ | | FK | | FK → 工序 |
+| 工廠類型 | `factory_type` | | ✓ | | 單選（enum） | 自有工廠 / 加工廠 / 外包廠 | |
+| 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機 | 見 state-machines-ops.md |
+| 目標數量 | `target_quantity` | | ✓ | | 整數（int） | | |
+| 預計執行日 | `scheduled_date` | | ✓ | | 日期（date） | 產能優化關鍵欄位 | XM-003 |
+| 合批群組 ID | `batch_group_id` | | | | 字串（varchar 50） | 同工序合批派工時使用 | 待 XM-003 確認 |
+| 指派工廠 | `assigned_factory` | | ✓ | | 字串（varchar 200） | | |
+| 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
+| 更新時間 | `updated_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 
 ---
 
@@ -366,18 +366,18 @@
 
 ### 生產任務（ProductionTask）
 
-| 中文名稱 | 英文鍵名 | 型別 | 說明 | 備註 |
-|---------|---------|------|------|------|
-| 系統 ID | `id` | UUID | PK | |
-| 所屬任務 | `task_id` | FK → 任務 | | |
-| 工序 | `process_id` | FK → 工序 | 冗餘存儲，便於查詢 | |
-| 工廠類型 | `factory_type` | enum | 自有工廠 / 加工廠 / 外包廠 | |
-| 狀態 | `status` | enum | 依狀態機 | 見 state-machines-ops.md |
-| 目標數量 | `target_quantity` | int | | |
-| 完成數量 | `completed_quantity` | int | 報工累計 | |
-| 預計執行日 | `scheduled_date` | date | 產能優化合批時間窗口 | |
-| 建立時間 | `created_at` | datetime | | |
-| 更新時間 | `updated_at` | datetime | | |
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 所屬任務 | `task_id` | | ✓ | ✓ | FK | | FK → 任務 |
+| 工序 | `process_id` | | ✓ | ✓ | FK | 冗餘存儲，便於查詢 | FK → 工序，系統自動帶入 |
+| 工廠類型 | `factory_type` | | ✓ | | 單選（enum） | 自有工廠 / 加工廠 / 外包廠 | |
+| 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機 | 見 state-machines-ops.md |
+| 目標數量 | `target_quantity` | | ✓ | | 整數（int） | | |
+| 完成數量 | `completed_quantity` | | ✓ | ✓ | 整數（int） | 報工累計 | 系統自動計算 |
+| 預計執行日 | `scheduled_date` | | ✓ | | 日期（date） | 產能優化合批時間窗口 | |
+| 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
+| 更新時間 | `updated_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 
 ### 報工紀錄（ProductionTaskWorkRecord）
 
@@ -422,26 +422,26 @@
 
 ### QC 單（QCRecord）
 
-| 中文名稱 | 英文鍵名 | 型別 | 說明 | 備註 |
-|---------|---------|------|------|------|
-| 系統 ID | `id` | UUID | PK | |
-| 所屬訂單 | `order_id` | FK → 訂單 | | |
-| 狀態 | `status` | enum | 依狀態機 | 見 state-machines-ops.md |
-| 建立者 | `created_by` | FK → 使用者 | 印務 | |
-| QC 執行人員 | `assigned_to` | FK → 使用者 | | |
-| 建立時間 | `created_at` | datetime | | |
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 所屬訂單 | `order_id` | | ✓ | ✓ | FK | | FK → 訂單 |
+| 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機 | 見 state-machines-ops.md |
+| 建立者 | `created_by` | | ✓ | ✓ | FK | 印務 | FK → 使用者，系統自動紀錄 |
+| QC 執行人員 | `assigned_to` | | ✓ | | FK | | FK → 使用者 |
+| 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 
 ### QC 明細（QCDetail，per 生產任務）
 
-| 中文名稱 | 英文鍵名 | 型別 | 說明 | 備註 |
-|---------|---------|------|------|------|
-| 系統 ID | `id` | UUID | PK | |
-| 所屬 QC 單 | `qc_record_id` | FK → QC 單 | | |
-| 對應生產任務 | `production_task_id` | FK → 生產任務 | | |
-| 生產數量 | `production_quantity` | int | | |
-| 通過數量 | `passed_quantity` | int | | |
-| 不通過數量 | `failed_quantity` | int | | |
-| 不通過原因 | `notes` | text | | 選填 |
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 所屬 QC 單 | `qc_record_id` | | ✓ | ✓ | FK | | FK → QC 單 |
+| 對應生產任務 | `production_task_id` | | ✓ | ✓ | FK | | FK → 生產任務 |
+| 生產數量 | `production_quantity` | | ✓ | | 整數（int） | | |
+| 通過數量 | `passed_quantity` | | ✓ | | 整數（int） | | |
+| 不通過數量 | `failed_quantity` | | ✓ | | 整數（int） | | |
+| 不通過原因 | `notes` | | | | 文本（text） | | |
 
 ---
 
@@ -451,22 +451,22 @@
 
 ### 出貨單（Shipment）
 
-| 中文名稱 | 英文鍵名 | 型別 | 說明 | 備註 |
-|---------|---------|------|------|------|
-| 系統 ID | `id` | UUID | PK | |
-| 出貨單號 | `shipment_no` | varchar(20) | | |
-| 所屬訂單 | `order_id` | FK → 訂單 | | |
-| 狀態 | `status` | enum | 依狀態機 | 見 state-machines-ops.md |
-| 物流商 | `logistics_provider` | varchar(100) | | 選填 |
-| 物流追蹤號 | `tracking_no` | varchar(100) | | 選填 |
-| 出貨時間 | `shipped_at` | datetime | | |
-| 建立時間 | `created_at` | datetime | | |
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 出貨單號 | `shipment_no` | | ✓ | ✓ | 字串（varchar 20） | | 系統自動產生 |
+| 所屬訂單 | `order_id` | | ✓ | ✓ | FK | | FK → 訂單 |
+| 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機 | 見 state-machines-ops.md |
+| 物流商 | `logistics_provider` | | | | 字串（varchar 100） | | |
+| 物流追蹤號 | `tracking_no` | | | | 字串（varchar 100） | | |
+| 出貨時間 | `shipped_at` | | ✓ | | 日期時間（datetime） | | |
+| 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 
 ### 出貨明細（ShipmentItem，per 印件）
 
-| 中文名稱 | 英文鍵名 | 型別 | 說明 | 備註 |
-|---------|---------|------|------|------|
-| 系統 ID | `id` | UUID | PK | |
-| 所屬出貨單 | `shipment_id` | FK → 出貨單 | | |
-| 對應印件 | `print_item_id` | FK → 印件 | | |
-| 出貨數量 | `quantity` | int | | |
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 所屬出貨單 | `shipment_id` | | ✓ | ✓ | FK | | FK → 出貨單 |
+| 對應印件 | `print_item_id` | | ✓ | ✓ | FK | | FK → 印件 |
+| 出貨數量 | `quantity` | | ✓ | | 整數（int） | | |
