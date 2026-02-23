@@ -31,3 +31,5 @@
 | 4 | 多印件合併出貨 vs 各別出貨 | ✅ 允許合併：出貨單移至訂單層，含出貨明細（per 印件 + 數量）；單一印件出貨為特殊情況 | `state-machines-ops.md` 出貨單狀態機 |
 | 8 | 需求單轉訂單時，資料是否全部自動帶入？ | ✅ 方向為自動帶入；欄位重疊大，細節由業務補填；欄位設計延至 Spec 階段定義 | 待 Spec |
 | 14 | Pipeline 管理功能是否在此版本 ERP 範疇？ | ✅ 不在本版本範疇；為 Data Governance 後的優化項目（KPI Dashboard 方向）| 排入後續 roadmap |
+| XM-001 | 行動裝置（手機）RWD 支援優先級？業務在外是否需要行動端操作？ | ✅ **Phase 1 桌機版優先**，不支援 RWD；行動裝置支援列為後續版本計畫。各模組 NFR 統一記錄：行動裝置 = 不支援（Phase 1）。 | `open-questions.md` XM-001 |
+| QR-004 | 議價中的「議價備註」欄位是否需要獨立紀錄？還是活動紀錄即可？ | ✅ **設獨立欄位** `negotiation_note`（text，選填），不依賴活動紀錄。已更新 `docs/data-model.md` QuoteRequest 表。 | `docs/data-model.md` |
