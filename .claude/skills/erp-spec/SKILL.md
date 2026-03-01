@@ -57,10 +57,15 @@ Spec 撰寫進度：
 
 **重要**：以下三個檔案是**所有 Spec 撰寫的必讀基礎**（提供邏輯、用戶與情境背景）：
 - `memory/erp/business-process.md` → 核心業務規則與決策邏輯
-- `memory/erp/user-scenarios.md` → 角色視角與使用者故事
+- `memory/erp/user-scenarios.md` → 角色視角與使用者故事 **← 含角色權責驗證（Who 執行什麼動作）**
 - `memory/erp/scenarios.md` → PM 視角情境驗證與邊界案例
 
-通用原則（OQ 管理、Spec 撰寫規範）一律參照 `memory/shared/principles.md`，無需重複載入。
+**⚠️ 角色驗證檢查點**（避免「業務出貨」等角色混淆）：
+- 撰寫時逐一檢查流程中的每個動作是否指定了正確的執行角色
+- 對照 `memory/erp/user-scenarios.md` 中各角色的權責範圍（業務、審稿、印務、生管、QC、出貨等）
+- 若發現角色分工不合理，應先回報用戶修正 `user-scenarios.md`，再續寫 Spec
+
+通用原則（OQ 管理、Spec 撰寫規範、角色驗證）一律參照 `memory/shared/principles.md`，無需重複載入。
 
 ### Step 3：觸發 product-management:feature-spec
 
@@ -75,6 +80,7 @@ Spec 撰寫進度：
 
 | 規則 | 說明 |
 |------|------|
+| 角色驗證優先 | 撰寫流程說明時，逐一檢查執行者角色是否符合 `user-scenarios.md`；若有矛盾立即停止並回報用戶修正 |
 | Section 10 不寫 | 開發估算與里程碑由 PM 在 GitHub Issues 管理，Spec 預設跳過 |
 | Section 11 不寫 | 測試計畫獨立維護於 `memory/erp/test-cases.md`，Spec 預設跳過；Spec 完成後在 test-cases.md 補充測試案例 |
 | Section 7 只寫差異 | 全局資料模型統一維護於 `docs/data-model.md`；Section 7 只列此 Spec 新增 / 修改的欄位，完成後同步更新 data-model.md |
