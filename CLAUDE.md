@@ -209,11 +209,15 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 | **角色層通用原則**（Spec 撰寫 / OQ 管理 / PM 視角） | `memory/shared/principles.md` |
 | **UI 設計系統**（Ant Design 元件 / Token / 版型規範）| `memory/shared/ui-design-system.md` |
 | **Prototype 工作流程**（製作 / 驗證 / 同步規則） | `memory/shared/prototype-guidelines.md` |
-| **Prototype 實作檔** | `code/` |
-| **規格檔案** | `spec/` |
 | 共用術語（完整） | `memory/shared/glossary.md` |
 | 產業背景 | `memory/shared/context/industry.md` |
 | 圖編術語（完整） | `memory/graphic-editor/glossary.md` |
+
+### Prototype 實作檔清單
+| 模組 | 檔案名稱 | 功能 | 版本 |
+|------|---------|------|------|
+| 需求單 | `code/prototype-quote-request.html` | 需求單列表（含文字/狀態/日期篩選、清除篩選）+ 編輯頁 + 報價評估 | v1.3 |
+| **規格檔案** | `spec/` | — | — |
 
 ### 工具
 | 資源 | 路徑 |

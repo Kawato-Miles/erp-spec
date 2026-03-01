@@ -32,12 +32,13 @@
 | `text-secondary` | `#000000A6`（rgba 65%）| 次要文字、表頭、Label |
 | `text-disabled` | `#00000040`（rgba 25%）| 停用文字 |
 | `border` | `#D9D9D9` | 輸入框、表格、卡片邊框 |
-| `bg-layout` | `#F5F5F5` | 頁面底層背景 |
+| `bg-layout` | `#F2F2F2` | 頁面底層背景 |
 | `bg-container` | `#FFFFFF` | 內容區塊背景（側欄、主區域、Modal） |
 | `bg-info-banner` | `#E6F4FF` | Info 提示橫幅背景 |
 | `info-icon` | `#1677FF` | Info icon 顏色 |
-| `sidebar-active-bg` | `#1677FF` | 側欄選中項背景 |
+| `sidebar-active-bg` | `#000000` | 側欄選中項背景 |
 | `sidebar-active-text` | `#FFFFFF` | 側欄選中項文字 |
+| `sidebar-text` | `#636466` | 側欄未選中項文字 |
 
 ### 1.2 字型
 
@@ -104,7 +105,7 @@
 | 背景 | `#FFFFFF` |
 | 分組標題 | `12px`，`text-secondary`，全大寫 |
 | 選單項高度 | `40px` |
-| 選中狀態 | 背景 `#1677FF`，文字 `#FFFFFF`，圓角 `6px`（左右各縮 4px） |
+| 選中狀態 | 背景 `#000000`，文字 `#FFFFFF`，圓角 `6px`（左右各縮 4px） |
 | Hover 狀態 | 背景 `rgba(0,0,0,0.04)` |
 | Icon 尺寸 | `16px`，與文字間距 `10px` |
 
@@ -231,7 +232,9 @@
 | 必填標記 | 紅色 `*`，顯示在 Label 前方 |
 | Input 高度 | `32px` |
 | Textarea 高度 | `80px`（預設，可調整 `autoSize`） |
-| 欄位間距 | `16px`（`Form.Item` margin-bottom）|
+| Label 與 Input 間距 | `8px`（`gap: 8px`）|
+| Form Item 之間間距 | `16px`（`Form.Item` margin-bottom）|
+| 多欄位表單 | `grid: 2 columns`，欄位間距 `16px` |
 | 錯誤文字 | `12px`，`#FF4D4F`，顯示在欄位下方 |
 | 說明文字 | `12px`，`text-secondary`，顯示在欄位下方 |
 
@@ -400,4 +403,6 @@ Drawer（從右側滑出，寬 520px）
 
 | 日期 | 變更 | 來源 |
 |------|------|------|
+| 2026/03/02 | 更新佈局色系：頁面背景 `#F5F5F5` → `#F2F2F2`；側欄選中 `#1677FF` → `#000000`；新增側欄文字色 `#636466` | 中台基本頁面設計參考 |
+| 2026/03/02 | 補充 Form Item 細節規範：Label 與 Input 間距 `8px`；多欄位表單 grid 間距 `16px` | Prototype 優化驗證（prototype-quote-request.html v1.1） |
 | 2025/02 | 初版建立，基於尺寸管理截圖萃取 | Miles 提供截圖 |

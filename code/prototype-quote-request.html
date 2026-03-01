@@ -4,6 +4,39 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>需求單模組 — ERP Prototype</title>
+<!--
+Prototype 版本：v1.3
+製作日期：2026-03-02
+更新內容：
+  - v1.3 (2026-03-02)：加入需求單列表篩選功能
+    * 文字篩選：需求單編號、案名、客戶名稱
+    * 狀態篩選：全部狀態下拉選單
+    * 日期範圍篩選：建立日期起訖
+    * 清除篩選按鈕：一鍵重置所有篩選條件
+    * 結果統計：顯示篩選後筆數
+  - v1.2 (2026-03-02)：完成費用編輯功能、整數貨幣顯示、UI 布局優化
+    * 費用欄位改為可編輯（業務可手動輸入，優先於自動計算）
+    * 貨幣顯示改為整數（無小數點）
+    * 規格備註改為 textarea（支援多行輸入）
+    * 所有數值欄位合併為一行布局（數量、報價單價、成本單價、費用、毛利率）
+    * 修正 calcSummary 函數支援手動費用計算
+  - v1.1 (2026-03-02)：簡化成本預估邏輯，移除工序選擇 UI，新增毛利率欄位與視覺化
+  - 參考規格：business-process.md v10, data-model.md v0.8, state-machines.md v10, spec-quote-request.md v0.8
+  - 涵蓋角色：業務/諮詢業務視角、印務主管視角
+  - 涵蓋流程：需求單建立 → 報價評估 → 成交
+
+版本對應：
+  - spec-quote-request.md (v0.8, 2026-03-01) - 簡化成本預估 + 費用編輯
+  - data-model.md (v0.8, 2026-03-01) - 新增 profit_margin 欄位 + 可編輯 amount_excl_tax
+  - state-machines.md (v10, 2026-02-24) - 需求單狀態機
+  - scenarios.md (2026-02-20) - 報價流程
+  - ui-design-system.md (Ant Design 5.x, 2026-01-30)
+
+變更記錄：
+- v1.3：列表篩選（文字/狀態/日期範圍）+ 清除篩選 + 結果統計
+- v1.2：費用編輯 + 整數貨幣 + UI 布局優化 + calcSummary 修正
+- v1.1：工序 UI 移除 + 毛利率視覺化
+-->
 <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/antd@5.22.0/dist/antd.min.js"></script>
@@ -11,15 +44,15 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.22.0/dist/reset.css" />
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: -apple-system, "Segoe UI", sans-serif; font-size: 14px; background: #F5F5F5; }
+  body { margin: 0; font-family: -apple-system, "Segoe UI", sans-serif; font-size: 14px; background: #F2F2F2; }
   .layout { display: flex; min-height: 100vh; }
   /* Sidebar */
   .sidebar { width: 200px; background: #fff; border-right: 1px solid #F0F0F0; flex-shrink: 0; display: flex; flex-direction: column; }
   .sidebar-logo { padding: 20px 16px 12px; font-size: 15px; font-weight: 700; color: #1677FF; border-bottom: 1px solid #F0F0F0; }
   .nav-group-title { padding: 8px 16px 4px; font-size: 11px; color: #00000040; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 8px; }
-  .nav-item { display: flex; align-items: center; gap: 8px; padding: 0 12px; height: 40px; cursor: pointer; border-radius: 6px; margin: 2px 8px; color: #000000A6; font-size: 14px; transition: background 0.15s; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 0 12px; height: 40px; cursor: pointer; border-radius: 6px; margin: 2px 8px; color: #636466; font-size: 14px; transition: background 0.15s; }
   .nav-item:hover { background: rgba(0,0,0,0.04); }
-  .nav-item.active { background: #1677FF; color: #fff; }
+  .nav-item.active { background: #000000; color: #fff; }
   /* Main */
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
   .content-area { padding: 24px; overflow-y: auto; flex: 1; }
@@ -31,7 +64,7 @@
   /* Page title */
   .page-title { font-size: 20px; font-weight: 600; color: #000000E0; margin: 0 0 16px; display: flex; align-items: center; gap: 12px; }
   /* Info banner */
-  .info-banner { background: #E6F4FF; border-left: 3px solid #1677FF; border-radius: 6px; padding: 10px 16px; font-size: 14px; margin-bottom: 16px; color: #000000E0; }
+  .info-banner { background: #E6F4FF; border-left: 3px solid #1677FF; border-radius: 6px; padding: 12px 16px; font-size: 14px; margin-bottom: 16px; color: #000000E0; }
   /* Toolbar */
   .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
   .toolbar-left { display: flex; align-items: center; gap: 8px; }
@@ -40,8 +73,8 @@
   /* Table */
   .table-wrap { background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #F0F0F0; }
   table { width: 100%; border-collapse: collapse; }
-  thead th { background: #FAFAFA; padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 500; color: #000000E0; border-bottom: 1px solid #F0F0F0; white-space: nowrap; }
-  tbody td { padding: 14px 16px; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #000000E0; }
+  thead th { background: #FAFAFA; padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 500; color: #000000E0; border-bottom: 1px solid #F0F0F0; white-space: nowrap; height: 54px; }
+  tbody td { padding: 14px 16px; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #000000E0; height: 54px; }
   tbody tr:last-child td { border-bottom: none; }
   tbody tr:hover td { background: #FAFAFA; cursor: pointer; }
   /* Tags */
@@ -71,7 +104,7 @@
   .tab-content { background: #fff; border-radius: 0 0 8px 8px; padding: 24px; }
   /* Forms */
   .form-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .form-item  { display: flex; flex-direction: column; gap: 6px; }
+  .form-item  { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
   .form-label { font-size: 14px; font-weight: 500; color: #000000E0; }
   .form-label.required::before { content: "* "; color: #FF4D4F; }
   .form-input { height: 32px; padding: 0 12px; border: 1px solid #D9D9D9; border-radius: 6px; font-size: 14px; outline: none; font-family: inherit; width: 100%; }
@@ -91,7 +124,7 @@
   .summary-label { color: #00000073; }
   .summary-value { font-weight: 600; color: #000000E0; min-width: 80px; text-align: right; }
   /* Activity */
-  .activity-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F5F5F5; }
+  .activity-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F2F2F2; }
   .activity-item:last-child { border-bottom: none; }
   .activity-dot { width: 8px; height: 8px; border-radius: 50%; background: #1677FF; margin-top: 6px; flex-shrink: 0; }
   .activity-time  { font-size: 12px; color: #00000040; }
@@ -105,7 +138,7 @@
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; display: flex; align-items: center; justify-content: center; }
   .modal-box { background: #fff; border-radius: 8px; width: 520px; max-width: 90vw; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
   .modal-header { padding: 16px 24px; border-bottom: 1px solid #F0F0F0; display: flex; align-items: center; justify-content: space-between; }
-  .modal-title  { font-size: 16px; font-weight: 600; color: #000000E0; }
+  .modal-title  { font-size: 18px; font-weight: 600; color: #000000E0; }
   .modal-close  { font-size: 16px; cursor: pointer; color: #00000073; background: none; border: none; padding: 4px; }
   .modal-body   { padding: 24px; max-height: 60vh; overflow-y: auto; }
   .modal-footer { padding: 12px 24px; border-top: 1px solid #F0F0F0; display: flex; justify-content: flex-end; gap: 8px; }
@@ -163,13 +196,18 @@ const PROCESS_OPTIONS = [
   { key: 'die_cut',       name: '模切',              unit: '個',  category: '加工' },
 ];
 
-function calcProcessItemsCost(processItems) {
-  if (!processItems || processItems.length === 0) return null;
-  return processItems.reduce((sum, item) => {
-    const qty = item.qty || 0;
-    const unitPrice = item.unitPrice || 0;
-    return sum + (qty * unitPrice);
-  }, 0);
+function calcProfitMargin(unitPrice, costEstimate) {
+  if (costEstimate == null || unitPrice == null) return null;
+  if (unitPrice <= 0) return null;
+  const margin = ((unitPrice - costEstimate) / unitPrice * 100);
+  return Math.round(margin * 100) / 100;  // 小數點後 2 位
+}
+
+function getProfitMarginColor(margin) {
+  if (margin == null) return '';
+  if (margin >= 30) return '#F6FFED';   // 綠色
+  if (margin >= 10) return '#FFFBE6';   // 黃色
+  return '#FFF2F0';                      // 紅色
 }
 
 const STATUS_TAG = {
@@ -198,25 +236,16 @@ const initialData = [
     lostReason: '', lostNote: '',
     items: [
       { id: 1, no: 'Q-20260223-01-1', name: 'A4 DM 正反面',
-        spec: 'A4 全彩正反面 銅版紙 105g', qty: 5000,
-        unitPrice: 2.16, costEstimate: 1.6, markup: 1.35,
-        processItems: [
-          { processKey: 'cardboard_200g', qty: 5000, unitPrice: 0.80 },
-          { processKey: 'print_offset_4c', qty: 5000, unitPrice: 0.60 },
-          { processKey: 'cut', qty: 5000, unitPrice: 0.08 },
-          { processKey: 'varnish', qty: 5000, unitPrice: 0.12 }
-        ],
-        shippingMethod: '物流配送', packagingNote: '每 500 張一捆',
+        spec: 'A4（210x297mm）\n數量：5,000 張\n紙材：銅版紙 105g\n印刷：全彩正反面 CMYK\n出貨：物流配送\n包装：每 500 張一捆', qty: 5000,
+        unitPrice: 2.16, costEstimate: 1.6, amount: null,
+        delivery_method: '整疊', packaging_note: '每 500 張一捆，共 10 捆',
+        estimated_delivery_date: '2026-03-10',
         attachments: ['DM設計稿_v3.pdf'] },
       { id: 2, no: 'Q-20260223-01-2', name: '名片',
-        spec: '標準名片 300g 特銅 雙面印刷', qty: 200,
-        unitPrice: 0.75, costEstimate: 0.52, markup: 1.44,
-        processItems: [
-          { processKey: 'cardboard_300g', qty: 200, unitPrice: 0.30 },
-          { processKey: 'print_offset_4c', qty: 200, unitPrice: 0.16 },
-          { processKey: 'cut', qty: 200, unitPrice: 0.06 }
-        ],
-        shippingMethod: '自取', packagingNote: '',
+        spec: '名片（90x54mm）\n數量：200 張\n紙材：特銅紙 300g\n印刷：雙面印刷 CMYK\n出貨：自取\n包装：整疊出貨', qty: 200,
+        unitPrice: 0.75, costEstimate: 0.52, amount: null,
+        delivery_method: '整疊', packaging_note: '',
+        estimated_delivery_date: '2026-03-05',
         attachments: [] },
     ],
     /* 三輪報價：第一輪原始報價 → 第二輪調整紙材 → 第三輪微調利潤倍數，完整呈現多次議價流程 */
@@ -228,8 +257,8 @@ const initialData = [
         evaluatedBy: '陳建宏（印務主管）',
         note: '初次評估，依原始規格計算。',
         snapshot: [
-          { name: 'A4 DM 正反面', costEstimate: 1.8, markup: 1.4,  unitPrice: 2.52 },
-          { name: '名片',         costEstimate: 0.55, markup: 1.45, unitPrice: 0.8  },
+          { name: 'A4 DM 正反面', costEstimate: 1.8,  unitPrice: 2.52 },
+          { name: '名片',         costEstimate: 0.55, unitPrice: 0.8  },
         ],
       },
       {
@@ -239,8 +268,8 @@ const initialData = [
         evaluatedBy: '陳建宏（印務主管）',
         note: '客戶反應總價偏高。改以 105g 銅版紙替換 120g 壓低紙張成本；名片量少利潤有限，售價維持不變。',
         snapshot: [
-          { name: 'A4 DM 正反面', costEstimate: 1.6, markup: 1.38, unitPrice: 2.2  },
-          { name: '名片',         costEstimate: 0.52, markup: 1.44, unitPrice: 0.75 },
+          { name: 'A4 DM 正反面', costEstimate: 1.6, unitPrice: 2.2  },
+          { name: '名片',         costEstimate: 0.52, unitPrice: 0.75 },
         ],
       },
       {
@@ -250,8 +279,8 @@ const initialData = [
         evaluatedBy: '陳建宏（印務主管）',
         note: '客戶持續議價，要求 DM 再降。紙材已無調整空間，本輪微幅調低 DM 利潤倍數（1.38 → 1.35）；此為底線，業務需向客戶說明。',
         snapshot: [
-          { name: 'A4 DM 正反面', costEstimate: 1.6, markup: 1.35, unitPrice: 2.16 },
-          { name: '名片',         costEstimate: 0.52, markup: 1.44, unitPrice: 0.75 },
+          { name: 'A4 DM 正反面', costEstimate: 1.6, unitPrice: 2.16 },
+          { name: '名片',         costEstimate: 0.52, unitPrice: 0.75 },
         ],
       },
     ],
@@ -283,9 +312,8 @@ const initialData = [
     items: [
       { id: 1, no: 'Q-20260223-02-1', name: 'A5 型錄 28P',
         spec: 'A5 28頁 封面 200g 特銅 + 內頁 105g 銅版', qty: 10000,
-        unitPrice: 8.0, costEstimate: null, markup: null,
-        processItems: [],
-        shippingMethod: '物流配送', packagingNote: '',
+        unitPrice: 8.0, costEstimate: null, amount: null,
+        delivery_method: '', packaging_note: '', estimated_delivery_date: '',
         attachments: [] },
     ],
     priceLogs: [],
@@ -307,18 +335,13 @@ const initialData = [
     items: [
       { id: 1, no: 'Q-20260222-01-1', name: '250g 牛皮紙包裝袋',
         spec: '牛皮紙 250g 掛孔打洞 4色印刷', qty: 2000,
-        unitPrice: 4.5, costEstimate: 3.2, markup: 1.4,
-        processItems: [
-          { processKey: 'cardboard_200g', qty: 2000, unitPrice: 1.20 },
-          { processKey: 'print_offset_4c', qty: 2000, unitPrice: 1.40 },
-          { processKey: 'die_cut', qty: 2000, unitPrice: 0.60 }
-        ],
-        shippingMethod: '自取', packagingNote: '每 100 個一袋',
+        unitPrice: 4.5, costEstimate: 3.2, amount: null,
+        delivery_method: '', packaging_note: '每 100 個一袋', estimated_delivery_date: '',
         attachments: ['包裝袋設計稿.pdf', '材質參考圖.jpg'] },
     ],
     priceLogs: [
       { id: 1, round: 1, evaluatedAt: '2026-02-22 11:30', evaluatedBy: '陳建宏（印務主管）', note: '',
-        snapshot: [{ name: '250g 牛皮紙包裝袋', costEstimate: 3.2, markup: 1.4, unitPrice: 4.5 }] },
+        snapshot: [{ name: '250g 牛皮紙包裝袋', costEstimate: 3.2, unitPrice: 4.5 }] },
     ],
     activityLog: [
       { id: 1, time: '2026-02-22 09:00', actor: '林雅婷', event: '建立需求單，Slack 通知已發送' },
@@ -336,13 +359,23 @@ function fmtMoney(v) {
   if (v == null) return '—';
   return (Math.round(v * 100) / 100).toLocaleString('zh-TW', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+function fmtMoneyInt(v) {
+  if (v == null) return '—';
+  return Math.round(v).toLocaleString('zh-TW');  // 整數，無小數點
+}
 function calcItem(item) {
-  const subtotal = item.unitPrice != null && item.qty != null ? item.unitPrice * item.qty : null;
+  // 費用優先使用手動輸入，否則自動計算
+  const subtotal = item.amount != null ? item.amount : (item.unitPrice != null && item.qty != null ? item.unitPrice * item.qty : null);
   const total    = subtotal != null ? subtotal * (1 + TAX_RATE) : null;
-  return { subtotal, total };
+  const profitMargin = calcProfitMargin(item.unitPrice, item.costEstimate);
+  return { subtotal, total, profitMargin };
 }
 function calcSummary(items) {
-  const subtotal = items.reduce((s, i) => s + (i.unitPrice != null && i.qty != null ? i.unitPrice * i.qty : 0), 0);
+  // 優先使用手動輸入的費用，否則自動計算
+  const subtotal = items.reduce((s, i) => {
+    const itemAmount = i.amount != null ? i.amount : (i.unitPrice != null && i.qty != null ? i.unitPrice * i.qty : 0);
+    return s + itemAmount;
+  }, 0);
   return { subtotal, tax: subtotal * TAX_RATE, total: subtotal * (1 + TAX_RATE) };
 }
 
@@ -504,50 +537,21 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role }) {
 
   const addItem = () => {
     const nextId = Math.max(...items.map(i => i.id), 0) + 1;
-    setItems([...items, { id: nextId, no: `${quoteNo}-${nextId}`, name: '', spec: '', qty: null, unitPrice: null, costEstimate: null, markup: null, processItems: [], shippingMethod: '', packagingNote: '', attachments: [] }]);
+    const defaultSpec = '尺寸：\n數量：\n紙材：\n印刷：\n出貨方式：\n包装：';
+    setItems([...items, { id: nextId, no: `${quoteNo}-${nextId}`, name: '', spec: defaultSpec, qty: null, unitPrice: null, costEstimate: null, amount: null, delivery_method: '', packaging_note: '', estimated_delivery_date: '', attachments: [] }]);
   };
   const removeItem = id => setItems(items.filter(i => i.id !== id));
   const updateItem = (id, key, val) => setItems(items.map(i => i.id === id ? { ...i, [key]: val } : i));
 
-  const addProcessItem = (itemId) => {
-    setItems(prev => prev.map(item => {
-      if (item.id !== itemId) return item;
-      const processItems = item.processItems || [];
-      const newProcessItems = [...processItems, { processKey: '', qty: 1, unitPrice: 0 }];
-      const newCost = calcProcessItemsCost(newProcessItems);
-      return { ...item, processItems: newProcessItems, costEstimate: newCost };
-    }));
-  };
 
-  const removeProcessItem = (itemId, pidx) => {
-    setItems(prev => prev.map(item => {
-      if (item.id !== itemId) return item;
-      const processItems = item.processItems || [];
-      const newProcessItems = processItems.filter((_, i) => i !== pidx);
-      const newCost = newProcessItems.length > 0 ? calcProcessItemsCost(newProcessItems) : (item.unitPrice != null ? item.unitPrice * 0.5 : null);
-      return { ...item, processItems: newProcessItems, costEstimate: newCost };
-    }));
-  };
 
-  const updateProcessItem = (itemId, pidx, key, val) => {
-    setItems(prev => prev.map(item => {
-      if (item.id !== itemId) return item;
-      const processItems = item.processItems || [];
-      const newProcessItems = processItems.map((p, i) => i === pidx ? { ...p, [key]: val } : p);
-      const newCost = calcProcessItemsCost(newProcessItems);
-      return { ...item, processItems: newProcessItems, costEstimate: newCost };
-    }));
-  };
+
+
+
 
   const handleUnitPriceChange = (id, val) => {
     const up = val ? Number(val) : null;
-    setItems(prev => prev.map(item => {
-      if (item.id !== id) return item;
-      const processItems = item.processItems || [];
-      // If no process items, auto-set cost to 50% of unit price
-      const newCost = processItems.length === 0 && up != null ? up * 0.5 : item.costEstimate;
-      return { ...item, unitPrice: up, costEstimate: newCost };
-    }));
+    setItems(prev => prev.map(item => item.id === id ? { ...item, unitPrice: up } : item));
   };
 
   const summary = calcSummary(items);
@@ -561,169 +565,133 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role }) {
 
       {/* Item Cards */}
       {items.map(item => {
-        const { subtotal, total } = calcItem(item);
-        const processItems = item.processItems || [];
-        const processCost = calcProcessItemsCost(processItems);
+        const { subtotal, total, profitMargin } = calcItem(item);
 
         return (
           <div key={item.id} style={{ border: '1px solid #F0F0F0', borderRadius: 8, marginBottom: 16, overflow: 'hidden' }}>
-            {/* Item Header */}
+            {/* Item Header - simplified */}
             <div style={{ background: '#FAFAFA', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #F0F0F0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ fontSize: 12, color: '#00000040', fontFamily: 'monospace' }}>{item.no}</span>
-                {isLocked ? <span style={{ fontWeight: 500 }}>{item.name}</span> : <input value={item.name || ''} onChange={e => updateItem(item.id, 'name', e.target.value)} placeholder="項目名稱" style={{ fontWeight: 500, border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontSize: 14, fontFamily: 'inherit' }} />}
-              </div>
+              <span style={{ fontSize: 12, color: '#00000040', fontFamily: 'monospace' }}>編號：{item.no}</span>
               {!isLocked && <button className="btn btn-danger btn-sm" onClick={() => removeItem(item.id)}>刪除</button>}
             </div>
 
             <div style={{ padding: '16px' }}>
-              {/* Spec section: spec, qty, unit price, fees */}
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', gap: 12, marginBottom: 12 }}>
-                  <div>
-                    <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>規格備註</div>
-                    {isLocked ? <span style={{ fontSize: 13 }}>{item.spec || '—'}</span> : <input value={item.spec || ''} onChange={e => updateItem(item.id, 'spec', e.target.value)} placeholder="例：A4 全彩正反面 105g 銅版紙" style={{ width: '100%', fontSize: 12, border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontFamily: 'inherit' }} />}
-                  </div>
+              {/* 【印件資料】Section */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#000000E0', marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #F0F0F0' }}>印件資料</div>
+
+                {/* 項目名稱 */}
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>項目名稱</div>
+                  {isLocked ? (
+                    <span style={{ fontSize: 14, fontWeight: 500 }}>{item.name || '—'}</span>
+                  ) : (
+                    <input value={item.name || ''} onChange={e => updateItem(item.id, 'name', e.target.value)} placeholder="項目名稱" style={{ width: '100%', fontWeight: 500, border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 14, fontFamily: 'inherit' }} />
+                  )}
+                </div>
+
+                {/* 規格備註 */}
+                <div>
+                  <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>規格備註</div>
+                  {isLocked ? (
+                    <span style={{ fontSize: 13, whiteSpace: 'pre-wrap', display: 'block', padding: '8px 12px', background: '#FAFAFA', borderRadius: 4 }}>{item.spec || '—'}</span>
+                  ) : (
+                    <textarea value={item.spec || ''} onChange={e => updateItem(item.id, 'spec', e.target.value)} placeholder="例：A4 全彩正反面 105g 銅版紙、無光膜" style={{ width: '100%', minHeight: 60, fontSize: 12, border: '1px solid #D9D9D9', borderRadius: 4, padding: '8px 12px', fontFamily: 'inherit', resize: 'vertical' }} />
+                  )}
+                </div>
+              </div>
+
+              {/* 【價格】Section */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#000000E0', marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #F0F0F0' }}>價格</div>
+
+                {/* 數量、報價單價、成本單價、費用、毛利率 - 一行五列 */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 1.2fr 1.2fr 1fr', gap: 12 }}>
                   <div>
                     <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>數量</div>
-                    {isLocked ? <span style={{ fontSize: 14 }}>{item.qty?.toLocaleString() || '—'}</span> : <input type="number" value={item.qty ?? ''} onChange={e => updateItem(item.id, 'qty', e.target.value ? Number(e.target.value) : null)} style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontFamily: 'inherit' }} />}
+                    {isLocked ? (
+                      <span style={{ fontSize: 14, fontWeight: 500 }}>{item.qty?.toLocaleString() || '—'}</span>
+                    ) : (
+                      <input type="number" value={item.qty ?? ''} onChange={e => updateItem(item.id, 'qty', e.target.value ? Number(e.target.value) : null)} placeholder="0" style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+                    )}
                   </div>
                   <div>
                     <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>報價單價</div>
-                    {isLocked ? <span style={{ fontFamily: 'monospace', fontSize: 14 }}>{item.unitPrice != null ? `$ ${fmtMoney(item.unitPrice)}` : '—'}</span> : <input type="number" step="0.01" value={item.unitPrice ?? ''} onChange={e => handleUnitPriceChange(item.id, e.target.value)} style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontFamily: 'inherit' }} />}
+                    {isLocked ? (
+                      <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 500 }}>{item.unitPrice != null ? `$ ${fmtMoney(item.unitPrice)}` : '—'}</span>
+                    ) : (
+                      <input type="number" step="0.01" value={item.unitPrice ?? ''} onChange={e => handleUnitPriceChange(item.id, e.target.value)} placeholder="0.00" style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+                    )}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>成本單價</div>
+                    {canEditCost ? (
+                      <input type="number" step="0.01" value={item.costEstimate ?? ''} onChange={e => updateItem(item.id, 'costEstimate', e.target.value ? Number(e.target.value) : null)} placeholder="0.00" style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+                    ) : (
+                      <span style={{ fontFamily: 'monospace', fontSize: 14 }}>{item.costEstimate != null ? `$ ${fmtMoney(item.costEstimate)}` : '—'}</span>
+                    )}
                   </div>
                   <div>
                     <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>費用（未稅）</div>
-                    <span style={{ fontFamily: 'monospace', fontSize: 14 }}>{subtotal != null ? `$ ${fmtMoney(subtotal)}` : '—'}</span>
+                    {isLocked ? (
+                      <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 500, color: '#000000E0' }}>{subtotal != null ? `$ ${fmtMoneyInt(subtotal)}` : '—'}</span>
+                    ) : (
+                      <input type="number" value={item.amount ?? ''} onChange={e => updateItem(item.id, 'amount', e.target.value ? Number(e.target.value) : null)} placeholder="自動計算" style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+                    )}
                   </div>
                   <div>
-                    <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>含稅金額</div>
-                    <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 500, color: '#000000E0' }}>{total != null ? `$ ${fmtMoney(total)}` : '—'}</span>
+                    <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>毛利率</div>
+                    {(() => {
+                      const margin = calcProfitMargin(item.unitPrice, item.costEstimate);
+                      const bgColor = margin != null ? getProfitMarginColor(margin) : 'transparent';
+                      return (
+                        <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 500, background: bgColor, padding: '2px 6px', borderRadius: 3 }}>
+                          {margin != null ? `${margin.toFixed(2)}%` : '—'}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </div>
+
+              {/* 【配送資料】Section */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#000000E0', marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #F0F0F0' }}>配送資料</div>
+
+                {/* 出貨方式 & 預計交貨日期 */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>出貨方式</div>
+                    {isLocked ? (
+                      <span style={{ fontSize: 14 }}>{item.delivery_method || '—'}</span>
+                    ) : (
+                      <input type="text" value={item.delivery_method || ''} onChange={e => updateItem(item.id, 'delivery_method', e.target.value)} placeholder="例：整疊、折好、TBD 等" style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+                    )}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>預計交貨日期</div>
+                    {isLocked ? (
+                      <span style={{ fontSize: 14 }}>{item.estimated_delivery_date || '—'}</span>
+                    ) : (
+                      <input type="date" value={item.estimated_delivery_date || ''} onChange={e => updateItem(item.id, 'estimated_delivery_date', e.target.value)} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+                    )}
                   </div>
                 </div>
 
-                {/* Process & Cost Section */}
-                <div style={{ background: '#FAFAFA', borderRadius: 6, padding: '12px 16px', borderTop: '1px solid #F0F0F0', marginTop: 12 }}>
-                  <div style={{ fontSize: 12, fontWeight: 500, color: '#00000073', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>預計工序與成本評估</div>
-
-                  {/* Process items table */}
-                  {canEditCost ? (
-                    <div style={{ marginBottom: 12 }}>
-                      <div style={{ fontSize: 12, color: '#00000073', marginBottom: 8 }}>工序成本明細</div>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, marginBottom: 8 }}>
-                        <thead>
-                          <tr style={{ background: '#fff' }}>
-                            <th style={{ padding: '6px 8px', textAlign: 'left', fontWeight: 500, borderBottom: '1px solid #D9D9D9', width: '35%' }}>工序名稱</th>
-                            <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 500, borderBottom: '1px solid #D9D9D9', width: '15%' }}>單位</th>
-                            <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 500, borderBottom: '1px solid #D9D9D9', width: '15%' }}>數量</th>
-                            <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 500, borderBottom: '1px solid #D9D9D9', width: '20%' }}>單價</th>
-                            <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 500, borderBottom: '1px solid #D9D9D9', width: '12%' }}>小計</th>
-                            <th style={{ padding: '6px 8px', textAlign: 'center', fontWeight: 500, borderBottom: '1px solid #D9D9D9', width: '8%' }}>操作</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {processItems.map((pi, pidx) => {
-                            const processOpt = PROCESS_OPTIONS.find(o => o.key === pi.processKey);
-                            const itemCost = (pi.qty || 0) * (pi.unitPrice || 0);
-                            return (
-                              <tr key={pidx} style={{ borderBottom: '1px solid #F0F0F0' }}>
-                                <td style={{ padding: '6px 8px' }}>
-                                  <select value={pi.processKey || ''} onChange={e => updateProcessItem(item.id, pidx, 'processKey', e.target.value)} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 6px', fontSize: 12, fontFamily: 'inherit' }}>
-                                    <option value="">選擇工序</option>
-                                    {PROCESS_OPTIONS.map(opt => (
-                                      <option key={opt.key} value={opt.key}>{opt.name}</option>
-                                    ))}
-                                  </select>
-                                </td>
-                                <td style={{ padding: '6px 8px', textAlign: 'right', fontSize: 12, color: '#00000073' }}>{processOpt?.unit || '—'}</td>
-                                <td style={{ padding: '6px 8px' }}>
-                                  <input type="number" min="0" value={pi.qty ?? ''} onChange={e => updateProcessItem(item.id, pidx, 'qty', e.target.value ? Number(e.target.value) : 0)} style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 6px', fontSize: 12, fontFamily: 'inherit' }} />
-                                </td>
-                                <td style={{ padding: '6px 8px' }}>
-                                  <input type="number" step="0.01" min="0" value={pi.unitPrice ?? ''} onChange={e => updateProcessItem(item.id, pidx, 'unitPrice', e.target.value ? Number(e.target.value) : 0)} placeholder="0.00" style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 6px', fontSize: 12, fontFamily: 'inherit' }} />
-                                </td>
-                                <td style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'monospace', fontSize: 12, fontWeight: 500 }}>$ {fmtMoney(itemCost)}</td>
-                                <td style={{ padding: '6px 8px', textAlign: 'center' }}>
-                                  <button className="btn btn-danger btn-sm" onClick={() => removeProcessItem(item.id, pidx)} style={{ fontSize: 11, padding: '2px 6px' }}>刪</button>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                      <button className="btn btn-default btn-sm" onClick={() => addProcessItem(item.id)} style={{ marginBottom: 12 }}>添加工序</button>
-                    </div>
+                {/* 包裝說明 */}
+                <div>
+                  <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>包裝說明</div>
+                  {isLocked ? (
+                    <span style={{ fontSize: 13, display: 'block', padding: '8px 12px', background: '#FAFAFA', borderRadius: 4, minHeight: 48, lineHeight: 1.5 }}>{item.packaging_note || '—'}</span>
                   ) : (
-                    <div style={{ fontSize: 13, marginBottom: 12 }}>
-                      {processItems.length > 0 ? (
-                        <div>
-                          {processItems.map((pi, i) => {
-                            const opt = PROCESS_OPTIONS.find(o => o.key === pi.processKey);
-                            const cost = (pi.qty || 0) * (pi.unitPrice || 0);
-                            return (
-                              <div key={i} style={{ fontSize: 12, marginBottom: 4, padding: '4px 8px', background: '#fff', borderRadius: 4 }}>
-                                {opt?.name} {pi.qty} {opt?.unit} × ${(pi.unitPrice || 0).toFixed(2)} = ${fmtMoney(cost)}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <span style={{ color: '#00000040' }}>未指定工序，以售價 50% 估算</span>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Cost and Markup */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12, borderTop: '1px solid #D9D9D9', paddingTop: 12 }}>
-                    <div>
-                      <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>
-                        成本預估
-                        {processItems.length > 0 ? (
-                          <span style={{ marginLeft: 4, color: '#1677FF', fontSize: 11 }}>(工序合計)</span>
-                        ) : (
-                          <span style={{ marginLeft: 4, color: '#00000040', fontSize: 11 }}>(售價 50%)</span>
-                        )}
-                      </div>
-                      {canEditCost ? (
-                        <input type="number" step="0.01" value={item.costEstimate ?? ''} onChange={e => updateItem(item.id, 'costEstimate', e.target.value ? Number(e.target.value) : null)} style={{ width: '100%', textAlign: 'right', border: item.costEstimate == null ? '1px solid #FF4D4F' : '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontFamily: 'inherit' }} />
-                      ) : (
-                        <span style={{ fontFamily: 'monospace', fontSize: 14 }}>{item.costEstimate != null ? `$ ${fmtMoney(item.costEstimate)}` : <span style={{ color: '#FF4D4F' }}>未填</span>}</span>
-                      )}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>售價 / 成本倍數</div>
-                      <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 500 }}>
-                        {item.costEstimate && item.unitPrice ? `${(item.unitPrice / item.costEstimate).toFixed(2)}×` : '—'}
-                      </span>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>出貨方式</div>
-                      {canEditCost ? (
-                        <input value={item.shippingMethod || ''} onChange={e => updateItem(item.id, 'shippingMethod', e.target.value)} placeholder="例：物流配送" style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '3px 8px', fontFamily: 'inherit' }} />
-                      ) : (
-                        <span style={{ fontSize: 13, color: '#00000073' }}>{item.shippingMethod || '—'}</span>
-                      )}
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>利潤金額</div>
-                      <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 500, color: '#389E0D' }}>
-                        {item.costEstimate && item.unitPrice ? `$ ${fmtMoney(item.unitPrice - item.costEstimate)}` : '—'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Default 50% hint if no process items */}
-                  {processItems.length === 0 && item.unitPrice && (
-                    <div style={{ marginTop: 12, fontSize: 12, color: '#00000040' }}>
-                      未選擇工序，成本以售價 50% 估算：$ {fmtMoney(item.unitPrice * 0.5)} / 單位
-                    </div>
+                    <textarea value={item.packaging_note || ''} onChange={e => updateItem(item.id, 'packaging_note', e.target.value)} placeholder="例：每 500 張一捆、外層打膜、貼標籤等" style={{ width: '100%', minHeight: 48, fontSize: 12, border: '1px solid #D9D9D9', borderRadius: 4, padding: '8px 12px', fontFamily: 'inherit', resize: 'vertical' }} />
                   )}
                 </div>
               </div>
 
               {/* Attachments */}
               {item.attachments?.length > 0 && (
-                <div style={{ borderTop: '1px solid #F0F0F0', paddingTop: 12 }}>
+                <div style={{ borderTop: '1px solid #F0F0F0', paddingTop: 12, marginTop: 12 }}>
                   <div style={{ fontSize: 12, color: '#00000073', marginBottom: 6 }}>參考附件</div>
                   <div className="attach-list">
                     {item.attachments.map((a, idx) => (
@@ -746,9 +714,9 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role }) {
       {/* Summary */}
       {items.length > 0 && (
         <div className="items-summary">
-          <div className="summary-item"><span className="summary-label">小計（未稅）</span><span className="summary-value">$ {fmtMoney(summary.subtotal)}</span></div>
-          <div className="summary-item"><span className="summary-label">稅額（5%）</span><span className="summary-value">$ {fmtMoney(summary.tax)}</span></div>
-          <div className="summary-item"><span className="summary-label">含稅總金額</span><span className="summary-value" style={{ color: '#1677FF' }}>$ {fmtMoney(summary.total)}</span></div>
+          <div className="summary-item"><span className="summary-label">小計（未稅）</span><span className="summary-value">$ {fmtMoneyInt(summary.subtotal)}</span></div>
+          <div className="summary-item"><span className="summary-label">稅額（5%）</span><span className="summary-value">$ {fmtMoneyInt(summary.tax)}</span></div>
+          <div className="summary-item"><span className="summary-label">含稅總金額</span><span className="summary-value" style={{ color: '#1677FF' }}>$ {fmtMoneyInt(summary.total)}</span></div>
         </div>
       )}
 
@@ -860,42 +828,13 @@ function ActivityTab({ activityLog }) {
   );
 }
 
-/* ─────────────────────────── Basic Info Tab ────────────────────────── */
-function BasicInfoTab({ qr }) {
+/* ─────────────────────────── Status Progress Bar ────────────────────── */
+function StatusProgressBar({ qr }) {
   const { status } = qr;
   const allStates = ['需求確認中', '待評估報價', '已評估報價', '已提供報價', '議價中'];
   const currIdx   = allStates.indexOf(status);
   return (
-    <div>
-      {status === '流失' && qr.lostReason && (
-        <div className="alert alert-error" style={{ marginBottom: 16 }}>
-          流失原因：<strong>{qr.lostReason}</strong>{qr.lostNote ? `　— ${qr.lostNote}` : ''}
-        </div>
-      )}
-      {status === '成交' && qr.linkedOrderId && (
-        <div className="alert alert-info" style={{ marginBottom: 16 }}>
-          已建立關聯訂單：<strong style={{ color: '#1677FF' }}>{qr.linkedOrderId}</strong>
-        </div>
-      )}
-      <div className="desc-grid">
-        <div><div className="desc-label">需求案名</div><div className="desc-value">{qr.title}</div></div>
-        <div><div className="desc-label">需求單號</div><div className="desc-value" style={{ fontFamily: 'monospace', color: '#1677FF' }}>{qr.quoteNo}</div></div>
-        <div><div className="desc-label">客戶</div><div className="desc-value">{qr.customer}</div></div>
-        <div><div className="desc-label">接單業務</div><div className="desc-value">{qr.sales}</div></div>
-        <div><div className="desc-label">詢價來源</div><div className="desc-value">{qr.source}</div></div>
-        <div><div className="desc-label">發票開立方式</div><div className="desc-value">{qr.invoiceType}</div></div>
-        <div><div className="desc-label">報價截止日</div><div className="desc-value">{qr.deadline || '—'}</div></div>
-        <div><div className="desc-label">最後更新</div><div className="desc-value">{qr.updatedAt}</div></div>
-        <div style={{ gridColumn: '1 / -1' }}>
-          <div className="desc-label">Slack 串連結</div>
-          <div className="desc-value">
-            {qr.slackUrl
-              ? <a href="#" style={{ color: '#1677FF' }} onClick={e => e.preventDefault()}>{qr.slackUrl}</a>
-              : <span style={{ color: '#00000040' }}>—（尚未填寫）</span>}
-          </div>
-        </div>
-      </div>
-      <div className="divider" />
+    <div style={{ padding: '16px 24px' }}>
       <div style={{ fontWeight: 500, marginBottom: 12 }}>狀態進度</div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
         {allStates.map((s, i) => {
@@ -919,6 +858,143 @@ function BasicInfoTab({ qr }) {
         <span style={{ padding: '3px 10px', borderRadius: 4, fontSize: 12, background: status === '成交' ? '#F6FFED' : '#FAFAFA', color: status === '成交' ? '#389E0D' : '#00000040', border: `1px solid ${status === '成交' ? '#B7EB8F' : '#F0F0F0'}`, fontWeight: status === '成交' ? 600 : 400 }}>成交</span>
         <span style={{ color: '#D9D9D9', margin: '0 4px', fontSize: 12 }}>/</span>
         <span style={{ padding: '3px 10px', borderRadius: 4, fontSize: 12, background: status === '流失' ? '#FFF2F0' : '#FAFAFA', color: status === '流失' ? '#CF1322' : '#00000040', border: `1px solid ${status === '流失' ? '#FFCCC7' : '#F0F0F0'}`, fontWeight: status === '流失' ? 600 : 400 }}>流失</span>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────── Basic Info Tab ────────────────────────── */
+function BasicInfoTab({ qr, status, onUpdate }) {
+  const isLocked = status === '成交' || status === '流失';
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [editData, setEditData] = React.useState(qr);
+
+  const requiredFields = ['title', 'customer', 'sales', 'source', 'invoiceType', 'deadline'];
+
+  const renderLabel = (label, fieldKey) => (
+    <span>
+      {label}
+      {requiredFields.includes(fieldKey) && <span style={{ color: '#FF4D4F', marginLeft: 2 }}>*</span>}
+    </span>
+  );
+
+  const handleEdit = () => setIsEditing(true);
+
+  const handleChange = (key, val) => {
+    setEditData({ ...editData, [key]: val });
+  };
+
+  const handleSave = () => {
+    if (onUpdate) onUpdate(editData);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditData(qr);
+    setIsEditing(false);
+  };
+
+  return (
+    <div>
+      {status === '流失' && qr.lostReason && (
+        <div className="alert alert-error" style={{ marginBottom: 16 }}>
+          流失原因：<strong>{qr.lostReason}</strong>{qr.lostNote ? `　— ${qr.lostNote}` : ''}
+        </div>
+      )}
+      {status === '成交' && qr.linkedOrderId && (
+        <div className="alert alert-info" style={{ marginBottom: 16 }}>
+          已建立關聯訂單：<strong style={{ color: '#1677FF' }}>{qr.linkedOrderId}</strong>
+        </div>
+      )}
+
+      {/* Edit Mode Header */}
+      {isEditing && (
+        <div style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #F0F0F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontWeight: 500, fontSize: 14, color: '#000000E0' }}>編輯基本資料</span>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="btn btn-default" onClick={handleCancel} style={{ padding: '6px 16px', fontSize: 13 }}>取消</button>
+            <button className="btn btn-primary" onClick={handleSave} style={{ padding: '6px 16px', fontSize: 13 }}>儲存</button>
+          </div>
+        </div>
+      )}
+
+      {/* Section Header with Edit Button */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <span style={{ fontSize: 13, color: '#00000073' }}>基本資料</span>
+        {!isEditing && !isLocked && (
+          <button className="btn btn-default btn-sm" onClick={handleEdit} style={{ padding: '4px 12px', fontSize: 12 }}>編輯</button>
+        )}
+      </div>
+
+      <div className="desc-grid">
+        <div>
+          <div className="desc-label">{renderLabel('需求案名', 'title')}</div>
+          {isEditing ? (
+            <input value={editData.title || ''} onChange={e => handleChange('title', e.target.value)} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+          ) : (
+            <div className="desc-value">{qr.title}</div>
+          )}
+        </div>
+        <div>
+          <div className="desc-label">需求單號</div>
+          <div className="desc-value" style={{ fontFamily: 'monospace', color: '#1677FF' }}>{qr.quoteNo}</div>
+        </div>
+        <div>
+          <div className="desc-label">{renderLabel('客戶', 'customer')}</div>
+          {isEditing ? (
+            <input value={editData.customer || ''} onChange={e => handleChange('customer', e.target.value)} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+          ) : (
+            <div className="desc-value">{qr.customer}</div>
+          )}
+        </div>
+        <div>
+          <div className="desc-label">{renderLabel('接單業務', 'sales')}</div>
+          {isEditing ? (
+            <input value={editData.sales || ''} onChange={e => handleChange('sales', e.target.value)} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+          ) : (
+            <div className="desc-value">{qr.sales}</div>
+          )}
+        </div>
+        <div>
+          <div className="desc-label">{renderLabel('詢價來源', 'source')}</div>
+          {isEditing ? (
+            <input value={editData.source || ''} onChange={e => handleChange('source', e.target.value)} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+          ) : (
+            <div className="desc-value">{qr.source}</div>
+          )}
+        </div>
+        <div>
+          <div className="desc-label">{renderLabel('發票開立方式', 'invoiceType')}</div>
+          {isEditing ? (
+            <input value={editData.invoiceType || ''} onChange={e => handleChange('invoiceType', e.target.value)} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+          ) : (
+            <div className="desc-value">{qr.invoiceType}</div>
+          )}
+        </div>
+        <div>
+          <div className="desc-label">{renderLabel('報價截止日', 'deadline')}</div>
+          {isEditing ? (
+            <input type="date" value={editData.deadline || ''} onChange={e => handleChange('deadline', e.target.value)} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+          ) : (
+            <div className="desc-value">{qr.deadline || '—'}</div>
+          )}
+        </div>
+        <div>
+          <div className="desc-label">最後更新</div>
+          <div className="desc-value">{qr.updatedAt}</div>
+        </div>
+        <div style={{ gridColumn: '1 / -1' }}>
+          <div className="desc-label">Slack 串連結</div>
+          {isEditing ? (
+            <input value={editData.slackUrl || ''} onChange={e => handleChange('slackUrl', e.target.value)} placeholder="https://slack.com/..." style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+          ) : (
+            <div className="desc-value">
+              {qr.slackUrl
+                ? <a href="#" style={{ color: '#1677FF' }} onClick={e => e.preventDefault()}>{qr.slackUrl}</a>
+                : <span style={{ color: '#00000040' }}>—（尚未填寫）</span>}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1003,7 +1079,7 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
   const handleEvaluate = () => {
     const now      = new Date().toLocaleString('zh-TW').replace(/\//g, '-');
     const nextRound = (freshQR.priceLogs.length || 0) + 1;
-    const snapshot = items.map(i => ({ name: i.name, costEstimate: i.costEstimate, markup: i.markup, unitPrice: i.unitPrice }));
+    const snapshot = items.map(i => ({ name: i.name, costEstimate: i.costEstimate, unitPrice: i.unitPrice }));
     const newLog   = { id: nextRound, round: nextRound, evaluatedAt: now, evaluatedBy: '陳建宏（印務主管）', note: '', snapshot };
     const actLog   = { id: freshQR.activityLog.length + 1, time: now, actor: '陳建宏', event: `狀態變更：待評估報價 → 已評估報價（自動建立報價紀錄 #${nextRound}）` };
     updateQR(qrId, { status: '已評估報價', priceLogs: [...freshQR.priceLogs, newLog], activityLog: [...freshQR.activityLog, actLog], items, updatedAt: now });
@@ -1025,31 +1101,53 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
         <span className="breadcrumb-sep">›</span>
         <span>{freshQR.quoteNo}</span>
       </div>
-      <div className="page-title">
-        {freshQR.title}
-        <StatusTag status={freshQR.status} />
-      </div>
-
-      {/* Header card */}
-      <div style={{ background: '#fff', borderRadius: '8px 8px 0 0', padding: '16px 24px 0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 14, flexWrap: 'wrap', gap: 8 }}>
-          <div style={{ fontSize: 13, color: '#00000073', display: 'flex', gap: 16 }}>
-            <span>需求單號：<strong style={{ fontFamily: 'monospace', color: '#1677FF' }}>{freshQR.quoteNo}</strong></span>
-            <span>最後更新：{freshQR.updatedAt}</span>
-            <span>報價輪次：<strong>{freshQR.priceLogs.length} 輪</strong></span>
+      {/* Card 1: Project Info & Status */}
+      <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #F0F0F0', boxShadow: '0 1px 2px rgba(0,0,0,0.06)', marginBottom: 16, overflow: 'hidden' }}>
+        {/* Title & Action Buttons Row */}
+        <div style={{ padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+          <h1 style={{ fontSize: 18, fontWeight: 600, color: '#000000E0', margin: 0, flex: 1 }}>{freshQR.title}</h1>
+          <div style={{ flexShrink: 0 }}>
+            <StateButtons qr={freshQR} role={role} onTransition={handleTransition} />
           </div>
-          <StateButtons qr={freshQR} role={role} onTransition={handleTransition} />
         </div>
-        <div className="tabs-nav">
-          {tabs.map(t => <div key={t.key} className={`tab-item ${activeTab === t.key ? 'active' : ''}`} onClick={() => setActiveTab(t.key)}>{t.label}</div>)}
+
+        {/* Key Info Section */}
+        <div style={{ padding: '20px 24px' }}>
+          {/* Key Info Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 24 }}>
+            <div>
+              <div style={{ fontSize: 11, color: '#00000073', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>需求單號</div>
+              <div style={{ fontSize: 14, fontWeight: 600, fontFamily: 'monospace', color: '#1677FF' }}>{freshQR.quoteNo}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: '#00000073', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>最後更新</div>
+              <div style={{ fontSize: 14, fontWeight: 400 }}>{freshQR.updatedAt}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: '#00000073', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>報價輪次</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{freshQR.priceLogs.length} 輪</div>
+            </div>
+          </div>
         </div>
+
+        {/* Status Progress Bar */}
+        <StatusProgressBar qr={freshQR} />
       </div>
 
-      <div className="tab-content">
-        {activeTab === 'basic'    && <BasicInfoTab qr={freshQR} />}
-        {activeTab === 'spec'     && <ItemSpecTab items={items} setItems={syncItems} status={freshQR.status} quoteNo={freshQR.quoteNo} role={role} />}
-        {activeTab === 'pricelog' && <PriceLogTab priceLogs={freshQR.priceLogs} />}
-        {activeTab === 'activity' && <ActivityTab activityLog={freshQR.activityLog} />}
+      {/* Card 2: Tabs & Content */}
+      <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #F0F0F0', boxShadow: '0 1px 2px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
+        <div style={{ borderBottom: '1px solid #F0F0F0' }}>
+          <div className="tabs-nav" style={{ padding: '0 24px', margin: 0 }}>
+            {tabs.map(t => <div key={t.key} className={`tab-item ${activeTab === t.key ? 'active' : ''}`} onClick={() => setActiveTab(t.key)}>{t.label}</div>)}
+          </div>
+        </div>
+
+        <div style={{ padding: '20px 24px' }}>
+          {activeTab === 'basic'    && <BasicInfoTab qr={freshQR} status={freshQR.status} onUpdate={updateQR} />}
+          {activeTab === 'spec'     && <ItemSpecTab items={items} setItems={syncItems} status={freshQR.status} quoteNo={freshQR.quoteNo} role={role} />}
+          {activeTab === 'pricelog' && <PriceLogTab priceLogs={freshQR.priceLogs} />}
+          {activeTab === 'activity' && <ActivityTab activityLog={freshQR.activityLog} />}
+        </div>
       </div>
 
       <LostModal open={lostOpen} onClose={() => setLostOpen(false)} onSubmit={handleLost} />
@@ -1060,13 +1158,30 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
 
 /* ─────────────────────────── List Page ─────────────────────────────── */
 function ListPage({ data, onSelect, role, onCreateQR }) {
-  const [statusFilter, setStatusFilter] = React.useState('');
-  const [salesFilter,  setSalesFilter]  = React.useState('');
+  const [quoteNoFilter, setQuoteNoFilter] = React.useState('');
+  const [titleFilter,   setTitleFilter]   = React.useState('');
+  const [customerFilter, setCustomerFilter] = React.useState('');
+  const [statusFilter,  setStatusFilter]  = React.useState('');
+  const [dateRangeFilter, setDateRangeFilter] = React.useState({ start: '', end: '' });
   const salesList = [...new Set(data.map(q => q.sales))];
-  const filtered  = data.filter(q =>
-    (statusFilter ? q.status === statusFilter : true) &&
-    (salesFilter  ? q.sales  === salesFilter  : true)
-  );
+
+  const filtered = data.filter(q => {
+    const matchQuoteNo = !quoteNoFilter || q.quoteNo.includes(quoteNoFilter);
+    const matchTitle = !titleFilter || q.title.includes(titleFilter);
+    const matchCustomer = !customerFilter || q.customer.includes(customerFilter);
+    const matchStatus = !statusFilter || q.status === statusFilter;
+    const matchDateStart = !dateRangeFilter.start || new Date(q.createdAt) >= new Date(dateRangeFilter.start);
+    const matchDateEnd = !dateRangeFilter.end || new Date(q.createdAt) <= new Date(dateRangeFilter.end);
+    return matchQuoteNo && matchTitle && matchCustomer && matchStatus && matchDateStart && matchDateEnd;
+  });
+
+  const handleClearFilters = () => {
+    setQuoteNoFilter('');
+    setTitleFilter('');
+    setCustomerFilter('');
+    setStatusFilter('');
+    setDateRangeFilter({ start: '', end: '' });
+  };
 
   return (
     <div>
@@ -1077,17 +1192,73 @@ function ListPage({ data, onSelect, role, onCreateQR }) {
         本模組取代原 Ragic + Slack 需求追蹤流程。業務在此建立並推進需求單；印務主管切換角色後可在「待評估報價」的需求單中填寫成本評估。
       </div>
 
-      <div className="toolbar">
-        <div className="toolbar-left">
-          <span className="filter-label">篩選</span>
-          <select className="form-select" style={{ width: 160 }} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+      <div style={{ background: '#fff', borderRadius: 8, padding: 16, marginBottom: 16, border: '1px solid #F0F0F0' }}>
+        <div style={{ marginBottom: 12 }}>
+          <span className="filter-label" style={{ fontWeight: 500 }}>文字篩選</span>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginTop: 8 }}>
+            <input
+              type="text"
+              placeholder="需求單編號"
+              value={quoteNoFilter}
+              onChange={e => setQuoteNoFilter(e.target.value)}
+              className="form-select"
+              style={{ padding: '6px 8px' }}
+            />
+            <input
+              type="text"
+              placeholder="案名"
+              value={titleFilter}
+              onChange={e => setTitleFilter(e.target.value)}
+              className="form-select"
+              style={{ padding: '6px 8px' }}
+            />
+            <input
+              type="text"
+              placeholder="客戶名稱"
+              value={customerFilter}
+              onChange={e => setCustomerFilter(e.target.value)}
+              className="form-select"
+              style={{ padding: '6px 8px' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 12 }}>
+          <span className="filter-label" style={{ fontWeight: 500 }}>狀態篩選</span>
+          <select className="form-select" style={{ width: '100%', marginTop: 8, padding: '6px 8px' }} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
             <option value="">全部狀態</option>
             {Object.keys(STATUS_TAG).map(s => <option key={s}>{s}</option>)}
           </select>
-          <select className="form-select" style={{ width: 140 }} value={salesFilter} onChange={e => setSalesFilter(e.target.value)}>
-            <option value="">全部業務</option>
-            {salesList.map(s => <option key={s}>{s}</option>)}
-          </select>
+        </div>
+
+        <div style={{ marginBottom: 12 }}>
+          <span className="filter-label" style={{ fontWeight: 500 }}>建立日期範圍</span>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 8 }}>
+            <input
+              type="date"
+              value={dateRangeFilter.start}
+              onChange={e => setDateRangeFilter(prev => ({ ...prev, start: e.target.value }))}
+              className="form-select"
+              style={{ padding: '6px 8px' }}
+            />
+            <input
+              type="date"
+              value={dateRangeFilter.end}
+              onChange={e => setDateRangeFilter(prev => ({ ...prev, end: e.target.value }))}
+              className="form-select"
+              style={{ padding: '6px 8px' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+          <button className="btn btn-default" onClick={handleClearFilters}>清除篩選</button>
+        </div>
+      </div>
+
+      <div className="toolbar">
+        <div className="toolbar-left">
+          <span className="filter-label">共 {filtered.length} 筆結果</span>
         </div>
         <div className="toolbar-right">
           <button className="btn btn-default" onClick={() => {}}>刷新</button>
