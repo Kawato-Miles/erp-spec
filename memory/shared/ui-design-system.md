@@ -44,14 +44,20 @@
 
 | Token | 值 | 使用場景 |
 |-------|----|---------|
+| `font-family-base` | `"Noto Sans TC", -apple-system, "Segoe UI", sans-serif` | 全域預設字體（Google Noto Sans TC） |
 | `font-size-base` | `14px` | 主要內文、表格內容、輸入框 |
 | `font-size-sm` | `12px` | 輔助說明、badge、breadcrumb |
 | `font-size-lg` | `16px` | 頁面標題（H1） |
 | `font-size-xl` | `20px` | Modal 標題 |
-| `font-weight-regular` | `400` | 一般內文 |
+| `font-weight-regular` | `400` | 一般內文、表格內容 |
 | `font-weight-medium` | `500` | 表格欄位標頭、Label |
 | `font-weight-semibold` | `600` | 頁面標題 |
+| `font-weight-bold` | `700` | 表格標題 |
 | `line-height-base` | `22px` | 搭配 14px 使用 |
+
+**表格特定規範**：
+- **表格標題（`<thead>`）**：14px / weight 700 / color #232324
+- **表格內容（`<tbody>`）**：14px / weight 400 / color #232324
 
 ### 1.3 間距（Spacing）
 
@@ -403,6 +409,7 @@ Drawer（從右側滑出，寬 520px）
 
 | 日期 | 變更 | 來源 |
 |------|------|------|
+| 2026/03/02 | 統一字體為 Google Noto Sans TC；補充表格字體規範（標題 14px/700、內容 14px/400，顏色均 #232324）| Prototype v4.3 標準化 |
 | 2026/03/02 | 更新佈局色系：頁面背景 `#F5F5F5` → `#F2F2F2`；側欄選中 `#1677FF` → `#000000`；新增側欄文字色 `#636466` | 中台基本頁面設計參考 |
 | 2026/03/02 | 補充 Form Item 細節規範：Label 與 Input 間距 `8px`；多欄位表單 grid 間距 `16px` | Prototype 優化驗證（prototype-quote-request.html v1.1） |
 | 2025/02 | 初版建立，基於尺寸管理截圖萃取 | Miles 提供截圖 |
