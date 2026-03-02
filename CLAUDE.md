@@ -208,7 +208,7 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 ### ERP 資源
 | 資源 | 路徑 |
 |------|------|
-| **Spec 迭代工作流**（實施細節、檔案清單、驗證標準）| `memory/erp/spec-iteration-workflow.md` |
+| Spec 迭代工作流（實施細節、檔案清單、驗證標準）| `memory/erp/spec-iteration-workflow.md` |
 | 產品目標（商業目標 / KPI / 範疇） | `memory/erp/product-goals.md` |
 | 業務流程（核心規則）| `memory/erp/business-process.md` |
 | 狀態機（上層：需求單 / 訂單 / 工單 / 印件）| `memory/erp/state-machines.md` |
@@ -218,16 +218,15 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 | 使用者情境（角色需求故事）| `memory/erp/user-scenarios.md` |
 | 待確認事項 | `memory/erp/open-questions.md` |
 | 待確認事項（已解答封存）| `memory/erp/open-questions-archive.md` |
-| 出貨邏輯診斷（常見漏洞與改善）| `memory/erp/shipment-logic-diagnosis.md` |
 | 術語表（完整）| `memory/erp/glossary.md` |
-| 測試案例（⚠️ 較舊，設計穩定後再清理）| `memory/erp/test-cases.md` |
+| 測試案例| `memory/erp/test-cases.md` |
 
 ### 共用資源
 | 資源 | 路徑 |
 |------|------|
-| **角色層通用原則**（Spec 撰寫 / OQ 管理 / PM 視角） | `memory/shared/principles.md` |
-| **UI 設計系統**（Ant Design 元件 / Token / 版型規範）| `memory/shared/ui-design-system.md` |
-| **Prototype 工作流程**（製作 / 驗證 / 同步規則） | `memory/shared/prototype-guidelines.md` |
+| 角色層通用原則（Spec 撰寫 / OQ 管理 / PM 視角） | `memory/shared/principles.md` |
+| UI 設計系統（Ant Design 元件 / Token / 版型規範）| `memory/shared/ui-design-system.md` |
+| Prototype 工作流程（製作 / 驗證 / 同步規則） | `memory/shared/prototype-guidelines.md` |
 | 共用術語（完整） | `memory/shared/glossary.md` |
 | 產業背景 | `memory/shared/context/industry.md` |
 | 圖編術語（完整） | `memory/graphic-editor/glossary.md` |
