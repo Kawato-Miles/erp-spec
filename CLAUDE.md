@@ -213,10 +213,12 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 | 業務流程（核心規則）| `memory/erp/business-process.md` |
 | 狀態機（上層：需求單 / 訂單 / 工單 / 印件）| `memory/erp/state-machines.md` |
 | 狀態機（下層：任務 / 生產任務 / QC / 出貨單）| `memory/erp/state-machines-ops.md` |
+| 數量換算計算規則（Prototype 設計參考）| `memory/erp/quantity-calculation-rules.md` |
 | 情境驗證（PM 視角步驟流程）| `memory/erp/scenarios.md` |
 | 使用者情境（角色需求故事）| `memory/erp/user-scenarios.md` |
 | 待確認事項 | `memory/erp/open-questions.md` |
 | 待確認事項（已解答封存）| `memory/erp/open-questions-archive.md` |
+| 出貨邏輯診斷（常見漏洞與改善）| `memory/erp/shipment-logic-diagnosis.md` |
 | 術語表（完整）| `memory/erp/glossary.md` |
 | 測試案例（⚠️ 較舊，設計穩定後再清理）| `memory/erp/test-cases.md` |
 

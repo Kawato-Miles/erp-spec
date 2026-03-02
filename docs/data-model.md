@@ -5,7 +5,7 @@
 > **注意**：本文件以業務語意為主；詳細 schema（constraints、index、migration）由開發維護。
 > 欄位以**中文名稱**為主要顯示，英文鍵名為開發對照參考。
 >
-> 最後更新：2026-03-01（需求單 v0.8 簡化成本預估邏輯；移除 QuoteRequestItemProcess、planned_process_id、price_multiplier；新增 profit_margin）
+> 最後更新：2026-03-02（需求單 v0.9 新增檢視權限管理；新增 QuoteRequestViewPermission 資料表；需求單新增 created_by 欄位已存在）
 
 ---
 
@@ -15,7 +15,7 @@
 |------|------|-----------|
 | [廠客管理（CRM）](#crm) | 最小必要版 | 客戶 |
 | [工序主檔](#process) | ✅ 設計完成（v1）| 工序 |
-| [需求單](#quote-request) | ✅ 設計完成（v0.8）| 需求單、需求單印件項目、印件項目附件、報價紀錄、活動紀錄、相似案件連結 |
+| [需求單](#quote-request) | ✅ 設計完成（v0.9）| 需求單、需求單印件項目、印件項目附件、報價紀錄、活動紀錄、相似案件連結、檢視權限（v2.0） |
 | [訂單](#order) | 🔲 Scaffold | 訂單、訂單項目 |
 | [工單](#work-order) | 🔲 Scaffold | 工單 |
 | [印件](#print-item) | 🔲 Scaffold | 印件 |
@@ -243,6 +243,19 @@
 | 參考需求單 | `referenced_quote_request_id` | | ✓ | | FK | 被參考的歷史需求單 | FK → 需求單 |
 | 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 | 建立者 | `created_by` | | ✓ | ✓ | FK | | FK → 使用者，系統自動紀錄 |
+
+### 檢視權限（QuoteRequestViewPermission，v2.0 新增）
+
+> 記錄需求單的檢視權限授予紀錄。擁有者（created_by）可新增/移除權限；被授權人檢視專用（read-only）。
+
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 所屬需求單 | `quote_request_id` | | ✓ | ✓ | FK | | FK → 需求單 |
+| 被授權人 | `granted_to_user_id` | | ✓ | ✓ | FK | 獲得檢視權限的業務/諮詢 | FK → 使用者 |
+| 授予者 | `granted_by_user_id` | | ✓ | ✓ | FK | 通常為需求單擁有者 | FK → 使用者，系統自動紀錄 |
+| 授予時間 | `granted_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
+| 移除時間 | `revoked_at` | | | ✓ | 日期時間（datetime） | NULL 表權限仍生效；有值表已移除 | 系統自動生成，唯讀 |
 
 ---
 
