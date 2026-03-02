@@ -8,10 +8,11 @@
 Prototype 版本：v4.3
 製作日期：2026-03-02
 更新內容：
-  - v4.3 (2026-03-02)：統一字體為 Google Noto Sans TC
-    * 全域字體改為「Noto Sans TC」
-    * 表格標題：14px，weight 700，color #232324
-    * 表格內容：14px，weight 400，color #232324
+  - v4.3 (2026-03-02)：統一字體為 Google Noto Sans TC，補充印件規格表格樣式
+    * 全域字體改為「Noto Sans TC」（含降級方案）
+    * 列表表格（thead/tbody）：標題 14px/700、內容 14px/400，顏色均 #232324
+    * 印件規格表格（.items-table）：補充 th/td 樣式，與列表表格規範一致
+    * 補充 .items-table 的 hover 和最後一列無邊框效果
   - v4.2 (2026-03-02)：調整彙總信息的顯示位置和方式
     * 彙總信息（小計、稅額、含稅總額）移至 Key Info Grid 中
     * 與「需求單號」、「最後更新」、「報價輪次」並列顯示（6 欄網格）
@@ -164,7 +165,11 @@ Prototype 版本：v4.3
   .form-textarea:focus { border-color: #1677FF; }
   .field-error { font-size: 12px; color: #FF4D4F; margin-top: 2px; }
   /* Items table */
-  .items-table { border: 1px solid #F0F0F0; border-radius: 6px; overflow: hidden; margin-bottom: 0; }
+  .items-table { border: 1px solid #F0F0F0; border-radius: 6px; overflow: hidden; margin-bottom: 0; border-collapse: collapse; }
+  .items-table th { background: #FAFAFA; padding: 12px 8px; text-align: center; font-size: 14px; font-weight: 700; color: #232324; border-bottom: 1px solid #F0F0F0; white-space: nowrap; min-height: 48px; vertical-align: middle; }
+  .items-table td { padding: 8px; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #232324; font-weight: 400; vertical-align: middle; text-align: center; }
+  .items-table tr:last-child td { border-bottom: none; }
+  .items-table tr:hover td { background: #FAFAFA; cursor: pointer; }
   .items-table input { border: 1px solid #D9D9D9; border-radius: 4px; padding: 6px 8px; font-size: 13px; width: 100%; font-family: inherit; outline: none; min-height: 36px; box-sizing: border-box; }
   .items-table input:focus { border-color: #1677FF; }
   .items-summary { background: #FAFAFA; padding: 12px 16px; border: 1px solid #F0F0F0; border-top: none; border-radius: 0 0 6px 6px; display: flex; justify-content: flex-end; gap: 24px; font-size: 13px; }
