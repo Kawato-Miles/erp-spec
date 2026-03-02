@@ -5,13 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>需求單模組 — ERP Prototype</title>
 <!--
-Prototype 版本：v4.3
+Prototype 版本：v4.6
 製作日期：2026-03-02
 更新內容：
-  - v4.3 (2026-03-02)：統一字體為 Google Noto Sans TC，補充印件規格表格樣式
+  - v4.6 (2026-03-02)：子列表表格內容置中
+    * 項目明細表格所有內容垂直水平置中（textAlign: center、verticalAlign: middle）
+    * 包括表頭（<th>）和表體（<td>）
+  - v4.5 (2026-03-02)：調整報價紀錄表格與評估備註樣式
+    * 移除母列展開/收合 icon（✕ icon 欄位）
+    * 評估備註內容靠左對齐（textAlign: left）
+    * 母列欄位調整：3 欄（報價紀錄、評估日期、評估者）
+  - v4.4 (2026-03-02)：報價紀錄分頁改成子母列表形式
+    * 改用表格（table）呈現報價紀錄，統一列表頁樣式
+    * 子母列表結構：母列顯示「報價紀錄、評估日期、評估者」，可展開檢視項目內容
+    * 移除與前一輪的比較內容
+    * 展開時顯示：評估備註（若有）+ 項目明細表格（成本總額、報價總額）
+    * 內嵌表格樣式與主表格統一（色彩、字體、邊框）
+  - v4.3 (2026-03-02)：統一字體為 Google Noto Sans TC，完整統一所有表格內容
     * 全域字體改為「Noto Sans TC」（含降級方案）
     * 列表表格（thead/tbody）：標題 14px/700、內容 14px/400，顏色均 #232324
     * 印件規格表格（.items-table）：補充 th/td 樣式，與列表表格規範一致
+    * 修正表格內容的 inline style：
+      - 編號欄位：移除 monospace，改 12px → 14px，色彩統一 #232324
+      - 所有內容欄位：改 13px → 14px，色彩統一 #232324，font-weight 400
+      - 數字欄位（成本/報價/毛利率）：移除 monospace 字體
     * 補充 .items-table 的 hover 和最後一列無邊框效果
   - v4.2 (2026-03-02)：調整彙總信息的顯示位置和方式
     * 彙總信息（小計、稅額、含稅總額）移至 Key Info Grid 中
@@ -77,6 +94,9 @@ Prototype 版本：v4.3
   - ui-design-system.md (Ant Design 5.x, 2026-03-02) - 統一字體 Noto Sans TC + 表格規範
 
 變更記錄：
+- v4.6：子列表表格內容垂直水平置中
+- v4.5：移除報價紀錄表格的展開 icon + 評估備註靠左對齐
+- v4.4：報價紀錄分頁改成子母列表形式（表格 + 展開內嵌項目明細）
 - v2.1：議價流程優化 - 業務發起「重新評估報價」（選填理由） + 移除印務主管退回權限
 - v2.0：新增檢視權限管理（Tab + 新增/移除權限 + 列表指示）
 - v1.3：列表篩選（文字/狀態/日期範圍）+ 清除篩選 + 結果統計
@@ -732,64 +752,64 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
 
                   return (
                     <tr key={item.id}>
-                      <td className="col-fixed col-no" style={{ fontSize: 12, color: '#00000040', fontFamily: 'monospace', padding: '8px', textAlign: 'center', whiteSpace: 'nowrap' }}>{item.no}</td>
+                      <td className="col-fixed col-no" style={{ fontSize: 14, fontWeight: 400, color: '#232324', padding: '8px', textAlign: 'center', whiteSpace: 'nowrap' }}>{item.no}</td>
                       <td className="col-fixed col-name" style={{ padding: '8px' }}>
                         {isEditing && canEditOtherField ? (
                           <input className="items-table input" value={item.name || ''} onChange={e => updateItem(item.id, 'name', e.target.value)} style={{ minWidth: 120, background: '#FFFBE6' }} />
                         ) : (
-                          <span style={{ fontSize: 13, color: '#000000E0' }}>{item.name || '—'}</span>
+                          <span style={{ fontSize: 14, fontWeight: 400, color: '#232324' }}>{item.name || '—'}</span>
                         )}
                       </td>
                       <td style={{ padding: '8px' }}>
                         {isEditing && canEditOtherField ? (
                           <textarea className="items-table input" value={item.spec || ''} onChange={e => updateItem(item.id, 'spec', e.target.value)} style={{ minWidth: 160, minHeight: 54, resize: 'none', background: '#FFFBE6' }} />
                         ) : (
-                          <span style={{ fontSize: 13, color: '#000000E0', whiteSpace: 'pre-wrap' }}>{item.spec || '—'}</span>
+                          <span style={{ fontSize: 14, fontWeight: 400, color: '#232324', whiteSpace: 'pre-wrap' }}>{item.spec || '—'}</span>
                         )}
                       </td>
                       <td style={{ padding: '8px' }}>
                         {isEditing && canEditOtherField ? (
                           <input className="items-table input" type="text" value={item.delivery_method || ''} onChange={e => updateItem(item.id, 'delivery_method', e.target.value)} style={{ minWidth: 90, background: '#FFFBE6' }} />
                         ) : (
-                          <span style={{ fontSize: 13, color: '#000000E0' }}>{item.delivery_method || '—'}</span>
+                          <span style={{ fontSize: 14, fontWeight: 400, color: '#232324' }}>{item.delivery_method || '—'}</span>
                         )}
                       </td>
                       <td style={{ padding: '8px' }}>
                         {isEditing && canEditOtherField ? (
                           <input className="items-table input" type="date" value={item.estimated_delivery_date || ''} onChange={e => updateItem(item.id, 'estimated_delivery_date', e.target.value)} style={{ minWidth: 120, background: '#FFFBE6' }} />
                         ) : (
-                          <span style={{ fontSize: 13, color: '#000000E0' }}>{item.estimated_delivery_date || '—'}</span>
+                          <span style={{ fontSize: 14, fontWeight: 400, color: '#232324' }}>{item.estimated_delivery_date || '—'}</span>
                         )}
                       </td>
                       <td style={{ padding: '8px' }}>
                         {isEditing && canEditOtherField ? (
                           <textarea className="items-table input" value={item.packaging_note || ''} onChange={e => updateItem(item.id, 'packaging_note', e.target.value)} style={{ minWidth: 120, minHeight: 54, resize: 'none', background: '#FFFBE6' }} />
                         ) : (
-                          <span style={{ fontSize: 13, color: '#000000E0', whiteSpace: 'pre-wrap' }}>{item.packaging_note || '—'}</span>
+                          <span style={{ fontSize: 14, fontWeight: 400, color: '#232324', whiteSpace: 'pre-wrap' }}>{item.packaging_note || '—'}</span>
                         )}
                       </td>
                       <td style={{ padding: '8px' }}>
                         {isEditing && canEditOtherField ? (
                           <input className="items-table input" type="number" value={item.qty ?? ''} onChange={e => updateItem(item.id, 'qty', e.target.value ? Number(e.target.value) : null)} style={{ minWidth: 70, background: '#FFFBE6' }} />
                         ) : (
-                          <span style={{ fontSize: 13, color: '#000000E0' }}>{item.qty ?? '—'}</span>
+                          <span style={{ fontSize: 14, fontWeight: 400, color: '#232324' }}>{item.qty ?? '—'}</span>
                         )}
                       </td>
                       <td style={{ padding: '8px' }}>
                         {isEditing && canEditCostField ? (
                           <input className="items-table input" type="number" value={item.costEstimate ?? ''} onChange={e => updateItem(item.id, 'costEstimate', e.target.value ? Number(e.target.value) : null)} style={{ minWidth: 90, background: '#FFFBE6' }} />
                         ) : (
-                          <span style={{ fontSize: 13, color: '#000000E0', fontFamily: 'monospace' }}>{item.costEstimate != null ? fmtMoneyInt(item.costEstimate) : '—'}</span>
+                          <span style={{ fontSize: 14, fontWeight: 400, color: '#232324' }}>{item.costEstimate != null ? fmtMoneyInt(item.costEstimate) : '—'}</span>
                         )}
                       </td>
                       <td style={{ padding: '8px' }}>
                         {isEditing && canEditOtherField ? (
                           <input className="items-table input" type="number" value={item.unitPrice ?? ''} onChange={e => updateItem(item.id, 'unitPrice', e.target.value ? Number(e.target.value) : null)} style={{ minWidth: 90, background: '#FFFBE6' }} />
                         ) : (
-                          <span style={{ fontSize: 13, color: '#000000E0', fontFamily: 'monospace' }}>{item.unitPrice != null ? fmtMoneyInt(item.unitPrice) : '—'}</span>
+                          <span style={{ fontSize: 14, fontWeight: 400, color: '#232324' }}>{item.unitPrice != null ? fmtMoneyInt(item.unitPrice) : '—'}</span>
                         )}
                       </td>
-                      <td style={{ padding: '8px', fontFamily: 'monospace', background: getProfitMarginColor(margin), fontWeight: margin != null ? 500 : 'normal' }}>{margin != null ? `${margin.toFixed(2)}%` : '—'}</td>
+                      <td style={{ padding: '8px', fontSize: 14, fontWeight: 400, color: '#232324', background: getProfitMarginColor(margin) }}>{margin != null ? `${margin.toFixed(2)}%` : '—'}</td>
                       {!isLocked && (
                         <td className="col-fixed col-operations" style={{ padding: '8px', textAlign: 'center' }}>
                           {isEditing ? (
@@ -819,64 +839,78 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
 
 /* ─────────────────────────── Price Log Tab ─────────────────────────── */
 function PriceLogTab({ priceLogs }) {
-  if (priceLogs.length === 0) return <div className="empty">尚無報價紀錄。印務主管完成評估後，系統將自動建立快照。</div>;
+  const [expandedId, setExpandedId] = React.useState(null);
+
+  if (priceLogs.length === 0)
+    return <div className="empty">尚無報價紀錄。印務主管完成評估後，系統將自動建立快照。</div>;
+
+  const toggleExpand = (id) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
   return (
-    <div>
-      {[...priceLogs].reverse().map(log => (
-        <div key={log.id} className="price-log-card">
-          <div className="price-log-header">
-            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-              <span style={{ fontWeight: 600 }}>報價紀錄 #{log.id}</span>
-              <span className="price-log-round">第 {log.round} 輪</span>
-              <span style={{ fontSize: 12, color: '#00000073' }}>評估者：{log.evaluatedBy}</span>
-            </div>
-            <span style={{ fontSize: 12, color: '#00000073', white_space: 'nowrap' }}>{log.evaluatedAt}</span>
-          </div>
-          {log.note && (
-            <div style={{ fontSize: 13, color: '#00000073', background: '#FAFAFA', borderRadius: 4, padding: '8px 12px', marginBottom: 12 }}>
-              評估備註：{log.note}
-            </div>
-          )}
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ background: '#FAFAFA' }}>
-                <th style={{ padding: '8px 12px', textAlign: 'left', fontSize: 14, fontWeight: 700, color: '#232324', borderBottom: '1px solid #F0F0F0' }}>項目名稱</th>
-                <th style={{ padding: '8px 12px', textAlign: 'right', fontSize: 14, fontWeight: 700, color: '#232324', borderBottom: '1px solid #F0F0F0', width: 120 }}>成本總額</th>
-                <th style={{ padding: '8px 12px', textAlign: 'right', fontSize: 14, fontWeight: 700, color: '#232324', borderBottom: '1px solid #F0F0F0', width: 120 }}>報價總額</th>
+    <div className="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>報價紀錄</th>
+            <th style={{ width: 140 }}>評估日期</th>
+            <th style={{ width: 140 }}>評估者</th>
+          </tr>
+        </thead>
+        <tbody>
+          {[...priceLogs].reverse().map(log => (
+            <React.Fragment key={log.id}>
+              <tr
+                onClick={() => toggleExpand(log.id)}
+                style={{ cursor: 'pointer' }}>
+                <td style={{ padding: '12px 8px' }}>
+                  <span style={{ fontWeight: 500 }}>報價紀錄 #{log.id}</span>
+                  <span className="price-log-round" style={{ marginLeft: 12 }}>第 {log.round} 輪</span>
+                </td>
+                <td style={{ padding: '12px 8px' }}>{log.evaluatedAt}</td>
+                <td style={{ padding: '12px 8px' }}>{log.evaluatedBy}</td>
               </tr>
-            </thead>
-            <tbody>
-              {log.snapshot.map((s, i) => (
-                <tr key={i} style={{ borderBottom: '1px solid #F9F9F9' }}>
-                  <td style={{ padding: '8px 12px', fontSize: 14, color: '#232324', fontWeight: 400 }}>{s.name}</td>
-                  <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'monospace', fontSize: 14, color: '#232324', fontWeight: 400 }}>{s.costEstimate != null ? `$ ${fmtMoneyInt(s.costEstimate)}` : '—'}</td>
-                  <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'monospace', fontSize: 14, color: '#232324', fontWeight: 400 }}>{s.unitPrice != null ? `$ ${fmtMoneyInt(s.unitPrice)}` : '—'}</td>
+
+              {expandedId === log.id && (
+                <tr>
+                  <td colSpan="3" style={{ padding: 0, borderBottom: 'none' }}>
+                    <div style={{ padding: '16px 24px', background: '#FAFAFA' }}>
+                      <div style={{ background: '#fff', border: '1px solid #F0F0F0', borderRadius: 6, overflow: 'hidden', marginBottom: 16 }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                          <thead>
+                            <tr style={{ background: '#FAFAFA' }}>
+                              <th style={{ padding: '12px 8px', textAlign: 'center', verticalAlign: 'middle', fontSize: 14, fontWeight: 700, color: '#232324', borderBottom: '1px solid #F0F0F0' }}>項目名稱</th>
+                              <th style={{ padding: '12px 8px', textAlign: 'center', verticalAlign: 'middle', fontSize: 14, fontWeight: 700, color: '#232324', borderBottom: '1px solid #F0F0F0', width: 120 }}>成本總額</th>
+                              <th style={{ padding: '12px 8px', textAlign: 'center', verticalAlign: 'middle', fontSize: 14, fontWeight: 700, color: '#232324', borderBottom: '1px solid #F0F0F0', width: 120 }}>報價總額</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {log.snapshot.map((s, i) => (
+                              <tr key={i} style={{ borderBottom: i === log.snapshot.length - 1 ? 'none' : '1px solid #F0F0F0' }}>
+                                <td style={{ padding: '12px 8px', textAlign: 'center', verticalAlign: 'middle', fontSize: 14, color: '#232324', fontWeight: 400 }}>{s.name}</td>
+                                <td style={{ padding: '12px 8px', textAlign: 'center', verticalAlign: 'middle', fontSize: 14, color: '#232324', fontWeight: 400 }}>{s.costEstimate != null ? `$ ${fmtMoneyInt(s.costEstimate)}` : '—'}</td>
+                                <td style={{ padding: '12px 8px', textAlign: 'center', verticalAlign: 'middle', fontSize: 14, color: '#232324', fontWeight: 400 }}>{s.unitPrice != null ? `$ ${fmtMoneyInt(s.unitPrice)}` : '—'}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {log.note && (
+                        <div style={{ fontSize: 13, color: '#00000073', background: '#fff', border: '1px solid #F0F0F0', borderRadius: 4, padding: '8px 12px', textAlign: 'left' }}>
+                          <span style={{ fontWeight: 500, color: '#000000E0' }}>評估備註</span>
+                          <div style={{ marginTop: 6, whiteSpace: 'pre-wrap', textAlign: 'left' }}>{log.note}</div>
+                        </div>
+                      )}
+                    </div>
+                  </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {/* Compare with previous round */}
-          {log.round > 1 && priceLogs.find(p => p.round === log.round - 1) && (
-            <div style={{ marginTop: 8, fontSize: 12, color: '#00000073' }}>
-              與第 {log.round - 1} 輪比較：
-              {log.snapshot.map((s, i) => {
-                const prev = priceLogs.find(p => p.round === log.round - 1)?.snapshot[i];
-                if (!prev || prev.unitPrice == null || s.unitPrice == null) return null;
-                const diff = s.unitPrice - prev.unitPrice;
-                return (
-                  <span key={i} style={{ marginLeft: 12 }}>
-                    {s.name} 報價總額 {diff < 0
-                      ? <span style={{ color: '#389E0D' }}>調降 {fmtMoneyInt(Math.abs(diff))}</span>
-                      : diff > 0
-                      ? <span style={{ color: '#CF1322' }}>調漲 {fmtMoneyInt(diff)}</span>
-                      : <span style={{ color: '#00000073' }}>不變</span>}
-                  </span>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      ))}
+              )}
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
