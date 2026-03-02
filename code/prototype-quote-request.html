@@ -443,7 +443,7 @@ const initialData = [
     items: [
       { id: 1, no: 'Q-20260223-02-1', name: 'A5 型錄 28P',
         spec: 'A5 28頁 封面 200g 特銅 + 內頁 105g 銅版', qty: 10000,
-        unitPrice: 8.0, costEstimate: null, amount: null,
+        unitPrice: null, costEstimate: null, amount: null,
         delivery_method: '', packaging_note: '', estimated_delivery_date: '',
         attachments: [] },
     ],
@@ -485,6 +485,63 @@ const initialData = [
       { id: 4, time: '2026-02-22 14:00', actor: '林雅婷', event: '狀態變更：已評估成本 → 已提供報價' },
       { id: 5, time: '2026-02-22 15:00', actor: '林雅婷', event: '狀態變更：已提供報價 → 議價中' },
       { id: 6, time: '2026-02-22 16:45', actor: '林雅婷', event: '狀態變更：議價中 → 成交' },
+    ],
+  },
+
+  {
+    id: 'QR004', quoteNo: 'Q-20260224-01',
+    title: '韓系美妝品牌商品貼紙',
+    customer: '韓美美妝有限公司', sales: '王美芳',
+    createdBy: '王美芳', estimatedByManager: '李明達',
+    status: '需求確認中',
+    deadline: '2026-03-01', updatedAt: '2026-02-24 14:30', createdAt: '2026-02-24 14:30',
+    source: '主動開發', invoiceType: '三聯式發票',
+    slackUrl: 'https://slack.com/archives/C123/p1706142000',
+    lostReason: '', lostNote: '', linkedOrderId: '',
+    viewPermissions: [],
+    items: [
+      { id: 1, no: 'Q-20260224-01-1', name: '透明貼紙',
+        spec: '透明雷射模切貼紙\n尺寸：5x5 cm\n數量：10,000 張\n材質：透明PET\n印刷：全彩噴墨', qty: 10000,
+        unitPrice: null, costEstimate: null, amount: null,
+        delivery_method: '', packaging_note: '', estimated_delivery_date: '',
+        attachments: [] },
+    ],
+    priceLogs: [],
+    activityLog: [
+      { id: 1, time: '2026-02-24 14:30', actor: '王美芳', event: '建立需求單，待釐清規格需求' },
+    ],
+  },
+
+  {
+    id: 'QR005', quoteNo: 'Q-20260221-02',
+    title: '某連鎖餐飲集團菜單設計印刷',
+    customer: '漢城屋股份有限公司', sales: '黃建中',
+    createdBy: '黃建中', estimatedByManager: '王琪雯',
+    status: '流失',
+    deadline: '2026-02-25', updatedAt: '2026-02-23 10:15', createdAt: '2026-02-21 10:00',
+    source: '展覽會', invoiceType: '三聯式發票',
+    slackUrl: 'https://slack.com/archives/C123/p1705832400',
+    lostReason: '價格競爭', lostNote: '客戶最終選擇其他廠商，主要原因是報價超出預算。建議後續可主動跟進折扣方案。',
+    linkedOrderId: '',
+    viewPermissions: [],
+    items: [
+      { id: 1, no: 'Q-20260221-02-1', name: 'A5 三折菜單',
+        spec: 'A5 三折菜單\n尺寸：180x210mm\n紙張：銅版紙 300g\n印刷：全彩正反面\n數量：5,000 份', qty: 5000,
+        unitPrice: 7500, costEstimate: 5500, amount: null,
+        delivery_method: '整疊', packaging_note: '膠裝裝訂', estimated_delivery_date: '2026-03-05',
+        attachments: ['菜單設計稿.pdf'] },
+    ],
+    priceLogs: [
+      { id: 1, round: 1, evaluatedAt: '2026-02-21 11:00', evaluatedBy: '王琪雯（印務主管）', note: '初次報價，膠裝增加成本。',
+        snapshot: [{ name: 'A5 三折菜單', costEstimate: 5500, unitPrice: 7500 }] },
+    ],
+    activityLog: [
+      { id: 1, time: '2026-02-21 10:00', actor: '黃建中', event: '建立需求單，Slack 通知已發送' },
+      { id: 2, time: '2026-02-21 10:30', actor: '黃建中', event: '狀態變更：需求確認中 → 待評估成本' },
+      { id: 3, time: '2026-02-21 11:00', actor: '王琪雯', event: '狀態變更：待評估成本 → 已評估成本（自動建立報價紀錄 #1）' },
+      { id: 4, time: '2026-02-21 14:00', actor: '黃建中', event: '狀態變更：已評估成本 → 已提供報價' },
+      { id: 5, time: '2026-02-21 15:00', actor: '黃建中', event: '狀態變更：已提供報價 → 議價中' },
+      { id: 6, time: '2026-02-23 10:15', actor: '黃建中', event: '狀態變更：議價中 → 流失（原因：價格競爭，客戶選擇其他廠商）' },
     ],
   },
 ];
@@ -1271,7 +1328,7 @@ function StateButtons({ qr, role, onTransition }) {
 
 /* ─────────────────────────── Detail Page ───────────────────────────── */
 function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
-  const [activeTab,     setActiveTab]     = React.useState('basic');
+  const [activeTab,     setActiveTab]     = React.useState(role === 'manager' ? 'spec' : 'basic');
   const [items,         setItems]         = React.useState(() => data.find(q => q.id === qrId).items);
   const [lostOpen,      setLostOpen]      = React.useState(false);
   const [evalOpen,      setEvalOpen]      = React.useState(false);
@@ -1395,7 +1452,7 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
               <div style={{ fontSize: 14, fontWeight: 500, color: '#636466', marginBottom: 6 }}>報價輪次</div>
               <div style={{ fontSize: 14, fontWeight: 400, color: '#232324' }}>{freshQR.priceLogs.length} 輪</div>
             </div>
-            {items && items.length > 0 && (
+            {role !== 'manager' && items && items.length > 0 && (
               <>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 500, color: '#636466', marginBottom: 6 }}>小計（未稅）</div>
@@ -1576,9 +1633,9 @@ function ListPage({ data, onSelect, role, onCreateQR }) {
           <thead>
             <tr>
               <th>需求單號</th><th>需求案名</th><th>客戶名稱</th>
-              <th>接單業務</th><th>狀態</th><th>權限</th><th>報價輪次</th>
+              <th>接單業務</th><th>狀態</th><th>報價輪次</th>
               <th>報價截止日</th><th>最後更新</th>
-              <th style={{ width: 60 }}>操作</th>
+              <th style={{ width: 80 }}>操作</th>
             </tr>
           </thead>
           <tbody>
@@ -1589,11 +1646,6 @@ function ListPage({ data, onSelect, role, onCreateQR }) {
                 <td style={{ fontSize: 14, fontWeight: 400, color: '#232324' }}>{qr.customer}</td>
                 <td style={{ fontSize: 14, fontWeight: 400, color: '#232324' }}>{qr.sales}</td>
                 <td style={{ fontSize: 14, fontWeight: 400, color: '#232324' }}><StatusTag status={qr.status} /></td>
-                <td style={{ fontSize: 14, fontWeight: 400, color: '#232324' }}>
-                  {qr.viewPermissions && qr.viewPermissions.length > 0
-                    ? <span className="permission-badge permission-badge-shared">已分享 ({qr.viewPermissions.length})</span>
-                    : <span className="permission-badge permission-badge-owner">僅我</span>}
-                </td>
                 <td style={{ textAlign: 'center', fontSize: 14, fontWeight: 400, color: '#232324' }}>
                   {qr.priceLogs.length > 0
                     ? <span style={{ fontFamily: 'monospace' }}>{qr.priceLogs.length} 輪</span>
@@ -1606,7 +1658,7 @@ function ListPage({ data, onSelect, role, onCreateQR }) {
                 </td>
               </tr>
             ))}
-            {filtered.length === 0 && <tr><td colSpan="10" className="empty">查無符合條件的需求單</td></tr>}
+            {filtered.length === 0 && <tr><td colSpan="9" className="empty">查無符合條件的需求單</td></tr>}
           </tbody>
         </table>
         <div className="pagination">
