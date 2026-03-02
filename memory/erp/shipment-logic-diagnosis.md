@@ -121,7 +121,7 @@
 ### 1.5 一印件多工單時的出貨聚合（Open Question）
 
 **漏掉的邏輯：**
-- ❌ scenarios.md 情境 6（一印件多工單）與情境 7（分批出貨）未結合驗證
+- ❌ scenarios.md 情境 2（一印件多工單）與情境 7（分批出貨）未結合驗證
 
 **當前狀態（待完善）：**
 - 一印件有工單 A、B 兩個
@@ -177,7 +177,7 @@
 出貨狀態機 → state-machines-ops.md § 出貨單狀態機
 出貨防呆 → state-machines-ops.md § 防呆規則
 出貨場景驗證 → scenarios.md § 情境 7
-一印件多工單 → scenarios.md § 情境 6（但無出貨驗證）
+一印件多工單 → scenarios.md § 情境 2（但無出貨驗證）
 ```
 
 **原因：**
@@ -259,7 +259,7 @@ scenarios.md 情境 1-7 涵蓋：
   [ ] state-machines-ops.md § 出貨單狀態機（完整）
   [ ] state-machines-ops.md § 連動規則（出貨 → 印件）
   [ ] scenarios.md § 情境 7（分批出貨）
-  [ ] scenarios.md § 情境 6（若涉及多工單）
+  [ ] scenarios.md § 情境 2（若涉及多工單）
 
 □ 驗證「本次設計」的邏輯完整性
   - [ ] 出貨單建立時機：前置條件是什麼？
@@ -333,7 +333,7 @@ scenarios.md 情境 1-7 涵蓋：
 ```markdown
 ## 情境 8：一印件多工單 + 分批出貨（工單 + 訂單管理）
 
-背景：情境 6（一印件多工單）結合分批出貨
+背景：情境 2（一印件多工單）結合分批出貨
 - 驗證：多工單時是否所有工單都需完成才能出貨
 - 驗證：先發部分工單完成部分的行為
 
@@ -364,7 +364,7 @@ scenarios.md 情境 1-7 涵蓋：
 - 還是只要 QC 入庫達標即可？
 - 若分別完成，該印件何時判定為「已送達」？
 
-**影響範圍：** scenarios.md 情境 6, 8（待補充）
+**影響範圍：** scenarios.md 情境 2, 8（待補充）
 
 **決策優先級：** 中（影響出貨 Spec 撰寫）
 
@@ -492,7 +492,7 @@ scenarios.md 情境 1-7 涵蓋：
 |-----|------|
 | business-process.md § 4.5, 5.2.5 | 業務規則定義 |
 | state-machines-ops.md § 出貨單 | 狀態機 + 防呆 |
-| scenarios.md § 情境 1, 6, 7 | 場景驗證 |
+| scenarios.md § 情境 1, 2, 7 | 場景驗證 |
 | open-questions.md | 待確認項 |
 | **shipment-design-overview.md（本檔）** | **統一設計視圖** |
 
