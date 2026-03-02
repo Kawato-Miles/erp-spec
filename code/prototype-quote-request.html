@@ -5,34 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>需求單模組 — ERP Prototype</title>
 <!--
-Prototype 版本：v1.3
+Prototype 版本：v2.1
 製作日期：2026-03-02
 更新內容：
+  - v2.1 (2026-03-02)：議價流程優化 - 業務發起重新評估
+    * 議價中狀態時，業務可點「重新評估報價」按鈕
+    * 點擊後出現模態框，可選擇填寫「調整說明」（非必填）
+    * 調整說明記錄在活動日誌，供印務主管參考
+    * 移除印務主管在議價中的「退回重評估」操作（實務無此流程）
+  - v2.0 (2026-03-02)：新增檢視權限管理功能
+    * 新增「權限管理」Tab：顯示已授予檢視權限的人員清單
+    * 支援新增檢視權限：搜尋並選擇業務/諮詢，授予檢視權限
+    * 支援移除檢視權限：點擊移除按鈕即可回收權限
+    * 權限紀錄：記錄誰授予權限、何時授予
+    * 列表頁權限指示：顯示「僅我」或「已分享 (N 人)」標籤
   - v1.3 (2026-03-02)：加入需求單列表篩選功能
-    * 文字篩選：需求單編號、案名、客戶名稱
-    * 狀態篩選：全部狀態下拉選單
-    * 日期範圍篩選：建立日期起訖
-    * 清除篩選按鈕：一鍵重置所有篩選條件
-    * 結果統計：顯示篩選後筆數
   - v1.2 (2026-03-02)：完成費用編輯功能、整數貨幣顯示、UI 布局優化
-    * 費用欄位改為可編輯（業務可手動輸入，優先於自動計算）
-    * 貨幣顯示改為整數（無小數點）
-    * 規格備註改為 textarea（支援多行輸入）
-    * 所有數值欄位合併為一行布局（數量、報價單價、成本單價、費用、毛利率）
-    * 修正 calcSummary 函數支援手動費用計算
   - v1.1 (2026-03-02)：簡化成本預估邏輯，移除工序選擇 UI，新增毛利率欄位與視覺化
-  - 參考規格：business-process.md v10, data-model.md v0.8, state-machines.md v10, spec-quote-request.md v0.8
-  - 涵蓋角色：業務/諮詢業務視角、印務主管視角
-  - 涵蓋流程：需求單建立 → 報價評估 → 成交
 
 版本對應：
   - spec-quote-request.md (v0.8, 2026-03-01) - 簡化成本預估 + 費用編輯
   - data-model.md (v0.8, 2026-03-01) - 新增 profit_margin 欄位 + 可編輯 amount_excl_tax
-  - state-machines.md (v10, 2026-02-24) - 需求單狀態機
+  - state-machines.md (v11, 2026-03-02) - 議價流程修正：業務發起重新評估
   - scenarios.md (2026-02-20) - 報價流程
   - ui-design-system.md (Ant Design 5.x, 2026-01-30)
 
 變更記錄：
+- v2.1：議價流程優化 - 業務發起「重新評估報價」（選填理由） + 移除印務主管退回權限
+- v2.0：新增檢視權限管理（Tab + 新增/移除權限 + 列表指示）
 - v1.3：列表篩選（文字/狀態/日期範圍）+ 清除篩選 + 結果統計
 - v1.2：費用編輯 + 整數貨幣 + UI 布局優化 + calcSummary 修正
 - v1.1：工序 UI 移除 + 毛利率視覺化
@@ -167,6 +167,24 @@ Prototype 版本：v1.3
   .role-btn.active { background: rgba(255,255,255,0.25); border-color: #fff; }
   /* Empty */
   .empty { text-align: center; padding: 40px; color: #00000040; font-size: 14px; }
+  /* Permission */
+  .permission-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+  .permission-badge-owner { background: #F9F0FF; border: 1px solid #D3ADF7; color: #531DAB; }
+  .permission-badge-shared { background: #F6FFED; border: 1px solid #B7EB8F; color: #389E0D; }
+  .permission-list { border: 1px solid #F0F0F0; border-radius: 6px; margin-bottom: 16px; }
+  .permission-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #F0F0F0; }
+  .permission-item:last-child { border-bottom: none; }
+  .permission-item-info { display: flex; align-items: center; gap: 12px; }
+  .permission-item-name { font-weight: 500; color: #000000E0; font-size: 14px; }
+  .permission-item-meta { font-size: 12px; color: #00000073; }
+  .permission-item-time { margin-left: 4px; color: #00000040; }
+  .permission-form { background: #FAFAFA; padding: 16px; border-radius: 6px; margin-bottom: 16px; }
+  .permission-search { display: flex; gap: 8px; }
+  .permission-search input { flex: 1; height: 32px; padding: 0 12px; border: 1px solid #D9D9D9; border-radius: 6px; font-size: 14px; font-family: inherit; }
+  .permission-dropdown { position: absolute; background: #fff; border: 1px solid #D9D9D9; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-height: 200px; overflow-y: auto; z-index: 100; }
+  .permission-dropdown-item { padding: 8px 12px; cursor: pointer; font-size: 14px; color: #000000E0; border-bottom: 1px solid #F0F0F0; }
+  .permission-dropdown-item:hover { background: #F5F5F5; }
+  .permission-dropdown-item:last-child { border-bottom: none; }
 </style>
 </head>
 <body>
@@ -223,17 +241,31 @@ const STATUS_TAG = {
 const LOSS_REASONS   = ['價格過高', '找其他廠商', '需求取消', '預算凍結', '時程不符', '其他'];
 const INQUIRY_SOURCES = ['業務開發', '老客戶續單', '朋友介紹', '官網詢問', '展覽接觸'];
 
+/* 業務/諮詢人員清單 */
+const SALES_STAFF = [
+  { id: 'sales_001', name: '林雅婷', role: '業務' },
+  { id: 'sales_002', name: '張世豪', role: '業務' },
+  { id: 'sales_003', name: '王美芳', role: '諮詢' },
+  { id: 'sales_004', name: '黃建中', role: '業務' },
+  { id: 'sales_005', name: '李侑霖', role: '諮詢' },
+];
+
 /* ─────────────────────────── Sample Data ───────────────────────────── */
 const initialData = [
   {
     id: 'QR001', quoteNo: 'Q-20260223-01',
     title: '誠品書店週年慶 DM',
     customer: '誠品生活股份有限公司', sales: '林雅婷',
+    createdBy: '林雅婷',
     status: '議價中',
-    deadline: '2026-02-28', updatedAt: '2026-02-23 17:20',
+    deadline: '2026-02-28', updatedAt: '2026-02-23 17:20', createdAt: '2026-02-23 09:00',
     source: '業務開發', invoiceType: '三聯式發票',
     slackUrl: 'https://slack.com/archives/C123/p1706056800',
     lostReason: '', lostNote: '',
+    viewPermissions: [
+      { staffId: 'sales_003', staffName: '王美芳', grantedBy: '林雅婷', grantedAt: '2026-02-23 14:30' },
+      { staffId: 'sales_004', staffName: '黃建中', grantedBy: '林雅婷', grantedAt: '2026-02-23 16:00' },
+    ],
     items: [
       { id: 1, no: 'Q-20260223-01-1', name: 'A4 DM 正反面',
         spec: 'A4（210x297mm）\n數量：5,000 張\n紙材：銅版紙 105g\n印刷：全彩正反面 CMYK\n出貨：物流配送\n包装：每 500 張一捆', qty: 5000,
@@ -305,10 +337,12 @@ const initialData = [
     id: 'QR002', quoteNo: 'Q-20260223-02',
     title: '台灣大哥大 Q2 型錄',
     customer: '台灣大哥大股份有限公司', sales: '張世豪',
+    createdBy: '張世豪',
     status: '待評估報價',
-    deadline: '2026-03-05', updatedAt: '2026-02-23 11:20',
+    deadline: '2026-03-05', updatedAt: '2026-02-23 11:20', createdAt: '2026-02-23 11:20',
     source: '老客戶續單', invoiceType: '三聯式發票',
     slackUrl: '', lostReason: '', lostNote: '',
+    viewPermissions: [],
     items: [
       { id: 1, no: 'Q-20260223-02-1', name: 'A5 型錄 28P',
         spec: 'A5 28頁 封面 200g 特銅 + 內頁 105g 銅版', qty: 10000,
@@ -327,11 +361,15 @@ const initialData = [
     id: 'QR003', quoteNo: 'Q-20260222-01',
     title: '陳氏咖啡烘焙坊包裝袋',
     customer: '陳氏咖啡烘焙坊', sales: '林雅婷',
+    createdBy: '林雅婷',
     status: '成交',
-    deadline: '2026-02-20', updatedAt: '2026-02-22 16:45',
+    deadline: '2026-02-20', updatedAt: '2026-02-22 16:45', createdAt: '2026-02-22 09:00',
     source: '朋友介紹', invoiceType: '二聯式收據',
     slackUrl: 'https://slack.com/archives/C123/p1706020000',
     lostReason: '', lostNote: '', linkedOrderId: 'ORD-20260222-01',
+    viewPermissions: [
+      { staffId: 'sales_005', staffName: '李侑霖', grantedBy: '林雅婷', grantedAt: '2026-02-22 15:00' },
+    ],
     items: [
       { id: 1, no: 'Q-20260222-01-1', name: '250g 牛皮紙包裝袋',
         spec: '牛皮紙 250g 掛孔打洞 4色印刷', qty: 2000,
@@ -508,6 +546,27 @@ function LostModal({ open, onClose, onSubmit }) {
   );
 }
 
+/* ─────────────────────────── Reassess Modal ─────────────────────────── */
+function ReassessModal({ open, onClose, onSubmit }) {
+  const [note, setNote] = React.useState('');
+  const handleSubmit = () => {
+    onSubmit(note);
+  };
+  return (
+    <Modal open={open} title="重新評估報價" onClose={onClose}
+      footer={<><button className="btn btn-default" onClick={onClose}>取消</button><button className="btn btn-primary" onClick={handleSubmit}>確認申請</button></>}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <p style={{ color: '#000000A6', fontSize: 14, margin: 0 }}>您確定需要重新回到「待評估報價」？這將觸發與印務的成本重新討論。</p>
+        <div className="form-item">
+          <label className="form-label">調整說明（選填）</label>
+          <textarea className="form-textarea" placeholder="例：客戶要求降價 10%；需調整紙張規格；或其他原因..." value={note} onChange={e => setNote(e.target.value)} style={{ minHeight: 80 }} />
+          <div style={{ fontSize: 12, color: '#00000073', marginTop: 4 }}>此說明將記錄在活動紀錄中，供印務主管參考。</div>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
 /* ─────────────────────────── Evaluate Modal ────────────────────────── */
 function EvaluateCheckModal({ open, onClose, onSubmit, items }) {
   const missing = items.filter(i => i.costEstimate == null || i.costEstimate === '');
@@ -531,9 +590,9 @@ function EvaluateCheckModal({ open, onClose, onSubmit, items }) {
 }
 
 /* ─────────────────────────── Item Spec Tab (印件規格+成本評估合併) ─────────────────────────── */
-function ItemSpecTab({ items, setItems, status, quoteNo, role }) {
-  const isLocked = status === '成交' || status === '流失';
-  const canEditCost = role === 'manager' && (status === '待評估報價' || status === '議價中');
+function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
+  const isLocked = status === '成交' || status === '流失' || isViewOnly;
+  const canEditCost = role === 'manager' && (status === '待評估報價' || status === '議價中') && !isViewOnly;
 
   const addItem = () => {
     const nextId = Math.max(...items.map(i => i.id), 0) + 1;
@@ -811,6 +870,120 @@ function PriceLogTab({ priceLogs }) {
   );
 }
 
+/* ─────────────────────────── Permission Tab ──────────────────────────── */
+function PermissionTab({ qr, onUpdatePermissions, isOwner }) {
+  const [searchVal, setSearchVal] = React.useState('');
+  const [showDropdown, setShowDropdown] = React.useState(false);
+
+  const currentPermissions = qr.viewPermissions || [];
+  const grantedStaffIds = currentPermissions.map(p => p.staffId);
+  const availableStaff = SALES_STAFF.filter(s => !grantedStaffIds.includes(s.id));
+  const filtered = availableStaff.filter(s => s.name.includes(searchVal) || s.role.includes(searchVal));
+
+  const handleGrantPermission = (staff) => {
+    const now = new Date().toLocaleString('zh-TW');
+    const updated = {
+      staffId: staff.id,
+      staffName: staff.name,
+      grantedBy: '林雅婷', // 模擬當前用戶
+      grantedAt: now,
+    };
+    const newPermissions = [...currentPermissions, updated];
+    onUpdatePermissions(qr.id, { viewPermissions: newPermissions });
+    setSearchVal('');
+    setShowDropdown(false);
+  };
+
+  const handleRevokePermission = (staffId) => {
+    const newPermissions = currentPermissions.filter(p => p.staffId !== staffId);
+    onUpdatePermissions(qr.id, { viewPermissions: newPermissions });
+  };
+
+  return (
+    <div>
+      <div style={{ marginBottom: 16 }}>
+        <span style={{ fontSize: 13, color: '#00000073', display: 'block', marginBottom: 12 }}>檢視權限管理</span>
+        <div style={{ fontSize: 12, color: '#00000073', marginBottom: 16 }}>原則上僅建立者可查閱此需求單，您可以分享檢視權限給其他業務/諮詢。</div>
+      </div>
+
+      {/* 當前權限列表 */}
+      {currentPermissions.length > 0 && (
+        <div>
+          <div style={{ fontSize: 12, color: '#00000073', marginBottom: 8, fontWeight: 500 }}>已授予檢視權限（{currentPermissions.length}）</div>
+          <div className="permission-list">
+            {currentPermissions.map(perm => (
+              <div key={perm.staffId} className="permission-item">
+                <div className="permission-item-info">
+                  <div>
+                    <div className="permission-item-name">{perm.staffName}</div>
+                    <div className="permission-item-meta">
+                      授予者：{perm.grantedBy}
+                      <span className="permission-item-time">{perm.grantedAt}</span>
+                    </div>
+                  </div>
+                </div>
+                {isOwner && (
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleRevokePermission(perm.staffId)}
+                    style={{ padding: '4px 12px', fontSize: 12 }}>
+                    移除
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 新增權限表單 - 僅擁有者可用 */}
+      {isOwner && (
+      <div className="permission-form">
+        <div style={{ fontSize: 12, color: '#00000073', marginBottom: 8, fontWeight: 500 }}>新增檢視權限</div>
+        <div style={{ position: 'relative' }}>
+          <div className="permission-search">
+            <input
+              type="text"
+              placeholder="搜尋業務/諮詢名稱..."
+              value={searchVal}
+              onChange={e => { setSearchVal(e.target.value); setShowDropdown(true); }}
+              onFocus={() => setShowDropdown(true)}
+              style={{ flex: 1 }}
+            />
+          </div>
+          {showDropdown && filtered.length > 0 && (
+            <div className="permission-dropdown" style={{ width: '100%', marginTop: 4 }}>
+              {filtered.map(staff => (
+                <div
+                  key={staff.id}
+                  className="permission-dropdown-item"
+                  onClick={() => handleGrantPermission(staff)}
+                >
+                  <div style={{ fontWeight: 500 }}>{staff.name}</div>
+                  <div style={{ fontSize: 12, color: '#00000073' }}>{staff.role}</div>
+                </div>
+              ))}
+            </div>
+          )}
+          {showDropdown && filtered.length === 0 && availableStaff.length === 0 && (
+            <div style={{ fontSize: 12, color: '#00000073', padding: 12 }}>所有人員已授予檢視權限</div>
+          )}
+          {showDropdown && filtered.length === 0 && availableStaff.length > 0 && searchVal && (
+            <div style={{ fontSize: 12, color: '#00000073', padding: 12 }}>查無符合的人員</div>
+          )}
+        </div>
+      </div>
+      )}
+
+      {currentPermissions.length === 0 && (
+        <div style={{ fontSize: 13, color: '#00000073', padding: 24, background: '#FAFAFA', borderRadius: 6, textAlign: 'center' }}>
+          尚未分享檢視權限給任何人
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─────────────────────────── Activity Tab ──────────────────────────── */
 function ActivityTab({ activityLog }) {
   return (
@@ -864,8 +1037,8 @@ function StatusProgressBar({ qr }) {
 }
 
 /* ─────────────────────────── Basic Info Tab ────────────────────────── */
-function BasicInfoTab({ qr, status, onUpdate }) {
-  const isLocked = status === '成交' || status === '流失';
+function BasicInfoTab({ qr, status, onUpdate, isViewOnly }) {
+  const isLocked = status === '成交' || status === '流失' || isViewOnly;
   const [isEditing, setIsEditing] = React.useState(false);
   const [editData, setEditData] = React.useState(qr);
 
@@ -1022,11 +1195,10 @@ function StateButtons({ qr, role, onTransition }) {
     btns.push(<button key="neg" className="btn btn-default" onClick={() => onTransition('進入議價')}>客戶回應，進入議價</button>);
   if (status === '議價中') {
     if (role === 'sales') {
+      btns.push(<button key="reassess" className="btn btn-default" onClick={() => onTransition('重新評估報價')}>重新評估報價</button>);
       btns.push(<button key="win"  className="btn btn-primary" onClick={() => onTransition('成交')}>成交</button>);
       btns.push(<button key="lose" className="btn btn-danger"  onClick={() => onTransition('流失')}>流失</button>);
     }
-    if (role === 'manager')
-      btns.push(<button key="reeval" className="btn btn-warning" onClick={() => onTransition('退回重評估')}>退回重評估</button>);
   }
   if (btns.length === 0)
     return <span style={{ fontSize: 13, color: '#00000040' }}>目前角色（{role === 'sales' ? '業務' : '印務主管'}）在此狀態無可用操作。</span>;
@@ -1035,21 +1207,26 @@ function StateButtons({ qr, role, onTransition }) {
 
 /* ─────────────────────────── Detail Page ───────────────────────────── */
 function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
-  const [activeTab,    setActiveTab]    = React.useState('basic');
-  const [items,        setItems]        = React.useState(() => data.find(q => q.id === qrId).items);
-  const [lostOpen,     setLostOpen]     = React.useState(false);
-  const [evalOpen,     setEvalOpen]     = React.useState(false);
+  const [activeTab,     setActiveTab]     = React.useState('basic');
+  const [items,         setItems]         = React.useState(() => data.find(q => q.id === qrId).items);
+  const [lostOpen,      setLostOpen]      = React.useState(false);
+  const [evalOpen,      setEvalOpen]      = React.useState(false);
+  const [reassessOpen,  setReassessOpen]  = React.useState(false);
 
   const freshQR = data.find(q => q.id === qrId);
+  const isOwner = freshQR.createdBy === '林雅婷'; // 模擬當前用戶
+  const hasViewPermission = isOwner || (freshQR.viewPermissions && freshQR.viewPermissions.some(p => p.staffName === '林雅婷'));
+  const isViewOnly = !isOwner && hasViewPermission;
   const syncItems = newItems => { setItems(newItems); updateQR(qrId, { items: newItems }); };
 
   const handleTransition = action => {
-    if (action === '流失')       { setLostOpen(true); return; }
-    if (action === '評估完成')   { setEvalOpen(true); return; }
+    if (action === '流失')           { setLostOpen(true); return; }
+    if (action === '評估完成')       { setEvalOpen(true); return; }
+    if (action === '重新評估報價')   { setReassessOpen(true); return; }
 
     const now    = new Date().toLocaleString('zh-TW').replace(/\//g, '-');
     const actor  = role === 'sales' ? '林雅婷' : '陳建宏';
-    const states = { '送印務評估': '待評估報價', '對外提供報價': '已提供報價', '進入議價': '議價中', '成交': '成交', '退回重評估': '待評估報價' };
+    const states = { '送印務評估': '待評估報價', '對外提供報價': '已提供報價', '進入議價': '議價中', '成交': '成交', '退回重評估': '待評估報價', '重新評估報價': '待評估報價' };
     const newStatus = states[action];
 
     if (action === '建立訂單') {
@@ -1063,6 +1240,7 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
     let eventText = `狀態變更：${freshQR.status} → ${newStatus}`;
     if (action === '送印務評估')  eventText += '，Slack 通知已發送';
     if (action === '退回重評估') eventText += '（退回印務重評，需調整方案）';
+    if (action === '重新評估報價') eventText += '（業務申請重新評估成本）';
     const log = { id: freshQR.activityLog.length + 1, time: now, actor, event: eventText };
     updateQR(qrId, { status: newStatus, activityLog: [...freshQR.activityLog, log], updatedAt: now });
     toast(action + ' 操作成功');
@@ -1087,11 +1265,24 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
     toast(`評估完成，已建立報價紀錄（第 ${nextRound} 輪）`);
   };
 
+  const handleReassess = (note) => {
+    const now   = new Date().toLocaleString('zh-TW').replace(/\//g, '-');
+    let eventText = `狀態變更：${freshQR.status} → 待評估報價（業務申請重新評估成本）`;
+    if (note && note.trim()) {
+      eventText += `；調整說明：${note}`;
+    }
+    const log   = { id: freshQR.activityLog.length + 1, time: now, actor: '林雅婷', event: eventText };
+    updateQR(qrId, { status: '待評估報價', activityLog: [...freshQR.activityLog, log], updatedAt: now });
+    setReassessOpen(false);
+    toast('已回退待評估報價，請與印務主管討論成本方案');
+  };
+
   const tabs = [
-    { key: 'basic',    label: '基本資料' },
-    { key: 'spec',     label: `印件規格與成本（${items.length}）` },
-    { key: 'pricelog', label: `報價紀錄（${freshQR.priceLogs.length}）` },
-    { key: 'activity', label: `活動紀錄（${freshQR.activityLog.length}）` },
+    { key: 'basic',      label: '基本資料' },
+    { key: 'spec',       label: `印件規格與成本（${items.length}）` },
+    { key: 'permission', label: `權限管理（${freshQR.viewPermissions?.length || 0}）` },
+    { key: 'pricelog',   label: `報價紀錄（${freshQR.priceLogs.length}）` },
+    { key: 'activity',   label: `活動紀錄（${freshQR.activityLog.length}）` },
   ];
 
   return (
@@ -1101,6 +1292,14 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
         <span className="breadcrumb-sep">›</span>
         <span>{freshQR.quoteNo}</span>
       </div>
+
+      {isViewOnly && (
+        <div style={{ background: '#FFFBE6', border: '1px solid #FFE58F', borderRadius: 6, padding: '12px 16px', marginBottom: 16, fontSize: 14, color: '#D46B08', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontWeight: 500 }}>你有檢視權限</span>
+          <span style={{ color: '#FA8C16', fontSize: 12 }}>此需求單由 {freshQR.createdBy} 建立。你可以檢視所有資訊，但無法進行編輯。</span>
+        </div>
+      )}
+
       {/* Card 1: Project Info & Status */}
       <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #F0F0F0', boxShadow: '0 1px 2px rgba(0,0,0,0.06)', marginBottom: 16, overflow: 'hidden' }}>
         {/* Title & Action Buttons Row */}
@@ -1143,8 +1342,9 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
         </div>
 
         <div style={{ padding: '20px 24px' }}>
-          {activeTab === 'basic'    && <BasicInfoTab qr={freshQR} status={freshQR.status} onUpdate={updateQR} />}
-          {activeTab === 'spec'     && <ItemSpecTab items={items} setItems={syncItems} status={freshQR.status} quoteNo={freshQR.quoteNo} role={role} />}
+          {activeTab === 'basic'    && <BasicInfoTab qr={freshQR} status={freshQR.status} onUpdate={updateQR} isViewOnly={isViewOnly} />}
+          {activeTab === 'spec'     && <ItemSpecTab items={items} setItems={syncItems} status={freshQR.status} quoteNo={freshQR.quoteNo} role={role} isViewOnly={isViewOnly} />}
+          {activeTab === 'permission' && <PermissionTab qr={freshQR} onUpdatePermissions={updateQR} isOwner={isOwner} />}
           {activeTab === 'pricelog' && <PriceLogTab priceLogs={freshQR.priceLogs} />}
           {activeTab === 'activity' && <ActivityTab activityLog={freshQR.activityLog} />}
         </div>
@@ -1152,6 +1352,7 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
 
       <LostModal open={lostOpen} onClose={() => setLostOpen(false)} onSubmit={handleLost} />
       <EvaluateCheckModal open={evalOpen} onClose={() => setEvalOpen(false)} onSubmit={handleEvaluate} items={items} />
+      <ReassessModal open={reassessOpen} onClose={() => setReassessOpen(false)} onSubmit={handleReassess} />
     </div>
   );
 }
@@ -1271,7 +1472,7 @@ function ListPage({ data, onSelect, role, onCreateQR }) {
           <thead>
             <tr>
               <th>需求單號</th><th>需求案名</th><th>客戶名稱</th>
-              <th>接單業務</th><th>狀態</th><th>報價輪次</th>
+              <th>接單業務</th><th>狀態</th><th>權限</th><th>報價輪次</th>
               <th>報價截止日</th><th>最後更新</th>
               <th style={{ width: 60 }}>操作</th>
             </tr>
@@ -1284,6 +1485,11 @@ function ListPage({ data, onSelect, role, onCreateQR }) {
                 <td>{qr.customer}</td>
                 <td>{qr.sales}</td>
                 <td><StatusTag status={qr.status} /></td>
+                <td>
+                  {qr.viewPermissions && qr.viewPermissions.length > 0
+                    ? <span className="permission-badge permission-badge-shared">已分享 ({qr.viewPermissions.length})</span>
+                    : <span className="permission-badge permission-badge-owner">僅我</span>}
+                </td>
                 <td style={{ textAlign: 'center' }}>
                   {qr.priceLogs.length > 0
                     ? <span style={{ fontSize: 12, fontFamily: 'monospace' }}>{qr.priceLogs.length} 輪</span>
@@ -1296,7 +1502,7 @@ function ListPage({ data, onSelect, role, onCreateQR }) {
                 </td>
               </tr>
             ))}
-            {filtered.length === 0 && <tr><td colSpan="9" className="empty">查無符合條件的需求單</td></tr>}
+            {filtered.length === 0 && <tr><td colSpan="10" className="empty">查無符合條件的需求單</td></tr>}
           </tbody>
         </table>
         <div className="pagination">
@@ -1328,9 +1534,9 @@ function App() {
     const now     = new Date().toLocaleString('zh-TW').replace(/\//g,'-');
     const newQR   = {
       id: 'QR' + Date.now(), quoteNo: no, title: form.title, customer: form.customer,
-      sales: '林雅婷', status: '需求確認中', deadline: form.deadline, updatedAt: now,
+      sales: '林雅婷', createdBy: '林雅婷', status: '需求確認中', deadline: form.deadline, updatedAt: now, createdAt: now,
       source: form.source, invoiceType: form.invoiceType, slackUrl: '', lostReason: '', lostNote: '',
-      items: [], priceLogs: [],
+      items: [], priceLogs: [], viewPermissions: [],
       activityLog: [{ id: 1, time: now, actor: '林雅婷', event: '建立需求單，Slack 通知已發送' }],
     };
     setData(d => [newQR, ...d]);
