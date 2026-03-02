@@ -250,13 +250,20 @@ const SALES_STAFF = [
   { id: 'sales_005', name: '李侑霖', role: '諮詢' },
 ];
 
+/* 印務主管清單 */
+const PRINT_MANAGERS = [
+  { id: 'mgr_001', name: '陳建宏', role: '印務主管' },
+  { id: 'mgr_002', name: '王琪雯', role: '印務主管' },
+  { id: 'mgr_003', name: '李明達', role: '印務主管' },
+];
+
 /* ─────────────────────────── Sample Data ───────────────────────────── */
 const initialData = [
   {
     id: 'QR001', quoteNo: 'Q-20260223-01',
     title: '誠品書店週年慶 DM',
     customer: '誠品生活股份有限公司', sales: '林雅婷',
-    createdBy: '林雅婷',
+    createdBy: '林雅婷', estimatedByManager: '陳建宏',
     status: '議價中',
     deadline: '2026-02-28', updatedAt: '2026-02-23 17:20', createdAt: '2026-02-23 09:00',
     source: '業務開發', invoiceType: '三聯式發票',
@@ -337,7 +344,7 @@ const initialData = [
     id: 'QR002', quoteNo: 'Q-20260223-02',
     title: '台灣大哥大 Q2 型錄',
     customer: '台灣大哥大股份有限公司', sales: '張世豪',
-    createdBy: '張世豪',
+    createdBy: '張世豪', estimatedByManager: '王琪雯',
     status: '待評估報價',
     deadline: '2026-03-05', updatedAt: '2026-02-23 11:20', createdAt: '2026-02-23 11:20',
     source: '老客戶續單', invoiceType: '三聯式發票',
@@ -361,7 +368,7 @@ const initialData = [
     id: 'QR003', quoteNo: 'Q-20260222-01',
     title: '陳氏咖啡烘焙坊包裝袋',
     customer: '陳氏咖啡烘焙坊', sales: '林雅婷',
-    createdBy: '林雅婷',
+    createdBy: '林雅婷', estimatedByManager: '陳建宏',
     status: '成交',
     deadline: '2026-02-20', updatedAt: '2026-02-22 16:45', createdAt: '2026-02-22 09:00',
     source: '朋友介紹', invoiceType: '二聯式收據',
@@ -592,7 +599,10 @@ function EvaluateCheckModal({ open, onClose, onSubmit, items }) {
 /* ─────────────────────────── Item Spec Tab (印件規格+成本評估合併) ─────────────────────────── */
 function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
   const isLocked = status === '成交' || status === '流失' || isViewOnly;
-  const canEditCost = role === 'manager' && (status === '待評估報價' || status === '議價中') && !isViewOnly;
+  // 印務主管角色：除成本單價外，所有欄位唯讀；僅在「待評估報價」或「議價中」時可編輯成本
+  const isManagerMode = role === 'manager';
+  const canEditCost = isManagerMode && (status === '待評估報價' || status === '議價中') && !isViewOnly;
+  const managerFieldsReadOnly = isManagerMode; // 印務主管角色下，除成本外所有欄位唯讀
 
   const addItem = () => {
     const nextId = Math.max(...items.map(i => i.id), 0) + 1;
@@ -617,9 +627,16 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
 
   return (
     <div>
+      {/* 印務主管視角提示 */}
+      {isManagerMode && (
+        <div style={{ background: '#F0F7FF', border: '1px solid #B3E5FC', borderRadius: 6, padding: '12px 16px', marginBottom: 16, fontSize: 13, color: '#0288D1' }}>
+          作為印務主管，你可以編輯「成本單價」欄位進行成本評估。其他欄位為唯讀，如需修改請聯絡接單業務。
+        </div>
+      )}
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <span style={{ fontWeight: 500 }}>印件規格與成本評估</span>
-        {!isLocked && role === 'sales' && <button className="btn btn-default btn-sm" onClick={addItem}>新增印件項目</button>}
+        {!isLocked && !isManagerMode && role === 'sales' && <button className="btn btn-default btn-sm" onClick={addItem}>新增印件項目</button>}
       </div>
 
       {/* Item Cards */}
@@ -642,7 +659,7 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
                 {/* 項目名稱 */}
                 <div style={{ marginBottom: 12 }}>
                   <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>項目名稱</div>
-                  {isLocked ? (
+                  {isLocked || managerFieldsReadOnly ? (
                     <span style={{ fontSize: 14, fontWeight: 500 }}>{item.name || '—'}</span>
                   ) : (
                     <input value={item.name || ''} onChange={e => updateItem(item.id, 'name', e.target.value)} placeholder="項目名稱" style={{ width: '100%', fontWeight: 500, border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 14, fontFamily: 'inherit' }} />
@@ -652,7 +669,7 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
                 {/* 規格備註 */}
                 <div>
                   <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>規格備註</div>
-                  {isLocked ? (
+                  {isLocked || managerFieldsReadOnly ? (
                     <span style={{ fontSize: 13, whiteSpace: 'pre-wrap', display: 'block', padding: '8px 12px', background: '#FAFAFA', borderRadius: 4 }}>{item.spec || '—'}</span>
                   ) : (
                     <textarea value={item.spec || ''} onChange={e => updateItem(item.id, 'spec', e.target.value)} placeholder="例：A4 全彩正反面 105g 銅版紙、無光膜" style={{ width: '100%', minHeight: 60, fontSize: 12, border: '1px solid #D9D9D9', borderRadius: 4, padding: '8px 12px', fontFamily: 'inherit', resize: 'vertical' }} />
@@ -668,7 +685,7 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 1.2fr 1.2fr 1fr', gap: 12 }}>
                   <div>
                     <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>數量</div>
-                    {isLocked ? (
+                    {isLocked || managerFieldsReadOnly ? (
                       <span style={{ fontSize: 14, fontWeight: 500 }}>{item.qty?.toLocaleString() || '—'}</span>
                     ) : (
                       <input type="number" value={item.qty ?? ''} onChange={e => updateItem(item.id, 'qty', e.target.value ? Number(e.target.value) : null)} placeholder="0" style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
@@ -676,7 +693,7 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
                   </div>
                   <div>
                     <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>報價單價</div>
-                    {isLocked ? (
+                    {isLocked || managerFieldsReadOnly ? (
                       <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 500 }}>{item.unitPrice != null ? `$ ${fmtMoney(item.unitPrice)}` : '—'}</span>
                     ) : (
                       <input type="number" step="0.01" value={item.unitPrice ?? ''} onChange={e => handleUnitPriceChange(item.id, e.target.value)} placeholder="0.00" style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
@@ -685,17 +702,38 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
                   <div>
                     <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>成本單價</div>
                     {canEditCost ? (
-                      <input type="number" step="0.01" value={item.costEstimate ?? ''} onChange={e => updateItem(item.id, 'costEstimate', e.target.value ? Number(e.target.value) : null)} placeholder="0.00" style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={item.costEstimate ?? ''}
+                        onChange={e => {
+                          const val = e.target.value;
+                          // 僅允許數字和一個小數點，最多兩位小數
+                          const regex = /^\d*\.?\d{0,2}$/;
+                          if (val === '' || regex.test(val)) {
+                            updateItem(item.id, 'costEstimate', val ? Number(val) : null);
+                          }
+                        }}
+                        placeholder="0.00"
+                        style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'monospace' }}
+                      />
                     ) : (
                       <span style={{ fontFamily: 'monospace', fontSize: 14 }}>{item.costEstimate != null ? `$ ${fmtMoney(item.costEstimate)}` : '—'}</span>
                     )}
                   </div>
                   <div>
                     <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>費用（未稅）</div>
-                    {isLocked ? (
+                    {isLocked || managerFieldsReadOnly ? (
                       <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 500, color: '#000000E0' }}>{subtotal != null ? `$ ${fmtMoneyInt(subtotal)}` : '—'}</span>
                     ) : (
-                      <input type="number" value={item.amount ?? ''} onChange={e => updateItem(item.id, 'amount', e.target.value ? Number(e.target.value) : null)} placeholder="自動計算" style={{ width: '100%', textAlign: 'right', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+                      item.amount != null ? (
+                        <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 500, color: '#000000E0' }}>$ {fmtMoneyInt(item.amount)}</span>
+                      ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 500, color: '#00000073' }}>{subtotal != null ? `$ ${fmtMoneyInt(subtotal)}` : '—'}</span>
+                          <span style={{ fontSize: 11, color: '#52C41A', background: '#F6FFED', padding: '2px 6px', borderRadius: 2, fontWeight: 500 }}>自動</span>
+                        </div>
+                      )
                     )}
                   </div>
                   <div>
@@ -721,7 +759,7 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
                   <div>
                     <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>出貨方式</div>
-                    {isLocked ? (
+                    {isLocked || managerFieldsReadOnly ? (
                       <span style={{ fontSize: 14 }}>{item.delivery_method || '—'}</span>
                     ) : (
                       <input type="text" value={item.delivery_method || ''} onChange={e => updateItem(item.id, 'delivery_method', e.target.value)} placeholder="例：整疊、折好、TBD 等" style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
@@ -729,7 +767,7 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
                   </div>
                   <div>
                     <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>預計交貨日期</div>
-                    {isLocked ? (
+                    {isLocked || managerFieldsReadOnly ? (
                       <span style={{ fontSize: 14 }}>{item.estimated_delivery_date || '—'}</span>
                     ) : (
                       <input type="date" value={item.estimated_delivery_date || ''} onChange={e => updateItem(item.id, 'estimated_delivery_date', e.target.value)} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
@@ -740,7 +778,7 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
                 {/* 包裝說明 */}
                 <div>
                   <div style={{ fontSize: 12, color: '#00000073', marginBottom: 4 }}>包裝說明</div>
-                  {isLocked ? (
+                  {isLocked || managerFieldsReadOnly ? (
                     <span style={{ fontSize: 13, display: 'block', padding: '8px 12px', background: '#FAFAFA', borderRadius: 4, minHeight: 48, lineHeight: 1.5 }}>{item.packaging_note || '—'}</span>
                   ) : (
                     <textarea value={item.packaging_note || ''} onChange={e => updateItem(item.id, 'packaging_note', e.target.value)} placeholder="例：每 500 張一捆、外層打膜、貼標籤等" style={{ width: '100%', minHeight: 48, fontSize: 12, border: '1px solid #D9D9D9', borderRadius: 4, padding: '8px 12px', fontFamily: 'inherit', resize: 'vertical' }} />
@@ -772,11 +810,16 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
 
       {/* Summary */}
       {items.length > 0 && (
-        <div className="items-summary">
-          <div className="summary-item"><span className="summary-label">小計（未稅）</span><span className="summary-value">$ {fmtMoneyInt(summary.subtotal)}</span></div>
-          <div className="summary-item"><span className="summary-label">稅額（5%）</span><span className="summary-value">$ {fmtMoneyInt(summary.tax)}</span></div>
-          <div className="summary-item"><span className="summary-label">含稅總金額</span><span className="summary-value" style={{ color: '#1677FF' }}>$ {fmtMoneyInt(summary.total)}</span></div>
-        </div>
+        <>
+          <div className="items-summary">
+            <div className="summary-item"><span className="summary-label">小計（未稅）</span><span className="summary-value">$ {fmtMoneyInt(summary.subtotal)}</span></div>
+            <div className="summary-item"><span className="summary-label">稅額（5%）</span><span className="summary-value">$ {fmtMoneyInt(summary.tax)}</span></div>
+          </div>
+          <div style={{ background: '#E6F7FF', border: '2px solid #1677FF', borderRadius: '0 0 6px 6px', padding: '16px 20px', textAlign: 'right' }}>
+            <div style={{ fontSize: 12, color: '#1677FF', marginBottom: 8, fontWeight: 500 }}>含稅總金額</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: '#1677FF' }}>$ {fmtMoneyInt(summary.total)}</div>
+          </div>
+        </>
       )}
 
       {/* All attachments section */}
@@ -901,15 +944,55 @@ function PermissionTab({ qr, onUpdatePermissions, isOwner }) {
 
   return (
     <div>
-      <div style={{ marginBottom: 16 }}>
-        <span style={{ fontSize: 13, color: '#00000073', display: 'block', marginBottom: 12 }}>檢視權限管理</span>
-        <div style={{ fontSize: 12, color: '#00000073', marginBottom: 16 }}>原則上僅建立者可查閱此需求單，您可以分享檢視權限給其他業務/諮詢。</div>
+      {/* 頁面說明 */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: '#000000D9', marginBottom: 8 }}>檢視權限管理</div>
+        <div style={{ fontSize: 13, color: '#00000073', lineHeight: 1.6 }}>原則上僅建立者可查閱此需求單，您可以分享檢視權限給其他業務/諮詢。</div>
       </div>
+
+      {/* 新增權限表單 - 僅擁有者可用 */}
+      {isOwner && (
+        <div className="permission-form" style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#000000D9', marginBottom: 12 }}>分享檢視權限</div>
+          <div style={{ position: 'relative' }}>
+            <div className="permission-search">
+              <input
+                type="text"
+                placeholder="搜尋業務/諮詢名稱..."
+                value={searchVal}
+                onChange={e => { setSearchVal(e.target.value); setShowDropdown(true); }}
+                onFocus={() => setShowDropdown(true)}
+                style={{ flex: 1 }}
+              />
+            </div>
+            {showDropdown && filtered.length > 0 && (
+              <div className="permission-dropdown" style={{ width: '100%', marginTop: 4 }}>
+                {filtered.map(staff => (
+                  <div
+                    key={staff.id}
+                    className="permission-dropdown-item"
+                    onClick={() => handleGrantPermission(staff)}
+                  >
+                    <div style={{ fontWeight: 500 }}>{staff.name}</div>
+                    <div style={{ fontSize: 12, color: '#00000073' }}>{staff.role}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {showDropdown && filtered.length === 0 && availableStaff.length === 0 && (
+              <div style={{ fontSize: 12, color: '#00000073', padding: 12 }}>所有人員已授予檢視權限</div>
+            )}
+            {showDropdown && filtered.length === 0 && availableStaff.length > 0 && searchVal && (
+              <div style={{ fontSize: 12, color: '#00000073', padding: 12 }}>查無符合的人員</div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 當前權限列表 */}
       {currentPermissions.length > 0 && (
         <div>
-          <div style={{ fontSize: 12, color: '#00000073', marginBottom: 8, fontWeight: 500 }}>已授予檢視權限（{currentPermissions.length}）</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#000000D9', marginBottom: 12 }}>已授予權限（{currentPermissions.length}）</div>
           <div className="permission-list">
             {currentPermissions.map(perm => (
               <div key={perm.staffId} className="permission-item">
@@ -917,7 +1000,7 @@ function PermissionTab({ qr, onUpdatePermissions, isOwner }) {
                   <div>
                     <div className="permission-item-name">{perm.staffName}</div>
                     <div className="permission-item-meta">
-                      授予者：{perm.grantedBy}
+                      <span>授予者：{perm.grantedBy}</span>
                       <span className="permission-item-time">{perm.grantedAt}</span>
                     </div>
                   </div>
@@ -936,46 +1019,13 @@ function PermissionTab({ qr, onUpdatePermissions, isOwner }) {
         </div>
       )}
 
-      {/* 新增權限表單 - 僅擁有者可用 */}
-      {isOwner && (
-      <div className="permission-form">
-        <div style={{ fontSize: 12, color: '#00000073', marginBottom: 8, fontWeight: 500 }}>新增檢視權限</div>
-        <div style={{ position: 'relative' }}>
-          <div className="permission-search">
-            <input
-              type="text"
-              placeholder="搜尋業務/諮詢名稱..."
-              value={searchVal}
-              onChange={e => { setSearchVal(e.target.value); setShowDropdown(true); }}
-              onFocus={() => setShowDropdown(true)}
-              style={{ flex: 1 }}
-            />
-          </div>
-          {showDropdown && filtered.length > 0 && (
-            <div className="permission-dropdown" style={{ width: '100%', marginTop: 4 }}>
-              {filtered.map(staff => (
-                <div
-                  key={staff.id}
-                  className="permission-dropdown-item"
-                  onClick={() => handleGrantPermission(staff)}
-                >
-                  <div style={{ fontWeight: 500 }}>{staff.name}</div>
-                  <div style={{ fontSize: 12, color: '#00000073' }}>{staff.role}</div>
-                </div>
-              ))}
-            </div>
-          )}
-          {showDropdown && filtered.length === 0 && availableStaff.length === 0 && (
-            <div style={{ fontSize: 12, color: '#00000073', padding: 12 }}>所有人員已授予檢視權限</div>
-          )}
-          {showDropdown && filtered.length === 0 && availableStaff.length > 0 && searchVal && (
-            <div style={{ fontSize: 12, color: '#00000073', padding: 12 }}>查無符合的人員</div>
-          )}
+      {currentPermissions.length === 0 && !isOwner && (
+        <div style={{ fontSize: 13, color: '#00000073', padding: 24, background: '#FAFAFA', borderRadius: 6, textAlign: 'center' }}>
+          此需求單尚未分享檢視權限
         </div>
-      </div>
       )}
 
-      {currentPermissions.length === 0 && (
+      {currentPermissions.length === 0 && isOwner && (
         <div style={{ fontSize: 13, color: '#00000073', padding: 24, background: '#FAFAFA', borderRadius: 6, textAlign: 'center' }}>
           尚未分享檢視權限給任何人
         </div>
@@ -1042,7 +1092,7 @@ function BasicInfoTab({ qr, status, onUpdate, isViewOnly }) {
   const [isEditing, setIsEditing] = React.useState(false);
   const [editData, setEditData] = React.useState(qr);
 
-  const requiredFields = ['title', 'customer', 'sales', 'source', 'invoiceType', 'deadline'];
+  const requiredFields = ['title', 'customer', 'sales', 'source', 'invoiceType', 'deadline', 'estimatedByManager'];
 
   const renderLabel = (label, fieldKey) => (
     <span>
@@ -1150,6 +1200,17 @@ function BasicInfoTab({ qr, status, onUpdate, isViewOnly }) {
             <input type="date" value={editData.deadline || ''} onChange={e => handleChange('deadline', e.target.value)} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
           ) : (
             <div className="desc-value">{qr.deadline || '—'}</div>
+          )}
+        </div>
+        <div>
+          <div className="desc-label">{renderLabel('評估印務主管', 'estimatedByManager')}</div>
+          {isEditing ? (
+            <select value={editData.estimatedByManager || ''} onChange={e => handleChange('estimatedByManager', e.target.value)} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }}>
+              <option value="">請選擇</option>
+              {PRINT_MANAGERS.map(mgr => <option key={mgr.id} value={mgr.name}>{mgr.name}</option>)}
+            </select>
+          ) : (
+            <div className="desc-value">{qr.estimatedByManager || '—'}</div>
           )}
         </div>
         <div>
@@ -1277,13 +1338,18 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
     toast('已回退待評估報價，請與印務主管討論成本方案');
   };
 
-  const tabs = [
-    { key: 'basic',      label: '基本資料' },
-    { key: 'spec',       label: `印件規格與成本（${items.length}）` },
-    { key: 'permission', label: `權限管理（${freshQR.viewPermissions?.length || 0}）` },
-    { key: 'pricelog',   label: `報價紀錄（${freshQR.priceLogs.length}）` },
-    { key: 'activity',   label: `活動紀錄（${freshQR.activityLog.length}）` },
-  ];
+  const tabs = role === 'manager'
+    ? [
+        { key: 'spec',       label: `印件規格與成本（${items.length}）` },
+        { key: 'activity',   label: `活動紀錄（${freshQR.activityLog.length}）` },
+      ]
+    : [
+        { key: 'basic',      label: '基本資料' },
+        { key: 'spec',       label: `印件規格與成本（${items.length}）` },
+        { key: 'pricelog',   label: `報價紀錄（${freshQR.priceLogs.length}）` },
+        { key: 'activity',   label: `活動紀錄（${freshQR.activityLog.length}）` },
+        { key: 'permission', label: `權限管理（${freshQR.viewPermissions?.length || 0}）` },
+      ];
 
   return (
     <div>
@@ -1364,6 +1430,7 @@ function ListPage({ data, onSelect, role, onCreateQR }) {
   const [customerFilter, setCustomerFilter] = React.useState('');
   const [statusFilter,  setStatusFilter]  = React.useState('');
   const [dateRangeFilter, setDateRangeFilter] = React.useState({ start: '', end: '' });
+  const [currentManager, setCurrentManager] = React.useState('陳建宏'); // 模擬當前登入的印務主管
   const salesList = [...new Set(data.map(q => q.sales))];
 
   const filtered = data.filter(q => {
@@ -1373,6 +1440,14 @@ function ListPage({ data, onSelect, role, onCreateQR }) {
     const matchStatus = !statusFilter || q.status === statusFilter;
     const matchDateStart = !dateRangeFilter.start || new Date(q.createdAt) >= new Date(dateRangeFilter.start);
     const matchDateEnd = !dateRangeFilter.end || new Date(q.createdAt) <= new Date(dateRangeFilter.end);
+
+    // 印務主管視角：限制為分配給自己且「待評估報價」的需求單
+    if (role === 'manager') {
+      const matchManager = q.estimatedByManager === currentManager;
+      const matchPendingStatus = q.status === '待評估報價';
+      return matchManager && matchPendingStatus;
+    }
+
     return matchQuoteNo && matchTitle && matchCustomer && matchStatus && matchDateStart && matchDateEnd;
   });
 
@@ -1451,6 +1526,16 @@ function ListPage({ data, onSelect, role, onCreateQR }) {
             />
           </div>
         </div>
+
+        {role === 'manager' && (
+          <div style={{ marginBottom: 12, padding: 12, background: '#F9FAFB', borderRadius: 6, border: '1px solid #E5E7EB' }}>
+            <span className="filter-label" style={{ fontWeight: 500, color: '#FF4D4F' }}>模擬登入印務主管</span>
+            <select className="form-select" style={{ width: '100%', marginTop: 8, padding: '6px 8px' }} value={currentManager} onChange={e => setCurrentManager(e.target.value)}>
+              {PRINT_MANAGERS.map(mgr => <option key={mgr.id} value={mgr.name}>{mgr.name}</option>)}
+            </select>
+            <div style={{ fontSize: 12, color: '#00000073', marginTop: 6 }}>切換此選項以查看分配給不同印務主管的待評估需求單</div>
+          </div>
+        )}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button className="btn btn-default" onClick={handleClearFilters}>清除篩選</button>
