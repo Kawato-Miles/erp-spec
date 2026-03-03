@@ -58,7 +58,7 @@ ProductionTask（生產任務）
 - `ProductionTask.completed_quantity`（報工累計）
 
 **計算**：
-- 無聚合，直接使用
+- 無統計，直接使用
 
 **輸出**：
 ```
@@ -67,7 +67,7 @@ pt_completed = ProductionTask.completed_quantity
 
 ---
 
-### 2.2 層級 2：任務層聚合（Task）
+### 2.2 層級 2：任務層統計（Task）
 
 **輸入**：
 - 該任務下所有 ProductionTask 的 completed_quantity
@@ -107,14 +107,14 @@ task_completion = min(1000, 2000) = 1000
 
 ---
 
-### 2.3 層級 3：工單層聚合（WorkOrder）
+### 2.3 層級 3：工單層統計（WorkOrder）
 
 **輸入**：
 - 該工單下所有 Task 的 completion（來自層級 2）
 
 **計算**：
 ```
-1. 聚合該工單內所有任務的完成倍數：
+1. 統計該工單內所有任務的完成倍數：
    for each task in workorder.tasks:
      task_completions = [task_completion, task_completion, ...]
 
@@ -137,7 +137,7 @@ wo_completion = min(1000, 500) = 500
 
 ---
 
-### 2.4 層級 4：印件層聚合（PrintItem）
+### 2.4 層級 4：印件層統計（PrintItem）
 
 **輸入**：
 - 該印件下所有 WorkOrder 的 completion（來自層級 3）
@@ -157,7 +157,7 @@ wo_completion = min(1000, 500) = 500
 3. 判定成品完成：
    if pi_completion >= print_item.target_quantity:
      print_item.status = '製作完成'
-     trigger bubble-up to Order
+     trigger 狀態向上傳遞 to Order
 ```
 
 **輸出**：
@@ -222,7 +222,7 @@ pi_completion = min(2, 1) = 1
 
 **計算**：
 ```
-層級 1：無聚合
+層級 1：無統計
 層級 2：
   PT-A 完成倍數 = floor(4000 ÷ 2) = 2000
   PT-B 完成倍數 = floor(2000 ÷ 1) = 2000
@@ -400,8 +400,8 @@ WO-001 完成 500，倍數 1000
 | TC 編號 | 情境 | 參考章節 |
 |---------|------|---------|
 | TC-Q-001 | 單一工單完成度計算 | §2.1-2.4、§3.1 |
-| TC-Q-002 | 複合任務（多生產任務）的 min 聚合 | §2.2、§3.2 |
-| TC-Q-003 | 多工單印件的聚合邏輯 | §2.3-2.4、§3.3 |
+| TC-Q-002 | 複合任務（多生產任務）的 min 統計 | §2.2、§3.2 |
+| TC-Q-003 | 多工單印件的統計邏輯 | §2.3-2.4、§3.3 |
 | TC-Q-004 | affects_product 篩選機制 | §2.2、§4.1 |
 | TC-Q-005 | 異動流程中的倍數調整 | §4.4-4.5 |
 
@@ -417,7 +417,7 @@ WO-001 完成 500，倍數 1000
 - [ ] 異動時強制檢查「至少 1 個生產任務 affects_product = TRUE」
 
 **測試時**：
-- [ ] 驗證層級聚合邏輯（木桶理論）
+- [ ] 驗證層級統計邏輯（木桶理論）
 - [ ] 驗證 floor 無條件捨去後的數字精度
 - [ ] 驗證 affects_product 篩選的正確性
 - [ ] 驗證異動流程的重算邏輯
@@ -427,7 +427,7 @@ WO-001 完成 500，倍數 1000
 ## 結論
 
 此文件定義了完整的數量換算規則，支持：
-- ✅ 四層層級的聚合計算（層級清晰，職責分明）
+- ✅ 四層層級的統計計算（層級清晰，職責分明）
 - ✅ 複雜場景（一任務多生產任務，各自倍數不同）
 - ✅ 邊界情況與防呆檢查
 - ✅ 異動流程的重算邏輯
