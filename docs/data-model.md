@@ -372,6 +372,7 @@
 | 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機 | 見 state-machines-ops.md |
 | 是否影響成品 | `affects_product` | | ✓ | || 布林值（boolean） | QC 通過數是否計入工單完成數計算；實際製程工序計入，採購紙張等支援工序不計入 | 預設 TRUE；由印務主管於工單建立時確認；見 business-process.md §4.3 |
 | 每份工單需生產數量 | `quantity_per_work_order` | | ✓ | | 小數（decimal 12,2） | 完成 1 份工單需要多少份此生產任務；由印務主管於工單建立時設定 | 例：1、2、0.5；驗證：> 0；見 business-process.md §4；關鍵：一個任務內的多個生產任務各自定義倍數 |
+| 設備 | `equipment` | | | | varchar(100) | 指派該生產任務執行的設備；單選，可選欄位 | 例：設備 ID 或設備名稱；由印務於建立工單時設定 |
 | 目標數量 | `target_quantity` | | ✓ | | 整數（int） | | |
 | 完成數量 | `completed_quantity` | | ✓ | ✓ | 整數（int） | 報工累計 | 系統自動計算 |
 | 預計執行日 | `scheduled_date` | | ✓ | | 日期（date） | 產能優化合批時間窗口 | |
