@@ -750,7 +750,8 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
   const [editingItemId, setEditingItemId] = React.useState(null);
   const isLocked = status === '成交' || status === '流失' || isViewOnly;
   const isManagerMode = role === 'manager';
-  const canEditCost = isManagerMode && (status === '待評估成本' || status === '議價中') && !isViewOnly;
+  const isSalesMode = role === 'sales';
+  const canEditCost = (isManagerMode || isSalesMode) && (status === '待評估成本' || status === '議價中') && !isViewOnly;
   const managerFieldsReadOnly = isManagerMode;
 
   const removeItem = (id) => setItems(items.filter(i => i.id !== id));
@@ -759,7 +760,18 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
   const stopEditing = () => setEditingItemId(null);
   const addItem = () => {
     const nextId = Math.max(...items.map(i => i.id), 0) + 1;
-    setItems([...items, { id: nextId, no: `${quoteNo}-${nextId}`, name: '', spec: '', delivery_method: '', estimated_delivery_date: '', packaging_note: '', qty: null, costEstimate: null, unitPrice: null, amount: null }]);
+    setItems([...items, { id: nextId, no: `${quoteNo}-${nextId}`, name: '', spec: '', delivery_method: '', estimated_delivery_date: '', packaging_note: '', qty: null, costEstimate: null, unitPrice: null, amount: null, attachments: [] }]);
+  };
+
+  const handleFileUpload = (itemId, files) => {
+    if (!files || files.length === 0) return;
+    const newFiles = Array.from(files).map(f => f.name);
+    const currentAttachments = items.find(i => i.id === itemId)?.attachments || [];
+    updateItem(itemId, 'attachments', [...currentAttachments, ...newFiles]);
+  };
+
+  const removeFile = (itemId, fileName) => {
+    updateItem(itemId, 'attachments', items.find(i => i.id === itemId)?.attachments.filter(f => f !== fileName) || []);
   };
 
   const summary = calcSummary(items);
@@ -791,6 +803,7 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
                   <th style={{ width: 100, padding: '12px 8px' }}>出貨方式</th>
                   <th style={{ width: 130, padding: '12px 8px' }}>預計交貨日期</th>
                   <th style={{ width: 130, padding: '12px 8px' }}>包裝說明</th>
+                  <th style={{ width: 100, padding: '12px 8px' }}>參考檔案</th>
                   <th style={{ width: 80, padding: '12px 8px' }}>數量</th>
                   <th style={{ width: 100, padding: '12px 8px' }}>成本總額</th>
                   <th style={{ width: 100, padding: '12px 8px' }}>報價總額</th>
@@ -843,6 +856,40 @@ function ItemSpecTab({ items, setItems, status, quoteNo, role, isViewOnly }) {
                           <textarea className="items-table input" value={item.packaging_note || ''} onChange={e => updateItem(item.id, 'packaging_note', e.target.value)} style={{ minWidth: 120, minHeight: 54, resize: 'none', background: '#FFFBE6' }} />
                         ) : (
                           <span style={{ fontSize: 14, fontWeight: 400, color: '#232324', whiteSpace: 'pre-wrap' }}>{item.packaging_note || '—'}</span>
+                        )}
+                      </td>
+                      <td style={{ padding: '8px' }}>
+                        {isEditing && canEditOtherField ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <label style={{ cursor: 'pointer', padding: '4px 8px', background: '#1677FF', color: '#fff', borderRadius: 4, fontSize: 12, fontWeight: 500 }}>
+                                上傳檔案
+                                <input type="file" multiple onChange={e => handleFileUpload(item.id, e.target.files)} style={{ display: 'none' }} />
+                              </label>
+                            </div>
+                            {item.attachments && item.attachments.length > 0 && (
+                              <div style={{ fontSize: 12, color: '#232324' }}>
+                                {item.attachments.map((fileName, idx) => (
+                                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0', borderBottom: '1px solid #F0F0F0' }}>
+                                    <span>{fileName}</span>
+                                    <button onClick={() => removeFile(item.id, fileName)} style={{ background: 'none', border: 'none', color: '#FF4D4F', cursor: 'pointer', fontSize: 12 }}>刪除</button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: 12, color: '#232324' }}>
+                            {item.attachments && item.attachments.length > 0 ? (
+                              <div>
+                                {item.attachments.map((fileName, idx) => (
+                                  <div key={idx} style={{ padding: '2px 0' }}>{fileName}</div>
+                                ))}
+                              </div>
+                            ) : (
+                              <span>—</span>
+                            )}
+                          </div>
                         )}
                       </td>
                       <td style={{ padding: '8px' }}>
@@ -1308,7 +1355,7 @@ function StateButtons({ qr, role, onTransition }) {
   const btns = [];
   if (status === '需求確認中' && role === 'sales')
     btns.push(<button key="send" className="btn btn-primary"  onClick={() => onTransition('送印務評估')}>送印務評估</button>);
-  if (status === '待評估成本' && role === 'manager')
+  if (status === '待評估成本' && (role === 'manager' || role === 'sales'))
     btns.push(<button key="eval" className="btn btn-primary"  onClick={() => onTransition('評估完成')}>評估完成</button>);
   if (status === '已評估成本' && role === 'sales')
     btns.push(<button key="provide" className="btn btn-primary" onClick={() => onTransition('對外提供報價')}>對外提供報價</button>);
@@ -1328,11 +1375,13 @@ function StateButtons({ qr, role, onTransition }) {
 
 /* ─────────────────────────── Detail Page ───────────────────────────── */
 function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
-  const [activeTab,     setActiveTab]     = React.useState(role === 'manager' ? 'spec' : 'basic');
+  const [activeTab,     setActiveTab]     = React.useState(role === 'manager' ? 'spec' : 'spec');
   const [items,         setItems]         = React.useState(() => data.find(q => q.id === qrId).items);
   const [lostOpen,      setLostOpen]      = React.useState(false);
   const [evalOpen,      setEvalOpen]      = React.useState(false);
   const [reassessOpen,  setReassessOpen]  = React.useState(false);
+  const [isEditingBasicInfo, setIsEditingBasicInfo] = React.useState(false);
+  const [editBasicData, setEditBasicData] = React.useState(null);
 
   const freshQR = data.find(q => q.id === qrId);
   const isOwner = freshQR.createdBy === '林雅婷'; // 模擬當前用戶
@@ -1379,8 +1428,11 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
     const now      = new Date().toLocaleString('zh-TW').replace(/\//g, '-');
     const nextRound = (freshQR.priceLogs.length || 0) + 1;
     const snapshot = items.map(i => ({ name: i.name, costEstimate: i.costEstimate, unitPrice: i.unitPrice }));
-    const newLog   = { id: nextRound, round: nextRound, evaluatedAt: now, evaluatedBy: '陳建宏（印務主管）', note: '', snapshot };
-    const actLog   = { id: freshQR.activityLog.length + 1, time: now, actor: '陳建宏', event: `狀態變更：待評估成本 → 已評估成本（自動建立報價紀錄 #${nextRound}）` };
+    const actor    = role === 'sales' ? '林雅婷' : '陳建宏';
+    const roleLabel = role === 'sales' ? '（業務）' : '（印務主管）';
+    const evaluatedByLabel = role === 'sales' ? '林雅婷（業務）' : '陳建宏（印務主管）';
+    const newLog   = { id: nextRound, round: nextRound, evaluatedAt: now, evaluatedBy: evaluatedByLabel, note: '', snapshot };
+    const actLog   = { id: freshQR.activityLog.length + 1, time: now, actor, event: `狀態變更：待評估成本 → 已評估成本（自動建立報價紀錄 #${nextRound}）` };
     updateQR(qrId, { status: '已評估成本', priceLogs: [...freshQR.priceLogs, newLog], activityLog: [...freshQR.activityLog, actLog], items, updatedAt: now });
     setEvalOpen(false);
     toast(`評估完成，已建立報價紀錄（第 ${nextRound} 輪）`);
@@ -1404,7 +1456,6 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
         { key: 'activity',   label: `活動紀錄（${freshQR.activityLog.length}）` },
       ]
     : [
-        { key: 'basic',      label: '基本資料' },
         { key: 'spec',       label: `印件規格與成本（${items.length}）` },
         { key: 'pricelog',   label: `報價紀錄（${freshQR.priceLogs.length}）` },
         { key: 'activity',   label: `活動紀錄（${freshQR.activityLog.length}）` },
@@ -1436,40 +1487,140 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
           </div>
         </div>
 
-        {/* Key Info Section */}
-        <div style={{ padding: '20px 24px' }}>
-          {/* Key Info Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr', gap: 24 }}>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: '#636466', marginBottom: 6 }}>需求單號</div>
-              <div style={{ fontSize: 14, fontWeight: 400, fontFamily: 'monospace', color: '#232324' }}>{freshQR.quoteNo}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: '#636466', marginBottom: 6 }}>最後更新</div>
-              <div style={{ fontSize: 14, fontWeight: 400, color: '#232324' }}>{freshQR.updatedAt}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: '#636466', marginBottom: 6 }}>報價輪次</div>
-              <div style={{ fontSize: 14, fontWeight: 400, color: '#232324' }}>{freshQR.priceLogs.length} 輪</div>
-            </div>
-            {role !== 'manager' && items && items.length > 0 && (
-              <>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: '#636466', marginBottom: 6 }}>小計（未稅）</div>
-                  <div style={{ fontSize: 14, fontWeight: 400, fontFamily: 'monospace', color: '#232324' }}>$ {fmtMoneyInt(calcSummary(items).subtotal)}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: '#636466', marginBottom: 6 }}>稅額（5%）</div>
-                  <div style={{ fontSize: 14, fontWeight: 400, fontFamily: 'monospace', color: '#232324' }}>$ {fmtMoneyInt(calcSummary(items).tax)}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: '#636466', marginBottom: 6 }}>含稅總額</div>
-                  <div style={{ fontSize: 14, fontWeight: 400, fontFamily: 'monospace', color: '#232324' }}>$ {fmtMoneyInt(calcSummary(items).total)}</div>
-                </div>
-              </>
+        {/* Basic Info Block */}
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid #F0F0F0' }}>
+          {/* Header with Edit Button */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <div style={{ fontSize: 13, fontWeight: 500, color: '#00000073' }}>基本資訊</div>
+            {isOwner && !isEditingBasicInfo && (
+              <button className="btn btn-default btn-sm" onClick={() => { setIsEditingBasicInfo(true); setEditBasicData(freshQR); }} style={{ padding: '4px 12px', fontSize: 12 }}>編輯</button>
             )}
           </div>
+
+          {/* Edit Header */}
+          {isEditingBasicInfo && (
+            <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid #F0F0F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 500, fontSize: 13, color: '#000000E0' }}>編輯基本資訊</span>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn btn-default" onClick={() => { setIsEditingBasicInfo(false); setEditBasicData(null); }} style={{ padding: '6px 16px', fontSize: 13 }}>取消</button>
+                <button className="btn btn-primary" onClick={() => { updateQR(qrId, editBasicData); setIsEditingBasicInfo(false); setEditBasicData(null); toast('基本資訊已保存'); }} style={{ padding: '6px 16px', fontSize: 13 }}>儲存</button>
+              </div>
+            </div>
+          )}
+
+          {/* Info Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 24 }}>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>需求案名</div>
+              {isEditingBasicInfo ? (
+                <input value={editBasicData?.title || ''} onChange={e => setEditBasicData({ ...editBasicData, title: e.target.value })} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+              ) : (
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#232324' }}>{freshQR.title}</div>
+              )}
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>客戶</div>
+              {isEditingBasicInfo ? (
+                <input value={editBasicData?.customer || ''} onChange={e => setEditBasicData({ ...editBasicData, customer: e.target.value })} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+              ) : (
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#232324' }}>{freshQR.customer || '—'}</div>
+              )}
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>接單業務</div>
+              {isEditingBasicInfo ? (
+                <input value={editBasicData?.sales || ''} onChange={e => setEditBasicData({ ...editBasicData, sales: e.target.value })} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+              ) : (
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#232324' }}>{freshQR.sales || '—'}</div>
+              )}
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>詢價來源</div>
+              {isEditingBasicInfo ? (
+                <input value={editBasicData?.source || ''} onChange={e => setEditBasicData({ ...editBasicData, source: e.target.value })} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+              ) : (
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#232324' }}>{freshQR.source || '—'}</div>
+              )}
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>發票開立方式</div>
+              {isEditingBasicInfo ? (
+                <input value={editBasicData?.invoiceType || ''} onChange={e => setEditBasicData({ ...editBasicData, invoiceType: e.target.value })} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+              ) : (
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#232324' }}>{freshQR.invoiceType || '—'}</div>
+              )}
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>報價截止日</div>
+              {isEditingBasicInfo ? (
+                <input type="date" value={editBasicData?.deadline || ''} onChange={e => setEditBasicData({ ...editBasicData, deadline: e.target.value })} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+              ) : (
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#232324' }}>{freshQR.deadline || '—'}</div>
+              )}
+            </div>
+            <div style={{ display: 'none' }}>
+              <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>評估印務主管</div>
+              {isEditingBasicInfo ? (
+                <input value={editBasicData?.estimatedByManager || ''} onChange={e => setEditBasicData({ ...editBasicData, estimatedByManager: e.target.value })} style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+              ) : (
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#232324' }}>{freshQR.estimatedByManager || '—'}</div>
+              )}
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>需求單號</div>
+              <div style={{ fontSize: 13, fontWeight: 400, fontFamily: 'monospace', color: '#1677FF' }}>{freshQR.quoteNo}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>最後更新</div>
+              <div style={{ fontSize: 13, fontWeight: 400, color: '#232324' }}>{freshQR.updatedAt}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>Slack 連結</div>
+              {isEditingBasicInfo ? (
+                <input value={editBasicData?.slackLink || ''} onChange={e => setEditBasicData({ ...editBasicData, slackLink: e.target.value })} placeholder="輸入 Slack 連結" style={{ width: '100%', border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit' }} />
+              ) : (
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#232324' }}>
+                  {freshQR.slackLink ? <a href={freshQR.slackLink} target="_blank" rel="noopener noreferrer" style={{ color: '#1677FF' }}>開啟連結</a> : '—'}
+                </div>
+              )}
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24, marginTop: 24 }}>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>備註</div>
+              {isEditingBasicInfo ? (
+                <textarea value={editBasicData?.remark || ''} onChange={e => setEditBasicData({ ...editBasicData, remark: e.target.value })} placeholder="輸入備註" style={{ width: '100%', minHeight: 80, border: '1px solid #D9D9D9', borderRadius: 4, padding: '6px 8px', fontSize: 13, fontFamily: 'inherit', resize: 'vertical' }} />
+              ) : (
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#232324', whiteSpace: 'pre-wrap' }}>{freshQR.remark || '—'}</div>
+              )}
+            </div>
+          </div>
         </div>
+
+        {/* Financial Info Block */}
+        {role !== 'manager' && items && items.length > 0 && (
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid #F0F0F0' }}>
+            <div style={{ fontSize: 13, fontWeight: 500, color: '#00000073', marginBottom: 12 }}>金額資訊</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 24 }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>報價輪次</div>
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#232324' }}>{freshQR.priceLogs.length} 輪</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>小計（未稅）</div>
+                <div style={{ fontSize: 13, fontWeight: 400, fontFamily: 'monospace', color: '#232324' }}>$ {fmtMoneyInt(calcSummary(items).subtotal)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>稅額（5%）</div>
+                <div style={{ fontSize: 13, fontWeight: 400, fontFamily: 'monospace', color: '#232324' }}>$ {fmtMoneyInt(calcSummary(items).tax)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 400, color: '#636466', marginBottom: 4 }}>含稅總額</div>
+                <div style={{ fontSize: 13, fontWeight: 400, fontFamily: 'monospace', color: '#232324' }}>$ {fmtMoneyInt(calcSummary(items).total)}</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Status Progress Bar */}
         <StatusProgressBar qr={freshQR} items={items} />
@@ -1484,7 +1635,6 @@ function DetailPage({ qrId, data, onBack, role, updateQR, toast }) {
         </div>
 
         <div style={{ padding: '20px 24px' }}>
-          {activeTab === 'basic'    && <BasicInfoTab qr={freshQR} status={freshQR.status} onUpdate={updateQR} isViewOnly={isViewOnly} />}
           {activeTab === 'spec'     && <ItemSpecTab items={items} setItems={syncItems} status={freshQR.status} quoteNo={freshQR.quoteNo} role={role} isViewOnly={isViewOnly} />}
           {activeTab === 'permission' && <PermissionTab qr={freshQR} onUpdatePermissions={updateQR} isOwner={isOwner} />}
           {activeTab === 'pricelog' && <PriceLogTab priceLogs={freshQR.priceLogs} />}
