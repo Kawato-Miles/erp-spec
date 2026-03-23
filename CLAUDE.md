@@ -253,13 +253,13 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 | 業務流程（核心規則）| Notion 商業流程：https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a |
 | 狀態機（上層：需求單 / 訂單 / 工單 / 印件）| Notion 狀態變化：https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 |
 | 狀態機（下層：任務 / 生產任務 / QC / 出貨單）| 同上（頁面下半段）|
-| 數量換算計算規則（Prototype 設計參考）| `memory/erp/quantity-calculation-rules.md` |
+| 數量換算計算規則（Prototype 設計參考）| Notion 數量換算規則：https://www.notion.so/32c3886511fa81e9a77adbd21cfc9d4a |
 | 情境驗證（PM 視角步驟流程）| Notion 業務情境 DB：https://www.notion.so/3163886511fa808a9d9bda01dc812206 |
 | 使用者情境（角色需求故事）| Notion 使用者情境：https://www.notion.so/32c3886511fa8144b38adc9266395d15 |
 | 待確認事項（OQ） | Notion Follow-up DB：https://www.notion.so/32c3886511fa808e9754ea1f18248d92 |
 | 術語表（完整）| `memory/erp/glossary.md` |
 | 測試案例| `memory/erp/test-cases.md` |
-| 出貨邏輯診斷（邊界情況 / 常見漏洞）| `memory/erp/shipment-logic-diagnosis.md` |
+| 出貨邏輯診斷（邊界情況 / 常見漏洞）| Notion 出貨邏輯診斷：https://www.notion.so/32c3886511fa81cfac16c4720b888ca2 |
 
 ### 共用資源
 | 資源 | 路徑 |

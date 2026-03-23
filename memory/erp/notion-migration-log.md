@@ -22,6 +22,8 @@ type: project
 | `spec/*.md`（所有規格書）| Feature Database | https://www.notion.so/2823886511fa83d08c16815824afd2b7 | 先前 |
 | `memory/erp/product-goals.md` | 產品目標 | https://www.notion.so/32c3886511fa81359354e33087d23f23 | 2026-03-23 |
 | `memory/erp/user-scenarios.md` | 使用者情境 | https://www.notion.so/32c3886511fa8144b38adc9266395d15 | 2026-03-23 |
+| `memory/erp/quantity-calculation-rules.md` | 數量換算規則 | https://www.notion.so/32c3886511fa81e9a77adbd21cfc9d4a | 2026-03-23 |
+| `memory/erp/shipment-logic-diagnosis.md` | 出貨邏輯診斷 | https://www.notion.so/32c3886511fa81cfac16c4720b888ca2 | 2026-03-23 |
 
 父頁面（Roadmap）：https://www.notion.so/Roadmap-8ba3886511fa83f8a5ce8173a6de3eca
 
@@ -31,8 +33,6 @@ type: project
 
 | 本地檔案 | 建議 Notion 頁面名稱 | 優先 | 備註 |
 |---------|-------------------|------|------|
-| `memory/erp/quantity-calculation-rules.md` | 數量換算規則 | 中 | Prototype 設計參考 |
-| `memory/erp/shipment-logic-diagnosis.md` | 出貨邏輯診斷 | 中 | 設計診斷紀錄，可作 Spec 附件 |
 | `memory/erp/test-cases.md` | 測試案例 | 中 | 45+ 測試案例，與 Spec 一起維護較方便 |
 | `memory/erp/glossary.md` | ERP 術語表 | 低 | 術語適合 Notion wiki |
 | `memory/shared/glossary.md` | 共用術語 | 低 | 同上 |
