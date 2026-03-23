@@ -63,14 +63,14 @@ Spec 撰寫進度：
 
 | Spec 類型 | 必讀 |
 |-----------|------|
-| 需求單 / 訂單 / 工單 / 印件 | `memory/erp/state-machines.md` + `memory/erp/business-process.md` + `memory/erp/user-scenarios.md` + Notion 業務情境 DB |
-| 生產任務 / QC / 出貨單 | `memory/erp/state-machines-ops.md` + `memory/erp/business-process.md` + `memory/erp/user-scenarios.md` + Notion 業務情境 DB |
-| 跨上下層流程 | 兩個 state-machines*.md + `memory/erp/business-process.md` + `memory/erp/user-scenarios.md` + Notion 業務情境 DB |
+| 需求單 / 訂單 / 工單 / 印件 | Notion 狀態變化 § 上層 + Notion 商業流程 + `memory/erp/user-scenarios.md` + Notion 業務情境 DB |
+| 生產任務 / QC / 出貨單 | Notion 狀態變化 § 下層 + Notion 商業流程 + `memory/erp/user-scenarios.md` + Notion 業務情境 DB |
+| 跨上下層流程 | Notion 狀態變化（上層 + 下層）+ Notion 商業流程 + `memory/erp/user-scenarios.md` + Notion 業務情境 DB |
 | 所有 ERP Spec | `memory/erp/product-goals.md`（KPI 對齊） |
 | Prototype / 介面設計規格 | `memory/shared/ui-design-system.md`（Ant Design 規範、元件、版型） |
 
 **重要**：以下三個檔案是**所有 Spec 撰寫的必讀基礎**（提供邏輯、用戶與情境背景）：
-- `memory/erp/business-process.md` → 核心業務規則與決策邏輯
+- Notion 商業流程（https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a）→ 核心業務規則與決策邏輯
 - `memory/erp/user-scenarios.md` → 角色視角與使用者故事 **← 含角色權責驗證（Who 執行什麼動作）**
 - Notion 業務情境 DB → PM 視角情境驗證與邊界案例（https://www.notion.so/3163886511fa808a9d9bda01dc812206）
 
@@ -202,12 +202,12 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | 通用工作原則 | `memory/shared/principles.md` |
 | UI 設計系統（Ant Design 規範） | `memory/shared/ui-design-system.md` |
 | ERP 產品目標 / KPI | `memory/erp/product-goals.md` |
-| 狀態機（上層：需求單 / 訂單 / 工單） | `memory/erp/state-machines.md` |
-| 狀態機（下層：任務 / QC / 出貨） | `memory/erp/state-machines-ops.md` |
+| 狀態機（上層：需求單 / 訂單 / 工單） | Notion 狀態變化：https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 |
+| 狀態機（下層：任務 / QC / 出貨） | 同上（頁面下半段）|
 | 待確認事項（OQ） | Notion Follow-up DB：https://www.notion.so/32c3886511fa808e9754ea1f18248d92 |
 | 情境驗證（PM 視角）| Notion 業務情境 DB：https://www.notion.so/3163886511fa808a9d9bda01dc812206 |
 | 使用者情境（角色需求故事） | `memory/erp/user-scenarios.md` |
-| 業務流程（核心規則） | `memory/erp/business-process.md` |
+| 業務流程（核心規則） | Notion 商業流程：https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a |
 | ERP 術語表 | `memory/erp/glossary.md` |
 | 共用術語 | `memory/shared/glossary.md` |
 | 產業背景 | `memory/shared/context/industry.md` |

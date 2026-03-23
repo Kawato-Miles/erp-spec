@@ -10,11 +10,11 @@
 
 | 檔案 | 用途 | 修改頻率 |
 |------|------|--------|
-| `state-machines.md` | 上層流程的狀態定義（需求單、訂單、工單、印件） | 低（架構穩定） |
-| `state-machines-ops.md` | 下層流程的狀態定義（任務、生產任務、QC、出貨） | 低（架構穩定） |
+| Notion 狀態變化 § 上層（https://www.notion.so/32c3886511fa81539eb9d3c97630caa0）| 上層流程的狀態定義（需求單、訂單、工單、印件） | 低（架構穩定） |
+| Notion 狀態變化 § 下層（同上頁面）| 下層流程的狀態定義（任務、生產任務、QC、出貨） | 低（架構穩定） |
 | Notion 業務情境 DB | PM 視角的情境驗證（業務邏輯驗證） | 中（常補充，正本在 Notion） |
 | `user-scenarios.md` | 各角色的使用者故事（需求確認） | 中（常補充） |
-| `business-process.md` | 核心業務規則（計算邏輯、計價方式等） | 中（迭代修改） |
+| Notion 商業流程（https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a）| 核心業務規則（計算邏輯、計價方式等） | 中（迭代修改） |
 | `data-model.md` | 全局資料模型（欄位定義） | 中（常新增） |
 | `test-cases.md` | 測試案例（邊界情況驗證） | 中（迭代補充） |
 | `open-questions.md` | 待確認事項（正本） | 高（邊迭代邊產生） |
@@ -36,18 +36,18 @@
 - [ ] 補充 [缺失的參考文件]
 
 ### 涉及的模組
-- [ ] 需求單 / 訂單管理（見 state-machines.md § XXX）
-- [ ] 工單 / 生產排程（見 state-machines.md § XXX）
-- [ ] 生產任務（見 state-machines-ops.md § XXX）
+- [ ] 需求單 / 訂單管理（見 Notion 狀態變化 § 上層）
+- [ ] 工單 / 生產排程（見 Notion 狀態變化 § 上層）
+- [ ] 生產任務（見 Notion 狀態變化 § 下層）
 - [ ] 其他 _________
 
 ### 驗證標準（檢查清單）
 - [ ] Spec 新增欄位已同步至 docs/data-model.md ✓
-- [ ] 狀態轉移已補充至 state-machines.md 或 state-machines-ops.md ✓
+- [ ] 狀態轉移已補充至 Notion 狀態變化（對應段落）✓
 - [ ] 情境驗證已補充至 Notion 業務情境 DB ✓
 - [ ] scenarios.md 情境對應的角色故事已補充至 user-scenarios.md ✓
-- [ ] 業務規則已補充至 business-process.md ✓
-- [ ] 跨檔案邏輯無矛盾（state-machines ↔ scenarios ↔ test-cases）✓
+- [ ] 業務規則已補充至 Notion 商業流程 ✓
+- [ ] 跨文件邏輯無矛盾（Notion 狀態變化 ↔ 業務情境 ↔ test-cases）✓
 - [ ] 新發現的邊界情況已記錄至 open-questions.md ✓
 - [ ] 相關文件版本號已遞增 ✓
 ```
@@ -62,7 +62,7 @@
 
 | 修改對象 | 必須連帶檢查 |
 |----------|------------|
-| `state-machines.md` 或 `state-machines-ops.md` | ☐ Notion 業務情境 DB（是否需補情境）<br/>☐ Notion OQ DB（是否解決待確認項） |
+| Notion 狀態變化（上層 / 下層） | ☐ Notion 業務情境 DB（是否需補情境）<br/>☐ Notion OQ DB（是否解決待確認項） |
 | `open-questions.md` 確認某問題 | ☐ 對應 `state-machines*.md` 是否已補設計<br/>☐ `scenarios.md` 是否補情境<br/>☐ 各 Spec 第 12 章 OQ 參照節點狀態 |
 | Notion 業務情境 DB 新增/修改情境 | ☐ `user-scenarios.md`（對應角色是否需補情境） |
 | `user-scenarios.md` 新增/修改故事 | ☐ Notion 業務情境 DB（情境索引是否同步） |
@@ -78,8 +78,8 @@
 | Spec 修改項 | 立即檢查 | 原因 |
 |-----------|--------|------|
 | **新增欄位** | docs/data-model.md | 欄位定義必須同步 |
-| **新增狀態** | state-machines.md / state-machines-ops.md | 狀態轉移必須定義 |
-| **修改計算邏輯** | business-process.md、Notion 業務情境 DB | 業務規則、驗證情境必須同步 |
+| **新增狀態** | Notion 狀態變化（對應上層或下層段落）| 新狀態轉移必須定義 |
+| **修改計算邏輯** | Notion 商業流程、Notion 業務情境 DB | 業務規則、驗證情境必須同步 |
 | **新增邊界情況** | test-cases.md、open-questions.md | 邊界情況必須有測試或 OQ 記錄 |
 | **涉及角色行為** | user-scenarios.md | 角色故事必須對應 |
 
@@ -89,12 +89,12 @@
 
 | 修改檔案 | 檢查對象 | 常見矛盾 |
 |---------|--------|--------|
-| **state-machines.md** | Notion 業務情境 DB、test-cases.md、business-process.md | 新狀態無對應的情境驗證或測試 |
-| **Notion 業務情境 DB** | user-scenarios.md、test-cases.md、state-machines.md | 情境假設與角色故事不符；邊界情況無測試 |
-| **user-scenarios.md** | Notion 業務情境 DB、state-machines.md、business-process.md | 角色故事與情境假設不一致；業務規則不符 |
-| **business-process.md** | Notion 業務情境 DB、state-machines.md | 規則異動未反映在情境或狀態機中 |
+| **Notion 狀態變化** | Notion 業務情境 DB、test-cases.md、Notion 商業流程 | 新狀態無對應的情境驗證或測試 |
+| **Notion 業務情境 DB** | user-scenarios.md、test-cases.md、Notion 狀態變化 | 情境假設與角色故事不符；邊界情況無測試 |
+| **user-scenarios.md** | Notion 業務情境 DB、Notion 狀態變化、Notion 商業流程 | 角色故事與情境假設不一致；業務規則不符 |
+| **Notion 商業流程** | Notion 業務情境 DB、Notion 狀態變化 | 規則異動未反映在情境或狀態機中 |
 | **data-model.md** | 所有使用該欄位的 Spec | 欄位類型、必填性異動未反映在業務邏輯中 |
-| **test-cases.md** | scenarios.md、state-machines.md、open-questions.md | 測試無對應情境；邊界缺陷未記為 OQ |
+| **test-cases.md** | Notion 業務情境 DB、Notion 狀態變化、Notion OQ DB | 測試無對應情境；邊界缺陷未記為 OQ |
 
 
 ### 識別新問題 → 立即記錄
@@ -132,11 +132,10 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 
 **文件同步**：
 - ☐ data-model.md 新增欄位已記錄，版本號遞增
-- ☐ state-machines.md 新增狀態已記錄，版本號遞增
-- ☐ state-machines-ops.md 新增狀態已記錄，版本號遞增
+- ☐ Notion 狀態變化 已更新（上層 / 下層對應段落）
 - ☐ Notion 業務情境 DB 已補充新情境
 - ☐ user-scenarios.md 新增角色故事已記錄，版本號遞增
-- ☐ business-process.md 新增規則已記錄，版本號遞增
+- ☐ Notion 商業流程 已更新
 
 **邏輯驗證**：
 - ☐ 新狀態有對應的情境驗證
@@ -160,14 +159,14 @@ feat: [ERP 模組] 迭代 Spec
 
 ### ① 連帶更新
 - data-model.md：新增 [欄位名稱]
-- state-machines.md：新增 [狀態名稱]
+- Notion 狀態變化：新增 [狀態名稱]
 - Notion 業務情境 DB：新增 [情境 ID 與名稱]
 - [其他檔案]：[修改項目]
 
 ### ② 邏輯驗證
-- state-machines.md ↔ scenarios.md：✓ 一致
-- scenarios.md ↔ user-scenarios.md：✓ 一致
-- user-scenarios.md ↔ business-process.md：✓ 一致
+- Notion 狀態變化 ↔ Notion 業務情境 DB：✓ 一致
+- Notion 業務情境 DB ↔ user-scenarios.md：✓ 一致
+- user-scenarios.md ↔ Notion 商業流程：✓ 一致
 - data-model.md ↔ Spec：✓ 一致
 
 ### ③ 自動稽核
@@ -187,8 +186,8 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
 
 | 陷阱 | 特徵 | 修復 |
 |------|------|------|
-| **狀態孤立** | state-machines.md 新增狀態，但 scenarios.md 無對應情境驗證 | 補充情境；若不需驗證，檢查狀態定義是否正確 |
-| **邏輯矛盾** | state-machines.md 允許的轉移，但 business-process.md 的規則禁止 | 確認業務規則是否正確；同步 state-machines.md 或 business-process.md |
+| **狀態孤立** | Notion 狀態變化 新增狀態，但業務情境 DB 無對應情境驗證 | 補充情境；若不需驗證，檢查狀態定義是否正確 |
+| **邏輯矛盾** | Notion 狀態變化 允許的轉移，但 Notion 商業流程 的規則禁止 | 確認業務規則是否正確；同步 Notion 狀態變化 或 Notion 商業流程 |
 | **角色遺漏** | scenarios.md 新增情境，但 user-scenarios.md 無對應角色故事 | 補充角色故事，或檢查該情境是否真的需要某角色參與 |
 | **欄位孤立** | data-model.md 新增欄位，但無 Spec 章節說明用途 | 補充 Spec；若欄位暫時不用，移至「未來預留」欄位區 |
 | **邊界無測試** | test-cases.md 發現邊界情況，但 Spec 未定義處理方式 | 新增 OQ 確認處理方式，或補充 Spec 定義 |
@@ -206,8 +205,8 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
 
 ### 涉及檔案速查
 
-- **狀態、流程相關** → state-machines.md / state-machines-ops.md
-- **邏輯、計算相關** → business-process.md
+- **狀態、流程相關** → Notion 狀態變化（https://www.notion.so/32c3886511fa81539eb9d3c97630caa0）
+- **邏輯、計算相關** → Notion 商業流程（https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a）
 - **情境、邊界相關** → Notion 業務情境 DB / test-cases.md
 - **數據結構相關** → docs/data-model.md
 - **角色、需求相關** → user-scenarios.md
