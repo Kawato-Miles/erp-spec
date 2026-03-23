@@ -88,13 +88,12 @@ KEY_FILES=(
     "state-machines.md"
     "state-machines-ops.md"
     "product-goals.md"
-    "open-questions.md"
-    "scenarios.md"
     "user-scenarios.md"
     "glossary.md"
     "business-process.md"
     "principles.md"
 )
+# 注意：open-questions.md 與 scenarios.md 已遷移至 Notion，不再檢查本地檔案
 for kf in "${KEY_FILES[@]}"; do
     if ! grep -q "$kf" "$SKILL_MD" 2>/dev/null; then
         echo "  ⚠️  未索引：$kf 未出現在 SKILL.md"
