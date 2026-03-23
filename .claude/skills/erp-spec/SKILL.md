@@ -69,9 +69,10 @@ Spec 撰寫進度：
 | 所有 ERP Spec | Notion 產品目標（https://www.notion.so/32c3886511fa81359354e33087d23f23）（KPI 對齊） |
 | Prototype / 介面設計規格 | `memory/shared/ui-design-system.md`（Ant Design 規範、元件、版型） |
 
-**重要**：以下三個檔案是**所有 Spec 撰寫的必讀基礎**（提供邏輯、用戶與情境背景）：
+**重要**：以下四個檔案是**所有 Spec 撰寫的必讀基礎**（提供邏輯、用戶與情境背景）：
 - Notion 商業流程（https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a）→ 核心業務規則與決策邏輯
-- Notion 使用者情境（https://www.notion.so/32c3886511fa8144b38adc9266395d15）→ 角色視角與使用者故事 **← 含角色權責驗證（Who 執行什麼動作）**
+- Notion 使用者情境（https://www.notion.so/32c3886511fa8144b38adc9266395d15）→ 角色權責定義與權限範圍 **← 含角色驗證（Who 執行什麼動作）**
+- Notion User Story DB（https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d）→ 具體的業務故事集（US-001 ~ US-015），供 Spec 關聯引用 **← 含各角色的操作流程與成功條件**
 - Notion 業務情境 DB → PM 視角情境驗證與邊界案例（https://www.notion.so/3163886511fa808a9d9bda01dc812206）
 
 **⚠️ 角色驗證檢查點**（避免「業務出貨」等角色混淆）：
@@ -94,10 +95,11 @@ Spec 撰寫進度：
 
 | 規則 | 說明 |
 |------|------|
-| 角色驗證優先 | 撰寫流程說明時，逐一檢查執行者角色是否符合 `user-scenarios.md`；若有矛盾立即停止並回報用戶修正 |
+| 角色驗證優先 | 撰寫流程說明時，逐一檢查執行者角色是否符合 Notion User Story DB（https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d）與 Notion 使用者情境；若有矛盾立即停止並回報用戶修正 |
+| 關聯 User Story | Spec 中的使用者故事（User Stories section）應改為引用 Notion User Story DB，不再直接寫故事描述；若創建新 User Story，應同步新增至 Notion DB |
 | Section 10 不寫 | 開發估算與里程碑由 PM 在 GitHub Issues 管理，Spec 預設跳過 |
 | Section 11 不寫 | 測試計畫獨立維護於 `memory/erp/test-cases.md`，Spec 預設跳過；Spec 完成後在 test-cases.md 補充測試案例 |
-| Section 7 只寫差異 | 全局資料模型統一維護於 `docs/data-model.md`；Section 7 只列此 Spec 新增 / 修改的欄位，完成後同步更新 data-model.md |
+| Section 7 只寫差異 | 全局資料模型統一維護於 Notion 資料欄位 DB（https://www.notion.so/32c3886511fa803e9f30edbb020d10ce）；Section 7 只列此 Spec 新增 / 修改的欄位，完成後同步更新 Notion 資料欄位 DB |
 | Ragic = 歷史基準 | Ragic 視為遷移前系統，**不納入新系統設計**；僅用於遷移前後 KPI 對比 |
 | 需求格式 | 「系統應…（System shall）」，每條需求含可測試驗收條件 |
 | 避免模糊詞 | 不用「更好」「更快」「某些情況」，改為具體數字或行為 |
@@ -198,7 +200,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | 資源 | 路徑 |
 |------|------|
 | Spec 模板 | `references/spec-template.md` |
-| ERP 全局資料模型 | `docs/data-model.md` |
+| ERP 全局資料模型 | Notion 資料欄位 DB：https://www.notion.so/32c3886511fa803e9f30edbb020d10ce |
 | 通用工作原則 | `memory/shared/principles.md` |
 | UI 設計系統（Ant Design 規範） | `memory/shared/ui-design-system.md` |
 | ERP 產品目標 / KPI | Notion 產品目標：https://www.notion.so/32c3886511fa81359354e33087d23f23 |
@@ -206,7 +208,8 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | 狀態機（下層：任務 / QC / 出貨） | 同上（頁面下半段）|
 | 待確認事項（OQ） | Notion Follow-up DB：https://www.notion.so/32c3886511fa808e9754ea1f18248d92 |
 | 情境驗證（PM 視角）| Notion 業務情境 DB：https://www.notion.so/3163886511fa808a9d9bda01dc812206 |
-| 使用者情境（角色需求故事） | Notion 使用者情境：https://www.notion.so/32c3886511fa8144b38adc9266395d15 |
+| User Story（業務故事集） | Notion User Story DB：https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d |
+| 使用者情境（角色權責定義） | Notion 使用者情境：https://www.notion.so/32c3886511fa8144b38adc9266395d15 |
 | 業務流程（核心規則） | Notion 商業流程：https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a |
 | ERP 術語表 | `memory/erp/glossary.md` |
 | 共用術語 | `memory/shared/glossary.md` |
