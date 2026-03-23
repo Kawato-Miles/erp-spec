@@ -21,13 +21,27 @@ description: >
 
 ```
 Spec 撰寫進度：
+- [ ] Step 0：查詢 Notion OQ DB，列出本次相關 OQ
 - [ ] Step 1：確認範圍與問題定義
 - [ ] Step 2：載入必要背景資源
 - [ ] Step 3：觸發 product-management:feature-spec skill
 - [ ] Step 4：依模板撰寫草稿
-- [ ] Step 5：識別與同步 Open Questions
+- [ ] Step 5：識別與同步 Open Questions（Notion）
 - [ ] Step 6：Task 結束同步檢查 + 稽核
 ```
+
+### Step 0：查詢 Notion OQ DB
+
+**每次討論需求或撰寫 Spec 前自動執行。**
+
+1. 識別本次涉及的模組（依 Feature relation 篩選）
+2. 查詢 Notion Follow-up DB OQ view，取得：任務類型=Open Question + 狀態=未開始 + 對應模組
+3. 在回應中列出相關 OQ（ID、標題、優先），讓 Miles 確認哪些帶入討論
+
+> 查詢工具：`mcp__notion__notion-query-database-view`，view_url 使用 OQ view：
+> https://www.notion.so/32c3886511fa808e9754ea1f18248d92?v=32c3886511fa8081878c000cab1b455b
+
+---
 
 ### Step 1：確認範圍與問題定義
 
@@ -88,20 +102,31 @@ Spec 撰寫進度：
 | 需求格式 | 「系統應…（System shall）」，每條需求含可測試驗收條件 |
 | 避免模糊詞 | 不用「更好」「更快」「某些情況」，改為具體數字或行為 |
 
-### Step 5：識別與同步 Open Questions
+### Step 5：識別與同步 Open Questions（Notion）
 
-撰寫中識別到的不確定項，依層級處理：
+OQ 唯一正本在 Notion Follow-up DB，不再使用本地 `open-questions.md`。
 
-| 類型 | 處置 |
+**撰寫 Spec 中識別到不確定項時，依層級處置：**
+
+| 類型 | 動作 |
 |------|------|
-| 功能局部問題（僅影響此模組）| 寫入 `memory/erp/open-questions.md` 對應模組分類，Spec Section 12 以**參照節點**格式顯示摘要 |
-| 跨模組 / 架構問題 | 寫入 `memory/erp/open-questions.md` XM 分類（續接最大編號、標明來源），Spec Section 12「跨模組 OQ」欄標注 ID |
+| 功能局部問題（僅影響此模組）| 在 Notion 建立新 OQ 條目（Feature 指向對應模組）|
+| 跨模組 / 架構問題 | 在 Notion 建立新 OQ 條目（Feature 留空或指向主要影響模組，ID 前綴用 XM）|
+
+**OQ ID 命名規則**：`{MODULE}-{NNN}`，序號從 Notion DB 現有最大號 +1
+
+**討論收斂後，依情況執行：**
+
+| 情況 | 動作 |
+|------|------|
+| 新增 OQ | `mcp__notion__notion-create-pages`，填入任務名稱、說明（含 ID）、優先順序、狀態=未開始、Feature |
+| OQ 已解答 | `mcp__notion__notion-update-page`，狀態 → 已完成；說明欄補充決策內容 |
+| OQ 說明更新 | `mcp__notion__notion-update-page`，更新說明欄 |
+| OQ 有依賴關係 | 建立後補設 `相關問題` relation |
 
 **Section 12 格式（參照節點）**：
-- 正本為 `open-questions.md`；Section 12 只顯示摘要與 ID，不重複維護內容
-- 有 OQ 時：列出 ID 清單 + 一行摘要 + 狀態；無 OQ 時：填「本模組目前無待確認事項」
-
-查詢現有 OQ 狀態時，**直接讀 `memory/erp/open-questions.md`**，不需翻各 Spec 文件。
+- 正本為 Notion OQ DB；Section 12 只顯示 ID + 一行摘要 + 狀態
+- 有 OQ 時：列出 ID 清單；無 OQ 時：填「本模組目前無待確認事項」
 
 ### Step 6：Task 結束同步檢查 + 稽核
 
@@ -179,7 +204,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | ERP 產品目標 / KPI | `memory/erp/product-goals.md` |
 | 狀態機（上層：需求單 / 訂單 / 工單） | `memory/erp/state-machines.md` |
 | 狀態機（下層：任務 / QC / 出貨） | `memory/erp/state-machines-ops.md` |
-| 待確認事項 | `memory/erp/open-questions.md` |
+| 待確認事項（OQ） | Notion Follow-up DB：https://www.notion.so/32c3886511fa808e9754ea1f18248d92 |
 | 情境驗證 | `memory/erp/scenarios.md` |
 | 使用者情境（角色需求故事） | `memory/erp/user-scenarios.md` |
 | 業務流程（核心規則） | `memory/erp/business-process.md` |
