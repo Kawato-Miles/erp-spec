@@ -20,6 +20,8 @@ type: project
 | `memory/erp/scenarios.md` | 業務情境 DB（原本已在 Notion）| https://www.notion.so/3163886511fa808a9d9bda01dc812206 | 先前 |
 | `memory/erp/open-questions.md` | Follow-up DB（OQ + Task）| https://www.notion.so/32c3886511fa808e9754ea1f18248d92 | 先前 |
 | `spec/*.md`（所有規格書）| Feature Database | https://www.notion.so/2823886511fa83d08c16815824afd2b7 | 先前 |
+| `memory/erp/product-goals.md` | 產品目標 | https://www.notion.so/32c3886511fa81359354e33087d23f23 | 2026-03-23 |
+| `memory/erp/user-scenarios.md` | 使用者情境 | https://www.notion.so/32c3886511fa8144b38adc9266395d15 | 2026-03-23 |
 
 父頁面（Roadmap）：https://www.notion.so/Roadmap-8ba3886511fa83f8a5ce8173a6de3eca
 
@@ -29,8 +31,6 @@ type: project
 
 | 本地檔案 | 建議 Notion 頁面名稱 | 優先 | 備註 |
 |---------|-------------------|------|------|
-| `memory/erp/product-goals.md` | 產品目標 | 高 | 商業目標 / KPI，適合關係人閱讀 |
-| `memory/erp/user-scenarios.md` | 使用者情境 | 高 | 角色需求故事，與 Spec 強相關 |
 | `memory/erp/quantity-calculation-rules.md` | 數量換算規則 | 中 | Prototype 設計參考 |
 | `memory/erp/shipment-logic-diagnosis.md` | 出貨邏輯診斷 | 中 | 設計診斷紀錄，可作 Spec 附件 |
 | `memory/erp/test-cases.md` | 測試案例 | 中 | 45+ 測試案例，與 Spec 一起維護較方便 |
