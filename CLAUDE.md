@@ -220,7 +220,7 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 
 - 文件語言：**繁體中文**
 - Spec 格式：使用 `.claude/skills/erp-spec/SKILL.md` 規範 / 規格書存於 **Notion Feature Database**（本地 `spec/` 已停用）
-- **Prototype / 介面設計**：UI 設計系統定義在 `memory/shared/ui-design-system.md`（Ant Design 5.x），Prototype 實作檔案在 `code/`
+- **Prototype / 介面設計**：Prototype 實作在 GitHub Repo `sens-erp-prototype`（本地路徑 `/Users/b-f-03-029/sens-erp-prototype`），技術棧為 React + TypeScript + Tailwind + shadcn/ui
 - 回應風格：重點優先，條列清楚，避免冗詞
 - 優先非同步溝通
 
@@ -242,8 +242,8 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 | 術語查詢 | `glossary.md` | — |
 | 產品目標 / KPI | Notion 產品目標：https://www.notion.so/32c3886511fa81359354e33087d23f23 | — |
 | 資料模型查詢 / 欄位確認 | `docs/data-model.md` | — |
-| **Prototype 製作** | `memory/shared/prototype-guidelines.md` + 對應 Spec + Notion 業務情境 DB + Notion 狀態變化 | `ui-design-system.md`、Notion 使用者情境、`test-cases.md` |
-| Prototype 驗證 / 反饋 | `code/[prototype].html` 內的反饋記錄 + `memory/shared/prototype-guidelines.md` § 五 | `spec/*.md`、`open-questions.md` |
+| **Prototype 製作** | `memory/shared/prototype-guidelines.md` + 對應 Spec + Notion 業務情境 DB + Notion 狀態變化 | Notion 使用者情境、`test-cases.md` |
+| Prototype 驗證 / 反饋 | `/Users/b-f-03-029/sens-erp-prototype/src/` 對應模組 + `memory/shared/prototype-guidelines.md` § 五 | — |
 
 ### ERP 資源
 | 資源 | 路徑 |
@@ -281,11 +281,14 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 | 訂單管理 | https://www.notion.so/32c3886511fa806bad41d755349b0567 | v1.1 | 初版（待審核） |
 | 工單管理 | https://www.notion.so/32c3886511fa80f98a43def401d1edce | v1.1 | 初版（待審核） |
 
-### Prototype 實作檔清單
-| 模組 | 檔案名稱 | 功能 | 版本 |
-|------|---------|------|------|
-| 需求單 | `code/prototype-quote-request.html` | 需求單列表（含文字/狀態/日期篩選、清除篩選）+ 編輯頁 + 報價評估 | v1.3 |
-| 訂單管理 | `code/prototype-order-management.html` | 訂單列表 + 工單與印件合併生產進度二層展開 | v1.3 |
+### Prototype 實作進度
+> Prototype 統一在 `sens-erp-prototype` Repo（本地：`/Users/b-f-03-029/sens-erp-prototype`）
+> GitHub：https://github.com/Kawato-Miles/sens-erp-prototype
+
+| 模組 | 路徑 | 功能 | 狀態 |
+|------|------|------|------|
+| 需求單 | `src/components/quote/` | 需求單列表 + 編輯頁 + 報價評估 | 建置中（由 Lovable 遷移） |
+| 訂單管理 | 尚未建立 | 訂單列表 + 工單與印件合併生產進度二層展開 | 待建置 |
 
 ### 工具
 | 資源 | 路徑 |

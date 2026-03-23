@@ -10,6 +10,7 @@ Thumbs.db
 # Local environment
 .env
 .env.local
+.claude/settings.local.json
 
 # Node (if any scripts used)
 node_modules/
