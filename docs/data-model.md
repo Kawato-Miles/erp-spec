@@ -5,7 +5,7 @@
 > **注意**：本文件以業務語意為主；詳細 schema（constraints、index、migration）由開發維護。
 > 欄位以**中文名稱**為主要顯示，英文鍵名為開發對照參考。
 >
-> 最後更新：2026-03-02（需求單 v0.10 改變成本與報價欄位邏輯：cost_estimate 和 price_per_unit 改為直接輸入總額；amount_excl_tax 改為自動計算唯讀）
+> 最後更新：2026-03-11（工單 v0.1 新增 equipment 欄位到 ProductionTask；詳見 spec/work-order.md）；2026-03-02（需求單 v0.10 改變成本與報價欄位邏輯）
 
 ---
 
@@ -59,17 +59,28 @@
 
 ### 客戶（Customer）
 
+> **更新**（2026-03-18）：補正 3 個缺失欄位（member_number、member_type、tax_id），對應 prototype-order-management.html v1.3 顧客資訊區。
+
 | 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
 |---------|---------|:--:|:--:|:--:|------|------|------|
-| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| **識別資訊** | | | | | | | |
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示；同時為會員編號 |
+| 會員編號 | `member_number` | | | ✓ | 字串（varchar 30） | 公開會員編號（可與 id 相同或格式化版本） | 唯讀，衍生自 id |
 | 公司名稱 | `company_name` | | ✓ | | 字串（varchar 200） | 客戶公司名稱 | |
 | 簡稱 | `short_name` | | | | 字串（varchar 50） | 顯示用簡稱 | |
+| **聯絡資訊** | | | | | | | |
 | 聯絡人姓名 | `contact_name` | | ✓ | | 字串（varchar 100） | 主要聯絡人 | |
 | 聯絡電話 | `contact_phone` | | ✓ | | 字串（varchar 30） | | |
 | 聯絡 Email | `contact_email` | | | | 字串（varchar 200） | | |
 | 地址 | `address` | | | | 字串（varchar 500） | | |
+| **會員/稅務資訊** | | | | | | | |
+| 會員身份 | `member_type` | | | | 單選（enum） | 一般會員 / VIP / 企業會員 / 其他 | |
+| 統一編號 | `tax_id` | | | | 字串（varchar 20） | 統一編號（VAT ID / 營業人統一編號） | |
+| **訂單/發票設定** | | | | | | | |
 | 發票類型 | `invoice_type` | | ✓ | | 單選（enum） | 電子發票 / 紙本 / 免開 | 待 QR-001 確認選項 |
+| **其他** | | | | | | | |
 | 備註 | `notes` | | | | 文本（text） | | |
+| **系統欄位** | | | | | | | |
 | 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 | 更新時間 | `updated_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 
@@ -266,20 +277,45 @@
 
 ### 訂單（Order）
 
+> **更新**（2026-03-18）：補正 23 個缺失欄位，對應 prototype-order-management.html v1.3 基本資訊頁籤。詳見 prototype-order-management-field-audit.md。
+
 | 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
 |---------|---------|:--:|:--:|:--:|------|------|------|
+| **識別資訊** | | | | | | | |
 | 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
 | 訂單號 | `order_no` | | ✓ | ✓ | 字串（varchar 20） | | 系統自動產生 |
+| 訂單類型 | `order_type` | | ✓ | | 單選（enum） | 線下 / 線上（EC） | |
+| **關聯資訊** | | | | | | | |
 | 來源需求單 | `quote_request_id` | | | | FK | 線上訂單可無 | FK → 需求單 |
 | 客戶 | `customer_id` | | ✓ | | FK | | FK → 客戶 |
-| 訂單類型 | `order_type` | | ✓ | | 單選（enum） | 線下 / 線上（EC） | |
-| 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機設計 | 見 state-machines.md |
-| 付款狀態 | `payment_status` | | ✓ | | 單選（enum） | 未付款 / 已付款 / 部分退款 / 已退款 | 待 ORD-002 |
 | 負責業務 | `sales_id` | | ✓ | | FK | | FK → 使用者 |
-| 回簽時間 | `signed_at` | | | | 日期時間（datetime） | 線下訂單用 | |
-| 付款時間 | `paid_at` | | | | 日期時間（datetime） | 線上訂單用 | |
+| **狀態及流程** | | | | | | | |
+| 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機設計 | 見 state-machines.md |
+| 是否急件 | `is_urgent` | | | | 布林值（boolean） | 優先度標記 | |
+| **時間相關** | | | | | | | |
 | 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 | 更新時間 | `updated_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
+| 回簽時間 | `signed_at` | | | | 日期時間（datetime） | 線下訂單用 | |
+| 稿件上傳時間 | `file_uploaded_at` | | | | 日期時間（datetime） | 訂單中最後一個稿件上傳的時間（聚合） | 由系統聚合 PrintItem.file_uploaded_at 的最大值；用於快速查詢 |
+| 內部完成時間 | `internal_complete_date` | | | | 日期（date） | 內部製作截止日期（印務主管用） | |
+| 預計出貨日期（前審稿） | `expected_ship_date_pre_review` | | | | 日期（date） | 審稿前的預計交期 | 業務報價用 |
+| 預計出貨日期（後審稿） | `expected_ship_date_post_review` | | | | 日期（date） | 審稿後的預計交期 | 審稿確認後更新 |
+| 交期 | `delivery_date` | | | | 日期（date） | 客戶確認的最終交期（deadline） | |
+| **付款資訊** | | | | | | | |
+| 付款狀態 | `payment_status` | | ✓ | | 單選（enum） | 未付款 / 已付款 / 部分退款 / 已退款 | 待 ORD-002 |
+| 付款方式 | `payment_method` | | | | 單選（enum） | 現金 / 信用卡 / 銀行轉帳 / 支票 / 其他 | |
+| 付款細項 | `payment_detail` | | | | 文本（text） | 分期資訊、發票備註等 | |
+| 付款時間 | `paid_at` | | | | 日期時間（datetime） | 線上訂單用 | |
+| 發票統一編號 | `invoice_unified_number` | | | | 字串（varchar 20） | 發票編號或統一編號 | |
+| **金額資訊** | | | | | | | |
+| 商品含稅小計 | `subtotal_with_tax` | | | | 小數（decimal 12,2） | 所有 OrderItem 的含稅合計 | 冗餘欄位，用於快速查詢；OrderItem 異動時同步更新 |
+| 紅利金額 | `bonus_amount` | | | | 小數（decimal 12,2） | 紅利折價金額 | 含稅 |
+| 折扣金額 | `discount_amount` | | | | 小數（decimal 12,2） | 優惠折扣金額 | 含稅 |
+| 運費 | `shipping_fee_with_tax` | | | | 小數（decimal 12,2） | 運費金額 | 含稅 |
+| 訂單總額 | `total_with_tax` | | | | 小數（decimal 12,2） | 商品 + 紅利 - 折扣 + 運費 | 含稅；冗餘欄位，同步更新 |
+| 可獲得紅利點數 | `earned_bonus_points` | | | | 整數（int） | 本次訂單可獲得的紅利點數或金額 | 會員系統 |
+| **其他** | | | | | | | |
+| 備註 | `notes` | | | | 文本（text） | 訂單備註或特殊要求 | |
 
 ### 訂單項目（OrderItem）
 
@@ -316,22 +352,54 @@
 
 ## 印件<a name="print-item"></a>
 
-> 🔲 Scaffold — 詳細設計待 Spec 撰寫。
+> 設計完成（v0.1）— 詳細業務規則見 `spec/order-management.md`。
+>
+> **更新**（2026-03-23）：依 spec/order-management.md v1.0 補齊欄位定義（name、quantity、unit、spec_note、sample_result、file_upload_enabled、quote_request_item_id）；新增 PrintItemFile 資料表。
 
 ### 印件（PrintItem）
 
 | 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
 |---------|---------|:--:|:--:|:--:|------|------|------|
+| **識別資訊** | | | | | | | |
 | 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| **關聯資訊** | | | | | | | |
 | 所屬訂單 | `order_id` | | ✓ | ✓ | FK | | FK → 訂單 |
 | 對應訂單項目 | `order_item_id` | | ✓ | ✓ | FK | | FK → 訂單項目 |
+| 來源印件項目 | `quote_request_item_id` | | | | FK | 轉訂單時帶入 | FK → 需求單印件項目 |
+| **基本屬性** | | | | | | | |
+| 印件名稱 | `name` | | ✓ | | 字串（varchar 200） | | |
 | 類型 | `type` | | ✓ | | 單選（enum） | 打樣 / 大貨 | |
-| 審稿狀態 | `review_status` | | ✓ | | 單選（enum） | 依狀態機 | 見 state-machines.md |
-| 印製狀態 | `production_status` | | ✓ | | 單選（enum） | 依狀態機 | 見 state-machines.md |
-| 打樣結果 | `proof_result` | | | | 單選（enum） | OK / NG / 待確認 | 打樣印件用 |
+| 數量 | `quantity` | | ✓ | | 小數（decimal 12,2） | 目標數量（印件單位） | |
+| 單位 | `unit` | | | | 字串（varchar 20） | 個 / 冊 / 張 / 式 | |
+| 規格備註 | `spec_note` | | | | 文本（text） | 材質、印刷方式、加工說明等 | |
+| **狀態資訊** | | | | | | | |
+| 審稿狀態 | `review_status` | | ✓ | | 單選（enum） | 稿件未上傳 / 等待審稿 / 已補件 / 合格 | 見 state-machines.md |
+| 印製狀態 | `production_status` | | ✓ | | 單選（enum） | 等待中 / 工單已交付 / 部分工單製作中 / 製作中 / 製作完成 / 出貨中 / 已送達 / 已棄用 | 見 state-machines.md |
+| 打樣結果 | `sample_result` | | | | 單選（enum） | 待確認 / OK / NG-製程問題 / NG-稿件問題 | 打樣印件專用；見 business-process.md § 5.3 |
+| 稿件上傳開放 | `file_upload_enabled` | | ✓ | | 布林值（boolean） | 大貨印件：建立時 false；打樣 OK 後改 true | |
+| **時間資訊** | | | | | | | |
+| 稿件上傳時間 | `file_uploaded_at` | | | | 日期時間（datetime） | 此印件首次稿件上傳時間 | 審稿狀態從「稿件未上傳」轉變時更新 |
+| **其他** | | | | | | | |
 | 稿件鎖定工單 | `file_lock_wo_id` | | | | FK | 工單建立時鎖定 | FK → 工單 |
+| **系統欄位** | | | | | | | |
 | 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 | 更新時間 | `updated_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
+
+### 稿件檔案（PrintItemFile）
+
+> 一個印件可上傳多個稿件檔案（不以版次號管理）。棄用 / 不合格的歷史稿件保留紀錄，不刪除。
+
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 所屬印件 | `print_item_id` | | ✓ | ✓ | FK | | FK → 印件 |
+| 稿件狀態 | `review_status` | | ✓ | | 單選（enum） | 待審稿 / 合格 / 不合格 | |
+| 審稿備註 | `review_note` | | | | 文本（text） | 不合格時審稿員填寫原因 | |
+| 檔案路徑 | `file_url` | | ✓ | ✓ | 字串（varchar 1000） | | |
+| 檔案名稱 | `filename` | | ✓ | | 字串（varchar 200） | 顯示用 | |
+| 檔案大小（KB） | `file_size_kb` | | ✓ | ✓ | 整數（int） | | 系統自動計算 |
+| 上傳者 | `uploaded_by` | | ✓ | ✓ | FK | | FK → 使用者，系統自動紀錄 |
+| 上傳時間 | `uploaded_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 
 ---
 
@@ -447,7 +515,9 @@
 
 ## 出貨單<a name="shipment"></a>
 
-> 🔲 Scaffold — 出貨單位於訂單層；支援多印件合併出貨。
+> 設計完成（v0.1）— 詳細業務規則見 `spec/order-management.md`。
+>
+> **更新**（2026-03-23）：依 spec/order-management.md v1.0 補齊欄位（shipment_type、收件資訊、carrier、tracking_number、created_by）；ShipmentItem 新增 delivered_quantity；新增 OrderPaymentRecord 資料表。
 
 ### 出貨單（Shipment）
 
@@ -456,11 +526,18 @@
 | 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
 | 出貨單號 | `shipment_no` | | ✓ | ✓ | 字串（varchar 20） | | 系統自動產生 |
 | 所屬訂單 | `order_id` | | ✓ | ✓ | FK | | FK → 訂單 |
-| 狀態 | `status` | | ✓ | | 單選（enum） | 依狀態機 | 見 state-machines-ops.md |
-| 物流商 | `logistics_provider` | | | | 字串（varchar 100） | | |
-| 物流追蹤號 | `tracking_no` | | | | 字串（varchar 100） | | |
-| 出貨時間 | `shipped_at` | | ✓ | | 日期時間（datetime） | | |
+| 出貨類型 | `shipment_type` | | ✓ | | 單選（enum） | 自行出貨 / 第三方物流 | |
+| 狀態 | `status` | | ✓ | | 單選（enum） | 草稿 / 待出貨 / 出貨中 / 已出貨 / 運送中 / 已送達 / 已作廢 | 見 state-machines-ops.md |
+| 收件人 | `recipient_name` | | ✓ | | 字串（varchar 100） | | |
+| 收件地址 | `recipient_address` | | ✓ | | 字串（varchar 500） | | |
+| 收件電話 | `recipient_phone` | | | | 字串（varchar 30） | | |
+| 物流商 | `carrier` | | | | 字串（varchar 100） | 第三方物流時填寫 | |
+| 追蹤號碼 | `tracking_number` | | | | 字串（varchar 100） | 第三方物流時填寫 | |
+| 備註 | `notes` | | | | 文本（text） | | |
+| 建立者 | `created_by` | | ✓ | ✓ | FK | | FK → 使用者，系統自動紀錄 |
+| 出貨時間 | `shipped_at` | | | ✓ | 日期時間（datetime） | 出貨中 / 已出貨時系統自動記錄 | 系統自動生成，唯讀 |
 | 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
+| 更新時間 | `updated_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
 
 ### 出貨明細（ShipmentItem，per 印件）
 
@@ -469,4 +546,21 @@
 | 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
 | 所屬出貨單 | `shipment_id` | | ✓ | ✓ | FK | | FK → 出貨單 |
 | 對應印件 | `print_item_id` | | ✓ | ✓ | FK | | FK → 印件 |
-| 出貨數量 | `quantity` | | ✓ | | 整數（int） | | |
+| 出貨數量 | `quantity` | | ✓ | | 整數（int） | 本次計劃出貨數 | |
+| 實際送達數量 | `delivered_quantity` | | | | 整數（int） | 確認送達時填寫；預設等於 quantity | |
+
+### 訂單付款紀錄（OrderPaymentRecord）
+
+> 記錄訂單層級的每筆收款（訂金 / 中期款 / 尾款 / 補收款）。付款狀態為平行追蹤維度，不影響生產流程。
+
+| 中文名稱 | 英文鍵名 | PK | 必填 | 唯讀 | 型別 | 說明 | 備註 |
+|---------|---------|:--:|:--:|:--:|------|------|------|
+| 系統 ID | `id` | ✓ | ✓ | ✓ | UUID | 唯一識別碼 | 系統自動生成，前台不顯示 |
+| 所屬訂單 | `order_id` | | ✓ | ✓ | FK | | FK → 訂單 |
+| 收款金額 | `amount` | | ✓ | | 小數（decimal 12,2） | | |
+| 付款日期 | `payment_date` | | ✓ | | 日期（date） | | |
+| 付款方式 | `payment_method` | | ✓ | | 單選（enum） | 現金 / 信用卡 / 銀行轉帳 / 支票 / 其他 | |
+| 收款類型 | `record_type` | | ✓ | | 單選（enum） | 訂金 / 中期款 / 尾款 / 補收款 | |
+| 備註 | `notes` | | | | 文本（text） | | |
+| 記錄人 | `recorded_by` | | ✓ | ✓ | FK | | FK → 使用者，系統自動紀錄 |
+| 建立時間 | `created_at` | | ✓ | ✓ | 日期時間（datetime） | | 系統自動生成，唯讀 |
