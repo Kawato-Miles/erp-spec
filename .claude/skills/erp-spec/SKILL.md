@@ -74,7 +74,7 @@ Spec 撰寫進度：
 
 ### Step 4：依模板撰寫草稿
 
-骨架使用 `references/spec-template.md`。
+骨架使用 `references/spec-template.md`。完成後直接寫入 Notion 對應的 Feature 頁面（不寫本地 `spec/` 檔）。Notion 頁面 ID 見 `CLAUDE.md` § Spec 規格檔清單。
 
 **重要預設規則：**
 
@@ -163,7 +163,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 
 ## 輸出物
 
-1. **功能規格書（.md 格式）**：依 `references/spec-template.md` 結構產出，Section 10 / 11 預設跳過
+1. **功能規格書（Notion 頁面）**：依 `references/spec-template.md` 結構，直接寫入 Notion Feature Database 對應頁面；Section 10 / 11 預設跳過
 2. **OQ 參照節點（Section 12）**：顯示本模組與相關跨模組 OQ 的 ID + 摘要，正本在 `memory/erp/open-questions.md`
 
 ---
