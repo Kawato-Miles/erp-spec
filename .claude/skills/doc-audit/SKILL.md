@@ -20,7 +20,7 @@ description: >
 | 情境 | 策略 |
 |------|------|
 | erp-spec Step 6 完成 | 強制執行 |
-| 主動收尾（原則 10）有 Spec / BRD / 欄位 / 流程 / 角色異動 | 預設執行（例外才跳過） |
+| 主動收尾（原則 10）有 商業流程 / Spec / BRD / 欄位 / 流程 / 角色異動 | 預設執行（例外才跳過） |
 | 純 OQ 文字更新、措辭修正 | 跳過 |
 | 獨立觸發：「執行稽核」「檢查文件一致性」「週期稽核」 | 執行 |
 
@@ -45,7 +45,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 |---------|------|
 | 狀態機一致性 | Spec 中的狀態流轉是否與 Notion 狀態變化一致 |
 | 商業流程一致性 | 角色、決策點、觸發條件是否與 Notion 商業流程一致 |
-| OQ 關聯完整性 | Spec 中引用的 OQ ID 是否存在於 Notion Follow-up DB |
+| OQ 關聯完整性 | 解析 Spec 中引用的 OQ ID → 觸發 `oq-manage`（模式 A）驗證 ID 是否存在；失效 ID 標記為需修正 |
 | 欄位定義一致性 | Spec 中提及的欄位是否與 Notion 資料欄位 DB 一致（含排序值） |
 | 角色一致性 | 流程中的執行者是否與 Notion 使用者情境一致 |
 | User Story 關聯性 | BRD 引用的 US-XXX 是否存在於 Notion User Story DB |
@@ -57,17 +57,18 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 
 | 異動類型 | 建議動作 |
 |---------|---------|
-| 新增 ERP 模組 | 建議在 Step 2 表格新增對應狀態機 / 流程檢查項 |
+| 新增 ERP 模組 | 建議在 Step 2 表格新增對應狀態機 / 流程檢查項；同步更新 oq-manage § 模組前綴對照 |
 | 新增 Notion DB（資料來源）| 建議在 Step 2 新增對應一致性檢查維度 |
 | 新增跨模組關係（如 A 模組狀態影響 B 模組）| 建議新增跨模組一致性檢查項 |
 | 新增角色 | 建議在角色一致性檢查中補充該角色 |
 | audit-erp-docs.sh 有新的 ⚠️ 類型未在 Step 2 覆蓋 | 建議補充至 Step 2 |
+| 稽核中發現疑似新 OQ（設計不一致但無對應 OQ）| 觸發 `oq-manage`（模式 B：新增，含去重） |
 
 **執行方式：**
-1. 列出識別到的新稽核維度（若無則略過）
+1. 列出識別到的新稽核維度或新 OQ（若無則略過）
 2. 說明建議加入的原因
 3. 詢問 Miles 是否採納
-4. 採納後：直接更新此 SKILL.md 對應段落，並 commit
+4. 採納後：直接更新此 SKILL.md 對應段落，並 commit；新 OQ 由 oq-manage 模式 B 建立
 
 ### Step 4：回報結果
 
