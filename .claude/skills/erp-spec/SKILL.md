@@ -22,10 +22,12 @@ description: >
 ```
 Spec 撰寫進度：
 - [ ] Step 0：查詢 Notion OQ DB，列出本次相關 OQ
+- [ ] Step 0.5：觸發 senior-pm（前期介入模式），確認問題框架
 - [ ] Step 1：確認範圍與問題定義
 - [ ] Step 2：載入必要背景資源
 - [ ] Step 3：觸發 product-management:feature-spec skill
 - [ ] Step 4：依模板撰寫草稿
+- [ ] Step 4.5：三視角審查（senior-pm + ceo-reviewer + erp-consultant 平行執行）
 - [ ] Step 5：識別與同步 Open Questions（Notion）
 - [ ] Step 6：Task 結束同步檢查 + 稽核
 ```
@@ -40,6 +42,24 @@ Spec 撰寫進度：
 
 > 查詢工具：`mcp__notion__notion-query-database-view`，view_url 使用 OQ view：
 > https://www.notion.so/32c3886511fa808e9754ea1f18248d92?v=32c3886511fa8081878c000cab1b455b
+
+---
+
+### Step 0.5：觸發 senior-pm（前期介入模式）
+
+**在確認範圍之前，先觸發 `senior-pm` agent 執行問題框架報告。**
+
+目的：確保 Spec 動筆前，問題定義、使用者需求、成功指標方向是正確的。
+
+```
+觸發：
+- Agent: senior-pm（傳入需求背景描述 + 涉及模組）
+- 模式：前期介入模式（Step 0.5）
+```
+
+收到問題框架報告後：
+1. 確認「開始 Spec 前必須確認的問題」是否需要先解答（若有，轉為 OQ 或與 Miles 確認後再繼續）
+2. 以問題框架報告的結論作為 Step 1 確認範圍的輸入
 
 ---
 
@@ -97,7 +117,7 @@ Spec 撰寫進度：
 
 Notion 頁面 ID 見 `CLAUDE.md` § Spec 規格檔清單。
 
-**BRD 內容**（Notion）：問題陳述、商業目標、KPI（含商業目標對應欄）、範疇、使用者情境、相依性與風險、OQ 索引、變更紀錄
+**BRD 內容**（Notion）：問題陳述、商業目標、KPI（含商業目標對應欄）、範疇、使用者情境、相依性與風險、變更紀錄
 
 > BRD 完成後，執行 `notion-to-github` skill 建立 GitHub PRD Issues（Parent + Sub-issues）。
 
@@ -114,19 +134,28 @@ Notion 頁面 ID 見 `CLAUDE.md` § Spec 規格檔清單。
 | 需求格式 | 「系統應…（System shall）」，每條需求含可測試驗收條件 |
 | 避免模糊詞 | 不用「更好」「更快」「某些情況」，改為具體數字或行為 |
 
-### Step 4.5：雙視角審查（CEO + ERP 顧問）
+### Step 4.5：三視角審查（Senior PM + CEO + ERP 顧問）
 
-BRD 草稿完成後，在 OQ 同步前執行審查。兩個 agent 平行呼叫，各自先載入全部背景文件再審查。
+BRD 草稿完成後，在 OQ 同步前執行審查。三個 agent 平行呼叫，各自先載入全部背景文件再審查。
 
 **呼叫方式：**
 ```
 平行觸發：
+- Agent: senior-pm（傳入 BRD 草稿全文 + 對應 Spec Notion 連結，模式：BRD 審查）
 - Agent: ceo-reviewer（傳入 BRD 草稿全文 + 對應 Spec Notion 連結）
 - Agent: erp-consultant（傳入 BRD 草稿全文 + 對應 Spec Notion 連結）
 ```
 
-**收到兩份審查意見後：**
-1. 彙整「不合理之處」與「設計漏洞」——這些是必須處理的項目
+**三個 Agent 的審查重心：**
+
+| Agent | 審查重心 |
+|-------|---------|
+| senior-pm | 問題定義品質、使用者需求對齊、KPI 可量化性、範疇邊界清晰度 |
+| ceo-reviewer | 業務可行性、現場運作合理性、導入阻力與 ROI |
+| erp-consultant | 狀態機完整性、資料一致性、系統設計與現有架構的一致性 |
+
+**收到三份審查意見後：**
+1. 彙整「需要調整的項目」「不合理之處」「設計漏洞」——這些是必須處理的項目
 2. 依嚴重程度分類：立即修改 BRD / 轉為 OQ / 記錄為已知風險
 3. 修改 BRD 後若有重大改動，重新觸發審查一次
 4. 確認無重大問題後才進入 Step 5
@@ -138,10 +167,6 @@ OQ 唯一正本在 Notion Follow-up DB。
 **撰寫 Spec 中識別到不確定項時，觸發 `oq-manage` skill（模式 B：新增）。**
 
 OQ 建立格式、去重流程、序號規則，統一依 `oq-manage` SKILL.md 執行，不在此重複定義。
-
-**Section 12 格式（參照節點）**：
-- 正本為 Notion OQ DB；Section 12 只顯示 ID + 一行摘要 + 狀態
-- 有 OQ 時：列出 ID 清單；無 OQ 時：填「本模組目前無待確認事項」
 
 ### Step 6：Task 結束同步檢查 + 稽核
 
@@ -183,7 +208,6 @@ Spec 完成後，觸發 `doc-audit` skill 執行完整稽核：
 ## 輸出物
 
 1. **BRD（Notion 頁面）**：依 `references/brd-template.md` 結構，直接寫入 Notion Feature Database 對應頁面；著重商業目標、KPI、使用者情境、範疇
-2. **OQ 索引（BRD § 待確認事項）**：顯示本模組與相關跨模組 OQ 的 ID + 摘要，正本在 Notion Follow-up DB
 
 > GitHub PRD Issues（Parent + Sub-issues）由 `notion-to-github` skill 負責建立，`erp-spec` 不建立 GitHub Issues。
 
