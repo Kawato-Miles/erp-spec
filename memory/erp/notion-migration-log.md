@@ -33,7 +33,7 @@ type: project
 
 | 本地檔案 | 建議 Notion 頁面名稱 | 優先 | 備註 |
 |---------|-------------------|------|------|
-| `memory/erp/test-cases.md` | 測試案例 | 中 | 45+ 測試案例，與 Spec 一起維護較方便 |
+| `memory/erp/test-cases.md` | 測試案例（https://www.notion.so/2b93886511fa817fbd65e7608726f036）| 中 | 45+ 測試案例，與 Spec 一起維護較方便；Notion DB 已建立，尚未搬移內容 |
 | `memory/erp/glossary.md` | ERP 術語表 | 低 | 術語適合 Notion wiki |
 | `memory/shared/glossary.md` | 共用術語 | 低 | 同上 |
 | `memory/graphic-editor/glossary.md` | 圖編術語 | 低 | 同上 |

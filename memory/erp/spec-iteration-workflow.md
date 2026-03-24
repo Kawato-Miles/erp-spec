@@ -45,7 +45,7 @@
 - [ ] Spec 新增欄位已同步至 Notion 資料欄位 DB ✓
 - [ ] 狀態轉移已補充至 Notion 狀態變化（對應段落）✓
 - [ ] 情境驗證已補充至 Notion 業務情境 DB ✓
-- [ ] scenarios.md 情境對應的角色故事已補充至 Notion 使用者情境 ✓
+- [ ] Notion 業務情境 DB 情境對應的角色故事已補充至 Notion 使用者情境 ✓
 - [ ] 業務規則已補充至 Notion 商業流程 ✓
 - [ ] 跨文件邏輯無矛盾（Notion 狀態變化 ↔ 業務情境 ↔ test-cases）✓
 - [ ] 新發現的邊界情況已記錄至 open-questions.md ✓
@@ -63,7 +63,7 @@
 | 修改對象 | 必須連帶檢查 |
 |----------|------------|
 | Notion 狀態變化（上層 / 下層） | ☐ Notion 業務情境 DB（是否需補情境）<br/>☐ Notion OQ DB（是否解決待確認項） |
-| `open-questions.md` 確認某問題 | ☐ 對應 `state-machines*.md` 是否已補設計<br/>☐ `scenarios.md` 是否補情境<br/>☐ 各 Spec 第 12 章 OQ 參照節點狀態 |
+| `open-questions.md` 確認某問題 | ☐ 對應 `state-machines*.md` 是否已補設計<br/>☐ Notion 業務情境 DB 是否補情境<br/>☐ 各 Spec 第 12 章 OQ 參照節點狀態 |
 | Notion 業務情境 DB 新增/修改情境 | ☐ Notion 使用者情境（對應角色是否需補情境） |
 | Notion 使用者情境 新增/修改故事 | ☐ Notion 業務情境 DB（情境索引是否同步） |
 | 任何欄位/狀態名稱異動 | ☐ `glossary.md`（術語是否需新增/修正） |
@@ -189,7 +189,7 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
 |------|------|------|
 | **狀態孤立** | Notion 狀態變化 新增狀態，但業務情境 DB 無對應情境驗證 | 補充情境；若不需驗證，檢查狀態定義是否正確 |
 | **邏輯矛盾** | Notion 狀態變化 允許的轉移，但 Notion 商業流程 的規則禁止 | 確認業務規則是否正確；同步 Notion 狀態變化 或 Notion 商業流程 |
-| **角色遺漏** | scenarios.md 新增情境，但 Notion 使用者情境無對應角色故事 | 補充角色故事，或檢查該情境是否真的需要某角色參與 |
+| **角色遺漏** | Notion 業務情境 DB 新增情境，但 Notion 使用者情境無對應角色故事 | 補充角色故事，或檢查該情境是否真的需要某角色參與 |
 | **欄位孤立** | Notion 資料欄位 DB 新增欄位，但無 Spec 章節說明用途 | 補充 Spec；若欄位暫時不用，移至「未來預留」欄位區 |
 | **邊界無測試** | test-cases.md 發現邊界情況，但 Spec 未定義處理方式 | 新增 OQ 確認處理方式，或補充 Spec 定義 |
 | **版本未遞增** | 修改了 .md 內容，但檔案頂部版本號未更新 | 遞增版本號（major.minor 格式），記錄修改理由 |
