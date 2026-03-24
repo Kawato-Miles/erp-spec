@@ -296,5 +296,7 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 |------|------|
 | ERP Spec Skill | `.claude/skills/erp-spec/SKILL.md` |
 | Notion → GitHub Issue Skill | `.claude/skills/notion-to-github/SKILL.md` |
-| Spec 模板 | `.claude/skills/erp-spec/references/spec-template.md` |
+| BRD 模板（Notion） | `.claude/skills/erp-spec/references/brd-template.md` |
+| PRD Parent Issue 模板（GitHub，模組層） | `.claude/skills/erp-spec/references/prd-parent-template.md` |
+| PRD Sub-issue 模板（GitHub，子功能層） | `.claude/skills/erp-spec/references/prd-sub-template.md` |
 | ERP 全局資料模型 | Notion 資料欄位 DB：https://www.notion.so/32c3886511fa803e9f30edbb020d10ce |

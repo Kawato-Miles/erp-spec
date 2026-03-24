@@ -1,5 +1,5 @@
 ---
-name: erp-spec-writing
+name: erp-spec
 description: >
   印刷業 ERP 功能規格書（Spec / PRD）撰寫 skill。
   觸發時機：Miles 說「寫 ERP spec」「寫 ERP PRD」「ERP 規格書」「規劃 [模組] 的需求文件」，
@@ -89,17 +89,28 @@ Spec 撰寫進度：
 
 ### Step 4：依模板撰寫草稿
 
-骨架使用 `references/spec-template.md`。完成後直接寫入 Notion 對應的 Feature 頁面（不寫本地 `spec/` 檔）。Notion 頁面 ID 見 `CLAUDE.md` § Spec 規格檔清單。
+規格書分為兩個輸出物，使用不同模板：
+
+| 輸出物 | 模板 | 存放位置 |
+|--------|------|----------|
+| BRD（商業需求文件） | `references/brd-template.md` | Notion Feature Database 對應頁面 |
+| PRD Parent Issue（模組層） | `references/prd-parent-template.md` | GitHub Issue |
+| PRD Sub-issue（子功能層） | `references/prd-sub-template.md` | GitHub Issue（掛在 Parent 下） |
+
+Notion 頁面 ID 見 `CLAUDE.md` § Spec 規格檔清單。
+
+**BRD 內容**（Notion）：問題陳述、商業目標、KPI（含商業目標對應欄）、範疇、使用者情境、相依性與風險、OQ 索引、變更紀錄
+
+**PRD 內容**（GitHub）：功能需求（FR-xxx）、UX 操作流程、資料模型差異、API 整合、非功能需求
 
 **重要預設規則：**
 
 | 規則 | 說明 |
 |------|------|
 | 角色驗證優先 | 撰寫流程說明時，逐一檢查執行者角色是否符合 Notion User Story DB（https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d）與 Notion 使用者情境；若有矛盾立即停止並回報用戶修正 |
-| 關聯 User Story | Spec 中的使用者故事（User Stories section）應改為引用 Notion User Story DB，不再直接寫故事描述；若創建新 User Story，應同步新增至 Notion DB |
-| Section 10 不寫 | 開發估算與里程碑由 PM 在 GitHub Issues 管理，Spec 預設跳過 |
-| Section 11 不寫 | 測試計畫獨立維護於 `memory/erp/test-cases.md`，Spec 預設跳過；Spec 完成後在 test-cases.md 補充測試案例 |
-| Section 7 只寫差異 | 全局資料模型統一維護於 Notion 資料欄位 DB（https://www.notion.so/32c3886511fa803e9f30edbb020d10ce）；Section 7 只列此 Spec 新增 / 修改的欄位，完成後同步更新 Notion 資料欄位 DB |
+| 關聯 User Story | BRD 的使用者情境段落應引用 Notion User Story DB，不直接寫故事描述；若創建新 User Story，應同步新增至 Notion DB |
+| 資料模型只寫差異 | 全局資料模型統一維護於 Notion 資料欄位 DB（https://www.notion.so/32c3886511fa803e9f30edbb020d10ce）；PRD Parent Issue 只列此模組新增 / 修改的欄位，完成後同步更新 Notion 資料欄位 DB |
+| 測試計畫不寫 | 測試計畫獨立維護於 `memory/erp/test-cases.md`；Spec 完成後在 test-cases.md 補充測試案例 |
 | Ragic = 歷史基準 | Ragic 視為遷移前系統，**不納入新系統設計**；僅用於遷移前後 KPI 對比 |
 | 需求格式 | 「系統應…（System shall）」，每條需求含可測試驗收條件 |
 | 避免模糊詞 | 不用「更好」「更快」「某些情況」，改為具體數字或行為 |
@@ -190,8 +201,10 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 
 ## 輸出物
 
-1. **功能規格書（Notion 頁面）**：依 `references/spec-template.md` 結構，直接寫入 Notion Feature Database 對應頁面；Section 10 / 11 預設跳過
-2. **OQ 參照節點（Section 12）**：顯示本模組與相關跨模組 OQ 的 ID + 摘要，正本在 `memory/erp/open-questions.md`
+1. **BRD（Notion 頁面）**：依 `references/brd-template.md` 結構，直接寫入 Notion Feature Database 對應頁面；著重商業目標、KPI、使用者情境、範疇
+2. **PRD Parent Issue（GitHub）**：依 `references/prd-parent-template.md`，建立模組層 Issue；包含資料模型差異、API 整合、非功能需求、Sub-issue 清單
+3. **PRD Sub-issue（GitHub）**：依 `references/prd-sub-template.md`，每個子功能一個 Issue，掛在 Parent 下；包含 FR-xxx 與 UX 流程
+4. **OQ 索引（BRD § 待確認事項）**：顯示本模組與相關跨模組 OQ 的 ID + 摘要，正本在 Notion Follow-up DB
 
 ---
 
@@ -199,7 +212,9 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 
 | 資源 | 路徑 |
 |------|------|
-| Spec 模板 | `references/spec-template.md` |
+| BRD 模板（Notion） | `references/brd-template.md` |
+| PRD Parent Issue 模板（GitHub，模組層） | `references/prd-parent-template.md` |
+| PRD Sub-issue 模板（GitHub，子功能層） | `references/prd-sub-template.md` |
 | ERP 全局資料模型 | Notion 資料欄位 DB：https://www.notion.so/32c3886511fa803e9f30edbb020d10ce |
 | 通用工作原則 | `memory/shared/principles.md` |
 | UI 設計系統（Ant Design 規範） | `memory/shared/ui-design-system.md` |
