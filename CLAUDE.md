@@ -243,7 +243,7 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 | 術語查詢 | `glossary.md` | — |
 | 產品目標 / KPI | Notion 產品目標：https://www.notion.so/32c3886511fa81359354e33087d23f23 | — |
 | 資料模型查詢 / 欄位確認 | Notion 資料欄位 DB：https://www.notion.so/32c3886511fa803e9f30edbb020d10ce | — |
-| **Prototype 製作** | `memory/shared/prototype-guidelines.md` + 對應 Spec + Notion 業務情境 DB + Notion 狀態變化 | Notion 使用者情境、`test-cases.md` |
+| **Prototype 製作** | `memory/shared/prototype-guidelines.md` + 對應 Spec + Notion 業務情境 DB + Notion 狀態變化 | Notion 使用者情境、Notion 測試案例 DB：https://www.notion.so/2b93886511fa817fbd65e7608726f036 |
 | Prototype 驗證 / 反饋 | `/Users/b-f-03-029/sens-erp-prototype/src/` 對應模組 + `memory/shared/prototype-guidelines.md` § 五 | — |
 
 ### ERP 資源
@@ -260,7 +260,7 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 | 使用者情境（角色權責定義）| Notion 使用者情境：https://www.notion.so/32c3886511fa8144b38adc9266395d15 |
 | 待確認事項（OQ） | Notion Follow-up DB：https://www.notion.so/32c3886511fa808e9754ea1f18248d92 |
 | 術語表（完整）| `memory/erp/glossary.md` |
-| 測試案例| `memory/erp/test-cases.md` |
+| 測試案例 | Notion ERP Test Case DB：https://www.notion.so/2b93886511fa817fbd65e7608726f036 |
 | 出貨邏輯診斷（邊界情況 / 常見漏洞）| Notion 出貨邏輯診斷：https://www.notion.so/32c3886511fa81cfac16c4720b888ca2 |
 
 ### 共用資源
