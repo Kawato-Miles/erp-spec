@@ -296,6 +296,7 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 | 資源 | 路徑 |
 |------|------|
 | ERP Spec Skill | `.claude/skills/erp-spec/SKILL.md` |
+| ERP Test Case Skill | `.claude/skills/erp-test-case/SKILL.md` |
 | Notion → GitHub Issue Skill | `.claude/skills/notion-to-github/SKILL.md` |
 | BRD 模板（Notion） | `.claude/skills/erp-spec/references/brd-template.md` |
 | PRD Parent Issue 模板（GitHub，模組層） | `.claude/skills/notion-to-github/references/prd-parent-template.md` |
