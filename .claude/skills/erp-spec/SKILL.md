@@ -114,6 +114,23 @@ Notion 頁面 ID 見 `CLAUDE.md` § Spec 規格檔清單。
 | 需求格式 | 「系統應…（System shall）」，每條需求含可測試驗收條件 |
 | 避免模糊詞 | 不用「更好」「更快」「某些情況」，改為具體數字或行為 |
 
+### Step 4.5：雙視角審查（CEO + ERP 顧問）
+
+BRD 草稿完成後，在 OQ 同步前執行審查。兩個 agent 平行呼叫，各自先載入全部背景文件再審查。
+
+**呼叫方式：**
+```
+平行觸發：
+- Agent: ceo-reviewer（傳入 BRD 草稿全文 + 對應 Spec Notion 連結）
+- Agent: erp-consultant（傳入 BRD 草稿全文 + 對應 Spec Notion 連結）
+```
+
+**收到兩份審查意見後：**
+1. 彙整「不合理之處」與「設計漏洞」——這些是必須處理的項目
+2. 依嚴重程度分類：立即修改 BRD / 轉為 OQ / 記錄為已知風險
+3. 修改 BRD 後若有重大改動，重新觸發審查一次
+4. 確認無重大問題後才進入 Step 5
+
 ### Step 5：識別與同步 Open Questions（Notion）
 
 OQ 唯一正本在 Notion Follow-up DB。
