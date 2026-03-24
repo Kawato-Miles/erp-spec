@@ -15,7 +15,7 @@
 | Notion 業務情境 DB | PM 視角的情境驗證（業務邏輯驗證） | 中（常補充，正本在 Notion） |
 | Notion 使用者情境（https://www.notion.so/32c3886511fa8144b38adc9266395d15）| 各角色的使用者故事（需求確認） | 中（常補充，正本在 Notion） |
 | Notion 商業流程（https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a）| 核心業務規則（計算邏輯、計價方式等） | 中（迭代修改） |
-| `data-model.md` | 全局資料模型（欄位定義） | 中（常新增） |
+| Notion 資料欄位 DB（https://www.notion.so/32c3886511fa803e9f30edbb020d10ce）| 全局資料模型（欄位定義） | 中（常新增） |
 | `test-cases.md` | 測試案例（邊界情況驗證） | 中（迭代補充） |
 | `open-questions.md` | 待確認事項（正本） | 高（邊迭代邊產生） |
 | Notion 產品目標（https://www.notion.so/32c3886511fa81359354e33087d23f23）| 產品目標與 KPI | 低（季度更新，正本在 Notion） |
@@ -42,7 +42,7 @@
 - [ ] 其他 _________
 
 ### 驗證標準（檢查清單）
-- [ ] Spec 新增欄位已同步至 docs/data-model.md ✓
+- [ ] Spec 新增欄位已同步至 Notion 資料欄位 DB ✓
 - [ ] 狀態轉移已補充至 Notion 狀態變化（對應段落）✓
 - [ ] 情境驗證已補充至 Notion 業務情境 DB ✓
 - [ ] scenarios.md 情境對應的角色故事已補充至 Notion 使用者情境 ✓
@@ -69,7 +69,7 @@
 | 任何欄位/狀態名稱異動 | ☐ `glossary.md`（術語是否需新增/修正） |
 | 新識別的 OQ | ☐ 跨模組/架構問題 → 合併至 `open-questions.md`<br/>☐ 局部問題可留 Spec 內顯示 |
 | `open-questions.md` 有 OQ 解答 | ☐ 定期移至 `open-questions-archive.md`<br/>☐ 正本只保留 ⏳ 待確認項目 |
-| `docs/data-model.md` 欄位異動 | ☐ 對應 Spec 第 7 章是否需連帶更新 |
+| Notion 資料欄位 DB 欄位異動 | ☐ 對應 Spec 第 7 章是否需連帶更新 |
 
 ### 2️⃣ 修改 Spec → 檢查關聯檔案（快速版）
 
@@ -77,7 +77,7 @@
 
 | Spec 修改項 | 立即檢查 | 原因 |
 |-----------|--------|------|
-| **新增欄位** | docs/data-model.md | 欄位定義必須同步 |
+| **新增欄位** | Notion 資料欄位 DB | 欄位定義必須同步 |
 | **新增狀態** | Notion 狀態變化（對應上層或下層段落）| 新狀態轉移必須定義 |
 | **修改計算邏輯** | Notion 商業流程、Notion 業務情境 DB | 業務規則、驗證情境必須同步 |
 | **新增邊界情況** | test-cases.md、open-questions.md | 邊界情況必須有測試或 OQ 記錄 |
@@ -93,8 +93,9 @@
 | **Notion 業務情境 DB** | Notion 使用者情境、test-cases.md、Notion 狀態變化 | 情境假設與角色故事不符；邊界情況無測試 |
 | **Notion 使用者情境** | Notion 業務情境 DB、Notion 狀態變化、Notion 商業流程 | 角色故事與情境假設不一致；業務規則不符 |
 | **Notion 商業流程** | Notion 業務情境 DB、Notion 狀態變化 | 規則異動未反映在情境或狀態機中 |
-| **data-model.md** | 所有使用該欄位的 Spec | 欄位類型、必填性異動未反映在業務邏輯中 |
+| **Notion 資料欄位 DB** | 所有使用該欄位的 Spec | 欄位類型、必填性異動未反映在業務邏輯中 |
 | **test-cases.md** | Notion 業務情境 DB、Notion 狀態變化、Notion OQ DB | 測試無對應情境；邊界缺陷未記為 OQ |
+
 
 
 ### 識別新問題 → 立即記錄
@@ -131,7 +132,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 ### Step 2：檢查清單（對照迭代前定義的驗證標準）
 
 **文件同步**：
-- ☐ data-model.md 新增欄位已記錄，版本號遞增
+- ☐ Notion 資料欄位 DB 新增欄位已記錄
 - ☐ Notion 狀態變化 已更新（上層 / 下層對應段落）
 - ☐ Notion 業務情境 DB 已補充新情境
 - ☐ Notion 使用者情境 新增角色故事已記錄
@@ -158,7 +159,7 @@ feat: [ERP 模組] 迭代 Spec
 ## § 多檔案驗證已完成
 
 ### ① 連帶更新
-- data-model.md：新增 [欄位名稱]
+- Notion 資料欄位 DB：新增 [欄位名稱]
 - Notion 狀態變化：新增 [狀態名稱]
 - Notion 業務情境 DB：新增 [情境 ID 與名稱]
 - [其他檔案]：[修改項目]
@@ -167,7 +168,7 @@ feat: [ERP 模組] 迭代 Spec
 - Notion 狀態變化 ↔ Notion 業務情境 DB：✓ 一致
 - Notion 業務情境 DB ↔ Notion 使用者情境：✓ 一致
 - Notion 使用者情境 ↔ Notion 商業流程：✓ 一致
-- data-model.md ↔ Spec：✓ 一致
+- Notion 資料欄位 DB ↔ Spec：✓ 一致
 
 ### ③ 自動稽核
 - 執行：bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
@@ -189,7 +190,7 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
 | **狀態孤立** | Notion 狀態變化 新增狀態，但業務情境 DB 無對應情境驗證 | 補充情境；若不需驗證，檢查狀態定義是否正確 |
 | **邏輯矛盾** | Notion 狀態變化 允許的轉移，但 Notion 商業流程 的規則禁止 | 確認業務規則是否正確；同步 Notion 狀態變化 或 Notion 商業流程 |
 | **角色遺漏** | scenarios.md 新增情境，但 Notion 使用者情境無對應角色故事 | 補充角色故事，或檢查該情境是否真的需要某角色參與 |
-| **欄位孤立** | data-model.md 新增欄位，但無 Spec 章節說明用途 | 補充 Spec；若欄位暫時不用，移至「未來預留」欄位區 |
+| **欄位孤立** | Notion 資料欄位 DB 新增欄位，但無 Spec 章節說明用途 | 補充 Spec；若欄位暫時不用，移至「未來預留」欄位區 |
 | **邊界無測試** | test-cases.md 發現邊界情況，但 Spec 未定義處理方式 | 新增 OQ 確認處理方式，或補充 Spec 定義 |
 | **版本未遞增** | 修改了 .md 內容，但檔案頂部版本號未更新 | 遞增版本號（major.minor 格式），記錄修改理由 |
 
@@ -208,7 +209,7 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
 - **狀態、流程相關** → Notion 狀態變化（https://www.notion.so/32c3886511fa81539eb9d3c97630caa0）
 - **邏輯、計算相關** → Notion 商業流程（https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a）
 - **情境、邊界相關** → Notion 業務情境 DB / test-cases.md
-- **數據結構相關** → docs/data-model.md
+- **數據結構相關** → Notion 資料欄位 DB（https://www.notion.so/32c3886511fa803e9f30edbb020d10ce）
 - **角色、需求相關** → Notion 使用者情境（https://www.notion.so/32c3886511fa8144b38adc9266395d15）
 - **不確定項** → open-questions.md
 

@@ -35,4 +35,4 @@
 | PI-002 | 大貨印件建立後、工單草稿建立前的印製狀態定義（等待中 = 工單草稿已建立？） | ✅ 印件狀態「等待中」= 印件建立後的初始狀態；工單不一定已建立，直到工單製程審核完畢並交付給各工廠後，才進到「工單已交付」；state-machines.md 定義已更新（v9） | `state-machines.md` 印製狀態設計決策 |
 | ORD-003 | 需求單成交→訂單轉單時，各欄位帶入規則？ | ✅ 除報價紀錄、活動紀錄外，暫定所有欄位均自動帶入；報價紀錄與活動紀錄保留在需求單，不帶入訂單 | `business-process.md` Section 2.1 |
 | XM-001 | 行動裝置（手機）RWD 支援優先級？業務在外是否需要行動端操作？ | ✅ **Phase 1 桌機版優先**，不支援 RWD；行動裝置支援列為後續版本計畫。各模組 NFR 統一記錄：行動裝置 = 不支援（Phase 1）。 | `open-questions.md` XM-001 |
-| QR-004 | 議價中的「議價備註」欄位是否需要獨立紀錄？還是活動紀錄即可？ | ✅ **設獨立欄位** `negotiation_note`（text，選填），不依賴活動紀錄。已更新 `docs/data-model.md` QuoteRequest 表。 | `docs/data-model.md` |
+| QR-004 | 議價中的「議價備註」欄位是否需要獨立紀錄？還是活動紀錄即可？ | ✅ **設獨立欄位** `negotiation_note`（text，選填），不依賴活動紀錄。已更新 Notion 資料欄位 DB QuoteRequest 表。 | Notion 資料欄位 DB |

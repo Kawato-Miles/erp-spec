@@ -1,7 +1,7 @@
 # ERP 單據資料流分析與測試案例
 
 > 分析範圍：需求單 / 訂單 / 印件 / 工單 / 任務 / 生產任務 / 數量計算
-> 依據文件：business-process.md v9、state-machines.md v8、state-machines-ops.md、data-model.md v0.7（2026-02-23）
+> 依據文件：Notion 商業流程、Notion 狀態變化（上層）、Notion 狀態變化（下層）、Notion 資料欄位 DB（https://www.notion.so/32c3886511fa803e9f30edbb020d10ce）
 > 狀態：資料流問題 8 項（已解答 6 項 ✅、待確認 2 項 ⏳）；測試案例 45 條（含 7 條數量計算 TC、6 條出貨 TC）
 > 最後更新：2026-02-24（新增 TC-SHP-001~006 出貨分批情境；修改 TC-P005 驗證點、TC-Q004 計算邏輯；依方向 A 決策：QC 入庫 > 0 即可出貨，不需等印件製作完成）
 

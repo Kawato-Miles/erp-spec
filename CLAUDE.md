@@ -221,6 +221,7 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 - 文件語言：**繁體中文**
 - Spec 格式：使用 `.claude/skills/erp-spec/SKILL.md` 規範 / 規格書存於 **Notion Feature Database**（本地 `spec/` 已停用）
 - **Prototype / 介面設計**：Prototype 實作在 GitHub Repo `sens-erp-prototype`（本地路徑 `/Users/b-f-03-029/sens-erp-prototype`），技術棧為 React + TypeScript + Tailwind + shadcn/ui
+- **ERP 平台限制**：ERP 系統僅支援電腦版（桌機瀏覽器），不規劃行動裝置版，所有 ERP 模組適用
 - 回應風格：重點優先，條列清楚，避免冗詞
 - 優先非同步溝通
 
@@ -297,6 +298,6 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 | ERP Spec Skill | `.claude/skills/erp-spec/SKILL.md` |
 | Notion → GitHub Issue Skill | `.claude/skills/notion-to-github/SKILL.md` |
 | BRD 模板（Notion） | `.claude/skills/erp-spec/references/brd-template.md` |
-| PRD Parent Issue 模板（GitHub，模組層） | `.claude/skills/erp-spec/references/prd-parent-template.md` |
-| PRD Sub-issue 模板（GitHub，子功能層） | `.claude/skills/erp-spec/references/prd-sub-template.md` |
+| PRD Parent Issue 模板（GitHub，模組層） | `.claude/skills/notion-to-github/references/prd-parent-template.md` |
+| PRD Sub-issue 模板（GitHub，子功能層） | `.claude/skills/notion-to-github/references/prd-sub-template.md` |
 | ERP 全局資料模型 | Notion 資料欄位 DB：https://www.notion.so/32c3886511fa803e9f30edbb020d10ce |

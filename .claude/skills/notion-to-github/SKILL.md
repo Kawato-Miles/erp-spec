@@ -1,14 +1,15 @@
 ---
 name: notion-to-github
 description: >
-  將 Notion spec 頁面轉換為 GitHub Issue，並設定 Project 欄位。
+  將 Notion BRD 頁面轉換為 GitHub PRD Issues（Parent Issue + Sub-issues），並設定 Project 欄位。
+  定位：BRD 完成後建立開發用 Issues；商業背景以 Notion 連結呈現，不重複複製內容。
   觸發時機：Miles 說「開 Issue」「Notion 轉 Issue」「建立 GitHub Issue」，或提供 Notion 頁面連結並要求建立 Issue。
-  此 skill 自動完成：讀取 Notion 頁面 → 解析業務內容 → 建立 GitHub Issue → 加入 Project 並設定欄位。
+  此 skill 自動完成：讀取 Notion BRD → 依模板建 Parent Issue（模組層）→ 依 BRD 範疇建 Sub-issues（子功能層）→ 加入 Project 並設定欄位。
 ---
 
-# Notion → GitHub Issue 轉換
+# Notion → GitHub PRD Issues 轉換
 
-將 Notion spec 頁面的業務內容轉換為 GitHub Issue，加入 sensationsprint 專案管理 Project。
+將 Notion BRD 頁面轉換為 GitHub PRD Issues（Parent + Sub-issues），加入 sensationsprint 專案管理 Project。
 
 ---
 
@@ -27,9 +28,10 @@ gh auth refresh -h github.com -s project
 轉換進度：
 - [ ] Step 1：讀取 Notion 頁面
 - [ ] Step 2：解析標題與平台
-- [ ] Step 3：整理 Issue body（業務內容）
-- [ ] Step 4：建立 GitHub Issue
-- [ ] Step 5：加入 Project 並設定欄位
+- [ ] Step 3：整理 Parent Issue body（依 prd-parent-template）
+- [ ] Step 4：建立 Parent Issue
+- [ ] Step 4b：依 BRD 範疇建立 Sub-issues（依 prd-sub-template）
+- [ ] Step 5：Parent Issue 加入 Project 並設定欄位
 ```
 
 ---
@@ -58,45 +60,85 @@ gh auth refresh -h github.com -s project
 
 ---
 
-### Step 3：整理 Issue body（業務內容）
+### Step 3：整理 Parent Issue body（依 prd-parent-template）
 
-**包含**（業務可讀內容）：
-- 問題陳述（背景痛點、受影響使用者、現有解法缺陷）
-- 目標與成功指標（KPI 表格）
-- 使用者故事（User Stories，含驗收條件）
-- 功能需求（Functional Requirements 表格）
-- 待確認項目（Open Questions）
+模板：`.claude/skills/notion-to-github/references/prd-parent-template.md`
 
-**排除**（技術細節，保留在 Notion）：
-- 資料模型 / DB Schema
-- 測試案例（Test Cases）
-- API 規格
-- 非功能需求（NFR）
-- UX 互動設計細節
-
-**Body 結尾必加 Notion 連結**：
-```markdown
----
-> Spec 版本：{版本號}（{最後更新日}）｜PM：{PM 名稱}
-> [完整規格書（Notion）]({notion_page_url})
-```
+**填入規則：**
+- `背景與商業目標`：貼入 Notion BRD URL
+- `資料欄位`：Notion 資料欄位 DB 連結（固定，加模組名稱說明）
+- `功能邏輯說明`：從 BRD § 範疇（In Scope）整理成條列說明
+- `UI / FE / BE`：留 TBD，由開發階段各角色補入
+- `Sub-issues`：等 Step 4b 建完後補入 Issue 號
 
 ---
 
-### Step 4：建立 GitHub Issue
+### Step 4：建立 Parent Issue
+
+**Issue Title 格式**：`[ Feature ] - {平台} - {模組名稱}`
 
 ```bash
-gh issue create \
-  --repo sensationsprint/backlog \
-  --title "[ Feature ] - {平台} - {功能描述}" \
-  --body "{body 內容}"
+gh api graphql -f query='
+mutation {
+  createIssue(input: {
+    repositoryId: "R_kgDOKbOGzg"
+    title: "[ Feature ] - {平台} - {模組名稱}"
+    body: "{parent body 內容}"
+    issueTypeId: "IT_kwDOCJVQiM4BNidc"
+  }) {
+    issue { id number title }
+  }
+}'
 ```
 
 **預設不帶入**：Labels、Assignee、Milestone。
 
 ---
 
+### Step 4b：建立 Task Sub-issues（依角色）
+
+模板：`.claude/skills/notion-to-github/references/prd-sub-template.md`
+
+**Sub-issue 拆分規則**：
+- 依角色（Backend / Frontend / Design）各建一個 Sub-issue
+- 若 BRD 有明確 Phase 拆分，每個角色 × Phase 各建一個（如：後端 Phase 1、後端 Phase 2）
+
+**Sub-issue Title 格式**：`[ Task ] - {角色} - {模組名稱} - {Phase（若有）}`
+- 例：`[ Task ] - 後端 - 需求單管理模組 - Phase 1`
+
+**角色 Label 對應：**
+| 角色 | Label | Label ID |
+|------|-------|----------|
+| 後端 | `Backend` | `LA_kwDOKbOGzs8AAAABqEeT5A` |
+| 前端 | `Frontend` | `LA_kwDOKbOGzs8AAAACGVRnYQ` |
+| 設計 | `Design` | `LA_kwDOKbOGzs8AAAACRooYDQ` |
+
+**IssueType：** Task（`IT_kwDOCJVQiM4BNidW`）
+
+**用 GraphQL 建立（同時設定 type、label、parent）：**
+```bash
+gh api graphql -f query='
+mutation {
+  createIssue(input: {
+    repositoryId: "R_kgDOKbOGzg"
+    title: "[ Task ] - {角色} - {模組名稱} - Phase {N}"
+    body: "{sub body 內容}"
+    issueTypeId: "IT_kwDOCJVQiM4BNidW"
+    labelIds: ["{label_id}"]
+    parentIssueId: "{parent_issue_node_id}"
+  }) {
+    issue { id number title }
+  }
+}'
+```
+
+Sub-issue 建完後，每個 Sub-issue 都接續 Step 5 加入 Project（設定與 Parent Issue 相同：Priority = P2、Platform = ERP）。
+
+---
+
 ### Step 5：加入 Project 並設定欄位
+
+> Parent Issue 與每個 Sub-issue 都執行此步驟。
 
 **5a. 取得新建 Issue 的 node ID：**
 ```bash
@@ -168,9 +210,12 @@ mutation {
 
 ## 欄位預設值一覽
 
+### Parent Issue（Feature）
+
 | GitHub 欄位 | 預設值 | 備註 |
 |------------|--------|------|
 | Repo | `sensationsprint/backlog` | 固定 |
+| IssueType | Feature（`IT_kwDOCJVQiM4BNidc`） | 固定 |
 | Labels | 不設定 | — |
 | Assignee | 不設定 | — |
 | Milestone | 不設定 | — |
@@ -178,6 +223,21 @@ mutation {
 | Status | Backlog（`f57e7ecf`） | 預設 |
 | Priority | P2（`6fd04d62`） | 可由 Notion 優先度覆寫：P0=`662124fe` / P1=`98204a83` / P3=`ec9d3ee1` |
 | Platform | 依平台對應表 | 預設 ERP（`fd47d6d0`） |
+
+### Sub-issue（Task）
+
+| GitHub 欄位 | 預設值 | 備註 |
+|------------|--------|------|
+| Repo | `sensationsprint/backlog` | 固定 |
+| IssueType | Task（`IT_kwDOCJVQiM4BNidW`） | 固定 |
+| Labels | 依角色：Backend / Frontend / Design | 見角色 Label 對應表 |
+| Parent | Parent Issue node ID | 建立時帶入 `parentIssueId` |
+| Assignee | 不設定 | — |
+| Milestone | 不設定 | — |
+| Project | `PVT_kwDOCJVQiM4AVSfE`（專案管理） | 固定，建立後用 Step 5 加入 |
+| Status | Backlog（`f57e7ecf`） | 預設 |
+| Priority | P2（`6fd04d62`） | 固定 |
+| Platform | ERP（`fd47d6d0`） | 固定 |
 
 ---
 

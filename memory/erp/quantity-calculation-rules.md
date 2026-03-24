@@ -1,7 +1,7 @@
 # 數量換算計算規則
 
 > **用途**：Prototype 設計與測試時的參考標準
-> **根據**：business-process.md §4、data-model.md v0.7 修訂
+> **根據**：Notion 商業流程 §4、Notion 資料欄位 DB 修訂
 > **狀態**：✅ 初版完成
 > **最後更新**：2026-02-23
 
