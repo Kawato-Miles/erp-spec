@@ -74,11 +74,11 @@ Read: .claude/agents/knowledge/erp-consultant-guideline.md
 - 每條趨勢必須有業務含義說明，不只是陳述趨勢本身
 - 重要的趨勢附上來源（URL）
 
-**重寫 ceo-guideline.md 的 § 五：**
-保留標題與說明文字，只更新條目內容，更新「最後趨勢更新」日期。
+**重寫 ceo-guideline.md 的 § 六（當前趨勢）：**
+保留標題與說明文字，只更新條目內容，更新「最後趨勢更新」日期。§ 一至五（含 CRM）不修改。
 
-**重寫 erp-consultant-guideline.md 的 § 六：**
-保留標題與說明文字，只更新條目內容，更新「最後趨勢更新」日期。
+**重寫 erp-consultant-guideline.md 的 § 七（當前趨勢）：**
+保留標題與說明文字，只更新條目內容，更新「最後趨勢更新」日期。§ 一至六（含 CRM）不修改。
 
 ## Step 6：寫回檔案並 Commit
 
