@@ -169,7 +169,7 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 | `docs:` | 更新說明性備註 |
 
 **結尾必加**：`Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>`
-**每次修改 memory/ 後，連同 CLAUDE.md 一起 commit。**
+**每次修改 `memory/` 或 `.claude/agents/` 後，連同 CLAUDE.md 一起 commit，commit 完成後 hook 會自動 push。**
 → Commit 格式範例見 `memory/erp/spec-iteration-workflow.md` § 迭代後 § Step 3
 
 ---
