@@ -88,7 +88,7 @@ pt_completed = ProductionTask.completed_quantity
 
    completion_ratios = [pt_completion_ratio, pt_completion_ratio, ...]
 
-4. 取最小值（木桶理論）：
+4. 取最小值（基於 BOM 結構的齊套性邏輯，Kitting Logic）：
    task_completion = min(completion_ratios)
 ```
 
@@ -118,7 +118,7 @@ task_completion = min(1000, 2000) = 1000
    for each task in workorder.tasks:
      task_completions = [task_completion, task_completion, ...]
 
-2. 取最小值（木桶理論）：
+2. 取最小值（基於 BOM 結構的齊套性邏輯，Kitting Logic）：
    wo_completion = min(task_completions)
 ```
 
@@ -151,7 +151,7 @@ wo_completion = min(1000, 500) = 500
 
    pi_ratios = [wo_completion_ratio, wo_completion_ratio, ...]
 
-2. 取最小值（木桶理論）：
+2. 取最小值（基於 BOM 結構的齊套性邏輯，Kitting Logic）：
    pi_completion = min(pi_ratios)
 
 3. 判定成品完成：
@@ -417,7 +417,7 @@ WO-001 完成 500，倍數 1000
 - [ ] 異動時強制檢查「至少 1 個生產任務 affects_product = TRUE」
 
 **測試時**：
-- [ ] 驗證層級統計邏輯（木桶理論）
+- [ ] 驗證層級統計邏輯（基於 BOM 結構的齊套性邏輯）
 - [ ] 驗證 floor 無條件捨去後的數字精度
 - [ ] 驗證 affects_product 篩選的正確性
 - [ ] 驗證異動流程的重算邏輯
