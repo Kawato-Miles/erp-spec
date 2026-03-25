@@ -253,6 +253,7 @@ ERP 文件中「Phase」有兩個層級：
 
 | 資源 | 路徑 |
 |------|------|
+| **Notion URL 索引（唯一正本）** | `memory/shared/notion-index.md` |
 | BRD 模板（Notion） | `references/brd-template.md` |
 | PRD Parent Issue 模板（GitHub，模組層） | `.claude/skills/notion-to-github/references/prd-parent-template.md` |
 | PRD Sub-issue 模板（GitHub，子功能層） | `.claude/skills/notion-to-github/references/prd-sub-template.md` |

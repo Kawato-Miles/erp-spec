@@ -49,6 +49,8 @@ Read: .claude/agents/knowledge/ceo-guideline.md
 
 ## 步驟三：載入業務背景文件
 
+> 完整 Notion URL 索引見 `memory/shared/notion-index.md`（唯一正本）。URL 異動時以該檔案為準。
+
 1. Notion 商業流程（https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a）
    - 重點：核心業務規則、決策邏輯、各環節的觸發條件
 2. Notion 使用者情境（https://www.notion.so/32c3886511fa8144b38adc9266395d15）

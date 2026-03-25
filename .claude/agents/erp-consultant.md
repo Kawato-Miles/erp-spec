@@ -50,6 +50,8 @@ Read: .claude/agents/knowledge/erp-consultant-guideline.md
 
 ## 步驟三：載入系統設計背景文件
 
+> 完整 Notion URL 索引見 `memory/shared/notion-index.md`（唯一正本）。URL 異動時以該檔案為準。
+
 1. Notion 狀態變化（https://www.notion.so/32c3886511fa81539eb9d3c97630caa0）
    - 重點：所有單據的狀態流轉規則（上層：需求單 / 訂單 / 工單 / 印件；下層：任務 / 生產任務 / QC / 出貨單）
    - 必須理解：哪些狀態轉換是自動觸發、哪些需要人工確認、哪些有前置條件

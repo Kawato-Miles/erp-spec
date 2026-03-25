@@ -59,6 +59,8 @@ Read: .claude/agents/knowledge/pm-guideline.md
 
 ### 3a. 全景資料清單（每次必確認）
 
+> 完整 Notion URL 索引見 `memory/shared/notion-index.md`（唯一正本）。URL 異動時以該檔案為準。
+
 以下資料來源是此 ERP 系統的完整知識庫。執行前先確認自己掌握每一個的現況，再決定本次需要深讀哪些：
 
 | 資料來源 | 說明 | Notion / 路徑 |
