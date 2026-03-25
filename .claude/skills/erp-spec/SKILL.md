@@ -119,6 +119,20 @@ Notion 頁面 ID 見 `CLAUDE.md` § Spec 規格檔清單。
 
 **BRD 內容**（Notion）：問題陳述、商業目標、範疇、設計決策（若有）、相依性與風險、變更紀錄
 
+**Notion Properties 同步規則（每次建立或更新 BRD 時執行）：**
+
+文件元資料不寫入 BRD body，統一透過 `mcp__notion__notion-update-page` 維護頁面屬性欄：
+
+| Property 欄位 | 對應值 | 更新時機 |
+|--------------|--------|---------|
+| Version | 當前版本號（如 `v0.1`） | 每次 BRD 有實質內容異動 |
+| Status | `草稿` / `審核中` / `核准` | 狀態變更時 |
+| Last Edited | 當日日期 | 每次更新 |
+| Related Modules | 下游 / 依賴模組 | 首次建立，異動時更新 |
+| Target Version | 預計商業 Phase（如 `Phase 1`） | 首次建立 |
+
+skill/agent 讀取元資料：`mcp__notion__notion-fetch`（讀 properties）或 `CLAUDE.md § Spec 規格檔清單`（本地快速索引）。
+
 > KPI 指標維護於 [KPI DB](https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f)（以 Feature 篩選），撰寫 BRD 時需對照確認指標已建立；User Story 維護於 [User Story DB](https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d)（以 Feature 篩選），撰寫 BRD 時需確認相關 Story 已存在或同步新增。兩者均不在 BRD 頁面內展示。
 
 > BRD 完成後，執行 `notion-to-github` skill 建立 GitHub PRD Issues（Parent + Sub-issues）。

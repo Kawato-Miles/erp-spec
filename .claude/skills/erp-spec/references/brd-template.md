@@ -14,18 +14,9 @@
 
 ---
 
-## 文件基本資訊 {toggle="true"}
-
-| 欄位 | 內容 |
-|------|------|
-| **功能名稱** | [功能名稱] |
-| **文件版本** | v0.1 |
-| **PM** | Miles |
-| **建立日期** | [YYYY-MM-DD] |
-| **最後更新** | [YYYY-MM-DD]（[版本]：[修改摘要]） |
-| **狀態** | 草稿 / 審核中 / 核准 |
-| **相關模組** | [下游模組、依賴模組] |
-| **預計版本** | [v1.0 Phase 1] |
+> **文件元資料**：版本、狀態、PM、建立日期、最後更新、相關模組、預計版本，統一維護於 Notion Feature Database 的頁面屬性欄（Properties），不寫入 BRD body。
+> skill/agent 讀取元資料：透過 `mcp__notion__notion-fetch` 讀取頁面 properties，或參照 CLAUDE.md § Spec 規格檔清單。
+> skill/agent 更新元資料：透過 `mcp__notion__notion-update-page` 更新對應 property 欄位（Version、Status、Last Edited 等）。
 
 ---
 
