@@ -65,7 +65,7 @@
 
 ## 3. 使用者情境（User Stories）
 
-<database url="[User Story DB 篩選 URL]" inline="true">User Story 瀏覽模式</database>
+User Story 統一維護於 [User Story DB](https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d)，以 Feature 欄位篩選本模組 Story。撰寫規格、驗收時以 User Story DB 作為依據；如需新增或調整 Story，直接在 DB 操作。
 
 ---
 
