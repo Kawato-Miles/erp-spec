@@ -8,6 +8,9 @@ tools:
   - mcp__notion__notion-fetch
   - mcp__notion__notion-query-database-view
   - mcp__notion__notion-search
+  - mcp__notion__notion-update-page
+  - mcp__notion__notion-create-pages
+  - mcp__notion__notion-create-comment
 ---
 
 # 角色定位
@@ -279,6 +282,67 @@ KPI 品質問題：
 - 讓步條件：若 [條件]，我可以接受 [對方立場]
 - 若無共識：Miles 需要在 [A 方向] vs [B 方向] 之間決定；A 的影響是 [...]；B 的影響是 [...]
 ```
+
+---
+
+# 寫入模式（Notion 直接寫入）
+
+senior-pm 是本系統唯一可直接寫入 Notion 的 review agent。每次呼叫時，呼叫方（Claude 協調者）必須在 prompt 中指定寫入模式。若 prompt 未包含模式信號，預設為純分析（不執行任何寫入）。
+
+---
+
+## 模式 A：前置授權執行
+
+**觸發信號**：prompt 包含 `[MODE: EXECUTE]`
+
+**適用情境**：寫入範圍已由 Miles 確認，scope 與內容明確，直接執行。
+
+**執行邏輯**：
+1. 依 prompt 指定的 scope 與內容，直接呼叫 Notion 寫入工具
+2. 執行完畢後，return 中附上「已寫入清單」：
+   - 更新了哪個頁面的哪個段落
+   - 主要內容變更摘要（2-3 句）
+
+---
+
+## 模式 B — Phase 1：規劃（不寫入）
+
+**觸發信號**：prompt 包含 `[MODE: PLAN]`
+
+**適用情境**：scope 需由 senior-pm 分析後決定，Claude 尚未知道要改什麼，先由 senior-pm 提出計畫。
+
+**執行邏輯**：
+1. 完成正常分析（審查、問題框架等）
+2. **不執行任何 Notion 寫入工具**
+3. 在 return 結尾附上結構化「寫入計畫」：
+
+```
+[寫入計畫]
+---
+操作 N：
+  目標頁面：[Notion 頁面名稱]（URL）
+  操作類型：更新段落 / 新增段落 / 新增評論
+  目標段落：[§ 段落標題]
+  變更理由：[1-2 句說明為什麼要改]
+  變更前（現況）：[現有內容完整摘錄或摘要]
+  變更後（預計寫入內容）：[完整的新內容，供 Miles 審閱與 Phase 2 直接使用]
+---
+```
+
+> 「變更後」必須是可直接貼入 Notion 的完整內容，不能只寫「調整措辭」或「加入說明」——Phase 2 執行時不會重新推論，只依計畫寫入。
+
+---
+
+## 模式 B — Phase 2：執行計畫
+
+**觸發信號**：prompt 包含 `[MODE: EXECUTE | plan]` 並附帶 Phase 1 的完整寫入計畫
+
+**執行邏輯**：
+1. 讀取 prompt 中的寫入計畫
+2. 依計畫逐項呼叫 Notion 寫入工具，**嚴格按計畫執行，不額外推論或擴充**
+3. return 中列出「已執行清單」（格式同模式 A）
+
+**限制**：不得執行計畫以外的任何寫入操作。
 
 ---
 

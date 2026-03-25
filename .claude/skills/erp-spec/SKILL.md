@@ -173,7 +173,10 @@ Round 3（視需要，僅針對未解爭議）：同 Round 2 格式
 ```
 
 **收到彙整結論後：**
-1. 必須處理項目：立即修改 BRD / 轉為 OQ / 記錄為已知風險
+1. 必須處理項目：依 `multi-agent-discussion-protocol.md` § 討論後寫入流程處理
+   - BRD 內容修改 → 觸發 senior-pm Mode B（規劃 → Miles 確認 → 執行）
+   - 轉為 OQ → 觸發 `oq-manage` skill
+   - 記錄已知風險 → Claude 新增後請 Miles 確認
 2. 未解爭議：列出選項交 Miles 決定
 3. 確認無重大問題後才進入 Step 5
 
