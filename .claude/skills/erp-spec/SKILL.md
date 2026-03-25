@@ -125,11 +125,9 @@ Notion 頁面 ID 見 `CLAUDE.md` § Spec 規格檔清單。
 
 | Property 欄位 | 對應值 | 更新時機 |
 |--------------|--------|---------|
-| Version | 當前版本號（如 `v0.1`） | 每次 BRD 有實質內容異動 |
-| Status | `草稿` / `審核中` / `核准` | 狀態變更時 |
-| Last Edited | 當日日期 | 每次更新 |
-| Related Modules | 下游 / 依賴模組 | 首次建立，異動時更新 |
-| Target Version | 預計商業 Phase（如 `Phase 1`） | 首次建立 |
+| 文件版本 | 當前版本號（如 `v0.1`） | 每次 BRD 有實質內容異動 |
+| 文件狀態 | `草稿` / `審核中` / `核准` | 狀態變更時 |
+| 相關模組 | 下游 / 依賴模組（Multi-select） | 首次建立，異動時更新 |
 
 skill/agent 讀取元資料：`mcp__notion__notion-fetch`（讀 properties）或 `CLAUDE.md § Spec 規格檔清單`（本地快速索引）。
 
