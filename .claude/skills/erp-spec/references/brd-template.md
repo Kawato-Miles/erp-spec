@@ -48,11 +48,7 @@
 
 ### 2.2 成功指標（KPI）
 
-<database url="[KPI DB 依 Feature 篩選後的 view URL]" inline="true">KPI 瀏覽模式</database>
-
-> 指標統一維護於 [KPI DB](https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f)。
-> 撰寫新模組 BRD 時，在 KPI DB 建立對應指標並以 Feature 欄位關聯本模組，再將篩選後的 view URL 貼至上方 database 標籤。
-> 如需調整指標，直接在 KPI DB 操作，BRD 頁面自動反映最新內容。
+指標統一維護於 [KPI DB](https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f)，以 Feature 欄位篩選本模組指標。撰寫規格、規劃驗收條件時，以 KPI DB 的成功指標作為依據；如需調整指標，直接在 KPI DB 操作。
 
 ### 2.3 範疇（階段目標）
 
