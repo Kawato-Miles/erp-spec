@@ -138,7 +138,7 @@ Notion 頁面 ID 見 `CLAUDE.md` § Spec 規格檔清單。
 
 BRD 草稿完成後，在 OQ 同步前執行。依「三視角多輪討論協議」執行，三個 agent 自主討論至收斂後才輸出給 Miles。
 
-協議全文：`.claude/agents/knowledge/three-perspective-protocol.md`
+協議全文：`.claude/agents/knowledge/multi-agent-discussion-protocol.md`
 
 **三個 Agent 的審查重心：**
 
