@@ -117,7 +117,9 @@ Spec 撰寫進度：
 
 Notion 頁面 ID 見 `CLAUDE.md` § Spec 規格檔清單。
 
-**BRD 內容**（Notion）：問題陳述、商業目標、KPI（含商業目標對應欄）、範疇、使用者情境、相依性與風險、變更紀錄
+**BRD 內容**（Notion）：問題陳述、商業目標、範疇、設計決策（若有）、相依性與風險、變更紀錄
+
+> KPI 指標維護於 [KPI DB](https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f)（以 Feature 篩選），撰寫 BRD 時需對照確認指標已建立；User Story 維護於 [User Story DB](https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d)（以 Feature 篩選），撰寫 BRD 時需確認相關 Story 已存在或同步新增。兩者均不在 BRD 頁面內展示。
 
 > BRD 完成後，執行 `notion-to-github` skill 建立 GitHub PRD Issues（Parent + Sub-issues）。
 
