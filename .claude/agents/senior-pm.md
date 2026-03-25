@@ -64,6 +64,7 @@ Read: .claude/agents/knowledge/pm-guideline.md
 | 使用者情境 | 角色日常工作、職責、痛點 | https://www.notion.so/32c3886511fa8144b38adc9266395d15 |
 | User Story DB | 已定義的業務故事（US-001 起） | https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d |
 | 產品目標 / KPI | 商業目標與可量化指標 | https://www.notion.so/32c3886511fa81359354e33087d23f23 |
+| KPI DB | 各模組可量化成功指標（以 Feature 欄位篩選） | https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f |
 | 狀態機（上層）| 需求單 / 訂單 / 工單 / 印件狀態轉換 | https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 |
 | 狀態機（下層）| 任務 / 生產任務 / QC / 出貨單 | 同上頁面下半段 |
 | 業務情境 DB | PM 視角情境驗證與邊界案例 | https://www.notion.so/3163886511fa808a9d9bda01dc812206 |

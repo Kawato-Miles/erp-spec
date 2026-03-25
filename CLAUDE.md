@@ -273,7 +273,7 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 | 確認 / 解答 Open Question | 查詢 Notion OQ DB（見 § OQ 工作流）+ Notion 狀態變化 對應章節 | — |
 | 使用者故事 / 業務情境 | Notion User Story DB：https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d | Notion 使用者情境（角色權責）：https://www.notion.so/32c3886511fa8144b38adc9266395d15 |
 | 術語查詢 | `glossary.md` | — |
-| 產品目標 / KPI | Notion 產品目標：https://www.notion.so/32c3886511fa81359354e33087d23f23 | — |
+| 產品目標 / KPI | Notion 產品目標：https://www.notion.so/32c3886511fa81359354e33087d23f23 | KPI DB（各模組可量化指標）：https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f |
 | 資料模型（查詢 / 新增 / 修改 / 移除欄位或資料表）| Notion 資料欄位 DB：https://www.notion.so/32c3886511fa803e9f30edbb020d10ce | — |
 | **Prototype 製作** | `memory/shared/prototype-guidelines.md` + 對應 Spec + Notion 業務情境 DB + Notion 狀態變化 | Notion 使用者情境、Notion 測試案例 DB：https://www.notion.so/2b93886511fa817fbd65e7608726f036 |
 | Prototype 驗證 / 反饋 | `/Users/b-f-03-029/sens-erp-prototype/src/` 對應模組 + `memory/shared/prototype-guidelines.md` § 五 | — |
@@ -283,6 +283,7 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 |------|------|
 | Spec 迭代工作流（實施細節、檔案清單、驗證標準）| `memory/erp/spec-iteration-workflow.md` |
 | 產品目標（商業目標 / KPI / 範疇） | Notion 產品目標：https://www.notion.so/32c3886511fa81359354e33087d23f23 |
+| 成功指標 KPI DB（各模組可量化指標，以 Feature 欄位篩選）| Notion KPI DB：https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f |
 | 業務流程（核心規則）| Notion 商業流程：https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a |
 | 狀態機（上層：需求單 / 訂單 / 工單 / 印件）| Notion 狀態變化：https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 |
 | 狀態機（下層：任務 / 生產任務 / QC / 出貨單）| 同上（頁面下半段）|

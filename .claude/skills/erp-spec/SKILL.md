@@ -86,7 +86,7 @@ Spec 撰寫進度：
 | 需求單 / 訂單 / 工單 / 印件 | Notion 狀態變化 § 上層 + Notion 商業流程 + Notion 使用者情境 + Notion 業務情境 DB |
 | 生產任務 / QC / 出貨單 | Notion 狀態變化 § 下層 + Notion 商業流程 + Notion 使用者情境 + Notion 業務情境 DB |
 | 跨上下層流程 | Notion 狀態變化（上層 + 下層）+ Notion 商業流程 + Notion 使用者情境 + Notion 業務情境 DB |
-| 所有 ERP Spec | Notion 產品目標（https://www.notion.so/32c3886511fa81359354e33087d23f23）（KPI 對齊） |
+| 所有 ERP Spec | Notion 產品目標（https://www.notion.so/32c3886511fa81359354e33087d23f23）（KPI 對齊）；KPI DB（https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f）（各模組可量化指標） |
 | Prototype / 介面設計規格 | `memory/shared/ui-design-system.md`（Ant Design 規範、元件、版型） |
 
 **重要**：以下四個檔案是**所有 Spec 撰寫的必讀基礎**（提供邏輯、用戶與情境背景）：
@@ -255,6 +255,7 @@ ERP 文件中「Phase」有兩個層級：
 | 通用工作原則 | `memory/shared/principles.md` |
 | UI 設計系統（Ant Design 規範） | `memory/shared/ui-design-system.md` |
 | ERP 產品目標 / KPI | Notion 產品目標：https://www.notion.so/32c3886511fa81359354e33087d23f23 |
+| 成功指標 KPI DB | Notion KPI DB（各模組可量化指標，以 Feature 篩選）：https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f |
 | 狀態機（上層：需求單 / 訂單 / 工單） | Notion 狀態變化：https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 |
 | 狀態機（下層：任務 / QC / 出貨） | 同上（頁面下半段）|
 | 待確認事項（OQ） | Notion Follow-up DB：https://www.notion.so/32c3886511fa808e9754ea1f18248d92 |

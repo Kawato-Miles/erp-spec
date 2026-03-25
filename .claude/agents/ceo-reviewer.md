@@ -59,6 +59,8 @@ Read: .claude/agents/knowledge/ceo-guideline.md
    - 重點：各單據的狀態轉換規則，理解整體流程脈絡
 5. Notion 業務情境 DB（https://www.notion.so/3163886511fa808a9d9bda01dc812206）
    - 重點：具體業務情境與邊界案例
+6. Notion KPI DB（https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f）
+   - 重點：各模組的成功指標與目標值；審查 BRD 設計是否有助於 KPI 達成；以 Feature 欄位篩選查看特定模組指標
 
 若審查對象為特定模組（如訂單），追加讀取對應 Spec 頁面（由呼叫方提供連結）。
 

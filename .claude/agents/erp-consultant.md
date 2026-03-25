@@ -63,6 +63,8 @@ Read: .claude/agents/knowledge/erp-consultant-guideline.md
    - 重點：具體操作流程與成功條件
 6. Notion 業務情境 DB（https://www.notion.so/3163886511fa808a9d9bda01dc812206）
    - 重點：邊界情況與複雜情境的已知設計
+7. Notion KPI DB（https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f）
+   - 重點：各模組的成功指標與目標值；確認設計決策是否支援 KPI 達成；以 Feature 欄位篩選查看特定模組指標
 
 若審查對象為特定模組，追加讀取對應 Spec 頁面（由呼叫方提供連結）與 Notion Follow-up DB 中該模組的現有 OQ（https://www.notion.so/32c3886511fa808e9754ea1f18248d92）。
 
