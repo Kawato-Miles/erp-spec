@@ -125,6 +125,7 @@ page_id: {OQ 頁面 ID}
 ```
 
 > BRD 引用格式：在功能說明中以括號標注 OQ 連結，例如「採系統自動執行審稿狀態轉換（詳見 [Open Question](https://www.notion.so/32c3886511fa808e9754ea1f18248d92) 的 ORD-008）」。決策細節不重複寫入 BRD，以 OQ 為正本。
+> 其他資源（模組 BRD / 業務情境 / 商業流程等）的引用格式，統一參照 `brd-template.md` § 跨頁面引用規則。
 
 ### OQ 說明補充
 

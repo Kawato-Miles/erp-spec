@@ -1,8 +1,34 @@
 # BRD 模板 — 印刷 ERP 系統（Notion 頁面）
 
 > **使用說明**：BRD 存於 Notion Feature Database，著重商業決策與使用者情境。將所有 `[佔位符]` 替換為實際內容。標示 `TBD` 表示需進一步確認。
->
-> **設計決策引用原則**：設計過程中確認的決策，結論與理由統一記錄於 OQ DB 的「決議與理由」欄位（唯一正本）。BRD 中以行內括號引用，格式為「[一句話摘要]（詳見 [Open Question](https://www.notion.so/32c3886511fa808e9754ea1f18248d92) 的 {MODULE}-{NNN}，如 ORD-008）」，不在 BRD 內另立設計決策段落。
+
+---
+
+## 跨頁面引用規則
+
+**原則**：BRD 內所有跨頁面引用，一律使用 `[可讀名稱](Notion URL)` 格式，讓讀者可直接點擊跳轉。不得只寫名稱而不附連結，不得只寫 URL 而不附可讀名稱。
+
+### 常用資源引用速查
+
+| 引用目標 | 格式範例 |
+|---------|---------|
+| Open Question（設計決策） | `詳見 [Open Question](https://www.notion.so/32c3886511fa808e9754ea1f18248d92) 的 ORD-008` |
+| 模組 BRD（需求單）| `詳見 [需求單 BRD](https://www.notion.so/3293886511fa80998ac0e8cdf555da68)` |
+| 模組 BRD（訂單）| `詳見 [訂單 BRD](https://www.notion.so/32c3886511fa806bad41d755349b0567)` |
+| 模組 BRD（工單）| `詳見 [工單 BRD](https://www.notion.so/32c3886511fa80f98a43def401d1edce)` |
+| 業務情境（具體情境）| `詳見 [業務情境](https://www.notion.so/3163886511fa808a9d9bda01dc812206) 的情境 XX` |
+| 商業流程（章節）| `詳見 [商業流程](https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a) § X.X` |
+| 狀態機（模組段落）| `詳見 [狀態機](https://www.notion.so/32c3886511fa81539eb9d3c97630caa0) § 工單` |
+| User Story | `詳見 [User Story DB](https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d) 的 US-XXX` |
+| 使用者情境（角色說明）| `詳見 [使用者情境](https://www.notion.so/32c3886511fa8144b38adc9266395d15)` |
+| 資料欄位 DB | `詳見 [資料欄位 DB](https://www.notion.so/32c3886511fa803e9f30edbb020d10ce) 的 [欄位名]` |
+| 數量換算規則 | `詳見 [數量換算規則](https://www.notion.so/32c3886511fa81e9a77adbd21cfc9d4a)` |
+
+### 設計決策引用補充說明
+
+設計決策的結論與理由，統一記錄於 OQ DB 的「決議與理由」欄位（唯一正本）。BRD 中以行內括號引用，不另立設計決策段落。
+
+範例：`免審稿設定後審稿狀態直接為「合格」（詳見 [Open Question](https://www.notion.so/32c3886511fa808e9754ea1f18248d92) 的 ORD-008）`
 
 ---
 
