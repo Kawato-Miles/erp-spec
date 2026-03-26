@@ -323,7 +323,7 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 |------|------------|------|------|
 | 需求單 | https://www.notion.so/3293886511fa80998ac0e8cdf555da68 | v1.9 | 草稿 |
 | 訂單管理 BRD | https://www.notion.so/32c3886511fa806bad41d755349b0567 | v0.3 | 草稿 |
-| 工單管理 BRD | https://www.notion.so/32c3886511fa80f98a43def401d1edce | v0.1 | 草稿 |
+| 工單管理 BRD | https://www.notion.so/32c3886511fa80f98a43def401d1edce | v0.3 | 草稿 |
 
 ### Prototype 實作進度
 > Prototype 統一在 `sens-erp-prototype` Repo（本地：`/Users/b-f-03-029/sens-erp-prototype`）
