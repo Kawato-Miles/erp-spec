@@ -50,6 +50,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | 角色一致性 | 流程中的執行者是否與 Notion 使用者情境一致 |
 | User Story 關聯性 | BRD 引用的 US-XXX 是否存在於 Notion User Story DB |
 | CLAUDE.md Spec 清單 | 新增或版本異動的 Spec 是否已更新 CLAUDE.md § Spec 規格檔清單 |
+| 跨層自動觸發一致性 | 檢查 bottom-up 觸發鏈（生產任務 → 任務層 → 工單 → 印件 → 訂單）中每個觸發條件與狀態結果是否在狀態機文件與商業流程文件描述一致；重點關注逆流程場景（如作廢、退回、異動）可能造成的上下游競態衝突：同一層級同時有「向上完成」與「向上作廢」兩條 bottom-up 路徑時，優先順序是否已定義 |
 
 ### Step 3：自我演化 — 識別新稽核維度
 
@@ -91,3 +92,4 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 |------|------|------------|------|
 | v1.0 | 2026-03-24 | 初版（狀態機 / 商業流程 / OQ / 欄位 / 角色 / User Story / CLAUDE.md）| 從 erp-spec Step 6 抽出獨立 skill |
 | v1.1 | 2026-03-26 | audit-erp-docs.sh 更新：Check 1 加入 Notion 遷移 skip list；Check 3 改以 Notion URL 驗證關鍵資源；Check 4 補充遷移檔例外清單 | 消除已遷移 Notion 的本地檔案誤報，腳本與現行 Notion-first 架構對齊 |
+| v1.2 | 2026-03-26 | 新增「跨層自動觸發一致性」稽核維度 | 任務層級作廢規則確立 bottom-up 機制後，生產任務 → 訂單之間存在多條 bottom-up 路徑，逆流程（作廢、退回、異動）時可能產生競態衝突，需獨立稽核項確保每條觸發鏈條件與結果在狀態機與商業流程文件中描述一致 |
