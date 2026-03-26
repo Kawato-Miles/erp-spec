@@ -40,6 +40,19 @@ echo ""
 # ─────────────────────────────────────────
 echo "【Check 1】memory/erp/ 檔案 → CLAUDE.md 快速索引 ERP 資源"
 echo "------------------------------------------------------------"
+
+# 已遷移至 Notion 或屬於記憶型檔案，不需出現在 CLAUDE.md 快速索引
+# CLAUDE.md 改為引用對應的 Notion URL，本地檔案為舊版備份或封存
+SKIP_IN_CLAUDE="
+  quantity-calculation-rules.md
+  scenarios.md
+  shipment-logic-diagnosis.md
+  test-cases.md
+  product-goals.md
+  open-questions-archive.md
+  notion-migration-log.md
+"
+
 if [ ! -d "$ERP_DIR" ]; then
     echo "  ❌ 找不到目錄：memory/erp/"
     ISSUES=$((ISSUES + 1))
@@ -47,6 +60,8 @@ else
     for f in "$ERP_DIR"/*.md; do
         [ -f "$f" ] || continue
         fname=$(basename "$f")
+        # 跳過已遷移 Notion 或記憶型檔案
+        echo "$SKIP_IN_CLAUDE" | grep -qw "$fname" && echo "  ✅  $fname（Notion 遷移，跳過）" && continue
         if ! grep -q "$fname" "$CLAUDE_MD" 2>/dev/null; then
             echo "  ⚠️  未索引：$fname 未出現在 CLAUDE.md"
             ISSUES=$((ISSUES + 1))
@@ -84,22 +99,35 @@ echo ""
 # ─────────────────────────────────────────
 echo "【Check 3】關鍵 ERP 資源 → SKILL.md 參考資源"
 echo "------------------------------------------------------------"
-KEY_FILES=(
-    "state-machines.md"
-    "state-machines-ops.md"
-    "product-goals.md"
-    "user-scenarios.md"
+# 僅保留仍為本地檔案的關鍵資源；已遷移 Notion 改以 URL 形式驗證
+# 以下為仍在本地且需出現在 SKILL.md 的檔案
+KEY_LOCAL_FILES=(
     "glossary.md"
-    "business-process.md"
     "principles.md"
 )
-# 注意：open-questions.md 與 scenarios.md 已遷移至 Notion，不再檢查本地檔案
-for kf in "${KEY_FILES[@]}"; do
+# 已遷移 Notion 的關鍵資源 → 改驗證 Notion URL 是否出現在 SKILL.md
+NOTION_KEY_PATTERNS=(
+    "notion.so/32c3886511fa81ccaaf9fbfd3882f19a"   # 商業流程
+    "notion.so/32c3886511fa81539eb9d3c97630caa0"   # 狀態變化
+    "notion.so/32c3886511fa8144b38adc9266395d15"   # 使用者情境
+    "notion.so/32c3886511fa81359354e33087d23f23"   # 產品目標
+)
+# 注意：state-machines.md、state-machines-ops.md、user-scenarios.md、
+#       business-process.md、product-goals.md、scenarios.md 已遷移至 Notion
+for kf in "${KEY_LOCAL_FILES[@]}"; do
     if ! grep -q "$kf" "$SKILL_MD" 2>/dev/null; then
         echo "  ⚠️  未索引：$kf 未出現在 SKILL.md"
         ISSUES=$((ISSUES + 1))
     else
         echo "  ✅  $kf"
+    fi
+done
+for pattern in "${NOTION_KEY_PATTERNS[@]}"; do
+    if ! grep -q "$pattern" "$SKILL_MD" 2>/dev/null; then
+        echo "  ⚠️  未索引：Notion 資源（$pattern）未出現在 SKILL.md"
+        ISSUES=$((ISSUES + 1))
+    else
+        echo "  ✅  Notion 資源（$(echo "$pattern" | sed 's/notion.so\///')）"
     fi
 done
 echo ""
@@ -112,8 +140,19 @@ echo ""
 echo "【Check 4】memory/erp/*.md → SKILL.md 中有提及？（提示）"
 echo "------------------------------------------------------------"
 
-# 已知合理不在 SKILL.md 中的例外清單（用空格分隔）
-SKIP_IN_SKILL="open-questions-archive.md test-cases.md"
+# 已知合理不在 SKILL.md 中的例外清單
+# 包含：封存檔、已遷移 Notion（SKILL.md 改用 Notion URL 引用）、記憶型管理檔
+SKIP_IN_SKILL="
+  open-questions-archive.md
+  test-cases.md
+  open-questions.md
+  quantity-calculation-rules.md
+  scenarios.md
+  shipment-logic-diagnosis.md
+  product-goals.md
+  notion-migration-log.md
+  spec-iteration-workflow.md
+"
 
 for f in "$ERP_DIR"/*.md; do
     [ -f "$f" ] || continue

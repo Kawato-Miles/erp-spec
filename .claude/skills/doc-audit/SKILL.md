@@ -90,3 +90,4 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | 版本 | 日期 | 新增稽核維度 | 原因 |
 |------|------|------------|------|
 | v1.0 | 2026-03-24 | 初版（狀態機 / 商業流程 / OQ / 欄位 / 角色 / User Story / CLAUDE.md）| 從 erp-spec Step 6 抽出獨立 skill |
+| v1.1 | 2026-03-26 | audit-erp-docs.sh 更新：Check 1 加入 Notion 遷移 skip list；Check 3 改以 Notion URL 驗證關鍵資源；Check 4 補充遷移檔例外清單 | 消除已遷移 Notion 的本地檔案誤報，腳本與現行 Notion-first 架構對齊 |
