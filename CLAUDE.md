@@ -296,7 +296,7 @@ Spec 完成後進行迭代驗證（迭代前、迭代中、迭代後的完整規
 | 狀態機（上層：需求單 / 訂單 / 工單 / 印件）| Notion 狀態變化：https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 |
 | 狀態機（下層：任務 / 生產任務 / QC / 出貨單）| 同上（頁面下半段）|
 | 數量換算計算規則（Prototype 設計參考）| Notion 數量換算規則：https://www.notion.so/32c3886511fa81e9a77adbd21cfc9d4a |
-| 情境驗證（PM 視角步驟流程）| Notion 業務情境 DB：https://www.notion.so/3163886511fa808a9d9bda01dc812206 |
+| 情境驗證（PM 視角步驟流程）| Notion 業務情境 DB：https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05 |
 | User Story（業務故事集）| Notion User Story DB：https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d |
 | 使用者情境（角色權責定義）| Notion 使用者情境：https://www.notion.so/32c3886511fa8144b38adc9266395d15 |
 | 待確認事項（OQ） | Notion Follow-up DB：https://www.notion.so/32c3886511fa808e9754ea1f18248d92 |

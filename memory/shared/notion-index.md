@@ -27,7 +27,7 @@ type: reference
 
 | 資源名稱 | 說明 | URL | BRD 引用格式範例 |
 |---------|------|-----|----------------|
-| 業務情境 DB | PM 視角情境驗證與邊界案例 | https://www.notion.so/3163886511fa808a9d9bda01dc812206 | `詳見 [業務情境](https://www.notion.so/3163886511fa808a9d9bda01dc812206) 的情境 XX` |
+| 業務情境 DB | PM 視角情境驗證與邊界案例 | https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05 | `詳見 [業務情境](https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05) 的情境 XX` |
 | 使用者情境 | 各角色日常工作、職責、痛點 | https://www.notion.so/32c3886511fa8144b38adc9266395d15 | `詳見 [使用者情境](https://www.notion.so/32c3886511fa8144b38adc9266395d15)` |
 | User Story DB | 業務故事集（US-001 起）| https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d | `詳見 [User Story DB](https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d) 的 US-XXX` |
 | 資料欄位 DB | 全局資料模型與欄位定義（唯一正本）| https://www.notion.so/32c3886511fa803e9f30edbb020d10ce | `詳見 [資料欄位 DB](https://www.notion.so/32c3886511fa803e9f30edbb020d10ce) 的 [欄位名]` |
@@ -61,7 +61,6 @@ type: reference
 | 資源名稱 | 說明 | URL | BRD 引用格式範例 |
 |---------|------|-----|----------------|
 | ERP Test Case DB | UAT 測試案例（含 View）| https://www.notion.so/2b93886511fa817fbd65e7608726f036 | `詳見 [ERP Test Case DB](https://www.notion.so/2b93886511fa817fbd65e7608726f036)` |
-| ERP Scenario DB（測試用）| 測試情境資料庫 | https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05 | — |
 
 ---
 

@@ -93,7 +93,7 @@ Spec 撰寫進度：
 - Notion 商業流程（https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a）→ 核心業務規則與決策邏輯
 - Notion 使用者情境（https://www.notion.so/32c3886511fa8144b38adc9266395d15）→ 角色權責定義與權限範圍 **← 含角色驗證（Who 執行什麼動作）**
 - Notion User Story DB（https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d）→ 具體的業務故事集（US-001 ~ US-015），供 Spec 關聯引用 **← 含各角色的操作流程與成功條件**
-- Notion 業務情境 DB → PM 視角情境驗證與邊界案例（https://www.notion.so/3163886511fa808a9d9bda01dc812206）
+- Notion 業務情境 DB → PM 視角情境驗證與邊界案例（https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05）
 
 **⚠️ 角色驗證檢查點**（避免「業務出貨」等角色混淆）：
 - 撰寫時逐一檢查流程中的每個動作是否指定了正確的執行角色
@@ -277,7 +277,7 @@ ERP 文件中「Phase」有兩個層級：
 | 狀態機（上層：需求單 / 訂單 / 工單） | Notion 狀態變化：https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 |
 | 狀態機（下層：任務 / QC / 出貨） | 同上（頁面下半段）|
 | 待確認事項（OQ） | Notion Follow-up DB：https://www.notion.so/32c3886511fa808e9754ea1f18248d92 |
-| 情境驗證（PM 視角）| Notion 業務情境 DB：https://www.notion.so/3163886511fa808a9d9bda01dc812206 |
+| 情境驗證（PM 視角）| Notion 業務情境 DB：https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05 |
 | User Story（業務故事集） | Notion User Story DB：https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d |
 | 使用者情境（角色權責定義） | Notion 使用者情境：https://www.notion.so/32c3886511fa8144b38adc9266395d15 |
 | 業務流程（核心規則） | Notion 商業流程：https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a |

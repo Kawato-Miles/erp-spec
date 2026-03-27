@@ -63,7 +63,7 @@ Read: .claude/agents/knowledge/erp-consultant-guideline.md
    - 重點：各角色的操作權限，確認誰能做什麼
 5. Notion User Story DB（https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d）
    - 重點：具體操作流程與成功條件
-6. Notion 業務情境 DB（https://www.notion.so/3163886511fa808a9d9bda01dc812206）
+6. Notion 業務情境 DB（https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05）
    - 重點：邊界情況與複雜情境的已知設計
 7. Notion KPI DB（https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f）
    - 重點：各模組的成功指標與目標值；確認設計決策是否支援 KPI 達成；以 Feature 欄位篩選查看特定模組指標
