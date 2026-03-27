@@ -14,7 +14,7 @@
 
 ---
 
-> **文件元資料**：版本、狀態、PM、建立日期、最後更新、相關模組、預計版本，統一維護於 Notion Feature Database 的頁面屬性欄（Properties），不寫入 BRD body。
+> **文件元資料**：版本、狀態、建立日期、最後更新、相關模組、預計版本，統一維護於 Notion Feature Database 的頁面屬性欄（Properties），不寫入 BRD body。
 > skill/agent 讀取元資料：透過 `mcp__notion__notion-fetch` 讀取頁面 properties，或參照 CLAUDE.md § Spec 規格檔清單。
 > skill/agent 更新元資料：透過 `mcp__notion__notion-update-page` 更新對應 property 欄位（Version、Status、Last Edited 等）。
 
