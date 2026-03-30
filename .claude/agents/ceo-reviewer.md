@@ -51,13 +51,13 @@ Read: .claude/agents/knowledge/ceo-guideline.md
 
 > 完整 Notion URL 索引見 `memory/shared/notion-index.md`（唯一正本）。URL 異動時以該檔案為準。
 
-1. Notion 商業流程（https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a）
+1. 商業流程（`openspec/specs/business-processes/spec.md`）
    - 重點：核心業務規則、決策邏輯、各環節的觸發條件
-2. Notion 使用者情境（https://www.notion.so/32c3886511fa8144b38adc9266395d15）
+2. 使用者情境（`openspec/specs/user-roles/spec.md`）
    - 重點：各角色的實際職責與權限範圍（業務、審稿、印務、生管、QC、出貨）
-3. Notion User Story DB（https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d）
+3. User Story — 嵌入各模組 spec（已遷至 OpenSpec）
    - 重點：各角色在真實情境中的操作流程與成功條件
-4. Notion 狀態變化（https://www.notion.so/32c3886511fa81539eb9d3c97630caa0）
+4. 狀態機（`openspec/specs/state-machines/spec.md`）
    - 重點：各單據的狀態轉換規則，理解整體流程脈絡
 5. Notion 業務情境 DB（https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05）
    - 重點：具體業務情境與邊界案例

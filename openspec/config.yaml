@@ -1,0 +1,90 @@
+schema: spec-driven
+
+context: |
+  產品：印刷業 ERP 系統（生產排程 / 採購 / 倉儲 / 客戶訂單管理）
+  語言：所有文件使用繁體中文
+  PM：Miles
+  平台限制：僅支援桌機瀏覽器（不規劃行動裝置版）
+
+  產品背景與目標：
+  - 現況：Ragic（線下訂單/工單）+ EC（線上訂單）雙系統並存，資料無法統一、角色操作重複、問題難追溯
+  - 自建 ERP 動機：Ragic 退役、印刷業特殊製程需求、EC 整合、生產流程優化、Data Governance
+  - 核心問題：(1) 工單資訊散落致掉單與生產錯誤 (2) 產能不透明致管理層無法判斷 (3) 角色分工不明確致責任模糊
+  - 階段範疇：
+    Phase 1 — EC 規格品 BOM 覆蓋率 >= 80%（建立可驗證的商品資料基礎）
+    Phase 2 — 訂單流程完整完成率 >= 60%（取代 Ragic + Slack + 紙本，線下訂單全流程上線）
+    Phase 3 — 訂單流程完整完成率 >= 80%（含 EC 線上訂單全自動同步）
+  - 北極星指標：
+    Phase 1：EC 規格品 BOM 覆蓋率（已完成 BOM 展算的品項 / EC 販售總品項）
+    Phase 2/3：訂單流程完整完成率（系統內從訂單起點到出貨完成的完整流程訂單比率）
+  - KPI DB（各模組可量化指標）：https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f
+  - 來源：Notion 產品目標（發布版本）：https://www.notion.so/32c3886511fa81359354e33087d23f23
+
+  核心原則：
+  - Prototype 優先於實現（驗證規格與邏輯，不寫實現代碼）
+  - 邏輯驗證優於空談（附帶具體例子與計算驗証）
+  - 問題優先於方案（先描述問題，再提修正）
+  - 文件即規格（所有決策記錄在相關檔案）
+
+  規格管理：
+  - OpenSpec 為規格工作版本（正本），Notion 為發布版本（團隊閱讀用）
+  - 規格異動在 OpenSpec 進行，確認後推到 Notion
+  - Notion 資源索引（URL 正本）：memory/shared/notion-index.md
+
+  Prototype 技術棧：React + TypeScript + Tailwind + shadcn/ui
+  Prototype 路徑：/Users/b-f-03-029/sens-erp-prototype/src/
+
+  OpenSpec Specs（7 個 main specs）：
+  - 模組 specs：quote-request, order-management, work-order, production-task
+  - 跨模組 specs：state-machines, business-processes, user-roles
+
+  Notion 發布版本（確認後手動推送）：
+  - 需求單 v1.9：https://www.notion.so/3293886511fa80998ac0e8cdf555da68
+  - 訂單管理 v0.5：https://www.notion.so/32c3886511fa806bad41d755349b0567
+  - 工單管理 v0.4：https://www.notion.so/32c3886511fa80f98a43def401d1edce
+  - 生產任務 v0.2：https://www.notion.so/32c3886511fa806ab1d5c2b815bf9c94
+
+  Notion 參考資源（仍在 Notion 維護，未遷入 OpenSpec）：
+  - 業務情境 DB：https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05
+  - OQ Follow-up DB：https://www.notion.so/32c3886511fa808e9754ea1f18248d92
+  - KPI DB：https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f
+
+  已遷入 OpenSpec 的資源（Notion 為發布版本，不再作為工作正本）：
+  - 資料欄位 → 各模組 spec § Data Model
+  - User Story → 各模組 spec § Scenarios
+  - 狀態機 → openspec/specs/state-machines/spec.md
+  - 商業流程 → openspec/specs/business-processes/spec.md
+  - 使用者角色 → openspec/specs/user-roles/spec.md
+
+  變更管理工作流（原 erp-spec 核心原則整合）：
+  - 建立 change 前：查詢 Notion OQ DB 列出相關未解 OQ（oq-manage skill）
+  - 建立 proposal 前：觸發 senior-pm agent（前期介入模式），確認問題框架
+  - specs/design 完成後：三視角審查（senior-pm + ceo-reviewer + erp-consultant 平行執行）
+  - 歸檔後：觸發 doc-audit 檢查跨檔案一致性
+  - Notion 推送：累積數個 change 後手動決定推送時機
+
+rules:
+  proposal:
+    - 使用繁體中文撰寫
+    - Capabilities 名稱使用英文 kebab-case
+    - 引用 Notion 頁面時使用 [可讀名稱](URL) 格式
+    - 建立前先查詢 Notion OQ DB（oq-manage skill），列出相關未解 OQ
+    - 觸發 senior-pm agent（前期介入模式），確認問題框架後再撰寫
+  specs:
+    - 使用繁體中文撰寫
+    - 需求描述使用 SHALL/MUST 規範用語
+    - 每個 Requirement 至少一個 Scenario（WHEN/THEN 格式）
+    - Scenario 標題使用 #### （四個 #），不可用三個
+    - 不使用 emoji
+    - 新增或修改 Requirement 前，須確認與 state-machines / business-processes / user-roles specs 的一致性
+  design:
+    - 使用繁體中文撰寫
+    - 著重 Prototype 設計決策，非實現代碼
+    - 參照 state-machines spec 確認狀態轉換設計
+    - 參照 business-processes spec 確認計算邏輯
+    - 參照 user-roles spec 確認角色權責
+  tasks:
+    - 使用繁體中文撰寫
+    - 任務以 Prototype 驗證為導向
+    - 每個任務對應可驗證的產出物
+    - 使用 checkbox 格式：- [ ] X.Y 任務描述

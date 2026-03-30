@@ -12,7 +12,8 @@
 
 ## 概述
 
-請參考 Notion BRD：[Notion 頁面 URL]
+規格正本：OpenSpec spec（`openspec/specs/<module>/spec.md`）
+Notion BRD（發布版本）：[Notion 頁面 URL]
 
 ---
 
@@ -46,7 +47,7 @@
 
 ### 資料欄位
 
-Notion 資料欄位 DB（篩選「模組」= [模組名稱]）：https://www.notion.so/32c3886511fa803e9f30edbb020d10ce
+OpenSpec spec § Data Model（正本）：`openspec/specs/<module>/spec.md`
 
 ---
 
@@ -66,7 +67,3 @@ Notion 資料欄位 DB（篩選「模組」= [模組名稱]）：https://www.not
 
 - [後端實作項目，例如：API 開立、DB Schema、Webhook 整合]
 
----
-
-> Spec 版本：[版本號]（[最後更新日]）｜PM：Miles
-> [完整規格書（Notion）]([Notion 頁面 URL])

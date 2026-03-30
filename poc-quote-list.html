@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>需求單管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: #F5F5F5;
+    color: #232324;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 56px;
+    background: #1C1C1E;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .sidebar-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #8E8E93;
+  }
+  .sidebar-icon:hover { background: #2C2C2E; }
+  .sidebar-icon.active { background: #2C2C2E; color: #fff; }
+  .sidebar-icon svg { width: 20px; height: 20px; }
+
+  /* ── Main area ── */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    background: #fff;
+    border-bottom: 1px solid #E3E4E5;
+    padding: 0 24px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .topbar-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #232324;
+    letter-spacing: -0.1px;
+  }
+  .breadcrumb {
+    font-size: 14px;
+    color: #8E8E93;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .breadcrumb span { color: #232324; }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .user-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #E3E4E5;
+    overflow: hidden;
+  }
+  .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .user-name { font-size: 14px; font-weight: 500; color: #232324; }
+  .btn-logout {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #8E8E93;
+    border: none;
+    background: transparent;
+  }
+  .btn-logout:hover { background: #F5F5F5; }
+
+  /* ── Content ── */
+  .content {
+    flex: 1;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ── Page header ── */
+  .page-header {
+    font-size: 24px;
+    font-weight: 700;
+    color: #232324;
+    letter-spacing: -0.024em;
+  }
+
+  /* ── Search card ── */
+  .card {
+    background: #fff;
+    border: 1px solid #E3E4E5;
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+  .search-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #232324;
+    margin-bottom: 8px;
+  }
+  .search-input-wrap {
+    position: relative;
+  }
+  .search-input {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #E3E4E5;
+    border-radius: 8px;
+    padding: 0 40px 0 12px;
+    font-size: 14px;
+    font-family: 'Noto Sans TC', sans-serif;
+    color: #232324;
+    outline: none;
+    background: #fff;
+  }
+  .search-input::placeholder { color: #B0B0B5; }
+  .search-input:focus { border-color: #4A90D9; }
+  .search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8E8E93;
+    pointer-events: none;
+  }
+
+  /* ── Filters ── */
+  .filters {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+  .filter-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #8E8E93;
+  }
+  .filter-select {
+    height: 36px;
+    border: 1px solid #E3E4E5;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-family: 'Noto Sans TC', sans-serif;
+    color: #B0B0B5;
+    background: #fff;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='%238E8E93'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 32px;
+  }
+  .date-range {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+    border: 1px solid #E3E4E5;
+    border-radius: 8px;
+    padding: 0 12px;
+    background: #fff;
+    flex: 2;
+  }
+  .date-input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    font-family: 'Noto Sans TC', sans-serif;
+    color: #B0B0B5;
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+  }
+  .date-sep { color: #B0B0B5; font-size: 14px; }
+  .date-icon { color: #8E8E93; flex-shrink: 0; }
+
+  /* ── Stat cards ── */
+  .stat-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat-card {
+    background: #fff;
+    border: 1px solid #E3E4E5;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .stat-icon svg { width: 24px; height: 24px; }
+  .stat-icon.blue   { background: #EBF3FD; color: #4A90D9; }
+  .stat-icon.purple { background: #F3EDFB; color: #9B51E0; }
+  .stat-icon.orange { background: #FEF3E2; color: #F5A623; }
+  .stat-icon.teal   { background: #E5F6F5; color: #27AE90; }
+  .stat-info {}
+  .stat-label { font-size: 14px; color: #8E8E93; margin-bottom: 4px; }
+  .stat-value { font-size: 24px; font-weight: 700; color: #232324; letter-spacing: -0.024em; }
+
+  /* ── Table card ── */
+  .table-card {
+    background: #fff;
+    border: 1px solid #E3E4E5;
+    border-radius: 12px;
+    padding: 12px;
+  }
+  .table-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .btn {
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Noto Sans TC', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+  }
+  .btn-outline {
+    background: #fff;
+    border: 1px solid #E3E4E5;
+    color: #232324;
+  }
+  .btn-outline:hover { background: #F5F5F5; }
+  .btn-primary {
+    background: #2563EB;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #1D4ED8; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #F2F2F2;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  thead tr {
+    background: #fff;
+  }
+  th {
+    text-align: left;
+    padding: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #232324;
+    border-bottom: 1px solid #F2F2F2;
+    white-space: nowrap;
+  }
+  td {
+    padding: 0 16px;
+    height: 52px;
+    font-size: 14px;
+    color: #232324;
+    border-bottom: 1px solid #F2F2F2;
+    white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #FAFAFA; }
+
+  /* ── Status badge ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .badge-pending    { background: #FEF3E2; color: #C97A00; }
+  .badge-costing    { background: #F3EDFB; color: #7B3BBE; }
+  .badge-quoting    { background: #FFF0E6; color: #C7560D; }
+  .badge-negotiating{ background: #EBF3FD; color: #1A65B5; }
+  .badge-closed     { background: #E6F9F2; color: #0E7A50; }
+  .badge-lost       { background: #FDE8E8; color: #B91C1C; }
+
+  /* ── Action icons ── */
+  .action-btns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+  }
+  .action-btn:hover { background: #F5F5F5; }
+  .action-btn.edit  { color: #4A90D9; }
+  .action-btn.delete{ color: #EF4444; }
+
+  /* ── Pagination ── */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    margin-top: 16px;
+    padding-top: 4px;
+  }
+  .page-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #E3E4E5;
+    background: #fff;
+    color: #232324;
+  }
+  .page-btn:hover { background: #F5F5F5; }
+  .page-btn.active {
+    background: #2563EB;
+    color: #fff;
+    border-color: #2563EB;
+  }
+  .page-btn.nav { color: #8E8E93; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-icon active">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+  </div>
+  <div class="sidebar-icon">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 6l-1-2H5v17h2v-7h5l1 2h7V6h-6zm4 8h-4l-1-2H7V6h5l1 2h5v6z"/></svg>
+  </div>
+  <div class="sidebar-icon">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+  </div>
+  <div class="sidebar-icon">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">需求單管理</span>
+      <div class="breadcrumb">
+        <span style="color:#8E8E93">首頁</span>
+        <span style="color:#B0B0B5">/</span>
+        <span>需求單管理</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-badge">
+        <div class="user-avatar">
+          <img src="http://localhost:3845/assets/e905ab96f14d2ff0a01d0eeb1f8b301d9524898e.png" alt="avatar" onerror="this.style.display='none'" />
+        </div>
+        <span class="user-name">Harry66888</span>
+      </div>
+      <button class="btn-logout" title="登出">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="content">
+
+    <!-- Search card -->
+    <div class="card">
+      <div class="search-label">搜尋需求單</div>
+      <div class="search-input-wrap">
+        <input class="search-input" type="text" placeholder="請輸入需求單編號、需求案名、或客戶名稱" />
+        <span class="search-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        </span>
+      </div>
+      <div class="filters">
+        <div class="filter-group">
+          <div class="filter-label">狀態</div>
+          <select class="filter-select"><option value="">請選擇</option></select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">帳務公司</div>
+          <select class="filter-select"><option value="">請選擇</option></select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">接單業務</div>
+          <select class="filter-select"><option value="">請選擇</option></select>
+        </div>
+        <div class="filter-group" style="flex:2">
+          <div class="filter-label">日期範圍</div>
+          <div class="date-range">
+            <input class="date-input" type="text" placeholder="起始日期" />
+            <span class="date-sep">→</span>
+            <input class="date-input" type="text" placeholder="結束日期" />
+            <span class="date-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/><path d="M12 10h-2v2H8v-2H6V8h2V6h2v2h2v2z" opacity=".4"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">待確認需求</div>
+          <div class="stat-value">2</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">待評估成本</div>
+          <div class="stat-value">1</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">待報價</div>
+          <div class="stat-value">3</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon teal">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.22C21 6.73 16.74 3 12 3c-4.69 0-9 3.65-9 9.28-.6.34-1 .98-1 1.72v2c0 1.1.9 2 2 2h1v-6.1c0-3.87 3.13-7 7-7s7 3.13 7 7V19h-8v2h8c1.1 0 2-.9 2-2v-1.22c.59-.31 1-.92 1-1.64v-2.3c0-.7-.41-1.31-1-1.62z"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">議價中</div>
+          <div class="stat-value">5</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table card -->
+    <div class="table-card">
+      <div class="table-actions">
+        <button class="btn btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          刷新
+        </button>
+        <button class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          新增
+        </button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>編號</th>
+            <th>需求單號</th>
+            <th>需求案名</th>
+            <th>狀態</th>
+            <th>客戶名稱</th>
+            <th>接單業務</th>
+            <th>帳務公司</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Q-20260221-01</td>
+            <td>誠品書店週年慶 DM</td>
+            <td><span class="badge badge-pending">待確認需求</span></td>
+            <td>誠品生活股份有限公司</td>
+            <td>Harry</td>
+            <td>威官SSP</td>
+            <td>
+              <div class="action-btns">
+                <button class="action-btn edit" title="編輯">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                </button>
+                <button class="action-btn delete" title="刪除">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Q-20260221-02</td>
+            <td>台大哥大 Q2 型錄</td>
+            <td><span class="badge badge-costing">待評估成本</span></td>
+            <td>台大哥大股份有限公司</td>
+            <td>Miles</td>
+            <td>威官SSP</td>
+            <td>
+              <div class="action-btns">
+                <button class="action-btn edit"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+                <button class="action-btn delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Q-20260221-03</td>
+            <td>陳氏咖啡烘焙坊包裝袋</td>
+            <td><span class="badge badge-quoting">待報價</span></td>
+            <td>陳氏咖啡烘焙坊</td>
+            <td>Bonshinnn</td>
+            <td>威官SSP</td>
+            <td>
+              <div class="action-btns">
+                <button class="action-btn edit"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+                <button class="action-btn delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Q-20260221-04</td>
+            <td>韓系美妝品牌商品貼紙</td>
+            <td><span class="badge badge-negotiating">議價中</span></td>
+            <td>韓美美股份有限公司</td>
+            <td>Raymond</td>
+            <td>理想BRC</td>
+            <td>
+              <div class="action-btns">
+                <button class="action-btn edit"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+                <button class="action-btn delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Q-20260221-05</td>
+            <td>漢城屋菜單設計印刷</td>
+            <td><span class="badge badge-closed">成交</span></td>
+            <td>漢城屋股份有限公司</td>
+            <td>Reyold</td>
+            <td>理想BRC</td>
+            <td>
+              <div class="action-btns">
+                <button class="action-btn edit"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+                <button class="action-btn delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Q-20260221-06</td>
+            <td>台積電 Q2 型錄</td>
+            <td><span class="badge badge-lost">流失</span></td>
+            <td>台灣積體電路公司</td>
+            <td>Eric</td>
+            <td>理想BRC</td>
+            <td>
+              <div class="action-btns">
+                <button class="action-btn edit"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+                <button class="action-btn delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button class="page-btn nav">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">4</button>
+        <button class="page-btn">5</button>
+        <button class="page-btn nav">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,15 +1,18 @@
 ---
 name: notion-to-github
 description: >
-  將 Notion BRD 頁面轉換為 GitHub PRD Issues（Parent Issue + Sub-issues），並設定 Project 欄位。
-  定位：BRD 完成後建立開發用 Issues；商業背景以 Notion 連結呈現，不重複複製內容。
-  觸發時機：Miles 說「開 Issue」「Notion 轉 Issue」「建立 GitHub Issue」，或提供 Notion 頁面連結並要求建立 Issue。
-  此 skill 自動完成：讀取 Notion BRD → 依模板建 Parent Issue（模組層）→ 依 BRD 範疇建 Sub-issues（子功能層）→ 加入 Project 並設定欄位。
+  將 OpenSpec spec 轉換為 GitHub PRD Issues（Parent Issue + Sub-issues），並設定 Project 欄位。
+  定位：規格確認後建立開發用 Issues；商業背景從 OpenSpec spec 讀取，Notion 連結作為補充。
+  觸發時機：Miles 說「開 Issue」「轉 Issue」「建立 GitHub Issue」，或指定模組要求建立 Issue。
+  此 skill 自動完成：讀取 OpenSpec spec → 依模板建 Parent Issue（模組層）→ 依 spec 範疇建 Sub-issues（子功能層）→ 加入 Project 並設定欄位。
 ---
 
-# Notion → GitHub PRD Issues 轉換
+# OpenSpec → GitHub PRD Issues 轉換
 
-將 Notion BRD 頁面轉換為 GitHub PRD Issues（Parent + Sub-issues），加入 sensationsprint 專案管理 Project。
+將 OpenSpec spec 轉換為 GitHub PRD Issues（Parent + Sub-issues），加入 sensationsprint 專案管理 Project。
+
+> 規格正本在 OpenSpec（`openspec/specs/`），不再從 Notion BRD 讀取功能內容。
+> Notion BRD URL 僅作為 Issue body 的補充連結。
 
 ---
 
@@ -36,9 +39,20 @@ gh auth refresh -h github.com -s project
 
 ---
 
-### Step 1：讀取 Notion 頁面
+### Step 1：讀取 OpenSpec spec
 
-使用 `notion-fetch` 工具取得頁面完整內容。
+讀取對應模組的 OpenSpec spec 檔案（`openspec/specs/<module>/spec.md`），取得：
+- Purpose（問題、目標）
+- Requirements + Scenarios（功能範疇）
+- Data Model（資料欄位）
+
+對應模組 spec 路徑：
+- 需求單：`openspec/specs/quote-request/spec.md`
+- 訂單管理：`openspec/specs/order-management/spec.md`
+- 工單管理：`openspec/specs/work-order/spec.md`
+- 生產任務：`openspec/specs/production-task/spec.md`
+
+> Notion BRD URL 從 spec Purpose 段的「來源 BRD」取得，僅作為 Issue body 的補充連結。
 
 ---
 
@@ -65,9 +79,9 @@ gh auth refresh -h github.com -s project
 模板：`.claude/skills/notion-to-github/references/prd-parent-template.md`
 
 **填入規則：**
-- `背景與商業目標`：貼入 Notion BRD URL
-- `資料欄位`：Notion 資料欄位 DB 連結（固定，加模組名稱說明）
-- `功能邏輯說明`：從 BRD § 範疇（In Scope）整理成條列說明
+- `背景與商業目標`：從 OpenSpec spec Purpose 段取得（問題 + 目標），附上 Notion BRD URL 作為補充連結
+- `資料欄位`：從 OpenSpec spec § Data Model 取得欄位摘要
+- `功能邏輯說明`：從 OpenSpec spec § Requirements 整理成條列說明
 - `UI / FE / BE`：留 TBD，由開發階段各角色補入
 - `Sub-issues`：等 Step 4b 建完後補入 Issue 號
 

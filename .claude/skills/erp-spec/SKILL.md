@@ -9,9 +9,13 @@ description: >
   不適用：純流程討論（不需輸出文件）、只查詢術語或狀態機、圖編相關功能。
 ---
 
-# ERP Spec 撰寫
+# ERP Spec 撰寫（已停用）
 
-適用於印刷業 ERP 系統各模組的功能規格書（Spec / PRD）撰寫。
+> **此 Skill 已停用（2026-03-30）。** 規格撰寫改用 OpenSpec change 工作流（`/opsx:propose` 或 `/opsx:new`）。
+> 核心原則（OQ 查詢、senior-pm 前期介入、三視角審查）已整合至 `openspec/config.yaml` 的 rules 中。
+> 保留此檔案供歷史參考。
+
+~~適用於印刷業 ERP 系統各模組的功能規格書（Spec / PRD）撰寫。~~
 
 ---
 
@@ -140,10 +144,37 @@ skill/agent 讀取元資料：`mcp__notion__notion-fetch`（讀 properties）或
 | 規則 | 說明 |
 |------|------|
 | 角色驗證優先 | 撰寫流程說明時，逐一檢查執行者角色是否符合 Notion User Story DB（https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d）與 Notion 使用者情境；若有矛盾立即停止並回報用戶修正 |
-| 關聯 User Story | BRD 的使用者情境段落應引用 Notion User Story DB，不直接寫故事描述；若創建新 User Story，應同步新增至 Notion DB |
+| 關聯 User Story | BRD 的使用者情境段落應引用 Notion User Story DB，不直接寫故事描述；若創建新 User Story，依下方「User Story 撰寫規格」新增至 Notion DB |
 | 資料模型以 Notion 為正本 | 欄位定義統一維護於 Notion 資料欄位 DB（https://www.notion.so/32c3886511fa803e9f30edbb020d10ce）；PRD 不重複定義欄位；涉及新增 / 修改欄位時，先更新 Notion DB，再在 PRD 中記錄異動欄位的 Notion 連結與業務規則 |
 | 新增欄位須填 `排序` 值 | 在 Notion 資料欄位 DB 新增欄位時，必須填寫 `排序` 欄位（數字），依 UI 閱讀順序排列：從 `id`（= 1）開始，依序為識別碼 → 所屬上層 FK → 核心業務欄位 → 狀態 / 金額 / 計算欄位 → 備註類 → 系統時間戳（created_at / updated_at）。各資料表使用 100 為間距（QuoteRequest = 1–99、QuoteRequestItem = 101–199 …），新欄位插入時取所在區段的空號即可 |
 | 測試計畫不寫 | 測試案例獨立維護於 Notion ERP Test Case DB；Spec 完成後觸發 `erp-test-case` skill 建立對應 TC |
+
+#### User Story 撰寫規格
+
+> 適用時機：erp-spec 流程中偵測到功能缺少對應 User Story 時，依此規格建立後，以 `mcp__notion__notion-create-pages` 寫入 Notion User Story DB。
+
+**Notion DB**：https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d
+
+| 欄位 | 類型 | 填寫規則 |
+|------|------|---------|
+| 編碼 | text | `US-XXX`，查詢 DB 現有最大序號後 +1 |
+| 名稱 | title | 簡短描述，格式：`[角色] [動作] [目的]`，例如「業務建立需求單」 |
+| 作為 | relation | 關聯至角色 DB，對應執行此故事的角色（業務 / 印務主管 / 生管…）|
+| 我希望 | text | 使用者想完成的具體動作，例如「能在系統中快速輸入客戶報價需求」 |
+| 以便 | text | 完成此動作帶來的業務價值，例如「減少口頭確認來回，加快報價流程」 |
+| 前置條件 | text | 故事成立的前提，例如「客戶資料已存在於系統」；若無則填「無」 |
+| 流程說明 | text | 操作步驟，以編號條列；例如「1. 業務點擊「新增需求單」→ 2. 填寫客戶、產品、規格 → 3. 送出」 |
+| 成功條件 | text | 可測試的驗收標準，例如「需求單建立後系統顯示 US-001 狀態為「待審核」，並通知印務主管」 |
+| 優先度 | select | 高 / 中 / 低，依 BRD 的 P0/P1/P2 對應（P0 → 高，P1 → 中，P2 → 低）|
+| 流程 | select | 主要流程（核心業務路徑）/ 優化流程（提升效率的延伸功能）|
+| 涉及模組 | multi-select | 依此 User Story 涵蓋的模組勾選（可複選）|
+| Feature | relation | 關聯至 Feature DB 對應的模組頁面 |
+
+**撰寫原則**：
+- 「我希望」聚焦動作，不寫技術實作細節
+- 「以便」聚焦業務價值，不寫「因為系統需要」
+- 「成功條件」必須可測試，避免「使用者感到滿意」等模糊描述
+- 一條 User Story 只描述一個角色的一個需求；若跨角色，拆成多條
 | Ragic = 歷史基準 | Ragic 視為遷移前系統，**不納入新系統設計**；僅用於遷移前後 KPI 對比 |
 | 需求格式 | 「系統應…（System shall）」，每條需求含可測試驗收條件 |
 | 避免模糊詞 | 不用「更好」「更快」「某些情況」，改為具體數字或行為 |

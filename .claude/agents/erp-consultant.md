@@ -52,16 +52,16 @@ Read: .claude/agents/knowledge/erp-consultant-guideline.md
 
 > 完整 Notion URL 索引見 `memory/shared/notion-index.md`（唯一正本）。URL 異動時以該檔案為準。
 
-1. Notion 狀態變化（https://www.notion.so/32c3886511fa81539eb9d3c97630caa0）
+1. 狀態機（`openspec/specs/state-machines/spec.md`）
    - 重點：所有單據的狀態流轉規則（上層：需求單 / 訂單 / 工單 / 印件；下層：任務 / 生產任務 / QC / 出貨單）
    - 必須理解：哪些狀態轉換是自動觸發、哪些需要人工確認、哪些有前置條件
-2. Notion 商業流程（https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a）
+2. 商業流程（`openspec/specs/business-processes/spec.md`）
    - 重點：核心業務規則、決策邏輯、各環節的觸發條件與例外處理
-3. Notion 資料欄位 DB（https://www.notion.so/32c3886511fa803e9f30edbb020d10ce）
+3. 資料欄位 — 嵌入各模組 spec（已遷至 OpenSpec）
    - 重點：現有資料模型的欄位定義、資料表關係、必填 / 可空設定
-4. Notion 使用者情境（https://www.notion.so/32c3886511fa8144b38adc9266395d15）
+4. 使用者情境（`openspec/specs/user-roles/spec.md`）
    - 重點：各角色的操作權限，確認誰能做什麼
-5. Notion User Story DB（https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d）
+5. User Story — 嵌入各模組 spec（已遷至 OpenSpec）
    - 重點：具體操作流程與成功條件
 6. Notion 業務情境 DB（https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05）
    - 重點：邊界情況與複雜情境的已知設計

@@ -10,12 +10,12 @@
 
 | 檔案 | 用途 | 修改頻率 |
 |------|------|--------|
-| Notion 狀態變化 § 上層（https://www.notion.so/32c3886511fa81539eb9d3c97630caa0）| 上層流程的狀態定義（需求單、訂單、工單、印件） | 低（架構穩定） |
-| Notion 狀態變化 § 下層（同上頁面）| 下層流程的狀態定義（任務、生產任務、QC、出貨） | 低（架構穩定） |
+| 狀態機 § 上層（`openspec/specs/state-machines/spec.md`）| 上層流程的狀態定義（需求單、訂單、工單、印件） | 低（架構穩定） |
+| 狀態機 § 下層（同上檔案）| 下層流程的狀態定義（任務、生產任務、QC、出貨） | 低（架構穩定） |
 | Notion 業務情境 DB | PM 視角的情境驗證（業務邏輯驗證） | 中（常補充，正本在 Notion） |
-| Notion 使用者情境（https://www.notion.so/32c3886511fa8144b38adc9266395d15）| 各角色的使用者故事（需求確認） | 中（常補充，正本在 Notion） |
-| Notion 商業流程（https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a）| 核心業務規則（計算邏輯、計價方式等） | 中（迭代修改） |
-| Notion 資料欄位 DB（https://www.notion.so/32c3886511fa803e9f30edbb020d10ce）| 全局資料模型（欄位定義） | 中（常新增） |
+| 使用者情境（`openspec/specs/user-roles/spec.md`）| 各角色的使用者故事（需求確認） | 中（常補充，正本在 OpenSpec） |
+| 商業流程（`openspec/specs/business-processes/spec.md`）| 核心業務規則（計算邏輯、計價方式等） | 中（迭代修改） |
+| 資料欄位 — 嵌入各模組 spec（已遷至 OpenSpec）| 全局資料模型（欄位定義） | 中（常新增） |
 | `test-cases.md` | 測試案例（邊界情況驗證） | 中（迭代補充） |
 | `open-questions.md` | 待確認事項（正本） | 高（邊迭代邊產生） |
 | Notion 產品目標（https://www.notion.so/32c3886511fa81359354e33087d23f23）| 產品目標與 KPI | 低（季度更新，正本在 Notion） |
@@ -199,11 +199,11 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
 
 ### 涉及檔案速查
 
-- **狀態、流程相關** → Notion 狀態變化（https://www.notion.so/32c3886511fa81539eb9d3c97630caa0）
-- **邏輯、計算相關** → Notion 商業流程（https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a）
+- **狀態、流程相關** → 狀態機（`openspec/specs/state-machines/spec.md`）
+- **邏輯、計算相關** → 商業流程（`openspec/specs/business-processes/spec.md`）
 - **情境、邊界相關** → Notion 業務情境 DB / test-cases.md
-- **數據結構相關** → Notion 資料欄位 DB（https://www.notion.so/32c3886511fa803e9f30edbb020d10ce）
-- **角色、需求相關** → Notion 使用者情境（https://www.notion.so/32c3886511fa8144b38adc9266395d15）
+- **數據結構相關** → 各模組 spec 內嵌資料欄位定義（已遷至 OpenSpec）
+- **角色、需求相關** → 使用者情境（`openspec/specs/user-roles/spec.md`）
 - **不確定項** → open-questions.md
 
 ### 稽核命令
