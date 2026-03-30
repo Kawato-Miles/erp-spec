@@ -6,9 +6,9 @@
 
 #### Scenario: 師傅首次報工觸發製作中
 
-- **WHEN** 師傅在任務平台為「已分派」狀態的生產任務提交首次報工
+- **WHEN** 師傅在任務平台為「待處理」狀態（已指派師傅）的生產任務提交首次報工
 - **THEN** 系統 SHALL 記錄報工數量至 ProductionTaskWorkRecord
-- **AND** 生產任務狀態 SHALL 從「已分派」變為「製作中」
+- **AND** 生產任務狀態 SHALL 從「待處理」變為「製作中」
 - **AND** reported_by SHALL 記錄為該師傅
 
 #### Scenario: 師傅後續報工累加數量
@@ -30,7 +30,7 @@
 #### Scenario: 師傅查看今日任務
 
 - **WHEN** 師傅登入任務平台
-- **THEN** 系統 SHALL 顯示以下任務：actual_start_date 為今日且狀態為「已分派」或「製作中」的生產任務
+- **THEN** 系統 SHALL 顯示以下任務：assigned_operator 為該師傅且（actual_start_date 為今日或狀態為「製作中」）的生產任務
 - **AND** 每筆任務 MUST 顯示：工序名稱、工單編號、目標數量、已完成數量、狀態
 
 #### Scenario: 師傅查看明日預覽

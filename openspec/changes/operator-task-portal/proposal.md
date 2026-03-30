@@ -9,7 +9,7 @@
 在 ERP 系統中建立師傅任務平台，透過角色切換帶出師傅專屬選單與路由。師傅登入後僅能看到自己被分派的生產任務，其他 ERP 模組不可見。
 
 Phase 1 MVP 功能範圍：
-- 今日任務表格（已分派 + 製作中的生產任務）
+- 今日任務表格（已指派且待處理 + 製作中的生產任務）
 - 師傅自助報工（單筆 + 批次，填完成數量，首次報工觸發「製作中」）
 - 明日預覽（查看明天排定的任務，唯讀）
 - 角色選單權限（師傅僅看到任務平台，其他角色看到對應模組）
@@ -24,7 +24,7 @@ Phase 1 MVP 功能範圍：
 
 - production-task: 新增師傅自助報工的 Requirement（目前 spec 註明 Phase 1 由生管代報，需擴充為師傅可直接報工）
 - user-roles: 更新師傅角色權責（新增「查看自身生產任務」「自助報工」權限）
-- state-machines: 無狀態機異動，「已分派 → 製作中」觸發邏輯不變（報工者從生管擴充為師傅本人）
+- state-machines: 無狀態機異動，「待處理 → 製作中」觸發邏輯不變（報工者從生管擴充為師傅本人）
 
 ## Design Constraints
 
@@ -35,7 +35,7 @@ Phase 1 MVP 功能範圍：
 
 ## Dependencies
 
-- wo-dispatch-ux change 的「已分派」狀態與 assigned_operator 欄位為前提
+- wo-dispatch-ux change 的 assigned_operator 欄位為前提
 - 生產任務 spec 的報工邏輯（completed_quantity 記錄）
 
 ## Open Questions
