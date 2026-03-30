@@ -23,8 +23,18 @@
 
 ### Requirement: 平台歸屬分類
 
-#### Scenario: 平台歸屬對照表（更新）
+#### Scenario: 工廠平台統一入口
 
 - **WHEN** 系統初始化角色設定
-- **THEN** 師傅角色 SHALL 歸屬於工廠平台
-- **AND** 師傅登入 ERP 後 SHALL 僅能存取師傅任務平台功能，系統 MUST 隱藏其他 ERP 模組選單
+- **THEN** 生管、師傅、外包廠商、QC、出貨 SHALL 歸屬於工廠平台
+- **AND** 工廠平台內依角色顯示對應功能：生管看到日程面板；師傅看到師傅任務平台
+
+#### Scenario: Prototype User 切換對應
+
+- **WHEN** 使用者在 Prototype 的角色切換選單選擇生管
+- **THEN** 系統 SHALL 自動導航至工廠平台首頁（日程面板）
+- **AND** 側選單 SHALL 僅顯示工廠平台功能
+
+- **WHEN** 使用者在 Prototype 的角色切換選單選擇師傅
+- **THEN** 系統 SHALL 自動導航至師傅任務平台
+- **AND** 側選單 SHALL 僅顯示師傅任務平台功能
