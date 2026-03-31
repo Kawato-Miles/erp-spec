@@ -48,10 +48,22 @@
       "Bash(npm install:*)",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({''''progress'''':d[''''progress''''],''''state'''':d[''''state'''']}, ensure_ascii=False\\)\\)\")",
       "mcp__figma-desktop__get_variable_defs",
-      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(f''''  {\"\"[x]\"\" if t[\"\"done\"\"] else \"\"[ ]\"\"} {t[\"\"id\"\"]}. {t[\"\"description\"\"]}''''\\) for t in d[''''tasks'''']]\")"
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(f''''  {\"\"[x]\"\" if t[\"\"done\"\"] else \"\"[ ]\"\"} {t[\"\"id\"\"]}. {t[\"\"description\"\"]}''''\\) for t in d[''''tasks'''']]\")",
+      "Bash(find /Users/b-f-03-029/Sens -type d -name *task* -o -type d -name *portal*)",
+      "Bash(grep -E \"\\\\.\\(tsx?|json\\)$\")",
+      "Bash(find /Users/b-f-03-029/Sens/memory -type f -name *.md)",
+      "Bash(mv openspec/changes/archive/2026-03-31-supplier-portal openspec/changes/supplier-portal)",
+      "Bash(mv openspec/changes/archive/2026-03-31-operator-task-portal openspec/changes/operator-task-portal)",
+      "Bash(cp /tmp/sp-proposal.md openspec/changes/supplier-portal/proposal.md)",
+      "Bash(cp /tmp/sp-design.md openspec/changes/supplier-portal/design.md)",
+      "Bash(cp /tmp/sp-tasks.md openspec/changes/supplier-portal/tasks.md)",
+      "Bash(cp /tmp/sp-user-roles.md openspec/changes/supplier-portal/specs/user-roles/spec.md)",
+      "Bash(wc -l /Users/b-f-03-029/sens-erp-prototype/src/pages/*.tsx)",
+      "Bash(grep -A 5 \"className=\"\"erp-table\" /Users/b-f-03-029/sens-erp-prototype/src/pages/*.tsx)"
     ],
     "additionalDirectories": [
-      "/Users/b-f-03-029/sens-erp-prototype"
+      "/Users/b-f-03-029/sens-erp-prototype",
+      "/tmp"
     ]
   }
 }
