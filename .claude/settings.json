@@ -59,11 +59,34 @@
       "Bash(cp /tmp/sp-tasks.md openspec/changes/supplier-portal/tasks.md)",
       "Bash(cp /tmp/sp-user-roles.md openspec/changes/supplier-portal/specs/user-roles/spec.md)",
       "Bash(wc -l /Users/b-f-03-029/sens-erp-prototype/src/pages/*.tsx)",
-      "Bash(grep -A 5 \"className=\"\"erp-table\" /Users/b-f-03-029/sens-erp-prototype/src/pages/*.tsx)"
+      "Bash(grep -A 5 \"className=\"\"erp-table\" /Users/b-f-03-029/sens-erp-prototype/src/pages/*.tsx)",
+      "Bash(grep -n \"class=\"\"erp-table\" /Users/b-f-03-029/sens-erp-prototype/src/pages/*.tsx)",
+      "Bash(grep -rn \"space-y-\" /Users/b-f-03-029/sens-erp-prototype/src/pages/*.tsx)",
+      "Read(//dev/**)",
+      "Bash(git pull:*)",
+      "Bash(for dir:*)",
+      "Bash(do echo:*)",
+      "Read(//Users/b-f-03-029/Sens/openspec/changes/$dir/**)",
+      "Bash(done)",
+      "Bash(git restore:*)",
+      "Bash(claude --version)",
+      "Bash(npm view:*)",
+      "Bash(npx openspec:*)",
+      "WebFetch(domain:printepssw.com)",
+      "WebFetch(domain:workcell.ai)",
+      "WebFetch(domain:www.smartfactorymom.com)",
+      "WebFetch(domain:blogs.solidworks.com)",
+      "Bash(openspec create:*)",
+      "Bash(find . -name \"*.tsx\" -exec grep -l \"ProductionTaskDrawer\\\\|WorkReportDialog\" {} \\\\;)",
+      "Bash(node -e ':*)"
     ],
     "additionalDirectories": [
       "/Users/b-f-03-029/sens-erp-prototype",
-      "/tmp"
+      "/tmp",
+      "/Users/b-f-03-029/Sens/openspec/specs/task-dispatch-board",
+      "/Users/b-f-03-029/.claude",
+      "/Users/b-f-03-029/Sens/openspec/changes/work-package",
+      "/Users/b-f-03-029/Sens/openspec/changes/imposition-calculator"
     ]
   }
 }
