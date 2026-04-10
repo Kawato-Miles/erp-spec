@@ -197,6 +197,22 @@
 - **WHEN** 使用者在訂單詳情頁查看活動紀錄
 - **THEN** 系統顯示完整的操作歷程，包含操作人、操作時間、操作內容
 
+### Requirement: 印件成品縮圖上傳
+
+系統 SHALL 支援審稿人員為印件上傳成品縮圖。成品縮圖獨立於稿件檔案，代表最終成品的視覺呈現。
+
+#### Scenario: 審稿人員上傳成品縮圖
+
+- **WHEN** 審稿人員在印件詳情頁上傳成品縮圖
+- **THEN** 系統 SHALL 儲存縮圖並更新 PrintItem.thumbnail_url
+- **AND** 印件詳情頁與相關生產任務詳情頁 SHALL 顯示此縮圖
+
+#### Scenario: 印件詳情顯示稿件與縮圖
+
+- **WHEN** 使用者開啟印件詳情頁
+- **THEN** 系統 SHALL 顯示稿件檔案列表（區分最終版與歷史版本）
+- **AND** 系統 SHALL 在醒目位置顯示成品縮圖（若已上傳）
+
 ---
 
 ## Data Model
@@ -214,6 +230,7 @@
 | 客戶 | customer_id | FK | Y | | FK -> 客戶 |
 | 負責業務 | sales_id | FK | Y | | FK -> 使用者 |
 | 來源需求單 | quote_request_id | FK | | | FK -> 需求單；線上訂單可無 |
+| 案名 | case_name | 字串 | | | 從需求單 title 帶入，可編輯 |
 | 客戶交期 | delivery_date | 日期 | | | 客戶確認的最終交期 |
 | 審稿前預計出貨日 | expected_ship_date_pre_review | 日期 | | | 審稿前預計出貨 |
 | 審稿後預計出貨日 | expected_ship_date_post_review | 日期 | | | 審稿後預計出貨 |
@@ -272,6 +289,7 @@
 | 稿件上傳開放 | file_upload_enabled | 布林值 | Y | | 稿件上傳開放 |
 | 首次稿件上傳時間 | file_uploaded_at | 日期時間 | | | 首次稿件上傳時間 |
 | 稿件鎖定工單 | file_lock_wo_id | FK | | | 稿件鎖定工單 |
+| 成品縮圖 | thumbnail_url | 字串 | | | 審稿人員獨立上傳的成品縮圖 |
 | 建立時間 | created_at | 日期時間 | Y | Y | |
 | 更新時間 | updated_at | 日期時間 | Y | Y | |
 
@@ -284,6 +302,8 @@
 | 檔案名稱 | filename | 字串 | Y | | |
 | 檔案網址 | file_url | 字串 | | Y | |
 | 檔案大小 | file_size_kb | 整數 | | Y | |
+| 檔案類型 | file_type | 單選 | Y | | 稿件 / 刀模 / 其他 |
+| 是否最終版 | is_final | 布林值 | Y | | 預設 FALSE；同一印件僅一組 is_final = TRUE |
 | 審稿狀態 | review_status | 單選 | Y | | 待審稿 / 合格 / 不合格 |
 | 審稿備註 | review_note | 文字 | | | 不合格原因 |
 | 上傳者 | uploaded_by | FK | Y | Y | |
