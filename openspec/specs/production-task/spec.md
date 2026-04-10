@@ -374,14 +374,15 @@
 3. **即將到來區**：預計開工日期在明天及之後的已交付生產任務
 4. **異動確認區**：需要生管確認的異動項目，區分工單層異動與任務層異動
 
-面板 SHALL 提供產線篩選器，生管可選擇特定產線僅顯示該產線的任務。
+面板 SHALL 提供產線篩選器，生管可選擇特定產線僅顯示該產線的任務。篩選器 SHALL 記住生管上次選擇的產線偏好（使用者端持久化），下次開啟時自動套用。
 
 每筆生產任務 SHALL 顯示生產任務細節（工序相關的 A/B/C 群組關鍵欄位：紙材、印刷色數、加工方式等），讓生管知道該任務實際要做什麼。
 
 #### Scenario: 生管查看今日待分派任務
 
 - **WHEN** 生管開啟日程執行面板
-- **THEN** 系統 SHALL 在待分派區顯示所有已交付且（預計開工日期 <= 今天 或 is_early_dispatched = true）的自有工廠生產任務
+- **THEN** 系統 SHALL 自動套用上次選擇的產線篩選（若有）
+- **AND** 系統 SHALL 在待分派區顯示所有已交付且（預計開工日期 <= 今天 或 is_early_dispatched = true）的自有工廠生產任務
 - **AND** 生產任務 SHALL 依工序 × 生產任務內容分組呈現，排序依交貨日期優先
 - **AND** 每筆生產任務 MUST 顯示：任務編號、所屬工單、印件名稱、目標數量、生產任務細節（紙材/印刷色數/加工方式等）
 - **AND** 逾期超過 3 天的任務 MUST 以紅色標籤標記
@@ -390,6 +391,7 @@
 
 - **WHEN** 生管在日程面板使用產線篩選器選擇「產線 A」
 - **THEN** 系統 SHALL 在所有功能區（待分派、進行中、即將到來、異動確認）僅顯示 production_line_id 為「產線 A」的任務
+- **AND** 系統 SHALL 記住此選擇，下次開啟自動套用
 - **AND** 生管 SHALL 可清除篩選以查看所有產線的任務
 
 #### Scenario: 生管查看即將到來的任務
@@ -579,7 +581,24 @@
 
 ### Requirement: 產線管理
 
-系統 SHALL 支援產線（ProductionLine）作為生管分工單位。每筆生產任務可指定所屬產線，生管日程面板 SHALL 提供產線篩選。
+系統 SHALL 支援產線（ProductionLine）作為生管分工單位。每筆生產任務 MUST 有所屬產線（production_line_id 為必填），由 BOM 行項目帶入，帶入後唯讀不可修改。生管日程面板 SHALL 提供產線篩選，並記住生管上次選擇的產線偏好。
+
+#### Scenario: BOM 展開時自動帶入產線
+
+- **WHEN** 系統依 BOM 建立生產任務
+- **THEN** 系統 SHALL 從 BOM 行項目的 production_line_id 自動帶入至生產任務的 production_line_id
+- **AND** production_line_id MUST 為必填，不允許為空
+- **AND** 帶入後 production_line_id SHALL 為唯讀，印務和生管均不可修改
+
+#### Scenario: 外包廠任務自動歸入外包廠產線
+
+- **WHEN** BOM 行項目的 factory_type 為「外包廠」
+- **THEN** 系統 SHALL 自動將 production_line_id 設為「外包廠」產線
+
+#### Scenario: 中國廠商任務自動歸入中國廠商產線
+
+- **WHEN** BOM 行項目的 factory_type 為「中國廠商」
+- **THEN** 系統 SHALL 自動將 production_line_id 設為「中國廠商」產線
 
 #### Scenario: 生管篩選產線任務
 
@@ -587,11 +606,18 @@
 - **THEN** 系統 SHALL 僅顯示 production_line_id 對應「產線 A」的生產任務
 - **AND** 其他產線的任務 SHALL 被隱藏
 
-#### Scenario: 印務為生產任務指定產線
+#### Scenario: 篩選器記住上次選擇
 
-- **WHEN** 印務在工單詳情頁新增或編輯生產任務
-- **THEN** 系統 SHALL 提供產線下拉選單供選擇（選填）
-- **AND** 產線選單 SHALL 顯示所有可用產線，不受工序限制
+- **WHEN** 生管選擇產線「產線 A」後關閉日程面板
+- **AND** 生管再次開啟日程面板
+- **THEN** 系統 SHALL 自動套用上次選擇的「產線 A」篩選條件
+- **AND** 生管 SHALL 可隨時切換或清除篩選
+
+#### Scenario: 印務不可手動指定產線
+
+- **WHEN** 印務在工單詳情頁查看生產任務
+- **THEN** production_line_id SHALL 顯示為唯讀欄位（由 BOM 帶入）
+- **AND** 系統 SHALL 不提供產線下拉選單供手動修改
 
 ### Requirement: 生產任務分類排序
 
@@ -676,7 +702,7 @@
 | 報價確認人 | price_confirmed_by | FK | | | FK -> 使用者（生管） |
 | 報價確認時間 | price_confirmed_at | 日期時間 | | | |
 | 退回原因 | quote_reject_reason | 文字 | | | 生管退回時填寫 |
-| 產線 | production_line_id | FK | | | FK -> ProductionLine（選填） |
+| 產線 | production_line_id | FK | Y | Y | FK -> ProductionLine（BOM 帶入，唯讀） |
 | 排序序號 | sort_order | 整數 | Y | | 分類內的排序序號 |
 | 建立時間 | created_at | 日期時間 | Y | Y | |
 | 更新時間 | updated_at | 日期時間 | Y | Y | |

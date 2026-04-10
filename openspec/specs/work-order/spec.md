@@ -24,13 +24,20 @@
 ### Requirement: 工單草稿建立
 系統 SHALL 支援兩種工單草稿建立方式：(1) 線上單由審稿通過後系統依 BOM 自動建立，帶入生產任務；(2) 線下單由印務主管手動建立。工單號格式：W-[YYYYMMDD]-[NN]。
 
+BOM 展開建立生產任務時，系統 SHALL 從 BOM 行項目帶入 production_line_id 至每筆生產任務。外包廠的行項目 SHALL 自動帶入「外包廠」產線，中國廠商的行項目 SHALL 自動帶入「中國廠商」產線。
+
 #### Scenario: 線上單審稿通過自動建立工單
 - **WHEN** 線上單印件審稿通過
 - **THEN** 系統自動建立工單草稿，依 BOM 帶入生產任務
+- **AND** 每筆生產任務的 production_line_id SHALL 從 BOM 行項目自動帶入
+- **AND** factory_type 為「外包廠」的行項目，production_line_id SHALL 自動設為「外包廠」產線
+- **AND** factory_type 為「中國廠商」的行項目，production_line_id SHALL 自動設為「中國廠商」產線
 
 #### Scenario: 線下單印務主管手動建立
 - **WHEN** 印務主管為線下全客製品建立工單
 - **THEN** 系統建立工單草稿，印務主管逐一新增生產任務
+- **AND** 依 BOM 自動建立時，production_line_id SHALL 從 BOM 行項目帶入
+- **AND** 手動建立時，系統 SHALL 從 BOM 行項目參考產線設定自動帶入 production_line_id
 
 #### Scenario: US-WO-003 建立工單草稿並選擇類型
 - **WHEN** 線上單審稿通過由系統自動建立工單草稿，或印務主管為線下單手動建立工單草稿並選擇工單類型（打樣/大貨）
