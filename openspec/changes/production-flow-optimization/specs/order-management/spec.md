@@ -1,5 +1,25 @@
 ## ADDED Requirements
 
+### Requirement: 印件預計產線
+
+系統 SHALL 支援在印件層填寫「預計產線」，為多選欄位，記錄該印件預計涉及的產線。
+
+#### Scenario: 印務為印件設定預計產線
+
+- **WHEN** 印務在印件詳情頁填寫預計產線
+- **THEN** 系統 SHALL 顯示所有產線供多選
+- **AND** 選取結果 SHALL 儲存至 PrintItemExpectedLine junction
+
+#### Scenario: 訂單印件清單顯示預計產線
+
+- **WHEN** 使用者在訂單詳情頁查看印件清單
+- **THEN** 每筆印件 SHALL 顯示其預計產線（以標籤形式呈現，多個並列）
+
+#### Scenario: 印件總覽顯示預計產線
+
+- **WHEN** 使用者在印件總覽查看印件列表
+- **THEN** 系統 SHALL 顯示每筆印件的預計產線（以標籤形式呈現，多個並列）
+
 ### Requirement: 印件成品縮圖上傳
 
 系統 SHALL 支援審稿人員為印件上傳成品縮圖。成品縮圖獨立於稿件檔案，代表最終成品的視覺呈現。
@@ -71,6 +91,7 @@
 | 生產數量 | pi_produced_qty | 整數 | | Y | 生產數量（報工累計） |
 | 入庫數量 | pi_warehouse_qty | 整數 | | Y | 入庫數量（QC 通過） |
 | 出貨數量 | pi_shipped_qty | 整數 | | Y | 出貨數量 |
+| 預計產線 | expected_production_lines | M:N | | | 多選；FK -> ProductionLine（透過 PrintItemExpectedLine） |
 | 審稿狀態 | review_status | 單選 | Y | | 稿件未上傳 / 等待審稿 / 已補件 / 合格 |
 | 生產狀態 | production_status | 單選 | Y | | 等待中 / 工單已交付 / 部分工單製作中 / 製作中 / 製作完成 / 出貨中 / 已送達 / 已棄用 |
 | 打樣結果 | sample_result | 單選 | | | 待確認 / OK / NG-製程問題 / NG-稿件問題（打樣印件專用） |
@@ -80,6 +101,14 @@
 | 成品縮圖 | thumbnail_url | 字串 | | | 審稿人員獨立上傳的成品縮圖 |
 | 建立時間 | created_at | 日期時間 | Y | Y | |
 | 更新時間 | updated_at | 日期時間 | Y | Y | |
+
+### PrintItemExpectedLine（印件預計產線 junction）
+
+| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
+|------|---------|------|------|------|------|
+| 識別碼 | id | UUID | Y | Y | 主鍵 |
+| 印件 | print_item_id | FK | Y | Y | FK -> PrintItem |
+| 產線 | production_line_id | FK | Y | Y | FK -> ProductionLine |
 
 ### PrintItemFile
 

@@ -9,6 +9,7 @@
 - **生產任務排序與分類**：Process 新增 `category`（材料/工序/裝訂），ProductionTask 新增 `sort_order`，支援分類內拖曳排序
 - **印務印件篩選**：印件總覽新增「只顯示我參與的印件」篩選（判斷條件：印件下有 WorkOrder.assigned_to = 當前印務）
 - **稿件與縮圖**：PrintItemFile 新增 `is_final`、`file_type`，PrintItem 新增 `thumbnail_url`（審稿人員獨立上傳），印件/生產任務詳情顯示稿件
+- **印件預計產線**：PrintItem 新增「預計產線」多選欄位（M:N -> ProductionLine）；ProductionLine 新增 sort_order 欄位及 10 筆種子資料；訂單印件清單與印件總覽同步顯示
 - **印件總覽欄位拆分**：Order 新增 `case_name`（從需求單 title 帶入），印件總覽列表拆分為案名、客戶、訂單編號獨立欄位
 
 ## Capabilities
@@ -21,14 +22,15 @@
 
 - `work-order`：新增 region 欄位與區域篩選規則；新增印務印件篩選需求
 - `production-task`：factory_type 擴充為四值；新增 ProductionLine 資料表與 production_line_id；新增 sort_order 與 Process.category；生產任務詳情顯示稿件
-- `order-management`：Order 新增 case_name；PrintItemFile 新增 is_final/file_type；PrintItem 新增 thumbnail_url；印件總覽欄位拆分
+- `quote-request`：QuoteRequestItem 新增預計產線（M:N）；新增 QuoteRequestItemExpectedLine junction；需求單轉訂單帶入規則
+- `order-management`：Order 新增 case_name；PrintItemFile 新增 is_final/file_type；PrintItem 新增 thumbnail_url 與預計產線（M:N）；新增 PrintItemExpectedLine junction；印件總覽欄位拆分
 - `state-machines`：確認 factory_type 四值的狀態路徑覆蓋（中國廠商路徑已存在，確認無需調整）
 - `business-processes`：需求單轉訂單帶入規則新增 title → case_name
 - `user-roles`：確認印務角色權限涵蓋印件總覽篩選
 
 ## Impact
 
-- **Data Model**：跨 4 個 spec 的欄位新增與修改（WorkOrder、ProductionTask、Process、PrintItem、PrintItemFile、Order、新增 ProductionLine 資料表）
+- **Data Model**：跨 4 個 spec 的欄位新增與修改（WorkOrder、ProductionTask、Process、PrintItem、PrintItemFile、Order、新增 ProductionLine 資料表、新增 PrintItemExpectedLine junction table）
 - **UI**：印件總覽列表欄位調整、生管日程面板產線篩選、生產任務拖曳排序、稿件顯示區塊
 - **業務規則**：region → factory_type 篩選約束、sort_order 分類內排序約束
 - **齊套性計算**：不受影響，仍以 WorkOrder → PrintItem 的 min() 計算

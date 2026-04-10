@@ -9,6 +9,10 @@
 - [x] 1.7 order-management spec: PrintItem 新增 thumbnail_url 欄位
 - [x] 1.8 order-management spec: PrintItemFile 新增 file_type 與 is_final 欄位
 
+- [x] 1.9 order-management spec: PrintItem 新增 expected_production_lines（M:N -> ProductionLine）
+- [x] 1.10 order-management spec: 新增 PrintItemExpectedLine junction table
+- [x] 1.11 production-task spec: ProductionLine 新增 sort_order 欄位及 10 筆種子資料
+
 ## 2. 業務規則更新（OpenSpec main specs）
 
 - [x] 2.1 work-order spec: 新增「工單區域設定」Requirement（region 篩選 factory_type 規則）
@@ -20,6 +24,10 @@
 - [x] 2.7 production-task spec: 新增「生產任務分類排序」Requirement
 - [x] 2.8 production-task spec: 新增「生產任務詳情顯示稿件」Requirement
 - [x] 2.9 order-management spec: 新增「印件成品縮圖上傳」Requirement
+- [x] 2.13 order-management spec: 新增「印件預計產線」Requirement（含訂單印件清單與印件總覽顯示）
+- [x] 2.14 quote-request spec: 修改「印件項目管理」Requirement（新增預計產線多選）
+- [x] 2.15 quote-request spec: QuoteRequestItem 新增 expected_production_lines + QuoteRequestItemExpectedLine junction
+- [x] 2.16 quote-request spec: 新增需求單轉訂單帶入預計產線規則
 - [x] 2.10 business-processes spec: 修改「需求單轉訂單欄位帶入規則」（新增 title → case_name）
 - [x] 2.11 state-machines spec: 修改「生產任務狀態機」（確認四值 factory_type 路徑覆蓋）
 - [x] 2.12 user-roles spec: 修改「印務角色權限」（新增印件總覽篩選、產線指定、排序權限）
@@ -33,6 +41,13 @@
 - [x] 3.5 印件詳情頁：新增稿件檔案列表區塊與成品縮圖顯示
 - [x] 3.6 生產任務詳情頁：新增稿件檔案與成品縮圖引用顯示
 - [x] 3.7 Demo 假資料：建立跨區域（台灣+中國）工單情境、跨印務印件情境
+- [x] 3.8 印件預計產線：types/order.ts 新增 expectedProductionLines、mockOrders/mockPipelineData 補 mock 資料
+- [x] 3.9 訂單印件清單（OrderDetail）：新增預計產線欄位顯示（標籤）
+- [x] 3.10 印件總覽（PrintItemDashboard）：新增預計產線欄位顯示（標籤）
+- [x] 3.11 mockArtwork.ts 產線清單補齊（全客製化品相、台灣外包、中國外包）
+- [x] 3.12 需求單印件（EditPrintItemPanel）：新增預計產線多選 toggle 欄位
+- [x] 3.13 需求單印件清單（PrintItemsTable）：新增預計產線欄位顯示（標籤）
+- [x] 3.14 mockQuotes.ts 全部印件補上 expectedProductionLines mock 資料
 
 ## 4. 跨檔案一致性驗證
 

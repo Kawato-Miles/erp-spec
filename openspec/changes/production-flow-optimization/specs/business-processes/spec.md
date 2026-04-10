@@ -6,6 +6,7 @@
 
 - 自動帶入（唯讀）：客戶基本資料、印件規格
 - 自動帶入（可編輯）：交期與備註、付款資訊、訂金設定、案名（需求單 title → 訂單 case_name）
+- 自動帶入（原值）：各印件項目的預計產線（QuoteRequestItem.expected_production_lines → PrintItem.expected_production_lines）
 - 不帶入：報價紀錄、活動紀錄
 
 #### Scenario: 需求單轉訂單時客戶資料帶入
@@ -23,6 +24,12 @@
 - **WHEN** 使用者將需求單轉為訂單
 - **THEN** 系統 SHALL 將需求單的 title 帶入訂單的 case_name 欄位
 - **AND** case_name SHALL 允許業務編輯
+
+#### Scenario: 需求單轉訂單時預計產線帶入
+
+- **WHEN** 使用者將需求單轉為訂單
+- **THEN** 系統 SHALL 將各印件項目的預計產線帶入對應 PrintItem 的 expected_production_lines
+- **AND** 帶入後印件的預計產線 SHALL 可繼續編輯
 
 #### Scenario: 需求單轉訂單時報價紀錄不帶入
 

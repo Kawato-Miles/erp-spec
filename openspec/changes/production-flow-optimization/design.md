@@ -95,6 +95,17 @@
 - 印件總覽需要顯示案名，案名源自訂單層
 - 案名帶入後允許編輯（業務可能需要調整）
 
+### D9：預計產線掛在 PrintItem 層，與 ProductionTask.production_line_id 獨立
+
+**決策**：PrintItem 新增「預計產線」多選欄位（M:N，透過 PrintItemExpectedLine junction table），記錄該印件預計涉及的產線。ProductionTask 的 production_line_id 為生產任務的確定產線，二者各自獨立。
+
+**理由**：
+- 印件尚未拆工單時，印務已可預估涉及哪些產線（例如一個印件可能同時需要數位線 + 裝訂線）
+- 產線選項包含實體產線（裝訂線、數位線等）與路徑分類（台灣外包、中國外包、全客製化品相），統一放 ProductionLine 表
+- 生產任務的 production_line_id 是單選（一個任務只在一條產線執行），印件的預計產線是多選（規劃概覽），語意不同
+
+**替代方案**：預計產線掛在 WorkOrder 層 → 缺點：工單建立在印件之後，規劃時機太晚；且同一印件可能拆成多個工單分散到不同產線
+
 ## Risks / Trade-offs
 
 - **[region 與 factory_type 的耦合]** → region 篩選規則目前寫死（台灣=三種、中國=一種）。若未來新增區域（如東南亞），需擴充 factory_type 枚舉與篩選規則。緩解：設計文件記錄此限制，未來再評估。
