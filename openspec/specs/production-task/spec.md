@@ -376,7 +376,7 @@
 
 面板 SHALL 提供產線篩選器，生管可選擇特定產線僅顯示該產線的任務。篩選器 SHALL 記住生管上次選擇的產線偏好（使用者端持久化），下次開啟時自動套用。
 
-每筆生產任務 SHALL 顯示生產任務細節（工序相關的 A/B/C 群組關鍵欄位：紙材、印刷色數、加工方式等），讓生管知道該任務實際要做什麼。
+每筆生產任務 SHALL 顯示生產任務細節（依工序 category 顯示對應的關鍵欄位，如：紙材、印刷色數、加工方式等），讓生管知道該任務實際要做什麼。
 
 #### Scenario: 生管查看今日待分派任務
 
@@ -653,6 +653,85 @@
 - **AND** 系統 SHALL 顯示印件的成品縮圖（thumbnail_url）
 - **AND** 最終版稿件（is_final = true）SHALL 以醒目標記顯示
 
+### Requirement: 設備預計成本計算
+
+系統 SHALL 根據生產任務的顏色選項、設備單價、及數量自動計算設備預計成本（estimated_equipment_cost）。任何影響因子（顏色選項、設備、目標數量）變動時，系統 SHALL 即時重算。
+
+計算公式：
+
+```
+令數 = pt_target_qty / 500
+
+base_mono = color_mono_black ? 設備.mono_black_unit_price x 令數 : 0
+base_cmyk = color_cmyk ? 設備.cmyk_unit_price x 令數 : 0
+base_price_per_ream = (color_mono_black ? 設備.mono_black_unit_price : 0)
+                    + (color_cmyk ? 設備.cmyk_unit_price : 0)
+
+pantone_extra = color_pantone_multiplier != null
+              ? base_price_per_ream x 令數 x color_pantone_multiplier : 0
+metallic_extra = color_metallic_multiplier != null
+              ? base_price_per_ream x 令數 x color_metallic_multiplier : 0
+metallic_min_extra = color_metallic_min_multiplier != null
+              ? base_price_per_ream x 令數 x color_metallic_min_multiplier : 0
+
+estimated_equipment_cost = base_mono + base_cmyk
+                         + pantone_extra + metallic_extra + metallic_min_extra
+```
+
+#### Scenario: 只選單黑
+
+- **WHEN** 印務為生產任務勾選「單黑」，設備單黑單價 250/令，目標數量 5,000 張
+- **THEN** 令數 = 5000/500 = 10，estimated_equipment_cost = 250 x 10 = 2,500
+
+#### Scenario: 只選 CMYK
+
+- **WHEN** 印務為生產任務勾選「CMYK」，設備 CMYK 單價 800/令，目標數量 5,000 張
+- **THEN** 令數 = 10，estimated_equipment_cost = 800 x 10 = 8,000
+
+#### Scenario: CMYK 加 Pantone 倍率
+
+- **WHEN** 印務勾選「CMYK」並設定「Pantone 倍率 = 2」，設備 CMYK 單價 800/令，目標數量 5,000 張
+- **THEN** 令數 = 10，base_cmyk = 800 x 10 = 8,000，pantone_extra = 800 x 10 x 2 = 16,000
+- **AND** estimated_equipment_cost = 8,000 + 16,000 = 24,000
+
+#### Scenario: 多重疊加（單黑加 CMYK 加金銀白螢光）
+
+- **WHEN** 印務勾選「單黑」+「CMYK」+「金/銀/白/螢光倍率 = 1.5」，設備單黑 250/令、CMYK 800/令，目標數量 5,000 張
+- **THEN** 令數 = 10，base_mono = 2,500，base_cmyk = 8,000，base_price_per_ream = 1,050
+- **AND** metallic_extra = 1,050 x 10 x 1.5 = 15,750
+- **AND** estimated_equipment_cost = 2,500 + 8,000 + 15,750 = 26,250
+
+#### Scenario: 未選任何顏色
+
+- **WHEN** 生產任務未勾選任何顏色選項
+- **THEN** estimated_equipment_cost = 0
+
+#### Scenario: 設備未指定
+
+- **WHEN** 生產任務尚未設定設備（planned_equipment 為 null）
+- **THEN** estimated_equipment_cost MUST NOT 計算，UI 顯示為「待排程」
+
+#### Scenario: 顏色選項變更觸發重算
+
+- **WHEN** 印務修改已設定顏色選項的生產任務（如新增 Pantone 倍率）
+- **THEN** 系統 SHALL 即時重算 estimated_equipment_cost 並更新顯示
+
+### Requirement: 顏色倍率自動帶入
+
+系統 SHALL 在印務選擇設備後，自動從設備主檔帶入金/銀/白/螢光倍率（color_metallic_multiplier）和單金/銀/白/螢光色最低色數倍率（color_metallic_min_multiplier）的預設值。印務可覆寫帶入的預設值。
+
+#### Scenario: 選擇設備後自動帶入倍率
+
+- **WHEN** 印務為生產任務選擇設備，該設備主檔的金/銀/白/螢光預設倍率為 1.5、最低色數預設倍率為 2
+- **THEN** 系統 SHALL 自動帶入 color_metallic_multiplier = 1.5、color_metallic_min_multiplier = 2
+- **AND** 印務可手動修改帶入的倍率值
+
+#### Scenario: 變更設備後重新帶入倍率
+
+- **WHEN** 印務變更生產任務的設備（從設備 A 改為設備 B）
+- **THEN** 系統 SHALL 以設備 B 的預設倍率覆蓋現有值
+- **AND** 系統 SHALL 提示「設備已變更，倍率已更新為新設備預設值」
+
 ---
 
 ## Data Model
@@ -704,6 +783,12 @@
 | 退回原因 | quote_reject_reason | 文字 | | | 生管退回時填寫 |
 | 產線 | production_line_id | FK | Y | Y | FK -> ProductionLine（BOM 帶入，唯讀） |
 | 排序序號 | sort_order | 整數 | Y | | 分類內的排序序號 |
+| 單黑 | color_mono_black | 布林值 | | | 預設 false |
+| CMYK | color_cmyk | 布林值 | | | 預設 false |
+| Pantone 倍率 | color_pantone_multiplier | 小數 | | | null = 未選；有值 = 倍率（印務手動輸入） |
+| 金/銀/白/螢光倍率 | color_metallic_multiplier | 小數 | | | null = 未選；有值 = 倍率（設備主檔預設，可覆寫） |
+| 單金/銀/白/螢光色最低色數倍率 | color_metallic_min_multiplier | 小數 | | | null = 未選；有值 = 倍率（設備主檔預設，可覆寫） |
+| 設備預計成本 | estimated_equipment_cost | 小數 | | Y | 系統依顏色選項 + 設備單價 + 數量自動計算，唯讀 |
 | 建立時間 | created_at | 日期時間 | Y | Y | |
 | 更新時間 | updated_at | 日期時間 | Y | Y | |
 
@@ -739,37 +824,6 @@
 | 報工工時 | reported_minutes | 整數 | | | 報工工時（分鐘） |
 | 缺陷數量 | defect_count | 整數 | | | |
 | 報工備註 | notes | 文字 | | | |
-
-**A 群組（選填）-- 紙材相關**
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|----------|------|------|------|------|
-| 紙材 | material_type_a | 字串 | | | |
-| 紙大 | paper_size_a | 字串 | | | |
-| 印刷色數 | print_colors_a | 字串 | | | |
-| 印刷數量 | print_quantity_a | 整數 | | | |
-| 損耗數量 | waste_quantity_a | 整數 | | | |
-| 成本 | cost_a | 小數 | | | |
-
-**B 群組（選填）-- 印刷相關**
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|----------|------|------|------|------|
-| 印刷尺寸 | print_size_b | 字串 | | | |
-| 印刷台數 | print_units_b | 整數 | | | |
-| 印刷數量 | print_quantity_b | 整數 | | | |
-| 損耗數量 | waste_quantity_b | 整數 | | | |
-| 成本 | cost_b | 小數 | | | |
-
-**C 群組（選填）-- 加工相關**
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|----------|------|------|------|------|
-| 刀模編號 | die_cut_no_c | 字串 | | | |
-| 刀模新舊 | die_cut_status_c | 字串 | | | |
-| 加工數量 | process_quantity_c | 整數 | | | |
-| 加工模數 | module_count_c | 整數 | | | |
-| 成本 | cost_c | 小數 | | | |
 
 ---
 
