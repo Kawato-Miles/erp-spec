@@ -19,14 +19,14 @@
 
 ## 3. Prototype 實作
 
-- [ ] 3.1 新增 `src/data/bomMasterMock.ts`（三個 master 的完整 mock + `resolveCatalogItem` helper）
-- [ ] 3.2 修訂 `src/types/workOrder.ts` 的 ProductionTask interface：新增 `bomType` / `materialSpecId` / `processId` / `bindingId` / `pricingSelection` / `pricingSelectionDefault` / `pricingSelectionOverridden`；既有 `process?` / `processCategory?` 標註 `@deprecated`
-- [ ] 3.3 重構 `src/data/processContentCatalog.ts`：內部改從 bomMasterMock 聚合，保留既有 public API
-- [ ] 3.4 補齊 `src/data/mockWorkOrders.ts`：為既有 ProductionTask mock 補上 BOM 欄位
-- [ ] 3.5 TypeScript 編譯通過（`npm run build` 或 `tsc --noEmit`）
-- [ ] 3.6 確認既有 UI 元件（ProductionTaskDrawer、SchedulePlanner 等）不需修改仍能執行
+- [x] 3.1 新增 `src/data/bomMasterMock.ts`（三個 master 的完整 mock + `resolveCatalogItem` helper）
+- [x] 3.2 修訂 `src/types/workOrder.ts` 的 ProductionTask interface：新增 `bomType` / `materialSpecId` / `processId` / `bindingId` / `pricingSelection` / `pricingSelectionDefault` / `pricingSelectionOverridden`；既有 `process?` / `processCategory?` 標註 `@deprecated`
+- [x] 3.3 重構 `src/data/processContentCatalog.ts`：內部改從 bomMasterMock 聚合，保留既有 public API
+- [x] 3.4 補齊 `src/data/mockWorkOrders.ts`：為既有 ProductionTask mock 補上 BOM 欄位
+- [x] 3.5 TypeScript 編譯通過（`npm run build` 或 `tsc --noEmit`）
+- [x] 3.6 確認既有 UI 元件（ProductionTaskDrawer、SchedulePlanner 等）不需修改仍能執行
 
 ## 4. Commit
 
-- [ ] 4.1 Commit spec change（包含 proposal / design / tasks / 2 個 delta）
-- [ ] 4.2 Commit prototype changes（bomMasterMock + types + processContentCatalog 重構 + mockWorkOrders 補齊）
+- [x] 4.1 Commit spec change（包含 proposal / design / tasks / 2 個 delta）
+- [x] 4.2 Commit prototype changes（bomMasterMock + types + processContentCatalog 重構 + mockWorkOrders 補齊）
