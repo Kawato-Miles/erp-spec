@@ -287,7 +287,7 @@ delta specs 合併回 main specs，歸檔 change。
 | 術語查詢 | `glossary.md` | — |
 | 產品目標 / KPI | Notion 產品目標：https://www.notion.so/32c3886511fa81359354e33087d23f23 | KPI DB（各模組可量化指標）：https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f |
 | 資料模型（查詢 / 新增 / 修改 / 移除欄位或資料表）| 各模組 spec § Data Model（已嵌入）+ Notion 資料欄位 DB（查詢用）：https://www.notion.so/32c3886511fa803e9f30edbb020d10ce | — |
-| BOM 底層（材料 / 工序 / 裝訂）| `openspec/specs/material-master/spec.md` + `openspec/specs/process-master/spec.md`（裝訂待補）| 各模組 spec § Data Model |
+| BOM 底層（材料 / 工序 / 裝訂）| `openspec/specs/material-master/spec.md` + `openspec/specs/process-master/spec.md` + `openspec/specs/binding-master/spec.md` | 各模組 spec § Data Model |
 | **Prototype 製作** | `memory/shared/prototype-guidelines.md` + 對應 Spec + Notion 業務情境 DB + 狀態機 spec | 使用者角色 spec、Notion 測試案例 DB：https://www.notion.so/2b93886511fa817fbd65e7608726f036 |
 | Prototype 驗證 / 反饋 | `/Users/b-f-03-029/sens-erp-prototype/src/` 對應模組 + `memory/shared/prototype-guidelines.md` § 五 | — |
 
@@ -338,6 +338,7 @@ delta specs 合併回 main specs，歸檔 change。
 | 使用者角色（跨模組）| `openspec/specs/user-roles/spec.md` | https://www.notion.so/32c3886511fa8144b38adc9266395d15 | — | 草稿 |
 | 材料主檔（BOM 底層）| `openspec/specs/material-master/spec.md` | — | v0.1 | 草稿（ERP 中台已實作）|
 | 工序主檔（BOM 底層）| `openspec/specs/process-master/spec.md` | — | v0.1 | 草稿（ERP 中台已實作）|
+| 裝訂主檔（BOM 底層）| `openspec/specs/binding-master/spec.md` | — | v0.1 | 草稿（ERP 中台已實作）|
 
 ### Prototype 實作進度
 > Prototype 統一在 `sens-erp-prototype` Repo（本地：`/Users/b-f-03-029/sens-erp-prototype`）
