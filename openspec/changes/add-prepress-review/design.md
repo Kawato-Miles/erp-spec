@@ -107,20 +107,20 @@ PrintItem (1) ──► (N) ReviewRound (1) ──► (N) PrintItemFile
    │                  ├─ source: enum (審稿 / 免審稿)
    │                  ├─ submitted_at: timestamp
    │                  ├─ result: enum (合格 / 不合格)
-   │                  ├─ reject_reason_category: enum LOV (不合格必填，選項見 PI-009)
+   │                  ├─ reject_reason_category: enum LOV (不合格必填，選項見 PI-009 定案 10 項)
    │                  └─ review_note: text (補充備註，選填)
    │
    └─ current_round_id: FK ReviewRound (新增；unique；指向當前合格輪次；尚未合格時為 NULL)
 
 PrintItemFile (延伸既有模型)
   ├─ round_id: FK ReviewRound (新增)
-  ├─ file_role: enum (原稿 / 加工檔 / 縮圖) (新增，詳見 PI-003)
+  ├─ file_role: enum (印件檔 / 縮圖) (新增；PI-003 定案：兩值結構)
   ├─ review_status: 保留但標為衍生值（= Round.result 投影）
   ├─ is_final: **移除**（由 PrintItem.current_round_id → Round → File 取代）
   └─ 其他既有欄位（file_url, file_size_kb, uploaded_at, ...）保留
 ```
 
-印件摘要呈現「當前合格輪次」的檔案與縮圖：透過 `PrintItem.current_round_id → ReviewRound → PrintItemFile (file_role ∈ {加工檔, 縮圖})` 查詢。
+**PI-003 定案結論**：`file_role` 僅兩值——印件檔 / 縮圖。審稿人員負責將客戶提供的內容（圖片、多組成品、刀模線等）於加工階段合併為**單一印件檔**；縮圖為該印件的視覺摘要（同時承擔「參考圖」功能，不另設）。印件摘要呈現「當前合格輪次」的檔案：透過 `PrintItem.current_round_id → ReviewRound → PrintItemFile (file_role ∈ {印件檔, 縮圖})` 查詢。
 
 **替代方案考慮**：
 - 方案 α：在 `PrintItemFile` 加 `version` + `previous_version_id` 平面版本鏈——被否決，同輪多檔（原稿 + 加工檔 + 縮圖）關聯鬆散
@@ -191,6 +191,33 @@ PrintItemFile (延伸既有模型)
 **Rationale**（修正先前決策）：原案「免審直接改 review_status=合格、不產生 Round」造成 `PrintItemFile.review_status` 同時承擔「正本」與「衍生值」兩種語意，導致下游查詢分岔。修正後 ReviewRound 成為單一正本，無論免審或審稿路徑，查詢合格檔案一律走 `current_round_id → Round → Files` 指針鏈，語意乾淨。
 
 **影響**：免審印件不進審稿人員列表、不觸發通知，但在印件詳情頁的歷史輪次中會呈現一筆 `source=免審稿` 的 Round，讓稽核完整可追溯。
+
+### D13：PI-004 定案——能力不足時「破例派給當前能力最高者」
+
+**決策**：當印件 `difficulty_level` 高於所有審稿人員 `max_difficulty_level` 時，系統 SHALL 破例派給當前 `max_difficulty_level` 最高者（在符合能力最高者中再用 D3 的負載最少 / tie-break 規則）。
+
+**同時 SHALL 記錄 ActivityLog 標註「破例派工」事件**，讓審稿主管知悉此印件超出現有人力能力上限，便於後續人力補充或 `max_difficulty_level` 調整。
+
+**Rationale**：Miles 指定先採此策略。相較於擱置通知主管，破例派工不卡流程、維持 SLA；資深人員雖被迫處理超能力件，但 ActivityLog 可量化破例派工頻率，成為人力補充的業務訊號。未來若破例頻率過高，可再改為混合策略（參考 PI-004 OQ 原始候選方案 d）。
+
+### D14：PI-009 定案——退件原因 LOV 10 項
+
+**決策**：`reject_reason_category` LOV 選單採用以下 10 項：
+
+1. 出血不足
+2. 解析度過低
+3. 色彩模式錯誤（RGB 未轉 CMYK）
+4. 缺少必要元素（圖 / 文字 / 字型）
+5. 版面超出安全區
+6. 尺寸不符
+7. 特殊工藝圖層異常（燙金 / 白墨 / 模切）
+8. 字型未外框
+9. 技術性退件（檔案損毀 / 無法開啟等；KPI 不合格率分母排除）
+10. 其他（需 review_note 補充具體原因）
+
+**Rationale**：前 8 項涵蓋印刷業審稿最常見的內容問題，與圖編器 Preflight（XM-007）的自動檢查規則可逐一對映（規則命中 → 自動帶入對應分類）；第 9 項「技術性退件」為 KPI 排除項；第 10 項「其他」為兜底，強制備註補充避免選項僵化。
+
+**後台擴充**：若業務實測後需新增分類（如「客戶要求重大修改」），由系統後台 LOV 管理介面擴充，不需 code change。
 
 ### D10：capability 歸屬——獨立為 prepress-review
 

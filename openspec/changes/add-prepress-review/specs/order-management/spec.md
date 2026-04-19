@@ -66,7 +66,7 @@
 
 **PrintItemFile 欄位調整**：
 - 新增 `round_id`：FK ReviewRound
-- 新增 `file_role`：enum（原稿 / 加工檔 / 縮圖）
+- 新增 `file_role`：enum（印件檔 / 縮圖；PI-003 定案兩值）
 - 保留 `review_status` 但標為衍生值
 - **移除** `is_final`：由 `PrintItem.current_round_id → Round → File` 指針鏈取代
 

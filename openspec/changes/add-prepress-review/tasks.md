@@ -2,17 +2,17 @@
 
 - [x] 1.1 將 7 項 OQ 入 Notion Follow-up DB（已完成，見 oq-drafts.md）
 - [ ] 1.2 審稿難易度（1-10）分級指引文件草稿（非系統機制，為業務填寫時的參考）
-- [ ] 1.3 **[blocker for 2.2]** PI-003 定案：ReviewRound 內 file_role 枚舉（原稿 / 加工檔 / 縮圖 三值或需擴充）
-- [ ] 1.4 **[blocker for 3.2]** PI-004 定案：能力不足時的降級策略
+- [x] 1.3 ~~PI-003 定案~~：已於 design.md D4 / PI-003 Notion 解答（file_role 僅兩值：印件檔 / 縮圖），歸檔時標為已完成
+- [x] 1.4 ~~PI-004 定案~~：已於 design.md D13 解答（破例派給能力最高者 + ActivityLog 記錄），歸檔時標為已完成
 - [x] 1.5 ~~OQ3 定案~~：已於 design.md D11 解答（B2C 自動帶生產任務 / B2B 空工單草稿），PI-005 於歸檔時標為已完成
 - [x] 1.6 建立 PI-008（角色拆分未來檢視）入 Notion — 已完成
 - [x] 1.7 建立 XM-007（圖編器 Preflight 追蹤）入 Notion — 已完成
-- [ ] 1.8 **[blocker for 2.1 / 7.7]** PI-009 定案：reject_reason_category LOV 選單完整清單（至少含「技術性退件」+ 業務實測後補）
+- [x] 1.8 ~~PI-009 定案~~：已於 design.md D14 解答（10 項 LOV 選單），歸檔時標為已完成
 
 ## 2. 資料模型（Prototype schema 定義；1.3 完成後啟動 2.2）
 
-- [ ] 2.1 於 Prototype `types/` 新增 `ReviewRound` interface（round_no、reviewer_id、source、submitted_at、result、`reject_reason_category`、review_note）；`reject_reason_category` 為 enum LOV，選項 Mock 至少含「技術性退件」及 3-5 個常見內容退件類型（等 PI-009 定案後補齊）
-- [ ] 2.2 `PrintItemFile` interface 擴充 `round_id`、`file_role` 欄位；**移除** `is_final` 引用
+- [ ] 2.1 於 Prototype `types/` 新增 `ReviewRound` interface（round_no、reviewer_id、source、submitted_at、result、`reject_reason_category`、review_note）；`reject_reason_category` enum LOV 10 項（依 D14 定案）
+- [ ] 2.2 `PrintItemFile` interface 擴充 `round_id`、`file_role`（**兩值**：印件檔 / 縮圖）；**移除** `is_final` 引用
 - [ ] 2.3 `PrintItem` interface 新增 `difficulty_level`（1-10）、`current_round_id`（FK ReviewRound，unique）、`audit_log` 陣列
 - [ ] 2.4 `User`（審稿人員）interface 新增 `max_difficulty_level`（1-10）與 `available_status`（在崗 / 不在崗）
 - [ ] 2.5 EC 商品主檔 interface 新增 `difficulty_level`
@@ -22,7 +22,7 @@
 ## 3. 狀態機與自動分配邏輯
 
 - [ ] 3.1 實作審稿維度狀態轉移函式（`稿件未上傳 → 等待審稿 → 合格 / 不合格 ↔ 已補件 → 合格`，合格為終態）
-- [ ] 3.2 實作自動分配演算法（能力最接近優先、負載最少次之、user_id tie-break）
+- [ ] 3.2 實作自動分配演算法（能力最接近優先、負載最少次之、user_id tie-break；候選集為空時破例派給能力最高者並記錄 ActivityLog「破例派工」）
 - [ ] 3.3 分配觸發點：訂單付款（B2C / B2B）hook
 - [ ] 3.4 ReviewRound 建立函式：
   - 送審產生新 round
@@ -94,6 +94,7 @@
   - 補件 loop 平均輪數
   - 不合格率（排除 reject_reason_category = 技術性退件）
   - 退件原因 Top N（依 reject_reason_category 分組統計）
+  - **破例派工頻率**（候選集為空時發生的比例，作為人力補充業務訊號）
 - [ ] 8.9 覆寫待辦清單：列出「原審稿人員不在崗且處於已補件」的印件
 
 ## 9. B2C 補件 Mock 介面（非 ERP 範疇，但需 Mock 展示）
@@ -124,7 +125,10 @@
 - [ ] 12.1 驗證所有 scenarios 可於 Prototype 重現
 - [ ] 12.2 更新既有 OQ 狀態並同步 Notion：
   - PI-002（打樣 NG 檔案版次 vs 重建印件）→ 已完成，決議：採「審稿階段內同印件補件（檔案版次方案）+ 合格後改開新印件」混合路徑。理由：補件 loop 適用稿件內容微調；合格後代表業務內容變更，應走新印件
+  - PI-003（file_role 枚舉）→ 已完成，決議：僅兩值（印件檔 / 縮圖）。理由：審稿人員將客戶提供的多類內容合併為單一印件檔，參考圖由縮圖承擔
+  - PI-004（能力不足降級）→ 已完成，決議：破例派給當前能力最高者 + ActivityLog 標註。理由：不卡流程維持 SLA；破例頻率成為人力補充訊號
   - PI-005（合格後建工單前置條件）→ 已完成，決議：B2C 自動帶生產任務 / B2B 建空工單草稿。理由：B2C 商品主檔已規格化、B2B 印件客製化需印務主管拆分
+  - PI-009（退件原因 LOV 清單）→ 已完成，決議：10 項（出血不足 / 解析度過低 / 色彩模式錯誤 / 缺少必要元素 / 版面超出安全區 / 尺寸不符 / 特殊工藝圖層異常 / 字型未外框 / 技術性退件 / 其他）。理由：涵蓋業界最常見問題 + 與圖編器 Preflight 規則對映 + 其他兜底強制備註
 - [ ] 12.3 `openspec validate add-prepress-review --strict` 通過
 - [ ] 12.4 Archive 時同步更新 `openspec/specs/order-management/spec.md` L325-340 的 PrintItemFile Data Model 表格：
   - 移除 `is_final` 欄位

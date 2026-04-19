@@ -35,6 +35,8 @@
 3. 若步驟 2 有多人並列，選取「進行中審稿數」最少者。**「進行中審稿數」定義**：審稿維度狀態為「等待審稿」或「已補件」，且被分配給該審稿人員的印件數（不計合格 / 不合格與未分配者）
 4. 若步驟 3 仍有多人並列，選取 `user_id` 字典序最小者
 
+**降級路徑（PI-004 定案）**：若步驟 1 候選集為空（無任何審稿人員 `max_difficulty_level ≥ 印件 difficulty_level`），系統 SHALL 破例派給當前 `max_difficulty_level` 最高者；若最高者為多人並列，再用步驟 3 的負載最少 + 步驟 4 的 tie-break。破例派工 SHALL 記錄 ActivityLog「破例派工」事件，供審稿主管監看（成為人力補充或能力調整的業務訊號）。
+
 分配完成後，系統 SHALL 將該印件加入被指派審稿人員的待審列表，並記錄分配事件至印件 ActivityLog。
 
 #### Scenario: B2C 付款後自動分配
@@ -69,6 +71,15 @@
 - **THEN** 系統 SHALL 跳過自動分配
 - **AND** 印件不出現在任何審稿人員的待審列表
 
+#### Scenario: 能力不足破例派工
+
+- **GIVEN** 印件 `difficulty_level = 10`
+- **AND** 系統中所有審稿人員的 `max_difficulty_level` 均 < 10（例如最高為 8）
+- **WHEN** 系統執行自動分配
+- **THEN** 系統 SHALL 破例派給 `max_difficulty_level = 8` 的審稿人員（若多人則用負載最少 / user_id 字典序挑選）
+- **AND** 印件 ActivityLog SHALL 新增一筆「破例派工」事件，標註「被指派者能力 8 < 印件難易度 10」
+- **AND** 審稿主管工作台 SHALL 於 KPI 儀表板呈現「破例派工頻率」指標
+
 ---
 
 ### Requirement: 審稿主管覆寫分配
@@ -102,7 +113,7 @@
 
 ### Requirement: ReviewRound 資料模型
 
-印件（PrintItem）與印件檔案（PrintItemFile）之間 SHALL 引入 `ReviewRound` 實體。每次審稿人員送出審核、或印件走免審稿路徑時，系統 MUST 產生一筆 ReviewRound 紀錄，聚合當輪的檔案（原稿 / 加工檔 / 縮圖）、審稿結果與備註。
+印件（PrintItem）與印件檔案（PrintItemFile）之間 SHALL 引入 `ReviewRound` 實體。每次審稿人員送出審核、或印件走免審稿路徑時，系統 MUST 產生一筆 ReviewRound 紀錄，聚合當輪的檔案（印件檔 / 縮圖）、審稿結果與備註。
 
 **ReviewRound 欄位**：
 - `id`
@@ -112,23 +123,23 @@
 - `source`：enum（審稿 / 免審稿）
 - `submitted_at`：送審時間（免審稿路徑為印件建立時間）
 - `result`：enum（合格 / 不合格）
-- `reject_reason_category`：enum LOV（不合格時必填；選項清單待 PI-009 定案，至少包含「技術性退件」一項用於區分檔案技術問題與內容問題）。**對齊 quote-request spec § 需求單流失歸因的 LOV 設計模式**，以結構化方式記錄便於統計分析（退件原因 Top 3、不同類別的補件回流率）
+- `reject_reason_category`：enum LOV（不合格時必填）。**PI-009 定案 10 項**：出血不足 / 解析度過低 / 色彩模式錯誤（RGB 未轉 CMYK）/ 缺少必要元素（圖 / 文字 / 字型）/ 版面超出安全區 / 尺寸不符 / 特殊工藝圖層異常（燙金 / 白墨 / 模切）/ 字型未外框 / 技術性退件（檔案損毀 / 無法開啟等；KPI 不合格率分母排除） / 其他（需 review_note 補充）。**對齊 quote-request spec § 需求單流失歸因的 LOV 設計模式**，以結構化方式記錄便於統計分析與圖編器 Preflight 規則對映
 - `review_note`：text（備註補充；不合格時建議填寫，非必填）
 
 **PrintItem 層新增**：
-- `current_round_id`：FK ReviewRound。指向當前合格輪次，作為印件摘要（縮圖、加工檔）的單一指針。**Unique constraint**：每 PrintItem 至多一個 current_round_id；尚未合格時為 NULL。
+- `current_round_id`：FK ReviewRound。指向當前合格輪次，作為印件摘要（縮圖、印件檔）的單一指針。**Unique constraint**：每 PrintItem 至多一個 current_round_id；尚未合格時為 NULL。
 
 **PrintItemFile 擴充**：
 - `round_id`：FK ReviewRound
-- `file_role`：enum（原稿 / 加工檔 / 縮圖）（具體枚舉擴充見 PI-003）
+- `file_role`：enum（**印件檔 / 縮圖**）。審稿人員負責將客戶提供的內容（圖片、多組成品、刀模線等）於加工階段合併為**單一印件檔**；縮圖為該印件的代表縮圖（視覺摘要）。每輪 Round SHALL 至少含 1 份 `file_role=印件檔` 與 1 份 `file_role=縮圖`。
 - `review_status`：保留但 SHALL 標為衍生值（= 所屬 Round.result 的投影）
-- `is_final`：於本 change **移除**。改由 `PrintItem.current_round_id → Round → File (file_role ∈ {加工檔, 縮圖})` 取代。
+- `is_final`：於本 change **移除**。改由 `PrintItem.current_round_id → Round → File` 取代。
 
 #### Scenario: 首輪送審建立 ReviewRound
 
 - **WHEN** 審稿人員首次對某印件送出審核
 - **THEN** 系統 SHALL 建立 `round_no = 1, source = 審稿` 的 ReviewRound
-- **AND** 將當輪上傳的加工檔、縮圖綁定此 round_id
+- **AND** 將當輪上傳的印件檔、縮圖綁定此 round_id
 
 #### Scenario: 補件後重審遞增 round_no
 
@@ -146,7 +157,7 @@
 #### Scenario: 印件摘要呈現合格輪檔案
 
 - **WHEN** 任一角色檢視印件摘要（訂單詳情、工單建立頁等）
-- **THEN** 系統 SHALL 透過 `PrintItem.current_round_id → ReviewRound → PrintItemFile (file_role ∈ {加工檔, 縮圖})` 呈現檔案
+- **THEN** 系統 SHALL 透過 `PrintItem.current_round_id → ReviewRound → PrintItemFile (file_role ∈ {印件檔, 縮圖})` 呈現檔案
 - **AND** current_round_id 為 NULL（尚未合格）時，SHALL 顯示「待審稿」狀態而非舊輪檔案
 - **AND** 歷史輪次檔案 SHALL 於印件詳情頁的歷史區可查閱
 
@@ -173,7 +184,7 @@
 - 檢視待審印件列表（我被分配的印件）
 - 進入印件詳情頁檢視原稿、印件需求規格、歷史輪次
 - 下載原稿進行加工（系統外處理）
-- 上傳加工檔與縮圖（單次送審至少包含一個加工檔與一個縮圖）
+- 上傳印件檔與縮圖（單次送審至少包含一個印件檔與一個縮圖）
 - 標記送審結果為「合格」或「不合格」
 - 不合格時 SHALL 填寫原因備註
 
@@ -181,7 +192,7 @@
 
 #### Scenario: 送審合格
 
-- **WHEN** 審稿人員上傳加工檔與縮圖，選擇「合格」並送審
+- **WHEN** 審稿人員上傳印件檔與縮圖，選擇「合格」並送審
 - **THEN** 系統 SHALL 建立新 ReviewRound（result = 合格）
 - **AND** 系統 SHALL 將 PrintItem.current_round_id 指向此 Round
 - **AND** 印件審稿維度狀態 SHALL 轉為「合格」（合格為終態，若後續需變更內容，SHALL 透過「棄用原印件 + 建立新印件」處理，參考 business-scenarios spec）
@@ -216,7 +227,7 @@
 - **GIVEN** B2C 印件審稿維度狀態為「不合格」
 - **WHEN** 會員於電商前台重新上傳檔案
 - **THEN** 電商系統 SHALL 呼叫 ERP 補件介面
-- **AND** ERP SHALL 新增一筆補件檔案（file_role = 原稿，round_id 暫為 NULL，於審稿人員下次送審時與新 Round 一起綁定）
+- **AND** ERP SHALL 新增一筆補件檔案（file_role = 印件檔，round_id 暫為 NULL，於審稿人員下次送審時與新 Round 一起綁定）
 - **AND** 印件狀態 SHALL 轉為「已補件」
 - **AND** 原審稿人員的待審列表 SHALL 重新出現此印件
 
@@ -230,7 +241,7 @@
 
 - **GIVEN** B2B 印件審稿維度狀態為「不合格」
 - **WHEN** 業務於訂單詳情頁點選該印件的「補件」入口並上傳檔案
-- **THEN** 系統 SHALL 新增一筆補件檔案（file_role = 原稿，round_id 暫為 NULL，於審稿人員下次送審時與新 Round 一起綁定）
+- **THEN** 系統 SHALL 新增一筆補件檔案（file_role = 印件檔，round_id 暫為 NULL，於審稿人員下次送審時與新 Round 一起綁定）
 - **AND** 印件狀態 SHALL 轉為「已補件」
 - **AND** 原審稿人員的待審列表 SHALL 重新出現此印件
 
