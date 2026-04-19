@@ -47,10 +47,10 @@
 
 ## 5. RoleSwitcher 與角色組
 
-- [ ] 5.1 RoleSwitcher 新增「審稿」「審稿主管」兩個角色組
-- [ ] 5.2 審稿角色對應的路由與側邊欄項目（Reviewer 工作台）
-- [ ] 5.3 審稿主管角色對應的路由與側邊欄項目（Supervisor 工作台）
-- [ ] 5.4 角色切換後的 Mock 登入狀態 persist
+- [x] 5.1 RoleSwitcher 新增「審稿」「審稿主管」兩個角色組
+- [x] 5.2 審稿角色對應的路由與側邊欄項目（Reviewer 工作台）
+- [x] 5.3 審稿主管角色對應的路由與側邊欄項目（Supervisor 工作台）
+- [x] 5.4 角色切換後的 Mock 登入狀態 persist
 
 ## 6. 需求單與訂單整合（quote-request / order-management）
 
