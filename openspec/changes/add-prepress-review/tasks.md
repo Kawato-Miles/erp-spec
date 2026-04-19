@@ -1,7 +1,7 @@
 ## 1. 前置決議（標示 blocker 的為 2.x 資料模型任務前置）
 
 - [x] 1.1 將 7 項 OQ 入 Notion Follow-up DB（已完成，見 oq-drafts.md）
-- [ ] 1.2 審稿難易度（1-10）分級指引文件草稿（非系統機制，為業務填寫時的參考）
+- [x] 1.2 審稿難易度（1-10）分級指引文件草稿（非系統機制，為業務填寫時的參考）
 - [x] 1.3 ~~PI-003 定案~~：已於 design.md D4 / PI-003 Notion 解答（file_role 僅兩值：印件檔 / 縮圖），歸檔時標為已完成
 - [x] 1.4 ~~PI-004 定案~~：已於 design.md D13 解答（破例派給能力最高者 + ActivityLog 記錄），歸檔時標為已完成
 - [x] 1.5 ~~OQ3 定案~~：已於 design.md D11 解答（B2C 自動帶生產任務 / B2B 空工單草稿），PI-005 於歸檔時標為已完成
@@ -11,30 +11,30 @@
 
 ## 2. 資料模型（Prototype schema 定義；1.3 完成後啟動 2.2）
 
-- [ ] 2.1 於 Prototype `types/` 新增 `ReviewRound` interface（round_no、reviewer_id、source、submitted_at、result、`reject_reason_category`、review_note）；`reject_reason_category` enum LOV 10 項（依 D14 定案）
-- [ ] 2.2 `PrintItemFile` interface 擴充 `round_id`、`file_role`（**兩值**：印件檔 / 縮圖）；**移除** `is_final` 引用
-- [ ] 2.3 `PrintItem` interface 新增 `difficulty_level`（1-10）、`current_round_id`（FK ReviewRound，unique）、`audit_log` 陣列
-- [ ] 2.4 `User`（審稿人員）interface 新增 `max_difficulty_level`（1-10）與 `available_status`（在崗 / 不在崗）
-- [ ] 2.5 EC 商品主檔 interface 新增 `difficulty_level`
-- [ ] 2.6 Mock 資料：至少 6 位審稿人員（能力值 3、5、5、7、8、10）、審稿主管 1 位、涵蓋 difficulty 1-10 的印件
-- [ ] 2.7 Mock 資料：至少含 2 筆進行中不合格印件（B2C 1 筆、B2B 1 筆）、1 筆多輪審稿完成印件、1 筆免審稿印件（驗證 source=免審稿 Round 建立）
+- [x] 2.1 於 Prototype `types/` 新增 `ReviewRound` interface（round_no、reviewer_id、source、submitted_at、result、`reject_reason_category`、review_note）；`reject_reason_category` enum LOV 10 項（依 D14 定案）
+- [x] 2.2 `PrintItemFile` interface 擴充 `round_id`、`file_role`（**兩值**：印件檔 / 縮圖）；**移除** `is_final` 引用
+- [x] 2.3 `PrintItem` interface 新增 `difficulty_level`（1-10）、`current_round_id`（FK ReviewRound，unique）、`audit_log` 陣列
+- [x] 2.4 `User`（審稿人員）interface 新增 `max_difficulty_level`（1-10）與 `available_status`（在崗 / 不在崗）
+- [x] 2.5 EC 商品主檔 interface 新增 `difficulty_level`
+- [x] 2.6 Mock 資料：至少 6 位審稿人員（能力值 3、5、5、7、8、10）、審稿主管 1 位、涵蓋 difficulty 1-10 的印件
+- [x] 2.7 Mock 資料：至少含 2 筆進行中不合格印件（B2C 1 筆、B2B 1 筆）、1 筆多輪審稿完成印件、1 筆免審稿印件（驗證 source=免審稿 Round 建立）
 
 ## 3. 狀態機與自動分配邏輯
 
-- [ ] 3.1 實作審稿維度狀態轉移函式（`稿件未上傳 → 等待審稿 → 合格 / 不合格 ↔ 已補件 → 合格`，合格為終態）
-- [ ] 3.2 實作自動分配演算法（能力最接近優先、負載最少次之、user_id tie-break；候選集為空時破例派給能力最高者並記錄 ActivityLog「破例派工」）
-- [ ] 3.3 分配觸發點：訂單付款（B2C / B2B）hook
-- [ ] 3.4 ReviewRound 建立函式：
+- [x] 3.1 實作審稿維度狀態轉移函式（`稿件未上傳 → 等待審稿 → 合格 / 不合格 ↔ 已補件 → 合格`，合格為終態）
+- [x] 3.2 實作自動分配演算法（能力最接近優先、負載最少次之、user_id tie-break；候選集為空時破例派給能力最高者並記錄 ActivityLog「破例派工」）
+- [x] 3.3 分配觸發點：訂單付款（B2C / B2B）hook
+- [x] 3.4 ReviewRound 建立函式：
   - 送審產生新 round
   - 合格時同步更新 PrintItem.current_round_id 指針（unique constraint 保證）
   - 免審路徑產生 `source=免審稿` 的 round
-- [ ] 3.5 合格後分流建工單：
+- [x] 3.5 合格後分流建工單：
   - B2C：自動建工單 + 依商品主檔工序定義建生產任務
   - B2B：建空工單草稿（生產任務由印務主管後續處理）
-- [ ] 3.6 狀態轉移同步寫入印件 ActivityLog
-- [ ] 3.7 技術性退件以 `reject_reason_category = 技術性退件` 判定，KPI 計算時排除於「不合格率」分母，計入「技術退件比率」單獨指標
-- [ ] 3.8 退件原因 Top N 統計：依 reject_reason_category 分組計數，呈現於審稿主管 KPI 儀表板
-- [ ] 3.8 驗證：Prototype 測試情境涵蓋自動分配 happy path（能力比對、並列挑選）
+- [x] 3.6 狀態轉移同步寫入印件 ActivityLog
+- [x] 3.7 技術性退件以 `reject_reason_category = 技術性退件` 判定，KPI 計算時排除於「不合格率」分母，計入「技術退件比率」單獨指標
+- [x] 3.8 退件原因 Top N 統計：依 reject_reason_category 分組計數，呈現於審稿主管 KPI 儀表板
+- [x] 3.8 驗證：Prototype 測試情境涵蓋自動分配 happy path（能力比對、並列挑選）
 
 ## 4. 共用元件
 
