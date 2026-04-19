@@ -38,12 +38,12 @@
 
 ## 4. 共用元件
 
-- [ ] 4.1 `DifficultyLevelInput`：1-10 數值輸入元件（含範圍驗證、必填提示）
-- [ ] 4.2 `DifficultyLevelBadge`：顯示難易度的 Badge（含顏色分層）
-- [ ] 4.3 `ReviewStatusBadge`：新增「不合格」「已補件」兩個狀態樣式（延伸既有 PrintItemStatusBadge）
-- [ ] 4.4 `ReviewRoundTimeline`：印件詳情頁歷史輪次時間軸元件
-- [ ] 4.5 `FileUploadPanel`：加工檔 + 縮圖上傳元件（多檔、拖放）
-- [ ] 4.6 `ActivityLogTimeline`：印件層活動紀錄元件（對齊需求單樣式）
+- [x] 4.1 `DifficultyLevelInput`：1-10 數值輸入元件（含範圍驗證、必填提示）
+- [x] 4.2 `DifficultyLevelBadge`：顯示難易度的 Badge（含顏色分層）
+- [x] 4.3 `ReviewStatusBadge`：新增「不合格」「已補件」兩個狀態樣式（延伸既有 PrintItemStatusBadge）
+- [x] 4.4 `ReviewRoundTimeline`：印件詳情頁歷史輪次時間軸元件
+- [x] 4.5 `FileUploadPanel`：加工檔 + 縮圖上傳元件（多檔、拖放）
+- [x] 4.6 `ActivityLogTimeline`：印件層活動紀錄元件（對齊需求單樣式）
 
 ## 5. RoleSwitcher 與角色組
 
