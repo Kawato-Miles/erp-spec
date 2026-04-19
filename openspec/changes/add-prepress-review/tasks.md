@@ -54,16 +54,16 @@
 
 ## 6. 需求單與訂單整合（quote-request / order-management）
 
-- [ ] 6.1 需求單印件編輯面板加入 `DifficultyLevelInput` 欄位（必填驗證）
-- [ ] 6.2 需求單送出前端驗證：所有印件 `difficulty_level` 必填
-- [ ] 6.3 需求單成交轉訂單時，訂單印件自動繼承 `difficulty_level`
-- [ ] 6.4 EC 商品主檔編輯頁新增 `difficulty_level` 欄位（若 Prototype 有 EC 商品主檔頁面，否則以 Mock 資料呈現）
-- [ ] 6.5 B2C 訂單建立時印件自動繼承商品主檔 `difficulty_level`
-- [ ] 6.6 訂單詳情頁印件列表顯示 `DifficultyLevelBadge`
-- [ ] 6.7 訂單詳情頁：當印件為「不合格」狀態時，顯示業務可見的「補件」入口
-- [ ] 6.8 業務點選補件入口觸發檔案上傳 → 新增補件 PrintItemFile → 狀態轉「已補件」
-- [ ] 6.9 訂單詳情頁印件摘要縮圖僅呈現 `PrintItem.current_round_id` 指向的輪次檔案
-- [ ] 6.10 印件詳情抽屜新增「歷史輪次」區塊（ReviewRoundTimeline）
+- [x] 6.1 需求單印件編輯面板加入 `DifficultyLevelInput` 欄位（必填驗證）
+- [x] 6.2 需求單送出前端驗證：所有印件 `difficulty_level` 必填
+- [x] 6.3 需求單成交轉訂單時，訂單印件自動繼承 `difficulty_level`
+- [x] 6.4 EC 商品主檔編輯頁新增 `difficulty_level` 欄位（若 Prototype 有 EC 商品主檔頁面，否則以 Mock 資料呈現）
+- [x] 6.5 B2C 訂單建立時印件自動繼承商品主檔 `difficulty_level`
+- [x] 6.6 訂單詳情頁印件列表顯示 `DifficultyLevelBadge`
+- [x] 6.7 訂單詳情頁：當印件為「不合格」狀態時，顯示業務可見的「補件」入口
+- [x] 6.8 業務點選補件入口觸發檔案上傳 → 新增補件 PrintItemFile → 狀態轉「已補件」
+- [x] 6.9 訂單詳情頁印件摘要縮圖僅呈現 `PrintItem.current_round_id` 指向的輪次檔案
+- [x] 6.10 印件詳情頁新增「歷史輪次」區塊（ReviewRoundTimeline）
 
 ## 7. 審稿人員工作台（Reviewer）
 
