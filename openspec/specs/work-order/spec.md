@@ -292,17 +292,25 @@ BOM 展開建立生產任務時，系統 SHALL 依印件的 `BOMLineItem` 清單
 - **THEN** 系統 SHALL 建立多筆生產任務；同廠商之生產任務 SHALL 自動分組為同一任務（Task）
 
 ### Requirement: QC 單建立
+
 系統 SHALL 支援印務在工單詳情頁建立 QC 單，選擇影響成品的生產任務、填寫批次目標 QC 數量、指定 QC 人員。目標數量不得超出可申請上限。
+
+QC 單為獨立實體（`QCRecord`），實體定位與 Data Model 詳見 [qc capability](../qc/spec.md)。工單詳情頁僅為 UI 觸發入口；QC 單實際關聯於生產任務（`production_task_id`），透過 `ProductionTask → WorkOrder` 關聯彙總至工單層。
+
+可申請上限公式詳見 [qc capability § QC 可申請上限](../qc/spec.md)。
 
 #### Scenario: US-WO-009 建立 QC 單
 - **WHEN** 印務在工單詳情頁建立 QC 單，選擇標記為「影響成品」的生產任務，填寫批次目標 QC 數量並指定 QC 人員
 - **THEN** QC 單 SHALL 建立完成並進入「待執行」狀態；批次目標 QC 數量 MUST 不超出該生產任務之可申請上限
 
 ### Requirement: QC 執行與結果記錄
+
 系統 SHALL 支援 QC 人員執行 QC 檢驗並記錄結果，QC 完成後自動觸發工單完成度重算。
 
+QC 單狀態機、執行流程、結果欄位（`passed_quantity` / `failed_quantity`）的權威定義詳見 [qc capability § QC 單狀態機](../qc/spec.md) 與 [qc capability § QC 結果記錄](../qc/spec.md)。本工單模組僅描述工單詳情頁的 QC 觸發與顯示路徑。
+
 #### Scenario: US-QC-001 執行 QC 並記錄結果
-- **WHEN** QC 人員進入 QC 單確認目標數量，QC 單進入「執行中」狀態，逐件抽驗填入通過/不通過結果後按「提交 QC」
+- **WHEN** QC 人員進入 QC 單確認目標數量，QC 單進入「執行中」狀態，填入通過數量與不通過數量後按「提交 QC」
 - **THEN** 系統 SHALL 生成 QC 紀錄，QC 單進入「已完成」狀態；系統 SHALL 自動更新工單累計入庫數量；工單完成度 MUST 正確反映最新 QC 結果
 
 ### Requirement: 印務主管印件總覽（防掉單）
@@ -612,11 +620,9 @@ Section 內容 SHALL 包含：
 
 ### QCRecord
 
-QCRecord 及 QCDetail 欄位定義待補充至資料欄位 DB。
+QCRecord 欄位定義詳見 [qc capability § ADDED Data Model § QCRecord](../qc/spec.md)。本模組不重複定義欄位；工單相關 UI 顯示（QC 單列表、批次目標 vs 累計通過數）透過 `ProductionTask → WorkOrder` 關聯彙總取得。
 
-### QCDetail
-
-QCDetail 欄位定義待補充至資料欄位 DB。
+（原 QCDetail 空殼實體已於 qc-spec-consolidation change 移除，不保留於 qc spec。未來若需逐件判定、缺陷代碼分類、抽樣規則等進階功能，另開 change 於 qc capability 新增。）
 
 ---
 
