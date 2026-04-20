@@ -119,19 +119,6 @@
 - **THEN** 系統 MUST 阻擋該寫入
 - **AND** `processCategory` 值 SHALL 由 `bom_type` 依上述對應自動推導
 
-## REMOVED Requirements
-
-### Requirement: 簡化版 Process 內部資料表
-
-**Reason**：production-task spec 原本定義的簡化版 `Process { id, name, category }` 為 BOM 底層 spec（material-master / process-master / binding-master）建立前的臨時資料模型。現已由三個 master 完整取代：工序 category 對應 process-master 的 Process；材料 category 對應 material-master 的 MaterialSpec；裝訂 category 對應 binding-master 的 Binding。
-
-**Migration**：
-- 既有 ProductionTask.process_id 須依既有 category 值分流：
-  - category = 工序：process_id 保留，指向 process-master 的 Process（需與中台實作對應）
-  - category = 材料：清空 process_id，設定 bom_type = material 並建立 material_spec_id
-  - category = 裝訂：清空 process_id，設定 bom_type = binding 並建立 binding_id
-- 本 change 為 spec 層變更；正式 DB 資料遷移不在本 change 範圍，需於接入中台時處理
-
 ## Data Model Changes
 
 ### ProductionTask -- 新增欄位

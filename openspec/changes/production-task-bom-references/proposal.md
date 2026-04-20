@@ -11,8 +11,7 @@
 
 - 生產任務 Data Model 新增 BOM 多形引用欄位（`bom_type` + `material_spec_id` / `process_id` / `binding_id` 互斥 FK）
 - 生產任務 Data Model 新增 pricing_selection 相關欄位（`pricing_selection` / `pricing_selection_default` / `pricing_selection_overridden`）
-- **BREAKING**：刪除 production-task spec 中的簡化版 Process 資料表（由 process-master 取代）
-- `processCategory` 從 enum 欄位改為從 `bom_type` 衍生
+- `processCategory` 從 enum 欄位改為從 `bom_type` 衍生（既有 prototype `processContentCatalog.ts` 的簡化版 Process 目錄由三個 BOM master 取代；非 main spec 層級 BREAKING）
 - 新增 Requirement：BOM 多形引用、pricing_selection 混合帶入、成本計算回查邏輯
 - work-order spec 新增 `BOMLineItem` 資料表與 Requirement：工單印件的 BOM 行項目如何對應三個 master、依 BOM 展開時如何帶入 `bom_type` / FK / `pricing_selection_default`
 - Prototype 同步：修訂 `types/workOrder.ts` 的 ProductionTask interface、新增 `data/bomMasterMock.ts`、重構 `data/processContentCatalog.ts`（向後相容）、補齊 `data/mockWorkOrders.ts`
