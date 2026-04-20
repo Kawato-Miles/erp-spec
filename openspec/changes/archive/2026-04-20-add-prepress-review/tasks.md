@@ -115,24 +115,24 @@
 
 ## 11. 三視角審查與稽核
 
-- [ ] 11.1 specs + design 完成後，平行呼叫 senior-pm、ceo-reviewer、erp-consultant 三視角審查
-- [ ] 11.2 依三視角回饋更新 proposal / design / specs
-- [ ] 11.3 執行 doc-audit 檢查跨檔案一致性
-- [ ] 11.4 針對 doc-audit 回饋修正
+- [x] 11.1 specs + design 完成後，平行呼叫 senior-pm、ceo-reviewer、erp-consultant 三視角審查
+- [x] 11.2 依三視角回饋更新 proposal / design / specs
+- [x] 11.3 執行 doc-audit 檢查跨檔案一致性
+- [x] 11.4 針對 doc-audit 回饋修正
 
 ## 12. 歸檔前準備
 
-- [ ] 12.1 驗證所有 scenarios 可於 Prototype 重現
-- [ ] 12.2 更新既有 OQ 狀態並同步 Notion：
+- [x] 12.1 驗證所有 scenarios 可於 Prototype 重現
+- [x] 12.2 更新既有 OQ 狀態並同步 Notion：
   - PI-002（打樣 NG 檔案版次 vs 重建印件）→ 已完成，決議：採「審稿階段內同印件補件（檔案版次方案）+ 合格後改開新印件」混合路徑。理由：補件 loop 適用稿件內容微調；合格後代表業務內容變更，應走新印件
   - PI-003（file_role 枚舉）→ 已完成，決議：僅兩值（印件檔 / 縮圖）。理由：審稿人員將客戶提供的多類內容合併為單一印件檔，參考圖由縮圖承擔
   - PI-004（能力不足降級）→ 已完成，決議：破例派給當前能力最高者 + ActivityLog 標註。理由：不卡流程維持 SLA；破例頻率成為人力補充訊號
   - PI-005（合格後建工單前置條件）→ 已完成，決議：B2C 自動帶生產任務 / B2B 建空工單草稿。理由：B2C 商品主檔已規格化、B2B 印件客製化需印務主管拆分
   - PI-009（退件原因 LOV 清單）→ 已完成，決議：10 項（出血不足 / 解析度過低 / 色彩模式錯誤 / 缺少必要元素 / 版面超出安全區 / 尺寸不符 / 特殊工藝圖層異常 / 字型未外框 / 技術性退件 / 其他）。理由：涵蓋業界最常見問題 + 與圖編器 Preflight 規則對映 + 其他兜底強制備註
-- [ ] 12.3 `openspec validate add-prepress-review --strict` 通過
-- [ ] 12.4 Archive 時同步更新 `openspec/specs/order-management/spec.md` L325-340 的 PrintItemFile Data Model 表格：
+- [x] 12.3 `openspec validate add-prepress-review --strict` 通過
+- [x] 12.4 Archive 時同步更新 `openspec/specs/order-management/spec.md` L325-340 的 PrintItemFile Data Model 表格：
   - 移除 `is_final` 欄位
   - 新增 `round_id`、`file_role` 欄位
   - `review_status` 欄位說明標為衍生值
-- [ ] 12.5 Archive 時同步 PrintItem Data Model 新增 `current_round_id` 欄位
-- [ ] 12.6 準備 PR / commit 訊息，等待 Miles 決定歸檔時機（`/opsx:archive add-prepress-review`）
+- [x] 12.5 Archive 時同步 PrintItem Data Model 新增 `current_round_id` 欄位
+- [x] 12.6 準備 PR / commit 訊息，等待 Miles 決定歸檔時機（`/opsx:archive add-prepress-review`）
