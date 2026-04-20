@@ -1,10 +1,18 @@
 ## MODIFIED Requirements
 
-### Requirement: 訂單確認觸發（Prototype 行為修正）
+### Requirement: 訂單確認觸發
 
-原 Prototype 實作為每個訂單狀態配一個手動推進按鈕，與[狀態機 spec](../../../../specs/state-machines/spec.md) 不符。修正為：Prototype 的 OrderDetail 頁面 SHALL 僅提供「確認回簽」與「取消訂單」兩個人工操作按鈕。
+系統 SHALL 支援訂單確認觸發：線下單 = 業務手動標記回簽（客戶回簽後）；線上單（含客製單）= 付款完成自動觸發（Phase 2，由 EC 同步）。
 
-審稿段之後的狀態推進（稿件未上傳 → 等待審稿 → 製作等待中 → ... → 訂單完成）SHALL 由下層模組 bubble-up 驅動，Prototype 不提供手動按鈕。
+Prototype 補強：原實作為每個訂單狀態配一個手動推進按鈕，與[狀態機 spec](../../../../specs/state-machines/spec.md) 不符。修正為 OrderDetail SHALL 僅提供「確認回簽」與「取消訂單」兩個人工操作按鈕；審稿段之後的狀態推進（稿件未上傳 → 等待審稿 → 製作等待中 → ... → 訂單完成）SHALL 由下層模組 bubble-up 驅動。
+
+#### Scenario: 線下單業務手動確認
+- **WHEN** 客戶印回簽後，業務在訂單頁面標記「已回簽」
+- **THEN** 訂單狀態從草稿轉為已確認
+
+#### Scenario: US-ORD-001 回簽後訂單確認推進
+- **WHEN** 客戶印回簽後，業務在訂單頁面手動點擊「標記回簽」
+- **THEN** 訂單狀態 SHALL 從「報價待回簽」推進至「訂單確認」；活動紀錄 MUST 記錄操作人、操作類型與時間戳
 
 #### Scenario: 線下訂單確認回簽（正常路徑）
 
@@ -23,6 +31,8 @@
 - **WHEN** 訂單狀態為「稿件未上傳」或之後的任何狀態
 - **THEN** OrderDetail 頁面 MUST NOT 顯示狀態推進按鈕
 - **AND** 狀態推進 SHALL 等待下層模組（印件審稿、工單、出貨）的 bubble-up 觸發
+
+## ADDED Requirements
 
 ### Requirement: 成交轉訂單
 
