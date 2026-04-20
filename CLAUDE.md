@@ -288,8 +288,8 @@ delta specs 合併回 main specs，歸檔 change。
 | 產品目標 / KPI | Notion 產品目標：https://www.notion.so/32c3886511fa81359354e33087d23f23 | KPI DB（各模組可量化指標）：https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f |
 | 資料模型（查詢 / 新增 / 修改 / 移除欄位或資料表）| 各模組 spec § Data Model（已嵌入）+ Notion 資料欄位 DB（查詢用）：https://www.notion.so/32c3886511fa803e9f30edbb020d10ce | — |
 | BOM 底層（材料 / 工序 / 裝訂）| `openspec/specs/material-master/spec.md` + `openspec/specs/process-master/spec.md` + `openspec/specs/binding-master/spec.md` | 各模組 spec § Data Model |
-| **Prototype 製作** | `memory/shared/prototype-guidelines.md` + 對應 Spec + Notion 業務情境 DB + 狀態機 spec | 使用者角色 spec、Notion 測試案例 DB：https://www.notion.so/2b93886511fa817fbd65e7608726f036 |
-| Prototype 驗證 / 反饋 | `/Users/b-f-03-029/sens-erp-prototype/src/` 對應模組 + `memory/shared/prototype-guidelines.md` § 五 | — |
+| **Prototype 製作** | `/Users/b-f-03-029/sens-erp-prototype/DESIGN.md`（視覺 + UX + §0 業務規範，唯一權威）+ `memory/shared/ui-business-rules.md`（框架無關業務規範細則）+ `memory/shared/prototype-guidelines.md`（工作流程）+ 對應 Spec + Notion 業務情境 DB + 狀態機 spec | 使用者角色 spec、Notion 測試案例 DB：https://www.notion.so/2b93886511fa817fbd65e7608726f036 |
+| Prototype 驗證 / 反饋 | `/Users/b-f-03-029/sens-erp-prototype/src/` 對應模組 + `/Users/b-f-03-029/sens-erp-prototype/DESIGN.md` + `memory/shared/prototype-guidelines.md` § 五 | — |
 
 ### ERP 資源
 > 完整 Notion URL 索引與引用格式：`memory/shared/notion-index.md`
@@ -316,6 +316,7 @@ delta specs 合併回 main specs，歸檔 change。
 | **Notion 資源索引（URL 唯一正本）** | `memory/shared/notion-index.md` |
 | 角色層通用原則（Spec 撰寫 / OQ 管理 / PM 視角） | `memory/shared/principles.md` |
 | UI 設計系統（業務規範 / 視覺 Token / UX 模式 / 元件清單，唯一權威）| `/Users/b-f-03-029/sens-erp-prototype/DESIGN.md`（Spec 撰寫前讀 §0 業務規範；Prototype 製作前完整讀） |
+| UI 業務規範細則（框架無關：禁 Emoji / 刪除流程 / Info Banner / Toast / Loading / 頁面模板 / 按鈕優先級 / 狀態標籤）| `memory/shared/ui-business-rules.md` |
 | Prototype 工作流程（製作 / 驗證 / 同步規則） | `memory/shared/prototype-guidelines.md` |
 | 共用術語（完整） | `memory/shared/glossary.md` |
 | 產業背景 | `memory/shared/context/industry.md` |
