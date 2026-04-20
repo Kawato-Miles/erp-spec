@@ -91,7 +91,7 @@ Spec 撰寫進度：
 | 生產任務 / QC / 出貨單 | Notion 狀態變化 § 下層 + Notion 商業流程 + Notion 使用者情境 + Notion 業務情境 DB |
 | 跨上下層流程 | Notion 狀態變化（上層 + 下層）+ Notion 商業流程 + Notion 使用者情境 + Notion 業務情境 DB |
 | 所有 ERP Spec | Notion 產品目標（https://www.notion.so/32c3886511fa81359354e33087d23f23）（KPI 對齊）；KPI DB（https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f）（各模組可量化指標） |
-| Prototype / 介面設計規格 | `memory/shared/ui-design-system.md`（Ant Design 規範、元件、版型） |
+| Prototype / 介面設計規格 | `/Users/b-f-03-029/sens-erp-prototype/DESIGN.md`（業務規範 §0、視覺 token、UX 模式、`Erp*` 元件清單） |
 
 **重要**：以下四個檔案是**所有 Spec 撰寫的必讀基礎**（提供邏輯、用戶與情境背景）：
 - Notion 商業流程（https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a）→ 核心業務規則與決策邏輯
@@ -302,7 +302,7 @@ ERP 文件中「Phase」有兩個層級：
 | PRD Sub-issue 模板（GitHub，子功能層） | `.claude/skills/notion-to-github/references/prd-sub-template.md` |
 | ERP 全局資料模型 | Notion 資料欄位 DB：https://www.notion.so/32c3886511fa803e9f30edbb020d10ce |
 | 通用工作原則 | `memory/shared/principles.md` |
-| UI 設計系統（Ant Design 規範） | `memory/shared/ui-design-system.md` |
+| UI 設計系統（業務規範 / 視覺 / UX 模式 / 元件，唯一權威） | `/Users/b-f-03-029/sens-erp-prototype/DESIGN.md`（Spec 撰寫前讀 §0） |
 | ERP 產品目標 / KPI | Notion 產品目標：https://www.notion.so/32c3886511fa81359354e33087d23f23 |
 | 成功指標 KPI DB | Notion KPI DB（各模組可量化指標，以 Feature 篩選）：https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f |
 | 狀態機（上層：需求單 / 訂單 / 工單） | Notion 狀態變化：https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 |

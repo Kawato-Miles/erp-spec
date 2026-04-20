@@ -314,7 +314,7 @@ delta specs 合併回 main specs，歸檔 change。
 |------|------|
 | **Notion 資源索引（URL 唯一正本）** | `memory/shared/notion-index.md` |
 | 角色層通用原則（Spec 撰寫 / OQ 管理 / PM 視角） | `memory/shared/principles.md` |
-| UI 設計系統（Ant Design 元件 / Token / 版型規範）| `memory/shared/ui-design-system.md` |
+| UI 設計系統（業務規範 / 視覺 Token / UX 模式 / 元件清單，唯一權威）| `/Users/b-f-03-029/sens-erp-prototype/DESIGN.md`（Spec 撰寫前讀 §0 業務規範；Prototype 製作前完整讀） |
 | Prototype 工作流程（製作 / 驗證 / 同步規則） | `memory/shared/prototype-guidelines.md` |
 | 共用術語（完整） | `memory/shared/glossary.md` |
 | 產業背景 | `memory/shared/context/industry.md` |
