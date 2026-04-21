@@ -4,8 +4,8 @@
 
 本 change 的 artifacts 經過 senior-pm / ceo-reviewer / erp-consultant 三視角兩輪討論後收斂，主要調整：
 - 命名從「審稿不合格」改為「待補件」（對齊業務 JTBD 語意）
-- Bubble-up 規則 4 補「至少一件送審過」前提（修正 EC 混合訂單誤派）
-- 追加印件走新訂單 + 免審稿（對齊現場業務實踐，避免製作段死路）
+- Bubble-up 規則簡化為 4 條（實作時發現 erp-consultant 原提「至少一件送審過」前提多餘 —— 「等待審稿」本身就隱含稿件已上傳，EC 混合情境中未上傳印件狀態是「稿件未上傳」而非「等待審稿」，規則不會誤觸發）
+- 邊界情境釐清：打樣 NG 原訂單新增免審稿印件 **in scope**；同印件追加製作走新訂單 **out of scope**（X6）
 - 明確與通知機制（OQ XM-006）的協同路徑
 - 增加技術債記帳段落（D7）
 
@@ -32,20 +32,19 @@
 
 ### D2：Bubble-up 決策表
 
-**派生規則**（優先序）：
+**派生規則**（優先序，4 條）：
 
 | # | 條件 | Order.status |
 |---|------|--------------|
 | 1 | 存在任一印件 `reviewDimensionStatus = '不合格'` | 待補件 |
 | 2 | 所有印件 `reviewDimensionStatus = '合格'` | 製作等待中（進入製作段）|
-| 3 | 所有印件 `reviewDimensionStatus = '稿件未上傳'` | 稿件未上傳 |
-| 4 | 存在「等待審稿」或「已補件」印件，且**至少一件已送審過** | 等待審稿 |
-| 5 | 其他混合情境（例如免審稿合格 + 需審稿未上傳，尚未送審任何一件）| 稿件未上傳 |
+| 3 | 存在任一印件 `reviewDimensionStatus = '等待審稿'` 或 `'已補件'` | 等待審稿 |
+| 4 | 其他（全部「稿件未上傳」；或「合格」+「稿件未上傳」混合）| 稿件未上傳 |
 
-**關鍵修正 — 規則 4「至少一件已送審過」**：
-- 情境：EC 混合訂單有兩件印件，一件勾選免審稿（直達「合格」），另一件需審稿（狀態為「稿件未上傳」）
-- 舊規則 4（無送審前提）：落到「等待審稿」，但實際還沒任何件送審過，審稿人員工作台看不到任何 task，業務也誤以為球在審稿人員手上
-- 新規則 4（有送審前提）：落到規則 5「稿件未上傳」，正確對應「等待客戶 / 業務上傳需審稿那件」的業務動線
+**規則 3 的設計驗證（erp-consultant Round 1 的擔憂實作後發現多餘）**：
+- 原擔憂：EC 混合訂單（免審稿合格 + 需審稿印件）會誤派為「等待審稿」
+- 實作驗證：需審稿但尚未上傳稿件的印件，`reviewDimensionStatus` 為 `'稿件未上傳'`，不是 `'等待審稿'`。規則 3 集合檢查不會被觸發，自然落到規則 4 「稿件未上傳」
+- 結論：「等待審稿」狀態本身即隱含「稿件已上傳、等待審稿人員動作」；不需要再檢查 `reviewRounds.length` 是否有送審紀錄
 
 **「已補件」印件視為「等待審稿」的原理**：
 - 業務視角的關鍵是「球在誰手上」：
@@ -87,34 +86,36 @@
 ```ts
 function deriveOrderReviewStatus(
   current: Order['status'],
-  printItems: Pick<OrderPrintItem, 'reviewDimensionStatus' | 'reviewRounds'>[],
+  printItems: Pick<OrderPrintItem, 'reviewDimensionStatus'>[],
 ): Order['status'] | null {
   const reviewPhaseStates: Order['status'][] = ['稿件未上傳', '等待審稿', '待補件'];
   if (!reviewPhaseStates.includes(current)) return null;
   if (printItems.length === 0) return null;
 
   const statuses = printItems.map(pi => pi.reviewDimensionStatus);
-  const anySubmitted = printItems.some(pi => (pi.reviewRounds?.length ?? 0) > 0);
 
   if (statuses.some(s => s === '不合格')) return '待補件';
   if (statuses.every(s => s === '合格')) return '製作等待中';
-  if (statuses.every(s => s === '稿件未上傳')) return '稿件未上傳';
-  if (anySubmitted) return '等待審稿';
-  return '稿件未上傳'; // 規則 5：混合情境但尚未送審
+  if (statuses.some(s => s === '等待審稿' || s === '已補件')) return '等待審稿';
+  return '稿件未上傳'; // 規則 4：全部「稿件未上傳」或「合格」+「稿件未上傳」混合
 }
 ```
 
-**觸發串接**：
-- `submitReviewForPrintItem`（印件送審完成）→ bubble-up
-- `onResupplyCompleted`（補件完成）→ bubble-up
-- `uploadArtworkFile`（首次上傳稿件）→ bubble-up
-- `confirmSignBack`（回簽自動分配）→ 維持現有免審稿快速路徑處理，不額外觸發
+**觸發串接（統一透過 `updateOrder`）**：
+- `updateOrder(orderId, updater)` action 內部自動套 `applyOrderReviewBubbleUpForOrder`，所有透過 `updateOrder` 改動印件狀態的路徑都自動 bubble-up
+- `submitReviewForPrintItem` 內部 `set()` 後明確呼叫一次（不透過 `updateOrder`）
+- `uploadArtworkFile` 內部 `set()` 後明確呼叫一次（不透過 `updateOrder`）
+- `confirmSignBack`：維持現有首次進入審稿段的手動邏輯（含免審稿快速路徑判斷），本次不動
 
-**追加印件走新訂單的邊界聲明**：
-- 業務若需在已進製作段的訂單追加印件，實務是**開新訂單 + 新印件設為免審稿**（重用已審稿過的內容基礎）
-- 此行為由業務流程承載，非系統觸發 — 原訂單的 `deriveOrderReviewStatus` 不會被呼叫（訂單已不在審稿段）
-- 新訂單正常走 bubble-up 邏輯；若新印件全為免審稿則直達「製作等待中」
-- 本 change 不提供「原訂單審稿段退回」的 API，避免破壞不可逆原則
+**邊界情境處理**：
+
+| 情境 | 觸發路徑 | Order.status 變化 |
+|------|---------|------------------|
+| 打樣 NG 棄用 + 原訂單新增免審稿印件（in scope）| `updateOrder` 改 printItems | Order 已離開審稿段 → bubble-up 檢查 `reviewPhaseStates` 不 match → return null → **Order 維持當前製作段狀態** |
+| 同印件追加製作（X6，out of scope）| 走新訂單，不碰原訂單 | 原訂單不動；新訂單正常走 bubble-up |
+| 原訂單仍在審稿段時新增印件 | `updateOrder` 改 printItems | 走 bubble-up 規則，依新印件狀態集合派生 |
+
+本 change 不提供「原訂單審稿段退回」的 API，避免破壞不可逆原則。
 
 ### D5：與免審稿快速路徑互動
 
@@ -123,7 +124,7 @@ function deriveOrderReviewStatus(
 
 **決定**：免審稿快速路徑**不經過「待補件」**。規則不變。
 
-**混合情境（D2 規則 5）補充**：若訂單部分印件免審稿（直達「合格」）+ 部分需審稿（「稿件未上傳」），訂單不走快速路徑（因為有印件尚未合格），走 bubble-up 規則 5 → Order.status = 「稿件未上傳」，等需審稿那件上傳後再走規則 4。
+**混合情境（D2 規則 4）補充**：若訂單部分印件免審稿（直達「合格」）+ 部分需審稿（「稿件未上傳」），訂單不走快速路徑（因為有印件尚未合格），走 bubble-up 規則 4 → Order.status = 「稿件未上傳」，等需審稿那件上傳稿件後 `reviewDimensionStatus` 變為「等待審稿」再走規則 3。
 
 ### D6：邊界聲明 — QC 不合格 / 審稿人員工作台 / 並行補件不走 Order 層
 
