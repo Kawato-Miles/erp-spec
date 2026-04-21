@@ -341,6 +341,10 @@ delta specs 合併回 main specs，歸檔 change。
 | 材料主檔（BOM 底層）| `openspec/specs/material-master/spec.md` | — | v0.1 | 草稿（ERP 中台已實作）|
 | 工序主檔（BOM 底層）| `openspec/specs/process-master/spec.md` | — | v0.1 | 草稿（ERP 中台已實作）|
 | 裝訂主檔（BOM 底層）| `openspec/specs/binding-master/spec.md` | — | v0.1 | 草稿（ERP 中台已實作）|
+| Prototype 資料層（跨模組工程）| `openspec/specs/prototype-data-store/spec.md` | — | — | 草稿（2026-04-20 e2e + 2026-04-21 data-consistency-audit）|
+| QC | `openspec/specs/qc/spec.md` | — | — | 草稿 |
+| 派工看板 | `openspec/specs/task-dispatch-board/spec.md` | — | — | 草稿 |
+| 工作包 | `openspec/specs/work-package/spec.md` | — | — | 草稿 |
 
 ### Prototype 實作進度
 > Prototype 統一在 `sens-erp-prototype` Repo（本地：`/Users/b-f-03-029/sens-erp-prototype`）

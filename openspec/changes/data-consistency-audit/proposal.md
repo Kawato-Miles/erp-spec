@@ -65,6 +65,10 @@ Prototype 已於 [2026-04-20-end-to-end-data-flow](../../changes/archive/2026-04
   - ADDED Requirement「情境驅動 Mock 完備性」
   - ~~ADDED Requirement「新增跨層欄位的 Change 工作流 Checklist」~~ 移出本 change
 
+- `prepress-review`（2026-04-21 UAT bug 修復連帶調整）：
+  - MODIFIED Requirement「ReviewRound 資料模型」：`PrintItemFileRole` 從兩值（印件檔 / 縮圖）擴為三值（印件檔 / 審稿後檔案 / 縮圖），語意分離（印件檔 = 補件方原始檔、審稿後檔案 = 審稿員加工版本）
+  - MODIFIED Requirement「審稿人員審稿作業」：明定審稿人員不可替換原印件檔；合格時上傳審稿後檔案 + 縮圖
+
 ## Impact
 
 ### 新增檔案

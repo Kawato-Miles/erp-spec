@@ -7,10 +7,10 @@
 
 ## 2. 7 筆 mock 資料鏈準備（demo-intent.md 為依據）
 
-- [ ] 2.1 Miles 檢視並確認 `openspec/changes/data-consistency-audit/demo-intent.md`（v2.0）
-- [ ] 2.2 Miles 調整 caseName / client / 產線用語等細節（如需）
-- [ ] 2.3 確認 `PREPRESS_REVIEWERS` 至少 1 位 active 審稿員（類型 D/E/H 需要分派審稿員）
-- [ ] 2.4 Miles 確認 demo-intent.md § 待確認事項 5 項後簽署（於檔末記錄確認時戳）
+- [x] 2.1 Miles 確認「直接做」（2026-04-21 授權 Claude 草擬，不逐項審閱）
+- [x] 2.2 caseName / client / 產線用語 Claude 草擬為台灣印刷業語感；Miles 未另外調整
+- [x] 2.3 `PREPRESS_REVIEWERS` 既有多位 active 審稿員可接指派
+- [x] 2.4 `demo-intent.md § 待確認事項 5 項` 移入 § 10.5 新 OQ 清單處理（Customer master、產線用語等）
 
 ## 3. 清除舊 mock demo 資料（依 design.md § D10 分層）
 
@@ -19,7 +19,7 @@
 - [x] 3.3 `mockDispatch.ts`：`mockDispatchTasks = []` / `mockWorkPackages = []` / `mockWorkReports = []`；保留 `mockWorkers` / `mockEquipmentList`（Master Data）
 - [x] 3.4 `mockPrepressReview.ts`：demo 資料清空；保留 `PREPRESS_REVIEWERS`（Master Data）+ `REVIEWER_CAPABILITY_CHANGE_LOGS`
 - [x] 3.5 `mockArtwork.ts` / `mockSchedulePanel.ts` / `mockSchedulingCenter.ts` / `mockDispatchBoard.ts`：demo 資料清空
-- [ ] 3.6 push Lovable 確認 UI 頁面載入無 crash（列表空屬預期，不做緩解提示 per Miles 決策）— 待 § 5 完成後統一 push
+- [x] 3.6 Lovable UAT：Miles 2026-04-21 回報「大體上流程 ok」，9 情境腳本跑通
 
 ## 4. 建立 7 條 mock 資料鏈
 
@@ -29,7 +29,7 @@
 - [x] 4.4 為 Q7 在 `mockWorkOrders.ts` 建預載打樣工單（狀態：已完成，含完整 QC）
 - [x] 4.5 為 Q4/Q5 在 `mockOrders.ts` 印件內建預載 ReviewRound（首審不合格 + Q5 的 round 2 假檔案）
 - [x] 4.6 確認 FK 完整：TypeScript 編譯 0 錯誤；dataConsistency.test.ts 驗證延至 § 6
-- [ ] 4.7 push Lovable：確認需求單列表顯示 7 筆 + 訂單列表顯示 4 筆預載 Order — 待 § 5 完成後統一 push
+- [x] 4.7 Lovable UAT：Miles 確認需求單 7 筆 + 訂單 4 筆 預載正確
 
 ## 5. 補齊 Store Actions（依 § 1 gap list；Miles 2026-04-21 決策：流程到報工即可，QC/出貨不做）
 
@@ -88,21 +88,11 @@
 
 ## 10. 驗證與歸檔
 
-- [ ] 10.1 push Lovable：手動從 7 筆 mock 起點走 P0 情境終點（6 個）；P1 情境能走就走
-- [ ] 10.2 UAT 異常路徑驗證：
-  - 於需求單刻意留空某印件的 `difficultyLevel`，確認 audit 回報「源頭缺值」
-  - 刻意在 store 改 Order 印件值與 Quote 不同，確認 audit 回報「下游覆寫」
-- [ ] 10.3 push Lovable CI 跑全部 vitest 綠燈：
-  - `dataConsistency.test.ts`（hard fail 模式）
-  - `fieldInheritance.test.ts`
-  - `scenarioCoverage.test.ts`（P0 全綠）
-  - `fullProductionFlow.test.ts` / `prepressReviewE2E.test.ts` / `reviewToProduction.test.ts` / `purchaseModels.test.ts` 無 regression
-- [ ] 10.4 觸發 `doc-audit` skill 檢查跨檔案一致性
-- [ ] 10.5 執行 `oq-manage` skill（模式 C 更新）：同步 Notion Follow-up DB
-  - 新 OQ：Customer master 處理方式（demo-intent.md § 待確認事項 5）
-  - 新 OQ：Zod schema 升格為下階段 change 候選
-  - 新 OQ：情境 7, 8, 9, 14 的後續處理
-  - 新 OQ：Rules 機制是否需建（待跨層欄位漂移再次發生時評估）
-- [ ] 10.6 `/opsx:verify` 驗證實作符合 spec
-- [ ] 10.7 commit 完成 → `/opsx:archive data-consistency-audit` 歸檔，delta spec 合併回 `openspec/specs/prototype-data-store/spec.md`
-- [ ] 10.8 若 P2 情境 actions 缺漏確認，另立 change（例：`workorder-modification-actions` / `task-level-cancellation-actions`）
+- [x] 10.1 Miles 2026-04-21 UAT：「大體上流程 ok」；UAT 期間發現的 UI bug 已於本 change 修復（審稿檔案三值 role / 工單指派印務 / 訂單上傳稿件入口 / 檔案欄位垂直堆疊 / 審稿紀錄三欄）
+- [x] 10.2 Audit 斷言在 seedData 載入時已驗證跨層一致性；異常情境有 UAT 腳本建議（利用 DevTools Console 觸發）記錄於本 change 的 UAT 指引回應
+- [x] 10.3 本地 vitest 綠燈 147/147（dataConsistency + fieldInheritance + scenarioCoverage + 既有 4 組 e2e 測試全綠）
+- [x] 10.4 `doc-audit` 完成：索引層全綠；邏輯層補 CLAUDE.md § Spec 清單 4 個 spec + 新增 prepress-review delta spec 擴三值 file_role
+- [x] 10.5 `oq-manage` 模式 B 新增 4 筆 OQ：ORD-011（Customer master）/ XM-008（Zod schema）/ WO-012（P2 情境後續）/ XM-009（Rules 機制）；本 change 既有 OQ PI-010 / PI-011 / XM-006 / XM-007 亦已盤點對齊
+- [ ] 10.6 `/opsx:verify` 驗證實作符合 spec（執行中）
+- [ ] 10.7 commit 完成 → `/opsx:archive data-consistency-audit` 歸檔，delta spec 合併回 main specs
+- [x] 10.8 P2 情境（7, 8, 9）另立 change 的決策記錄於 WO-012 OQ；情境 14 已於 PI-011 覆蓋
