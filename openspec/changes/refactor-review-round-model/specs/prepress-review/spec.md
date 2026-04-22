@@ -66,21 +66,38 @@ Round 狀態 =
 - **THEN** 系統 SHALL 更新當前 Round：`reviewed_at = now, reviewer_id = 審稿人員, result = '不合格', reject_reason_category = LOV 值, review_note = 填寫內容`
 - **AND** 印件 `reviewDimensionStatus` SHALL 轉為「不合格」
 
-#### Scenario: 業務補件建立新 Round
+#### Scenario: 業務補件建立新 Round（補件 MUST 有新檔）
 
 - **GIVEN** 印件存在 `result = '不合格'` 的最新 Round
-- **WHEN** 業務 / 會員完成補件（上傳新印件檔，可選填 submitted_note）
+- **WHEN** 業務 / 會員完成補件（上傳新印件檔 ≥ 1 份，可選填 submitted_note）
 - **THEN** 系統 SHALL 建立 `round_no = N + 1, submitted_at = now, submitted_by = 補件者, source = 審稿, result = null, submitted_note = 填寫內容（可空）` 的新 ReviewRound
 - **AND** 新上傳的檔案 `file_role = '印件檔'` SHALL 綁定此新 Round 的 `submitted_files`
 - **AND** 印件 `reviewDimensionStatus` SHALL 從「不合格」轉為「已補件」
+
+#### Scenario: 補件僅改備註不上傳新檔 SHALL 被拒絕
+
+- **GIVEN** 印件存在 `result = '不合格'` 的最新 Round
+- **WHEN** 業務 / 會員於補件 Dialog 僅填 `submitted_note` 未上傳任何新印件檔
+- **THEN** 系統 MUST 拒絕補件動作
+- **AND** UI SHALL 提示「補件必須提供至少一份新印件檔」
+- **AND** 印件狀態與 Round 結構 MUST NOT 變化
 
 #### Scenario: 免審稿路徑建立 Round 1
 
 - **WHEN** 印件走免審稿快速路徑（`skipReview = true`）
 - **THEN** 系統 SHALL 於印件建立時自動產生 `round_no = 1, source = 免審稿, submitted_by = '系統', reviewer_id = null, result = '合格', submitted_at = reviewed_at = 印件建立時間` 的 ReviewRound
-- **AND** 客戶提供的原檔 `file_role = '印件檔'` SHALL 同時綁定此 Round 的 `submitted_files` 與 `reviewed_files`（免審稿不需要審稿人員複製一份）
+- **AND** 客戶提供的原檔 `file_role = '印件檔'` SHALL 綁定此 Round 的 `submitted_files`
+- **AND** `reviewed_files` SHALL 為 NULL（免審稿無審稿人員加工後的檔案）
 - **AND** 印件 `reviewDimensionStatus` SHALL 直達「合格」
 - **AND** 印件 SHALL 不出現在任何審稿人員的待審列表
+
+#### Scenario: 下游工單取終稿時依 source 判斷
+
+- **WHEN** 工單建立時取印件的「終稿」檔案
+- **THEN** 系統 SHALL 依 Round.source 判斷：
+  - `source === '審稿'` → 取 `current_round.reviewed_files`（審稿後檔案 + 縮圖）
+  - `source === '免審稿'` → 取 `current_round.submitted_files`（客戶原檔即終稿）
+- **AND** 工單製作不得因免審稿 `reviewed_files = null` 而取不到終稿
 
 #### Scenario: 補件後重審
 

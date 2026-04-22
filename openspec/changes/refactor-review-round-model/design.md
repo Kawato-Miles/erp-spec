@@ -183,9 +183,15 @@ TypeScript discriminated union 強制 `result` 值 vs `reviewedAt` / `reviewerId
 | `reviewerId` | null |
 | `result` | `'合格'` |
 | `reviewNote` | null / 「免審稿路徑，系統自動合格」|
-| `reviewedFiles` | **由客戶上傳的原檔作為終稿**（不複製，Q5 選項 a）|
+| `reviewedFiles` | **null**（免審稿沒有審稿人員加工後的檔案；下游工單取終稿時判斷 `source === '免審稿' ? submittedFiles : reviewedFiles`）|
 
 **UI 說明**：`ReviewRoundTimeline` 顯示這輪時應標示 `source = 免審稿`（而非一般審稿路徑）。
+
+**下游取檔規則**：工單建立時取「終稿」的邏輯 MUST 判斷 `source`：
+- `source === '審稿'`：取 `Round.reviewedFiles`（審稿後檔案 + 縮圖）
+- `source === '免審稿'`：取 `Round.submittedFiles`（客戶原檔即終稿）
+
+此規則避免免審稿印件下游取不到檔案（因 reviewedFiles 為 null）。
 
 ## Alternatives Considered
 
@@ -217,9 +223,17 @@ Round 建獨立狀態機欄位（待審 → 已審合格 / 已審不合格）。
 - 測試斷言大規模重寫（緩解：scenarioCoverage 先定義新結構的關鍵斷言）
 - UI 元件多處 refactor（緩解：分批 push 到 Lovable，每批驗證後再動下一批）
 
-### Open Questions（本 change 範圍內）
-- **OQ-A**：`reviewStatus`（legacy 欄位，含相容值 `待審稿` / `審稿中` / `免審稿`）是否在本 change 順手清理？或另議？
-- **OQ-B**：首次上傳稿件時若未分派審稿人員（例如難易度未填），Round 1 的 `reviewerId` 是 null 還是稍後填？—— 對應 `confirmSignBack` 回簽後分派的時序
-- **OQ-C**：業務補件時若填了 `submittedNote` 但不上傳新檔（只改備註補說明），是否允許？—— 目前 `ResupplyDialog` 強制要求至少一份印件檔
+### Open Questions（本 change 範圍內）— 已於 2026-04-22 Round 1 審查後收斂
 
-三題由 Miles 在 tasks 執行階段決定或標記為後續 change。
+- **OQ-A ✅ 採「本 change 順手清理」**：legacy `reviewStatus` 欄位（含相容值 `待審稿` / `審稿中` / `免審稿`）在本 change 移除。Prototype 階段清理成本低，保留會累積「最新 Round result=合格 但 legacy reviewStatus=審稿中」的雙軌矛盾。見 tasks 3.1.4。
+- **OQ-B ✅ 採「Round 1 先建、`reviewerId=null`，分派 action 稍後補」**：首次上傳稿件時若未分派審稿人員，Round 1 以 `reviewerId=null` 建立；後續由 `confirmSignBack` 或 `assignReviewer` action 單獨更新欄位（不新建 Round）。審稿人員工作台查詢條件：`assignedReviewerId === current_user && result === null`，未分派印件自然不會出現在任何人工作台。
+- **OQ-C ✅ 採「嚴格：補件必須有新檔」**：業務補件 MUST 提供至少一份新印件檔（`submittedFiles.length >= 1`）；只改備註不算補件。Miles 明確確認「補件就是要一起提供檔案」的業務語意。若未來實際情境需要「送審備註補充」，另提 change 評估獨立事件型別。
+
+### 型別 / 實作層約束（Round 1 erp-consultant 提出的技術強化，已採納為實作標準）
+
+1. **免審稿 `reviewedFiles = null`**（非指向 `submittedFiles`）：
+   - 理由：免審稿沒有審稿人員背書，`reviewedFiles` 語意是「審稿人員加工後的下游生產基準」，不該被客戶原檔污染
+   - 下游工單取終稿邏輯：`source === '免審稿' ? submittedFiles : reviewedFiles`
+   - 對齊 SAP QM Skip（免檢）實踐：auto-approved 不生成「審核後物料」
+2. **測試 invariant assertion**：每個情境驗證結尾 assert `printItem.reviewDimensionStatus === derive(printItem.rounds)`，防止 Round[] 與 denormalized 狀態欄位不同步。屬工程品質基本實踐。
+3. **工作台查詢乾淨化**：不另加 `assignmentStatus` 欄位，沿用 `reviewerId` null / 已分派二元判斷即可；工作台 filter `assignedReviewerId === me && result === null` 正確表達「我的待審」。

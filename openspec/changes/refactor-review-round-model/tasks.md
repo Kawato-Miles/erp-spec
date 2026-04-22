@@ -1,11 +1,13 @@
-## 1. Spec 審查（三視角 + OQ）
+## 1. Spec 審查（三視角 + OQ）— 已完成
 
-- [ ] 1.1 OQ 查詢：跑 `oq-manage`（模式 A）確認 Notion Follow-up DB 對應 Round 模型 / ActivityLog 清理的既存 OQ
-- [ ] 1.2 三視角輕量審查（資料模型重構風險低，不必走 2 輪完整討論；主要 validate 型別 + 同步規則）
-  - `senior-pm`：驗證業務動線對齊（印件建立 → 送審 → 審稿 → 合格 / 不合格迴圈）
-  - `erp-consultant`：驗證型別層約束、mock 遷移策略、ActivityLog 清理邊界
-  - `ceo-reviewer`：驗證工作量與回報（是否值得現在重構）
-- [ ] 1.3 三題 Open Questions 收斂（OQ-A 清理 reviewStatus / OQ-B Round 1 reviewerId 時序 / OQ-C 補件僅改備註）
+- [x] 1.1 OQ 查詢（2026-04-22）：Notion Follow-up DB 無新發現；[file_role 枚舉](https://www.notion.so/3473886511fa812e9189fbc4625b54f8) / [打樣 NG 補件策略](https://www.notion.so/32d3886511fa8123a592c78223483225) 均於先前 change 已定案
+- [x] 1.2 三視角輕量審查（2026-04-22，單輪收斂，無方向爭議）
+  - `senior-pm`：業務動線對齊；Success Criteria 補 SubmitReviewDialog 頂部 submittedNote + Timeline 外部可讀性兩項 UAT 指標
+  - `erp-consultant`：型別 discriminated union 完整性、免審稿 reviewedFiles 語意污染、D3 同步表觸發點補強
+- [x] 1.3 三題 Open Questions 收斂：
+  - **OQ-A ✅**：本 change 順手清理 legacy `reviewStatus`（見 3.1.4）
+  - **OQ-B ✅**：Round 1 先建 `reviewerId=null`，分派 action 稍後 update（見 3.2.4）
+  - **OQ-C ✅**：補件 MUST 有新檔（見 spec delta § 業務補件建立新 Round / § 補件僅改備註 SHALL 被拒絕）
 
 ## 2. Spec 正式化
 
@@ -24,9 +26,13 @@
 - [ ] 3.2.1 `uploadArtworkFile` 改為先建 Round 1（待審）再把檔案綁 Round 1 `submittedFiles`
 - [ ] 3.2.2 `submitReviewForPrintItem` 改為**更新當前 Round 的審稿端欄位**（不是新建 Round）；合格路徑繼續觸發建工單
 - [ ] 3.2.3 新增 `startResupplyRound(printItemId, files, note, actor)` — 業務補件完成時建新 Round N+1（待審），新檔案綁 `submittedFiles`，`submittedNote` 存備註
-- [ ] 3.2.4 `confirmSignBack`：免審稿路徑時系統自動建 Round 1（source=免審稿、result=合格、submittedBy=系統、reviewedFiles=客戶原檔）
-- [ ] 3.2.5 所有 action 結尾保留 `applyOrderReviewBubbleUpForOrder` 呼叫（不影響 Order 層）
-- [ ] 3.2.6 單元測試：各種情境組合 → Round 結構與印件狀態欄位同步
+- [ ] 3.2.4 `confirmSignBack` 拆兩路：
+  - **免審稿路徑**：印件建立時系統自動建 Round 1（source=免審稿、result=合格、submittedBy=系統、**reviewedFiles=null**、submittedFiles=客戶原檔）
+  - **需審稿路徑**：Round 1 已由 `uploadArtworkFile` 建（reviewerId=null 或已分派）；`confirmSignBack` 只 update Round 1 的 `reviewerId` 為分派結果，**不新建 Round**
+- [ ] 3.2.5 下游工單建立時取終稿的邏輯補 source 判斷：`source === '免審稿' ? submittedFiles : reviewedFiles`
+- [ ] 3.2.6 所有 action 結尾保留 `applyOrderReviewBubbleUpForOrder` 呼叫（不影響 Order 層）
+- [ ] 3.2.7 單元測試：各種情境組合 → Round 結構與印件狀態欄位同步
+- [ ] 3.2.8 `startResupplyRound` 必須驗證 `files.length >= 1`，否則拒絕並回傳 `{ success: false, error: '補件必須提供至少一份新印件檔' }`
 
 ### 3.3 UI 元件（三個強化位置）
 - [ ] 3.3.1 `ReviewRoundTimeline` 加欄位：送審時間、送審者、送審備註（分成 submittedNote / reviewNote 兩欄）
@@ -46,6 +52,9 @@
 - [ ] 3.5.2 Order 層「待補件」bubble-up 不受影響（前 change 成果）
 - [ ] 3.5.3 補件備註在三個位置可見（ReviewRoundTimeline / SubmitReviewDialog / ResupplyDialog）
 - [ ] 3.5.4 `稿件上傳` / `補件完成` ActivityLog 事件全部消失（全域 grep 驗證）
+- [ ] 3.5.5 **Invariant assertion**（測試工程基本水準）：每個情境驗證結尾斷言 `printItem.reviewDimensionStatus === derive(printItem.rounds)`，防止 Round[] 與印件狀態欄位不同步
+- [ ] 3.5.6 `ResupplyDialog` 只填備註不上傳檔案的邊界測試：SHALL 被 `startResupplyRound` 拒絕
+- [ ] 3.5.7 免審稿印件的 `Round.reviewedFiles` 為 null 驗證；下游工單取檔用 `submittedFiles`（依 source 判斷）
 
 ## 4. UI 驗證（Lovable）
 
