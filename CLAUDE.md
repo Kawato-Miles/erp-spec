@@ -333,7 +333,7 @@ delta specs 合併回 main specs，歸檔 change。
 | 訂單管理 | `openspec/specs/order-management/spec.md` | https://www.notion.so/32c3886511fa806bad41d755349b0567 | v0.5 | 草稿 |
 | 工單管理 | `openspec/specs/work-order/spec.md` | https://www.notion.so/32c3886511fa80f98a43def401d1edce | v0.4 | 草稿 |
 | 生產任務 | `openspec/specs/production-task/spec.md` | https://www.notion.so/32c3886511fa806ab1d5c2b815bf9c94 | v0.2 | 草稿 |
-| 稿件審查 | `openspec/specs/prepress-review/spec.md` | https://www.notion.so/32c3886511fa80eab36aded242f6deb9 | v1.2 | 草稿（v1.2：refine-prepress-review-scope + add-order-review-rejected-status 同步）|
+| 稿件審查 | `openspec/specs/prepress-review/spec.md` | https://www.notion.so/32c3886511fa80eab36aded242f6deb9 | v1.3 | 草稿（v1.3：refactor-review-round-model 2026-04-22 歸檔 — Round 雙端聚合 + ActivityLog 清理 + 印件狀態同步規則）|
 | 狀態機（跨模組）| `openspec/specs/state-machines/spec.md` | https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 | — | 草稿 |
 | 商業流程（跨模組）| `openspec/specs/business-processes/spec.md` | https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a | — | 草稿 |
 | 業務情境（跨模組）| `openspec/specs/business-scenarios/spec.md` | https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05 | — | 草稿 |
