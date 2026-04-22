@@ -320,6 +320,15 @@ BOM 展開建立生產任務時，系統 SHALL 依印件的 `BOMLineItem` 清單
 - 工單資訊區塊 SHALL 使用 `ErpDetailCard` + `ErpInfoTable`（cols=2）；三分類 Tab 外層 SHALL 使用 `ErpDetailCard noPadding`
 - 頁面非 category 色 SHALL 使用 design token（`border-border` / `text-foreground` / `bg-card` 等），SHALL NOT 寫死 hex
 
+**表格 cell atom 規範**（add-table-form-atoms，2026-04-22）：
+- 三分類生產任務表格（`MaterialSection / ProcessSection / BindingSection`）的 `<table>` SHALL 套用 `.erp-form-table` CSS class（header 灰底 / border / hover 與 `.erp-table` 視覺一致，但 padding 為密集 `6px 8px`，適合 cell 內嵌 input 的表單列場景）
+- 表格 cell 內的輸入元件 SHALL 使用 Erp* atom 的 compact 變體：
+  - `<input type="text">` / `<input type="number">` / `<input type="date">` → `<ErpInput size="compact">`
+  - `<select>` → `<ErpSelect size="compact">`
+  - 搜尋下拉仍使用 `<SearchableSelect size="compact">`（既有）
+- 頁面層 SHALL NOT 定義自製 INP / SEL class 常數（例如 `const INP = 'h-7 w-full rounded...'`）
+- `ErpInput` / `ErpSelect` 的 `size` prop：`'default'`（panel / form 場景，h-8 / text-sm）、`'compact'`（表格 cell 場景，h-7 / text-xs）
+
 **單位 LOV**（`PRODUCTION_TASK_UNITS`）：`張 / 令 / 本 / 件 / 個 / 份 / 組 / 套 / 冊 / 盒 / 批 / 卷 / 面 / 塊 / 片 / 時 / 趟`；選 BOM 後系統 SHALL 自動帶入主檔單位，使用者可改選其他單位。
 
 **分組規範**（UI 形式調整不改變分組行為）：
@@ -376,6 +385,13 @@ BOM 展開建立生產任務時，系統 SHALL 依印件的 `BOMLineItem` 清單
 - **THEN** 工單資訊區塊 SHALL 以 `ErpDetailCard` + `ErpInfoTable` 樣式呈現（與工單詳情頁 / 訂單詳情頁的 Info 卡片視覺一致）
 - **AND** 三分類 Tab 外層 SHALL 使用 `ErpDetailCard noPadding`
 - **AND** 頁面外殼 / 容器 / label 的顏色 SHALL 由 design token 提供，不得出現字面 hex（除 P2 範圍內的 Tab / badge 色系）
+
+#### Scenario: 表格 cell 視覺與全站一致
+
+- **WHEN** 生管進入新增生產任務頁，檢視三分類表格
+- **THEN** 表格 SHALL 有統一的 header 灰底 / border / hover 樣式（由 `.erp-form-table` 提供），與全站其他 `.erp-table` 列表頁視覺一致
+- **AND** 每個 cell 的 input / select SHALL 使用 `ErpInput size="compact"` / `ErpSelect size="compact"`（高度 28px、字 12px、圓角 8px）
+- **AND** 頁面內容不得出現 inline 寫死的 `h-7 border-input text-xs` input class（由 atom 統一提供）
 
 ### Requirement: QC 單建立
 

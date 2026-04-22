@@ -54,15 +54,15 @@
 
 ## 5. 驗收（Lovable 瀏覽器）
 
-- [ ] 5.1 三分類表格 header 灰底 / border 樣式一致
-- [ ] 5.2 表格 hover 有淺灰底色（與列表頁同）
-- [ ] 5.3 每個 cell 內 input/select 高度 28px、字 12px，視覺密集且邊框齊整
-- [ ] 5.4 sticky header（`sticky top-0 z-10` 保留 inline）滾動時正常吸頂
-- [ ] 5.5 color count input（色數子行）視覺正常，不過擠
-- [ ] 5.6 既有 panel（新增生產任務 side panel）內 input 視覺維持 h-8 / text-sm，不受影響
-- [ ] 5.7 DevTools 檢查頁面無殘留 `h-7 border-input text-xs` inline class 模仿 compact 樣式
+- [x] 5.1 三分類表格 header 灰底 / border 樣式一致
+- [x] 5.2 表格 hover 有淺灰底色（與列表頁同）
+- [x] 5.3 每個 cell 內 input/select 高度 28px、字 12px，視覺密集且邊框齊整
+- [x] 5.4 sticky header（`sticky top-0 z-10` 保留 inline）滾動時正常吸頂
+- [x] 5.5 color count input（色數子行）視覺正常，不過擠
+- [x] 5.6 既有 panel（新增生產任務 side panel）內 input 視覺維持 h-8 / text-sm，不受影響
+- [x] 5.7 DevTools 檢查頁面無殘留 `h-7 border-input text-xs` inline class 模仿 compact 樣式
 
 ## 6. Commit + Push
 
 - [x] 6.1 提交 Prototype 變更至 `sens-erp-prototype` main，push 觸發 Lovable 同步
-- [ ] 6.2 完成 5.x 驗收後於 Sens repo 歸檔 change（`/opsx:archive add-table-form-atoms`）
+- [x] 6.2 完成 5.x 驗收後於 Sens repo 歸檔 change（`/opsx:archive add-table-form-atoms`）
