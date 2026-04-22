@@ -308,6 +308,18 @@ BOM 展開建立生產任務時，系統 SHALL 依印件的 `BOMLineItem` 清單
 - Panel 新增後的既有表格列 SHALL 保留 inline 編輯能力（使用者可直接修改 cell），編輯路徑不變
 - 材料分類表格 SHALL NOT 包含「設備」欄位（設備不參與材料計價）；工序 / 裝訂表格保留設備欄
 
+**頁面層級 UI 規範**（refactor-add-production-tasks-page，2026-04-22）：
+- 頁面骨架 SHALL 為 `AppLayout` → `ErpPageHeader` → `ErpSummaryGrid`（成本摘要）→ 雙欄區（左：工單資訊 + 分類 Tab / 右：拼版試算 sticky）
+- `ErpPageHeader` badges SHALL 只保留印件名稱識別 badge，SHALL NOT 重複顯示成本數字（成本交由下方 `ErpSummaryGrid` 呈現）
+- `ErpSummaryGrid` SHALL 緊接 `ErpPageHeader` 下方，**6 欄**依序：`設備費` / `材料小計` / `工序小計` / `裝訂小計` / `色數加價` / `總成本`
+  - 每欄 value SHALL 為 `NT$ {localeNumber}`，無資料時顯示 `—`
+  - 「材料小計 / 工序小計 / 裝訂小計」= 對應分類 rows 的 `unitPrice × qty` 加總
+  - 「設備費」= 所有 rows 的 `setupFee` 加總（複用 `calculateSetupFee`）
+  - 「色數加價」= 工序 rows 的 `colorCost` 加總（複用 `calculateColorCost`）
+  - 「總成本」= 5 項加總，value SHALL 以 `text-base font-semibold tabular-nums` 加強視覺
+- 工單資訊區塊 SHALL 使用 `ErpDetailCard` + `ErpInfoTable`（cols=2）；三分類 Tab 外層 SHALL 使用 `ErpDetailCard noPadding`
+- 頁面非 category 色 SHALL 使用 design token（`border-border` / `text-foreground` / `bg-card` 等），SHALL NOT 寫死 hex
+
 **單位 LOV**（`PRODUCTION_TASK_UNITS`）：`張 / 令 / 本 / 件 / 個 / 份 / 組 / 套 / 冊 / 盒 / 批 / 卷 / 面 / 塊 / 片 / 時 / 趟`；選 BOM 後系統 SHALL 自動帶入主檔單位，使用者可改選其他單位。
 
 **分組規範**（UI 形式調整不改變分組行為）：
@@ -348,6 +360,22 @@ BOM 展開建立生產任務時，系統 SHALL 依印件的 `BOMLineItem` 清單
 - **WHEN** 生管開啟材料分類 panel 或檢視材料分類表格
 - **THEN** panel 數量區塊 SHALL NOT 顯示「設備」欄位；材料表格 SHALL NOT 包含「設備」欄
 - **AND** 工序 / 裝訂分類仍 SHALL 顯示設備欄位
+
+#### Scenario: 頁面頂部成本摘要（6 欄分項 + 總成本）
+
+- **WHEN** 生管於新增生產任務頁尚未輸入任何 draft
+- **THEN** 頁面頂部 `ErpSummaryGrid` 6 欄 SHALL 全顯示 `—`
+- **WHEN** 生管於材料 Tab 新增 2 筆 draft，合計 `unitPrice × qty = NT$ 1,500`
+- **THEN** 「材料小計」SHALL 顯示 `NT$ 1,500`；「總成本」SHALL 同步顯示 `NT$ 1,500`；其他 4 欄 SHALL 維持 `—`
+- **WHEN** 生管再於工序 Tab 新增 1 筆 `unitPrice × qty = NT$ 800`、選設備（setupFee=NT$ 200）、色數加價 NT$ 50
+- **THEN** 「工序小計」SHALL 顯示 `NT$ 800`、「設備費」SHALL 顯示 `NT$ 200`、「色數加價」SHALL 顯示 `NT$ 50`；「總成本」SHALL 顯示 `NT$ 2,550`（5 項加總）
+
+#### Scenario: 容器與表格視覺一致性
+
+- **WHEN** 生管進入新增生產任務頁
+- **THEN** 工單資訊區塊 SHALL 以 `ErpDetailCard` + `ErpInfoTable` 樣式呈現（與工單詳情頁 / 訂單詳情頁的 Info 卡片視覺一致）
+- **AND** 三分類 Tab 外層 SHALL 使用 `ErpDetailCard noPadding`
+- **AND** 頁面外殼 / 容器 / label 的顏色 SHALL 由 design token 提供，不得出現字面 hex（除 P2 範圍內的 Tab / badge 色系）
 
 ### Requirement: QC 單建立
 

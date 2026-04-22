@@ -57,17 +57,17 @@
 
 ## 6. 驗收（Lovable 瀏覽器）
 
-- [ ] 6.1 空狀態：初次進頁，5 欄摘要全顯示 `—`，三 Tab 皆空狀態
-- [ ] 6.2 材料 Tab 新增 2 筆 → 材料小計 = 2 筆合計；其他 4 欄維持 `—`
-- [ ] 6.3 工序 Tab 新增 1 筆（含設備、色數）→ 工序小計（不含加價）/ 設備費 / 色數加價三欄分別正確
-- [ ] 6.4 工單資訊卡片視覺與「工單詳情頁」的 Info 卡片（`ErpDetailCard`）一致
-- [ ] 6.5 三個分類表格樣式與「工單列表頁」（`.erp-table`）一致：邊框 / hover / header 灰底
-- [ ] 6.6 Tab 切換正常（三色 badge 維持現狀，P2 處理）
-- [ ] 6.7 既有新增 panel 與 inline 編輯不退化
-- [ ] 6.8 每筆 row 的 table 最右「預估成本」欄仍顯示 `NT$ rowCost + @unitPrice/unit（粗估）`（Miles 決議：逐筆明細由此欄承擔）
-- [ ] 6.9 瀏覽器 DevTools 檢查：無字面 hex 殘留（除 D6 豁免範圍）
+- [x] 6.1 空狀態：初次進頁，5 欄摘要全顯示 `—`，三 Tab 皆空狀態
+- [x] 6.2 材料 Tab 新增 2 筆 → 材料小計 = 2 筆合計；其他 4 欄維持 `—`
+- [x] 6.3 工序 Tab 新增 1 筆（含設備、色數）→ 工序小計（不含加價）/ 設備費 / 色數加價三欄分別正確
+- [x] 6.4 工單資訊卡片視覺與「工單詳情頁」的 Info 卡片（`ErpDetailCard`）一致
+- [x] 6.5 三個分類表格樣式與「工單列表頁」（`.erp-table`）一致：邊框 / hover / header 灰底
+- [x] 6.6 Tab 切換正常（三色 badge 維持現狀，P2 處理）
+- [x] 6.7 既有新增 panel 與 inline 編輯不退化
+- [x] 6.8 每筆 row 的 table 最右「預估成本」欄仍顯示 `NT$ rowCost + @unitPrice/unit（粗估）`（Miles 決議：逐筆明細由此欄承擔）
+- [x] 6.9 瀏覽器 DevTools 檢查：無字面 hex 殘留（除 D6 豁免範圍）
 
 ## 7. Commit + Push
 
-- [ ] 7.1 提交 Prototype 變更至 `sens-erp-prototype` main，push 觸發 Lovable 同步
-- [ ] 7.2 完成 6.x 全部驗收後，於 Sens repo 歸檔 change（`/opsx:archive refactor-add-production-tasks-page`）
+- [x] 7.1 提交 Prototype 變更至 `sens-erp-prototype` main，push 觸發 Lovable 同步
+- [x] 7.2 完成 6.x 全部驗收後，於 Sens repo 歸檔 change（`/opsx:archive refactor-add-production-tasks-page`）
