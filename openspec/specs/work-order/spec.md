@@ -653,6 +653,18 @@ Section 內容 SHALL 包含：
 - **THEN** 每筆 BOMLineItem SHALL 記錄：`quantity_per_work_order`（每份工單的預計用量）、`factory_type`（工廠類別）、`production_line_id`（產線 FK）
 - **AND** 產線 SHALL 依 factory_type 自動帶入：外包廠 -> 外包廠產線；中國廠商 -> 中國廠商產線；自有 / 加工廠 -> 對應的自有產線
 
+### Requirement: 詳情頁 Tab 使用共用元件
+
+工單詳情頁的 Tab 切換（切換內容區：生產任務 / QC 記錄 / 異動紀錄 / 活動紀錄）SHALL 使用 `ErpDetailTabs` 共用元件，與需求單詳情頁 Tab 同一元件來源。
+
+共用元件外觀規範由 DESIGN.md §1.4 Organism 清單與 §1.4.4 決策樹定義；本 requirement 確保工單詳情頁不再手寫 Tabs + TabsList + TabsTrigger 的 class 組合。
+
+#### Scenario: 工單詳情頁 Tab 使用 ErpDetailTabs
+
+- **WHEN** 使用者進入工單詳情頁
+- **THEN** 頁面 Tab 區域 SHALL 由 `ErpDetailTabs` 元件渲染，DOM 結構包含外層卡片容器、底線式 TabsList、共用 body padding（與需求單詳情頁 Tab 一致）
+- **AND** 頁面程式碼中 SHALL NOT 手寫 `<Tabs>` + `<TabsList>` + `<TabsTrigger>` 的 class 組合（由 `ErpDetailTabs` 元件統一提供）
+
 ### Requirement: 依 BOM 展開生產任務時帶入 BOM 引用欄位
 
 系統 SHALL 於工單依 BOM 展開生產任務時，為每筆 BOMLineItem 產生一筆 ProductionTask，並將下列欄位從 BOMLineItem 複製或衍生至 ProductionTask：`bom_type`、三個互斥 FK（`material_spec_id` / `process_id` / `binding_id`）、`production_line_id`、`factory_type`。

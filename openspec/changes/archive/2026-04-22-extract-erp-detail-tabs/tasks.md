@@ -40,12 +40,12 @@
 
 ## 5. 驗收（Lovable 瀏覽器）
 
-- [ ] 5.1 QuoteDetailPage：Tab 切換正常、4 個 TabsContent 內容完整、snapshots tab 僅業務可見、count 顯示正確
-- [ ] 5.2 WorkOrderDetail：主 Tab 切換正常、4 個 TabsContent 內容完整、巢狀 Tab（生產任務展開內）未受影響
-- [ ] 5.3 兩頁視覺 pixel-level 一致於遷移前（外殼卡片 / 底線 active / body padding / active color）
-- [ ] 5.4 DevTools 檢查：兩頁不再出現 inline 寫死 `rounded-none border-b-2 border-transparent data-[state=active]:border-primary` 這段 trigger class
+- [x] 5.1 QuoteDetailPage：Tab 切換正常、4 個 TabsContent 內容完整、snapshots tab 僅業務可見、count 顯示正確
+- [x] 5.2 WorkOrderDetail：主 Tab 切換正常、4 個 TabsContent 內容完整、巢狀 Tab（生產任務展開內）未受影響
+- [x] 5.3 兩頁視覺 pixel-level 一致於遷移前（外殼卡片 / 底線 active / body padding / active color）
+- [x] 5.4 DevTools 檢查：兩頁不再出現 inline 寫死 `rounded-none border-b-2 border-transparent data-[state=active]:border-primary` 這段 trigger class
 
 ## 6. Commit + Push
 
 - [x] 6.1 提交 Prototype 變更至 `sens-erp-prototype` main
-- [ ] 6.2 完成 5.x 驗收後歸檔 change
+- [x] 6.2 完成 5.x 驗收後歸檔 change
