@@ -53,15 +53,15 @@
 
 ## 7. 驗收（Lovable 瀏覽器）
 
-- [ ] 7.1 AddProductionTasks 三個 Tab 的 active 底線色：材料 = amber、工序 = blue、裝訂 = green（視覺與遷移前一致）
-- [ ] 7.2 AddProductionTasks 印件名稱 badge 仍是淺綠底 + 綠字
-- [ ] 7.3 WorkOrderDetail 巢狀 Tab（生產任務展開內三色 Tab）active 底線色一致
-- [ ] 7.4 QuoteDetailPage 印件名稱 badge 視覺一致
-- [ ] 7.5 AddTaskCalcPanel 印件名稱 badge 視覺一致
-- [ ] 7.6 DevTools 抽查：各處 color 實際 RGB 值對應 Tailwind 原色（例如 `rgb(245 158 11)` = amber-500）
-- [ ] 7.7 DevTools 檢查：無殘留寫死 hex（`#f1fde8` / `#defacd` / `#3c9d13`）或 Tailwind category 色盤（`amber-50/100/200/500/700` 等）於本次遷移檔案
+- [x] 7.1 AddProductionTasks 三個 Tab 的 active 底線色：材料 = amber、工序 = blue、裝訂 = green（視覺與遷移前一致）
+- [x] 7.2 AddProductionTasks 印件名稱 badge 仍是淺綠底 + 綠字
+- [x] 7.3 WorkOrderDetail 巢狀 Tab（生產任務展開內三色 Tab）active 底線色一致
+- [x] 7.4 QuoteDetailPage 印件名稱 badge 視覺一致
+- [x] 7.5 AddTaskCalcPanel 印件名稱 badge 視覺一致
+- [x] 7.6 DevTools 抽查：各處 color 實際 RGB 值對應 Tailwind 原色（例如 `rgb(245 158 11)` = amber-500）
+- [x] 7.7 DevTools 檢查：無殘留寫死 hex（`#f1fde8` / `#defacd` / `#3c9d13`）或 Tailwind category 色盤（`amber-50/100/200/500/700` 等）於本次遷移檔案
 
 ## 8. Commit + Push + Archive
 
 - [x] 8.1 提交 Prototype 變更至 `sens-erp-prototype` main，push 觸發 Lovable 同步
-- [ ] 8.2 完成 7.x 驗收後，於 Sens repo 歸檔 change（`/opsx:archive tokenize-category-colors`）
+- [x] 8.2 完成 7.x 驗收後，於 Sens repo 歸檔 change（`/opsx:archive tokenize-category-colors`）

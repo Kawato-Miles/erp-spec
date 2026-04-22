@@ -653,6 +653,36 @@ Section 內容 SHALL 包含：
 - **THEN** 每筆 BOMLineItem SHALL 記錄：`quantity_per_work_order`（每份工單的預計用量）、`factory_type`（工廠類別）、`production_line_id`（產線 FK）
 - **AND** 產線 SHALL 依 factory_type 自動帶入：外包廠 -> 外包廠產線；中國廠商 -> 中國廠商產線；自有 / 加工廠 -> 對應的自有產線
 
+### Requirement: Category 色與 Success 色使用 design token
+
+所有涉及 category 分類視覺（材料 / 工序 / 裝訂）與 success 成功色（印件名稱 badge）的頁面與元件，SHALL 使用 design token 取得顏色值，SHALL NOT 寫死 Tailwind 色盤（`amber-500` / `blue-500` / `green-500` 等）或 hex（`#f1fde8` / `#defacd` / `#3c9d13` 等）。
+
+**Category token 規範**：
+- `bg-category-{material|process|binding}-bg`（badge / section 底色）
+- `border-category-{material|process|binding}-border`（badge / section 邊框）
+- `text-category-{material|process|binding}-text`（badge / section 文字色）
+- `border-category-{material|process|binding}-active`（Tab active 底線色）
+
+**Success token 規範**：
+- `bg-success-bg`（badge 底色）
+- `border-success-border`（badge 邊框）
+- `text-success`（文字色）
+- `text-success-foreground`（success 為底色時的前景色）
+
+Token CSS 變數定義於 `src/index.css`，透過 `tailwind.config.ts` 暴露為 class。
+
+#### Scenario: 三分類 Tab 使用 category token
+
+- **WHEN** 使用者進入新增生產任務頁或工單詳情頁生產任務展開
+- **THEN** 三分類 Tab（材料 / 工序 / 裝訂）active 狀態的底線 color SHALL 由 `border-category-{name}-active` token 提供
+- **AND** 頁面程式碼 SHALL NOT 出現 `data-[state=active]:border-amber-500` / `-blue-500` / `-green-500` 寫法
+
+#### Scenario: 印件名稱 badge 使用 success token
+
+- **WHEN** 頁面顯示印件名稱 badge（綠底 + 綠框 + 綠字）
+- **THEN** badge SHALL 使用 `bg-success-bg border-success-border text-success` class
+- **AND** 頁面程式碼 SHALL NOT 出現 `bg-[#f1fde8] border-[#defacd] text-[#3c9d13]` 寫死 hex
+
 ### Requirement: 詳情頁 Tab 使用共用元件
 
 工單詳情頁的 Tab 切換（切換內容區：生產任務 / QC 記錄 / 異動紀錄 / 活動紀錄）SHALL 使用 `ErpDetailTabs` 共用元件，與需求單詳情頁 Tab 同一元件來源。
