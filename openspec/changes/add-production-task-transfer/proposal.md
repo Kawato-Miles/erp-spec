@@ -22,7 +22,7 @@
 - **上限規則**：每條 line.quantity 不得超過對應生產任務的 `ptProducedQty − 該生產任務在其他非作廢 Ticket 中被抽走的總量`（對應 Miles「報工後才可以轉交，不可大於報工數 − 已轉交數」）
 - **Prototype UI**：在**印件詳情頁**新增「轉交單」Tab（Tab 順序：審稿 → 工單 → QC → **轉交** → 出貨 → 活動紀錄，符合業務流先後）
 - **Tab 內容**：類 QC 單 Tab — 摘要 + 新增按鈕 + Ticket 卡片列表；每張 Ticket 顯示 lines 明細與操作按鈕（確認送達 / 作廢 / 重新複製 Slack 摘要）
-- **Slack 摘要自動複製**：建單儲存時自動 `navigator.clipboard.writeText` + Toast，摘要含多 line 彙整格式（例：「來源：印刷 100 + 模切 100」）
+- **Slack 通知連結**：TransferTicket 新增 `slackMessageUrl?: string` 欄位，對齊需求單 `QuoteRequest.slackLink` 模式；正式上線後 Webhook 發出 Slack 訊息 URL 由印務回填，Prototype 階段為純編輯欄（**不實作 Webhook**）。建單 Dialog 選填、詳情 Dialog 可 inline 編輯、主列表以 ExternalLink icon 顯示
 - **作廢機制**：誤建救濟，AlertDialog 二次確認，target 不計入其他單的可申請上限
 - **生產任務狀態機維持原樣**：轉交只是印件層憑證，不影響報工 / QC 既有狀態推進邏輯
 

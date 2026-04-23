@@ -18,7 +18,7 @@
 
 - [x] 2.1 `src/lib/transfer/aggregateTransferStatus.ts`：簡化為印件級 `getPrintItemTransferBadge`（待轉交 / 已轉交 / 無）；移除 `deriveProductionTaskStatus`
 - [x] 2.2 `src/lib/transfer/validateTransferQuantity.ts`：改為 line-level，提供 `computeLineQuantityLimit` + `validateTransferTicketLines`，涵蓋「報工 − 其他非作廢單占用」公式與重複 PT / 非整數驗證
-- [x] 2.3 `src/lib/transfer/buildSlackSummary.ts`：改為多 line 彙整格式（「印刷 100 + 模切 100」+ 總數）
+- [x] 2.3 ~~`src/lib/transfer/buildSlackSummary.ts`~~（已刪除）：Slack 摘要自動複製機制改為 TransferTicket.slackMessageUrl 連結欄位（對齊需求單模式，不實作 Webhook）
 - [x] 2.4 刪除 `src/lib/transfer/crossStationProcesses.ts`（transferRequired flag 與跨站工序清單已不需）
 - [x] 2.5 單元測試：27 個測試通過（印件 Badge 6 / line 上限 14 / Slack 摘要 7）
 

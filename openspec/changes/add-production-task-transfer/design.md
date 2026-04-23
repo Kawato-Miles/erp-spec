@@ -70,24 +70,23 @@
 - 建單錯誤是實務常見（目的地、數量、廠商選錯）
 - 類 QC 單作廢模式，印務認知負擔低
 
-### D5：Slack 摘要建單時自動複製（多 line 彙整格式）
+### D5：Slack 通知以連結欄位表達（對齊需求單模式）
 
-**決策**：`TransferTicket` 儲存時自動 `navigator.clipboard.writeText(summary)` + Toast。摘要格式：
+**決策**：`TransferTicket.slackMessageUrl?: string`。正式上線後由 Webhook 自動發 Slack 通知，印務取得訊息 URL 後回填；Prototype 階段**純編輯欄，不實作 Webhook**。
 
-```
-【轉交任務】
-印件：{printItemName}
-來源：{lines 彙整，如「印刷 100 + 模切 100」}
-送至：{destination}
-總數：{sum(lines.quantity)}
-廠務：{handlerName}
-備註：{notes}
-預計：{expectedDate}
-```
+**UI 配置**：
+- 建單 Dialog：選填 URL 欄位
+- 詳情 Dialog：顯示 + 編輯（inline）
+- 主列表：ExternalLink icon 欄位（有值才顯示）
 
 **理由**：
-- CEO 審查指出「複製 + 切 Slack + 貼上」三步會被跳過，系統紀錄脫鉤
-- 多 line 合併顯示讓廠務一眼理解「哪些東西要一起搬」
+- Miles 指示：通知機制由正式環境 Webhook 負責，ERP 只需儲存連結作事後查找
+- 對齊 `QuoteRequest.slackLink` 既有模式，一致的視覺與編輯行為
+- 移除先前「剪貼簿自動複製 + 印務手貼」的中介步驟（會被跳過、紀錄脫鉤）
+
+**替代方案**（已淘汰）：
+- 自動複製剪貼簿 + 印務手貼 Slack — CEO 指出會被跳過；且 Webhook 落地後重複
+- 全文 Slack 摘要模板儲存於欄位 — 事後引用價值不如直接跳到原 Slack 訊息
 
 ### D6：line-level 上限（per 生產任務）
 

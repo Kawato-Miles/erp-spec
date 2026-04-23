@@ -156,41 +156,43 @@ line.quantity <= pt.ptProducedQty
 
 ---
 
-### Requirement: Slack 摘要自動複製
+### Requirement: Slack 通知連結欄位
 
-TransferTicket 建立時，系統 SHALL 自動呼叫 `navigator.clipboard.writeText` 將摘要寫入剪貼簿，同時顯示 Toast「已複製至剪貼簿，可貼到 Slack」。
+TransferTicket SHALL 提供 `slackMessageUrl` 欄位（URL 字串，選填），對齊需求單 `QuoteRequest.slackLink` 模式。
 
-摘要格式：
+正式上線後由 Webhook 自動發 Slack 通知 → 印務取得訊息 URL 後回填；Prototype 階段本欄位為純編輯欄（**不實作 Webhook 機制**），供印務手動紀錄參考用。
 
-```
-【轉交任務】
-印件：{printItemName}
-來源：{lines 彙整：「{productionTaskName} {quantity}」以「 + 」串接}
-送至：{destination}
-總數：{sum(lines.quantity)}
-廠務：{handlerName}
-備註：{notes}
-預計：{expectedDate}
-```
+**編輯位置**：
+- 建單 Dialog：表單含選填「Slack 通知連結」欄位
+- 詳情 Dialog：顯示連結（可點擊開新視窗）+「編輯 / 填寫」按鈕切換 inline 編輯
+- 主列表 Table：「Slack」欄顯示 ExternalLink icon（有值才顯示），點擊開新視窗
 
-欄位缺失時以「—」占位或省略整行，不 block 建單。
+**終態限制**：已作廢的 Ticket MUST NOT 提供「編輯 / 填寫」按鈕（保護歷史紀錄）。
 
-#### Scenario: 多 line 來源彙整
+#### Scenario: 建單時選填 Slack 連結
 
-- **WHEN** TransferTicket lines = [{印刷, 100}, {模切, 100}]
-- **THEN** 摘要「來源」行 MUST 顯示「印刷 100 + 模切 100」
-- **AND** 摘要「總數」行 MUST 顯示「200」
+- **WHEN** 印務於新增 Dialog 填妥其他欄位 + 選填 Slack URL 並儲存
+- **THEN** 系統 SHALL 將 URL 寫入 TransferTicket.slackMessageUrl
+- **AND** URL 留空時 MUST 寫入 undefined
 
-#### Scenario: 建單時自動複製
+#### Scenario: 詳情彈窗編輯 Slack 連結
 
-- **WHEN** 印務於 Dialog 點「儲存並建立」
-- **THEN** 系統 MUST 在寫入 store 的同時呼叫 clipboard API 寫入摘要
-- **AND** 顯示 Toast「已複製至剪貼簿，可貼到 Slack」
+- **WHEN** 印務於詳情 Dialog 點「編輯」（或「填寫」）→ 在 inline input 輸入 URL → 點 Check 按鈕
+- **THEN** 系統 MUST 呼叫 `updateTransferTicketSlackUrl` 更新 store
+- **AND** 顯示 Toast「Slack 連結已更新」
+- **AND** Ticket.updatedAt 重寫
 
-#### Scenario: 手動重新複製
+#### Scenario: 主列表 Slack 欄跳外連
 
-- **WHEN** 印務於 Ticket 卡片點「重新複製 Slack 摘要」
-- **THEN** 系統 SHALL 重新產生摘要並複製
+- **WHEN** 主列表某列 Ticket 有 slackMessageUrl
+- **THEN** Slack 欄 SHALL 顯示 ExternalLink icon
+- **AND** 點擊 icon MUST 開新視窗至該 URL 且 `e.stopPropagation()` 防止觸發列點擊（避免同時開詳情彈窗）
+
+#### Scenario: 已作廢禁止編輯
+
+- **WHEN** Ticket 狀態為已作廢
+- **THEN** 詳情 Dialog MUST NOT 顯示「編輯 / 填寫」按鈕
+- **AND** 若已有 URL 仍可點擊跳轉（唯讀）
 
 ---
 
@@ -250,6 +252,7 @@ Tab 內容 MUST 包含：
 | 實際轉交日 | actualDate | 日期 | 系統自動 | Y | 確認送達時寫入 |
 | 確認操作人 | confirmedBy | FK | 系統自動 | Y | FK → User |
 | 簽收照片 | signaturePhotos | 檔案陣列 | | | Prototype 階段 placeholder |
+| Slack 通知連結 | slackMessageUrl | URL 字串 | | | 對齊需求單 Slack 連結；Webhook 發出訊息後回填供查找 |
 | 作廢時間 | cancelledAt | 日期時間 | | | |
 | 作廢操作人 | cancelledBy | FK | | | |
 | 作廢原因 | cancelledReason | 文字 | | | |
