@@ -37,6 +37,9 @@
 | 瓶頸機台 | Bottleneck | 產能最緊張、最常造成延遲的設備 |
 | 換線時間 | Setup time | 機台從上一工單切換到下一工單的準備時間 |
 | 印版 | Printing plate | 平版印刷用的版材，每批訂單可能需重製 |
+| 轉交單 | TransferTicket | 印件級跨站點運送憑證（add-production-task-transfer 引入）；透過 `printItemId` FK 關聯印件，一印件可有多張以支援分批轉交；每張單可含 `lines[]` 明細抽取同印件下多個生產任務的產出，但不可跨印件；狀態機：運送中 / 已送達 / 已作廢 |
+| 轉交單明細 | TransferTicketLine | 轉交單中每條 line 的子結構；含 `productionTaskId` + `quantity`；上限規則：該 PT 的 `ptProducedQty` − 其他非作廢 Ticket 該 PT 已抽走總量 |
+| 轉交 | Transfer | 印件在不同站點之間的物件流動動作；印務主導 → 透過轉交單記錄 → 下一棒加工站點（內部產線 / 外部廠商 / 貨運行）；與出貨不同（出貨為送終端客戶） |
 
 ---
 

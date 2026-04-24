@@ -332,7 +332,7 @@ delta specs 合併回 main specs，歸檔 change。
 | 需求單 | `openspec/specs/quote-request/spec.md` | https://www.notion.so/3293886511fa80998ac0e8cdf555da68 | v1.9 | 草稿 |
 | 訂單管理 | `openspec/specs/order-management/spec.md` | https://www.notion.so/32c3886511fa806bad41d755349b0567 | v0.5 | 草稿 |
 | 工單管理 | `openspec/specs/work-order/spec.md` | https://www.notion.so/32c3886511fa80f98a43def401d1edce | v0.4 | 草稿 |
-| 生產任務 | `openspec/specs/production-task/spec.md` | https://www.notion.so/32c3886511fa806ab1d5c2b815bf9c94 | v0.2 | 草稿 |
+| 生產任務 | `openspec/specs/production-task/spec.md` | https://www.notion.so/32c3886511fa806ab1d5c2b815bf9c94 | v0.3 | 草稿（v0.3：add-production-task-transfer 2026-04-24 歸檔 — 新增印件級 TransferTicket + TransferTicketLine 實體、線上彙整多生產任務轉交流程；主流程 MVP 不含撤回 / transferRequired flag）|
 | 稿件審查 | `openspec/specs/prepress-review/spec.md` | https://www.notion.so/32c3886511fa80eab36aded242f6deb9 | v1.5 | 草稿（v1.5：refine-prepress-review-scope 2026-04-22 補歸檔 — client_note / review_note 擴充 / 印件詳情頁最新審稿備註顯示 等 Requirements 正式 sync 入主 spec，補完 2026-04-20~22 審稿模組五個 change 的完整歸檔）|
 | 狀態機（跨模組）| `openspec/specs/state-machines/spec.md` | https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 | — | 草稿 |
 | 商業流程（跨模組）| `openspec/specs/business-processes/spec.md` | https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a | — | 草稿 |
