@@ -26,15 +26,15 @@
 
 ## 3. Mock 資料遷移
 
-- [ ] 3.1 列出現有 mock 中所有 TransferTicket（v0.3 結構）
-- [ ] 3.2 既有 TransferTicket 維持為 Header；其 lines 陣列保留並符合新 Line schema（每筆 Line 補 destinationProductionTaskId / destinationProductionTaskName / sourceWorkRecordId 引用）
-- [ ] 3.3 移除既有 mock 中任何 `autoSealed` 欄位（已取消）
+- [x] 3.1 列出現有 mock 中所有 TransferTicket（v0.3 結構）
+- [x] 3.2 既有 TransferTicket 維持為 Header；其 lines 陣列保留並符合新 Line schema（每筆 Line 補 destinationProductionTaskId / destinationProductionTaskName / sourceWorkRecordId 引用）
+- [x] 3.3 移除既有 mock 中任何 `autoSealed` 欄位（已取消）
 - [ ] 3.4 確保 mock 中至少有部分 TransferTicket 為「已送達」狀態（含 signaturePhotos placeholder URL，例：`/mock/signature-photo-1.jpg`）
-- [ ] 3.5 更新 mock `ProductionTask` 新增 `transferRequired` 欄位（依工序類型推論）
-- [ ] 3.6 更新 mock `ProductionTask` 新增 `transferConfig` 欄位（依工序目的地推論）
-- [ ] 3.7 更新 mock `ProductionTask.dependsOn` 為物件陣列：依 BOM 工序順序推論 + 設預設消耗比例
-- [ ] 3.8 移除任何先前 mock 中的 `prerequisiteMet` 欄位
-- [ ] 3.9 新增至少一個「精裝書多印件 + 跨依賴邊」mock 範例（封面 P1 + 內頁 P2 → 裝訂）
+- [x] 3.5 更新 mock `ProductionTask` 新增 `transferRequired` 欄位（依工序類型推論）
+- [x] 3.6 更新 mock `ProductionTask` 新增 `transferConfig` 欄位（依工序目的地推論）
+- [x] 3.7 更新 mock `ProductionTask.dependsOn` 為物件陣列：依 BOM 工序順序推論 + 設預設消耗比例
+- [x] 3.8 移除任何先前 mock 中的 `prerequisiteMet` 欄位
+- [x] 3.9 新增至少一個「精裝書多印件 + 跨依賴邊」mock 範例（封面 P1 + 內頁 P2 → 裝訂）
 - [ ] 3.10 新增至少一個「分批裝訂」mock 情境（裝訂任務 100 本、已報工 30、剩 70 本待後續料到）
 
 ## 4. 印件詳情頁「轉交單」Tab UI 改動
