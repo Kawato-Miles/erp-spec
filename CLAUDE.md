@@ -329,7 +329,7 @@ delta specs 合併回 main specs，歸檔 change。
 
 | 模組 | OpenSpec Spec | Notion BRD（發布版本） | 版本 | 狀態 |
 |------|--------------|----------------------|------|------|
-| 需求單 | `openspec/specs/quote-request/spec.md` | https://www.notion.so/3293886511fa80998ac0e8cdf555da68 | v1.9 | 草稿 |
+| 需求單 | `openspec/specs/quote-request/spec.md` | https://www.notion.so/3293886511fa80998ac0e8cdf555da68 | v2.0 | 草稿（v2.0：add-sales-manager-quote-approval 2026-04-27 歸檔 — 新增業務主管角色 + 核可進議價 gate + approvedBySalesManager / paymentTermsNote / approvalRequired 三欄位 + Supervisor 解鎖機制 + Slack toast 通知對齊；不核可時透過 Slack thread 溝通）|
 | 訂單管理 | `openspec/specs/order-management/spec.md` | https://www.notion.so/32c3886511fa806bad41d755349b0567 | v0.5 | 草稿 |
 | 工單管理 | `openspec/specs/work-order/spec.md` | https://www.notion.so/32c3886511fa80f98a43def401d1edce | v0.4 | 草稿 |
 | 生產任務 | `openspec/specs/production-task/spec.md` | https://www.notion.so/32c3886511fa806ab1d5c2b815bf9c94 | v0.3 | 草稿（v0.3：add-production-task-transfer 2026-04-24 歸檔 — 新增印件級 TransferTicket + TransferTicketLine 實體、線上彙整多生產任務轉交流程；主流程 MVP 不含撤回 / transferRequired flag）|
