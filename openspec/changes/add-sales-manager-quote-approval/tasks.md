@@ -56,48 +56,53 @@
 
 ## 8. Supervisor 解鎖機制
 
-- [ ] 8.1 Supervisor 於需求單詳情頁看到「重新指定業務主管」按鈕（其他角色 MUST NOT 顯示）
-- [ ] 8.2 Supervisor 於需求單詳情頁看到「重新指定評估印務主管」按鈕（補齊既有印務主管欄位的解鎖路徑）
-- [ ] 8.3 「重新指定業務主管」操作彈出選擇器（限業務主管角色用戶）+ 解鎖原因 textarea（必填）
-- [ ] 8.4 重新指定後新業務主管收到 Slack Webhook 通知（對齊 §9.2）
+- [x] 8.1 Supervisor 於需求單詳情頁看到「重新指定業務主管」按鈕（其他角色 MUST NOT 顯示）
+- [x] 8.2 Supervisor 於需求單詳情頁看到「重新指定評估印務主管」按鈕（補齊既有印務主管欄位的解鎖路徑）
+- [x] 8.3 「重新指定業務主管」操作彈出選擇器（限業務主管角色用戶）+ 解鎖原因 textarea（必填）
+- [x] 8.4 重新指定後新業務主管收到 Slack Webhook 通知（對齊 §9.4 toast 模擬）
 
 ## 9. Slack Webhook 通知（Prototype 模擬）
 
-- [ ] 9.1 既有「進入待評估成本」通知印務主管維持不變
-- [ ] 9.2 新增「進入已評估成本」時透過 Slack Webhook 通知指定業務主管，permalink 寫回 `slack_thread_url`
-- [ ] 9.3 新增「業務主管退回討論」時透過 Slack Webhook 通知需求單建立者（業務）
-- [ ] 9.4 新增「Supervisor 重新指定業務主管」時通知新業務主管
-- [ ] 9.5 通知發送失敗時 MUST NOT 阻擋狀態轉換（業務主管仍可從待辦清單看到）
+- [x] 9.1 既有「進入待評估成本」通知印務主管維持不變（toast 模擬）
+- [x] 9.2 新增「進入已評估成本」時透過 Slack Webhook 通知指定業務主管（toast 模擬，permalink 機制留待真實 Webhook 接入）
+- [x] 9.3 新增「業務主管退回討論」時透過 Slack Webhook 通知需求單建立者（業務）（toast 模擬）
+- [x] 9.4 新增「Supervisor 重新指定業務主管」時通知新業務主管（toast 模擬）
+- [x] 9.5 通知發送失敗時 MUST NOT 阻擋狀態轉換（toast 為純 UI，必定不阻擋）
 
 ## 10. ActivityLog 三類事件埋點
 
 - [x] 10.1 業務主管首次查看需求單時自動寫入 ActivityLog（事件描述 = 「業務主管首次查看」），同一業務主管後續查看不重複記錄
 - [x] 10.2 業務主管核可動作寫入 ActivityLog（事件描述 = 「核可進入議價」或「核可進入議價（業務主管確認口頭對齊，無書面備註）」）
 - [x] 10.3 業務主管退回討論動作寫入 ActivityLog（事件描述 = 「退回討論」+ 退回理由 free text）
-- [ ] 10.4 Supervisor 重新指定動作寫入 ActivityLog（事件描述 = 「重新指定業務主管」+ 舊值 + 新值 + 原因）（待 Group 8 Supervisor 角色實作）
+- [x] 10.4 Supervisor 重新指定動作寫入 ActivityLog（事件描述 = 「重新指定業務主管」+ 舊值 + 新值 + 原因）
 - [x] 10.5 業務 / 業務主管於需求單詳情頁可查看 ActivityLog 完整歷程（既有 ActivityTimeline 元件已支援）
 
-## 11. 狀態機與權限邊界驗證
+## 11. 狀態機與權限邊界驗證（待 Lovable 環境 UAT 驗證）
 
-- [ ] 11.1 業務嘗試透過 API 直接推進「已評估成本 → 議價中」回傳權限不足錯誤
-- [ ] 11.2 業務主管嘗試核可他人指定範圍的需求單，列表與詳情頁皆 MUST NOT 顯示該需求單
-- [ ] 11.3 業務主管嘗試編輯印件規格、報價、執行成交 / 流失，UI MUST NOT 提供入口
-- [ ] 11.4 一般使用者嘗試修改 `approved_by_sales_manager_id` 或 `estimated_by_manager_id`（鎖定狀態下）回傳權限不足
-- [ ] 11.5 `approval_required = true` 時業務不可跳過業務主管 gate（Phase 2 預留欄位行為驗證）
+> 11.x 為運行時行為驗證，需 Prototype 於 Lovable 環境跑起來才能完整測。
+> 所有條件已在 store actions 與 UI 內 enforce，預期通過。
 
-## 12. UAT 情境驗證（端到端走查）
+- [ ] 11.1 業務嘗試透過 API 直接推進「已評估成本 → 議價中」回傳權限不足錯誤（store action approveQuoteByManager 已驗證 currentUser.role === 'sales_manager'，業務角色將取得 `success: false, error: '僅業務主管可執行此動作'`）
+- [ ] 11.2 業務主管嘗試核可他人指定範圍的需求單，列表與詳情頁皆 MUST NOT 顯示該需求單（QuoteListPage filter + 操作按鈕條件已 enforce）
+- [ ] 11.3 業務主管嘗試編輯印件規格、報價、執行成交 / 流失，UI MUST NOT 提供入口（角色判斷 isSales / isPM / isSalesManager 已 enforce）
+- [ ] 11.4 一般使用者嘗試修改 `approved_by_sales_manager_id` 或 `estimated_by_manager_id`（鎖定狀態下）回傳權限不足（EditQuotePanel disabled enforce + 提交時 strip 鎖定欄位）
+- [ ] 11.5 `approval_required = true` 時業務不可跳過業務主管 gate（QuoteDetailPage 已移除業務的「進入議價」按鈕）
+
+## 12. UAT 情境驗證（端到端走查 - 待 Lovable 環境執行）
+
+> 由 Miles 於 Lovable 環境執行端到端走查，驗證下列情境。
 
 - [ ] 12.1 情境 A：業務建立需求單 → 指定印務主管與業務主管 → 送印務評估 → 印務主管評估完成 → 業務主管收到 Slack 通知 → 業務填收款備註 → 業務主管核可 → 進入議價中 → 業務成交 → 轉訂單
 - [ ] 12.2 情境 B：業務主管「退回討論」流程 → 業務看到退回理由 → 業務走 US-QR-006 重新評估 → 印務主管重新評估完成 → 業務主管看到收款條件未變的快速 confirm 捷徑 → 一鍵確認 → 進入議價中
 - [ ] 12.3 情境 C：業務主管 A 收到需求單但離職 → Supervisor 重新指定給業務主管 B → B 收到 Slack 通知 → B 在自己的待辦清單看到 → B 核可 → 進入議價中
 - [ ] 12.4 情境 D：業務未填收款備註 → 業務主管核可觸發 Confirm Dialog → 業務主管確認口頭對齊 → 進入議價中 → ActivityLog 顯示「業務主管確認口頭對齊，無書面備註」
-- [ ] 12.5 情境 E：兼角色使用者（資深業務 + 業務主管）登入 → 同時看到自己建立的需求單 + 自己被指定的需求單 → 對自己建立的需求單可正常編輯，對自己被指定的需求單可執行核可
+- [ ] 12.5 情境 E：兼角色使用者（資深業務 + 業務主管）登入 → 同時看到自己建立的需求單 + 自己被指定的需求單 → 對自己建立的需求單可正常編輯，對自己被指定的需求單可執行核可（Phase 1 受 single UserRole 設計限制，待後續 roles[] 重構驗證）
 
 ## 13. 規格 / 文件同步
 
-- [ ] 13.1 確認 design.md § 欄位 Lifecycle 表與 Prototype 行為一致
-- [ ] 13.2 確認 design.md § 資料可見範圍規則與 Prototype 行為一致
-- [ ] 13.3 確認 quote-request spec § 12 個 Scenario 全部於 Prototype 可重現
-- [ ] 13.4 確認 user-roles spec § 三張對照表更新（平台、權限、階段）後與 Prototype 角色行為一致
-- [ ] 13.5 確認 state-machines spec § 需求單狀態機新增 Scenario 全部於 Prototype 可重現
+- [x] 13.1 確認 design.md § 欄位 Lifecycle 表與 Prototype 行為一致（鎖定時機與 disabled UI 對齊）
+- [x] 13.2 確認 design.md § 資料可見範圍規則與 Prototype 行為一致（業務 / 業務主管 / Supervisor / PM 各自 filter 已實作）
+- [ ] 13.3 確認 quote-request spec § 12 個 Scenario 全部於 Prototype 可重現（待 Lovable UAT 驗證；implementation 已涵蓋）
+- [ ] 13.4 確認 user-roles spec § 三張對照表更新（平台、權限、階段）後與 Prototype 角色行為一致（待 Lovable UAT 驗證；implementation 已涵蓋）
+- [ ] 13.5 確認 state-machines spec § 需求單狀態機新增 Scenario 全部於 Prototype 可重現（待 Lovable UAT 驗證；implementation 已涵蓋）
 - [ ] 13.6 archive 後手動推送 Notion BRD（quote-request v2.0、user-roles 更新版、state-machines 更新版）
