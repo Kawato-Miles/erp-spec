@@ -1,17 +1,17 @@
 ## 1. TypeScript 型別與 Store 重構
 
-- [ ] 1.1 `ProductionTask` 型別新增欄位：`transferRequired: boolean`、`transferConfig?: TransferConfig`、`dependsOn: DependencyEdge[]`（dependsOn 為物件陣列）
-- [ ] 1.2 新增 `TransferConfig` interface（含 targetType / destinationLineId / destinationVendorId / deliveryMethod / carrierName / handlerName）
-- [ ] 1.3 新增 `DependencyEdge` interface：`{ upstreamProductionTaskId: string, consumptionRatio: number }`
-- [ ] 1.4 `TransferTicket` 型別維持 Header 結構（狀態三態：運送中 / 已送達 / 已作廢）；移除任何先前版本曾引入的 `productionTaskId` / `quantity` 直接欄位 / `autoSealed` 欄位 / 「待印務確認」狀態
-- [ ] 1.5 `TransferTicketLine` 型別：`{ id, transferTicketId: string (必填、非 null), sourceWorkRecordId, sourceProductionTaskId, sourceProductionTaskName, destinationProductionTaskId: string (必填), destinationProductionTaskName, printItemId, quantity, createdAt }`（每張 Header 含一筆 Line，1:1）
-- [ ] 1.6 移除任何先前版本引入的 `prerequisiteMet` 儲存欄位（佇列量改為計算衍生值）
-- [ ] 1.7 確認 `TransferTicket.signaturePhotos` 為檔案陣列（Prototype 階段以 image URL placeholder 模擬）
+- [x] 1.1 `ProductionTask` 型別新增欄位：`transferRequired: boolean`、`transferConfig?: TransferConfig`、`dependsOn: DependencyEdge[]`（dependsOn 為物件陣列）
+- [x] 1.2 新增 `TransferConfig` interface（含 targetType / destinationLineId / destinationVendorId / deliveryMethod / carrierName / handlerName）
+- [x] 1.3 新增 `DependencyEdge` interface：`{ upstreamProductionTaskId: string, consumptionRatio: number }`
+- [x] 1.4 `TransferTicket` 型別維持 Header 結構（狀態三態：運送中 / 已送達 / 已作廢）；移除任何先前版本曾引入的 `productionTaskId` / `quantity` 直接欄位 / `autoSealed` 欄位 / 「待印務確認」狀態
+- [x] 1.5 `TransferTicketLine` 型別：`{ id, transferTicketId: string (必填、非 null), sourceWorkRecordId, sourceProductionTaskId, sourceProductionTaskName, destinationProductionTaskId: string (必填), destinationProductionTaskName, printItemId, quantity, createdAt }`（每張 Header 含一筆 Line，1:1）
+- [x] 1.6 移除任何先前版本引入的 `prerequisiteMet` 儲存欄位（佇列量改為計算衍生值）
+- [x] 1.7 確認 `TransferTicket.signaturePhotos` 為檔案陣列（Prototype 階段以 image URL placeholder 模擬）
 - [ ] 1.8 Store 移除：`addTransferTicket`（手動建單）、`computeLineQuantityLimit`、任何「待交接池」相關 slice / action、`autoSealEndOfDay` / `confirmAutoSealedHeader`
-- [ ] 1.9 Store 新增 action：
-  - [ ] 1.9.1 `autoCreateTransferTicketOnReport(workRecordId)`：報工後對該 PT 的每條下游依賴邊建立 Header（運送中）+ 一筆 Line
-  - [ ] 1.9.2 `confirmTransferDelivered(ticketId, signaturePhotos)`：印務標已送達，必填簽收照片，寫入 actualDate / confirmedBy
-  - [ ] 1.9.3 `cancelTransferTicket(ticketId, reason)`：印務作廢，寫入 cancelledAt / cancelledBy / cancelledReason
+- [x] 1.9 Store 新增 action：
+  - [x] 1.9.1 `autoCreateTransferTicketOnReport(workRecordId)`：報工後對該 PT 的每條下游依賴邊建立 Header（運送中）+ 一筆 Line
+  - [x] 1.9.2 `confirmTransferDelivered(ticketId, signaturePhotos)`：印務標已送達，必填簽收照片，寫入 actualDate / confirmedBy
+  - [x] 1.9.3 `cancelTransferTicket(ticketId, reason)`：印務作廢，寫入 cancelledAt / cancelledBy / cancelledReason
 
 ## 2. 佇列量計算與依賴判定 helper
 
