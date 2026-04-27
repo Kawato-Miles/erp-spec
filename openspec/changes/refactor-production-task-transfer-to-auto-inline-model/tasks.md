@@ -52,34 +52,34 @@
 
 ## 5. 生產任務編輯頁 UI 擴充
 
-- [ ] 5.1 新增 `transferRequired` Checkbox 欄位（排工階段可編輯）
-- [ ] 5.2 新增 `transferConfig` 表單區塊（僅在 `transferRequired=true` 時顯示）
-  - [ ] 5.2.1 targetType RadioGroup（內部產線 / 外部廠商）
-  - [ ] 5.2.2 destinationLineId / destinationVendorId Select（依 targetType 切換）
-  - [ ] 5.2.3 deliveryMethod Select
-  - [ ] 5.2.4 carrierName TextInput（deliveryMethod=貨運行時顯示且必填）
-  - [ ] 5.2.5 handlerName TextInput（選填）
-- [ ] 5.3 新增「依賴邊」管理區塊
-  - [ ] 5.3.1 顯示目前依賴邊列表（每邊：上游 PT 名 + 消耗比例輸入 + 註解「下游每生產 1 單位需消耗該上游多少單位」）
-  - [ ] 5.3.2 「新增依賴邊」對話框：選擇上游 PT（限同印件、transferRequired=true 的 PT）+ 填消耗比例
-  - [ ] 5.3.3 即時呼叫 `detectDependencyCycle` 驗證，環形時阻擋並顯示錯誤訊息
+- [x] 5.1 新增 `transferRequired` Checkbox 欄位（排工階段可編輯）
+- [x] 5.2 新增 `transferConfig` 表單區塊（僅在 `transferRequired=true` 時顯示）
+  - [x] 5.2.1 targetType RadioGroup（內部產線 / 外部廠商）
+  - [x] 5.2.2 destinationLineId / destinationVendorId Select（依 targetType 切換）
+  - [x] 5.2.3 deliveryMethod Select
+  - [x] 5.2.4 carrierName TextInput（deliveryMethod=貨運行時顯示且必填）
+  - [x] 5.2.5 handlerName TextInput（選填）
+- [x] 5.3 新增「依賴邊」管理區塊
+  - [x] 5.3.1 顯示目前依賴邊列表（每邊：上游 PT 名 + 消耗比例輸入 + 註解「下游每生產 1 單位需消耗該上游多少單位」）
+  - [x] 5.3.2 「新增依賴邊」對話框：選擇上游 PT（限同印件、transferRequired=true 的 PT）+ 填消耗比例
+  - [x] 5.3.3 即時呼叫 `detectDependencyCycle` 驗證，環形時阻擋並顯示錯誤訊息
   - [ ] 5.3.4 每條邊提供「依工序類型建議消耗比例」按鈕（裁切=1、裝訂依本書印件用量推算等）
   - [ ] 5.3.5 **新建 PT 時依 BOM `process_master.sort_order` 自動建議 dependsOn**：自動帶入 sort_order = 自身 - 1 且 transferRequired=true 的 PT（含預設消耗比例），印務可調整或刪除
   - [ ] 5.3.6 第一次基於某依賴邊報工時跳 confirm 對話框：「依此倍率本次報工將消耗上游 [N 單位]，是否確認？」防止標錯導致佇列大量誤算
-- [ ] 5.4 狀態轉為「待處理」時驗證 `transferRequired=true` 需 `transferConfig` 必填欄位完整
-- [ ] 5.5 狀態轉為「待處理」時驗證每條依賴邊的 `consumptionRatio` 必填且 > 0
+- [x] 5.4 狀態轉為「待處理」時驗證 `transferRequired=true` 需 `transferConfig` 必填欄位完整
+- [x] 5.5 狀態轉為「待處理」時驗證每條依賴邊的 `consumptionRatio` 必填且 > 0
 
 ## 6. 派工板 UI 擴充
 
-- [ ] 6.1 任務列下方渲染依賴邊三欄迷你表格（上游 PT / 佇列量 / 消耗比例）
-- [ ] 6.2 任一依賴邊佇列 = 0 任務套用禁用樣式（灰階 + 「依賴未滿足」Badge）
-- [ ] 6.3 佇列量 = 0 的列以紅色強調；佇列量為負的列以橙色強調 + 「補料不足」標籤
-- [ ] 6.4 被禁用任務的勾選框 disabled
-- [ ] 6.5 Tooltip 於懸停被禁用勾選框時顯示具體哪些邊佇列為 0
-- [ ] 6.6 新增「僅顯示可派工」切換
-- [ ] 6.7 標頭計數顯示「可派工 N / 依賴未滿足 M」
-- [ ] 6.8 上游 TransferTicket 送達 → 下游佇列即時刷新（訂閱 store 變化）
-- [ ] 6.9 建立工作包 action 前置檢查：若含「任一依賴邊佇列 = 0」任務則拒絕並提示
+- [x] 6.1 任務列下方渲染依賴邊三欄迷你表格（上游 PT / 佇列量 / 消耗比例）
+- [x] 6.2 任一依賴邊佇列 = 0 任務套用禁用樣式（灰階 + 「依賴未滿足」Badge）
+- [x] 6.3 佇列量 = 0 的列以紅色強調；佇列量為負的列以橙色強調 + 「補料不足」標籤
+- [x] 6.4 被禁用任務的勾選框 disabled
+- [x] 6.5 Tooltip 於懸停被禁用勾選框時顯示具體哪些邊佇列為 0
+- [x] 6.6 新增「僅顯示可派工」切換
+- [x] 6.7 標頭計數顯示「可派工 N / 依賴未滿足 M」
+- [x] 6.8 上游 TransferTicket 送達 → 下游佇列即時刷新（訂閱 store 變化）
+- [x] 6.9 建立工作包 action 前置檢查：若含「任一依賴邊佇列 = 0」任務則拒絕並提示
 
 ## 7. 報工流程整合
 
