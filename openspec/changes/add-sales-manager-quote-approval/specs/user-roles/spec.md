@@ -10,7 +10,11 @@
 
 業務主管的利害關係程度 SHALL 為「高」，因「議價中」的核可為需求單流程關鍵推進節點。
 
-**資料可見範圍**：業務主管 SHALL 僅看到 `approved_by_sales_manager_id = self` 且 `status ∈ {已評估成本, 議價中, 成交, 流失}` 的需求單。MUST NOT 看到處於「草稿」、「需求確認中」、「待評估成本」狀態的需求單（即印務主管尚未完成評估前，業務主管不需介入）。詳細規則見 [quote-request spec](../quote-request/spec.md) § Requirement「資料可見範圍」。
+**資料可見範圍**：業務主管於不同頁面有不同可見範圍：
+- 「需求單核可頁」（`/sales-manager/approvals`）：僅自己被指定且 `status ∈ {已評估成本, 議價中, 成交, 流失}`
+- 「需求單列表頁」（`/`）：所有需求單（提供部門總覽能力）
+
+詳細規則見 [quote-request spec](../quote-request/spec.md) § Requirement「資料可見範圍」與「業務主管側選單與兩個頁面」。
 
 若同一使用者兼具業務與業務主管兩角色（如資深業務兼任業務主管），可見範圍 SHALL 取兩者聯集。
 
@@ -42,7 +46,7 @@
 - **WHEN** 業務主管於需求單詳情頁查看內容
 - **THEN** 系統 SHALL 提供印件規格、成本、報價、客戶資料、收款備註等欄位以唯讀方式呈現
 - **AND** 系統 MUST NOT 提供業務主管編輯印件、修改報價、執行成交 / 流失的入口
-- **AND** 系統 SHALL 提供業務主管「核可進入議價」與「退回討論」兩個動作入口（細粒度權限見 [quote-request spec](../quote-request/spec.md) § Requirement「業務主管核可議價推進」）
+- **AND** 系統 SHALL 提供業務主管「核可進入議價」單向動作入口；業務主管不核可時透過 Slack thread 與業務溝通（從 `slackLink` 進入），不於 ERP 內留 comment（細粒度權限見 [quote-request spec](../quote-request/spec.md) § Requirement「業務主管核可議價推進」）
 
 #### Scenario: 業務主管收到 Slack 通知
 
@@ -100,12 +104,12 @@ AND 系統 MUST 隱藏其他 ERP 模組選單
 - **AND** 側選單 SHALL 僅顯示師傅任務平台功能
 
 - **WHEN** 使用者在 Prototype 的角色切換選單選擇業務主管
-- **THEN** 系統 SHALL 自動導航至中台首頁
-- **AND** 側選單 SHALL 僅顯示需求單模組
+- **THEN** 系統 SHALL 自動導航至 `/sales-manager/approvals`（需求單核可頁）
+- **AND** 側選單 SHALL 顯示「需求單管理」單一 group，含「需求單核可」與「需求單列表」兩個 sub item
 
 - **WHEN** 使用者在 Prototype 的角色切換選單選擇業務
-- **THEN** 系統 SHALL 自動導航至業務平台首頁
-- **AND** 側選單 SHALL 僅顯示需求單與報價單 / 訂單兩個模組
+- **THEN** 系統 SHALL 自動導航至業務平台首頁（`/` 需求單列表頁）
+- **AND** 側選單 SHALL 僅顯示「需求單管理 → 需求單列表」單一 group + sub item（不含訂單管理；Miles 2026-04-27 修正）
 
 ---
 
@@ -113,7 +117,7 @@ AND 系統 MUST 隱藏其他 ERP 模組選單
 
 系統 SHALL 對每個角色定義四個模組（需求單、報價單/訂單、工單、任務）的存取層級。權限層級分為 R/W（可讀寫）與 X（無存取權限）。
 
-**「R/W」為粗粒度標示**，意義為「該角色於該模組內擁有讀取與寫入能力」。實際細粒度權限（可讀哪些資料、可寫哪些欄位、可執行哪些動作）由各模組 spec 的 Requirement 規範。例如業務主管於需求單模組為 R/W，但細粒度上僅可核可 / 退回特定狀態的需求單，且僅限自己被指定範圍，這類細節由 [quote-request spec](../quote-request/spec.md) 的對應 Requirement 定義。
+**「R/W」為粗粒度標示**，意義為「該角色於該模組內擁有讀取與寫入能力」。實際細粒度權限（可讀哪些資料、可寫哪些欄位、可執行哪些動作）由各模組 spec 的 Requirement 規範。例如業務主管於需求單模組為 R/W，但細粒度上僅可核可特定狀態且自己被指定的需求單，這類細節由 [quote-request spec](../quote-request/spec.md) 的對應 Requirement 定義。
 
 新增角色時 SHALL 同時於 user-roles spec 設定粗粒度 R/W 標示，並於對應模組 spec 補充細粒度行為 Requirement。
 

@@ -41,13 +41,13 @@
 - **AND** UI SHALL 顯示「等待 [業務主管姓名] 核可中（已等待 X 天）」提示文字
 - **AND** 任何 API 請求嘗試由業務直接推進至「議價中」 MUST 回傳權限不足錯誤
 
-#### Scenario: 業務主管退回討論不變更狀態
+#### Scenario: 業務主管暫不核可時透過 Slack 與業務溝通
 
 - **GIVEN** 需求單狀態為「已評估成本」
-- **WHEN** 業務主管於需求單詳情頁點擊「退回討論」並填寫退回理由
-- **THEN** 需求單狀態 MUST 維持「已評估成本」（非狀態轉換）
-- **AND** 系統 MUST 寫入 ActivityLog 記錄退回討論動作與理由
-- **AND** 系統 SHALL 透過 Slack Webhook 通知業務
+- **WHEN** 業務主管於需求單詳情頁查看內容後選擇暫不核可
+- **THEN** 業務主管 MUST NOT 於 ERP 內留 comment 或執行「退回」動作
+- **AND** 業務主管 SHALL 透過需求單 `slackLink` 進入 Slack thread 與業務直接討論
+- **AND** 需求單狀態 MUST 維持「已評估成本」直到核可
 
 #### Scenario: 議價後成交
 
