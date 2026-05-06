@@ -17,12 +17,12 @@
 
 ## 2. 付款計畫與收款記錄
 
-- [ ] 2.1 PaymentPlan 型別（order_id / installment_no / description / scheduled_amount / scheduled_date / status）
-- [ ] 2.2 Payment 型別（order_id / payment_plan_id 可空 / amount 可正可負 / payment_method 含「退款」/ payment_ref / paid_at / recorded_by）
-- [ ] 2.3 訂單詳情頁「付款計畫」區塊：列表 + 新增 / 編輯 / 刪除期次
-- [ ] 2.4 PaymentPlan 各期合計與訂單應收總額對齊驗證（不符時顯示差額警告，拒絕儲存）
-- [ ] 2.5 訂單詳情頁「收款紀錄」區塊：列表 + 新增 Payment（可關聯 PaymentPlan，可不關聯）
-- [ ] 2.6 PaymentPlan.status 自動更新邏輯（依累計 Payment 金額：未收 / 部分收款 / 已收訖）
+- [x] 2.1 PaymentPlan 型別（order_id / installment_no / description / scheduled_amount / scheduled_date / status）
+- [x] 2.2 Payment 型別（order_id / payment_plan_id 可空 / amount 可正可負 / payment_method 含「退款」/ payment_ref / paid_at / recorded_by）
+- [x] 2.3 訂單詳情頁「付款計畫」區塊：列表 + 新增 / 編輯 / 刪除期次
+- [x] 2.4 PaymentPlan 各期合計與訂單應收總額對齊驗證（不符時顯示差額警告，拒絕儲存）
+- [x] 2.5 訂單詳情頁「收款紀錄」區塊：列表 + 新增 Payment（可關聯 PaymentPlan，可不關聯）
+- [x] 2.6 PaymentPlan.status 自動更新邏輯（依累計 Payment 金額：未收 / 部分收款 / 已收訖）
 
 ## 3. 發票模組（藍新 Mockup）
 
