@@ -26,17 +26,17 @@
 
 ## 3. 發票模組（藍新 Mockup）
 
-- [ ] 3.1 Invoice 型別（含完整藍新欄位 + status 開立 / 作廢 + invalid_reason / invalid_at / invalid_by）
-- [ ] 3.2 PaymentInvoice junction 型別（payment_id 可空 / invoice_id / amount）
-- [ ] 3.3 Mockup 字軌號產生函式：InvoiceTransNo（17 碼時間戳）/ InvoiceNumber（兩碼英文 + 8 碼遞增 / 跳過已用編號）/ RandomNum（4 碼）
-- [ ] 3.4 ezpay_merchant_order_no 產生規則：`{order_no}-INV-{流水}`，限英數 + 底線 + 20 字元
-- [ ] 3.5 ezpay_merchant_order_no 複合唯一鍵驗證：(billing_company_id, ezpay_merchant_order_no) 不可重覆
-- [ ] 3.6 訂單詳情頁「發票」區塊：列表 + 新增（手動填表）+ 一鍵開發票（自動帶入買受人 / 金額 / 商品明細）
-- [ ] 3.7 發票表單：B2B（必填統編）/ B2C（可選載具或捐贈碼）區分；課稅別 / 商品明細
-- [ ] 3.8 發票作廢功能：填入 invalid_reason（限中文 6 字 / 英文 20 字）、Activity log 留痕
-- [ ] 3.9 作廢後流水號 +1 不重用驗證
-- [ ] 3.10 PaymentInvoice 對應介面：業務勾選收款記錄與發票對應、支援拆分 / 合併
-- [ ] 3.11 先開發票後收款 → PaymentInvoice 暫無 payment_id 的 UI 流程
+- [x] 3.1 Invoice 型別（含完整藍新欄位 + status 開立 / 作廢 + invalid_reason / invalid_at / invalid_by）
+- [x] 3.2 PaymentInvoice junction 型別（payment_id 可空 / invoice_id / amount）
+- [x] 3.3 Mockup 字軌號產生函式：InvoiceTransNo（17 碼時間戳）/ InvoiceNumber（兩碼英文 + 8 碼遞增 / 跳過已用編號）/ RandomNum（4 碼）
+- [x] 3.4 ezpay_merchant_order_no 產生規則：`{order_no}-INV-{流水}`，限英數 + 底線 + 20 字元
+- [x] 3.5 ezpay_merchant_order_no 複合唯一鍵驗證：(billing_company_id, ezpay_merchant_order_no) 不可重覆
+- [x] 3.6 訂單詳情頁「發票」區塊：列表 + 新增（手動填表）+ 一鍵開發票（自動帶入買受人 / 金額 / 商品明細）
+- [x] 3.7 發票表單：B2B（必填統編）/ B2C（可選載具或捐贈碼）區分；課稅別 / 商品明細
+- [x] 3.8 發票作廢功能：填入 invalid_reason（限中文 6 字 / 英文 20 字）、Activity log 留痕
+- [x] 3.9 作廢後流水號 +1 不重用驗證
+- [x] 3.10 PaymentInvoice 對應介面：業務勾選收款記錄與發票對應、支援拆分 / 合併
+- [x] 3.11 先開發票後收款 → PaymentInvoice 暫無 payment_id 的 UI 流程
 
 ## 4. 折讓單模組（與退款 Payment 分離）
 
