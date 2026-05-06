@@ -329,9 +329,9 @@ delta specs 合併回 main specs，歸檔 change。
 
 | 模組 | OpenSpec Spec | Notion BRD（發布版本） | 版本 | 狀態 |
 |------|--------------|----------------------|------|------|
-| 需求單 | `openspec/specs/quote-request/spec.md` | https://www.notion.so/3293886511fa80998ac0e8cdf555da68 | v2.0 | 草稿（v2.0：add-sales-manager-quote-approval 2026-04-27 歸檔 — 新增業務主管角色 + 核可進議價 gate + approvedBySalesManager / paymentTermsNote / approvalRequired 三欄位 + Supervisor 解鎖機制 + Slack toast 通知對齊；不核可時透過 Slack thread 溝通）|
-| 訂單管理 | `openspec/specs/order-management/spec.md` | https://www.notion.so/32c3886511fa806bad41d755349b0567 | v0.5 | 草稿 |
-| 工單管理 | `openspec/specs/work-order/spec.md` | https://www.notion.so/32c3886511fa80f98a43def401d1edce | v0.4 | 草稿 |
+| 需求單 | `openspec/specs/quote-request/spec.md` | https://www.notion.so/3293886511fa80998ac0e8cdf555da68 | v2.1 | 草稿（v2.1：refactor-detail-pages-to-subheader-tab-layout 2026-05-06 歸檔 — 新增需求單詳情頁 Tabs 化版型 Requirement，5 Tabs 含「資訊」首位 + defaultValue="info"，基本資訊卡進資訊 Tab；條件 inline banner 緊貼 Header 不變）|
+| 訂單管理 | `openspec/specs/order-management/spec.md` | https://www.notion.so/32c3886511fa806bad41d755349b0567 | v0.6 | 草稿（v0.6：refactor-detail-pages-to-subheader-tab-layout 2026-05-06 歸檔 — 新增訂單詳情頁 Tabs 化版型 Requirement，6 Tabs 含「資訊」首位 + defaultValue="info"，5 張資訊卡進資訊 Tab 單欄垂直；既有 refactor-order-detail-to-hero-tab-layout abandon）|
+| 工單管理 | `openspec/specs/work-order/spec.md` | https://www.notion.so/32c3886511fa80f98a43def401d1edce | v0.5 | 草稿（v0.5：refactor-detail-pages-to-subheader-tab-layout 2026-05-06 歸檔 — MODIFIED 詳情頁 Tab 使用共用元件（4→5 Tabs 含資訊首位）+ ADDED 工單詳情頁 Tabs 化版型，三張資訊卡進資訊 Tab，退回原因獨立 InfoBanner）|
 | 生產任務 | `openspec/specs/production-task/spec.md` | https://www.notion.so/32c3886511fa806ab1d5c2b815bf9c94 | v0.3 | 草稿（v0.3：add-production-task-transfer 2026-04-24 歸檔 — 新增印件級 TransferTicket + TransferTicketLine 實體、線上彙整多生產任務轉交流程；主流程 MVP 不含撤回 / transferRequired flag）|
 | 稿件審查 | `openspec/specs/prepress-review/spec.md` | https://www.notion.so/32c3886511fa80eab36aded242f6deb9 | v1.5 | 草稿（v1.5：refine-prepress-review-scope 2026-04-22 補歸檔 — client_note / review_note 擴充 / 印件詳情頁最新審稿備註顯示 等 Requirements 正式 sync 入主 spec，補完 2026-04-20~22 審稿模組五個 change 的完整歸檔）|
 | 狀態機（跨模組）| `openspec/specs/state-machines/spec.md` | https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 | — | 草稿 |
@@ -342,7 +342,7 @@ delta specs 合併回 main specs，歸檔 change。
 | 工序主檔（BOM 底層）| `openspec/specs/process-master/spec.md` | — | v0.1 | 草稿（ERP 中台已實作）|
 | 裝訂主檔（BOM 底層）| `openspec/specs/binding-master/spec.md` | — | v0.1 | 草稿（ERP 中台已實作）|
 | Prototype 資料層（跨模組工程）| `openspec/specs/prototype-data-store/spec.md` | — | — | 草稿（2026-04-20 e2e + 2026-04-21 data-consistency-audit）|
-| Prototype 共用 UI（跨模組工程）| `openspec/specs/prototype-shared-ui/spec.md` | — | — | 草稿（2026-04-21 fix-erp-summary-grid-info-icon-overflow 起點）|
+| Prototype 共用 UI（跨模組工程）| `openspec/specs/prototype-shared-ui/spec.md` | — | — | 草稿（2026-04-21 fix-erp-summary-grid-info-icon-overflow 起點；2026-05-06 refactor-detail-pages-to-subheader-tab-layout 歸檔新增「印件詳情頁 Tabs 化版型」Requirement，OQ-2 標明 capability 歸屬待後續決定）|
 | QC | `openspec/specs/qc/spec.md` | — | — | 草稿 |
 | 派工看板 | `openspec/specs/task-dispatch-board/spec.md` | — | — | 草稿 |
 | 工作包 | `openspec/specs/work-package/spec.md` | — | — | 草稿 |
@@ -373,3 +373,68 @@ delta specs 合併回 main specs，歸檔 change。
 | PRD Parent Issue 模板（GitHub，模組層） | `.claude/skills/notion-to-github/references/prd-parent-template.md` |
 | PRD Sub-issue 模板（GitHub，子功能層） | `.claude/skills/notion-to-github/references/prd-sub-template.md` |
 | ERP 全局資料模型 | 各模組 spec § Data Model（正本）；Notion 資料欄位 DB（查詢用）：https://www.notion.so/32c3886511fa803e9f30edbb020d10ce |
+# CLAUDE.md
+
+Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
+
+**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+
+## 1. Think Before Coding
+
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
+
+Before implementing:
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them - don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
+
+## 2. Simplicity First
+
+**Minimum code that solves the problem. Nothing speculative.**
+
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
+
+Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+
+## 3. Surgical Changes
+
+**Touch only what you must. Clean up only your own mess.**
+
+When editing existing code:
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken.
+- Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it - don't delete it.
+
+When your changes create orphans:
+- Remove imports/variables/functions that YOUR changes made unused.
+- Don't remove pre-existing dead code unless asked.
+
+The test: Every changed line should trace directly to the user's request.
+
+## 4. Goal-Driven Execution
+
+**Define success criteria. Loop until verified.**
+
+Transform tasks into verifiable goals:
+- "Add validation" → "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" → "Write a test that reproduces it, then make it pass"
+- "Refactor X" → "Ensure tests pass before and after"
+
+For multi-step tasks, state a brief plan:
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+3. [Step] → verify: [check]
+```
+
+Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+---
+
+**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
