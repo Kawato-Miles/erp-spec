@@ -36,16 +36,13 @@
 - [ ] 4.8 詳情頁顯示 `linked_quote_request_id` / `linked_consultation_order_id` 跳轉連結（若已關聯）
 - [ ] 4.9 對齊 DESIGN.md（業務規範、視覺 token、UX 模式、頁面模板）
 
-## 5. Prototype 需求單 v3.0 修訂
+## 5. Prototype 需求單修訂（諮詢單 entry point）
 
-- [ ] 5.1 移除「已評估成本 → 議價中」業務主管核可 gate UI（業務可直接點擊「進入議價」）
-- [ ] 5.2 新增「成交」狀態的「待業務主管成交審核」過渡狀態 UI
-- [ ] 5.3 新增業務主管「核准成交」按鈕（於「待業務主管成交審核」狀態、approved_by_sales_manager_id = self 時顯示）
-- [ ] 5.4 新增業務主管 Slack 通知模擬（「待業務主管成交審核」進入時通知）
-- [ ] 5.5 修訂業務主管「需求單核准頁」篩選邏輯（從 `已評估成本` 改為 `待業務主管成交審核`）
-- [ ] 5.6 新增「來自諮詢單」資訊區塊（when from_consultation_request_id 非空，顯示諮詢費已預收提示）
-- [ ] 5.7 「轉訂單」按鈕僅於「已核准成交」狀態顯示，於「成交（待審核）」狀態隱藏
-- [ ] 5.8 諮詢來源需求單流失時觸發建諮詢訂單流程（系統自動，非業務手動操作）
+> 業務主管 gate 位置調整由獨立 change `relocate-sales-manager-approval-from-quote-to-order` 處理，本章節僅含諮詢單 entry point 相關修訂。
+
+- [x] 5.1 新增「來自諮詢單」資訊區塊（when linkedConsultationRequestId 非空，顯示諮詢費已預收提示）
+- [x] 5.2 諮詢來源需求單流失時觸發建諮詢訂單流程（系統自動，非業務手動操作）
+- [x] 5.3 需求單建立時自動帶入 linkedConsultationRequestId / requirementNote（從 ConsultationRequest 轉入時）
 
 ## 6. Prototype 訂單模組擴充
 
@@ -67,7 +64,7 @@
 
 - [ ] 8.1 情境 A：客人填表單 → 付款（defer_to_main_order）→ webhook 建 ConsultationRequest + Payment（綁 CR）→ 諮詢 → 不做大貨 → 建諮詢訂單 + Payment 轉移 + 開 Invoice → 訂單完成
 - [ ] 8.2 情境 B：客人填表單 → 付款（issue_now）→ webhook 建 ConsultationRequest + Payment（綁 CR）→ 諮詢 → 不做大貨 → 建諮詢訂單 + Payment 轉移 + 立即開 Invoice → 訂單完成
-- [ ] 8.3 情境 C：客人填表單 → 付款 → 諮詢 → 做大貨 → 建需求單（不建任何訂單）→ 議價 → 成交 → 業務主管審核 → 業務轉訂單 → 建一般訂單 + OrderExtraCharge(consultation_fee) + Payment 從 CR 轉移至一般訂單 → 一般訂單應收 5000、已收 1000、待繳 4000
+- [ ] 8.3 情境 C：客人填表單 → 付款 → 諮詢 → 做大貨 → 建需求單（不建任何訂單）→ 議價 → 成交 → 業務轉訂單 → 建一般訂單 + OrderExtraCharge(consultation_fee) + Payment 從 CR 轉移至一般訂單 → 一般訂單應收 5000、已收 1000、待繳 4000（業務主管審核步驟由獨立 change 處理，不含於此情境）
 - [ ] 8.4 情境 D：情境 C + issue_now → 一般訂單立即開立諮詢費 Invoice（金額 1000）+ 業務後續開立印件費 Invoice（金額 4000）
 - [ ] 8.5 情境 E：情境 C + defer_to_main_order → 業務正常開立 Invoice 涵蓋全額（含諮詢費）
 - [ ] 8.6 情境 F：諮詢結束做大貨後需求單議價中流失 → 系統建諮詢訂單 + Payment 轉移 + 開 Invoice → 訂單完成；ConsultationRequest 結局更新為「完成諮詢」
@@ -96,10 +93,10 @@
 ## 11. 歸檔（Phase 1 完成 + refactor change 整合後）
 
 - [ ] 11.1 執行 `/opsx:archive add-consultation-request-and-revise-approval-gate`（delta specs sync 進 main specs）
-- [ ] 11.2 更新 CLAUDE.md § Spec 規格檔清單版本號（quote-request v2.0 → v3.0、order-management 對應更新、新增 consultation-request v0.1）
+- [ ] 11.2 更新 CLAUDE.md § Spec 規格檔清單版本號（quote-request 增加諮詢單 entry point 修訂、order-management 對應更新、新增 consultation-request v0.1）
 - [ ] 11.3 推送至 Notion Feature Database：
   - 諮詢單為新模組，新建 Notion 頁面
-  - 需求單 Notion 頁面更新至 v3.0
+  - 需求單 Notion 頁面更新（補入諮詢單 entry point 描述）
   - 訂單管理 Notion 頁面更新（搭配 refactor change 推送）
 - [ ] 11.4 將解答完的 OQ 在 Notion Follow-up DB 標記為已解
 

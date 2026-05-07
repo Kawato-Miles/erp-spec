@@ -128,7 +128,7 @@
 
 - **GIVEN** ConsultationRequest 狀態為「待諮詢」且已指派 `consultant_id`
 - **WHEN** 諮詢人員點擊「轉需求單（做大貨）」
-- **THEN** 系統 SHALL 建立 QuoteRequest（status = 需求確認中、from_consultation_request_id 寫入）
+- **THEN** 系統 SHALL 建立 QuoteRequest（status = 需求確認中、linked_consultation_request_id 寫入）
 - **AND** ConsultationRequest 狀態 MUST 推進至「已轉需求單」終態
 - **AND** Payment 維持綁 ConsultationRequest（系統 MUST NOT 在此時建立任何 Order，等需求單結局明確才轉移）
 - **AND** `linked_quote_request_id` MUST 寫入新建需求單 ID
@@ -148,7 +148,7 @@
 | 數量級距預填 | estimated_quantity_band | 印件項目 `quantity` 預填 | 中間值預填：1-100→50；101-300→200；301-500→400；501-1000→750；1000+→1500（皆可業務手動調整） |
 | 諮詢預約資訊 | reserved_date / reserved_time / visitor_count | 不帶入 | 已過期 |
 | 印件規格細節 | （諮詢單不蒐集）| 印件規格欄位 | 由「需求確認中」狀態下業務（即諮詢人員）與客人交互填入 |
-| 來源關聯 | consultation_request_id | `from_consultation_request_id` | 反向關聯 |
+| 來源關聯 | consultation_request_id | `linked_consultation_request_id` | 反向關聯 |
 
 **諮詢人員 = 需求單負責業務**：諮詢人員轉需求單時，新建需求單的負責業務（owner）SHALL 設定為當前諮詢人員（即 `consultant_id`）。
 
@@ -164,13 +164,13 @@
 - **THEN** 系統 SHALL 建立新 QuoteRequest（status = 需求確認中）
 - **AND** 客戶資料 MUST 自 ConsultationRequest 直接帶入
 - **AND** `requirement_note` 欄位 MUST = 「想做名片，雙面 250g」
-- **AND** `from_consultation_request_id` MUST 寫入 ConsultationRequest ID
+- **AND** `linked_consultation_request_id` MUST 寫入 ConsultationRequest ID
 - **AND** 印件預填 `quantity` MUST = 200（級距 101-300 中間值）
 - **AND** 需求單負責業務 MUST = `consultant_id`
 
 #### Scenario: 由諮詢轉的需求單於詳情頁顯示來源連結
 
-- **GIVEN** 需求單 `from_consultation_request_id` 非空
+- **GIVEN** 需求單 `linked_consultation_request_id` 非空
 - **WHEN** 使用者開啟需求單詳情頁
 - **THEN** UI SHALL 顯示「來自諮詢單 [諮詢單編號]」可點擊連結
 - **AND** UI SHALL 顯示諮詢費已預收金額「諮詢費 X 元（轉訂單時併入主訂單應收）」資訊

@@ -1,85 +1,5 @@
 ## MODIFIED Requirements
 
-### Requirement: 需求單狀態機
-
-需求單（Quote Request）SHALL 依以下狀態流轉：
-
-需求確認中 → 待評估成本 → 已評估成本 → 議價中 → 成交 → 待業務主管成交審核 → 已核准成交 / 流失
-
-角色權責：業務 / 諮詢業務負責需求確認、報價、議價對談與成交 / 流失決策；印務主管負責成本評估；業務主管負責「待業務主管成交審核 → 已核准成交」的核准推進，並於核准前確認收款條件、報價單條件、交期是否合理。
-
-「已評估成本 → 議價中」轉換 SHALL 由業務直接執行，無需業務主管核可（v2.0 議價前 gate 已取消，理由見 [quote-request spec](../quote-request/spec.md) § REMOVED Requirements「業務主管核可議價推進」）。
-
-「成交 → 待業務主管成交審核」 SHALL 由業務於議價成交後觸發。
-
-「待業務主管成交審核 → 已核准成交」 MUST 由指定的業務主管（`approved_by_sales_manager_id`）執行，前提為 `approval_required = true`（Phase 1 預設所有需求單皆 true）。業務角色 MUST NOT 直接執行此轉換。業務主管核准動作為單向狀態轉換（無「退回至成交」按鈕）；業務主管不核准時透過 Slack thread 溝通，需求單維持「待業務主管成交審核」狀態。
-
-「已核准成交」狀態 SHALL 為轉訂單前的最後狀態，業務於該狀態下方可執行「轉訂單」並出報價單給客人。
-
-通知機制：需求單進入「待評估成本」時，系統 SHALL 透過 Slack Webhook 通知指定印務主管；進入「待業務主管成交審核」時，系統 SHALL 透過 Slack Webhook 通知指定業務主管。
-
-#### Scenario: 需求單從需求確認進入待評估成本
-
-- **WHEN** 業務完成需求確認，提交需求單
-- **THEN** 需求單狀態 SHALL 變為「待評估成本」
-- **AND** 印務主管 SHALL 收到 Slack Webhook 評估通知
-
-#### Scenario: 業務直接從已評估成本推進至議價中
-
-- **GIVEN** 需求單狀態為「已評估成本」
-- **WHEN** 業務於需求單詳情頁點擊「進入議價」
-- **THEN** 需求單狀態 SHALL 直接變更為「議價中」
-- **AND** 系統 MUST NOT 要求業務主管核可
-- **AND** 系統 MUST 寫入 ActivityLog（操作者 = 業務、事件描述 = 「進入議價」）
-
-#### Scenario: 議價後成交進入待業務主管成交審核
-
-- **WHEN** 客戶於議價階段接受報價，業務點擊「成交」
-- **THEN** 需求單狀態 SHALL 變為「待業務主管成交審核」
-- **AND** 業務主管 SHALL 收到 Slack Webhook 通知
-- **AND** 此轉換 SHALL 由業務角色執行
-
-#### Scenario: 業務主管核准成交
-
-- **GIVEN** 需求單狀態為「待業務主管成交審核」且 `approved_by_sales_manager_id` 等於當前業務主管
-- **AND** `approval_required = true`
-- **WHEN** 業務主管於需求單詳情頁點擊「核准成交」
-- **THEN** 需求單狀態 SHALL 變更為「已核准成交」
-- **AND** 系統 MUST 寫入 ActivityLog 記錄業務主管核准動作
-
-#### Scenario: 業務不可從待業務主管成交審核直接推進至已核准成交
-
-- **GIVEN** 需求單狀態為「待業務主管成交審核」且 `approval_required = true`
-- **WHEN** 業務（非指定業務主管）於需求單詳情頁查看狀態推進選項
-- **THEN** 系統 MUST NOT 提供「核准成交」按鈕給業務
-- **AND** UI SHALL 顯示「等待 [業務主管姓名] 審核中（已等待 X 天）」提示文字
-- **AND** 任何 API 請求嘗試由業務直接推進至「已核准成交」 MUST 回傳權限不足錯誤
-
-#### Scenario: 業務主管暫不核准透過 Slack 溝通
-
-- **GIVEN** 需求單狀態為「待業務主管成交審核」
-- **WHEN** 業務主管選擇暫不核准
-- **THEN** 業務主管 MUST NOT 於 ERP 內留 comment 或執行「退回」動作
-- **AND** 業務主管 SHALL 透過需求單 `slack_thread_url` 進入 Slack thread 與業務直接討論
-- **AND** 需求單狀態 MUST 維持「待業務主管成交審核」直到核准
-
-#### Scenario: 議價後流失
-
-- **WHEN** 客戶於議價階段拒絕報價或逾期未回覆
-- **THEN** 需求單狀態 SHALL 變為「流失」
-- **AND** 此轉換 SHALL 由業務角色執行
-
-#### Scenario: Phase 2 條件化跳過審核
-
-- **GIVEN** Phase 2 已實作條件化規則
-- **AND** 需求單 `approval_required = false`（依規則計算結果）
-- **WHEN** 需求單進入「成交」狀態
-- **THEN** 業務 SHALL 可直接從「成交」推進至「已核准成交」（跳過業務主管 gate）
-- **AND** 此轉換 MUST 寫入 ActivityLog 標示「條件化跳過業務主管成交審核」
-- **AND** Phase 1 範疇內所有需求單 `approval_required` 皆為 true，此 Scenario MUST NOT 觸發
-
----
-
 ### Requirement: 訂單狀態機
 
 訂單（Order）SHALL 依以下狀態流轉，分為三條前段路徑：
@@ -121,6 +41,8 @@
 
 免審稿快速路徑（線下 / 線上適用）：當訂單下所有印件的 review_status 皆為「合格」（含免審稿設定）時，訂單 SHALL 從「已付款」或「已回簽」直接進入「製作等待中」，跳過「稿件未上傳」、「等待審稿」、「待補件」。
 
+> 訂單前段「業務主管審核」狀態（線下訂單建立後 → 報價待回簽前）由獨立 change `relocate-sales-manager-approval-from-quote-to-order` 處理，本 change 不涉及。
+
 #### Scenario: 線下訂單回簽後進入共用段
 
 - **WHEN** 線下訂單的報價已回簽
@@ -133,7 +55,7 @@
 
 #### Scenario: 諮詢結束不做大貨建諮詢訂單
 
-- **GIVEN** ConsultationRequest 狀態 = 諮詢中
+- **GIVEN** ConsultationRequest 狀態 = 待諮詢、已指派 `consultant_id`
 - **WHEN** 諮詢人員選「結束諮詢 - 不做大貨」
 - **THEN** 系統 SHALL 建立諮詢訂單（order_type = 諮詢）
 - **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)
@@ -153,7 +75,7 @@
 
 #### Scenario: 諮詢結束做大貨需求單成交時建一般訂單
 
-- **GIVEN** ConsultationRequest 狀態 = 已轉需求單、需求單已核准成交
+- **GIVEN** ConsultationRequest 狀態 = 已轉需求單、需求單已成交
 - **WHEN** 業務點擊「轉訂單」
 - **THEN** 系統 SHALL 建立一般訂單（order_type = 線下）
 - **AND** 系統 SHALL 在一般訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)
@@ -264,7 +186,7 @@
 
 #### Scenario: 需求單成交業務轉訂單時 Payment 轉移至一般訂單
 
-- **GIVEN** ConsultationRequest 狀態 = 已轉需求單、需求單已核准成交
+- **GIVEN** ConsultationRequest 狀態 = 已轉需求單、需求單已成交
 - **WHEN** 業務點擊「轉訂單」
 - **THEN** 系統 SHALL 建立一般訂單（order_type = 線下）+ OrderExtraCharge(consultation_fee, 諮詢費)
 - **AND** Payment 從 ConsultationRequest 轉移至一般訂單

@@ -9,9 +9,9 @@
 - **自動帶入（原值）**：各印件項目的預計產線（QuoteRequestItem.expected_production_lines → PrintItem.expected_production_lines）
 - **不帶入**：報價紀錄、活動紀錄
 
-**前置條件**：需求單 SHALL 為「已核准成交」狀態才能執行轉訂單；於「成交（待業務主管成交審核）」狀態下，業務 MUST NOT 可執行轉訂單（v3.0 變更，見 [quote-request spec](../quote-request/spec.md) § 成交轉訂單）。
+**前置條件**：需求單 SHALL 為「成交」狀態才能執行轉訂單。業務主管 gate 由獨立 change `relocate-sales-manager-approval-from-quote-to-order` 在訂單階段處理（不影響本 Requirement 的轉訂單前提）。
 
-**諮詢來源需求單的諮詢費處理**：當需求單 `from_consultation_request_id` 非空時，系統 SHALL 於主訂單建立時自動執行：
+**諮詢來源需求單的諮詢費處理**：當需求單 `linked_consultation_request_id` 非空時，系統 SHALL 於主訂單建立時自動執行：
 
 1. 將 Payment 從 ConsultationRequest 轉移至主訂單（修改 Payment.linked_entity_type 與 linked_entity_id）
 2. 在主訂單上建立一筆 `OrderExtraCharge(charge_type = consultation_fee, amount = 諮詢費, description = 諮詢單編號)`
@@ -22,35 +22,35 @@
 
 #### Scenario: 需求單轉訂單時客戶資料帶入
 
-- **WHEN** 業務於「已核准成交」需求單執行「轉訂單」
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
 - **THEN** 系統 SHALL 自動帶入客戶基本資料與印件規格，且這些欄位為唯讀狀態
 
 #### Scenario: 需求單轉訂單時交期可編輯
 
-- **WHEN** 業務於「已核准成交」需求單執行「轉訂單」
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
 - **THEN** 系統 SHALL 自動帶入交期與備註、付款資訊、訂金設定，且這些欄位允許使用者編輯
 
 #### Scenario: 需求單轉訂單時案名帶入
 
-- **WHEN** 業務於「已核准成交」需求單執行「轉訂單」
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
 - **THEN** 系統 SHALL 將需求單的 title 帶入訂單的 case_name 欄位
 - **AND** case_name SHALL 允許業務編輯
 
 #### Scenario: 需求單轉訂單時預計產線帶入
 
-- **WHEN** 業務於「已核准成交」需求單執行「轉訂單」
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
 - **THEN** 系統 SHALL 將各印件項目的預計產線帶入對應 PrintItem 的 expected_production_lines
 - **AND** 帶入後印件的預計產線 SHALL 可繼續編輯
 
 #### Scenario: 需求單轉訂單時報價紀錄不帶入
 
-- **WHEN** 業務於「已核准成交」需求單執行「轉訂單」
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
 - **THEN** 系統 SHALL 不帶入報價紀錄與活動紀錄至訂單
 
 #### Scenario: 諮詢來源需求單轉訂單同步處理 Payment 轉移與 OrderExtraCharge
 
-- **GIVEN** 需求單 `from_consultation_request_id` 非空，諮詢費 = 2000、印件費 = 4000、Payment 綁 ConsultationRequest
-- **WHEN** 業務於「已核准成交」需求單執行「轉訂單」
+- **GIVEN** 需求單 `linked_consultation_request_id` 非空，諮詢費 = 2000、印件費 = 4000、Payment 綁 ConsultationRequest
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
 - **THEN** 系統 SHALL 建立主訂單
 - **AND** 系統 SHALL 將 Payment 從 ConsultationRequest 轉移至主訂單
 - **AND** 系統 SHALL 在主訂單上建立 OrderExtraCharge（charge_type = consultation_fee、amount = 1000）
@@ -58,13 +58,6 @@
 - **AND** 主訂單應收總額 SHALL = 5000（印件費 4000 + 諮詢費 OrderExtraCharge 1000）
 - **AND** 主訂單已收 SHALL = 1000（轉移過來的諮詢費 Payment）
 - **AND** 主訂單待繳 SHALL = 4000
-
-#### Scenario: 待業務主管成交審核狀態不可轉訂單
-
-- **GIVEN** 需求單狀態為「待業務主管成交審核」
-- **WHEN** 業務開啟需求單詳情頁
-- **THEN** 系統 MUST NOT 顯示「轉訂單」按鈕
-- **AND** UI SHALL 顯示「等待 [業務主管姓名] 審核成交條件中」資訊
 
 ---
 
@@ -98,9 +91,8 @@ ConsultationRequest 自動建立 (status=待諮詢)
                 ↓
             需求單流程：需求確認中 → 待評估成本 → 已評估成本 → 議價中 → 成交
                 ↓
-            業務主管成交後審核 (status=已核准成交)
-                ↓
             業務「轉訂單」 (Order, type=線下)
+            （訂單階段業務主管 gate 由獨立 change 處理）
                 + Payment 從 ConsultationRequest 轉移至一般訂單
                 + 一般訂單建立 OrderExtraCharge(consultation_fee)
                 ↓
@@ -144,9 +136,9 @@ ConsultationRequest 自動建立 (status=待諮詢)
 #### Scenario: 諮詢費走「做大貨 + 需求單成交」分支端到端
 
 - **GIVEN** 客人付諮詢費 2000 元、諮詢結束選「做大貨」、後續需求單議價成交報價總額 4000 元（印件費）
-- **WHEN** webhook 觸發、諮詢結束、需求單建立、議價成交、業務主管核准
+- **WHEN** webhook 觸發、諮詢結束、需求單建立、議價成交
 - **THEN** 系統 MUST NOT 建立任何 Order（Payment 維持綁 ConsultationRequest）
-- **WHEN** 業務於「已核准成交」需求單執行「轉訂單」
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
 - **THEN** 系統 SHALL 建立一般訂單 + OrderExtraCharge(consultation_fee, 1000) + Payment 從 ConsultationRequest 轉移至一般訂單
 - **AND** 一般訂單應收 = 5000、已收 = 1000、待繳 = 4000
 

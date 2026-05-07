@@ -6,7 +6,7 @@
 
 **`order_type = 線下`（一般訂單）**：
 
-1. 業務於需求單「已核准成交」狀態點擊「轉訂單」，自動帶入印件規格、客戶資料、交期、報價金額。若需求單來源為 ConsultationRequest（`from_consultation_request_id` 非空），主訂單建立時 SHALL 自動：(a) 在主訂單建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費)、(b) 將 Payment 從 ConsultationRequest 轉移至主訂單（修改 Payment 的 polymorphic 關聯）、(c) 依 ConsultationRequest 的 `consultation_invoice_option`（若 `issue_now` 則立即在主訂單上開立諮詢費 Invoice）。
+1. 業務於需求單「成交」狀態點擊「轉訂單」，自動帶入印件規格、客戶資料、交期、報價金額。若需求單來源為 ConsultationRequest（`linked_consultation_request_id` 非空），主訂單建立時 SHALL 自動：(a) 在主訂單建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費)、(b) 將 Payment 從 ConsultationRequest 轉移至主訂單（修改 Payment 的 polymorphic 關聯）、(c) 依 ConsultationRequest 的 `consultation_invoice_option`（若 `issue_now` 則立即在主訂單上開立諮詢費 Invoice）。
 
 **`order_type = 線上`（EC 訂單）**：
 
@@ -26,14 +26,14 @@
 
 #### Scenario: 線下單由需求單轉入
 
-- **WHEN** 業務在「已核准成交」需求單點擊「轉訂單」
+- **WHEN** 業務在「成交」需求單點擊「轉訂單」
 - **THEN** 系統建立訂單草稿（`order_type = 線下`），自動帶入印件規格、客戶資料、交期
 - **AND** 帶入規則詳見[商業流程 spec](../business-processes/spec.md) § 需求單轉訂單欄位帶入規則
 
 #### Scenario: 諮詢來源主訂單建立時自動建 OrderExtraCharge 與轉移 Payment
 
-- **GIVEN** 需求單 `from_consultation_request_id` 非空，諮詢費 = 1000、印件費 = 4000
-- **WHEN** 業務於「已核准成交」需求單執行「轉訂單」
+- **GIVEN** 需求單 `linked_consultation_request_id` 非空，諮詢費 = 1000、印件費 = 4000
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
 - **THEN** 系統 SHALL 建立主訂單（`order_type = 線下`）
 - **AND** 系統 SHALL 自動建立 OrderExtraCharge（charge_type = consultation_fee、amount = 1000、description = 「諮詢費（諮詢單編號 [CR-XXX]）」）
 - **AND** 系統 SHALL 將 Payment 從 ConsultationRequest 轉移至主訂單（修改 linked_entity_type 與 linked_entity_id）
@@ -192,12 +192,12 @@ Payment 的關聯目標 SHALL 為 polymorphic，支援關聯 ConsultationRequest
 | 是否需要審核 | 否（屬訂單明細的一部分） | 是（草稿 → 待主管審核 → 已核可 → 已執行） |
 | 業務語意 | 應收明細項目 | 應收金額異動 |
 
-**諮詢費的特殊路徑**：當訂單 `order_type = 諮詢` 或主訂單來自 ConsultationRequest 時（`from_consultation_request_id` 非空），系統 SHALL 自動建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費)，業務無需手動建立。
+**諮詢費的特殊路徑**：當訂單 `order_type = 諮詢` 或主訂單來自 ConsultationRequest 時（`linked_consultation_request_id` 非空），系統 SHALL 自動建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費)，業務無需手動建立。
 
 #### Scenario: 諮詢來源主訂單自動建 consultation_fee OrderExtraCharge
 
-- **GIVEN** 需求單 `from_consultation_request_id = CR-202605-0001`、諮詢費 = 1000
-- **WHEN** 業務於「已核准成交」需求單執行「轉訂單」
+- **GIVEN** 需求單 `linked_consultation_request_id = CR-202605-0001`、諮詢費 = 1000
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
 - **THEN** 系統 SHALL 在主訂單上建立 OrderExtraCharge：
   - `charge_type = consultation_fee`
   - `amount = 1000`
@@ -249,7 +249,7 @@ Payment 的關聯目標 SHALL 為 polymorphic，支援關聯 ConsultationRequest
 
 #### Scenario: 諮詢結束做大貨需求單成交 Payment 轉移至一般訂單
 
-- **GIVEN** ConsultationRequest CR-XXX、Payment 綁 CR-XXX、需求單 QR-XXX（from_consultation_request_id = CR-XXX）已核准成交
+- **GIVEN** ConsultationRequest CR-XXX、Payment 綁 CR-XXX、需求單 QR-XXX（linked_consultation_request_id = CR-XXX）成交
 - **WHEN** 業務點擊「轉訂單」、系統建立一般訂單 SO-ZZZ
 - **THEN** 系統 SHALL 修改 Payment.linked_entity_id 為 SO-ZZZ、linked_entity_type = Order
 - **AND** is_transferred = true
