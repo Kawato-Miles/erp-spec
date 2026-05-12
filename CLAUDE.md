@@ -309,6 +309,7 @@ delta specs 合併回 main specs，歸檔 change。
 | 術語表（完整）| `memory/erp/glossary.md` |
 | 測試案例 | Notion ERP Test Case DB：https://www.notion.so/2b93886511fa817fbd65e7608726f036 |
 | 出貨邏輯診斷（邊界情況 / 常見漏洞）| Notion 出貨邏輯診斷：https://www.notion.so/32c3886511fa81cfac16c4720b888ca2 |
+| 訂單款項與發票 13 業務情境（產 user story / test case 原始材料）| `memory/erp/payment-invoice-scenarios.md` |
 
 ### 共用資源
 | 資源 | 路徑 |
@@ -330,7 +331,7 @@ delta specs 合併回 main specs，歸檔 change。
 | 模組 | OpenSpec Spec | Notion BRD（發布版本） | 版本 | 狀態 |
 |------|--------------|----------------------|------|------|
 | 需求單 | `openspec/specs/quote-request/spec.md` | https://www.notion.so/3293886511fa80998ac0e8cdf555da68 | v3.1 | 草稿（v3.1：refactor-order-payment-and-invoice + add-consultation-request 同 2026-05-07 歸檔 — 新增「帳務公司指定」Requirement + billing_company_id 必填欄位、新增「從諮詢單轉建需求單」/「諮詢來源需求單流失觸發建諮詢訂單」/「諮詢來源需求備註欄位」三個 Requirement、Data Model 補入 linked_consultation_request_id / requirement_note 欄位；v3.0 業務主管 gate 移至訂單階段內容延續）|
-| 訂單管理 | `openspec/specs/order-management/spec.md` | https://www.notion.so/32c3886511fa806bad41d755349b0567 | v1.1 | 草稿（v1.1：refactor-order-payment-and-invoice + add-consultation-request 同 2026-05-07 歸檔 — 新增 PaymentPlan / Payment / Invoice / SalesAllowance / OrderAdjustment / BillingCompany 六實體、order_type 三值化（線下 / 線上 / 諮詢）+ 新增 linked_consultation_request_id 欄位、新增「諮詢費 OrderExtraCharge」/「Payment 跨實體轉移」等諮詢相關 Requirement；v1.0 業務主管 gate 訂單側內容延續）|
+| 訂單管理 | `openspec/specs/order-management/spec.md` | https://www.notion.so/32c3886511fa806bad41d755349b0567 | v1.2 | 草稿（v1.2：refactor-order-adjustment-and-cleanup 2026-05-12 歸檔 — OrderAdjustment 加 adjustment_phase 雙重身份（訂單異動單 / 售後服務單）+ OrderAdjustmentItem 子實體、adjustment_type enum 擴為 8 種並依 phase 限制、對帳警示 banner 觸發改為 executed_at > completed_at、OrderExtraCharge vs OrderAdjustment.fee 時間邊界、廢除 Order.is_supplemental + parent_order_id；v1.1 PaymentPlan / Payment / Invoice / SalesAllowance / OrderAdjustment / BillingCompany 六實體 + 諮詢相關 Requirement 延續）|
 | 諮詢單 | `openspec/specs/consultation-request/spec.md` | — | v0.1 | 草稿（v0.1：add-consultation-request-and-revise-approval-gate 2026-05-07 歸檔 — 新建：surveycake webhook 自動建單、雙出口（諮詢訂單 / 轉需求單）、Payment 跨實體轉移、待諮詢取消退費等 10 個 Requirement）|
 | 工單管理 | `openspec/specs/work-order/spec.md` | https://www.notion.so/32c3886511fa80f98a43def401d1edce | v0.5 | 草稿（v0.5：refactor-detail-pages-to-subheader-tab-layout 2026-05-06 歸檔 — MODIFIED 詳情頁 Tab 使用共用元件（4→5 Tabs 含資訊首位）+ ADDED 工單詳情頁 Tabs 化版型，三張資訊卡進資訊 Tab，退回原因獨立 InfoBanner）|
 | 生產任務 | `openspec/specs/production-task/spec.md` | https://www.notion.so/32c3886511fa806ab1d5c2b815bf9c94 | v0.3 | 草稿（v0.3：add-production-task-transfer 2026-04-24 歸檔 — 新增印件級 TransferTicket + TransferTicketLine 實體、線上彙整多生產任務轉交流程；主流程 MVP 不含撤回 / transferRequired flag）|
