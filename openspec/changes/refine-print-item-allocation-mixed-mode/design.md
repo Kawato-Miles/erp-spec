@@ -161,6 +161,31 @@ type AssignmentResult = {
 - Dialog 直接呼叫 store — 拒絕，違反元件可重用原則（Dialog 應與 store 解耦）
 - 兩個 callback（`onAssignExisting` + `onAddNew`） — 拒絕，使用者只按一次「確認」，不應拆成兩個 callback
 
+### Decision 9：對齊 spec 修正 `buildAutoCreatedWorkOrder`（UAT 後追加範圍）
+
+**選擇**：擴大本 change 範圍，修正 `useErpStore.ts` 的 `buildAutoCreatedWorkOrder` 函數，使自動建立工單時 `status='草稿'`、`assignedTo=''`、`supervisor=''`。
+
+**背景**：UAT 發現 Dialog 撈不到「審稿合格時自動建立的草稿」。深入追查發現 prototype 既有實作（2026-04-21 data-consistency-audit hack）將自動建工單直接推進到 `status='製程確認中'` 並預設指派 `PRODUCTION_STAFF[0]`，違反 [work-order spec § 工單草稿建立 L47](../../specs/work-order/spec.md) 規定「工單狀態為『草稿』」。
+
+**為什麼**：
+
+- 本 change Dialog 設計依 spec 過濾 `status === '草稿'`，必須對齊
+- 既有 hack 的理由（避免 `tryReportWork` 守門失效）在邏輯上不成立：草稿階段 + `assignedTo=''` 本來就不該允許報工，`tryReportWork` 的 deny 是正確守門行為，不是 bug
+- 不修這個既有與 spec 不一致，本 change 的「分配既有草稿」情境永遠無法觸發
+
+**影響範圍評估**：
+
+- `derivePrintItemStatusFromWOs`（`src/utils/printItemStatus.ts`）：草稿 / 製程確認中 都 fall through 到「等待中」，印件層狀態派生不受影響
+- `tryReportWork`：`assignedTo===''` 時 deny 報工，這是正確守門行為（草稿階段不該報工）
+- `PrintItemDashboard` 優先顯示：`!wo.assignedTo` 置頂顯示，完美對齊本 change 設計目標
+- `WorkOrderDetail.tsx` L495：草稿狀態可編輯排程，對齊 [work-order spec § 工單內容填寫 L66](../../specs/work-order/spec.md)
+- UAT 路徑變化：原本「自動建工單後直接走報工流程」的測試路徑，現在需先透過 Dialog 完成指派——這是正確的業務流程，原 hack 是繞過
+
+**替代方案**：
+
+- 選項 B（折衷）：只改 status='草稿'，保留 `assignedTo=PRODUCTION_STAFF[0]` — 拒絕，違反「草稿待指派」設計意圖
+- 選項 C（繞過）：Dialog filter 改為 `status='草稿' || '製程確認中'` — 拒絕，違反工單狀態機語意，會讓未來開發者困惑
+
 ## Risks / Trade-offs
 
 - **[Risk 1] 既有草稿類型 / 地區唯讀，若印務主管真有需求改（例：自動建立時 BOM 帶錯）** → Mitigation：spec 中明確指引此情境走「工單編輯」流程；本 change 列為已知限制；若日後成為高頻需求，可開新 change 處理。

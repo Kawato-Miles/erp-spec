@@ -9,6 +9,7 @@
 - [x] 2.1 重用既有 `assignWorkOrder(woId, assignedTo, supervisor)` action（useErpStore.ts L2305-2335，已實作 `assignedTo` 寫入 + activityLogs 條目）
 - [x] 2.2 新增 `addManualWorkOrderDraft(printItemId, { type, region, officerName })` action：建立空草稿（status='草稿'，tasks=[]），自動帶入 `targetQty` = 印件 `orderedQty`、`unit` = 印件 `unit`、`quantityPerPrintItem` = 1，並 append 工單與訂單層 `activityLogs`
 - [x] 2.3 新 action 同步更新 order 的 `workOrders` summary、`workOrderCount`、印件層 `workOrderCount` 與 order 層 `activityLogs`
+- [x] 2.4 修正 `buildAutoCreatedWorkOrder`（UAT 後追加，對齊 design Decision 9）：將 `status` 從 `'製程確認中'` 改為 `'草稿'`、`assignedTo` 從 `PRODUCTION_STAFF[0]` 改為 `''`、`supervisor` 從 `PRODUCTION_MANAGERS[0]` 改為 `''`，對齊 work-order spec § 工單草稿建立 L47
 
 ## 3. AssignPrintItemDialog 元件改造
 
