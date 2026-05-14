@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>售後服務單設計方向對比</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+    max-width: 1280px;
+    margin: 2rem auto;
+    padding: 0 2rem 4rem;
+    color: #1f2937;
+    line-height: 1.65;
+    background: #fff;
+  }
+  h1 { font-size: 1.875rem; border-bottom: 3px solid #1f2937; padding-bottom: 0.5rem; }
+  h2 { font-size: 1.5rem; margin-top: 3rem; border-bottom: 1px solid #d1d5db; padding-bottom: 0.4rem; }
+  h3 { font-size: 1.2rem; margin-top: 2rem; color: #111827; }
+  h4 { font-size: 1rem; margin: 0 0 0.5rem 0; }
+  .lead { color: #4b5563; font-size: 1.05rem; }
+  .lead strong { color: #1f2937; }
+
+  /* 共識區塊 */
+  .consensus {
+    background: #f0fdf4;
+    border-left: 4px solid #16a34a;
+    padding: 1rem 1.25rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+  }
+  .consensus ul { margin: 0.5rem 0 0 0; padding-left: 1.2rem; }
+  .consensus li { margin: 0.25rem 0; }
+
+  /* 卡片 */
+  .compare-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1rem 0; }
+  .compare-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+  .card {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 1.1rem 1.25rem;
+    background: #fafbfc;
+  }
+  .card-A { border-left: 4px solid #f59e0b; }
+  .card-B { border-left: 4px solid #2563eb; }
+  .card-1 { border-left: 4px solid #ef4444; }
+  .card-2 { border-left: 4px solid #10b981; }
+  .card-3 { border-left: 4px solid #8b5cf6; }
+  .card-scenario { background: #fff; border: 1px solid #e5e7eb; }
+
+  /* 流程圖 */
+  .flow {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.85rem;
+    background: #f9fafb;
+    padding: 0.75rem 0.9rem;
+    border-radius: 4px;
+    white-space: pre;
+    overflow-x: auto;
+    line-height: 1.45;
+    color: #111827;
+  }
+  .flow-A { background: #fef3c7; }
+  .flow-B { background: #dbeafe; }
+
+  /* 表格 */
+  table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  th { background: #f3f4f6; font-weight: 600; color: #111827; }
+  td.no { background: #fef2f2; color: #991b1b; }
+  td.yes { background: #f0fdf4; color: #166534; }
+  td.partial { background: #fef3c7; color: #92400e; }
+
+  /* badge */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .badge-A { background: #fef3c7; color: #92400e; }
+  .badge-B { background: #dbeafe; color: #1e3a8a; }
+  .badge-1 { background: #fee2e2; color: #991b1b; }
+  .badge-2 { background: #d1fae5; color: #065f46; }
+  .badge-3 { background: #ede9fe; color: #5b21b6; }
+  .badge-warning { background: #fee2e2; color: #991b1b; }
+  .badge-success { background: #d1fae5; color: #065f46; }
+
+  /* 提示框 */
+  .tradeoff {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    background: #fff7ed;
+    border-left: 3px solid #f97316;
+    font-size: 0.88rem;
+    border-radius: 3px;
+  }
+  .recommend {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    background: #ecfdf5;
+    border-left: 3px solid #10b981;
+    font-size: 0.88rem;
+    border-radius: 3px;
+  }
+  .note {
+    padding: 0.6rem 0.85rem;
+    background: #f3f4f6;
+    border-left: 3px solid #6b7280;
+    font-size: 0.88rem;
+    border-radius: 3px;
+    margin: 0.75rem 0;
+  }
+
+  /* UI Mockup */
+  .mockup {
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    overflow: hidden;
+    margin: 0.5rem 0;
+  }
+  .mockup-header {
+    background: #f3f4f6;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.78rem;
+    color: #6b7280;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .mockup-body { padding: 0.6rem 0.75rem; font-size: 0.85rem; }
+  .mockup-row { padding: 0.3rem 0; border-bottom: 1px dashed #f3f4f6; }
+  .mockup-row:last-child { border-bottom: none; }
+
+  /* 場景區塊 */
+  .scenario {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    background: #ffffff;
+  }
+  .scenario-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+  }
+  .scenario-sub {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  .step-label {
+    display: inline-block;
+    background: #e5e7eb;
+    color: #374151;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+</style>
+</head>
+<body>
+
+<h1>售後服務單設計方向對比</h1>
+<p class="lead">針對「訂單異動：售後服務需要主管討論 + 結案追蹤」需求，本頁對比兩個設計維度的方案，並以三個具體場景演示流程差異與業務感受。</p>
+
+<div class="consensus">
+  <strong>背景共識（不論選哪條都不變）</strong>
+  <ul>
+    <li>業務跟主管討論走 Slack，系統不放核可關卡</li>
+    <li>退款動作走既有「退款 Payment」流程</li>
+    <li>補印動作走既有「印件 + 審稿 + 工單」流程</li>
+    <li>不新增 AfterSalesCase 上層容器（諮詢是售前 ≠ 售後）</li>
+    <li>一個訂單通常一次售後，不像保固有多次案件</li>
+  </ul>
+</div>
+
+<h2>維度 1：售後服務單實體要不要從 OrderAdjustment 拆出來</h2>
+
+<div class="compare-grid-2">
+
+  <div class="card card-A">
+    <h4><span class="badge badge-A">方向 A</span>沿用 OrderAdjustment，加新欄位</h4>
+    <p style="font-size: 0.92rem; color: #4b5563;">售後服務單 = OrderAdjustment phase=after_completion，原表加新欄位與新 enum。</p>
+    <strong style="font-size: 0.9rem;">資料模型變更：</strong>
+    <div class="flow flow-A">OrderAdjustment 既有欄位不動
+新增：
+  adjustment_type enum 加值「不處理」「補印觸發」
+  resolution      = 不處理 / 退款 / 補印 / 退款+補印
+  closure_status  = 處理中 / 已結案
+  closed_at       = 結案時間
+  closed_by       = 結案人
+
+允許 amount = 0（破壞既有
+「OrderAdjustment 必為金額異動」邊界）</div>
+    <div class="tradeoff">
+      <strong>取捨：</strong>實體最少改動，但 OrderAdjustment 同時承擔「金額異動」與「售後事件容器」雙重角色，語意變肥；amount=0 也打破現有 scenarios.md 設計邊界。
+    </div>
+  </div>
+
+  <div class="card card-B">
+    <h4><span class="badge badge-B">方向 B</span>獨立 AfterSalesTicket 實體</h4>
+    <p style="font-size: 0.92rem; color: #4b5563;">售後服務單 = 新實體 AfterSalesTicket；OrderAdjustment 回歸「純金額異動」（during_order 用）。</p>
+    <strong style="font-size: 0.9rem;">資料模型變更：</strong>
+    <div class="flow flow-B">新實體 AfterSalesTicket：
+  id, order_id
+  opened_at, opened_by
+  customer_complaint  (text)
+  resolution          = 不處理 / 退款 / 補印 / 組合
+  related_adjustments = 0..N OrderAdjustment
+  related_print_items = 0..N PrintItem (補印)
+  closure_status, closed_at, closed_by
+
+OrderAdjustment 改動：
+  adjustment_phase 移除 after_completion
+  （或保留但僅用於跨期執行警示）</div>
+    <div class="tradeoff">
+      <strong>取捨：</strong>多一個實體，但語意乾淨；「不處理」「補印觸發」「結案追蹤」都有專屬欄位承載，OrderAdjustment 不變肥。
+    </div>
+  </div>
+
+</div>
+
+<div class="note">
+<strong>關於「沿用既有流程」原則：</strong>方向 B 雖然新增 AfterSalesTicket 實體，但下游動作（退款 Payment、補印 PrintItem、SalesAllowance）完全沿用既有流程。AfterSalesTicket 只是「案件容器」，不新建任何售後專用的金額 / 退款 / 補印流程。所以兩個方向都符合「沿用既有」原則，只是抽象層次不同。
+</div>
+
+<h2>三個場景演示</h2>
+
+<!-- 場景 1：不處理 -->
+<div class="scenario">
+  <div class="scenario-title">場景 1：客戶投訴瑕疵，公司認賠不處理</div>
+  <div class="scenario-sub">已完成訂單 ORD-001，客戶反映印件有輕微瑕疵但不嚴重，業務跟主管討論後決定「公司認賠、不退款不補印」。</div>
+
+  <div class="compare-grid-2">
+    <div class="card card-A">
+      <h4><span class="badge badge-A">方向 A</span>建一張 amount=0 的 OrderAdjustment</h4>
+      <div class="flow"><span class="step-label">業務</span>於訂單詳情頁點「建立售後服務單」
+  ↓
+填表單：
+  adjustment_type = 不處理
+  amount          = 0
+  resolution      = 不處理
+  reason          = 「客戶投訴瑕疵，公司認賠」
+  ↓
+<span class="step-label">業務</span>點「執行」（無主管核可）
+  ↓
+closure_status 自動 = 已結案
+（不處理沒有下游動作，立刻結案）
+  ↓
+訂單應收總額不變</div>
+      <div class="tradeoff"><strong>痛點：</strong>三方對帳檢視會看到一張 amount=0 的「已執行 OrderAdjustment」，這違反「OrderAdjustment 必為金額異動」的 scenarios.md 設計邊界。對帳警示 banner 觸發條件（executed_at > completed_at）會誤觸發。</div>
+    </div>
+
+    <div class="card card-B">
+      <h4><span class="badge badge-B">方向 B</span>建一張 AfterSalesTicket，零關聯動作</h4>
+      <div class="flow"><span class="step-label">業務</span>於訂單詳情頁點「建立售後服務單」
+  ↓
+填表單：
+  customer_complaint = 「客戶投訴瑕疵」
+  resolution         = 不處理
+  ↓
+<span class="step-label">業務</span>點「結案」
+  ↓
+closure_status = 已結案
+（無 OrderAdjustment、無 PrintItem、無 Payment）
+  ↓
+訂單應收 / 對帳完全不動
+活動紀錄寫入「售後服務：不處理」</div>
+      <div class="recommend"><strong>優點：</strong>沒有任何「假裝有動作」的 OrderAdjustment 污染對帳。售後服務單是獨立 ticket，不處理是合法結局。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 場景 2：退款 -->
+<div class="scenario">
+  <div class="scenario-title">場景 2：客戶要求退款 5,000 元</div>
+  <div class="scenario-sub">已完成訂單 ORD-002（應收 100,000、已開發票、已收款），客戶投訴部分瑕疵，業務跟主管討論後決定退 5,000。</div>
+
+  <div class="compare-grid-2">
+    <div class="card card-A">
+      <h4><span class="badge badge-A">方向 A</span>OrderAdjustment 同時是案件 + 動作</h4>
+      <div class="flow"><span class="step-label">業務</span>建「售後服務單」
+  adjustment_type = 退印
+  amount          = -5,000
+  resolution      = 退款
+  ↓
+<span class="step-label">業務</span>點「執行」
+  → OrderAdjustment.status = 已執行
+  → 訂單應收 = 95,000
+  ↓
+<span class="step-label">業務</span>於發票區建退款 Payment(-5,000)
+<span class="step-label">業務</span>視需要開 SalesAllowance
+  ↓
+<span class="step-label">業務</span>於同一張 OrderAdjustment 點「結案」
+  → closure_status = 已結案
+
+UI：訂單詳情頁有一張售後服務單，
+   點開可看到金額 + 結案狀態 + 關聯退款 Payment</div>
+      <div class="tradeoff"><strong>痛點：</strong>同一張 OrderAdjustment 同時表達「金額 -5,000」與「案件結案」兩個概念。如果業務忘記點「結案」，OrderAdjustment 永遠掛著未結案，但對帳上又已執行，狀態混淆。</div>
+    </div>
+
+    <div class="card card-B">
+      <h4><span class="badge badge-B">方向 B</span>Ticket 是案件，OrderAdjustment 是動作</h4>
+      <div class="flow"><span class="step-label">業務</span>建「售後服務單」(AfterSalesTicket)
+  customer_complaint = 「客戶投訴瑕疵」
+  resolution         = 退款
+  ↓
+系統提示「請建立退款異動單」
+<span class="step-label">業務</span>點「建立關聯異動單」
+  → OrderAdjustment 自動帶入 ticket_id
+  → adjustment_type = 退印
+  → amount          = -5,000
+  → 直接「已執行」(無核可關卡)
+  → 訂單應收 = 95,000
+  ↓
+<span class="step-label">業務</span>建退款 Payment(-5,000)
+<span class="step-label">業務</span>視需要開 SalesAllowance
+  ↓
+<span class="step-label">業務</span>於 AfterSalesTicket 點「結案」
+  → closure_status = 已結案
+
+UI：訂單詳情頁有一張 ticket，
+   ticket 內看到關聯的退款異動單 + 退款 Payment</div>
+      <div class="recommend"><strong>優點：</strong>金額異動 / 案件結案兩個概念實體分離。OrderAdjustment 仍是純粹的金額異動單，三方對帳邏輯不受影響。Ticket 結案與否完全獨立追蹤。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 場景 3：補印 -->
+<div class="scenario">
+  <div class="scenario-title">場景 3：客戶要求補印（公司認賠 100 份）</div>
+  <div class="scenario-sub">已完成訂單 ORD-003，客戶反映 100 份瑕疵需重做，公司認賠補印。業務跟主管討論後決定補印 100 份不收費。</div>
+
+  <div class="compare-grid-2">
+    <div class="card card-A">
+      <h4><span class="badge badge-A">方向 A</span>用 OrderAdjustment 觸發補印</h4>
+      <div class="flow"><span class="step-label">業務</span>建「售後服務單」
+  adjustment_type = 補印觸發 (新 enum)
+  amount          = 0 (公司認賠不收費)
+  resolution      = 補印
+  closure_status  = 處理中
+  ↓
+<span class="step-label">業務</span>點「執行」
+  → 系統提示「請手動建立補印印件」
+  ↓
+<span class="step-label">業務</span>於訂單詳情頁手動建 PrintItem(補印100份)
+  PrintItem 跟 OrderAdjustment 沒有直接關聯
+  （僅靠人腦記憶連結）
+  ↓
+PrintItem 走審稿 → 工單 → 出貨
+  ↓
+<span class="step-label">業務</span>確認客戶收件滿意後
+  回到 OrderAdjustment 點「結案」
+  → closure_status = 已結案
+
+UI 痛點：補印印件與 OrderAdjustment
+       在資料上沒有關聯，只能靠日期猜</div>
+      <div class="tradeoff"><strong>痛點：</strong>(1) OrderAdjustment 又出現 amount=0；(2) 補印 PrintItem 跟 OrderAdjustment 沒有資料關聯，無法自動推導「補印完成 → 案件結案」；(3)「補印觸發」這個 type 語意奇怪——OrderAdjustment 本來是金額異動載具，不該管生產動作。</div>
+    </div>
+
+    <div class="card card-B">
+      <h4><span class="badge badge-B">方向 B</span>Ticket 直接關聯補印印件</h4>
+      <div class="flow"><span class="step-label">業務</span>建「售後服務單」(AfterSalesTicket)
+  customer_complaint = 「客戶要求補印100份」
+  resolution         = 補印
+  closure_status     = 處理中
+  ↓
+<span class="step-label">業務</span>於 ticket 內點「建立補印印件」
+  → 系統建 PrintItem(補印100份)
+  → PrintItem.related_after_sales_ticket_id = ticket
+  → 不建任何 OrderAdjustment（amount=0 公司認賠）
+  ↓
+PrintItem 走審稿 → 工單 → 出貨
+  系統可自動偵測：補印印件出貨完成
+  ↓
+方案 a：自動結案
+  ticket.closure_status = 已結案
+方案 b：通知業務確認結案
+  「補印印件已出貨，請確認客戶滿意後結案」
+  ↓
+ticket 結案
+
+UI 優點：ticket 內直接看到關聯的補印印件
+       狀態，一頁掌握進度</div>
+      <div class="recommend"><strong>優點：</strong>(1) 沒有 amount=0 OrderAdjustment 污染；(2) ticket 與補印印件有明確 FK 關聯，自動推導結案邏輯可行；(3) 補印若客戶承擔費用，加掛一張正常 OrderAdjustment(amount=+補印費) 即可，與 ticket 平行。</div>
+    </div>
+  </div>
+</div>
+
+<h3>場景對照速覽</h3>
+<table>
+<thead>
+<tr>
+  <th>能力</th>
+  <th>方向 A（沿用 OrderAdjustment）</th>
+  <th>方向 B（獨立 AfterSalesTicket）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>「不處理」結局承載</td>
+  <td class="partial">amount=0 OrderAdjustment（破壞既有邊界）</td>
+  <td class="yes">Ticket 直接結案，無動作關聯</td>
+</tr>
+<tr>
+  <td>退款動作關聯</td>
+  <td class="partial">同一張 OA 既是異動又是案件</td>
+  <td class="yes">Ticket 關聯 OrderAdjustment(退印)</td>
+</tr>
+<tr>
+  <td>補印動作關聯</td>
+  <td class="no">PrintItem 與 OA 無 FK 關聯</td>
+  <td class="yes">Ticket 與補印 PrintItem 有 FK 關聯</td>
+</tr>
+<tr>
+  <td>自動推導結案</td>
+  <td class="no">補印場景無法自動結案</td>
+  <td class="yes">補印印件出貨完成 → 自動 / 提示結案</td>
+</tr>
+<tr>
+  <td>對帳邏輯影響</td>
+  <td class="partial">amount=0 影響對帳警示 banner 邏輯</td>
+  <td class="yes">不影響</td>
+</tr>
+<tr>
+  <td>實體變更成本</td>
+  <td class="yes">不新增實體</td>
+  <td class="partial">新增 AfterSalesTicket</td>
+</tr>
+<tr>
+  <td>scenarios.md 異動情境 1（公司吸收）對應</td>
+  <td class="partial">建空單，違反既有設計</td>
+  <td class="yes">Ticket 結案 + 工單異動，符合既有</td>
+</tr>
+</tbody>
+</table>
+
+<h2>維度 2：訂單狀態怎麼表達「售後處理中」</h2>
+
+<div class="compare-grid-3">
+
+  <div class="card card-1">
+    <h4><span class="badge badge-1">解讀 1</span>狀態機新增「售後處理中」階段</h4>
+    <div class="flow">Order.status 推進：
+... 出貨中 → 已完成
+         → 售後處理中
+         → 售後完成</div>
+    <div class="tradeoff"><strong>影響：</strong>v1.2 的 <code>adjustment_phase</code> 推算邏輯（依 Order.status=已完成 判定）要重寫；對帳警示 banner 的「executed_at &gt; completed_at」需重新定義 completed_at 是哪個時間點。多個邊界要動。</div>
+  </div>
+
+  <div class="card card-2">
+    <h4><span class="badge badge-2">解讀 2</span>狀態不變，UI 徽章推導</h4>
+    <div class="flow">Order.status = 已完成 (永遠不變)
+
+UI 推導：
+  訂單有未結案售後 → 顯示「售後中」徽章
+  訂單售後全結案   → 顯示「已結案」徽章</div>
+    <div class="recommend"><strong>影響最小：</strong>不動狀態機、不動 adjustment_phase、不動對帳邏輯。售後處理時間戳記在 ticket 上，要查歷史用「訂單關聯的 ticket 列表」。</div>
+  </div>
+
+  <div class="card card-3">
+    <h4><span class="badge badge-3">解讀 3</span>parent + sub-status</h4>
+    <div class="flow">Order.status     = 已完成 (parent, 不變)
+Order.sub_status = 無 / 售後處理中 / 售後完成
+
+兩維度獨立追蹤</div>
+    <div class="tradeoff"><strong>影響：</strong>新欄位、UI 多一層顯示。比解讀 2 多了正式的 sub-status 概念，但對印刷業 ERP 場景而言可能過度設計（一個訂單通常一次售後）。</div>
+  </div>
+
+</div>
+
+<h3>UI 上長什麼樣（訂單列表頁）</h3>
+
+<div class="compare-grid-3">
+
+  <div class="card card-1">
+    <h4><span class="badge badge-1">解讀 1</span>狀態欄就是售後狀態</h4>
+    <div class="mockup">
+      <div class="mockup-header">訂單列表</div>
+      <div class="mockup-body">
+        <div class="mockup-row">ORD-001 &nbsp;&nbsp; 已完成 &nbsp;&nbsp; 客戶 A</div>
+        <div class="mockup-row">ORD-002 &nbsp;&nbsp; <span class="badge badge-warning">售後處理中</span> &nbsp;&nbsp; 客戶 B</div>
+        <div class="mockup-row">ORD-003 &nbsp;&nbsp; 售後完成 &nbsp;&nbsp; 客戶 C</div>
+      </div>
+    </div>
+    <p style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">優點：狀態欄一目了然<br>缺點：「售後完成」是不是訂單終態？業務模型彈性差</p>
+  </div>
+
+  <div class="card card-2">
+    <h4><span class="badge badge-2">解讀 2</span>主狀態 + 售後欄位</h4>
+    <div class="mockup">
+      <div class="mockup-header">訂單列表</div>
+      <div class="mockup-body">
+        <div class="mockup-row">ORD-001 &nbsp;&nbsp; 已完成 &nbsp;&nbsp; —— &nbsp;&nbsp; 客戶 A</div>
+        <div class="mockup-row">ORD-002 &nbsp;&nbsp; 已完成 &nbsp;&nbsp; <span class="badge badge-warning">售後中</span> &nbsp;&nbsp; 客戶 B</div>
+        <div class="mockup-row">ORD-003 &nbsp;&nbsp; 已完成 &nbsp;&nbsp; <span class="badge badge-success">已結案</span> &nbsp;&nbsp; 客戶 C</div>
+      </div>
+    </div>
+    <p style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">優點：主狀態保持完整，售後是附加維度<br>缺點：列表多一欄</p>
+  </div>
+
+  <div class="card card-3">
+    <h4><span class="badge badge-3">解讀 3</span>主狀態 + sub-status</h4>
+    <div class="mockup">
+      <div class="mockup-header">訂單列表</div>
+      <div class="mockup-body">
+        <div class="mockup-row">ORD-001 &nbsp;&nbsp; 已完成 / —— &nbsp;&nbsp; 客戶 A</div>
+        <div class="mockup-row">ORD-002 &nbsp;&nbsp; 已完成 / <span class="badge badge-warning">售後處理中</span> &nbsp;&nbsp; 客戶 B</div>
+        <div class="mockup-row">ORD-003 &nbsp;&nbsp; 已完成 / 售後完成 &nbsp;&nbsp; 客戶 C</div>
+      </div>
+    </div>
+    <p style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">優點：與解讀 2 視覺相近<br>缺點：要新增 sub_status 欄位，正式化代價較高</p>
+  </div>
+
+</div>
+
+<h2>我的傾向組合</h2>
+
+<div class="recommend" style="font-size: 1rem;">
+<strong>建議組合：方向 B + 解讀 2</strong><br><br>
+<strong>方向 B</strong>（獨立 AfterSalesTicket 實體）— 因為三個場景中只有方向 B 的語意是乾淨的：「不處理」不會建出 amount=0 OrderAdjustment 污染對帳；補印有明確 FK 關聯方便自動推導結案；OrderAdjustment 回歸純金額異動，scenarios.md 既有設計邊界不被破壞。<br><br>
+<strong>解讀 2</strong>（訂單狀態不變，UI 徽章推導）— 不動 v1.2 既有設計邊界（adjustment_phase、對帳警示、三方對帳）。售後狀態靠「訂單關聯 ticket 的結案狀態」推導，列表頁加一欄「售後」徽章即可。
+</div>
+
+<div class="tradeoff" style="font-size: 1rem;">
+<strong>如果你想最小變更：方向 A + 解讀 2</strong><br><br>
+保留 OrderAdjustment 雙重身份不拆，純粹加 resolution / closure_status 欄位。代價是接受三個瑕疵：(1) amount=0 OrderAdjustment 進對帳；(2) 補印無 FK 關聯；(3)「補印觸發」這個 type 語意尷尬。
+</div>
+
+<h2>下一步建議</h2>
+<ol>
+  <li>看完此頁，決定要走 <span class="badge badge-A">方向 A</span> 或 <span class="badge badge-B">方向 B</span>，以及 <span class="badge badge-1">解讀 1</span> / <span class="badge badge-2">解讀 2</span> / <span class="badge badge-3">解讀 3</span></li>
+  <li>確認「結案」是否要支援「自動推導」（補印印件出貨完成 → ticket 自動結案）還是統一手動結案</li>
+  <li>確認「業務跟主管 Slack 討論」要不要在系統留下任何痕跡（如 ticket 上的「決議筆記」欄位）</li>
+  <li>確認後啟動 <code>/opsx:propose</code> 建立 change，含 spec 變更 + tasks</li>
+</ol>
+
+</body>
+</html>
