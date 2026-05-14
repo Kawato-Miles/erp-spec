@@ -106,5 +106,5 @@ ERP 採用「中台 + 平台」架構（既定，定義於 [user-roles spec § R
 1. **業務平台側邊欄印件總覽入口的命名與位置**：是「印件總覽」（與中台版同名）還是「我的印件」之類業務語境名稱？側邊欄歸於哪個 group？— Prototype 暫沿用「印件總覽」名稱，掛在「訂單管理」group 下作為 sub item（與訂單列表並列），命名最終決策留待後續 UI change
 2. **業務平台版印件總覽是否需要連結回訂單**：點擊「訂單編號」欄位是否導航至訂單詳情頁？— Prototype 暫沿用中台版邏輯（訂單編號欄位顯示為純文字，與中台版一致），實作時驗證
 3. **後續諮詢 / 工廠平台 capability 拆分時機**：諮詢目前歸業務平台，未來若需要諮詢專屬功能 spec，capability 是繼續用 sales-platform 還是拆出 consultation-platform？— 本次不決定
-4. **業務開放印件詳情頁存取（Miles 決定，2026-05-14）**：業務需查閱審稿紀錄等印件深度資訊，因此 `/print-items/:id` 路由前綴開放給 sales / consultant ROLE_ALLOWED_PREFIXES。印件詳情頁屬印件模組（非工單模組），開放給業務不違反 user-roles spec § 業務與諮詢角色的工單查閱限制 原則。Prototype 對應修改：恢復印件名稱可點擊（不再因 isSalesView 切換顯示）。**仍待釐清**：業務於印件詳情頁的可見 Tab 與動作（如工單 Tab 是否該對業務隱藏 / 純檢視、QC Tab 是否該對業務隱藏），由 Lovable 驗證後再決定是否需要新 change 細化
+4. **業務開放印件詳情頁存取 + Tab 閹割（Miles 決定，2026-05-14）**：業務需查閱審稿紀錄等印件深度資訊，因此 `/print-items/:id` 路由前綴開放給 sales / consultant ROLE_ALLOWED_PREFIXES。印件詳情頁屬印件模組（非工單模組），開放給業務不違反 user-roles spec § 業務與諮詢角色的工單查閱限制 原則。業務 / 諮詢看印件詳情頁時，僅保留「資訊 / 審稿紀錄 / 活動紀錄」三個 Tab，其他 Tab（工單 / QC 紀錄 / 轉交單 / 出貨單）隱藏 — 避免業務看到生產層細節後跨層介入印務排程（破窗效應）。詳見 sales-platform spec § Requirement: 業務平台印件詳情頁 Tab 閹割
 5. **業務平台路由前綴 `/sales/`（Prototype 實作決定）**：本次 Prototype 採用 `/sales/print-items` 作為業務平台印件總覽路徑（與中台版 `/work-orders/print-items` 區隔）。未來業務平台其他功能若加入，可比照 `/sales/{feature}` 模式部署。此 URL 設計屬實作層約定，spec 不規範具體路徑
