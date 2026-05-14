@@ -32,7 +32,7 @@
 
 - [ ] 5.1 Prototype 完成後，比對 sales-platform spec § 業務平台印件總覽 五個 Scenario 全部可在 Prototype 中驗證
 - [ ] 5.2 比對 user-roles spec delta § 業務 Role 業務平台功能存取 三個 Scenario 全部可在 Prototype 中驗證
-- [ ] 5.3 將實作中遇到的偏離 spec 議題（如資料層 join 邏輯、過濾性能、UI 細節差異）記錄回 design.md § Open Questions 或新增 OQ
+- [x] 5.3 將實作中遇到的偏離 spec 議題（如資料層 join 邏輯、過濾性能、UI 細節差異）記錄回 design.md § Open Questions 或新增 OQ — 已補 OQ 4 & 5（印件詳情頁路由處理、`/sales/` 路由前綴決定）
 - [ ] 5.4 執行 doc-audit skill 檢查 user-roles spec / sales-platform spec / work-order spec 跨檔案一致性
 
 ## 6. Notion 推送（累積後執行，不在本次必做）
