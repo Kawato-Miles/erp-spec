@@ -151,6 +151,13 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 
 **線下路徑（`order_type = 線下`）**：報價待回簽 → 已回簽 → [共用段]
 
+線下路徑「報價待回簽 → 已回簽」transition SHALL 採「OR 觸發」設計（extend-order-fields-from-vendor-feedback change），任一條件成立即推進：
+
+- **條件 A（手動）**：業務於訂單詳情頁點擊「確認回簽」按鈕
+- **條件 B（自動）**：業務於訂單詳情頁「回簽檔案上傳區」成功上傳至少一份回簽檔案（建立 OrderSignedFile 紀錄）
+
+任一觸發成立時，系統 SHALL 寫入 `Order.signed_at` = 觸發時間並推進狀態。
+
 **線上路徑（`order_type = 線上`，含一般訂單與客製單）**：等待付款 → 已付款（由 EC 付款完成自動觸發）→ [共用段]
 
 **諮詢訂單路徑（`order_type = 諮詢`）**：諮詢訂單只在以下三種「沒進大貨製作」收尾情境之一才建立（webhook 階段不建）：
@@ -190,8 +197,24 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 
 #### Scenario: 線下訂單回簽後進入共用段
 
-- **WHEN** 線下訂單的報價已回簽
+- **WHEN** 線下訂單的報價已回簽（業務手動點按鈕或上傳回簽檔案）
 - **THEN** 訂單狀態 SHALL 進入「稿件未上傳」
+
+#### Scenario: 線下訂單上傳回簽檔案自動推進
+
+- **GIVEN** 訂單狀態 = 報價待回簽
+- **WHEN** 業務於訂單詳情頁的「回簽檔案上傳區」上傳檔案，系統 SHALL 建立 OrderSignedFile 紀錄
+- **THEN** 系統 SHALL 自動推進訂單狀態
+- **AND** 系統 SHALL 寫入 `Order.signed_at` = 第一份檔案上傳完成時間
+- **AND** ActivityLog MUST 記錄「上傳回簽檔案自動推進」與操作人
+
+#### Scenario: 已回簽訂單追加上傳不重複觸發
+
+- **GIVEN** 訂單狀態 = 製作中或之後、已有 OrderSignedFile
+- **WHEN** 業務追加上傳回簽相關文件
+- **THEN** 系統 SHALL 建立新 OrderSignedFile 紀錄
+- **AND** 訂單狀態 MUST NOT 變更
+- **AND** `Order.signed_at` MUST NOT 覆寫
 
 #### Scenario: 線上訂單付款後進入共用段
 
