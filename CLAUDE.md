@@ -339,7 +339,8 @@ delta specs 合併回 main specs，歸檔 change。
 | 狀態機（跨模組）| `openspec/specs/state-machines/spec.md` | https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 | — | 草稿 |
 | 商業流程（跨模組）| `openspec/specs/business-processes/spec.md` | https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a | — | 草稿 |
 | 業務情境（跨模組）| `openspec/specs/business-scenarios/spec.md` | https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05 | — | 草稿 |
-| 使用者角色（跨模組）| `openspec/specs/user-roles/spec.md` | https://www.notion.so/32c3886511fa8144b38adc9266395d15 | — | 草稿 |
+| 使用者角色（跨模組）| `openspec/specs/user-roles/spec.md` | https://www.notion.so/32c3886511fa8144b38adc9266395d15 | — | 草稿（2026-05-14 add-print-item-overview-to-sales-platform 歸檔新增「業務 Role 業務平台功能存取」Requirement）|
+| 業務平台（容器 spec）| `openspec/specs/sales-platform/spec.md` | — | v0.1 | 草稿（2026-05-14 add-print-item-overview-to-sales-platform 歸檔 — 新建容器 spec + 業務平台容器定位 / 業務平台印件總覽 / 業務平台印件詳情頁 Tab 閹割三條 Requirement）|
 | 材料主檔（BOM 底層）| `openspec/specs/material-master/spec.md` | — | v0.1 | 草稿（ERP 中台已實作）|
 | 工序主檔（BOM 底層）| `openspec/specs/process-master/spec.md` | — | v0.1 | 草稿（ERP 中台已實作）|
 | 裝訂主檔（BOM 底層）| `openspec/specs/binding-master/spec.md` | — | v0.1 | 草稿（ERP 中台已實作）|
