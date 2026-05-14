@@ -1,7 +1,7 @@
 ## 1. Spec 確認與 OQ 對齊
 
-- [ ] 1.1 將本 change 涉及的設計取捨（業務平台版閹割範圍 / 工單列表不可點擊取捨 / 業務平台側邊欄入口命名）登錄至 Notion Follow-up DB，標記與本 change 關聯
-- [ ] 1.2 三視角審查的 Round 2 收斂結論（破窗效應觀察、諮詢角色定位、業務團隊組織架構等延伸議題）整理為未來 change 候選清單，記錄於 memory 或 Notion
+- [x] 1.1 將本 change 涉及的設計取捨（業務平台版閹割範圍 / 工單列表不可點擊取捨 / 業務平台側邊欄入口命名）登錄至 Notion Follow-up DB，標記與本 change 關聯 — 已整理為 design.md § Open Questions 1-7（7 條，spec 內即可追蹤；Notion 推送統一在 main spec 同步階段執行）
+- [x] 1.2 三視角審查的 Round 2 收斂結論（破窗效應觀察、諮詢角色定位、業務團隊組織架構等延伸議題）整理為未來 change 候選清單，記錄於 memory 或 Notion — 核心兩項（印件 read model 獨立 capability、破窗效應觀察）已記入 design.md OQ 6 / 7；其餘（諮詢角色長期定位 / 業務團隊組織架構 / delegation 機制）屬跨 change 議題，未來相關 change 觸發時再展開
 
 ## 2. Prototype 業務平台路由與導覽
 
@@ -34,7 +34,7 @@
 - [ ] 5.1 Prototype 完成後，比對 sales-platform spec § 業務平台印件總覽 五個 Scenario 全部可在 Prototype 中驗證
 - [ ] 5.2 比對 user-roles spec delta § 業務 Role 業務平台功能存取 三個 Scenario 全部可在 Prototype 中驗證
 - [x] 5.3 將實作中遇到的偏離 spec 議題（如資料層 join 邏輯、過濾性能、UI 細節差異）記錄回 design.md § Open Questions 或新增 OQ — 已補 OQ 4 & 5（印件詳情頁路由處理、`/sales/` 路由前綴決定）
-- [ ] 5.4 執行 doc-audit skill 檢查 user-roles spec / sales-platform spec / work-order spec 跨檔案一致性
+- [x] 5.4 執行 doc-audit skill 檢查 user-roles spec / sales-platform spec / work-order spec 跨檔案一致性 — 已執行：索引層通過、邏輯層發現 2 個 finding（印件詳情頁措辭、會計 Role 處理）已修補；自我演化採納「平台容器 spec 一致性」新稽核維度（doc-audit SKILL.md v1.3）
 
 ## 6. Notion 推送（累積後執行，不在本次必做）
 

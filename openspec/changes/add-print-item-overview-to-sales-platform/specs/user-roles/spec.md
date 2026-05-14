@@ -6,7 +6,9 @@
 
 業務 Role 對業務平台印件總覽的存取 SHALL 不違反既有 § Requirement: 業務與諮詢角色的工單查閱限制 — 業務平台印件總覽屬於業務平台容器內的自有功能，業務透過此功能查閱印件層彙整資料（不導航至工單模組詳情頁），與「業務 MUST NOT 提供導航至工單模組的連結」原則一致。
 
-業務 Role 同時 SHALL 可進入印件詳情頁（`/print-items/:id`）查閱審稿紀錄等印件深度資訊。印件詳情頁屬印件模組（非工單模組），開放給業務 Role 與「業務 MUST NOT 導航至工單模組」原則無衝突。業務於印件詳情頁的可見內容與可執行動作 SHALL 由各印件詳情頁 Tab 自身的角色判斷規範（如工單 Tab 內的工單項目仍不可點擊至工單詳情頁）。
+業務 Role 同時 SHALL 可進入印件詳情頁（`/print-items/:id`）查閱審稿紀錄等印件深度資訊。印件詳情頁是跨 capability 的 UI 元件（涉及印件 / 審稿 / 工單 / QC / 轉交單 / 出貨單 / 活動紀錄資訊），既有 spec 尚未拆出獨立「印件 read model」capability。本 change 開放業務 / 諮詢進入印件詳情頁時，僅可見「資訊 / 審稿紀錄 / 活動紀錄」三個 Tab（其他生產相關 Tab 隱藏，見 [sales-platform spec § Requirement: 業務平台印件詳情頁 Tab 閹割](../sales-platform/spec.md)），實質上業務 / 諮詢看到的內容不含工單模組任何資訊，與「業務 MUST NOT 導航至工單模組」原則一致。
+
+**會計 Role 不在本次開放範圍**：會計（accountant）雖屬業務平台（依既有 § 平台歸屬分類），但其職責限定於 § Requirement: 會計角色資料存取範圍 定義的「報價單 / 訂單模組（讀取）+ 對帳檢視」，不含印件相關功能。會計 MUST NOT 取得業務平台印件總覽 / 印件詳情頁的存取權。
 
 後續新增業務平台功能 SHALL 在本 Requirement 列舉清單中補充，並於 [sales-platform spec](../sales-platform/spec.md) 內以對應 Requirement 詳細描述。
 
@@ -28,7 +30,15 @@
 - **WHEN** 業務於業務平台印件總覽點擊某印件名稱
 - **THEN** 系統 SHALL 導航至該印件詳情頁（`/print-items/:id`）
 - **AND** 業務 SHALL 可查閱該印件的審稿紀錄、規格、檔案等資訊
-- **AND** 印件詳情頁屬印件模組（非工單模組），開放給業務 Role 不違反 § 業務與諮詢角色的工單查閱限制 原則
+- **AND** 業務於印件詳情頁僅可見「資訊 / 審稿紀錄 / 活動紀錄」三個 Tab（工單 / QC / 轉交單 / 出貨單 Tab 隱藏，見 [sales-platform spec § 業務平台印件詳情頁 Tab 閹割](../sales-platform/spec.md)）
+- **AND** 實質上業務看到的內容不含工單模組任何資訊，不違反 § 業務與諮詢角色的工單查閱限制 原則
+
+#### Scenario: 會計 Role 不在本次印件相關功能開放範圍
+
+- **WHEN** 會計角色登入系統
+- **THEN** 業務平台側邊欄 MUST NOT 顯示「印件總覽」入口
+- **AND** 會計 Role 嘗試以 URL 直接訪問 `/sales/print-items` 或 `/print-items/:id`，系統 MUST 回傳權限不足錯誤
+- **AND** 會計權限沿用既有 § Requirement: 會計角色資料存取範圍 限定
 
 #### Scenario: 業務平台印件總覽純檢視
 

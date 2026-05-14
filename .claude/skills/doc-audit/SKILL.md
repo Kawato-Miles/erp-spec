@@ -51,6 +51,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | User Story 關聯性 | BRD 引用的 US-XXX 是否存在於 Notion User Story DB |
 | CLAUDE.md Spec 清單 | 新增或版本異動的 Spec 是否已更新 CLAUDE.md § Spec 規格檔清單 |
 | 跨層自動觸發一致性 | 檢查 bottom-up 觸發鏈（生產任務 → 任務層 → 工單 → 印件 → 訂單）中每個觸發條件與狀態結果是否在狀態機文件與商業流程文件描述一致；重點關注逆流程場景（如作廢、退回、異動）可能造成的上下游競態衝突：同一層級同時有「向上完成」與「向上作廢」兩條 bottom-up 路徑時，優先順序是否已定義 |
+| 平台容器 spec 一致性 | 新增或修改「平台容器 spec」（如 sales-platform / consultation-platform / factory-platform 等）時稽核：(1) 容器名稱與 user-roles spec § Requirement: 平台歸屬分類 對應（業務平台 / 中台 / 印務平台 / 審稿平台 / 工廠平台 / 中國供應商平台）；(2) 容器內每條 Requirement 是否引用對應的中台版功能 spec 作為內容基準（避免重複描述）；(3) 業務平台版與中台版差異點是否明確（過濾規則 / 動作可見性 / 預設 UI / Tab 閹割等）；(4) user-roles spec 是否同步開放對應 Role 使用該容器內功能（含同平台不同 Role 的差異處理，如業務平台內業務 / 諮詢開放、會計沿用既有限制） |
 
 ### Step 3：自我演化 — 識別新稽核維度
 
@@ -93,3 +94,4 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | v1.0 | 2026-03-24 | 初版（狀態機 / 商業流程 / OQ / 欄位 / 角色 / User Story / CLAUDE.md）| 從 erp-spec Step 6 抽出獨立 skill |
 | v1.1 | 2026-03-26 | audit-erp-docs.sh 更新：Check 1 加入 Notion 遷移 skip list；Check 3 改以 Notion URL 驗證關鍵資源；Check 4 補充遷移檔例外清單 | 消除已遷移 Notion 的本地檔案誤報，腳本與現行 Notion-first 架構對齊 |
 | v1.2 | 2026-03-26 | 新增「跨層自動觸發一致性」稽核維度 | 任務層級作廢規則確立 bottom-up 機制後，生產任務 → 訂單之間存在多條 bottom-up 路徑，逆流程（作廢、退回、異動）時可能產生競態衝突，需獨立稽核項確保每條觸發鏈條件與結果在狀態機與商業流程文件中描述一致 |
+| v1.3 | 2026-05-14 | 新增「平台容器 spec 一致性」稽核維度 | `add-print-item-overview-to-sales-platform` change 引入新 capability 類型「平台容器 spec」（首例為 sales-platform，承載業務平台所有功能 spec），未來會有諮詢 / 印務 / 審稿 / 工廠 / 中國供應商平台對應容器。需獨立稽核項確保容器名稱對齊 user-roles § 平台歸屬分類、容器內 Requirement 正確引用中台版功能 spec、平台版與中台版差異點明確、user-roles 同步開放對應 Role |
