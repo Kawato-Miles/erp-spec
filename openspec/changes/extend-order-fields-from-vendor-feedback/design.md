@@ -79,9 +79,11 @@ tax_amount = with_tax − without_tax
 - 不增加新欄位，不增加狀態機節點
 
 **「規格變更觸發 OrderAdjustment」與既有 OrderAdjustment.adjustment_type 對齊：**
-- 數量追加 → `quantity_increase`
-- 數量減少 → `quantity_decrease`
-- 規格 / 單位 / 難易度變更 → `spec_change`（既有 enum 已涵蓋）
+- 數量追加 → 對應 `add-after-sales-ticket` 重定義 enum 中的「加印追加」
+- 數量減少 → 對應「退印」
+- 規格 / 單位 / 難易度變更 → 對應「規格變更」
+
+> 完整 adjustment_type enum 8 值（規格變更 / 加印追加 / 退印 / 折扣 / 加運費 / 急件費 / 補退 / 其他）定義於 `add-after-sales-ticket` change 的 `specs/order-management/spec.md` § OrderAdjustment.adjustment_type 完整 enum。本 change 在訂單期間建立的 OrderAdjustment SHALL 將 `linked_after_sales_ticket_id` 設為 NULL（區分於售後 ticket 內建立的關聯異動）。
 
 ### Decision 3：線下單回簽自動推進採「OR 觸發」設計
 
@@ -155,8 +157,8 @@ tax_amount = with_tax − without_tax
 | 既有 mock data 全部以含稅輸入，需回填未稅 | Prototype tasks 中明列回填 script：對既有 `_with_tax` 反推 `_without_tax = _with_tax / 1.05`，rounding 至小數 0 位（與會計慣例一致） |
 | OrderAdjustment 觸發條件變動（回簽後印件編輯均走 OrderAdjustment）可能增加業務心智負擔 | 在訂單詳情頁印件區於「回簽後」自動將「編輯」按鈕改為「申請異動」，UI 提示路徑變更原因；保留輕量訂正（如錯字）不觸發 OrderAdjustment 的例外規則需於後續 change 評估 |
 | 線下單回簽檔案上傳自動推進，可能誤觸（業務上傳了非回簽檔案至同一上傳區） | OrderSignedFile 子表獨立於其他訂單附件區，UI 強制業務在「上傳回簽檔案」專屬入口操作，避免與其他附件混淆 |
-| 與 `add-after-sales-ticket` 對 OrderAdjustment 的擴充有衝突 | 三視角審查階段明確列出衝突欄位 / Requirement，若衝突採「後者覆蓋前者」並補 cross-reference |
-| 與 `extend-invoice-issuance-flexibility` 對 Invoice 的擴充有衝突 | 同上 |
+| 與 `add-after-sales-ticket` 對 OrderAdjustment 的擴充有衝突 | 衝突檢查（2026-05-14）結論：無實質衝突。本 change 依賴的 adjustment_type（規格變更 / 數量追加 / 數量減少）已涵蓋於後者重定義的 8 值完整 enum；後者新增 `linked_after_sales_ticket_id` 為 nullable，訂單期間異動傳入 NULL 不影響既有流程；後者廢止 `adjustment_phase` 雙重身份不影響本 change 的「已回簽閘門」邏輯。雙欄計價對 OrderAdjustment.amount 的擴充與後者並行實作 |
+| 與 `extend-invoice-issuance-flexibility` 對 Invoice 的擴充有衝突 | 該 change 目錄目前為空（2026-05-14），無內容可比對；後續若補上實質設計，於該 change 三視角審查階段再做衝突確認 |
 
 ## Migration Plan
 

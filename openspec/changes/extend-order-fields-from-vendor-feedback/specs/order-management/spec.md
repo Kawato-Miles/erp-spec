@@ -179,7 +179,9 @@ UI 上 SHALL 依 order_source 條件顯示適用欄位，避免業務混淆。
 
 **階段二：已回簽（含後續所有狀態，已取消狀態除外）**
 
-業務 SHALL NOT 直接編輯上述欄位；變更 SHALL 透過 OrderAdjustment 流程處理（依變更類型選用對應 adjustment_type：規格變更 / 數量追加 / 數量減少 / 補退）。OrderAdjustment 經業務主管核可並執行後，系統 SHALL 同步更新 PrintItem / OrderItem 欄位並建立補收 / 退款 Payment。
+業務 SHALL NOT 直接編輯上述欄位；變更 SHALL 透過 OrderAdjustment 流程處理（依變更類型選用對應 adjustment_type：規格變更 / 加印追加 / 退印 / 補退）。OrderAdjustment 經業務主管核可並執行後，系統 SHALL 同步更新 PrintItem / OrderItem 欄位並建立補收 / 退款 Payment。
+
+> OrderAdjustment 完整 enum（8 值）與狀態機定義於 `add-after-sales-ticket` change 的 `specs/order-management/spec.md` § OrderAdjustment.adjustment_type 完整 enum 與 `specs/state-machines/spec.md` § OrderAdjustment 狀態機。訂單期間建立的 OrderAdjustment SHALL 將 `linked_after_sales_ticket_id` 設為 NULL，售後 ticket 內建立的關聯異動才填入 ticket FK。
 
 訂單狀態 = 已取消的訂單，所有印件欄位 MUST 為唯讀，不允許異動。
 
