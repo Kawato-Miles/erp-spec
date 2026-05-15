@@ -21,21 +21,21 @@
 
 ## 3. 訂單詳情頁「售後服務」Tab
 
-- [ ] 3.1 於訂單詳情頁 SubHeader Tab 結構新增「售後服務」Tab（沿用既有 tab layout 元件）
-- [ ] 3.2 Tab 內容區塊：訂單關聯 AfterSalesTicket 列表卡片
+- [x] 3.1 於訂單詳情頁 SubHeader Tab 結構新增「售後服務」Tab（沿用既有 tab layout 元件）
+- [x] 3.2 Tab 內容區塊：訂單關聯 AfterSalesTicket 列表卡片
   - 卡片顯示：case_no、case_category（含「色差爭議」）、responsibility、resolution、status badge、opened_at（含「N 天前」相對時間）、closed_at（若已結案）
   - 卡片排序：未結案在上（按 opened_at 升序），已結案在下（按 closed_at 降序）
   - 空狀態文案：「尚無售後服務紀錄」+ 引導建單按鈕
   - 未結案卡片置頂顯示，可一眼看出當前處理進度
-- [ ] 3.3 「建立售後服務單」按鈕：僅 Order.status = 已完成 且無未結案 ticket 時可點擊，否則 disabled 並 tooltip 提示原因
-- [ ] 3.4 Order.status ≠ 已完成 時，Tab 內容顯示「訂單未完成時無售後服務」+ 引導文，按鈕隱藏
+- [x] 3.3 「建立售後服務單」按鈕：僅 Order.status = 已完成 且無未結案 ticket 時可點擊，否則 disabled 並 tooltip 提示原因
+- [x] 3.4 Order.status ≠ 已完成 時，Tab 內容顯示「訂單未完成時無售後服務」+ 引導文，按鈕隱藏
 
 ## 4. AfterSalesTicket 建單表單
 
-- [ ] 4.1 表單元件：customer_complaint（textarea）、case_category（select：6 個 enum）、responsibility（select：3 個 enum）、slack_thread_url（input，可選）
-- [ ] 4.2 表單必填 validation：customer_complaint / case_category / responsibility
-- [ ] 4.3 送出後系統自動產生 case_no（AS-YYYYMMDD-XX，YYYYMMDD 為今日，XX 為當日流水號）、opened_at、opened_by（current user）
-- [ ] 4.4 新 ticket.status 預設 = 受理中、resolution = null
+- [x] 4.1 表單元件：customer_complaint（textarea）、case_category（select：6 個 enum）、responsibility（select：3 個 enum）、slack_thread_url（input，可選）
+- [x] 4.2 表單必填 validation：customer_complaint / case_category / responsibility
+- [x] 4.3 送出後系統自動產生 case_no（AS-YYYYMMDD-XX，YYYYMMDD 為今日，XX 為當日流水號）、opened_at、opened_by（current user）
+- [x] 4.4 新 ticket.status 預設 = 受理中、resolution = null
 
 ## 5. ticket 詳情頁互動
 
