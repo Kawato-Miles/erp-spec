@@ -39,19 +39,19 @@
 
 ## 5. ticket 詳情頁互動
 
-- [ ] 5.1 ticket 詳情頁版型：header（case_no、status badge）+ body（客訴內容、決議區、關聯動作區、活動紀錄）
-- [ ] 5.2 resolution 下拉選單（不處理 / 退款 / 補印 / 退款+補印）：填入後點「送出決議」推進 status 至處理中
-- [ ] 5.3 resolution 修改：處理中 ticket 允許修改 resolution，UI 提供「修改決議」按鈕
-- [ ] 5.4 case_category / responsibility 編輯：處理中允許修改；已結案唯讀
-- [ ] 5.5 「補述客戶反映」按鈕 → append additional_complaint_log（含 logged_at + note）
-- [ ] 5.6 「結案」按鈕：處理中可點擊，點擊後 confirm dialog 顯示具體確認文案
+- [x] 5.1 ticket 詳情頁版型：header（case_no、status badge）+ body（客訴內容、決議區、關聯動作區、活動紀錄）
+- [x] 5.2 resolution 下拉選單（不處理 / 退款 / 補印 / 退款+補印）：填入後點「送出決議」推進 status 至處理中
+- [x] 5.3 resolution 修改：處理中 ticket 允許修改 resolution，UI 提供「修改決議」按鈕
+- [x] 5.4 case_category / responsibility 編輯：處理中允許修改；已結案唯讀
+- [x] 5.5 「補述客戶反映」按鈕 → append additional_complaint_log（含 logged_at + note）
+- [x] 5.6 「結案」按鈕：處理中可點擊，點擊後 confirm dialog 顯示具體確認文案
   - Dialog title：「結案售後服務單 AS-XXX」
   - Dialog body：「請確認：(1) 客戶已收到滿意處理；(2) 所有關聯 OrderAdjustment 已執行；(3) 所有補印 PrintItem 已出貨。結案後不可重開。」
   - 按鈕：「確認結案」（primary）/「取消」（secondary）
   - 若 ticket 內有未完結 OrderAdjustment（status ≠ 已執行 / 已取消），dialog 額外提示「該 ticket 仍有 N 筆未完結異動單，建議完成後再結案」（業務可選擇強制結案）
   - 確認後推進 status → 已結案，寫入 closed_at = 當下、closed_by = 操作業務
-- [ ] 5.7 已結案 ticket UI：所有編輯按鈕 disabled，但 append complaint log 仍允許
-- [ ] 5.8 Slack thread URL 區塊：顯示 URL 預覽 + 「在 Slack 開啟」按鈕；空值時提示「請貼入 Slack 討論串 URL」
+- [x] 5.7 已結案 ticket UI：所有編輯按鈕 disabled，但 append complaint log 仍允許
+- [x] 5.8 Slack thread URL 區塊：顯示 URL 預覽 + 「在 Slack 開啟」按鈕；空值時提示「請貼入 Slack 討論串 URL」
 - [ ] 5.9 ticket 內關聯 OrderAdjustment 取消後處理：ticket 詳情頁「關聯動作」區塊顯示提示「該決議的下游動作已取消，請確認是否變更 resolution 或重新建立關聯動作」；業務 SHALL 可選擇 (a) 修改 resolution、(b) 重新建關聯 OA、(c) 維持現狀
 - [ ] 5.10 補印 PrintItem 取消後處理：ticket 詳情頁顯示「補印已取消」標示 + 提示「請於 ticket 內重新建立補印印件或變更 resolution」；ticket.status 與 ticket.resolution 維持原值（不自動清空）
 
