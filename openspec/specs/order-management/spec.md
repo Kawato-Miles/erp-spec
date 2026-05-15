@@ -32,13 +32,16 @@
 
 **`order_type = 諮詢`（諮詢訂單）**：
 
-諮詢訂單只在以下三種「沒進大貨製作」收尾情境之一才建立（webhook 階段不建）：
+諮詢訂單只在以下**兩種**收尾情境之一才建立（webhook 階段不建）：
 
-3. 諮詢結束 - 不做大貨：諮詢人員點擊「結束諮詢 - 不做大貨」時建立
-4. 需求單流失：ConsultationRequest 狀態 = 已轉需求單、需求單流失時，系統自動建立諮詢訂單收尾
-5. 待諮詢取消（退費）：業務點擊「取消諮詢」時建立
+3. **不做大貨**：客戶最終沒做大貨製作，涵蓋兩個觸發點：
+   - 3.1 諮詢人員於諮詢單階段點「結束諮詢 - 不做大貨」時建立
+   - 3.2 諮詢結束做大貨後，需求單流失：系統將此事件歸類為「不做大貨」結局，自動建諮詢訂單收尾
+4. **待諮詢取消（退費）**：業務於待諮詢階段點「取消諮詢」時建立，含退款 Payment
 
-三種情境共同的建立動作：(a) 訂單金額 = 諮詢費，(b) 建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費)，(c) Payment 從 ConsultationRequest 轉移至此諮詢訂單，(d) 依 invoice_option 與是否退費決定 Invoice / SalesAllowance 處理（見 [consultation-request spec](../consultation-request/spec.md) § 諮詢費發票時間點處理）。
+**重要釐清**：非諮詢來源（`linked_consultation_request_id` 為空）的需求單流失與諮詢訂單無關，**不建任何訂單**；需求單流失走需求單自身的退款 / 流失流程。
+
+兩種情境共同的建立動作：(a) 訂單金額 = 諮詢費，(b) 建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費)，(c) Payment 從 ConsultationRequest 轉移至此諮詢訂單，(d) 依 invoice_option 與是否退費決定 Invoice / SalesAllowance 處理（見 [consultation-request spec](../consultation-request/spec.md) § 諮詢費發票時間點處理）。
 
 訂單實體 SHALL 包含 `order_type` 欄位（enum: `線下` / `線上` / `諮詢`，必填，建立時設定不可變更）。
 
@@ -58,21 +61,29 @@
 - **AND** 若 ConsultationRequest 的 `consultation_invoice_option = issue_now`，主訂單 SHALL 立即開立諮詢費 Invoice（金額 = 1000）
 - **AND** 主訂單三方對帳：應收 = 5000 = 已收 1000 + 待繳 4000
 
-#### Scenario: 諮詢結束不做大貨建諮詢訂單
+#### Scenario: 諮詢結束不做大貨建諮詢訂單（觸發點 3.1）
 
-- **WHEN** ConsultationRequest 諮詢結束選「不做大貨」
+- **WHEN** ConsultationRequest 諮詢結束，諮詢人員選「不做大貨」
 - **THEN** 系統 SHALL 建立諮詢訂單（`order_type = 諮詢`、總額 = 諮詢費）
 - **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)
 - **AND** 系統 SHALL 將 Payment 從 ConsultationRequest 轉移至諮詢訂單
 
-#### Scenario: 需求單流失觸發建諮詢訂單
+#### Scenario: 諮詢來源需求單流失歸類為「不做大貨」（觸發點 3.2）
 
 - **GIVEN** ConsultationRequest 狀態 = 已轉需求單、Payment 綁 ConsultationRequest
-- **AND** 對應需求單流失
-- **WHEN** 系統處理需求單流失事件
-- **THEN** 系統 SHALL 建立諮詢訂單（`order_type = 諮詢`、總額 = 諮詢費）
+- **AND** 對應需求單流失（流失事件由需求單模組觸發）
+- **WHEN** 系統處理需求單流失事件，且需求單 `linked_consultation_request_id` 非空
+- **THEN** 系統 SHALL 將此事件歸類為「不做大貨」結局
+- **AND** 系統 SHALL 建立諮詢訂單（`order_type = 諮詢`、總額 = 諮詢費）
 - **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)
 - **AND** 系統 SHALL 將 Payment 從 ConsultationRequest 轉移至諮詢訂單
+
+#### Scenario: 非諮詢來源的需求單流失不建諮詢訂單
+
+- **GIVEN** 需求單 `linked_consultation_request_id` 為空（非諮詢來源）
+- **WHEN** 需求單流失
+- **THEN** 系統 MUST NOT 建立諮詢訂單
+- **AND** 需求單流失走需求單自身的退款 / 流失流程，與諮詢訂單無關
 
 #### Scenario: 待諮詢取消觸發建諮詢訂單
 
@@ -1422,11 +1433,13 @@ UI 上 SHALL 依 order_source 條件顯示適用欄位，避免業務混淆。
 
 訂單階段的印件規格（`spec_note`）/ 購買數量（`pi_ordered_qty`）/ 單位（`unit`）/ 難易度（`difficulty_level`）/ 報價單價的可編輯性 SHALL 依 `Order.status` 區分兩階段：
 
-**階段一：訂單已建立 → 報價待回簽 → 已回簽前（不含已回簽）**
+**階段一：訂單已建立 → 報價待回簽 → 已回簽 → 審稿段（稿件未上傳 / 等待審稿 / 待補件）**
 
 業務 / 訂單管理人 SHALL 可直接編輯上述欄位，系統直接更新 PrintItem / OrderItem 對應值；ActivityLog MUST 記錄變更。
 
-**階段二：已回簽（含後續所有狀態，已取消狀態除外）**
+**階段二：製作等待中（含）之後所有狀態（已取消除外）**
+
+涵蓋狀態：製作等待中 / 工單已交付 / 製作中 / 製作完成 / 出貨中 / 訂單完成。
 
 業務 SHALL NOT 直接編輯上述欄位；變更 SHALL 透過 OrderAdjustment 流程處理（依變更類型選用對應 adjustment_type：規格變更 / 加印追加 / 退印 / 補退）。OrderAdjustment 經業務主管核可並執行後，系統 SHALL 同步更新 PrintItem / OrderItem 欄位並建立補收 / 退款 Payment。
 
@@ -1434,19 +1447,32 @@ UI 上 SHALL 依 order_source 條件顯示適用欄位，避免業務混淆。
 
 訂單狀態 = 已取消的訂單，所有印件欄位 MUST 為唯讀，不允許異動。
 
-#### Scenario: 回簽前業務調整印件規格
+#### Scenario: 報價待回簽階段業務調整印件規格
 
 - **GIVEN** 訂單 SO-001 狀態 = 報價待回簽
 - **WHEN** 業務於印件詳情頁修改 `spec_note` 與 `pi_ordered_qty`
 - **THEN** 系統 SHALL 直接更新 PrintItem
 - **AND** ActivityLog MUST 記錄變更內容、操作人、時間
 
-#### Scenario: 回簽後業務調整印件規格走 OrderAdjustment
+#### Scenario: 審稿段業務調整印件規格
 
-- **GIVEN** 訂單 SO-001 狀態 = 製作中
+- **GIVEN** 訂單 SO-001 狀態 = 等待審稿
+- **WHEN** 業務 / 客戶溝通後於印件詳情頁調整 `spec_note`
+- **THEN** 系統 SHALL 直接更新 PrintItem（審稿段內無需走 OrderAdjustment）
+- **AND** ActivityLog MUST 記錄變更
+
+#### Scenario: 製作等待中業務調整印件規格走 OrderAdjustment
+
+- **GIVEN** 訂單 SO-001 狀態 = 製作等待中
 - **WHEN** 業務於印件詳情頁點擊「編輯」
 - **THEN** 系統 SHALL 將「編輯」按鈕改為「申請異動」並提示「訂單已進入製作階段，調整需走訂單異動流程」
 - **AND** 業務點擊「申請異動」後系統 SHALL 建立 OrderAdjustment 草稿，預填變更類型與差額
+
+#### Scenario: 製作中業務調整印件規格走 OrderAdjustment
+
+- **GIVEN** 訂單 SO-001 狀態 = 製作中
+- **WHEN** 業務於印件詳情頁點擊「編輯」
+- **THEN** 系統 SHALL 顯示「申請異動」按鈕並指向 OrderAdjustment 流程
 
 #### Scenario: OrderAdjustment 執行後同步印件欄位
 
@@ -1462,33 +1488,6 @@ UI 上 SHALL 依 order_source 條件顯示適用欄位，避免業務混淆。
 - **WHEN** 業務開啟印件詳情頁
 - **THEN** 所有印件欄位 MUST 為唯讀
 - **AND** 系統 MUST NOT 顯示「編輯」或「申請異動」按鈕
-
----
-
-### Requirement: 訂單階段改派負責業務（轉單）
-
-業務 / 訂單管理人 SHALL 可於訂單未進入製作階段（狀態 ∈ {草稿, 報價待回簽, 訂單確認, 稿件未上傳, 等待審稿, 待補件}）變更 `Order.sales_id`，支援業務間轉單。
-
-進入製作階段（狀態 = 製作等待中或之後）後，僅 Supervisor 角色 SHALL 可變更 sales_id；一般業務 / 訂單管理人 MUST 不可變更。
-
-#### Scenario: 業務轉單給同事
-
-- **GIVEN** 訂單 SO-001 狀態 = 報價待回簽、sales_id = U-100
-- **WHEN** 業務於訂單詳情頁點擊「改派負責業務」並選擇 U-200
-- **THEN** 系統 SHALL 更新 Order.sales_id = U-200
-- **AND** ActivityLog MUST 記錄改派紀錄（舊值 / 新值 / 操作人 / 時間 / 原因，原因為選填）
-
-#### Scenario: 製作階段後一般業務不可改派
-
-- **GIVEN** 訂單 SO-001 狀態 = 製作中
-- **WHEN** 一般業務嘗試於訂單詳情頁改派 sales_id
-- **THEN** 系統 SHALL 禁用改派 UI 並提示「訂單已進入製作階段，請聯絡 Supervisor 改派」
-
-#### Scenario: Supervisor 製作階段強制改派
-
-- **GIVEN** 訂單 SO-001 狀態 = 製作中
-- **WHEN** Supervisor 於訂單詳情頁改派 sales_id
-- **THEN** 系統 SHALL 允許更新並記錄 ActivityLog
 
 ---
 

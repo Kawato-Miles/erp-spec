@@ -191,7 +191,9 @@ TBD - created by archiving change add-consultation-request-and-revise-approval-g
 
 ConsultationRequest 狀態 MUST 從「已轉需求單」更新為「完成諮詢」（最終結局）。`linked_consultation_order_id` 寫入新建諮詢訂單 ID。
 
-**設計理由**：複用「最終沒進入大貨製作」的單一收尾流程，避免新增訂單類型或新流程。
+**設計理由**：複用「最終沒進入大貨製作」的單一收尾流程，避免新增訂單類型或新流程。本情境在 [order-management spec § 訂單建立](../order-management/spec.md) 概念分類上歸入「不做大貨」高層情境（觸發點 3.2，與諮詢人員直接點不做大貨並列）。
+
+**重要限制**：本 Requirement 僅適用於 `linked_consultation_request_id` 非空（諮詢來源）的需求單。**非諮詢來源**（直接從需求單建立、`linked_consultation_request_id` 為空）的需求單流失與諮詢訂單無關，**不觸發本流程**。
 
 #### Scenario: 議價中需求單流失觸發建諮詢訂單
 
@@ -205,6 +207,15 @@ ConsultationRequest 狀態 MUST 從「已轉需求單」更新為「完成諮詢
 - **AND** ConsultationRequest 狀態 SHALL 從「已轉需求單」更新為「完成諮詢」
 - **AND** `linked_consultation_order_id` MUST 寫入新諮詢訂單 ID
 - **AND** ConsultationRequest 同時保留 `linked_quote_request_id`（保留歷史足跡）
+- **AND** 系統 ActivityLog SHALL 將事件歸類標籤標為「不做大貨」（與觸發點 3.1 諮詢人員直接點不做大貨同分類）
+
+#### Scenario: 非諮詢來源的需求單流失不觸發本流程
+
+- **GIVEN** 需求單 `linked_consultation_request_id` 為空（業務直接從需求單建立、無諮詢階段）
+- **WHEN** 需求單流失
+- **THEN** 系統 MUST NOT 建立諮詢訂單
+- **AND** 系統 MUST NOT 觸發本 Requirement 的任何動作
+- **AND** 需求單流失走需求單自身的退款 / 流失流程（不在本 spec 範圍）
 
 #### Scenario: 早期狀態需求單流失（待評估成本前）
 

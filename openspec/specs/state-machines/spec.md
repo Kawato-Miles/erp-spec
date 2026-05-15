@@ -160,17 +160,20 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 
 **線上路徑（`order_type = 線上`，含一般訂單與客製單）**：等待付款 → 已付款（由 EC 付款完成自動觸發）→ [共用段]
 
-**諮詢訂單路徑（`order_type = 諮詢`）**：諮詢訂單只在以下三種「沒進大貨製作」收尾情境之一才建立（webhook 階段不建）：
+**諮詢訂單路徑（`order_type = 諮詢`）**：諮詢訂單只在以下**兩種**收尾情境之一才建立（webhook 階段不建）：
 
-1. 諮詢結束 - 不做大貨：諮詢人員選「不做大貨」時建立
-2. 需求單流失：ConsultationRequest 已轉需求單後、需求單流失時系統自動建立
-3. 待諮詢取消（退費）：業務取消預約時建立
+1. **不做大貨**（客戶最終沒做大貨製作）：兩個觸發點同歸此類
+   - 觸發點 1.1：諮詢人員於諮詢單階段點「結束諮詢 - 不做大貨」
+   - 觸發點 1.2：諮詢結束做大貨後，需求單流失（仍歸類為「不做大貨」結局，自動建諮詢訂單收尾）
+2. **待諮詢取消（退費）**：業務於待諮詢階段點「取消諮詢」（含退款 Payment）
 
-三種情境共用相同短路徑：建立 → 已開發票 → 訂單完成。其中「待諮詢取消」情境不開 Invoice（defer_to_main_order）或開 Invoice + SalesAllowance（issue_now）。
+**重要釐清**：非諮詢來源（`linked_consultation_request_id` 為空）的需求單流失與諮詢訂單無關，不建任何訂單；需求單流失走需求單自身的退款 / 流失流程。
+
+兩種情境共用相同短路徑：建立 → 已開發票 → 訂單完成。其中「待諮詢取消」情境不開 Invoice（defer_to_main_order）或開 Invoice + SalesAllowance（issue_now）。
 
 狀態流：
 
-- 不做大貨 / 需求單流失：建立 → 已開發票（依 invoice_option 開立 Invoice）→ 訂單完成
+- 不做大貨（涵蓋觸發點 1.1 與 1.2）：建立 → 已開發票（依 invoice_option 開立 Invoice）→ 訂單完成
 - 待諮詢取消（defer_to_main_order）：建立 → 訂單完成（不開 Invoice、退款 Payment 抵銷）
 - 待諮詢取消（issue_now）：建立 → 已開發票（含 SalesAllowance 抵銷）→ 訂單完成
 
@@ -185,7 +188,7 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 
 **諮詢訂單特殊規則**：
 - 諮詢訂單 MUST NOT 進入共用段（無印件、無製作、無出貨）
-- 諮詢訂單只在三種「沒進大貨製作」收尾情境建立（不做大貨 / 需求單流失 / 待諮詢取消），webhook 階段不建
+- 諮詢訂單只在兩種「沒進大貨製作」收尾情境建立（不做大貨 / 待諮詢取消），webhook 階段不建
 - 諮詢訂單建立時即在訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)，並從 ConsultationRequest 將 Payment 轉移過來
 - 諮詢訂單從「建立」推進至「已開發票」依 invoice_option 與情境觸發，詳見 [order-management spec](../order-management/spec.md) § 諮詢訂單發票時間點處理
 - 諮詢訂單從「已開發票」推進至「訂單完成」 MUST 為自動推進（無人工確認步驟）
