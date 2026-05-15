@@ -72,11 +72,11 @@
 
 ## 8. 業務看板「我的未結案售後」分桶
 
-- [ ] 8.1 業務看板首頁新增「我的未結案售後」分桶（位置：與既有「我的待辦訂單」分桶並列）
-- [ ] 8.2 分桶內容：filter `opened_by = currentUser AND status ≠ 已結案`，按 opened_at 升序排序（最久優先）
-- [ ] 8.3 每筆顯示：case_no、訂單編號、客戶名稱、case_category、opened_at（含「N 天前」相對時間）、status badge
-- [ ] 8.4 opened_at 距今 > 7 天的 ticket 標紅色 badge「逾期」
-- [ ] 8.5 點擊 ticket 卡片導向訂單詳情頁的「售後服務」Tab 並自動展開該 ticket
+- [x] 8.1 業務看板首頁新增「我的未結案售後」分桶（位置：與既有「我的待辦訂單」分桶並列）
+- [x] 8.2 分桶內容：filter `opened_by = currentUser AND status ≠ 已結案`，按 opened_at 升序排序（最久優先）
+- [x] 8.3 每筆顯示：case_no、訂單編號、客戶名稱、case_category、opened_at（含「N 天前」相對時間）、status badge
+- [x] 8.4 opened_at 距今 > 7 天的 ticket 標紅色 badge「逾期」
+- [x] 8.5 點擊 ticket 卡片導向訂單詳情頁的「售後服務」Tab 並自動展開該 ticket
 - [ ] 8.6 業務主管後台「ticket 負責人管理」頁：列出全公司未結案 ticket，可勾選批次轉派 opened_by；轉派表單必填新負責人 + 轉派原因
 - [ ] 8.7 業務本人嘗試自行轉派時系統 UI 拒絕並顯示「ticket 負責人轉派需由業務主管執行」
 
