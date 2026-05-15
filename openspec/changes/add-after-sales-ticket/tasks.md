@@ -52,16 +52,16 @@
   - 確認後推進 status → 已結案，寫入 closed_at = 當下、closed_by = 操作業務
 - [x] 5.7 已結案 ticket UI：所有編輯按鈕 disabled，但 append complaint log 仍允許
 - [x] 5.8 Slack thread URL 區塊：顯示 URL 預覽 + 「在 Slack 開啟」按鈕；空值時提示「請貼入 Slack 討論串 URL」
-- [ ] 5.9 ticket 內關聯 OrderAdjustment 取消後處理：ticket 詳情頁「關聯動作」區塊顯示提示「該決議的下游動作已取消，請確認是否變更 resolution 或重新建立關聯動作」；業務 SHALL 可選擇 (a) 修改 resolution、(b) 重新建關聯 OA、(c) 維持現狀
-- [ ] 5.10 補印 PrintItem 取消後處理：ticket 詳情頁顯示「補印已取消」標示 + 提示「請於 ticket 內重新建立補印印件或變更 resolution」；ticket.status 與 ticket.resolution 維持原值（不自動清空）
+- [x] 5.9 ticket 內關聯 OrderAdjustment 取消後處理：ticket 詳情頁「關聯動作」區塊顯示提示「該決議的下游動作已取消，請確認是否變更 resolution 或重新建立關聯動作」；業務 SHALL 可選擇 (a) 修改 resolution、(b) 重新建關聯 OA、(c) 維持現狀
+- [x] 5.10 補印 PrintItem 取消後處理：ticket 詳情頁顯示「補印已取消」標示 + 提示「請於 ticket 內重新建立補印印件或變更 resolution」；ticket.status 與 ticket.resolution 維持原值（不自動清空）
 
 ## 6. ticket 內加掛關聯動作
 
-- [ ] 6.1 「建立退款異動單」按鈕：resolution = 退款 或 退款+補印 時顯示；點擊後開啟 OrderAdjustment 表單，預填 adjustment_type=退印、linked_after_sales_ticket_id=此 ticket
-- [ ] 6.2 「建立補印費異動單」按鈕：resolution = 補印 或 退款+補印 + responsibility = 客戶承擔 / 共同分擔 時顯示；預填 adjustment_type=補退、linked_after_sales_ticket_id=此 ticket
-- [ ] 6.3 「建立補印印件」按鈕：resolution = 補印 或 退款+補印 時顯示；點擊後開啟 PrintItem 建單表單，預填 related_after_sales_ticket_id=此 ticket
-- [ ] 6.4 ticket 詳情頁「關聯動作」區塊：列出所有 linked_adjustments（卡片含 OrderAdjustment 狀態 + 金額）與 linked_print_items（卡片含 PrintItem 狀態）
-- [ ] 6.5 點擊關聯動作卡片可跳轉至 OrderAdjustment / PrintItem 詳情頁
+- [x] 6.1 「建立退款異動單」按鈕：resolution = 退款 或 退款+補印 時顯示；點擊後開啟 OrderAdjustment 表單，預填 adjustment_type=退印、linked_after_sales_ticket_id=此 ticket
+- [x] 6.2 「建立補印費異動單」按鈕：resolution = 補印 或 退款+補印 + responsibility = 客戶承擔 / 共同分擔 時顯示；預填 adjustment_type=補退、linked_after_sales_ticket_id=此 ticket
+- [x] 6.3 「建立補印印件」按鈕：resolution = 補印 或 退款+補印 時顯示；點擊後開啟 PrintItem 建單表單，預填 related_after_sales_ticket_id=此 ticket
+- [x] 6.4 ticket 詳情頁「關聯動作」區塊：列出所有 linked_adjustments（卡片含 OrderAdjustment 狀態 + 金額）與 linked_print_items（卡片含 PrintItem 狀態）
+- [x] 6.5 點擊關聯動作卡片可跳轉至 OrderAdjustment / PrintItem 詳情頁
 
 ## 7. 訂單列表「售後狀態」欄位 + 篩選器
 
