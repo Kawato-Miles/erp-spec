@@ -267,15 +267,15 @@
 
 OpenSpec change 階段可直接撤銷未歸檔；歸檔後若需 rollback，要另開反向 change（資料回填邏輯複雜不在本次設計範疇）。
 
-## Open Questions
+## Open Questions（歸檔時 2026-05-07 最終拍板）
 
-| OQ | 描述 | Reasonable Default |
-|----|------|-------------------|
-| OQ-1 | ~~SalesAllowance.refund_payment_id 是否 mock 一筆「退款 Payment」記錄？~~ | **已答（D12）**：折讓不自動建 Payment；業務先記錄退款 Payment（payment_method = 退款），再開立折讓單並手動關聯 refund_payment_id |
-| OQ-2 | 兩家 BillingCompany 的預設值（is_default）由誰維護？需求單建立時若客戶沒指定，預設邏輯為何？ | is_default = true 那家為預設帶入；後台僅會計 / 系統管理員可設定；同時間僅一家 is_default = true |
-| OQ-3 | 業務主管審核 OrderAdjustment 是否需要批次操作（如選 5 筆一次審）？ | Prototype 階段先做單筆審核；批次審核留待 user feedback 後另開 change |
-| OQ-4 | 「應收金額 vs PaymentPlan 未付期合計」差額提示的閾值是多少？任何差額都提示，還是 > 1 元才提示？ | 差額 ≠ 0 即提示（包含 1 元誤差，避免漏網） |
-| OQ-5 | OrderAdjustment「已執行」是否該觸發訂單詳情頁的活動紀錄事件？格式為何？ | 觸發 Activity log，格式：「[時間] [業務] 執行訂單異動 #ADJ-001（規格變更 +20,000）」 |
-| OQ-6 | 接單公司（account_company：SSP / BRO / KAD / EC，4 家）與帳務公司（BillingCompany，2 家）的對應關係？是否要在系統內維護映射表（如：SSP → 帳務公司 A）？ | Prototype 階段不維護硬映射；需求單建立時兩個欄位獨立填寫；UI 提示「該接單公司近 30 天最常用的帳務公司」作為軟性引導；實際使用後若映射穩定再開 change 加映射表 |
+| OQ | 描述 | 最終拍板 | 狀態 |
+|----|------|---------|------|
+| OQ-1 | ~~SalesAllowance.refund_payment_id 是否 mock 退款 Payment？~~ | **D12 折讓 / 退款分離**：折讓不自動建 Payment；退款必走 OrderAdjustment 路徑（業務建負值異動 → 主管核可 → 業務執行 → 系統建退款 Payment）。Prototype 已關閉收款紀錄的「建立退款」入口。 | 已答 + 已實作 |
+| OQ-2 | 兩家 BillingCompany 預設值維護 | `is_default = true` 那家為新建需求單預設帶入；同時間僅一筆 is_default = true；由系統管理員（Supervisor）於後台「系統管理 / 帳務公司」維護。Prototype 已實作互斥邏輯。 | 已實作 |
+| OQ-3 | OrderAdjustment 批次審核 | **Prototype 維持單筆審核**（後台「訂單異動審核」頁逐筆核可 / 退回）。批次審核留待 UAT 後 user feedback。 | 維持單筆，未變更 |
+| OQ-4 | 差額提示閾值 | **差額 ≠ 0 即提示**（含 1 元誤差，避免漏網）。「金額及付款狀態」Tab 的對帳輔助區塊即時顯示計畫合計 vs 應收差額；訂單詳情頁預計發票區塊也有「未規劃應開」紅色 banner。 | 已實作 |
+| OQ-5 | OrderAdjustment Activity log | **Toast 留痕已實作**（執行 / 核可 / 退回 / 取消都會 toast）；寫入 `Order.activityLogs` 的跨模組整合尚未實作（task 8.6 延後）。格式對齊預定：「[時間] [業務] 執行訂單異動 #ADJ-001（規格變更 +20,000）」。 | 部分實作；ActivityLog 整合 change 接手 |
+| OQ-6 | 接單公司 ↔ 帳務公司映射 | **變更為硬映射**（Miles 2026-05-06 拍板）：需求單拿掉「帳務公司」下拉；接單公司直接決定帳務公司（SSP / KAD → bc-ssp、BRO / EC → bc-bro）。`inferBillingCompanyByAccount` 函式承載 mapping；訂單建立時自動繼承；原本的「軟性提示」設計已廢除。 | 變更後實作 |
 
-以上 OQ 的 default 為 Prototype 階段建議值，實作時若有業務情境牴觸再回頭調整。
+**結論**：6 個 OQ 全部已收尾（已答 / 已實作 / 變更後實作 / 延後到下一 change 接手）。本 change 在 2026-05-07 歸檔時不留任何未拍板項。
