@@ -320,21 +320,29 @@
 - 大貨「微調」如客戶補檔字距、輕微調整 → 不另收
 - 第二次打樣是因第一次出問題 → 走原工單不補收
 
-**實作解決方式**：
+**實作解決方式**（add-after-sales-ticket change 修訂）：
+
+訂單**期間**（未完成）：
 1. 業務 / 印務發起工單異動（修改紙材 / 工序 / 數量等）
 2. 工單異動記錄變更內容（modifications 區塊）
-3. **不建 OrderAdjustment**（amount=0 不屬於「金額變動」，違反 phase 判定邊界）
+3. **不建 OrderAdjustment**（amount=0 不屬於「金額變動」）
 4. 訂單應收 / 發票 / 收款不變動
 
+訂單**已完成後**：
+1. 業務建 AfterSalesTicket（case_category 依情境、responsibility = 公司認賠）
+2. resolution = 不處理 → ticket 直接結案（無下游動作）；或 resolution = 補印 → ticket 內建補印 PrintItem（免費補印不建 OrderAdjustment）
+3. 訂單應收 / 發票 / 收款不變動
+
 **驗證重點**：
-- 工單異動流程獨立於 OrderAdjustment
-- 工單.modifications 紀錄變更原因
+- 訂單期間：工單異動流程獨立於 OrderAdjustment
+- 訂單已完成後：ticket 存在但無下游金額異動
 - 訂單應收總額不變
 - 三方對帳對齊（無新異動）
 - 既有 PaymentPlan / Payment / Invoice 不受影響
 - 不出現對帳警示 banner（無 OrderAdjustment 執行）
+- 補印場景的補印 PrintItem 走原審稿 / 工單 / 出貨流程（與一般 PrintItem 無差異）
 
-**Prototype 對應訂單**：`ORD-20260322-01`（田田餐飲菜單，紙廠停產換紙公司吸收，純走工單異動）
+**Prototype 對應訂單**：`ORD-20260322-01`（田田餐飲菜單，紙廠停產換紙公司吸收，純走工單異動）；訂單已完成後同類情境參考 `AS-20260512-01` mock（不處理 demo）與 `AS-20260505-01` mock（補印免費 demo）
 
 ---
 
@@ -345,17 +353,26 @@
 - 客戶臨時改規格 / 改數量 / 改加工 → 補收成本差
 - 紙材成本 / 工法升級 → 重新報價補收
 - 加工升級：新增刀模、燙金、上膜、雙面印 → 補收
+- 客戶補檔錯誤要求補印且承擔費用 → 補收（add-after-sales-ticket change 補入）
 
-**實作解決方式**：
-與情境「特殊收款 4. 線下單補收款情境」相同：
-1. 業務建立 OrderAdjustment（補收類型）
+**實作解決方式**（add-after-sales-ticket change 修訂）：
+
+訂單**期間**（未完成）— 與情境「特殊收款 4. 線下單補收款情境」相同：
+1. 業務建立 OrderAdjustment（補收類型；linkedAfterSalesTicketId = null）
 2. 業務主管審核執行
 3. 業務手動於訂單詳情頁編輯 PrintItem（若涉及生產內容）
 4. 業務新增 PaymentPlan + 開立補收發票
 
-**驗證重點**：與情境「特殊收款 4」相同。
+訂單**已完成後**（客戶承擔的補印 / 規格變更）：
+1. 業務建 AfterSalesTicket（responsibility = 客戶承擔 或 共同分擔、resolution = 補印 或 退款+補印）
+2. ticket 內建關聯 OrderAdjustment(adjustment_type = 補退, amount = +補印費, linkedAfterSalesTicketId = 此 ticket)
+3. OrderAdjustment 走原狀態機（業務主管核可仍存在於 OA 層級）→ 已執行
+4. 業務於 ticket 內建補印 PrintItem（走原審稿 / 工單流程）
+5. 業務新增 PaymentPlan + 開立補收發票
 
-**Prototype 對應訂單**：`ORD-20260301-01`（已用於特殊收款 4 演示）
+**驗證重點**：與情境「特殊收款 4」相同；另需驗證 ticket 與關聯 OrderAdjustment、補印 PrintItem 的 FK 關聯正確（linkedAfterSalesTicketId / relatedAfterSalesTicketId 寫入 ticket id）。
+
+**Prototype 對應訂單**：`ORD-20260301-01`（已用於特殊收款 4 演示，訂單期間補收）
 
 ---
 
@@ -371,22 +388,31 @@
 - 收款後發現檔案問題無法製作 → 全額退
 - 下單後途中發現交期來不及 → 視情況退款
 
-**實作解決方式**：
-1. 業務建立售後服務單（OrderAdjustment phase = after_completion，type = 退印 / 補退）
-2. 業務主管審核執行 → 應收總額降低
-3. 業務於發票區建立退款 Payment（負數）
-4. 視發票是否跨期：
+**實作解決方式**（add-after-sales-ticket change 修訂）：
+
+訂單**已完成後**的售後退款（取代原 phase=after_completion 路徑）：
+1. 業務建 AfterSalesTicket（case_category 依情境、responsibility 依責任、resolution = 退款 或 退款+補印）
+2. 業務於 Slack 與業務主管討論決議，將 thread URL 貼入 ticket.slackThreadUrl
+3. ticket 內建關聯 OrderAdjustment(adjustment_type = 退印, amount = -退款額, linkedAfterSalesTicketId = 此 ticket)
+4. OrderAdjustment 走原狀態機（草稿 → 待主管審核 → 已核可 → 已執行）→ 應收總額降低
+5. 業務於發票區建立退款 Payment（負數）
+6. 視發票是否跨期：
    - 未跨期：作廢原 Invoice 重開正確金額
    - 已跨期：開立 SalesAllowance（折讓）關聯原 Invoice + refundPaymentId 連結退款 Payment
+7. 業務確認客戶滿意後手動點 ticket 上「結案」推進 ticket.status → 已結案
+
+訂單**期間**（未完成）的退款仍走原 OrderAdjustment 路徑（linkedAfterSalesTicketId = null）。
 
 **驗證重點**：
-- 售後服務單 phase 自動為 after_completion，type 範圍限退印 / 折扣 / 補退 / 其他
-- 執行後對帳警示 banner 因執行時點跨期觸發
+- ticket.status 推進：受理中 → 處理中（送出 resolution）→ 已結案（業務手動）
+- 關聯 OrderAdjustment.linkedAfterSalesTicketId 寫入 ticket id
+- OrderAdjustment 仍走業務主管審核（金額把關在 OA 層級）
+- 執行後對帳警示 banner 因執行時點跨期觸發（觸發條件不分 linkedAfterSalesTicketId 是否為空）
 - 退款 Payment 不入 PaymentInvoice junction
 - 折讓單關聯 Invoice 後發票剩餘可折讓金額減少
 - 三方對帳：應收降低、發票淨額降低（折讓抵減）、收款淨額降低（退款抵減）→ 差額為零
 
-**Prototype 對應訂單**：`ORD-20260331-02`（益生健康產品標籤 32K → 客戶投訴減價驗收 -8K）
+**Prototype 對應訂單**：`ORD-20260331-02`（益生健康產品標籤 32K → 客戶投訴減價驗收 -8K，對應 `AS-20260503-01` 售後 ticket）
 
 ---
 

@@ -1,23 +1,23 @@
 ## 1. 資料層基礎（Prototype Data Store）
 
-- [ ] 1.1 新增 `types/afterSalesTicket.ts`：定義 AfterSalesTicket TypeScript type（含所有欄位、enum、derived field）
-- [ ] 1.2 於 `types/order.ts` OrderPrintItem 新增 `related_after_sales_ticket_id: string | null`
-- [ ] 1.3 於 `types/order.ts` OrderAdjustment 新增 `linked_after_sales_ticket_id: string | null`，移除 `adjustment_phase` 欄位
-- [ ] 1.4 於 `storeTestUtils.ts` 新增 `makeAfterSalesTicket(overrides)` factory，提供合理預設值（status=受理中、resolution=null、closure_status=未結案 等）
-- [ ] 1.5 於 `storeTestUtils.ts` 更新 `makeOrderAdjustment(overrides)` factory：移除 adjustment_phase，新增 linked_after_sales_ticket_id（預設 null）
-- [ ] 1.6 於 `storeTestUtils.ts` 更新 `makeOrderPrintItem(overrides)` factory：新增 related_after_sales_ticket_id（預設 null）
-- [ ] 1.7 於 `seedData.ts` 新增 `mockAfterSalesTickets`：含三筆情境驅動 mock（不處理-已結案、退款-處理中、補印-處理中）+ 對應關聯 OrderAdjustment / PrintItem
-- [ ] 1.8 於 `seedData.ts` 移除既有 `OrderAdjustment(phase=after_completion)` mock，改為「對應訂單建 AfterSalesTicket（legacy_migrated=true）+ ticket 內掛該 OrderAdjustment（linked_after_sales_ticket_id 寫入）」
-- [ ] 1.9 於 `seedData.ts` 更新 `enrichOrdersFromQuotes`：Order.after_sales_status derived field 推導邏輯（無 / 售後處理中 / 售後逾期 / 售後已結案）
-- [ ] 1.10 更新 `crossLayerAssertions.ts` TRACKED_PARITY_FIELDS：新增 AfterSalesTicket 相關欄位的跨層一致性檢查
+- [x] 1.1 新增 `types/afterSalesTicket.ts`：定義 AfterSalesTicket TypeScript type（含所有欄位、enum、derived field）
+- [x] 1.2 於 `types/order.ts` OrderPrintItem 新增 `related_after_sales_ticket_id: string | null`
+- [x] 1.3 於 `types/order.ts` OrderAdjustment 新增 `linked_after_sales_ticket_id: string | null`，移除 `adjustment_phase` 欄位
+- [x] 1.4 於 `storeTestUtils.ts` 新增 `makeAfterSalesTicket(overrides)` factory，提供合理預設值（status=受理中、resolution=null、closure_status=未結案 等）
+- [x] 1.5 於 `storeTestUtils.ts` 更新 `makeOrderAdjustment(overrides)` factory：移除 adjustment_phase，新增 linked_after_sales_ticket_id（預設 null）
+- [x] 1.6 於 `storeTestUtils.ts` 更新 `makeOrderPrintItem(overrides)` factory：新增 related_after_sales_ticket_id（預設 null）
+- [x] 1.7 於 `seedData.ts` 新增 `mockAfterSalesTickets`：含三筆情境驅動 mock（不處理-已結案、退款-處理中、補印-處理中）+ 對應關聯 OrderAdjustment / PrintItem
+- [x] 1.8 於 `seedData.ts` 移除既有 `OrderAdjustment(phase=after_completion)` mock，改為「對應訂單建 AfterSalesTicket（legacy_migrated=true）+ ticket 內掛該 OrderAdjustment（linked_after_sales_ticket_id 寫入）」
+- [x] 1.9 於 `seedData.ts` 更新 `enrichOrdersFromQuotes`：Order.after_sales_status derived field 推導邏輯（無 / 售後處理中 / 售後逾期 / 售後已結案）
+- [x] 1.10 更新 `crossLayerAssertions.ts` TRACKED_PARITY_FIELDS：新增 AfterSalesTicket 相關欄位的跨層一致性檢查
 
 ## 2. ticket 業務邏輯（State Machine + 計算）
 
-- [ ] 2.1 實作 AfterSalesTicket 狀態機推進函式：`transitionTicketToProcessing(ticketId)`（受理中 → 處理中，前置：resolution 必填）
-- [ ] 2.2 實作 `transitionTicketToClosed(ticketId)`（處理中 → 已結案，前置：業務手動觸發，寫入 closed_at / closed_by）
-- [ ] 2.3 實作「一張訂單最多 1 張未結案 ticket」validation：建單時檢查同 Order 下未結案 ticket 數量 ≤ 0
-- [ ] 2.4 實作 `appendComplaintLog(ticketId, note)`：append 至 additional_complaint_log 陣列（含 logged_at），既有紀錄不可改
-- [ ] 2.5 實作 `Order.after_sales_status` derived field 計算函式（依關聯 ticket 狀態與 opened_at 距今天數推導，閾值 7 天可配置）
+- [x] 2.1 實作 AfterSalesTicket 狀態機推進函式：`transitionTicketToProcessing(ticketId)`（受理中 → 處理中，前置：resolution 必填）
+- [x] 2.2 實作 `transitionTicketToClosed(ticketId)`（處理中 → 已結案，前置：業務手動觸發，寫入 closed_at / closed_by）
+- [x] 2.3 實作「一張訂單最多 1 張未結案 ticket」validation：建單時檢查同 Order 下未結案 ticket 數量 ≤ 0
+- [x] 2.4 實作 `appendComplaintLog(ticketId, note)`：append 至 additional_complaint_log 陣列（含 logged_at），既有紀錄不可改
+- [x] 2.5 實作 `Order.after_sales_status` derived field 計算函式（依關聯 ticket 狀態與 opened_at 距今天數推導，閾值 7 天可配置）
 
 ## 3. 訂單詳情頁「售後服務」Tab
 
@@ -82,31 +82,31 @@
 
 ## 9. 對帳警示 banner 校準
 
-- [ ] 9.1 確認對帳警示 banner 觸發條件函式適用於 `linked_after_sales_ticket_id` 為 NULL 與非 NULL 兩種 OrderAdjustment（無需分桶判斷）
-- [ ] 9.2 驗證測試 mockData：以 ticket-001（退款 -5000）+ Order(completed_at=2026-03-15) + OrderAdjustment(executed_at=2026-05-06, linked_after_sales_ticket_id=ticket-001) 驗證
+- [x] 9.1 確認對帳警示 banner 觸發條件函式適用於 `linked_after_sales_ticket_id` 為 NULL 與非 NULL 兩種 OrderAdjustment（無需分桶判斷）
+- [x] 9.2 驗證測試 mockData：以 ticket-001（退款 -5000）+ Order(completed_at=2026-03-15) + OrderAdjustment(executed_at=2026-05-06, linked_after_sales_ticket_id=ticket-001) 驗證
   - 訂單詳情頁對帳檢視面板顯示警示 banner
   - banner 文字精確比對：「歷史對帳需重新核對 — 訂單已於 2026-03-15 完成，異動於 2026-05-06 執行，請會計確認原月結紀錄」
   - 對照組驗證：linked_after_sales_ticket_id=NULL 的 OA 跨期執行也應觸發相同 banner
 
 ## 10. 歷史資料遷移（mockData）
 
-- [ ] 10.1 撰寫 mockData 遷移腳本：掃描既有 `OrderAdjustment(phase=after_completion)` mock 並為每筆建立對應 AfterSalesTicket
+- [x] 10.1 撰寫 mockData 遷移腳本：掃描既有 `OrderAdjustment(phase=after_completion)` mock 並為每筆建立對應 AfterSalesTicket
   - 新 ticket.legacy_migrated = true
   - 新 ticket.customer_complaint 從 OrderAdjustment.reason 帶入
   - 新 ticket.case_category 預設「其他」（無原始分類資訊）
   - 新 ticket.responsibility 預設「公司認賠」（保守假設）
   - 新 ticket.status = 已結案（假設歷史單為已完成）
   - 新 ticket.closed_at = OrderAdjustment.executed_at（保守取執行時間）
-- [ ] 10.2 OrderAdjustment.linked_after_sales_ticket_id 回填至新建 ticket id
-- [ ] 10.3 OrderAdjustment 移除 adjustment_phase 欄位
-- [ ] 10.4 PrintItem.related_after_sales_ticket_id 補空值
+- [x] 10.2 OrderAdjustment.linked_after_sales_ticket_id 回填至新建 ticket id
+- [x] 10.3 OrderAdjustment 移除 adjustment_phase 欄位
+- [x] 10.4 PrintItem.related_after_sales_ticket_id 補空值
 
 ## 11. 業務情境 mockData 改寫（payment-invoice-scenarios.md 對應）
 
-- [ ] 11.1 改寫情境 1（公司吸收，`ORD-20260322-01`）mockData：建 AfterSalesTicket（resolution=不處理 或 補印免費，依細節判斷）+ 不建 OrderAdjustment
-- [ ] 11.2 改寫情境 2（補收，`ORD-20260301-01`）mockData：此情境屬訂單期間補收，仍走 OrderAdjustment（不關 ticket），確認 mockData 路徑正確
-- [ ] 11.3 改寫情境 3（退款，`ORD-20260331-02`）mockData：建 AfterSalesTicket（resolution=退款）+ ticket 內掛 OrderAdjustment(退印, -金額, linked_after_sales_ticket_id)
-- [ ] 11.4 更新 `memory/erp/payment-invoice-scenarios.md` 異動情境 1-3 文字表述：將「建售後服務單」改為「建 AfterSalesTicket + 視需要建關聯 OrderAdjustment」
+- [x] 11.1 改寫情境 1（公司吸收，`ORD-20260322-01`）mockData：建 AfterSalesTicket（resolution=不處理 或 補印免費，依細節判斷）+ 不建 OrderAdjustment
+- [x] 11.2 改寫情境 2（補收，`ORD-20260301-01`）mockData：此情境屬訂單期間補收，仍走 OrderAdjustment（不關 ticket），確認 mockData 路徑正確
+- [x] 11.3 改寫情境 3（退款，`ORD-20260331-02`）mockData：建 AfterSalesTicket（resolution=退款）+ ticket 內掛 OrderAdjustment(退印, -金額, linked_after_sales_ticket_id)
+- [x] 11.4 更新 `memory/erp/payment-invoice-scenarios.md` 異動情境 1-3 文字表述：將「建售後服務單」改為「建 AfterSalesTicket + 視需要建關聯 OrderAdjustment」
 
 ## 12. OpenSpec validate + Spec 同步
 
@@ -116,15 +116,15 @@
 
 ## 13. 三視角審查
 
-- [ ] 13.1 並行呼叫 senior-pm（審查模式，非前期介入）+ ceo-reviewer + erp-consultant，傳入 proposal.md / design.md / specs/ 完整內容
-- [ ] 13.2 整合審查結果至 design.md 「## 三視角審查結果」新章節（或回填 Risks / OQ）
-- [ ] 13.3 高優先 issue 即時修正 spec / design；中低優先 issue 列為新 OQ（記入 Notion Follow-up DB 與 design.md OQ 區）
-- [ ] 13.4 若審查發現重大設計風險（例：與既有 capability 衝突），暫停 commit 並請 Miles 決定是否需新一輪 explore
+- [x] 13.1 並行呼叫 senior-pm（審查模式，非前期介入）+ ceo-reviewer + erp-consultant，傳入 proposal.md / design.md / specs/ 完整內容
+- [x] 13.2 整合審查結果至 design.md 「## 三視角審查結果」新章節（或回填 Risks / OQ）
+- [x] 13.3 高優先 issue 即時修正 spec / design；中低優先 issue 列為新 OQ（記入 Notion Follow-up DB 與 design.md OQ 區）
+- [x] 13.4 若審查發現重大設計風險（例：與既有 capability 衝突），暫停 commit 並請 Miles 決定是否需新一輪 explore
 
 ## 14. OQ 同步至 Notion Follow-up DB
 
-- [ ] 14.1 將 design.md 中 10 個 OQ（OQ-AST-1 ~ OQ-UI-1）寫入 Notion Follow-up DB，Feature 欄位關聯「訂單管理」與「售後服務」（若新建 Feature page 也需建立）
-- [ ] 14.2 確認部分解答的既有 OQ（ORD-002、訂單退款逆流程、WO-010、ORD-004）的「決議與理由」欄位補上本 change 處理範圍
+- [x] 14.1 將 design.md 中 10 個 OQ（OQ-AST-1 ~ OQ-UI-1）寫入 Notion Follow-up DB，Feature 欄位關聯「訂單管理」與「售後服務」（若新建 Feature page 也需建立）
+- [x] 14.2 確認部分解答的既有 OQ（ORD-002、訂單退款逆流程、WO-010、ORD-004）的「決議與理由」欄位補上本 change 處理範圍
 
 ## 15. doc-audit + commit
 
