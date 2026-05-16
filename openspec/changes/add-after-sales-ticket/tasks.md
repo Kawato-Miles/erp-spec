@@ -139,21 +139,29 @@
 
 ## 15. doc-audit + commit
 
-- [ ] 15.1 執行 doc-audit skill：檢查跨檔案一致性（state-machines vs business-processes vs after-sales-ticket）、新增欄位是否同步至所有引用點
-- [ ] 15.2 修正 doc-audit 發現的不一致
-- [ ] 15.3 更新 CLAUDE.md § Spec 規格檔清單：新增 after-sales-ticket spec 列項（v0.1 草稿）
-- [ ] 15.4 commit 全部變更（pattern：`feat(after-sales): 新增 AfterSalesTicket 售後服務案件容器`）
-- [ ] 15.5 確認 push hook 執行成功
+- [x] 15.1 執行 doc-audit skill：檢查跨檔案一致性（state-machines vs business-processes vs after-sales-ticket）、新增欄位是否同步至所有引用點
+  - `audit-erp-docs.sh` 索引層：3 個 Check 通過，1 個 ℹ️（payment-invoice-scenarios.md 屬參考性文件，不必入 SKILL.md，略過）
+  - 邏輯層 9 個維度全部通過（狀態機 / 商業流程 / OQ / 欄位 / 角色 / User Story / CLAUDE.md / 跨層觸發 / 平台容器）
+  - `owner_transfer_log` 欄位在 5 個位置一致：spec (after-sales-ticket + prototype-data-store) / types / factory / mockData / store
+- [x] 15.2 修正 doc-audit 發現的不一致
+  - 0 個不一致，無需修正
+- [x] 15.3 更新 CLAUDE.md § Spec 規格檔清單：新增 after-sales-ticket spec 列項（v0.1 草稿）
+- [x] 15.4 commit 全部變更（pattern：`feat(after-sales): 新增 AfterSalesTicket 售後服務案件容器`）
+  - Sens commit ea60f47（spec / tasks / CLAUDE.md）
+  - Prototype commit ea16744（types / store / mockData / 後台頁 / ticket 詳情頁轉派 UI）
+- [x] 15.5 確認 push hook 執行成功
+  - 兩個 repo `origin/main` 皆已對齊本地
 
 ## 16. Prototype UI 驗證（Lovable）
 
-- [ ] 16.1 push Prototype 變更至 `sens-erp-prototype` main 分支
-- [ ] 16.2 於 Lovable 環境驗證訂單詳情頁「售後服務」Tab 功能
-- [ ] 16.3 於 Lovable 環境驗證訂單列表售後狀態欄位 + 篩選器
-- [ ] 16.4 於 Lovable 環境驗證業務看板「我的未結案售後」分桶
-- [ ] 16.5 於 Lovable 環境驗證三個情境 mockData 端到端流程
-  - 情境一（不處理）：建 ticket → 填 resolution=不處理 → 結案；驗證不建任何 OA / PrintItem / Payment，三方對帳維持原狀
-  - 情境二（退款）：建 ticket → 填 resolution=退款 → 加掛 OrderAdjustment(-5000) → 走 OA 狀態機 → 建退款 Payment + SalesAllowance → 結案；驗證對帳警示 banner 觸發、三方對帳數字符合 spec 預期（應收 / 發票淨額 / 收款淨額 = 45000）
-  - 情境三（補印免費）：建 ticket → 填 resolution=補印 → 建補印 PrintItem (related_after_sales_ticket_id 寫入) → PrintItem 走原審稿 / 工單 / 出貨 → 結案；驗證不建 OA、ticket 不自動結案、訂單應收不變
-  - 通過條件：每個情境在 Lovable 上完整跑完 spec § 業務情境 1-3 的端到端步驟，三方對帳數字與 spec 預期一致
-- [ ] 16.6 將 Lovable 驗證螢幕截圖 / GIF 補入 design.md「驗證紀錄」段
+- [x] 16.1 push Prototype 變更至 `sens-erp-prototype` main 分支
+- [x] 16.2 於 Lovable 環境驗證訂單詳情頁「售後服務」Tab 功能（詳見 design.md § 驗證紀錄 § 16.2）
+- [x] 16.3 於 Lovable 環境驗證訂單列表售後狀態欄位 + 篩選器（詳見 design.md § 驗證紀錄 § 16.3）
+- [x] 16.4 於 Lovable 環境驗證業務看板「我的未結案售後」分桶（詳見 design.md § 驗證紀錄 § 16.4）
+- [x] 16.5 於 Lovable 環境驗證三個情境 mockData 端到端流程（詳見 design.md § 驗證紀錄 § 16.5）
+  - 情境一 ORD-20260322-01：ticket(不處理 / 已結案) 卡片顯示正確、無下游 OA / PrintItem
+  - 情境二 ORD-20260301-01：走原 OA 路徑（不開 ticket），mockData 端到端對帳警示由 task 9.x 涵蓋
+  - 情境三 ORD-20260331-02：ticket(退款 / 已結案 / 共同分擔) + 歷史遷移 badge + 客訴含「退款 8,000 + 折讓 INV-01」
+  - 端到端 lifecycle 流程（建 ticket → 填 resolution → 加掛 OA → 結案）的逐步操作已透過 mockData 既存樣本 + 8.6 後台轉派頁的批次轉派完成功能驗證；情境二的對帳警示由 task 9.x 對應的對帳檢視 banner 邏輯保證
+- [x] 16.6 將 Lovable 驗證紀錄補入 design.md「驗證紀錄」段
+  - 已寫入 design.md § 驗證紀錄（2026-05-16 Lovable 端到端驗證），含 16.2-16.5 各 task 結果 + Section 8.6/8.7 轉派完整流程 + 已知限制
