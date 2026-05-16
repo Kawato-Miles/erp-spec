@@ -77,8 +77,16 @@
 - [x] 8.3 每筆顯示：case_no、訂單編號、客戶名稱、case_category、opened_at（含「N 天前」相對時間）、status badge
 - [x] 8.4 opened_at 距今 > 7 天的 ticket 標紅色 badge「逾期」
 - [x] 8.5 點擊 ticket 卡片導向訂單詳情頁的「售後服務」Tab 並自動展開該 ticket
-- [ ] 8.6 業務主管後台「ticket 負責人管理」頁：列出全公司未結案 ticket，可勾選批次轉派 opened_by；轉派表單必填新負責人 + 轉派原因
-- [ ] 8.7 業務本人嘗試自行轉派時系統 UI 拒絕並顯示「ticket 負責人轉派需由業務主管執行」
+- [x] 8.6 業務主管後台「ticket 負責人管理」頁：列出全公司未結案 ticket，可勾選批次轉派 opened_by；轉派表單必填新負責人 + 轉派原因
+  - 新增 `/sales-manager/after-sales-tickets` 路由 + AppSidebar「售後服務單轉派」入口
+  - `ManageAfterSalesTicketOwnership.tsx`：篩選器（負責人 / 售後類型 / 訂單編號 / 逾期）+ Checkbox 多選 + 批次轉派 dialog
+  - store 新增 `transferAfterSalesTickets(ticketIds, newOwnerName, reason)` mutation，僅允許 sales_manager / supervisor，已結案自動略過，append `ownerTransferLog`
+  - AfterSalesTicket entity 新增 `ownerTransferLog: AfterSalesOwnerTransferEntry[]` 欄位（含 transferredAt / previousOwner / newOwner / transferredBy / reason）
+- [x] 8.7 業務本人嘗試自行轉派時系統 UI 拒絕並顯示「ticket 負責人轉派需由業務主管執行」
+  - `AfterSalesTicketDetail.tsx` header 新增「轉派負責人」按鈕（任何未結案 ticket 皆顯示）
+  - 業務 / 諮詢 / 會計角色點擊：toast.error「售後服務單負責人轉派需由業務主管執行」
+  - 業務主管 / Supervisor 角色點擊：開啟單張轉派 dialog（新負責人 select + 原因 textarea）
+  - 詳情頁新增「負責人轉派紀錄」Section（有轉派紀錄時顯示舊負責人 / 新負責人 / 轉派人 / 時間 / 原因）
 
 ## 9. 對帳警示 banner 校準
 
@@ -110,9 +118,12 @@
 
 ## 12. OpenSpec validate + Spec 同步
 
-- [ ] 12.1 執行 `openspec validate --change "add-after-sales-ticket"`，修正任何 schema / format 錯誤
-- [ ] 12.2 確認所有 spec delta 檔案 ADDED / MODIFIED / REMOVED 區塊格式正確（4 個 # 的 Scenario 標題、SHALL/MUST 規範用語）
-- [ ] 12.3 確認跨檔案引用連結（spec.md / design.md / payment-invoice-scenarios.md / decks/）皆可導航
+- [x] 12.1 執行 `openspec validate --change "add-after-sales-ticket"`，修正任何 schema / format 錯誤
+  - `openspec validate add-after-sales-ticket --strict` 通過（2026-05-16）
+- [x] 12.2 確認所有 spec delta 檔案 ADDED / MODIFIED / REMOVED 區塊格式正確（4 個 # 的 Scenario 標題、SHALL/MUST 規範用語）
+  - 透過 `--strict` validate 同步驗證 7 個 spec delta 檔案 schema 正確
+- [x] 12.3 確認跨檔案引用連結（spec.md / design.md / payment-invoice-scenarios.md / decks/）皆可導航
+  - 對照 8 個被引用檔案皆存在：decks/after-sales-design-comparison.html / memory/erp/payment-invoice-scenarios.md / openspec/specs/{order-management,state-machines,business-processes,business-scenarios,prototype-data-store,user-roles}/spec.md
 
 ## 13. 三視角審查
 

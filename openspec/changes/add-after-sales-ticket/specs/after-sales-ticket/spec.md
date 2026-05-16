@@ -25,6 +25,7 @@
 | `closed_at` | timestamp | N | 結案時間，結案後寫入 |
 | `closed_by` | FK -> 使用者 | N | 結案者 |
 | `legacy_migrated` | boolean | N | 標記是否為從歷史 OrderAdjustment(phase=after_completion) 遷移而來 |
+| `owner_transfer_log` | array<{transferred_at, previous_owner, new_owner, transferred_by, reason}> | N | 負責人轉派紀錄陣列（業務主管批次轉派時 append，既有紀錄不可改）；預設空陣列 |
 
 **關聯欄位（反向關聯）：**
 
@@ -404,19 +405,27 @@ Tab 顯示內容：
 
 當 ticket.opened_by（業務）離職、長假、或暫時無法處理時，業務主管 SHALL 可於後台批次將該業務名下未結案 AfterSalesTicket 的 opened_by 轉派給其他業務。
 
-轉派 SHALL 寫入 ActivityLog（事件描述 = 「ticket 負責人轉派」、舊負責人、新負責人、轉派人、轉派原因）。轉派後新負責人於業務看板「我的未結案售後」分桶 SHALL 看到該 ticket。
+轉派 SHALL 於 `owner_transfer_log` append 新紀錄（含 transferred_at、previous_owner、new_owner、transferred_by、reason），既有紀錄不可修改 / 刪除。轉派後新負責人於業務看板「我的未結案售後」分桶 SHALL 看到該 ticket。
 
-轉派 MUST 為僅業務主管權限；業務本人 MUST NOT 自行轉派 ticket 給他人。已結案 ticket MUST NOT 支援轉派（無實際操作需要）。
+轉派 MUST 為僅業務主管 / Supervisor 權限；業務 / 諮詢 / 會計本人 MUST NOT 自行轉派 ticket 給他人，系統 SHALL 於 UI 拒絕並提示「售後服務單負責人轉派需由業務主管執行」。已結案 ticket MUST NOT 支援轉派（無實際操作需要）。
 
 #### Scenario: 業務主管批次轉派離職業務的 ticket
 
 - **GIVEN** 業務 Alice 已離職、其名下有 3 張未結案 AfterSalesTicket
-- **WHEN** 業務主管於後台「ticket 負責人管理」頁勾選 Alice 的 3 張 ticket，選擇新負責人 = Bob，填入轉派原因 = 「Alice 離職」
+- **WHEN** 業務主管於後台「售後服務單轉派」頁勾選 Alice 的 3 張 ticket，選擇新負責人 = Bob，填入轉派原因 = 「Alice 離職」
 - **THEN** 系統 SHALL 將 3 張 ticket.opened_by 改為 Bob
-- **AND** 每張 ticket SHALL 寫入 ActivityLog 記錄轉派事件
+- **AND** 每張 ticket SHALL 於 owner_transfer_log append 新紀錄（previous_owner=Alice、new_owner=Bob、transferred_by=業務主管、reason=「Alice 離職」）
 - **AND** Bob 於業務看板「我的未結案售後」SHALL 看到新增的 3 張 ticket
 
 #### Scenario: 業務本人不可自行轉派 ticket
 
-- **GIVEN** 業務 Alice 嘗試將自己的 ticket 改派給 Bob
-- **THEN** 系統 MUST 拒絕並提示「ticket 負責人轉派需由業務主管執行」
+- **GIVEN** 業務 Alice 嘗試於 ticket 詳情頁點擊「轉派負責人」按鈕
+- **THEN** 系統 MUST 拒絕並 toast 提示「售後服務單負責人轉派需由業務主管執行」
+- **AND** 系統 MUST NOT 開啟轉派 dialog
+
+#### Scenario: 已結案 ticket 不支援轉派
+
+- **GIVEN** ticket.status = 已結案
+- **WHEN** 業務主管於後台勾選該 ticket 嘗試批次轉派
+- **THEN** 系統 SHALL 自動略過該 ticket（不更新 opened_by、不寫 owner_transfer_log）
+- **AND** UI SHALL 回報「已略過 N 張已結案 ticket」
