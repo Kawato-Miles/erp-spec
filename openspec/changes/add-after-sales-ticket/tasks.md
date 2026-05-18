@@ -58,8 +58,13 @@
 ## 6. ticket 內加掛關聯動作
 
 - [x] 6.1 「建立退款異動單」按鈕：resolution = 退款 或 退款+補印 時顯示；點擊後開啟 OrderAdjustment 表單，預填 adjustment_type=退印、linked_after_sales_ticket_id=此 ticket
+  - 2026-05-18 完整補完：原本只是 toast + navigate 跳 Tab，現升級為 ticket 內直接開 dialog 完成建單（adjustmentType select + amount + reason）
+  - 新增 `addOrderAdjustmentFromTicket` store mutation，OA 移入 useErpStore.orderAdjustments 達成跨頁面同步
 - [x] 6.2 「建立補印費異動單」按鈕：resolution = 補印 或 退款+補印 + responsibility = 客戶承擔 / 共同分擔 時顯示；預填 adjustment_type=補退、linked_after_sales_ticket_id=此 ticket
+  - 與 6.1 共用同一 OA Dialog，預填 adjustmentType=補退、amount=+1000、reason=「售後補印收費（{caseNo}）...」
 - [x] 6.3 「建立補印印件」按鈕：resolution = 補印 或 退款+補印 時顯示；點擊後開啟 PrintItem 建單表單，預填 related_after_sales_ticket_id=此 ticket
+  - 2026-05-18 完整補完：ticket 內直接開 PrintItem dialog 完成建單（來源印件 select + 補印名稱 + 補印數量 + 補印備註）
+  - 新增 `addReprintPrintItemFromTicket` store mutation：從來源 PrintItem 複製紙材 / 工法 / 包裝等規格，predfill relatedAfterSalesTicketId，printItemNo 自動命名為 `{訂單編號}_R{流水}`
 - [x] 6.4 ticket 詳情頁「關聯動作」區塊：列出所有 linked_adjustments（卡片含 OrderAdjustment 狀態 + 金額）與 linked_print_items（卡片含 PrintItem 狀態）
 - [x] 6.5 點擊關聯動作卡片可跳轉至 OrderAdjustment / PrintItem 詳情頁
 

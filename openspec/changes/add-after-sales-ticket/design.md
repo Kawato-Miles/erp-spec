@@ -403,3 +403,45 @@ senior-pm + ERP 顧問皆指出設計品質高、業界對齊度尚可，CEO 的
 
 - Lovable preview 的 zustand store 無 persistence，MCP `navigate` 觸發 hard reload 會 reset store；以 SPA 內 link 點擊跳轉時 store state 維持
 - 已結案 ticket 不在後台列表內，「跳過已結案」分支（spec § Scenario: 已結案 ticket 不支援轉派）已透過 store mutation 邏輯（檢查 `status !== '已結案'`）保證；於 UI 上需透過 url 直接訪問 + 將已結案 id 帶入勾選才能完整驗證，此情境暫列 UAT 階段補驗
+
+## 驗證紀錄補充（2026-05-18 task 6.1-6.3 補完）
+
+問題：原 task 6.1 / 6.2 / 6.3 「建立退款異動單」「建立補印費異動單」「建立補印印件」按鈕只實作 toast 提示 + navigate 跳 Tab，沒有真正在 ticket 內建立 OA / PrintItem。Miles 指出設計未完整實作。
+
+修正：把 OrderAdjustment 移入 useErpStore.orderAdjustments，讓 ticket 內建單與訂單異動 Tab 共用同一資料源；ticket 詳情頁加 2 個 Dialog 完整實作建單流程。
+
+### Section 6.1 / 6.2 OrderAdjustment 內建單驗證（ORD-20260418-02 / ast-demo-refund-open）
+
+- ticket 詳情頁點「建立退款異動單」→ 開啟 Dialog（標題「建立退款異動單」+ 說明「將自動關聯本售後服務單（AS-20260513-01）」）
+- Dialog 內欄位：
+  - 異動類型 select（退印 / 補退 / 折扣 / 其他）+ 預填「退印（負金額退款）」
+  - 異動金額（預填 -1000，業務改為 -3000 模擬實際退款金額）
+  - 異動原因 textarea，預填「售後退款（AS-20260513-01）：客戶反映 10 張帆布提袋邊緣縫線不齊，要求退款 3,000；業務於 Slack @ 業務主管討論後決議退款。」
+- 提交「建立草稿」→ toast「已建立關聯訂單異動單草稿（退印，-3,000），請至訂單異動 Tab 提交審核」
+- ticket 詳情頁「關聯動作（OA 1 / 補印印件 0）」即時更新，下方列出「退印 / -3,000 / 草稿 / 售後退款...」OA 卡片
+- 切到「訂單異動」Tab（SPA 內 navigation）→ 看到新 OA 與既有 OA 並列：
+  - 「規格變更 +30,000 待審核」（既有，「訂單異動單」灰 badge）
+  - 「退印 -1,000 草稿 售後退款（AS-20260513-01）...」（新建，「售後 ticket 來源」黃 badge）✓ 跨頁面同步成功
+
+### Section 6.3 補印 PrintItem 內建單驗證（ORD-20260413-07 / ast-demo-reprint-overdue）
+
+- ticket 詳情頁點「建立補印印件」→ 開啟 Dialog（標題「建立補印印件」+ 說明「將自動關聯本售後服務單（AS-20260505-01），紙材 / 工法 / 包裝等規格沿用來源印件；建單後走原審稿 / 工單 / 出貨流程」）
+- Dialog 內欄位：
+  - 來源印件 select（過濾掉已是補印的 PrintItem）+ 預設第一張：「ORD-20260413-07_001 · 造型卡片（原訂 20 張）」
+  - 補印印件名稱：「造型卡片（補印）」（自動帶）
+  - 補印數量：20（自動帶入原訂數量，業務改為 100）
+  - 補印備註 textarea，業務填入「原批次 100 份名片紙色與打樣不一致（紙廠誤送），公司認賠補印 100 份；急件，希望 5/20 前出貨配合活動使用」
+- 提交「建立補印印件」→ toast「已建立補印印件 ORD-20260413-07_R01（100 張），將走原審稿 / 工單流程」
+- ticket 詳情頁「關聯動作（OA 0 / 補印印件 1）」即時更新，下方列出「造型卡片（補印）/ 補印 100 張 / 待生產 / ORD-20260413-07_R01」卡片
+- 訂單項目 Tab 印件計數從（1）變為（2）✓ 跨頁同步成功
+
+### 工程設計補充
+
+| 動作 | 既有實作 | 補完後 |
+|------|---------|-------|
+| OrderAdjustment 儲存位置 | OrderAdjustmentSection 內 `useState` + MOCK_ORDER_ADJUSTMENTS | useErpStore.orderAdjustments + seedData 注入 |
+| ticket 內 OA 建單 | toast 提示 + navigate 跳 Tab，沒實際建單 | ticket 詳情頁 Dialog 收集表單 + 呼叫 `addOrderAdjustmentFromTicket` store mutation |
+| ticket 內補印 PrintItem 建單 | toast 提示 + navigate 跳 Tab，沒實際建單 | ticket 詳情頁 Dialog 收集表單 + 呼叫 `addReprintPrintItemFromTicket` store mutation（從來源印件複製規格） |
+| linkedAdjustments 來源 | `MOCK_ORDER_ADJUSTMENTS.filter(...)` | `store.orderAdjustments.filter(...)` |
+| linkedPrintItems 來源 | `store.orders[orderId].printItems.filter(...)` | （不變）|
+| 跨頁面同步 | OA 在 ticket 與 訂單異動 Tab 不同步（兩個 useState） | OA 從同一 store 讀寫，即時同步 |
