@@ -319,6 +319,7 @@ delta specs 合併回 main specs，歸檔 change。
 | UI 設計系統（業務規範 / 視覺 Token / UX 模式 / 元件清單，唯一權威）| `/Users/b-f-03-029/sens-erp-prototype/DESIGN.md`（Spec 撰寫前讀 §0 業務規範；Prototype 製作前完整讀） |
 | UI 業務規範細則（框架無關：禁 Emoji / 刪除流程 / Info Banner / Toast / Loading / 頁面模板 / 按鈕優先級 / 狀態標籤）| `memory/shared/ui-business-rules.md` |
 | Prototype 工作流程（製作 / 驗證 / 同步規則） | `memory/shared/prototype-guidelines.md` |
+| impeccable 設計稽核 skill 使用指引（ERP 場景指令選擇決策樹）| `memory/shared/impeccable-usage.md` |
 | 共用術語（完整） | `memory/shared/glossary.md` |
 | 產業背景 | `memory/shared/context/industry.md` |
 | 圖編術語（完整） | `memory/graphic-editor/glossary.md` |
