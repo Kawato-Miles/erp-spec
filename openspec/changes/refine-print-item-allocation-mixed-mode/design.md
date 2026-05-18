@@ -14,7 +14,7 @@
 - 不修改審稿合格自動建草稿的邏輯（`useErpStore.ts` L1617-1694），該段邏輯已正確，僅 UI 沒讀取
 - 對齊 [work-order spec § 工單分配](../../specs/work-order/spec.md) L58「所有草稿工單均 MUST 完成分派」
 - 對齊 [user-roles spec § 印務主管職責](../../specs/user-roles/spec.md) L230-246「分配工單」
-- Prototype 技術棧：React + TypeScript + Tailwind + shadcn/ui；不本地跑、Lovable 部署
+- Prototype 技術棧：React + TypeScript + Tailwind + shadcn/ui；本地 `npm run dev` 開發伺服器與 Playwright 端對端測試（e2e）自驗，`git push` 後 Lovable 雲端建置同步部署
 
 **利害關係人**：
 

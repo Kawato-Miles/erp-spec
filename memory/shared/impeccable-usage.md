@@ -37,8 +37,8 @@
 
 | 指令 | 不適用原因 |
 |------|----------|
-| `craft` | ERP 用 Lovable 同步，不本地 build；OpenSpec change 已是 build 前 gate |
-| `live` | 需 dev server 跑視覺變體迭代 |
+| `craft` | ERP 本地 `npm run dev` 與 Playwright 端對端測試（e2e）即驗證，Lovable 雲端建置同步部署；OpenSpec change 已是建置前 gate |
+| `live` | 需開發伺服器跑視覺變體迭代 |
 | `bolder` / `quieter` / `delight` / `overdrive` | brand register 視覺放大器，product register 不追求驚奇 |
 | `colorize` | brand register 色彩策略；ERP 走 Figma token |
 | `animate` / `motion-design` | ERP motion 150-250ms 已上限，不需放大 |
