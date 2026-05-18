@@ -4,26 +4,8 @@
     "type": "split",
     "children": [
       {
-        "id": "8a239fae87bbe852",
-        "type": "tabs",
-        "dimension": 38.13451776649746,
-        "children": [
-          {
-            "id": "f98bc180b00066f3",
-            "type": "leaf",
-            "state": {
-              "type": "empty",
-              "state": {},
-              "icon": "lucide-file",
-              "title": "新分頁"
-            }
-          }
-        ]
-      },
-      {
         "id": "b013283dcbc4ca65",
         "type": "tabs",
-        "dimension": 61.86548223350253,
         "children": [
           {
             "id": "e8160a650e7b4e10",
@@ -31,13 +13,58 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "00-meta/editing-conventions.md",
+                "file": "01-products/erp/stakeholders.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "editing-conventions"
-            }
+              "title": "stakeholders"
+            },
+            "group": "606b0cd21e34a6e0"
+          }
+        ]
+      },
+      {
+        "id": "ddd2cc5225d57558",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c15b7eadbbe105cf",
+            "type": "leaf",
+            "state": {
+              "type": "localgraph",
+              "state": {
+                "file": "01-products/erp/stakeholders.md",
+                "options": {
+                  "collapse-filter": true,
+                  "search": "",
+                  "localJumps": 1,
+                  "localBacklinks": true,
+                  "localForelinks": true,
+                  "localInterlinks": false,
+                  "showTags": false,
+                  "showAttachments": false,
+                  "hideUnresolved": false,
+                  "collapse-color-groups": true,
+                  "colorGroups": [],
+                  "collapse-display": true,
+                  "showArrow": false,
+                  "textFadeMultiplier": 0,
+                  "nodeSizeMultiplier": 1,
+                  "lineSizeMultiplier": 1,
+                  "collapse-forces": true,
+                  "centerStrength": 0.518713248970312,
+                  "repelStrength": 10,
+                  "linkStrength": 1,
+                  "linkDistance": 250,
+                  "scale": 0.8496676697998151,
+                  "close": false
+                }
+              },
+              "icon": "lucide-git-fork",
+              "title": "stakeholders 的關聯圖"
+            },
+            "group": "606b0cd21e34a6e0"
           }
         ]
       }
@@ -112,7 +139,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "00-meta/editing-conventions.md",
+                "file": "01-products/erp/stakeholders.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -122,7 +149,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "editing-conventions 的反向連結"
+              "title": "stakeholders 的反向連結"
             }
           },
           {
@@ -131,12 +158,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "00-meta/editing-conventions.md",
+                "file": "01-products/erp/stakeholders.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "editing-conventions 的對外連結"
+              "title": "stakeholders 的對外連結"
             }
           },
           {
@@ -174,13 +201,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "00-meta/editing-conventions.md",
+                "file": "01-products/erp/stakeholders.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "editing-conventions 的大綱"
+              "title": "stakeholders 的大綱"
             }
           }
         ]
@@ -203,33 +230,34 @@
   },
   "active": "e8160a650e7b4e10",
   "lastOpenFiles": [
-    "09-canvases/模組依賴.canvas",
+    "08-open-questions/README.md",
+    "01-products/erp/kpi/README.md",
+    "07-scenarios/README.md",
+    "06-state-machines/出貨單狀態.md",
+    "06-state-machines/QC 狀態.md",
+    "06-state-machines/生產任務狀態.md",
+    "06-state-machines/任務狀態.md",
+    "06-state-machines/工單狀態.md",
+    "06-state-machines/印件狀態.md",
+    "06-state-machines/訂單狀態.md",
+    "06-state-machines/諮詢單狀態.md",
+    "06-state-machines/需求單狀態.md",
+    "05-entities/售後服務.md",
+    "05-entities/出貨單.md",
+    "05-entities/QC.md",
+    "05-entities/生產任務.md",
+    "05-entities/任務.md",
+    "05-entities/工單.md",
+    "05-entities/印件.md",
+    "05-entities/訂單.md",
+    "05-entities/諮詢單.md",
+    "05-entities/需求單.md",
+    "04-business-logic/報價邏輯.md",
+    "04-business-logic/付款發票邏輯.md",
+    "04-business-logic/審稿分配規則.md",
+    "04-business-logic/免審決策樹.md",
     "09-canvases/角色×流程-swimlane.canvas",
-    "00-meta/vault-charter.md",
-    "00-meta/editing-conventions.md",
-    "00-meta/README.md",
-    "03-roles/業務.md",
-    "03-roles/_alignment-report.md",
-    "03-roles/EC 商品管理.md",
-    "03-roles/外包廠商.md",
-    "03-roles/中國廠商.md",
-    "03-roles/出貨.md",
-    "03-roles/QC.md",
-    "03-roles/師傅.md",
-    "03-roles/生管.md",
-    "03-roles/印務.md",
-    "03-roles/印務主管.md",
-    "03-roles/會計.md",
-    "03-roles/審稿.md",
-    "03-roles/訂單管理人.md",
-    "02-domain/glossary-erp.md",
-    "03-roles/審稿主管.md",
-    "03-roles/諮詢.md",
-    "03-roles/Supervisor.md",
-    "02-domain/glossary-graphic-editor.md",
-    "02-domain/glossary-shared.md",
-    "02-domain/printing-industry.md",
-    "01-products/graphic-editor/product-vision.md",
+    "09-canvases/模組依賴.canvas",
     "10-references",
     "09-canvases",
     "08-open-questions",

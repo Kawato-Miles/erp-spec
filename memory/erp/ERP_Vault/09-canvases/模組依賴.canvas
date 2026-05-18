@@ -1,44 +1,38 @@
 {
-	"nodes": [
-		{"id": "title", "type": "text", "text": "# 模組依賴圖（骨架版）\n\n## 兩個入口\n- 一般路徑：需求單 → 訂單\n- 諮詢路徑：諮詢單 → 訂單\n\n## BOM 底層（Phase 1）\n- 材料 / 工序 / 裝訂主檔\n\n→ Phase C 補實體節點（05-entities/）連線", "x": -700, "y": 0, "width": 600, "height": 280, "color": "5"},
-
-		{"id": "bom-group", "type": "group", "label": "BOM 底層（Phase 1）", "x": 0, "y": -200, "width": 1100, "height": 180, "color": "1"},
-		{"id": "spec-material-master", "type": "text", "text": "## 材料主檔\n`material-master`\n\n紙張、油墨、版材等\n→ openspec/specs/material-master/spec.md", "x": 40, "y": -160, "width": 320, "height": 120, "color": "1"},
-		{"id": "spec-process-master", "type": "text", "text": "## 工序主檔\n`process-master`\n\n印刷、裁切、燙金等工序\n→ openspec/specs/process-master/spec.md", "x": 400, "y": -160, "width": 320, "height": 120, "color": "1"},
-		{"id": "spec-binding-master", "type": "text", "text": "## 裝訂主檔\n`binding-master`\n\n裝訂方式\n→ openspec/specs/binding-master/spec.md", "x": 760, "y": -160, "width": 320, "height": 120, "color": "1"},
-
-		{"id": "entry-group", "type": "group", "label": "訂單兩個入口", "x": 0, "y": 80, "width": 540, "height": 360, "color": "2"},
-		{"id": "spec-quote-request", "type": "text", "text": "## 需求單\n`quote-request`\n\nv3.2 — 帳務公司自動推導\n→ openspec/specs/quote-request/spec.md", "x": 40, "y": 120, "width": 220, "height": 140, "color": "2"},
-		{"id": "spec-consultation-request", "type": "text", "text": "## 諮詢單\n`consultation-request`\n\nv0.1 — surveycake webhook\n→ openspec/specs/consultation-request/spec.md", "x": 290, "y": 120, "width": 220, "height": 140, "color": "2"},
-
-		{"id": "core-group", "type": "group", "label": "訂單與生產（核心）", "x": 600, "y": 80, "width": 880, "height": 540, "color": "4"},
-		{"id": "spec-order", "type": "text", "text": "## 訂單管理\n`order-management`\n\nv1.4 — 雙欄計價 / 三類附件\n→ openspec/specs/order-management/spec.md", "x": 640, "y": 120, "width": 240, "height": 140, "color": "4"},
-		{"id": "spec-work-order", "type": "text", "text": "## 工單管理\n`work-order`\n\nv0.5 — Tab 化版型\n→ openspec/specs/work-order/spec.md", "x": 920, "y": 120, "width": 240, "height": 140, "color": "4"},
-		{"id": "spec-production-task", "type": "text", "text": "## 生產任務\n`production-task`\n\nv0.3 — TransferTicket\n→ openspec/specs/production-task/spec.md", "x": 1200, "y": 120, "width": 240, "height": 140, "color": "4"},
-		{"id": "spec-prepress-review", "type": "text", "text": "## 稿件審查\n`prepress-review`\n\nv1.5 — 五個 change\n→ openspec/specs/prepress-review/spec.md", "x": 920, "y": 320, "width": 240, "height": 140, "color": "6"},
-		{"id": "spec-qc", "type": "text", "text": "## QC\n`qc`\n\n草稿\n→ openspec/specs/qc/spec.md", "x": 1200, "y": 320, "width": 240, "height": 140, "color": "3"},
-		{"id": "spec-shipping", "type": "text", "text": "## 出貨單\n（嵌入 order-management）\n\n→ 見訂單管理 § 出貨", "x": 640, "y": 320, "width": 240, "height": 140, "color": "4"},
-		{"id": "spec-after-sales", "type": "text", "text": "## 售後服務\n`after-sales-ticket`\n\nv0.1 — AfterSalesTicket\n→ openspec/specs/after-sales-ticket/spec.md", "x": 640, "y": 480, "width": 240, "height": 120, "color": "2"},
-
-		{"id": "cross-group", "type": "group", "label": "跨模組基礎規格（Vault 商業層 ground truth）", "x": 0, "y": 680, "width": 1480, "height": 220, "color": "3"},
-		{"id": "vault-business-processes", "type": "text", "text": "## 商業流程\n`business-processes` (1098 行)\n\n齊套 / 數量換算 / 出貨規則\n\n→ 04-business-logic/", "x": 40, "y": 720, "width": 340, "height": 160, "color": "3"},
-		{"id": "vault-state-machines", "type": "text", "text": "## 狀態機\n`state-machines` (1077 行)\n\n8 實體狀態機\n\n→ 06-state-machines/", "x": 400, "y": 720, "width": 340, "height": 160, "color": "3"},
-		{"id": "vault-user-roles", "type": "text", "text": "## 使用者角色\n`user-roles` (764 行) → Vault 16 角色\n\n→ 03-roles/\n→ _alignment-report.md", "x": 760, "y": 720, "width": 340, "height": 160, "color": "3"},
-		{"id": "vault-scenarios", "type": "text", "text": "## 業務情境\n`business-scenarios` (706 行)\n\n13 個端到端情境\n\n→ 07-scenarios/", "x": 1120, "y": 720, "width": 340, "height": 160, "color": "3"}
+	"nodes":[
+		{"id":"title","type":"text","text":"# 模組依賴圖（骨架版）\n\n## 兩個入口\n- 一般路徑：需求單 → 訂單\n- 諮詢路徑：諮詢單 → 訂單\n\n## BOM 底層（Phase 1）\n- 材料 / 工序 / 裝訂主檔\n\n→ Phase C 補實體節點（05-entities/）連線","x":-700,"y":0,"width":600,"height":280,"color":"5"},
+		{"id":"bom-group","type":"group","label":"BOM 底層（Phase 1）","x":0,"y":-200,"width":1100,"height":180,"color":"1"},
+		{"id":"spec-material-master","type":"text","text":"## 材料主檔\n`material-master`\n\n紙張、油墨、版材等\n→ openspec/specs/material-master/spec.md","x":40,"y":-160,"width":320,"height":120,"color":"1"},
+		{"id":"spec-process-master","type":"text","text":"## 工序主檔\n`process-master`\n\n印刷、裁切、燙金等工序\n→ openspec/specs/process-master/spec.md","x":400,"y":-160,"width":320,"height":120,"color":"1"},
+		{"id":"spec-binding-master","type":"text","text":"## 裝訂主檔\n`binding-master`\n\n裝訂方式\n→ openspec/specs/binding-master/spec.md","x":760,"y":-160,"width":320,"height":120,"color":"1"},
+		{"id":"entry-group","type":"group","label":"訂單兩個入口","x":0,"y":80,"width":540,"height":360,"color":"2"},
+		{"id":"spec-quote-request","type":"text","text":"## 需求單\n`quote-request`\n\nv3.2 — 帳務公司自動推導\n→ openspec/specs/quote-request/spec.md","x":40,"y":120,"width":220,"height":140,"color":"2"},
+		{"id":"spec-consultation-request","type":"text","text":"## 諮詢單\n`consultation-request`\n\nv0.1 — surveycake webhook\n→ openspec/specs/consultation-request/spec.md","x":290,"y":120,"width":220,"height":140,"color":"2"},
+		{"id":"core-group","type":"group","label":"訂單與生產（核心）","x":600,"y":80,"width":880,"height":540,"color":"4"},
+		{"id":"spec-order","type":"text","text":"## 訂單管理\n`order-management`\n\nv1.4 — 雙欄計價 / 三類附件\n→ openspec/specs/order-management/spec.md","x":640,"y":120,"width":240,"height":140,"color":"4"},
+		{"id":"spec-work-order","type":"text","text":"## 工單管理\n`work-order`\n\nv0.5 — Tab 化版型\n→ openspec/specs/work-order/spec.md","x":920,"y":120,"width":240,"height":140,"color":"4"},
+		{"id":"spec-production-task","type":"text","text":"## 生產任務\n`production-task`\n\nv0.3 — TransferTicket\n→ openspec/specs/production-task/spec.md","x":1200,"y":120,"width":240,"height":140,"color":"4"},
+		{"id":"spec-prepress-review","type":"text","text":"## 稿件審查\n`prepress-review`\n\nv1.5 — 五個 change\n→ openspec/specs/prepress-review/spec.md","x":920,"y":320,"width":240,"height":140,"color":"6"},
+		{"id":"spec-qc","type":"text","text":"## QC\n`qc`\n\n草稿\n→ openspec/specs/qc/spec.md","x":1200,"y":320,"width":240,"height":140,"color":"3"},
+		{"id":"spec-shipping","type":"text","text":"## 出貨單\n（嵌入 order-management）\n\n→ 見訂單管理 § 出貨","x":640,"y":320,"width":240,"height":140,"color":"4"},
+		{"id":"spec-after-sales","type":"text","text":"## 售後服務\n`after-sales-ticket`\n\nv0.1 — AfterSalesTicket\n→ openspec/specs/after-sales-ticket/spec.md","x":640,"y":480,"width":240,"height":120,"color":"2"},
+		{"id":"cross-group","type":"group","label":"跨模組基礎規格（Vault 商業層 ground truth）","x":0,"y":680,"width":1480,"height":220,"color":"3"},
+		{"id":"vault-business-processes","type":"text","text":"## 商業流程\n`business-processes` (1098 行)\n\n齊套 / 數量換算 / 出貨規則\n\n→ 04-business-logic/","x":40,"y":720,"width":340,"height":160,"color":"3"},
+		{"id":"vault-state-machines","type":"text","text":"## 狀態機\n`state-machines` (1077 行)\n\n8 實體狀態機\n\n→ 06-state-machines/","x":400,"y":720,"width":340,"height":160,"color":"3"},
+		{"id":"vault-user-roles","type":"text","text":"## 使用者角色\n`user-roles` (764 行) → Vault 16 角色\n\n→ 03-roles/\n→ _alignment-report.md","x":760,"y":720,"width":340,"height":160,"color":"3"},
+		{"id":"vault-scenarios","type":"text","text":"## 業務情境\n`business-scenarios` (706 行)\n\n13 個端到端情境\n\n→ 07-scenarios/","x":1120,"y":720,"width":340,"height":160,"color":"3"}
 	],
-	"edges": [
-		{"id": "e-bom-wo", "fromNode": "spec-material-master", "fromSide": "bottom", "toNode": "spec-work-order", "toSide": "top", "label": "BOM 構成"},
-		{"id": "e-process-wo", "fromNode": "spec-process-master", "fromSide": "bottom", "toNode": "spec-work-order", "toSide": "top"},
-		{"id": "e-binding-wo", "fromNode": "spec-binding-master", "fromSide": "bottom", "toNode": "spec-work-order", "toSide": "top"},
-
-		{"id": "e-quote-order", "fromNode": "spec-quote-request", "fromSide": "right", "toNode": "spec-order", "toSide": "left", "label": "需求 → 訂單"},
-		{"id": "e-consult-order", "fromNode": "spec-consultation-request", "fromSide": "right", "toNode": "spec-order", "toSide": "left", "label": "諮詢 → 訂單"},
-
-		{"id": "e-order-wo", "fromNode": "spec-order", "fromSide": "right", "toNode": "spec-work-order", "toSide": "left", "label": "工單分派"},
-		{"id": "e-wo-pt", "fromNode": "spec-work-order", "fromSide": "right", "toNode": "spec-production-task", "toSide": "left", "label": "生產任務"},
-		{"id": "e-wo-prepress", "fromNode": "spec-work-order", "fromSide": "bottom", "toNode": "spec-prepress-review", "toSide": "top", "label": "製前審稿"},
-		{"id": "e-pt-qc", "fromNode": "spec-production-task", "fromSide": "bottom", "toNode": "spec-qc", "toSide": "top", "label": "QC"},
-		{"id": "e-order-shipping", "fromNode": "spec-order", "fromSide": "bottom", "toNode": "spec-shipping", "toSide": "top", "label": "出貨"},
-		{"id": "e-order-aftersales", "fromNode": "spec-order", "fromSide": "bottom", "toNode": "spec-after-sales", "toSide": "left", "label": "售後"}
+	"edges":[
+		{"id":"e-bom-wo","fromNode":"spec-material-master","fromSide":"bottom","toNode":"spec-work-order","toSide":"top","label":"BOM 構成"},
+		{"id":"e-process-wo","fromNode":"spec-process-master","fromSide":"bottom","toNode":"spec-work-order","toSide":"top"},
+		{"id":"e-binding-wo","fromNode":"spec-binding-master","fromSide":"bottom","toNode":"spec-work-order","toSide":"top"},
+		{"id":"e-quote-order","fromNode":"spec-quote-request","fromSide":"right","toNode":"spec-order","toSide":"left","label":"需求 → 訂單"},
+		{"id":"e-consult-order","fromNode":"spec-consultation-request","fromSide":"right","toNode":"spec-order","toSide":"left","label":"諮詢 → 訂單"},
+		{"id":"e-order-wo","fromNode":"spec-order","fromSide":"right","toNode":"spec-work-order","toSide":"left","label":"工單分派"},
+		{"id":"e-wo-pt","fromNode":"spec-work-order","fromSide":"right","toNode":"spec-production-task","toSide":"left","label":"生產任務"},
+		{"id":"e-wo-prepress","fromNode":"spec-work-order","fromSide":"bottom","toNode":"spec-prepress-review","toSide":"top","label":"製前審稿"},
+		{"id":"e-pt-qc","fromNode":"spec-production-task","fromSide":"bottom","toNode":"spec-qc","toSide":"top","label":"QC"},
+		{"id":"e-order-shipping","fromNode":"spec-order","fromSide":"bottom","toNode":"spec-shipping","toSide":"top","label":"出貨"},
+		{"id":"e-order-aftersales","fromNode":"spec-order","fromSide":"bottom","toNode":"spec-after-sales","toSide":"left","label":"售後"}
 	]
 }
