@@ -756,21 +756,18 @@ OrderAdjustment SHALL 為**獨立狀態機**，不影響主訂單狀態。狀態
 已核可 ─ 執行 ────────▶ 已執行
 ```
 
-OrderAdjustment 處於非終態時 SHALL NOT 阻擋主訂單狀態推進。OrderAdjustment「已執行」時 SHALL 觸發訂單應收總額更新（Order.total_with_tax + ∑ 已執行 OrderAdjustment.amount），但 SHALL NOT 自動建立或修改 PaymentPlan。
+OrderAdjustment 處於非終態時 SHALL NOT 阻擋主訂單狀態推進。OrderAdjustment「已執行」時 SHALL 觸發訂單應收總額更新（∑ 印件費 + ∑ OrderExtraCharge.amount + ∑ 已執行 OrderAdjustment.amount），但 SHALL NOT 自動建立或修改 PaymentPlan。
 
-**雙重身份標註**：OrderAdjustment 同時涵蓋「訂單異動」與「售後服務」兩種業務情境，由 `adjustment_phase` 欄位區分（詳見 [order-management spec](../order-management/spec.md) § OrderAdjustment 建立與審核）：
+**OrderAdjustment 雙重身份廢止**：本 change（add-after-sales-ticket）廢止 v1.2 的「雙重身份標註」設計。OrderAdjustment 不再有 `adjustment_phase` 欄位，不再依 Order.status 推算 phase，所有 adjustment_type 皆可於任何 Order 狀態下選用。原 phase = after_completion 的「售後服務單」業務情境改由 AfterSalesTicket 承載（見 [after-sales-ticket spec](../after-sales-ticket/spec.md)）。
 
-- `adjustment_phase = during_order`（訂單尚未完成）→ UI 顯示「訂單異動單」
-- `adjustment_phase = after_completion`（訂單已完成）→ UI 顯示「售後服務單」
+OrderAdjustment 新增 `linked_after_sales_ticket_id`（FK -> AfterSalesTicket，nullable）欄位標示其源自哪張售後 ticket：
 
-雙身份共用同一狀態機，差異在於：
+- **NULL**：訂單期間業務直接建立的金額異動（原 during_order 路徑）
+- **非 NULL**：AfterSalesTicket 內部建立的關聯異動（退款 / 補印收費）
 
-- `during_order`：可選 `adjustment_type` 範圍較廣（含加印追加、加運費、急件費）；執行後若涉及生產內容（item_type = print_item）顯示提示「請至訂單詳情頁編輯印件以接續審稿 / 工單流程」
-- `after_completion`：可選 `adjustment_type` 範圍縮限（不可加印 / 加運費 / 急件費）；執行後顯示提示「請至訂單詳情頁的發票區處理（作廢 / 折讓）」
+兩種情境共用同一狀態機。`linked_after_sales_ticket_id` 一經建立 MUST NOT 變動。
 
-`adjustment_phase` 於建單時依 `Order.status` 自動推算後鎖定，狀態機運作與 phase 無關（兩 phase 共用相同狀態轉換）。
-
-**對帳警示觸發**：對帳檢視面板的警示 banner 觸發條件 SHALL 為「`OrderAdjustment.executed_at > Order.completed_at`」（執行時點跨越訂單完成日），不依 phase 判斷。原因是 phase = during_order 但跨期執行的場景（業務於訂單未完成時建單，拖到訂單完成後才執行）會計帳上仍是跨期調整。完整觸發邏輯詳見 [order-management spec](../order-management/spec.md) § 對帳警示 banner 觸發條件 Requirement。
+**對帳警示觸發**：對帳檢視面板的警示 banner 觸發條件仍為「`OrderAdjustment.executed_at > Order.completed_at`」（執行時點跨越訂單完成日），同時適用 linked_after_sales_ticket_id 為 NULL 與非 NULL 的 OrderAdjustment。完整觸發邏輯詳見 [order-management spec § 對帳警示 banner 觸發條件](../order-management/spec.md)。
 
 #### Scenario: OrderAdjustment 草稿提交審核
 
@@ -811,29 +808,71 @@ OrderAdjustment 處於非終態時 SHALL NOT 阻擋主訂單狀態推進。Order
 - **THEN** 系統 SHALL 顯示提示 banner「該訂單仍有 N 筆訂單異動待主管審核」
 - **AND** OrderAdjustment SHALL 仍可獨立完成審核與執行
 
-#### Scenario: phase = during_order 但跨期執行觸發對帳警示
+#### Scenario: 跨期執行觸發對帳警示
 
-- **GIVEN** OrderAdjustment.adjustment_phase = during_order（建單時 Order 尚未完成）
-- **AND** 業務主管核可後 Order 推進至已完成（completed_at = 2026-03-15）
-- **WHEN** 業務於 2026-05-06 執行 OrderAdjustment（executed_at = 2026-05-06）
-- **THEN** OrderAdjustment.status SHALL → 已執行
-- **AND** 因 executed_at > completed_at，對帳檢視面板 SHALL 顯示警示 banner
-- **AND** 警示 banner 觸發與 phase 無關（不需 phase = after_completion 也會觸發）
+- **GIVEN** Order.completed_at = 2026-03-15
+- **WHEN** 任一 OrderAdjustment（含 linked_after_sales_ticket_id 為 NULL 或非 NULL）執行於 2026-05-06
+- **THEN** 對帳檢視面板 SHALL 顯示警示 banner
 
-#### Scenario: 訂單異動單（during_order）執行後生產內容變更提示
+### Requirement: AfterSalesTicket 狀態機
 
-- **GIVEN** OrderAdjustment.adjustment_phase = during_order
-- **AND** OrderAdjustment 含 item_type = print_item 的明細
-- **WHEN** OrderAdjustment.status → 已執行
-- **THEN** 系統 SHALL 顯示提示「此異動涉及生產內容，請至訂單詳情頁編輯印件以接續審稿 / 工單流程」
-- **AND** 系統 NOT 自動建立或修改 PrintItem
+AfterSalesTicket SHALL 為獨立狀態機，與 Order 主狀態、OrderAdjustment 狀態機平行運作。狀態定義：
 
-#### Scenario: 售後服務單（after_completion）執行後顯示發票處理提示
+| 狀態 | 說明 |
+|------|------|
+| 受理中 | 業務已建 ticket、尚未填入 resolution |
+| 處理中 | 業務已填入 resolution 並送出決議；下游動作（關聯 OrderAdjustment / 補印 PrintItem）可建立與執行 |
+| 已結案 | 業務手動點「結案」推進的終態 |
 
-- **GIVEN** OrderAdjustment.adjustment_phase = after_completion
-- **WHEN** OrderAdjustment.status → 已執行
-- **THEN** 系統 SHALL 顯示提示「此筆異動涉及金額變動，請至訂單詳情頁的發票區處理（作廢 / 折讓）」
-- **AND** 提示為非問句、非自動跳轉
+狀態轉換：
+
+```
+受理中 ─ 送出決議（填 resolution）──▶ 處理中
+處理中 ─ 業務點結案 ────────────────▶ 已結案
+處理中 ─ 修改 resolution ───────────▶ 處理中（同態，允許 resolution 變更）
+已結案 ─ 不可重開 ──────────────────▶ X
+```
+
+**無核可關卡**：AfterSalesTicket 狀態機無「待主管核可」階段。業務與業務主管於 Slack 線下討論，ERP 僅記錄結果（resolution / responsibility / slack_thread_url）。
+
+**結案純手動**：MVP 階段「處理中 → 已結案」轉換 SHALL 為業務手動操作（點「結案」按鈕），系統 SHALL NOT 依關聯動作（補印 PrintItem 出貨完成、退款 Payment 入帳）自動推導結案。
+
+**ticket 不阻擋主訂單**：AfterSalesTicket 處於任何狀態 SHALL NOT 影響 Order.status。Order.status 永遠保持「已完成」不回退。
+
+**ticket 不阻擋 OrderAdjustment**：AfterSalesTicket 內建關聯 OrderAdjustment 仍走 OrderAdjustment 既有狀態機（含業務主管審核關卡）。ticket 結案前 OrderAdjustment 可獨立運作。
+
+**結案後不可重開**：MVP 階段已結案 ticket 不支援重開。客戶後續再投訴時，業務 SHALL 建立新 ticket（已結案 ticket 不算入「最多 1 張」限制）。
+
+完整 ticket 規格詳見 [after-sales-ticket spec](../after-sales-ticket/spec.md)。
+
+#### Scenario: ticket 受理中填入 resolution 推進處理中
+
+- **GIVEN** AfterSalesTicket.status = 受理中、resolution = NULL
+- **WHEN** 業務填入 resolution = 退款 並點「送出決議」
+- **THEN** status SHALL → 處理中
+- **AND** 系統 SHALL 寫入 ActivityLog（事件描述 = 「決議送出」、resolution 值）
+
+#### Scenario: ticket 處理中業務手動結案
+
+- **GIVEN** AfterSalesTicket.status = 處理中、resolution = 退款、關聯 OrderAdjustment 已執行
+- **WHEN** 業務點擊「結案」
+- **THEN** status SHALL → 已結案
+- **AND** 系統 SHALL 寫入 closed_at、closed_by
+
+#### Scenario: ticket 結案不影響 Order.status
+
+- **GIVEN** Order.status = 已完成、AfterSalesTicket.status = 處理中
+- **WHEN** 業務於 ticket 上推進結案
+- **THEN** AfterSalesTicket.status SHALL → 已結案
+- **AND** Order.status MUST 維持「已完成」不變
+
+#### Scenario: ticket 內 OrderAdjustment 獨立運作
+
+- **GIVEN** AfterSalesTicket.status = 處理中
+- **AND** ticket 內建 OrderAdjustment(linked_after_sales_ticket_id=此 ticket).status = 待主管審核
+- **WHEN** 業務嘗試結案 ticket
+- **THEN** 系統 SHALL 提示「ticket 內有未完結的 OrderAdjustment（待主管審核），建議完成後再結案」
+- **AND** 系統允許強制結案（業務確認時）；OrderAdjustment 仍可獨立完成狀態機
 
 ### Requirement: 發票（Invoice）狀態機
 
