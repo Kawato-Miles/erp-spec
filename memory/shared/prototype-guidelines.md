@@ -60,6 +60,12 @@
 
 ## 四、Prototype 驗證流程
 
+0. **Playwright e2e 自驗（每次 prototype 變更後強制）**
+   - `npm run test:e2e:smoke`（健康檢查 ~3 秒）
+   - `npm run test:e2e`（navigation 12 個頂層頁 + 流程 spec）
+   - 全綠才 commit + push；發現 DOM / runtime bug 當場修元件
+   - 細則見 `/Users/b-f-03-029/sens-erp-prototype/CLAUDE.md` § 6
+
 1. **功能自檢**
    - 對照 2.1 功能對應檢查清單
    - 對照 2.2 情境驗證檢查清單
