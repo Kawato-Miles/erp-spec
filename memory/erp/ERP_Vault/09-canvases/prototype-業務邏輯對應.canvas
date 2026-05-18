@@ -1,0 +1,29 @@
+{
+	"nodes": [
+		{"id": "title", "type": "text", "text": "# Prototype 業務邏輯對應\n\n左：Prototype src/types/*.ts 業務規則\n右：Vault 業務邏輯卡\n\n→ 確認 Prototype 業務規則與 Vault 不脫鉤\n→ **不含 DESIGN.md UI 規範**", "x": -400, "y": 0, "width": 400, "height": 280, "color": "5"},
+
+		{"id": "src-quote-difficulty", "type": "text", "text": "## src/types/quote.ts L54-57\n\n`difficultyLevel?: number`\n印件難易度 1-10 整數\n業務必填", "x": 100, "y": -200, "width": 320, "height": 140, "color": "1"},
+		{"id": "src-quote-skipreview", "type": "text", "text": "## src/types/quote.ts L58-61\n\n`skipReview?: boolean`\n是否免審稿", "x": 100, "y": -40, "width": 320, "height": 140, "color": "1"},
+		{"id": "src-quote-clientnote", "type": "text", "text": "## src/types/quote.ts L62-70\n+ CLIENT_NOTE_MAX_LENGTH = 500\n\n印件檔案備註 500 字上限", "x": 100, "y": 120, "width": 320, "height": 140, "color": "1"},
+		{"id": "src-prepress-utils", "type": "text", "text": "## src/utils/prepressReview.ts\n\n自動分配演算法\n（業務規則部分）\n+ 免審路徑邏輯", "x": 100, "y": 280, "width": 320, "height": 140, "color": "1"},
+		{"id": "src-workorder-status", "type": "text", "text": "## src/types/workOrder.ts\n\nWorkOrderStatus (9 狀態)\nProductionTaskStatus (10 狀態)", "x": 100, "y": 440, "width": 320, "height": 140, "color": "1"},
+		{"id": "src-mock-orders", "type": "text", "text": "## src/data/mockOrders.ts\n\n6-8 筆代表性訂單場景\n含 13 個付款發票情境對應", "x": 100, "y": 600, "width": 320, "height": 140, "color": "1"},
+
+		{"id": "vault-difficulty", "type": "file", "file": "04-business-logic/難易度機制.md", "x": 540, "y": -200, "width": 280, "height": 140, "color": "4"},
+		{"id": "vault-skipreview", "type": "file", "file": "04-business-logic/免審決策樹.md", "x": 540, "y": -40, "width": 280, "height": 140, "color": "4"},
+		{"id": "vault-clientnote", "type": "file", "file": "04-business-logic/印件檔案備註上限.md", "x": 540, "y": 120, "width": 280, "height": 140, "color": "4"},
+		{"id": "vault-assign-rules", "type": "file", "file": "04-business-logic/審稿分配規則.md", "x": 540, "y": 280, "width": 280, "height": 140, "color": "4"},
+		{"id": "vault-wo-status", "type": "file", "file": "06-state-machines/工單狀態.md", "x": 540, "y": 440, "width": 280, "height": 140, "color": "4"},
+		{"id": "vault-payment", "type": "file", "file": "04-business-logic/付款發票邏輯.md", "x": 540, "y": 600, "width": 280, "height": 140, "color": "4"},
+
+		{"id": "exclude-note", "type": "text", "text": "## 明確不收（屬實作層）\n\n- DESIGN.md（UI 設計系統）\n- ui-business-rules.md\n- principles.md\n- src/utils/ 中的演算法步驟\n- src/utils/orderPricing.ts 計算公式\n- after-sales-design-comparison.html", "x": -400, "y": 400, "width": 400, "height": 340, "color": "2"}
+	],
+	"edges": [
+		{"id": "e-difficulty", "fromNode": "src-quote-difficulty", "fromSide": "right", "toNode": "vault-difficulty", "toSide": "left", "label": "業務規則 → Vault"},
+		{"id": "e-skipreview", "fromNode": "src-quote-skipreview", "fromSide": "right", "toNode": "vault-skipreview", "toSide": "left"},
+		{"id": "e-clientnote", "fromNode": "src-quote-clientnote", "fromSide": "right", "toNode": "vault-clientnote", "toSide": "left"},
+		{"id": "e-assign", "fromNode": "src-prepress-utils", "fromSide": "right", "toNode": "vault-assign-rules", "toSide": "left", "label": "只收業務規則"},
+		{"id": "e-wo-status", "fromNode": "src-workorder-status", "fromSide": "right", "toNode": "vault-wo-status", "toSide": "left"},
+		{"id": "e-payment", "fromNode": "src-mock-orders", "fromSide": "right", "toNode": "vault-payment", "toSide": "left", "label": "13 情境對應"}
+	]
+}

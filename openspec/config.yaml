@@ -68,7 +68,8 @@ rules:
     - 使用繁體中文撰寫
     - Capabilities 名稱使用英文 kebab-case
     - 引用 Notion 頁面時使用 [可讀名稱](URL) 格式
-    - 建立前先查詢 Notion OQ DB（oq-manage skill），列出相關未解 OQ
+    - "[2026-05-19] 商業背景必須引用 ERP_Vault 對應節點：建立 proposal 時必須在 ## Why 或 ## Background 段以相對路徑 link 引用 memory/erp/ERP_Vault/ 下對應的卡（如 04-business-logic/、05-entities/、03-roles/）"
+    - "[2026-05-19] OQ 操作正本變更為 Vault：建立前先查詢 ERP_Vault/08-open-questions/（oq-manage skill 已改寫），列出相關未解 OQ"
     - 觸發 senior-pm agent（前期介入模式），確認問題框架後再撰寫
   specs:
     - 使用繁體中文撰寫
@@ -77,12 +78,14 @@ rules:
     - Scenario 標題使用 #### （四個 #），不可用三個
     - 不使用 emoji
     - 新增或修改 Requirement 前，須確認與 state-machines / business-processes / user-roles specs 的一致性
+    - "[2026-05-19] 涉及商業邏輯 / 角色 R&R / 實體關聯時，必須對照 ERP_Vault 對應卡（04-business-logic/ / 03-roles/ / 05-entities/）；發現不一致時優先更新 Vault 卡（內部正本）"
   design:
     - 使用繁體中文撰寫
     - 著重 Prototype 設計決策，非實作程式碼
     - 參照 state-machines spec 確認狀態轉換設計
     - 參照 business-processes spec 確認計算邏輯
     - 參照 user-roles spec 確認角色權責
+    - "[2026-05-19] 商業層 ground truth 在 ERP_Vault（如齊套邏輯、付款發票邏輯、難易度機制等），design 撰寫時優先引用 Vault 卡"
   tasks:
     - 使用繁體中文撰寫
     - 任務以 Prototype 驗證為導向
