@@ -1,0 +1,66 @@
+---
+type: metric
+module:
+  - cross-module
+related-notion: https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f
+status: active
+last-reviewed: 2026-05-19
+---
+
+# 成功指標
+
+## 北極星指標
+
+### Phase 1：EC 規格品 BOM 覆蓋率
+
+**定義**：已在 ERP 中完成 BOM 建立（含工序 + 材料 + 機台設備）的 EC 現行規格品數 ÷ EC 現行販售規格品總數。
+
+**目標**：Phase 1 完成時 ≥ 80%
+
+**衡量方式**：ERP 商品主檔查詢（已完成 BOM 展算且經業務情境驗證的品項數）
+
+**策略邏輯**：
+> Phase 1 的核心任務是「建立可驗證的商品資料基礎」，非流程替換。
+> - 覆蓋率達標 → EC 商品管理可完整移轉至 ERP，可進行成本試算與分析
+> - 覆蓋率不足 → 代表設定方式有預期外障礙、 BOM 架構不足或其他缺陷
+
+### Phase 2/3：訂單流程完整完成率
+
+**定義**：在系統中從訂單起點（線下訂單：「訂單確認」；EC 訂單：「付款完成」）到「出貨完成」的完整流程均在系統內完成的訂單比率。
+
+**目標值**：
+- Phase 2 上線後第 1 個月：≥ 60%
+- Phase 2 上線後第 3 個月：≥ 80%
+
+**衡量方式**：系統事件追蹤（狀態機完整走完的訂單數 ÷ 當月進入系統的訂單總數）
+
+**策略邏輯**：
+> Phase 2 的核心使命是「取代 Ragic + Slack + 紙本組合」。選擇此指標的原因：
+> 1. 走完完整流程會強制讓所有環節角色真正進入 ERP 完成業務
+> 2. 出貨完成是公司服務流程兌現的時刻，若未達到此節點代表無法滿足服務流程
+
+## 各 Phase KPI 細項
+
+詳細 KPI 條目見 `kpi/` 子目錄（**Phase B Stage 5 補建，每個 KPI 一個檔**）。
+
+來源：[Notion KPI DB](https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f)（`collection://32e38865-11fa-8011-b3d2-000bc2ff77fb`）
+
+DB Schema：
+- 商業目標（title）
+- 成功指標（text）
+- 目標值（text）
+- 衡量方式（text）
+- Baseline（text）
+- Feature（relation → Feature DB）
+- Phase（relation → Phase DB）
+
+## 與功能優先度的關係
+
+KPI 是「結果指標」，功能優先度評估用 [[impact-score-framework]]（4 維度評分）。兩者不互相替代：
+- KPI 衡量「**做到了沒**」
+- Impact Score 衡量「**該優先做哪些功能**」
+
+## 來源
+
+- Notion 產品目標頁 § 五、成功指標 § 北極星指標：[產品目標](https://www.notion.so/32c3886511fa81359354e33087d23f23)
+- Notion KPI DB：[KPI](https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f)

@@ -1,0 +1,62 @@
+---
+type: role
+module:
+  - qc
+  - production-task
+related-spec: openspec/specs/user-roles/spec.md
+related-notion: https://www.notion.so/99dc5a4ce3ea48bc9c394a8cc8040200
+status: active
+last-reviewed: 2026-05-19
+---
+
+# QC
+
+> [!success] OpenSpec spec 狀態：**部分對應**
+> `openspec/specs/user-roles/spec.md` 中以「品管」涵蓋此角色，但 Notion DB 將「品管」拆分為 [[審稿]]（製前合規）+ QC（成品檢驗）兩個角色。Vault 採 Notion 命名分離。
+
+## 基本資料
+
+- **平台**：工廠平台
+- **利害關係程度**：中
+- **參與階段**：打樣印製
+- **任務操作**：X
+- **報價單 / 訂單**：X
+- **工單**：R/W
+- **需求單**：X
+
+## 主要工作職責
+
+依照訂單進行 QC，記錄檢驗結果
+
+## 關切點
+
+- 明確知道 QC 標的與驗收標準
+- 結果有留存記錄
+- 不通過原因需從固定選項選擇
+
+## 預期阻力
+
+QC 不通過需選擇原因而非自由輸入，若選項設計不貼近實際，可能被跳過或隨意選填
+
+## 備註
+
+僅可編輯 QC 紀錄，其餘皆不可異動
+
+## 相關業務邏輯
+
+- [[qc/spec.md]]（OpenSpec QC 模組）
+
+## 與審稿角色的差異
+
+| 維度 | 審稿（[[審稿]]） | QC（本卡） |
+|------|---------|-----------|
+| 階段 | 製前（審稿階段）| 製後（打樣印製階段）|
+| 平台 | 審稿平台 | 工廠平台 |
+| 職責 | 確認稿件合規、製作稿件 | 依訂單進行 QC、記錄檢驗結果 |
+| 利害程度 | 高 | 中 |
+| 對應 OpenSpec | 「品管」（合併兩者）| 「品管」（合併兩者）|
+
+## 來源
+
+- [Notion 核心角色權責表 - QC](https://www.notion.so/99dc5a4ce3ea48bc9c394a8cc8040200)
+- [OpenSpec user-roles spec.md](../../../../openspec/specs/user-roles/spec.md)

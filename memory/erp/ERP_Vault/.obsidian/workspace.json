@@ -1,0 +1,244 @@
+{
+  "main": {
+    "id": "252b1c73ac94f5f8",
+    "type": "split",
+    "children": [
+      {
+        "id": "8a239fae87bbe852",
+        "type": "tabs",
+        "dimension": 38.13451776649746,
+        "children": [
+          {
+            "id": "f98bc180b00066f3",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新分頁"
+            }
+          }
+        ]
+      },
+      {
+        "id": "b013283dcbc4ca65",
+        "type": "tabs",
+        "dimension": 61.86548223350253,
+        "children": [
+          {
+            "id": "e8160a650e7b4e10",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "00-meta/editing-conventions.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "editing-conventions"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "d50eae016f9fdf4f",
+    "type": "split",
+    "children": [
+      {
+        "id": "a92e36b2cc23235c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a235d1822c871c37",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "檔案瀏覽器"
+            }
+          },
+          {
+            "id": "7c75c7db51c248a0",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜尋"
+            }
+          },
+          {
+            "id": "2197d194bd8e1ece",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "書籤"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "fd88aa32a473640b",
+    "type": "split",
+    "children": [
+      {
+        "id": "ffb5b79e2133fbaf",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d2a5c4741949cde9",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "00-meta/editing-conventions.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "editing-conventions 的反向連結"
+            }
+          },
+          {
+            "id": "7966b287306b9453",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "00-meta/editing-conventions.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "editing-conventions 的對外連結"
+            }
+          },
+          {
+            "id": "7ea2c69e5c930a21",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "標籤"
+            }
+          },
+          {
+            "id": "69921856e9810747",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "所有屬性"
+            }
+          },
+          {
+            "id": "9ff7d6e421266569",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "00-meta/editing-conventions.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "editing-conventions 的大綱"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:開啟快速切換": false,
+      "graph:查看關聯圖": false,
+      "canvas:建立新畫布": false,
+      "daily-notes:開啟今天的每日筆記": false,
+      "templates:插入模板": false,
+      "command-palette:開啟命令面板": false,
+      "bases:建立新的 base": false
+    }
+  },
+  "active": "e8160a650e7b4e10",
+  "lastOpenFiles": [
+    "09-canvases/模組依賴.canvas",
+    "09-canvases/角色×流程-swimlane.canvas",
+    "00-meta/vault-charter.md",
+    "00-meta/editing-conventions.md",
+    "00-meta/README.md",
+    "03-roles/業務.md",
+    "03-roles/_alignment-report.md",
+    "03-roles/EC 商品管理.md",
+    "03-roles/外包廠商.md",
+    "03-roles/中國廠商.md",
+    "03-roles/出貨.md",
+    "03-roles/QC.md",
+    "03-roles/師傅.md",
+    "03-roles/生管.md",
+    "03-roles/印務.md",
+    "03-roles/印務主管.md",
+    "03-roles/會計.md",
+    "03-roles/審稿.md",
+    "03-roles/訂單管理人.md",
+    "02-domain/glossary-erp.md",
+    "03-roles/審稿主管.md",
+    "03-roles/諮詢.md",
+    "03-roles/Supervisor.md",
+    "02-domain/glossary-graphic-editor.md",
+    "02-domain/glossary-shared.md",
+    "02-domain/printing-industry.md",
+    "01-products/graphic-editor/product-vision.md",
+    "10-references",
+    "09-canvases",
+    "08-open-questions",
+    "07-scenarios",
+    "06-state-machines",
+    "05-entities",
+    "04-business-logic",
+    "03-roles",
+    "02-domain",
+    "01-products/erp/kpi"
+  ]
+}
