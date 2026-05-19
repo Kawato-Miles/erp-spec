@@ -37,6 +37,7 @@ last-reviewed: 2026-05-19
 | 狀態機 | `06-state-machines/<實體名>狀態.md` |
 | 跨模組情境 | `07-scenarios/<情境名>.md` |
 | 既有 OQ | `08-open-questions/<OQ 編號>.md`（Phase B 後寫入） |
+| **審查方法論 / Agent 框架**（三視角審查 / 5 設計模式 / 命名規則 / 多視角討論協議）| `11-review-knowledge/`（入口 [[README\|11-review-knowledge/README]]；`_shared/` 共用 + `pm/` `ceo/` `erp/` 視角專屬 + `protocols/` 流程協議；2026-05-19 新增）|
 
 撰寫時於 proposal `## Why` / `## Background` 段以 wiki link 引用對應節點，例：
 
@@ -64,6 +65,6 @@ last-reviewed: 2026-05-19
 |---------|------|
 | UI 設計系統 | `sens-erp-prototype/DESIGN.md` |
 | UI 業務規則 | `memory/shared/ui-business-rules.md` |
-| Prototype 設計原則 | `memory/shared/principles.md` |
+| 跨產品通用工作原則 | `memory/shared/principles.md`（§ 六 ERP 設計模式 2026-05-19 已遷入本 Vault [[erp-design-patterns]]）|
 | 演算法 / 計算公式 | Prototype `src/utils/` |
 | 功能 step Requirement | OpenSpec 各模組 spec |

@@ -31,7 +31,8 @@ last-reviewed: 2026-05-19
 | `src/utils/prepressReview.ts` 演算法步驟（5 步驟）| 實作細節，留程式碼 |
 | `src/utils/orderPricing.ts`、`equipmentCost.ts`、`imposition.ts`、`scheduling.ts` | 計算公式 / 演算法，實作層 |
 | `src/index.css`、各 component | UI 實作 |
-| `memory/shared/ui-business-rules.md`、`principles.md` | Prototype 範疇（UI 業務規則 / 設計原則）|
+| `memory/shared/ui-business-rules.md` | UI 業務規則（屬 Prototype 範疇）|
+| `memory/shared/principles.md`（§ 一~五）| 跨產品通用工作原則（§ 六 ERP 設計模式 2026-05-19 已遷至 [[erp-design-patterns]]）|
 
 ## 三、Vault → Prototype 反向追蹤
 

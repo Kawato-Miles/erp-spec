@@ -54,7 +54,8 @@ ERP_Vault/
 ├── 07-scenarios/                 # 跨模組業務情境（鏡像 Notion 業務情境 DB + business-scenarios spec）
 ├── 08-open-questions/            # OQ 內部正本（oq-manage skill 改寫後寫此處）
 ├── 09-canvases/                  # JSON Canvas 視覺化（角色 swimlane / 狀態機 graph / 實體關聯 / 模組依賴 / traceability）
-└── 10-references/                # 外部連結索引（Notion / OpenSpec / Prototype / decks）
+├── 10-references/                # 外部連結索引（Notion / OpenSpec / Prototype / decks）
+└── 11-review-knowledge/          # 三視角審查 Agent 方法論（審查框架 / 5 設計模式 / 命名規則 / 多視角討論協議；2026-05-19 新增）
 ```
 
 ## 五、Commit 規範
@@ -75,6 +76,6 @@ ERP_Vault/
 |---------|------|
 | UI 設計系統（顏色、字型、元件、layout） | `sens-erp-prototype/DESIGN.md`（實作層唯一權威）|
 | UI 業務規則（表格密度 / 批次操作 / 響應式等） | `memory/shared/ui-business-rules.md` + Prototype |
-| Prototype 設計原則（指針模式 / 狀態碼結構化等） | `memory/shared/principles.md` |
+| 跨產品通用工作原則（Spec 撰寫 / OQ 管理 / PM 視角 / 迭代工作流） | `memory/shared/principles.md` § 一~五（§ 六 ERP 設計模式 2026-05-19 已遷至 Vault [[erp-design-patterns]]）|
 | 演算法 / 計算公式 / 自動分配步驟 | Prototype `src/utils/` 與各模組 spec § Requirements |
 | 功能 step-by-step Requirement | OpenSpec 各模組 spec § Requirements |

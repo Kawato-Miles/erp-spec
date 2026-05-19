@@ -48,7 +48,8 @@ last-reviewed: 2026-05-19
 | 屬於 | 位置 |
 |------|------|
 | 表格密度 / 批次操作 / 響應式 | `memory/shared/ui-business-rules.md` |
-| 設計原則（指針模式 / 狀態碼結構化 / 合格終態） | `memory/shared/principles.md` |
+| 跨產品通用工作原則（Spec 撰寫 / OQ 管理 / PM 視角 / 迭代工作流） | `memory/shared/principles.md` § 一~五 |
+| ERP 資料模型設計模式（指針模式 / 狀態碼結構化 / 合格終態 / B2C-B2B 分流 / 稽核鉤子）| **已遷入 Vault**：[[erp-design-patterns]]（2026-05-19）|
 | 禁 Emoji / 詳情頁 Tab 順序 / Info Banner | `sens-erp-prototype/DESIGN.md` §0 |
 
 ### 演算法 / 實作細節
