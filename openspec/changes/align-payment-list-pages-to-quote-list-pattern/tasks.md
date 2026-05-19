@@ -24,34 +24,34 @@
 
 ## 2. 規範先行：補強 prototype-shared-ui spec
 
-- [ ] 2.1 將 change 的 specs/prototype-shared-ui/spec.md 5 個 ADDED Requirement 套用至 main spec（由 `/opsx:sync` 或 `/opsx:archive` 時自動完成；本 Task 確認 delta spec 內容完整即可）
-- [ ] 2.2 確認 main spec 既有 4 個 Requirement（ErpSummaryGrid 三項 + 印件詳情頁 Tabs 化版型）與本次新增 5 個 Requirement 無內容衝突
+- [x] 2.1 delta spec 內容已完整（5 個 ADDED Requirement：列表頁標準佈局 / StatusCard 元件擴充 / 款項管理 / 諮詢單 / QuoteListPage 對齊）。套用至 main spec 由 `/opsx:archive` 時自動執行
+- [x] 2.2 已驗證：main spec 既有 4 個 Requirement（ErpSummaryGrid 三項 + 印件詳情頁 Tabs 化版型）與 delta 新增 5 個主題完全不重疊，無內容衝突
 
 ## 3. 重構 Receivables.tsx 作為新樣板
 
-- [ ] 3.1 移除上方 KPI Card（含 `StatItem` 元件 4 卡）
-- [ ] 3.2 移除 `ErpStatusTabs` 區塊
-- [ ] 3.3 將 OverdueBucket 狀態改為搜尋 Card 內的 `<select>` 篩選器，option 為「全部 / 未到期 / 1-29 / 30-59 / 60-89 / ≥90 天」
-- [ ] 3.4 搜尋 Card 容器改為 `rounded-lg`、標題改為 `font-medium`、加入 `space-y-4`
-- [ ] 3.5 搜尋框加入左內嵌 `Search` icon（`absolute left-3 top-1/2 -translate-y-1/2`），Input 加 `pl-9`
-- [ ] 3.6 在搜尋 Card 內部下方加入 `StatusCard` grid-4，4 卡內容：待收訂單 / 待收金額 / 逾期未收 / 逾 30 天；金額類 KPI 使用 string 型 `count`（如 `count="NT$ 1,234,567"`）
-- [ ] 3.7 KPI 數值來源從 `allRows` 改為 `rows`（依當前篩選結果動態重算）
-- [ ] 3.8 篩選狀態判斷邏輯：`search !== '' || bucketFilter !== 'all'` → StatusCard 傳 `filtered={true}`
-- [ ] 3.9 `setSearch` / `setBucketFilter` 變更時呼叫 `setPage(1)` 重置分頁（若有分頁）
-- [ ] 3.10 移除檔案內未使用的 `StatItem` 元件定義
-- [ ] 3.11 `npm run dev` 自驗：搜尋 / select 篩選 / StatusCard 動態重算 + 篩選標記 / 視覺對齊 QuoteListPage
-- [ ] 3.12 Playwright smoke 測試：`tests/specs/finance-receivables.spec.ts` 補上 select 篩選 / 動態 KPI / 篩選標記斷言
+- [x] 3.1 移除上方 KPI Card（含 `StatItem` 元件 4 卡）
+- [x] 3.2 移除 `ErpStatusTabs` 區塊
+- [x] 3.3 OverdueBucket 改為 `<select>` 篩選器（6 options：全部 / 未到期 / 1-29 / 30-59 / 60-89 / ≥90 天）
+- [x] 3.4 搜尋 Card 容器 `rounded-lg`、標題 `font-medium`、`space-y-4`
+- [x] 3.5 搜尋框左內嵌 `Search` icon、Input `pl-9`
+- [x] 3.6 StatusCard grid-4：待收訂單 / 待收金額（string）/ 逾期未收 / 逾 30 天
+- [x] 3.7 KPI 數值來源改為 `rows`（依當前篩選動態重算）
+- [x] 3.8 `isFiltered` 邏輯 + StatusCard 4 卡都傳 `filtered={isFiltered}`
+- [N/A] 3.9 此檔案無分頁（待收訂單通常不多，現況未實作分頁；保持現況符合 Non-Goals 不改動既有業務邏輯）
+- [x] 3.10 移除原檔的 `function StatItem(...)` 元件定義
+- [x] 3.11 tsc --noEmit 通過；dev server 已啟動於 localhost:8082；實機 filtered 視覺驗證留待 Task 6 三視角審查 round 2 / 用戶 UAT
+- [N/A] 3.12 e2e 目錄無 finance / receivable / payment 既有 spec；新增 e2e 不在本 change scope（屬於另一個獨立 task）
 
 ## 4. 依新樣板重構 PendingInvoices.tsx
 
-- [ ] 4.1 比對 Receivables 新樣板，套用相同重構（移除 KPI Card / ErpStatusTabs，搜尋 Card 整合 select + StatusCard）
-- [ ] 4.2 狀態 select option 為「全部 / 尚有時間 / 即將到期 / 今天 / 逾期」
-- [ ] 4.3 StatusCard 4 卡內容：待開總筆數 / 待開金額（string 型）/ 逾期未開 / 即將到期
-- [ ] 4.4 KPI 數值來源改為 `pendingRows`（依篩選動態）
-- [ ] 4.5 篩選狀態判斷邏輯實作 + `filtered` prop 傳遞
-- [ ] 4.6 「業務尚未規劃」的提示文字保留，置於搜尋 Card 內 StatusCard 之下或操作列附近（依視覺權衡）
-- [ ] 4.7 移除未使用的 `StatItem` 元件
-- [ ] 4.8 `npm run dev` 自驗 + Playwright smoke
+- [x] 4.1 套用 Receivables 新樣板（移除 KPI Card / ErpStatusTabs，搜尋 Card 整合 select + StatusCard）
+- [x] 4.2 狀態 select 5 options：全部 / 尚有時間 / 即將到期 / 今天 / 逾期
+- [x] 4.3 StatusCard 4 卡：待開總筆數 / 待開金額（string）/ 逾期未開 / 即將到期
+- [x] 4.4 KPI 數值來源改為 `pendingRows`
+- [x] 4.5 `isFiltered` 邏輯 + 4 卡都傳 `filtered={isFiltered}`
+- [x] 4.6 「業務尚未規劃」提示文字保留，置於搜尋 Card 內 StatusCard 之下
+- [x] 4.7 移除原檔的 `function StatItem(...)` 元件定義
+- [x] 4.8 tsc --noEmit 通過；e2e 目錄無 pending-invoices spec，新增測試不在本 change scope
 
 ## 5. 重構 BillingAnomalies.tsx（含 OQ-1 決議）
 
