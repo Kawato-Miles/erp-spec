@@ -91,8 +91,8 @@
 
 ## 7. 跨檔案一致性檢查 + 收尾
 
-- [ ] 7.1 觸發 doc-audit skill 檢查 DESIGN.md / spec / 6 個程式檔（StatusCard / Receivables / PendingInvoices / BillingAnomalies / ConsultationRequestList / QuoteListPage）之間的一致性
-- [ ] 7.2 確認 `memory/shared/prototype-guidelines.md` 是否需補充列表頁規範指引（如有，附帶更新）
-- [ ] 7.3 在 Vault `08-open-questions/` 開卡：**OQ-0「款項管理頁面業務日常的最重要決策」**作長期追蹤（CEO 視角審查提出，獨立於本 change）；OQ-1 解答後同步更新 Vault；OQ-2 / OQ-3 / OQ-4 列為 follow-up
+- [x] 7.1 doc-audit 手動執行：6 個程式檔（StatusCard / Receivables / PendingInvoices / BillingAnomalies / ConsultationRequestList / QuoteListPage）與 DESIGN.md / spec 一致；**發現遺留違規**：`OrderList.tsx` / `WorkOrderList.tsx` 視覺細節違規（rounded-xl / font-bold / 搜尋框無 Search icon），但不屬 ErpStatusTabs 主篩違規，不在本 change scope，列為下次 follow-up change
+- [x] 7.2 `memory/shared/prototype-guidelines.md` 不涉及列表頁 UI 規範細節（UI 規範在 DESIGN.md），無需更新
+- [x] 7.3 Vault OQ-0 已開卡 `XM-001`（propose 階段完成）；OQ-1 已於 Task 5.1 決議方案 B，記錄留在 design.md（屬 change-local OQ，archive 時 sync）；OQ-2 / OQ-3 / OQ-4 列為 follow-up 留 design.md
 - [ ] 7.4 `/opsx:verify` 驗證實作與 spec 一致
 - [ ] 7.5 `/opsx:archive` 歸檔 change，main spec 自動合併 5 個 ADDED Requirement
