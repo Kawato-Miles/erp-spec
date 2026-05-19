@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 880" font-family="-apple-system, BlinkMacSystemFont, 'Microsoft JhengHei', sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="#444"/>
+    </marker>
+    <marker id="arrowblue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="#003366"/>
+    </marker>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="960" height="880" fill="#FAFAFA"/>
+
+  <!-- 標題區 -->
+  <text x="480" y="34" text-anchor="middle" font-size="22" font-weight="bold" fill="#222">齊套規則架構圖（現況 / C1 過渡期沿用）</text>
+  <text x="480" y="58" text-anchor="middle" font-size="13" fill="#666">桶板原理：每一層級取 min，最弱環節決定齊套數；超額產出無法折算其他環節</text>
+
+  <!-- 分隔線 -->
+  <line x1="40" y1="78" x2="920" y2="78" stroke="#CCC" stroke-width="1"/>
+
+  <!-- ============= 左半邊：資料階層 ============= -->
+  <text x="220" y="106" text-anchor="middle" font-size="15" font-weight="bold" fill="#003366">資料模型階層</text>
+
+  <!-- Order -->
+  <rect x="140" y="120" width="180" height="40" rx="6" fill="#FFE4B5" stroke="#8B5A2B" stroke-width="1.5"/>
+  <text x="230" y="146" text-anchor="middle" font-size="14" fill="#222">訂單 Order</text>
+
+  <!-- PrintItem -->
+  <rect x="140" y="186" width="180" height="48" rx="6" fill="#B0E0E6" stroke="#1E5F7A" stroke-width="1.5"/>
+  <text x="230" y="206" text-anchor="middle" font-size="14" font-weight="bold" fill="#222">印件 PrintItem</text>
+  <text x="230" y="223" text-anchor="middle" font-size="11" fill="#444">出貨單位 / 客戶可見成品</text>
+
+  <!-- WorkOrder -->
+  <rect x="140" y="258" width="180" height="48" rx="6" fill="#90EE90" stroke="#2D7A2D" stroke-width="1.5"/>
+  <text x="230" y="278" text-anchor="middle" font-size="14" font-weight="bold" fill="#222">工單 WorkOrder</text>
+  <text x="230" y="295" text-anchor="middle" font-size="11" fill="#444">同一工序流程的生產批次</text>
+
+  <!-- Task -->
+  <rect x="140" y="330" width="180" height="40" rx="6" fill="#FFD1DC" stroke="#A0507A" stroke-width="1.5"/>
+  <text x="230" y="356" text-anchor="middle" font-size="14" fill="#222">任務 Task（工序分組）</text>
+
+  <!-- ProductionTask -->
+  <rect x="140" y="394" width="180" height="58" rx="6" fill="#FFA07A" stroke="#A0532E" stroke-width="1.5"/>
+  <text x="230" y="414" text-anchor="middle" font-size="14" font-weight="bold" fill="#222">生產任務 ProductionTask</text>
+  <text x="230" y="432" text-anchor="middle" font-size="11" fill="#444">派工到師傅 / 供應商</text>
+  <text x="230" y="447" text-anchor="middle" font-size="11" fill="#A0532E">affects_product 旗標</text>
+
+  <!-- WorkRecord -->
+  <rect x="40" y="484" width="170" height="60" rx="6" fill="#FFFACD" stroke="#A0822E" stroke-width="1.5"/>
+  <text x="125" y="502" text-anchor="middle" font-size="12" font-weight="bold" fill="#222">WorkRecord</text>
+  <text x="125" y="518" text-anchor="middle" font-size="11" fill="#444">reported_quantity</text>
+  <text x="125" y="534" text-anchor="middle" font-size="10" fill="#888">（報工：驅動製作中狀態）</text>
+
+  <!-- QCRecord -->
+  <rect x="230" y="484" width="190" height="60" rx="6" fill="#FFFACD" stroke="#A0822E" stroke-width="1.5"/>
+  <text x="325" y="502" text-anchor="middle" font-size="12" font-weight="bold" fill="#222">QCRecord</text>
+  <text x="325" y="518" text-anchor="middle" font-size="11" fill="#444">passed_quantity / failed_quantity</text>
+  <text x="325" y="534" text-anchor="middle" font-size="10" fill="#888">C1 後 → ProductionTask type=qc</text>
+
+  <!-- 階層連線 -->
+  <line x1="230" y1="160" x2="230" y2="186" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="230" y1="234" x2="230" y2="258" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="230" y1="306" x2="230" y2="330" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="230" y1="370" x2="230" y2="394" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="190" y1="452" x2="125" y2="484" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="270" y1="452" x2="325" y2="484" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ============= 中間：聚合方向指示 ============= -->
+  <text x="460" y="290" text-anchor="middle" font-size="11" fill="#003366" transform="rotate(-90 460 290)">由下而上聚合 ↑</text>
+
+  <!-- ============= 右半邊：齊套計算 ============= -->
+  <text x="740" y="106" text-anchor="middle" font-size="15" font-weight="bold" fill="#003366">齊套計算（由下而上 5 層）</text>
+
+  <!-- L1 -->
+  <rect x="500" y="120" width="420" height="62" rx="6" fill="#E6F2FF" stroke="#003366" stroke-width="1.5"/>
+  <text x="514" y="142" font-size="13" font-weight="bold" fill="#003366">L1 · 生產任務層（單位：件）</text>
+  <text x="514" y="160" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">pt_qc_passed = sum(QC.passed_quantity where status = 已完成)</text>
+  <text x="514" y="175" font-size="10" fill="#666">同一 PT 所有已完成 QC 紀錄通過數加總，未齊套</text>
+
+  <!-- L2 -->
+  <rect x="500" y="194" width="420" height="80" rx="6" fill="#E6F2FF" stroke="#003366" stroke-width="1.5"/>
+  <text x="514" y="216" font-size="13" font-weight="bold" fill="#003366">L2 · 工單完成度（PT 間齊套，單位：份）</text>
+  <text x="514" y="234" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">工單完成度 = floor( min over affects_product PT</text>
+  <text x="540" y="250" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">( pt_qc_passed / quantity_per_work_order ) )</text>
+  <text x="514" y="266" font-size="10" fill="#666">取所有「影響成品」PT 完成比例最小（短板）</text>
+
+  <!-- L3 -->
+  <rect x="500" y="286" width="420" height="60" rx="6" fill="#E6F2FF" stroke="#003366" stroke-width="1.5"/>
+  <text x="514" y="308" font-size="13" font-weight="bold" fill="#003366">L3 · 工單入庫件數（單位轉換：份 → 件）</text>
+  <text x="514" y="326" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">wo_warehouse_qty = 工單完成度 × quantity_per_print_item</text>
+  <text x="514" y="340" font-size="10" fill="#666">從「份」轉「件」，得工單可入庫件數</text>
+
+  <!-- L4 -->
+  <rect x="500" y="358" width="420" height="80" rx="6" fill="#E6F2FF" stroke="#003366" stroke-width="1.5"/>
+  <text x="514" y="380" font-size="13" font-weight="bold" fill="#003366">L4 · 印件入庫件數（WO 間齊套，單位：件）</text>
+  <text x="514" y="398" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">pi_warehouse_qty = floor( min over WO</text>
+  <text x="540" y="414" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">( 工單完成度 / 每份印件生產數量 ) )</text>
+  <text x="514" y="430" font-size="10" fill="#666">跨工單聚合，取最小完成份數（再次短板）</text>
+
+  <!-- L5 -->
+  <rect x="500" y="450" width="420" height="78" rx="6" fill="#FFE4E1" stroke="#8B0000" stroke-width="1.5"/>
+  <text x="514" y="472" font-size="13" font-weight="bold" fill="#8B0000">L5 · 出貨上限（出貨流程）</text>
+  <text x="514" y="490" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">可出貨數 = pi_warehouse_qty - 已出貨數</text>
+  <text x="514" y="505" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">作廢回算 = pi_warehouse_qty - (已出貨 - 作廢)</text>
+  <text x="514" y="521" font-size="10" fill="#666">入庫條件：QC 通過（C4 後改為品檢通過）</text>
+
+  <!-- 層級之間箭頭 -->
+  <line x1="710" y1="182" x2="710" y2="194" stroke="#003366" stroke-width="1.5" marker-end="url(#arrowblue)"/>
+  <line x1="710" y1="274" x2="710" y2="286" stroke="#003366" stroke-width="1.5" marker-end="url(#arrowblue)"/>
+  <line x1="710" y1="346" x2="710" y2="358" stroke="#003366" stroke-width="1.5" marker-end="url(#arrowblue)"/>
+  <line x1="710" y1="438" x2="710" y2="450" stroke="#003366" stroke-width="1.5" marker-end="url(#arrowblue)"/>
+
+  <!-- 資料 → 計算的橫向連結 -->
+  <line x1="420" y1="514" x2="498" y2="150" stroke="#A0822E" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <line x1="320" y1="423" x2="498" y2="234" stroke="#A0532E" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <line x1="320" y1="282" x2="498" y2="396" stroke="#2D7A2D" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <line x1="320" y1="210" x2="498" y2="490" stroke="#1E5F7A" stroke-width="1.2" stroke-dasharray="4 3"/>
+
+  <!-- ============= 底部：具體範例 ============= -->
+  <line x1="40" y1="556" x2="920" y2="556" stroke="#CCC" stroke-width="1"/>
+  <text x="480" y="582" text-anchor="middle" font-size="15" font-weight="bold" fill="#003366">具體範例（取自 business-processes spec）</text>
+
+  <!-- 範例 1 -->
+  <rect x="40" y="600" width="420" height="140" rx="6" fill="#F5F5DC" stroke="#888" stroke-width="1.2"/>
+  <text x="56" y="622" font-size="13" font-weight="bold" fill="#222">範例 1：PT 間齊套（L2）</text>
+  <text x="56" y="644" font-size="11" fill="#444">工單 W 含兩個 affects_product PT：</text>
+  <text x="70" y="664" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">PT-A: pt_qc_passed = 2100, qpwo = 1000</text>
+  <text x="70" y="680" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">PT-B: pt_qc_passed =  600, qpwo =  300</text>
+  <text x="56" y="704" font-size="12" font-weight="bold" fill="#003366">工單完成度</text>
+  <text x="70" y="722" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">= floor(min(2100/1000, 600/300))</text>
+  <text x="70" y="736" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">= floor(min(2.1, 2.0)) = 2 份（PT-B 為短板）</text>
+
+  <!-- 範例 2 -->
+  <rect x="480" y="600" width="440" height="140" rx="6" fill="#F5F5DC" stroke="#888" stroke-width="1.2"/>
+  <text x="496" y="622" font-size="13" font-weight="bold" fill="#222">範例 2：WO 間齊套（L4 / 出貨）</text>
+  <text x="496" y="644" font-size="11" fill="#444">印件 P 含兩個工單（每份印件各需 1 份）：</text>
+  <text x="510" y="664" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">WO-A: wo_warehouse_qty = 500 件</text>
+  <text x="510" y="680" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">WO-B: wo_warehouse_qty = 300 件</text>
+  <text x="496" y="704" font-size="12" font-weight="bold" fill="#003366">印件可出貨上限</text>
+  <text x="510" y="722" font-size="11" font-family="ui-monospace, Menlo, monospace" fill="#222">= min(500, 300) = 300 件</text>
+  <text x="510" y="736" font-size="11" fill="#666">（WO-B 為短板；WO-A 多生產的 200 件無法折算）</text>
+
+  <!-- 重點精神 -->
+  <rect x="40" y="758" width="880" height="100" rx="6" fill="#FFFFCC" stroke="#8B0000" stroke-width="1.5"/>
+  <text x="56" y="780" font-size="13" font-weight="bold" fill="#8B0000">核心精神</text>
+  <text x="56" y="800" font-size="11" fill="#222">1. 三層 floor(min(...)) 結構：PT 間齊套（L2）→ 單位轉換（L3）→ WO 間齊套（L4）</text>
+  <text x="56" y="817" font-size="11" fill="#222">2. 桶板原理：每一層級取最小完成比例，最弱環節決定齊套數；超額產出不可折算其他環節</text>
+  <text x="56" y="834" font-size="11" fill="#222">3. 「影響成品」（affects_product）旗標決定哪些 PT 計入 L2：FALSE 的 PT 不阻擋齊套（例如打樣 / 試做）</text>
+  <text x="56" y="851" font-size="11" fill="#444">4. C4 後預期變更：入庫條件由「QC 通過」改為「印件層品檢通過」，L4 公式以品檢通過數為基準重寫</text>
+</svg>

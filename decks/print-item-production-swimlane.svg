@@ -1,0 +1,254 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1900 1280" font-family="-apple-system, BlinkMacSystemFont, 'Microsoft JhengHei', sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="#333"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="#D2691E"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="#1E5F7A"/>
+    </marker>
+  </defs>
+
+  <rect width="1900" height="1280" fill="#FAFAFA"/>
+
+  <text x="950" y="32" text-anchor="middle" font-size="22" font-weight="bold">印件生產服務流程泳道圖（C1+C3+C4 完成後 / MES 標準模式）</text>
+  <text x="950" y="56" text-anchor="middle" font-size="13" fill="#666">主流程不被 NCR 阻擋 / 補生產 + 分批提前統一為「Rework Order with Reference」子 PT 鏈機制</text>
+
+  <rect x="110" y="78" width="380" height="42" fill="#003366"/>
+  <text x="300" y="105" text-anchor="middle" font-size="15" font-weight="bold" fill="#FFF">規劃期</text>
+  <rect x="490" y="78" width="640" height="42" fill="#003366"/>
+  <text x="810" y="105" text-anchor="middle" font-size="15" font-weight="bold" fill="#FFF">生產執行</text>
+  <rect x="1130" y="78" width="450" height="42" fill="#003366"/>
+  <text x="1355" y="105" text-anchor="middle" font-size="15" font-weight="bold" fill="#FFF">品檢與入庫</text>
+  <rect x="1580" y="78" width="320" height="42" fill="#003366"/>
+  <text x="1740" y="105" text-anchor="middle" font-size="15" font-weight="bold" fill="#FFF">出貨</text>
+
+  <line x1="490" y1="120" x2="490" y2="930" stroke="#003366" stroke-width="1" stroke-dasharray="8 4"/>
+  <line x1="1130" y1="120" x2="1130" y2="930" stroke="#003366" stroke-width="1" stroke-dasharray="8 4"/>
+  <line x1="1580" y1="120" x2="1580" y2="930" stroke="#003366" stroke-width="1" stroke-dasharray="8 4"/>
+
+  <line x1="0" y1="120" x2="1900" y2="120" stroke="#333" stroke-width="2"/>
+  <line x1="0" y1="270" x2="1900" y2="270" stroke="#888"/>
+  <line x1="0" y1="400" x2="1900" y2="400" stroke="#888"/>
+  <line x1="0" y1="530" x2="1900" y2="530" stroke="#888"/>
+  <line x1="0" y1="660" x2="1900" y2="660" stroke="#888"/>
+  <line x1="0" y1="790" x2="1900" y2="790" stroke="#888"/>
+  <line x1="0" y1="930" x2="1900" y2="930" stroke="#333" stroke-width="2"/>
+  <line x1="110" y1="120" x2="110" y2="930" stroke="#333" stroke-width="2"/>
+
+  <rect x="0" y="120" width="110" height="150" fill="#FFE4B5"/>
+  <text x="55" y="200" text-anchor="middle" font-size="15" font-weight="bold" fill="#A0532E">印務</text>
+  <rect x="0" y="270" width="110" height="130" fill="#E0FFE0"/>
+  <text x="55" y="340" text-anchor="middle" font-size="15" font-weight="bold" fill="#2D7A2D">生管</text>
+  <rect x="0" y="400" width="110" height="130" fill="#E0F0FF"/>
+  <text x="55" y="460" text-anchor="middle" font-size="14" font-weight="bold" fill="#1E5F7A">師傅 / 廠商</text>
+  <rect x="0" y="530" width="110" height="130" fill="#FFFACD"/>
+  <text x="55" y="595" text-anchor="middle" font-size="14" font-weight="bold" fill="#A0822E">QC / 品檢</text>
+  <rect x="0" y="660" width="110" height="130" fill="#FFE0D0"/>
+  <text x="55" y="730" text-anchor="middle" font-size="15" font-weight="bold" fill="#8B5A2B">出貨</text>
+  <rect x="0" y="790" width="110" height="140" fill="#E8E8E8"/>
+  <text x="55" y="865" text-anchor="middle" font-size="15" font-weight="bold" fill="#666">系統</text>
+
+  <!-- ============ 規劃期 ============ -->
+  <circle cx="135" cy="195" r="13" fill="#000"/>
+
+  <rect x="170" y="145" width="310" height="110" rx="6" fill="#FFE4B5" stroke="#A0532E" stroke-width="1.5"/>
+  <text x="325" y="167" text-anchor="middle" font-size="13" font-weight="bold">工單規劃（一次性決定）</text>
+  <text x="325" y="185" text-anchor="middle" font-size="11">建 production PT + 屬性逐筆設定：</text>
+  <text x="325" y="200" text-anchor="middle" font-size="11">affects_product / requires_qc /</text>
+  <text x="325" y="215" text-anchor="middle" font-size="11">require_transfer / 排序（相依性）</text>
+  <text x="325" y="234" text-anchor="middle" font-size="10" fill="#666">決定品檢模式（整批 / 分批）</text>
+
+  <line x1="325" y1="255" x2="325" y2="820" stroke="#666" stroke-width="1.2"/>
+
+  <rect x="170" y="820" width="310" height="80" rx="6" fill="#E0E0E0" stroke="#666" stroke-width="1.5"/>
+  <text x="325" y="842" text-anchor="middle" font-size="13" font-weight="bold">自動建 QC PT + 品檢 PT</text>
+  <text x="325" y="860" text-anchor="middle" font-size="11">QC PT：依 requires_qc 一對一</text>
+  <text x="325" y="875" text-anchor="middle" font-size="11">品檢 PT：依印務模式建立</text>
+  <text x="325" y="890" text-anchor="middle" font-size="10" fill="#666">pt_target_qty 同步寫入</text>
+
+  <line x1="480" y1="860" x2="510" y2="860" stroke="#333" stroke-width="1.5"/>
+  <line x1="510" y1="860" x2="510" y2="335" stroke="#333" stroke-width="1.5"/>
+  <line x1="510" y1="335" x2="525" y2="335" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ============ 生產執行 ============ -->
+
+  <rect x="525" y="295" width="220" height="80" rx="6" fill="#E0FFE0" stroke="#2D7A2D" stroke-width="1.5"/>
+  <text x="635" y="317" text-anchor="middle" font-size="13" font-weight="bold">派工生產 PT</text>
+  <text x="635" y="335" text-anchor="middle" font-size="11">依排序 + 相依性檢查</text>
+  <text x="635" y="350" text-anchor="middle" font-size="10" fill="#666">前置：上游 QC / 轉交完成（不看數量）</text>
+  <text x="635" y="365" text-anchor="middle" font-size="10" fill="#1E5F7A">含主鏈 + 子 PT 鏈派工</text>
+
+  <line x1="635" y1="375" x2="635" y2="425" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="525" y="425" width="220" height="80" rx="6" fill="#E0F0FF" stroke="#1E5F7A" stroke-width="1.5"/>
+  <text x="635" y="447" text-anchor="middle" font-size="13" font-weight="bold">報工（一次性）</text>
+  <text x="635" y="465" text-anchor="middle" font-size="11">pt_produced_qty 確定</text>
+  <text x="635" y="480" text-anchor="middle" font-size="10" fill="#666">主鏈 / 子鏈 各自報工累計</text>
+
+  <line x1="745" y1="465" x2="780" y2="465" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="780" y="425" width="220" height="80" rx="6" fill="#E0F0FF" stroke="#1E5F7A" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="890" y="447" text-anchor="middle" font-size="13" font-weight="bold">執行物流交付（若需要）</text>
+  <text x="890" y="465" text-anchor="middle" font-size="11">依系統自動建之 TransferTicket</text>
+  <text x="890" y="480" text-anchor="middle" font-size="10" fill="#666">送達後啟動下游 PT</text>
+
+  <line x1="890" y1="505" x2="890" y2="555" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="780" y="555" width="220" height="80" rx="6" fill="#FFFACD" stroke="#A0822E" stroke-width="1.5"/>
+  <text x="890" y="577" text-anchor="middle" font-size="13" font-weight="bold">QC 驗收（一次性）</text>
+  <text x="890" y="595" text-anchor="middle" font-size="11">填 passed_quantity</text>
+  <text x="890" y="610" text-anchor="middle" font-size="10" fill="#666">系統算 failed = target - passed</text>
+
+  <line x1="890" y1="635" x2="890" y2="820" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="780" y="820" width="220" height="80" rx="6" fill="#E0E0E0" stroke="#666" stroke-width="1.5"/>
+  <text x="890" y="842" text-anchor="middle" font-size="13" font-weight="bold">QC 結果累計</text>
+  <text x="890" y="860" text-anchor="middle" font-size="11">pt_qc_passed 更新</text>
+  <text x="890" y="875" text-anchor="middle" font-size="10" fill="#D2691E">若 failed &gt; 0：自動建 NCR</text>
+  <text x="890" y="890" text-anchor="middle" font-size="10" fill="#666">通知印務（不阻擋主流程）</text>
+
+  <!-- 主流程繼續：QC 累計 → 觸發下游 PT（回到派工） -->
+  <line x1="890" y1="900" x2="890" y2="915" stroke="#333" stroke-width="1.5"/>
+  <line x1="890" y1="915" x2="450" y2="915" stroke="#333" stroke-width="1.5"/>
+  <line x1="450" y1="915" x2="450" y2="335" stroke="#333" stroke-width="1.5"/>
+  <line x1="450" y1="335" x2="525" y2="335" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="3 2"/>
+  <text x="455" y="700" font-size="10" fill="#333" transform="rotate(-90 455 700)">下游 PT 派工（繼續主流程）</text>
+
+  <!-- NCR 通知印務 -->
+  <line x1="1000" y1="860" x2="1020" y2="860" stroke="#D2691E" stroke-width="1.5"/>
+  <line x1="1020" y1="860" x2="1020" y2="200" stroke="#D2691E" stroke-width="1.5"/>
+  <line x1="1020" y1="200" x2="1030" y2="200" stroke="#D2691E" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+
+  <!-- B1. NCR Disposition (印務) -->
+  <rect x="1030" y="145" width="270" height="125" rx="6" fill="#FFF5E0" stroke="#D2691E" stroke-width="2"/>
+  <text x="1165" y="167" text-anchor="middle" font-size="13" font-weight="bold" fill="#D2691E">NCR Disposition（QC 失敗）</text>
+  <text x="1165" y="186" text-anchor="middle" font-size="11">印務檢視 NCR、三選一處置：</text>
+  <text x="1045" y="205" font-size="11">A. Rework → 建子 PT 鏈補做</text>
+  <text x="1045" y="221" font-size="11">B. Use-As-Is → 鎖印件數 + 業務退款</text>
+  <text x="1045" y="237" font-size="11">C. Scrap → 標記放棄</text>
+  <text x="1165" y="258" text-anchor="middle" font-size="10" fill="#666">並行於主流程，不阻擋下游</text>
+
+  <!-- Rework 分支：印務 → 系統建子 PT 鏈 → 派工 -->
+  <line x1="1165" y1="270" x2="1165" y2="820" stroke="#1E5F7A" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+
+  <rect x="1030" y="820" width="270" height="80" rx="6" fill="#E0F8FF" stroke="#1E5F7A" stroke-width="1.5"/>
+  <text x="1165" y="842" text-anchor="middle" font-size="13" font-weight="bold" fill="#1E5F7A">建 Rework 子 PT 鏈</text>
+  <text x="1165" y="860" text-anchor="middle" font-size="11">從失敗工序往下到品檢</text>
+  <text x="1165" y="875" text-anchor="middle" font-size="10" fill="#666">parent_production_task_id 指向原 PT</text>
+  <text x="1165" y="890" text-anchor="middle" font-size="10" fill="#1E5F7A">累計回原 PT（衍生公式）</text>
+
+  <!-- 子 PT 鏈回派工 -->
+  <line x1="1030" y1="860" x2="450" y2="860" stroke="#1E5F7A" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="700" y="855" text-anchor="middle" font-size="10" fill="#1E5F7A">子 PT 鏈派工（並行主流程）</text>
+
+  <!-- ============ 品檢與入庫 ============ -->
+  <line x1="1300" y1="200" x2="1340" y2="200" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="1340" y="145" width="220" height="125" rx="6" fill="#FFE4B5" stroke="#A0532E" stroke-width="1.5"/>
+  <text x="1450" y="167" text-anchor="middle" font-size="13" font-weight="bold">觸發品檢 + Disposition</text>
+  <text x="1450" y="186" text-anchor="middle" font-size="11">所有 production / QC 完成</text>
+  <text x="1450" y="200" text-anchor="middle" font-size="11">→ 印務派品檢 PT</text>
+  <text x="1450" y="219" text-anchor="middle" font-size="10" fill="#666">品檢失敗時：</text>
+  <text x="1340" y="235" font-size="10">Rework / Use-As-Is / Scrap</text>
+  <text x="1450" y="255" text-anchor="middle" font-size="10" fill="#D2691E">同 QC NCR 處置邏輯</text>
+
+  <line x1="1450" y1="270" x2="1450" y2="555" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="1340" y="555" width="220" height="80" rx="6" fill="#FFFACD" stroke="#A0822E" stroke-width="1.5"/>
+  <text x="1450" y="577" text-anchor="middle" font-size="13" font-weight="bold">品檢驗收（一次性）</text>
+  <text x="1450" y="595" text-anchor="middle" font-size="11">填 passed_quantity</text>
+  <text x="1450" y="610" text-anchor="middle" font-size="10" fill="#666">系統算 failed = target - passed</text>
+
+  <line x1="1450" y1="635" x2="1450" y2="820" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="1340" y="820" width="220" height="80" rx="6" fill="#E0E0E0" stroke="#666" stroke-width="1.5"/>
+  <text x="1450" y="842" text-anchor="middle" font-size="13" font-weight="bold">入庫累計 + NCR</text>
+  <text x="1450" y="860" text-anchor="middle" font-size="11">pi_warehouse_qty += passed</text>
+  <text x="1450" y="875" text-anchor="middle" font-size="10" fill="#A0532E">通過部分先入庫（不卡）</text>
+  <text x="1450" y="890" text-anchor="middle" font-size="10" fill="#D2691E">失敗自動建 NCR</text>
+
+  <!-- 品檢 NCR 通知印務 -->
+  <line x1="1560" y1="860" x2="1575" y2="860" stroke="#D2691E" stroke-width="1.5"/>
+  <line x1="1575" y1="860" x2="1575" y2="208" stroke="#D2691E" stroke-width="1.5"/>
+  <line x1="1575" y1="208" x2="1560" y2="208" stroke="#D2691E" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+
+  <line x1="1450" y1="270" x2="1450" y2="200" stroke="#333" stroke-width="1.5"/>
+  <line x1="1560" y1="200" x2="1605" y2="200" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ============ 出貨 ============ -->
+
+  <rect x="1605" y="145" width="270" height="125" rx="6" fill="#FFE4B5" stroke="#A0532E" stroke-width="1.5"/>
+  <text x="1740" y="167" text-anchor="middle" font-size="13" font-weight="bold">決定出貨數量</text>
+  <text x="1740" y="186" text-anchor="middle" font-size="11">出貨量 ≤ pi_warehouse_qty</text>
+  <text x="1740" y="201" text-anchor="middle" font-size="11">可分多次（執行期決策）</text>
+  <text x="1740" y="220" text-anchor="middle" font-size="10" fill="#666">隨入庫上升可分批出</text>
+  <text x="1740" y="238" text-anchor="middle" font-size="10" fill="#A0532E">議價交付：印務鎖印件數</text>
+  <text x="1740" y="255" text-anchor="middle" font-size="10" fill="#A0532E">→ 業務處理訂單退款</text>
+
+  <line x1="1740" y1="270" x2="1740" y2="685" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="1605" y="685" width="270" height="80" rx="6" fill="#FFE0D0" stroke="#8B5A2B" stroke-width="1.5"/>
+  <text x="1740" y="707" text-anchor="middle" font-size="13" font-weight="bold">建出貨單 / 執行出貨</text>
+  <text x="1740" y="725" text-anchor="middle" font-size="11">pi_shipped_qty 累計</text>
+  <text x="1740" y="740" text-anchor="middle" font-size="10" fill="#666">作廢可回算可出貨額度</text>
+
+  <line x1="1740" y1="765" x2="1740" y2="795" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <circle cx="1740" cy="808" r="12" fill="#FFF" stroke="#000" stroke-width="2"/>
+  <circle cx="1740" cy="808" r="6" fill="#000"/>
+  <text x="1740" y="840" text-anchor="middle" font-size="11">結束 / 分批續</text>
+
+  <!-- ============ 圖例與說明 ============ -->
+  <rect x="40" y="960" width="1820" height="300" rx="6" fill="#FFFFFF" stroke="#888"/>
+  <text x="950" y="985" text-anchor="middle" font-size="14" font-weight="bold">圖例與說明</text>
+
+  <!-- 圖例第一行：節點類型 -->
+  <circle cx="80" cy="1010" r="8" fill="#000"/>
+  <text x="100" y="1014" font-size="11">開始</text>
+  <circle cx="170" cy="1010" r="10" fill="#FFF" stroke="#000" stroke-width="2"/>
+  <circle cx="170" cy="1010" r="5" fill="#000"/>
+  <text x="190" y="1014" font-size="11">結束</text>
+
+  <rect x="260" y="1000" width="50" height="20" fill="#FFE4B5" stroke="#A0532E"/>
+  <text x="320" y="1014" font-size="11">印務</text>
+  <rect x="380" y="1000" width="50" height="20" fill="#E0FFE0" stroke="#2D7A2D"/>
+  <text x="440" y="1014" font-size="11">生管</text>
+  <rect x="500" y="1000" width="50" height="20" fill="#E0F0FF" stroke="#1E5F7A"/>
+  <text x="560" y="1014" font-size="11">師傅 / 廠商</text>
+  <rect x="640" y="1000" width="50" height="20" fill="#FFFACD" stroke="#A0822E"/>
+  <text x="700" y="1014" font-size="11">QC / 品檢</text>
+  <rect x="780" y="1000" width="50" height="20" fill="#FFE0D0" stroke="#8B5A2B"/>
+  <text x="840" y="1014" font-size="11">出貨</text>
+  <rect x="900" y="1000" width="50" height="20" fill="#E0E0E0" stroke="#666"/>
+  <text x="960" y="1014" font-size="11">系統</text>
+  <rect x="1020" y="1000" width="50" height="20" fill="#FFF5E0" stroke="#D2691E" stroke-width="2"/>
+  <text x="1080" y="1014" font-size="11">NCR Disposition（決策）</text>
+  <rect x="1240" y="1000" width="50" height="20" fill="#E0F8FF" stroke="#1E5F7A"/>
+  <text x="1300" y="1014" font-size="11">Rework 子 PT 鏈</text>
+
+  <!-- 圖例第二行：線型 -->
+  <line x1="80" y1="1050" x2="120" y2="1050" stroke="#333" stroke-width="1.5"/>
+  <text x="130" y="1054" font-size="11">主流程箭頭</text>
+  <line x1="260" y1="1050" x2="300" y2="1050" stroke="#333" stroke-width="1.5" stroke-dasharray="3 2"/>
+  <text x="310" y="1054" font-size="11">主流程循環（下游 PT 派工）</text>
+  <line x1="540" y1="1050" x2="580" y2="1050" stroke="#D2691E" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+  <text x="590" y="1054" font-size="11">NCR 通知流程（QC / 品檢失敗）</text>
+  <line x1="820" y1="1050" x2="860" y2="1050" stroke="#1E5F7A" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="870" y="1054" font-size="11">Rework 子 PT 鏈派工（並行主流程）</text>
+  <rect x="1130" y="1040" width="50" height="20" fill="#FFF" stroke="#1E5F7A" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="1190" y="1054" font-size="11">條件性動作（依旗標決定是否執行）</text>
+
+  <!-- 核心原則 -->
+  <text x="60" y="1090" font-size="13" font-weight="bold" fill="#003366">核心原則</text>
+  <text x="60" y="1110" font-size="11">1. 工單規劃時印務一次決定所有 PT（含 QC、品檢、相依性、轉交、品檢分批模式）；執行期每筆 PT 一次性報工 / 驗收</text>
+  <text x="60" y="1127" font-size="11">2. PT 相依性 = 上游 QC 完成 + 上游轉交完成（不考慮數量，差額由 NCR Disposition 處理）；可並行多鏈</text>
+  <text x="60" y="1144" font-size="11">3. QC / 品檢失敗時系統自動建 NCR、主流程不中斷；印務做 Disposition 三選一處置</text>
+  <text x="60" y="1161" font-size="11">4. Rework = 子 PT 鏈（parent_production_task_id 指向原 PT），與主流程並行進行，累計回原 PT 的衍生欄位</text>
+  <text x="60" y="1178" font-size="11">5. 補生產與分批提前出貨採用「同一機制」（MES 業界稱 Rework Order with Reference / Partial Release）</text>
+  <text x="60" y="1195" font-size="11">6. 入庫依品檢回填 passed_quantity 計算（pi_warehouse_qty += passed），通過部分先入庫不卡；失敗部分由印務 Disposition 處理</text>
+  <text x="60" y="1212" font-size="11">7. 議價交付（Use-As-Is）= 印務鎖印件可入庫數量、業務負責訂單款項；分工原則：印務管印件、業務管款項</text>
+  <text x="60" y="1229" font-size="11">8. 工單異動發起者統一為印務，依既有異動審核流程（印務主管簽核 / 不需簽核）</text>
+  <text x="60" y="1246" font-size="11" fill="#D2691E">★ NCR + Disposition 為 MES 業界標準模式，避免拆 PT 破壞齊套規則</text>
+</svg>

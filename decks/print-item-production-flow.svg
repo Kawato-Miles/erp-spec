@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1620" font-family="-apple-system, BlinkMacSystemFont, 'Microsoft JhengHei', sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="#333"/>
+    </marker>
+    <marker id="arrowR" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="#8B0000"/>
+    </marker>
+    <marker id="arrowG" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="#666"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="1620" fill="#FAFAFA"/>
+
+  <!-- 標題 -->
+  <text x="600" y="36" text-anchor="middle" font-size="22" font-weight="bold" fill="#222">印件生產流程圖（C1 + C3 + C4 完成後）</text>
+  <text x="600" y="58" text-anchor="middle" font-size="13" fill="#666">規劃期決定模型：工單規劃時一次決定所有 PT；執行期每筆 PT 一次性報工 / 驗收</text>
+
+  <!-- 圖例 -->
+  <rect x="40" y="80" width="270" height="170" rx="6" fill="#FFFFFF" stroke="#888"/>
+  <text x="175" y="100" text-anchor="middle" font-size="13" font-weight="bold">圖例</text>
+  <circle cx="60" cy="120" r="8" fill="#000"/>
+  <text x="80" y="124" font-size="11">開始節點</text>
+  <circle cx="180" cy="120" r="10" fill="#FFF" stroke="#000" stroke-width="2"/>
+  <circle cx="180" cy="120" r="5" fill="#000"/>
+  <text x="200" y="124" font-size="11">結束節點</text>
+  <rect x="50" y="140" width="60" height="20" rx="10" fill="#FFE4B5" stroke="#666"/>
+  <text x="120" y="155" font-size="11">主流程動作</text>
+  <rect x="50" y="166" width="60" height="20" rx="10" fill="#FFFACD" stroke="#666"/>
+  <text x="120" y="181" font-size="11">QC 動作</text>
+  <rect x="50" y="192" width="60" height="20" rx="10" fill="#B0E0E6" stroke="#666"/>
+  <text x="120" y="207" font-size="11">品檢動作</text>
+  <rect x="50" y="218" width="60" height="20" rx="10" fill="#90EE90" stroke="#666"/>
+  <text x="120" y="233" font-size="11">入庫 / 同步</text>
+  <polygon points="225,144 245,154 225,164 205,154" fill="#FFEEBA" stroke="#666"/>
+  <text x="255" y="158" font-size="11">判斷分歧</text>
+  <rect x="205" y="170" width="40" height="16" fill="#FFE4E1" stroke="#8B0000"/>
+  <text x="255" y="183" font-size="11">補生產 (C3)</text>
+  <line x1="205" y1="200" x2="245" y2="200" stroke="#8B0000" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <text x="255" y="204" font-size="11">補生產回流</text>
+  <line x1="205" y1="220" x2="245" y2="220" stroke="#666" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <text x="255" y="224" font-size="11">出貨分次循環</text>
+
+  <!-- 開始 -->
+  <circle cx="600" cy="95" r="13" fill="#000"/>
+  <line x1="600" y1="108" x2="600" y2="124" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- A1 印件建立 -->
+  <rect x="500" y="124" width="200" height="42" rx="21" fill="#FFE4B5" stroke="#666"/>
+  <text x="600" y="151" text-anchor="middle" font-size="13">印件 PrintItem 建立</text>
+  <line x1="600" y1="166" x2="600" y2="182" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- A2 BOM 展算 -->
+  <rect x="500" y="182" width="200" height="42" rx="21" fill="#FFE4B5" stroke="#666"/>
+  <text x="600" y="209" text-anchor="middle" font-size="13">BOM 展算（建初步 WO / Task）</text>
+  <line x1="600" y1="224" x2="600" y2="240" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- A3 印務工單規劃（核心節點，雙框） -->
+  <rect x="340" y="240" width="520" height="180" rx="22" fill="#FFE4B5" stroke="#003366" stroke-width="2.5"/>
+  <text x="600" y="264" text-anchor="middle" font-size="14" font-weight="bold" fill="#003366">印務工單規劃（一次性決定所有 PT，規劃期）</text>
+  <line x1="360" y1="278" x2="840" y2="278" stroke="#888" stroke-width="0.8"/>
+  <text x="362" y="298" font-size="12">▸ 建 production PT（每筆設定 affects_product、requires_qc、require_transfer）</text>
+  <text x="362" y="318" font-size="12">▸ 系統依 requires_qc 自動建對應 QC PT（一對一，pt_target_qty 同上游）</text>
+  <text x="362" y="338" font-size="12">▸ 系統建品檢 PT（預設 1 個；印務可拆多個批次以對應分批出貨）</text>
+  <text x="362" y="358" font-size="12">▸ 印務設定 PT 相依性（previous_production_task_id）</text>
+  <text x="362" y="378" font-size="12">▸ 印務設定 require_transfer（轉交需求 → TransferTicket）</text>
+  <text x="362" y="404" font-size="11" font-style="italic" fill="#666">執行期不再動態新增 PT；如需臨時調整走「工單異動」既有路徑</text>
+  <line x1="600" y1="420" x2="600" y2="438" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- A4 執行階段 -->
+  <rect x="500" y="438" width="200" height="46" rx="22" fill="#E0E0E0" stroke="#666"/>
+  <text x="600" y="467" text-anchor="middle" font-size="13" font-weight="bold">執行階段（依相依性順序）</text>
+  <line x1="600" y1="484" x2="600" y2="500" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- B1 production PT 報工 -->
+  <rect x="470" y="500" width="260" height="64" rx="22" fill="#FFE4B5" stroke="#666"/>
+  <text x="600" y="524" text-anchor="middle" font-size="13" font-weight="bold">production PT 派工 → 報工</text>
+  <text x="600" y="542" text-anchor="middle" font-size="11">一次性報工，pt_produced_qty 一刻確定</text>
+  <text x="600" y="556" text-anchor="middle" font-size="10" fill="#666">前置 PT 完成才能執行（依相依性）</text>
+  <line x1="600" y1="564" x2="600" y2="582" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- D1 requires_qc? -->
+  <polygon points="600,584 740,640 600,696 460,640" fill="#FFEEBA" stroke="#666"/>
+  <text x="600" y="636" text-anchor="middle" font-size="13" font-weight="bold">requires_qc?</text>
+  <text x="600" y="654" text-anchor="middle" font-size="11">該 PT 規劃時是否帶 QC？</text>
+
+  <!-- YES -->
+  <text x="450" y="636" text-anchor="end" font-size="12" fill="#003366" font-weight="bold">YES</text>
+  <line x1="460" y1="640" x2="290" y2="640" stroke="#333" stroke-width="1.5"/>
+  <line x1="290" y1="640" x2="290" y2="710" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- NO -->
+  <text x="750" y="636" text-anchor="start" font-size="12" fill="#003366" font-weight="bold">NO</text>
+  <line x1="740" y1="640" x2="910" y2="640" stroke="#333" stroke-width="1.5"/>
+  <line x1="910" y1="640" x2="910" y2="900" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- B2 QC PT 驗收 -->
+  <rect x="170" y="710" width="240" height="64" rx="22" fill="#FFFACD" stroke="#666"/>
+  <text x="290" y="734" text-anchor="middle" font-size="13" font-weight="bold">QC PT 派工 → 驗收</text>
+  <text x="290" y="752" text-anchor="middle" font-size="11">一次性驗收（同報工規則）</text>
+  <text x="290" y="766" text-anchor="middle" font-size="10" fill="#666">填 passed_quantity / failed_quantity</text>
+  <line x1="290" y1="774" x2="290" y2="790" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- D2 QC 結果? -->
+  <polygon points="290,792 400,844 290,896 180,844" fill="#FFEEBA" stroke="#666"/>
+  <text x="290" y="840" text-anchor="middle" font-size="13" font-weight="bold">QC 結果?</text>
+  <text x="290" y="857" text-anchor="middle" font-size="10">是否有部分不通過？</text>
+
+  <!-- QC 全通過 -->
+  <text x="305" y="912" text-anchor="middle" font-size="12" fill="#003366" font-weight="bold">全通過</text>
+  <line x1="290" y1="896" x2="290" y2="930" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- QC 部分不通過 -->
+  <text x="415" y="840" text-anchor="start" font-size="12" fill="#8B0000" font-weight="bold">部分不通過</text>
+  <line x1="400" y1="844" x2="500" y2="844" stroke="#8B0000" stroke-width="1.5" marker-end="url(#arrowR)"/>
+
+  <!-- B3 補生產（QC 缺口） -->
+  <rect x="500" y="814" width="240" height="64" rx="22" fill="#FFE4E1" stroke="#8B0000"/>
+  <text x="620" y="838" text-anchor="middle" font-size="13" font-weight="bold" fill="#8B0000">補生產 (C3)</text>
+  <text x="620" y="856" text-anchor="middle" font-size="11">QC 缺口 → 印務建補生產 PT</text>
+  <text x="620" y="870" text-anchor="middle" font-size="10" fill="#666">補做完累計回原 PT</text>
+
+  <!-- B3 補生產回流到 production PT 報工 -->
+  <line x1="740" y1="844" x2="1080" y2="844" stroke="#8B0000" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <line x1="1080" y1="844" x2="1080" y2="530" stroke="#8B0000" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <line x1="1080" y1="530" x2="730" y2="530" stroke="#8B0000" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#arrowR)"/>
+  <text x="1090" y="700" font-size="11" fill="#8B0000" transform="rotate(90 1090 700)">補生產回流</text>
+
+  <!-- 合流到同步點 -->
+  <line x1="290" y1="930" x2="290" y2="965" stroke="#333" stroke-width="1.5"/>
+  <line x1="910" y1="900" x2="910" y2="965" stroke="#333" stroke-width="1.5"/>
+  <line x1="290" y1="965" x2="600" y2="965" stroke="#333" stroke-width="1.5"/>
+  <line x1="910" y1="965" x2="600" y2="965" stroke="#333" stroke-width="1.5"/>
+  <line x1="600" y1="965" x2="600" y2="985" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- C1 同步點 -->
+  <rect x="370" y="985" width="460" height="64" rx="6" fill="#90EE90" stroke="#444" stroke-width="2"/>
+  <text x="600" y="1008" text-anchor="middle" font-size="13" font-weight="bold">同步點：等待所有上游 production / QC PT 完成</text>
+  <text x="600" y="1026" text-anchor="middle" font-size="11">pt_effective_qty 累計 → pi_cumulative_produced_qty 重算</text>
+  <text x="600" y="1040" text-anchor="middle" font-size="10" fill="#666">齊套性 L2-L4 公式套用</text>
+  <line x1="600" y1="1049" x2="600" y2="1065" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- E1 品檢 PT 驗收 -->
+  <rect x="430" y="1065" width="340" height="64" rx="22" fill="#B0E0E6" stroke="#666"/>
+  <text x="600" y="1089" text-anchor="middle" font-size="13" font-weight="bold">品檢 PT 派工 → 驗收（每筆依規劃批次）</text>
+  <text x="600" y="1107" text-anchor="middle" font-size="11">一次性驗收（同報工規則）</text>
+  <text x="600" y="1121" text-anchor="middle" font-size="10" fill="#666">填 passed_quantity / failed_quantity</text>
+  <line x1="600" y1="1129" x2="600" y2="1145" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- D3 品檢結果? -->
+  <polygon points="600,1147 740,1205 600,1263 460,1205" fill="#FFEEBA" stroke="#666"/>
+  <text x="600" y="1200" text-anchor="middle" font-size="13" font-weight="bold">品檢結果?</text>
+  <text x="600" y="1218" text-anchor="middle" font-size="10">是否有部分不通過？</text>
+
+  <!-- 全通過 -->
+  <text x="450" y="1200" text-anchor="end" font-size="12" fill="#003366" font-weight="bold">全通過</text>
+  <line x1="460" y1="1205" x2="290" y2="1205" stroke="#333" stroke-width="1.5"/>
+  <line x1="290" y1="1205" x2="290" y2="1280" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 部分不通過 -->
+  <text x="750" y="1200" text-anchor="start" font-size="12" fill="#8B0000" font-weight="bold">部分不通過</text>
+  <line x1="740" y1="1205" x2="860" y2="1205" stroke="#8B0000" stroke-width="1.5" marker-end="url(#arrowR)"/>
+
+  <!-- E2 補生產（品檢缺口） -->
+  <rect x="860" y="1175" width="240" height="64" rx="22" fill="#FFE4E1" stroke="#8B0000"/>
+  <text x="980" y="1199" text-anchor="middle" font-size="13" font-weight="bold" fill="#8B0000">補生產 (C3)</text>
+  <text x="980" y="1217" text-anchor="middle" font-size="11">品檢缺口 → 追溯 PT 補做</text>
+  <text x="980" y="1231" text-anchor="middle" font-size="10" fill="#666">補做完重走 QC / 品檢</text>
+
+  <!-- E2 補生產回流 -->
+  <line x1="1100" y1="1205" x2="1140" y2="1205" stroke="#8B0000" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <line x1="1140" y1="1205" x2="1140" y2="530" stroke="#8B0000" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <line x1="1140" y1="530" x2="1080" y2="530" stroke="#8B0000" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#arrowR)"/>
+
+  <!-- F1 印件入庫 -->
+  <rect x="170" y="1280" width="240" height="64" rx="22" fill="#90EE90" stroke="#666"/>
+  <text x="290" y="1304" text-anchor="middle" font-size="13" font-weight="bold">印件入庫</text>
+  <text x="290" y="1322" text-anchor="middle" font-size="11">pi_inspected_passed_qty 累計</text>
+  <text x="290" y="1336" text-anchor="middle" font-size="10" fill="#666">pi_warehouse_qty 更新（= 入庫件數）</text>
+  <line x1="290" y1="1344" x2="290" y2="1360" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- F2 出貨 -->
+  <rect x="170" y="1360" width="240" height="64" rx="22" fill="#FFE4B5" stroke="#666"/>
+  <text x="290" y="1384" text-anchor="middle" font-size="13" font-weight="bold">建立出貨單 / 出貨</text>
+  <text x="290" y="1402" text-anchor="middle" font-size="11">出貨量 ≤ 可出貨數量（可分多次）</text>
+  <text x="290" y="1416" text-anchor="middle" font-size="10" fill="#666">可出貨 = pi_warehouse - pi_shipped</text>
+  <line x1="290" y1="1424" x2="290" y2="1440" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- D4 全出完? -->
+  <polygon points="290,1442 410,1490 290,1538 170,1490" fill="#FFEEBA" stroke="#666"/>
+  <text x="290" y="1486" text-anchor="middle" font-size="13" font-weight="bold">全部出完?</text>
+  <text x="290" y="1503" text-anchor="middle" font-size="10">pi_shipped ≥ pi_planned?</text>
+
+  <!-- YES -->
+  <text x="305" y="1557" text-anchor="middle" font-size="12" fill="#003366" font-weight="bold">YES</text>
+  <line x1="290" y1="1538" x2="290" y2="1568" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- NO 回到出貨建立 -->
+  <text x="425" y="1486" text-anchor="start" font-size="12" fill="#003366" font-weight="bold">NO（分次出貨）</text>
+  <line x1="410" y1="1490" x2="460" y2="1490" stroke="#333" stroke-width="1.5"/>
+  <line x1="460" y1="1490" x2="460" y2="1392" stroke="#666" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <line x1="460" y1="1392" x2="410" y2="1392" stroke="#666" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#arrowG)"/>
+
+  <!-- 結束 -->
+  <circle cx="290" cy="1582" r="13" fill="#FFF" stroke="#000" stroke-width="2"/>
+  <circle cx="290" cy="1582" r="6" fill="#000"/>
+</svg>
