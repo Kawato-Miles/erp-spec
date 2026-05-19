@@ -11,16 +11,16 @@
 
 ## 1. 規範先行：補強 DESIGN.md § 6.1
 
-- [ ] 1.1 在 [DESIGN.md § 6.1](sens-erp-prototype/DESIGN.md) 範式 B 模板中，明確標註「`StatusCard` 統計 grid 應置於搜尋 Card 內部下方（篩選器之下）」
-- [ ] 1.2 在 § 6.1「列表頁共同準則」新增條款：「列表頁狀態主篩 MUST 使用 `<select>`，**MUST NOT 使用 `ErpStatusTabs`**」
-- [ ] 1.3 在 § 6.1 新增「列表頁狀態主篩 vs 上層 view 切換」操作性判定（4 項判定條件表格 + 正反例），避免後續開發者語感歧義
-- [ ] 1.4 在 § 6.1「列表頁共同準則」新增條款：「KPI 卡 SHALL 使用 `StatusCard` 元件，**MUST NOT 使用自定義 `StatItem` 純文字樣式**；KPI 數值來源 SHALL 為 `rows`（篩選後）；篩選非預設時傳 `filtered={true}`」
-- [ ] 1.5 在 § 6.1 新增條款：「KPI 卡片數量視業務必要性，1-4 卡皆可」
-- [ ] 1.6 在 § 6.1 明定 `src/components/quote/QuoteListPage.tsx` 為 canonical reference，新列表頁優先對照此範本而非從其他列表頁複製
-- [ ] 1.7 在 § 6.1 新增「列表頁稽核清單」（從 design.md 末尾搬移），含 12 項可逐項對照的 checklist
-- [ ] 1.8 § 6.1 視覺細節對齊：Card 圓角 `rounded-lg`、標題 `font-medium`、搜尋框左內嵌 `Search` icon（更新模板程式碼）
-- [ ] 1.9 在 § 0.1「列表頁不得按狀態拆多張表」條款末加「具體實作細節見 § 6.1」交叉引用
-- [ ] 1.10 在 DESIGN.md § 末「變更日誌」追加本次更新條目（日期 / 條目摘要 / 對應 change 名稱）
+- [x] 1.1 在 [DESIGN.md § 6.1](sens-erp-prototype/DESIGN.md) 範式 B 模板中，明確標註「`StatusCard` 統計 grid 應置於搜尋 Card 內部下方（篩選器之下）」
+- [x] 1.2 在 § 6.1「列表頁共同準則」新增條款 7：「列表頁狀態主篩 MUST 使用 `<select>`，**MUST NOT 使用 `ErpStatusTabs`**」
+- [x] 1.3 在 § 6.1 新增「狀態主篩 vs 上層 view 切換操作性判定」段（4 項判定條件表格 + 正反例）
+- [x] 1.4 在 § 6.1「列表頁共同準則」新增條款 8/9：KPI 卡 SHALL 用 `StatusCard`、數值來源 `rows`、篩選非預設傳 `filtered={true}`
+- [x] 1.5 在 § 6.1 新增條款 10：KPI 卡片數量視業務必要性，1-4 卡皆可
+- [x] 1.6 在 § 6.1 條款 12 明定 `QuoteListPage.tsx` 為 canonical reference
+- [x] 1.7 在 § 6.1 新增「列表頁稽核清單」12 項
+- [x] 1.8 § 6.1 範式 B 模板視覺對齊：`rounded-lg` / `font-medium` / 搜尋框左內嵌 `Search` icon（含 `pl-9`）
+- [x] 1.9 在 § 0.1「列表頁不得按狀態拆多張表」末加「具體實作細節見 § 6.1」交叉引用
+- [x] 1.10 在 § 9 版本記錄追加 2026-05-19 條目（含對應 change 名稱）
 
 ## 2. 規範先行：補強 prototype-shared-ui spec
 
