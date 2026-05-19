@@ -24,10 +24,6 @@
 - **WHEN** 系統管理員嘗試新增與現有設備同名的設備
 - **THEN** 系統 SHALL 阻擋並提示「設備名稱已存在」
 
-### Requirement: 設備資料表
-
-系統 SHALL 建立 Equipment 資料表，作為設備主檔的資料儲存。
-
 ## Data Model
 
 ### Equipment
