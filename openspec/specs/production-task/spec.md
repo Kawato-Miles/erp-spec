@@ -58,15 +58,20 @@
 - **AND** 自有工廠、加工廠、外包廠 MUST NOT 出現在可選清單中
 
 ### Requirement: 開工日期設定與完工推算
-系統 SHALL 支援印務手動設定開工日期（pt_scheduled_date），系統依 estimated_duration_days 自動推算 planned_end_date。派工時間單位為天。
+
+系統 SHALL 支援印務手動設定開工日期（scheduled_date），系統依 estimated_duration_days 自動推算 planned_end_date。派工時間單位為天。生產任務新增 stage_order 欄位用於階段管理，estimated_duration_days 欄位供印務填寫預估工期。
 
 #### Scenario: 印務設定開工日期
 - **WHEN** 印務設定生產任務的開工日期為 2026-04-01，預估工期 3 天
 - **THEN** 系統自動推算完工日期為 2026-04-04（planned_end_date = scheduled_date + estimated_duration_days）
 
-#### Scenario: US-WO-015 手動設定開工日期與完工推算
-- **WHEN** 印務主管選擇待派工任務並輸入開工日期
-- **THEN** 系統 SHALL 根據工序耗時即時推算完工日期並顯示；印務主管 MUST 確認推算完工日期是否在交貨日期之前，確認後保存派工
+#### Scenario: 自動排程覆寫開工日期
+- **WHEN** 印務點擊「自動排程」
+- **THEN** 系統依交貨日回推結果覆寫各任務的 scheduled_date 與 planned_end_date
+
+#### Scenario: 階段序號預設值
+- **WHEN** 生產任務建立時未指定 stage_order
+- **THEN** 系統預設 stage_order = 1
 
 ### Requirement: 設備/工廠負載視圖
 系統 SHALL 提供設備/工廠負載視圖，顯示同設備/工廠已排程任務，輔助印務避免超載排程與拼版成本優化。
@@ -92,33 +97,19 @@
 
 ### Requirement: 生管接收與分派
 
-系統 SHALL 讓生管查看已交付任務清單，並透過日程面板的「建立工作包」操作完成派工。原有的批次派工操作由建立工作包取代。
+生管查看已交付任務清單，透過任務分派介面決定實際通知工廠 / 師傅開工的時機。生管 SHALL 可在任務分派介面上依工序分組查看所有待處理生產任務，並批次選取同工序任務進行派工。派工操作將生產任務狀態從「待處理」推進至「製作中」。所有生產任務 MUST 分派完畢後，生管可在系統中查看各任務進度狀態。
 
-生管 SHALL 在日程面板上依分組查看所有待處理生產任務，勾選任務後建立工作包（含指派師傅、備註、確樣需求）。建立工作包後，任務狀態維持「待處理」不變。
+#### Scenario: 生管透過任務分派介面接收任務
+- **WHEN** 印務交付任務後，生產任務狀態為「待處理」
+- **THEN** 生管在任務分派介面上可看到該任務，歸入對應工序分組
 
-所有已派工的生產任務 MUST 歸屬於某工作包（work_package_id NOT NULL）。不存在「有 assigned_operator 但無 work_package_id」的生產任務。
-
-已派工的生產任務在生產任務列表中以工作包為單位呈現（ErpExpandableRow 兩層展開），不再以單筆平鋪顯示。
-
-#### Scenario: 生管透過工作包完成派工
-
-- **WHEN** 生管在日程面板勾選 3 筆待處理任務並建立工作包
-- **THEN** 3 筆任務歸入工作包，assigned_operator 設為選定師傅，狀態維持「待處理」
+#### Scenario: 生管批次派工同工序任務
+- **WHEN** 生管在任務分派介面勾選同工序的多筆待處理任務並確認派工
+- **THEN** 所有被選取的任務狀態從「待處理」轉為「製作中」
 
 #### Scenario: 生管查看各任務進度
-
-- **WHEN** 生管進入生產任務列表
-- **THEN** 以工作包為父列（Key、師傅、備註、確樣需求、任務數、進度），展開後顯示包內生產任務明細
-
-#### Scenario: 派工後欄位一致性
-
-- **WHEN** 生管透過建立工作包完成派工
-- **THEN** 該生產任務的 work_package_id、assigned_operator MUST 同時有值
-
-#### Scenario: 移出工作包後欄位清除
-
-- **WHEN** 生產任務從工作包移出
-- **THEN** work_package_id、assigned_operator、actual_start_date MUST 全部清除為 null
+- **WHEN** 生管已完成當日派工
+- **THEN** 任務分派介面顯示各任務當前狀態（待處理 / 製作中 / 已完成），統計摘要即時反映
 
 ### Requirement: 師傅查看工作包
 
@@ -262,16 +253,16 @@
 - **THEN** 系統 SHALL 顯示 actual_start_date 為明日的生產任務（唯讀，不可報工）
 
 ### Requirement: 生管代替報工
-系統 SHALL 支援生管代替師傅記錄 completed_quantity（報工數量）。生管代報與師傅自助報工並存，兩者皆可觸發狀態轉換。
 
-#### Scenario: 生管記錄報工數量
-- **WHEN** 師傅口頭告知完成數量，生管在系統記錄
-- **THEN** 系統更新 completed_quantity，觸發上層工單完成度重算
+生管代替師傅記錄 completed_quantity（報工數量）。Phase 1 不要求師傅直接操作系統。生管 SHALL 可在任務分派介面上對「製作中」狀態的生產任務進行報工，填寫報工數量、工時、缺陷數量與備註。
 
-#### Scenario: 師傅已自行報工後生管不重複記錄
-- **WHEN** 師傅已透過任務平台回報完成數量
-- **THEN** 生管在日程面板可查看該筆報工紀錄（唯讀）
-- **AND** 生管仍可為同一任務新增報工紀錄（如師傅漏報的部分）
+#### Scenario: 生管在任務分派介面上報工
+- **WHEN** 生管在任務分派介面點擊某「製作中」任務的「報工」按鈕
+- **THEN** 系統顯示報工對話框，生管填寫報工數量後確認，系統累加至 pt_produced_qty
+
+#### Scenario: 報工紀錄追溯
+- **WHEN** 生管完成報工
+- **THEN** 系統記錄報工人員、報工時間、報工數量、工時、缺陷數量、備註
 
 ### Requirement: 狀態向上傳遞
 系統 SHALL 在生產任務狀態變更時自動向上傳遞：生產任務 -> 任務 -> 工單 -> 印件 -> 訂單。
