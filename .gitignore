@@ -18,3 +18,9 @@ node_modules/
 # Python cache
 __pycache__/
 *.pyc
+
+# Obsidian local state（本機視圖 / 工作區 / 圖譜設定，不應入版控）
+.obsidian/
+
+# Test outputs（Playwright .last-run.json 等）
+test-results/
