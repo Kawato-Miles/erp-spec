@@ -84,15 +84,12 @@
 
 > 規格期三視角審查已執行（見 conversation log）；此 round 為實作後審查。
 
-- [ ] 6.1 觸發 senior-pm agent：審查實作是否真正解決「使用者跨模組學習成本」問題，是否有 UX 退化（select 兩步 vs Tab 一步在實際操作下的體感）
-- [ ] 6.2 觸發 ceo-reviewer agent：審查 OQ-1 決議是否合理、是否符合業務追款日常需求；若 OQ-0 在審查中再次被提起，記錄並 follow-up
-- [ ] 6.3 觸發 erp-consultant agent：審查實作與 spec 一致性、是否有規格未涵蓋的實作細節、`filtered` 標記視覺方案是否符合 SAP Fiori / NetSuite 業界做法
-- [ ] 6.4 三視角審查回饋整合至 design.md「審查回饋」段落，必要時更新 spec / DESIGN.md
+- [N/A] 6.1-6.4 Task 6 三視角審查 round 2 跳過（Miles 確認）：規格期已完整三視角，實作層 tsc 通過 + 邏輯保留，實作後再做邊際價值有限
 
 ## 7. 跨檔案一致性檢查 + 收尾
 
 - [x] 7.1 doc-audit 手動執行：6 個程式檔（StatusCard / Receivables / PendingInvoices / BillingAnomalies / ConsultationRequestList / QuoteListPage）與 DESIGN.md / spec 一致；**發現遺留違規**：`OrderList.tsx` / `WorkOrderList.tsx` 視覺細節違規（rounded-xl / font-bold / 搜尋框無 Search icon），但不屬 ErpStatusTabs 主篩違規，不在本 change scope，列為下次 follow-up change
 - [x] 7.2 `memory/shared/prototype-guidelines.md` 不涉及列表頁 UI 規範細節（UI 規範在 DESIGN.md），無需更新
 - [x] 7.3 Vault OQ-0 已開卡 `XM-001`（propose 階段完成）；OQ-1 已於 Task 5.1 決議方案 B，記錄留在 design.md（屬 change-local OQ，archive 時 sync）；OQ-2 / OQ-3 / OQ-4 列為 follow-up 留 design.md
-- [ ] 7.4 `/opsx:verify` 驗證實作與 spec 一致
-- [ ] 7.5 `/opsx:archive` 歸檔 change，main spec 自動合併 5 個 ADDED Requirement
+- [x] 7.4 `/opsx:verify` 通過：5/5 Requirements 全部 scenarios 有實作對應；6 個檔案 grep 驗證新樣板 class 完整；無 critical / warning（OrderList / WorkOrderList 視覺違規屬已知 follow-up，不阻斷 archive）
+- [x] 7.5 `/opsx:archive` 即將執行
