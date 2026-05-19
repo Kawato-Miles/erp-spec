@@ -2,6 +2,7 @@
 type: meta
 status: active
 last-reviewed: 2026-05-19
+last-case-added: 2026-05-19
 ---
 
 # 背景載入規則 + 設計理解摘要 + 防誤審記錄
@@ -54,6 +55,24 @@ last-reviewed: 2026-05-19
 - **誤審 agent**：erp-consultant
 - **詳見**：[[erp-naming-misjudgements]]（ERP 顧問專屬，因涉及 5 秒測試規則）
 - **本卡只記跨 agent 通用教訓**：英文 ERP 術語 / 學術名稱衝突推論在 Miles 直接溝通時失敗
+
+### 2026-05-19「我的售後服務」列表頁版型範式誤審
+
+- **誤審 agent**：senior-pm（前期介入時未指出 layout 應對照 DESIGN.md § 6.1）/ erp-consultant（設計審查時未掃 DESIGN.md § 6.1 清單）
+- **誤審內容**：
+  - explore 階段 Miles 說「layout 可以用需求單詳情頁的形式即可」
+  - design D1 直接決議「依 next action 分組」而非「依 status 排序」
+  - spec 寫「依 next action 分組的 ticket 列表」
+  - prototype 實作為「分組 + 卡片」（`MyAfterSalesActionCard.tsx`，div / button 結構），沒用 ErpTableCard + table + ErpPagination 標準三件套
+- **實際情況**：
+  Miles 原話反饋：「我的售後服務 layout 介面不太對，正確要用 table 呈現，目前不是統一的 table 樣式」「找出為什麼會跑偏，有不清楚可以問我，確保後續產出 UI / UX 一致」。違反 DESIGN.md § 6.1 第 42 條「列表頁採『搜尋 + 多維度篩選 + 狀態統計卡 + 單一資料表 + 分頁』模式，不得按狀態拆多張表」+「列表頁狀態主篩 MUST 用 select，MUST NOT 用卡片或 Tab 分組呈現資料」。Miles「layout 用詳情頁形式」指的是容器版型（AppLayout + 標題 + breadcrumb + spacing），不是內部資料呈現方式
+- **教訓**：
+  1. 列表頁的「容器版型」可參考其他頁，但「資料呈現範式」必須先對照 DESIGN.md § 6.1 列表頁規範清單，禁止憑直覺自由發揮
+  2. 當 Miles 提到「layout 用 XX 形式」時，先釐清是指容器層（AppLayout / 標題 / breadcrumb / spacing / Card 間距）還是資料層（table / 卡片 / 分組 / 列表結構）。詳情頁可用卡片分組（§ 6.3 範式，QuoteDetailPage），列表頁禁止卡片分組（§ 6.1 第 42 條）
+  3. 「業務優先級提示」「分組導航」這類 UX 需求在列表頁應該透過 table 欄位 / filter / sortable / status badge 解決，而不是把資料拆成多張卡片
+  4. **規則**：規劃任何新列表頁時，erp-consultant agent MUST 先讀 DESIGN.md § 6.1 + 對照三個 canonical reference（QuoteListPage / OrderList / ConsultationRequestList），確認新頁的「資料層結構」是否對齊 ErpTableCard + table + ErpPagination 三件套，再展開設計
+- **適用 agent**：senior-pm（前期介入）+ erp-consultant（設計審查）
+- **相關 change**：[add-my-after-sales-action-page-and-remove-owner-transfer](../../../../../openspec/changes/archive/2026-05-19-add-my-after-sales-action-page-and-remove-owner-transfer/)（2026-05-19 歸檔 v0.2）；修正 change：refactor-my-after-sales-to-standard-list-pattern（後續開立）
 
 ## 四、新增誤審案例的流程
 
