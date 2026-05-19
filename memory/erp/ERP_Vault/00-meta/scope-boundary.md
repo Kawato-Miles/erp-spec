@@ -26,6 +26,9 @@ last-reviewed: 2026-05-19
 | KPI | `01-products/erp/kpi/` | 各模組 KPI |
 | 視覺化 | `09-canvases/` | 6 張 Canvas |
 | 外部連結索引 | `10-references/` | Notion / OpenSpec / Prototype / decks |
+| **Audit Log** | `00-meta/audit-log.md` | vault-audit / vault-insight skill 追加式日誌 |
+| **Wiki Schema** | `00-meta/wiki-schema.md` | Vault formal 治理規則（lint 依據）|
+| **Insights** | `12-insights/` | vault-insight skill 產出的跨主題模式識別 + 下一步建議 |
 
 ### 收的判斷準則
 

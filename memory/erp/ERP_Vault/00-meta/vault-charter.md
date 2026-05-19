@@ -11,8 +11,14 @@ last-reviewed: 2026-05-19
 ## 一、定位
 
 - **路徑**：`Sens/memory/erp/ERP_Vault/`，沿用 Sens 主 repo（不獨立 repo、不用 submodule）
-- **採用範式**：PARA + Zettelkasten 混合，目錄前綴 00 ~ 10 為 PARA 階層，內容卡片本身遵循 Zettelkasten 原子化原則
+- **採用範式**：PARA + Zettelkasten 混合，目錄前綴 00 ~ 12 為 PARA 階層，內容卡片本身遵循 Zettelkasten 原子化原則
 - **服務對象**：Miles（PM）、Claude Code（撰寫 spec 時的背景資料來源）、未來公司同仁（透過 Vault → Notion 推送的發布版本）
+- **2026-05-19 升級：Self-Maintaining KM**（仿 [Karpathy LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) 模式）
+  - **vault-audit skill**（10 維度稽核）：定期 / 事件觸發自審健康狀態
+  - **vault-insight skill**（跨主題模式識別）：累積 OQ / alignment / phase 進度識別系統性議題，產出帶下一步的 insight 卡
+  - **`00-meta/audit-log.md`**：追加式日誌，記錄每次 audit / insight 執行
+  - **`00-meta/wiki-schema.md`**：formal schema 治理層
+  - **`12-insights/`**：insight 累積階層
 
 ## 二、三邊分工
 

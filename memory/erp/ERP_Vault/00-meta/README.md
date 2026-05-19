@@ -12,13 +12,16 @@ last-reviewed: 2026-05-19
 
 建議閱讀順序：
 
-1. [[vault-charter]] — 本 Vault 的章程、三邊分工、Source of Truth 規則
-2. [[editing-conventions]] — frontmatter schema、wiki link 規則、檔名規約（**新建任何卡前必讀**）
-3. [[scope-boundary]] — 哪些內容收進來、哪些不收（**Phase C 撰寫**）
-4. [[sync-workflow]] — Vault ↔ OpenSpec ↔ Notion 同步流程（**Phase C 撰寫**）
-5. `01-products/erp/product-vision.md` — ERP 產品願景與痛點
-6. `03-roles/` — 五大角色 + Notion DB 補齊角色
-7. `09-canvases/` — JSON Canvas 視覺化（在 Obsidian app 開啟最佳）
+1. [[vault-charter]] — 本 Vault 的章程、三邊分工、Source of Truth 規則、**Self-Maintaining 升級摘要**
+2. [[wiki-schema]] — formal schema 治理規則（**新建任何卡前必讀**，lint 依據）
+3. [[editing-conventions]] — 人類友善版規約（schema 的簡化版）
+4. [[scope-boundary]] — 哪些內容收進來、哪些不收
+5. [[sync-workflow]] — Vault ↔ OpenSpec ↔ Notion 同步流程
+6. [[audit-log]] — Vault 自審追加式日誌（最近 audit / insight 紀錄）
+7. `01-products/erp/product-vision.md` — ERP 產品願景與痛點
+8. `03-roles/` — 16 角色 + alignment-report
+9. `09-canvases/` — JSON Canvas 視覺化（在 Obsidian app 開啟最佳）
+10. `12-insights/README.md` — 跨主題模式識別 + 下一步建議（vault-insight 產出）
 
 ## 給 AI 讀（Claude Code）
 
@@ -38,6 +41,9 @@ last-reviewed: 2026-05-19
 | 跨模組情境 | `07-scenarios/<情境名>.md` |
 | 既有 OQ | `08-open-questions/<OQ 編號>.md`（Phase B 後寫入） |
 | **審查方法論 / Agent 框架**（三視角審查 / 5 設計模式 / 命名規則 / 多視角討論協議）| `11-review-knowledge/`（入口 [[README\|11-review-knowledge/README]]；`_shared/` 共用 + `pm/` `ceo/` `erp/` 視角專屬 + `protocols/` 流程協議；2026-05-19 新增）|
+| **跨主題 Insight / 下一步建議**（vault-insight 產出，跨 OQ / phase / alignment 識別系統性議題）| `12-insights/`（入口 [[12-insights/README\|12-insights/README]]）|
+| **Vault 自審日誌**（vault-audit / vault-insight 追加紀錄）| [[audit-log]] |
+| **Vault 治理規則 / lint 依據** | [[wiki-schema]] |
 
 撰寫時於 proposal `## Why` / `## Background` 段以 wiki link 引用對應節點，例：
 
@@ -58,6 +64,11 @@ last-reviewed: 2026-05-19
   - `obsidian-bases` — `.base` 檔案操作
   - `json-canvas` — `.canvas` 檔案操作
   - `obsidian-cli` — 包裝 CLI 的高階查詢
+- **Sens 自建 Skill**（`.claude/skills/`）：
+  - `oq-manage` — OQ CRUD（mode A 查詢 / B 新增 / C 更新 / D 遷出）
+  - `vault-audit` — Vault 10 維度自審稽核（**2026-05-19 Phase E 新增**）
+  - `vault-insight` — 跨主題模式識別 + 下一步建議（**2026-05-19 Phase E 新增**）
+  - `doc-audit` — OpenSpec spec 層稽核（與 vault-audit 分工）
 
 ## 不在此 Vault
 
