@@ -388,7 +388,10 @@ delta specs 合併回 main specs，歸檔 change。
 | Prototype 資料層（跨模組工程）| `openspec/specs/prototype-data-store/spec.md` | — | — | 草稿（2026-04-20 e2e + 2026-04-21 data-consistency-audit）|
 | Prototype 共用 UI（跨模組工程）| `openspec/specs/prototype-shared-ui/spec.md` | — | — | 草稿（2026-04-21 fix-erp-summary-grid-info-icon-overflow 起點；2026-05-06 refactor-detail-pages-to-subheader-tab-layout 歸檔新增「印件詳情頁 Tabs 化版型」Requirement；2026-05-19 align-payment-list-pages-to-quote-list-pattern 歸檔新增 5 個 Requirement：「列表頁標準佈局 / StatusCard 元件支援字串型 count 與篩選中標記 / 款項管理列表頁對齊基準範本 / 諮詢單列表頁對齊基準範本 / QuoteListPage canonical reference 自身對齊新規範」；同步補強 sens-erp-prototype/DESIGN.md § 6.1 範式 B 模板 + 12 條共同準則 + 操作性判定 + 12 項稽核清單；OQ-2 標明 capability 歸屬待後續決定）|
 | QC | `openspec/specs/qc/spec.md` | — | — | 草稿 |
-| 派工看板 | `openspec/specs/task-dispatch-board/spec.md` | — | — | 草稿 |
+| 派工看板 | `openspec/specs/task-dispatch-board/spec.md` | — | — | 草稿（2026-05-19 task-dispatch-prototype 歸檔合併 8 個 Requirement 為 prototype 初版基線；後續排程模組重構另開 change）|
+| 排程中心 | `openspec/specs/scheduling-center/spec.md` | — | — | 草稿（2026-05-19 scheduling-center 歸檔 8 個 Requirement 為 prototype 初版基線；archive 前修正：移除「設備資料表」requirement 改以獨立 Data Model section；後續重構另開 change）|
+| 工單回推排程 | `openspec/specs/schedule-backtrack/spec.md` | — | — | 草稿（2026-05-19 schedule-backtrack-prototype 歸檔 4 個 Requirement 為 prototype 初版基線；後續重構另開 change）|
+| 設備主檔 | `openspec/specs/equipment/spec.md` | — | — | 草稿（2026-05-19 scheduling-center 歸檔新建 1 個 Requirement「設備主檔管理」+ Data Model section；對齊 material-master / binding-master 模式；後續重構另開 change）|
 | 工作包 | `openspec/specs/work-package/spec.md` | — | — | 草稿 |
 
 ### Prototype 實作進度
