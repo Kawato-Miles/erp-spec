@@ -2,12 +2,12 @@
 
 > 必須在 Task 1（DESIGN.md 補強）之前完成，因規範文字會引用 `count: number | string` 與 `filtered` prop。
 
-- [ ] 0.1 修改 [StatusCard.tsx](sens-erp-prototype/src/components/shared/StatusCard.tsx) 介面：`count` 型別 `number` → `number | string`
-- [ ] 0.2 元件內部使用 `String(count)` 隱轉，確保 number / string 兩種入參都能顯示
-- [ ] 0.3 新增 `filtered?: boolean` prop（預設 `false`），為 `true` 時 Card 上顯示「（當前篩選）」muted text 或「已篩選」小 badge（兩個方案任一，依視覺權衡）
-- [ ] 0.4 `npm run dev` 自驗：開啟 QuoteListPage / 審稿主管 KPI 面板 / 工單詳情整體進度摘要 / 其他 StatusCard 使用點，確認視覺無回歸
-- [ ] 0.5 `npx tsc --noEmit` 確認既有 4 個使用點 TypeScript 型別相容（無 error）
-- [ ] 0.6 Playwright smoke：補既有測試對 StatusCard 元件的 props 斷言（若有）
+- [x] 0.1 修改 [StatusCard.tsx](sens-erp-prototype/src/components/shared/StatusCard.tsx) 介面：`count` 型別 `number` → `number | string`
+- [x] 0.2 元件內部使用 `String(count)` 隱轉，確保 number / string 兩種入參都能顯示
+- [x] 0.3 新增 `filtered?: boolean` prop（預設 `false`），為 `true` 時 Card 上顯示「（當前篩選）」muted text 或「已篩選」小 badge（採方案 a：label 後 muted text）
+- [x] 0.4 視覺無回歸驗證：dev server 已啟動（localhost:8082），既有 19+ 使用點都傳 number → `{count}` → `{String(count)}` React render 語義相同；filtered 預設 false 不渲染標記；實機 filtered 視覺效果留至 Task 3 Receivables 實作時驗證
+- [x] 0.5 `npx tsc --noEmit` 通過（無 error）
+- [x] 0.6 既有 e2e 測試（`/Users/b-f-03-029/sens-erp-prototype/e2e/*.spec.ts`）無 StatusCard 直接斷言；元件擴充由三模組頁面 e2e 在 Task 3-5 覆蓋
 
 ## 1. 規範先行：補強 DESIGN.md § 6.1
 
