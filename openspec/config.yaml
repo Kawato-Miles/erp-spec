@@ -102,3 +102,9 @@ rules:
     - 執行 `npm run test` 確認 vitest 基線無新增失敗（既有失敗請對照 memory/feedback_prototype_playwright.md 的已知遺留清單，不視為新增）
     - 逐一比對 tasks.md 內每個已勾選 task 對應的 prototype 變更，確認均涵蓋於對應的 Playwright 測試案例或 vitest 單元測試
     - 若 change 引入新業務流程，須先補對應 e2e 測試案例（並驗證通過）才能進入歸檔（archive）
+  archive:
+    - "[2026-05-19] 歸檔前 MUST 掃描 design.md / proposal.md / specs/ 內未解 `## Open Questions` section"
+    - "[2026-05-19] 對每筆未解 OQ 觸發 oq-manage mode B 建 Vault OQ 卡（memory/erp/ERP_Vault/08-open-questions/<MODULE>-<NNN>-<簡述>.md），含去重流程"
+    - "[2026-05-19] design.md / proposal.md 原處 OQ 條目改為「→ 對應 Vault OQ：[[<MODULE>-<NNN>-<簡述>]]」雙向引用，不刪除原 section"
+    - "[2026-05-19] 已解 OQ 在 design.md 內保留「決議與理由」標注；若決議影響跨 change 商業邏輯，同步遷 Vault OQ 卡並標 status: answered"
+    - "[2026-05-19] 上述步驟全部完成後才能 archive；oq-manage skill mode D 可協助批次處理"

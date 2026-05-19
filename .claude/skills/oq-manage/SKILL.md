@@ -2,10 +2,16 @@
 name: oq-manage
 description: >
   OQ（Open Question）管理 skill。
+  正本：Vault `memory/erp/ERP_Vault/08-open-questions/`（Vault Charter v2026-05-19 變更）。
   觸發時機：發現設計不確定項、Miles 說「新增 OQ」「這個要記下來」「有個問題要確認」，
   或任何 Spec / 規劃 / 討論中需要新增、查詢、更新 OQ 時（不限於 Spec 撰寫情境）。
   此 skill 強制執行去重邏輯：新增前先搜尋相似 OQ，由 Claude 分析並建議，由 Miles 決定。
-  正本：Vault `memory/erp/ERP_Vault/08-open-questions/`（Vault Charter v2026-05-19 變更）。
+  **強制規則（禁止以下 anti-pattern）**：
+    1. 禁止在 Vault 卡內使用 `> [!question]` callout 標注 OQ
+    2. 禁止以「待確認」「待釐清」「需確認」「尚未確認」「待補」「待釐清事項」等措辭 inline 標注卻不開檔
+    3. 禁止只在當前回應中口頭說「列為 OQ」「我會記下來」卻不觸發本 skill
+    4. 任何撰寫 Vault 卡 / Spec / 對話過程中識別到不確定項 MUST 立即觸發 mode B 開獨立檔（含去重流程），原處改 wiki link 引用
+    5. 既有 inline OQ pattern 出現時，MUST 觸發 mode D（遷出）改為獨立檔
   不適用：已確認的決策記錄、術語定義更新、一般討論備忘。
 ---
 
@@ -28,13 +34,14 @@ description: >
 
 ---
 
-## 三種操作模式
+## 四種操作模式
 
 | 模式 | 觸發時機 |
 |------|---------|
 | A：查詢 | 討論開始前 / 確認特定模組的未解 OQ |
 | B：新增（含去重）| 識別到不確定項 / Miles 說「新增 OQ」|
 | C：更新 | OQ 已解答 / 說明需補充 |
+| D：遷出（inline OQ → 獨立檔）| Miles 說「遷出 [檔案 / 目錄] 的 OQ」/ 主動收尾掃描發現 inline pattern |
 
 ---
 
@@ -295,6 +302,85 @@ related-oq:
 
 ---
 
+## 模式 D：遷出（inline OQ → 獨立檔）
+
+**用途**：把 Vault 卡內既有的 inline OQ pattern（`> [!question]` callout / `## Open Questions` section / 內文「待確認」標注）轉成獨立的 OQ 卡，原處改為 wiki link。
+
+**觸發時機**：
+- Miles 說「遷出 [檔案 / 目錄] 的 OQ」「把這個 OQ 拉出來」「OQ 太多 inline，整理一下」
+- 主動收尾掃描發現 inline pattern（CLAUDE.md § 主動收尾原則要求）
+- `/opsx:archive` 前掃描 design.md 未解 OQ
+
+### Step D1：掃描識別
+
+```bash
+# 在目標檔 / 目錄 grep inline OQ pattern
+grep -rn "\[!question\]\|^## Open Questions\|^### Open Questions" <目標路徑>
+```
+
+也檢查內文是否有：
+- 「待確認」「待釐清」「需確認」「尚未確認」「待補」「待釐清事項」加問題敘述
+- 表格欄位含 OQ 編號（如「OQ XM-003」）但無對應獨立檔
+
+### Step D2：對每筆命中提取問題核心
+
+對每筆命中：
+
+1. **讀上下文**（前後 5-10 行）萃取問題核心
+2. **識別 metadata**：
+   - 模組（依檔案位置或內容推斷）
+   - 優先順序（依問題影響範圍，預設 medium）
+   - source-link（目前所在卡的相對路徑 + 行號）
+
+### Step D3：對每筆執行 mode B 開檔
+
+依 [[#模式 B：新增（強制去重流程）]] 完整流程：
+
+- Step B2 去重檢查（避免與其他 inline 重複）
+- Step B3 建檔（檔名 `<MODULE>-<NNN>-<簡述>.md`）
+
+**關鍵**：mode D 不跳過去重邏輯——多個檔案的 inline OQ 可能講同一件事，要合併為 1 個 OQ 卡。
+
+### Step D4：修原處為 wiki link
+
+對每筆 inline OQ，**用 Edit 把原處 callout / 表格列**替換為 wiki link 引用：
+
+```markdown
+# 反例（替換前）
+## 五、難易度分數的業務含義（待補）
+
+> [!question] OQ
+> Notion / Spec 中目前未明確定義「1-10 分各代表什麼產品類型」...
+```
+
+```markdown
+# 正例（替換後）
+## 五、難易度分數的業務含義
+
+詳見 [[PI-001-難易度分數業務含義]]。
+```
+
+若原章節只剩「待補」框架沒實際內容，**整段刪除**僅保留 wiki link：
+
+```markdown
+詳見 [[PI-001-難易度分數業務含義]]（OQ）。
+```
+
+### Step D5：回報
+
+```
+[Mode D 遷出完成]
+掃描範圍：<檔案 / 目錄>
+找到 inline OQ：X 筆
+去重後建檔：Y 個獨立 OQ 卡
+原處替換為 wiki link：Z 處
+OQ 清單：
+  - <MODULE>-<NNN>-<簡述>（原 inline 位置：file:line）
+  - ...
+```
+
+---
+
 ## 模組前綴對照
 
 | 模組 | 前綴 |
@@ -329,6 +415,126 @@ related-oq:
 - **不需大量遷移**（既有 Notion OQ 量大）
 - 新 OQ 直接寫 Vault
 - 既有 Notion OQ 在被引用 / 解答時，由 Claude 個別鏡像進 Vault（**過渡期手動**）
+
+---
+
+## OpenSpec change 內 OQ 處理
+
+依 `openspec/config.yaml` rules § archive：
+
+| 階段 | 處理 |
+|------|------|
+| change 探索期 | design.md / proposal.md 可使用 `## Open Questions` section（change-local OQ） |
+| change 內 OQ 解答 | design.md 內 OQ 末加「決議與理由」標注，不強制遷 Vault（屬 change-local 範疇）|
+| **`/opsx:archive` 前** | **MUST 掃描 design.md / proposal.md / specs/ 內未解 `## Open Questions`** |
+| archive 前未解 OQ 處理 | 觸發 mode B 為每筆未解 OQ 建 Vault OQ 卡 → design.md 原處改為「→ 對應 Vault OQ：[[<MODULE>-<NNN>-<簡述>]]」雙向引用 |
+| 已解 OQ | design.md 保留「決議與理由」即可，不必遷 Vault（除非該結論需於跨 change 引用）|
+
+**範例**：
+
+archive 前 design.md 含：
+
+```markdown
+## Open Questions
+
+- **OQ-3：審稿合格後印件狀態是否需 buffer 時間才允許工單建立？**
+  - 還在內部討論
+```
+
+archive 流程：
+1. 觸發 mode B 建 Vault OQ 卡 `PI-XXX-審稿合格後工單建立 buffer.md`
+2. Edit design.md 把該條改為：
+
+```markdown
+## Open Questions
+
+- **OQ-3：審稿合格後印件狀態是否需 buffer 時間才允許工單建立？**
+  - → 對應 Vault OQ：[[PI-XXX-審稿合格後工單建立 buffer]]
+```
+
+3. archive 完成
+
+---
+
+## Anti-Pattern 範例
+
+### 反例 1：Vault 卡內用 callout
+
+```markdown
+## 五、難易度分數的業務含義（待補）
+
+> [!question] OQ
+> Notion / Spec 中目前未明確定義「1-10 分各代表什麼產品類型」...
+```
+
+**錯在哪**：用 `> [!question]` callout 把 OQ 嵌入 entity / business-logic 卡，違反 hard rule 第 1 條。
+
+**正例**：
+
+```markdown
+## 五、難易度分數的業務含義
+
+詳見 [[PI-001-難易度分數業務含義]]。
+```
+
+並在 `08-open-questions/PI-001-難易度分數業務含義.md` 建獨立卡。
+
+---
+
+### 反例 2：表格列出「OQ-XXX」但無對應檔
+
+```markdown
+| 角色 | 主要影響 | OQ |
+|------|---------|------|
+| 出貨 | shipping | OQ SHP-005（分批出貨觸發節點）|
+```
+
+**錯在哪**：只有 OQ 編號文字，沒實際檔案，讀者無從追溯。
+
+**正例**：
+
+```markdown
+| 角色 | 主要影響 | OQ |
+|------|---------|------|
+| 出貨 | shipping | [[SHP-005-分批出貨觸發節點]] |
+```
+
+---
+
+### 反例 3：對話中口頭說「列為 OQ」
+
+```
+Claude: 「這個分批出貨觸發節點還沒確認，我列為 OQ。」
+```
+
+**錯在哪**：沒實際觸發本 skill mode B 建檔，下次討論時失憶。
+
+**正例**：
+
+```
+Claude: 「這個分批出貨觸發節點還沒確認，我用 oq-manage mode B 建檔。」
+[實際觸發 mode B → 完成去重 → 建檔 → 回報 OQ ID]
+```
+
+---
+
+### 反例 4：「待補」「待釐清」inline 措辭
+
+```markdown
+## 三、難易度分數的業務含義（**待補**）
+
+目前由業務「經驗判斷」，無共識量表。
+```
+
+**錯在哪**：用「待補」標記但沒建 OQ 卡，與 callout 同性質違規。
+
+**正例**：
+
+```markdown
+## 三、難易度分數的業務含義
+
+詳見 [[PI-001-難易度分數業務含義]]。
+```
 
 ---
 
