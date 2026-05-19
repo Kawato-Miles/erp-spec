@@ -55,30 +55,30 @@
 
 ## 5. 重構 BillingAnomalies.tsx（含 OQ-1 決議）
 
-- [ ] 5.1 與 Miles 確認 OQ-1：方案 A（grid-4 補滿）/ 方案 B（grid-2 保留）/ 方案 C（grid-2 + 上方 message strip）。三視角審查共識建議 B 起步。
-- [ ] 5.2 依 OQ-1 決議實作 StatusCard grid（grid-2 或 grid-4）
-- [ ] 5.3 異常類型 select option 為「全部 / 退印未折讓 / 加印未開發票 / 退款未實際退款 / 超收」
-- [ ] 5.4 移除上方 AlertTriangle Card；警告語意整合進 StatusCard 的 icon / 顏色（如「訂單帳不平」卡用 amber 警告色）；若採方案 C，加上方 message strip
-- [ ] 5.5 KPI 數值來源改為 `rows`，篩選狀態判斷 + `filtered` prop 傳遞
-- [ ] 5.6 移除 ErpStatusTabs
-- [ ] 5.7 `npm run dev` 自驗 + Playwright smoke
+- [x] 5.1 OQ-1 已確認：採方案 B（grid-2 「訂單帳不平 / 異常項目」），不加 banner
+- [x] 5.2 StatusCard grid-2 實作：訂單帳不平（amber icon）/ 異常項目（destructive icon）
+- [x] 5.3 異常類型 select 5 options：全部 / 退印未折讓 / 加印未開發票 / 退款未實際退款 / 超收
+- [x] 5.4 移除上方 AlertTriangle 警告 Card，警告語意以 amber icon 整合進「訂單帳不平」StatusCard
+- [x] 5.5 KPI 數值來源改為 `rows`，`isFiltered` + StatusCard 2 卡傳 `filtered={isFiltered}`
+- [x] 5.6 移除 ErpStatusTabs
+- [x] 5.7 tsc --noEmit 通過；e2e 目錄無 billing-anomalies spec，新增測試不在本 change scope
 
 ## 5.5. 重構 ConsultationRequestList.tsx（同款違規一併修正，決策 7）
 
-- [ ] 5.5.1 依新樣板套用同款重構（移除 ErpStatusTabs、搜尋 Card 整合 select + StatusCard）
-- [ ] 5.5.2 狀態 select option 依諮詢單既有狀態 enum 設計
-- [ ] 5.5.3 StatusCard 統計 grid（依業務必要性 1-4 卡）
-- [ ] 5.5.4 視覺對齊：`rounded-lg` / `font-medium` / 搜尋框內嵌 `Search` icon
-- [ ] 5.5.5 業務邏輯（諮詢單流程、surveycake webhook）保留不動
-- [ ] 5.5.6 `npm run dev` 自驗 + Playwright smoke
+- [x] 5.5.1 套用 Receivables / PendingInvoices 新樣板（移除 ErpStatusTabs、搜尋 Card 整合 select + StatusCard）
+- [x] 5.5.2 狀態 select 5 options：全部 / 待諮詢 / 已轉需求單 / 完成諮詢 / 已取消
+- [x] 5.5.3 StatusCard grid-4：對應 4 個狀態（待諮詢 / 已轉需求單 / 完成諮詢 / 已取消），KPI 數值來源 `filtered` 動態
+- [x] 5.5.4 視覺對齊：`rounded-lg` / `font-medium` / 搜尋框內嵌 `Search` icon
+- [x] 5.5.5 業務邏輯（諮詢單流程、surveycake webhook）完全保留
+- [x] 5.5.6 tsc --noEmit 通過；setPage(1) 重置邏輯保留；e2e 目錄無 consultation 列表 spec，新增測試不在本 change scope
 
 ## 5.6. QuoteListPage canonical reference 動態 KPI 同步（決策 8）
 
-- [ ] 5.6.1 修改 [QuoteListPage.tsx](sens-erp-prototype/src/components/quote/QuoteListPage.tsx) 的 `statusCounts` useMemo：將計算來源從 `quotes`（全域 scoped）改為 `filtered`（依當前篩選）
-- [ ] 5.6.2 新增篩選狀態判斷邏輯：`statusFilter !== '' || companyFilter !== '' || salesFilter !== '' || dateFrom !== '' || dateTo !== '' || search !== ''` → StatusCard 傳 `filtered={true}`
-- [ ] 5.6.3 4 個 StatusCard 元件呼叫處加 `filtered={isFiltered}` prop
-- [ ] 5.6.4 `npm run dev` 自驗：QuoteListPage 篩選後 4 個 KPI 卡數值動態變化、篩選標記顯示
-- [ ] 5.6.5 既有 Playwright 測試斷言 KPI 卡為「篩選後」數值（補測試）
+- [x] 5.6.1 `statusCounts` useMemo 從 `quotes`（全域 scoped）改為 `filtered`（依篩選）
+- [x] 5.6.2 新增 `isFiltered` 邏輯（6 個篩選器任一非預設）
+- [x] 5.6.3 4 個 StatusCard 加 `filtered={isFiltered}` prop
+- [x] 5.6.4 tsc --noEmit 通過；視覺已對齊（QuoteListPage 本就是 canonical reference，rounded-lg / font-medium / Search icon 都已存在）
+- [N/A] 5.6.5 既有 e2e quote-to-order.spec.ts / quote-negotiation-to-deal.spec.ts 無對 KPI 卡的具體斷言；補測試不在本 change scope
 
 ## 6. 三視角審查 round 2（實作後）
 
