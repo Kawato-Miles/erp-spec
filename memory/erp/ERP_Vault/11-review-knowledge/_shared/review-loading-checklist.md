@@ -57,14 +57,15 @@ last-reviewed: 2026-05-19
 
 ## 四、新增誤審案例的流程
 
-當審查被 Miles 反饋為誤審時：
+**MUST 觸發 `misjudgement-record` skill mode B**（不可手動寫入避免格式不一致）。skill 自動完成：
 
-1. 確認誤審類型：
-   - **跨 agent 通用**（如「設計理解摘要不充分」「過度推論」）→ 本卡新增
-   - **ERP 顧問命名 / 用語特有**（如「英文 ERP 術語不通」）→ [[erp-naming-misjudgements]] 新增
-   - **CEO 商業推論誤區**（如「以政治成本為由」）→ [[ceo-review-pitfalls]] 新增
-2. 記錄格式：日期 / 誤審 agent / 誤審內容 / 實際情況 / 教訓 / 規則 / 適用 agent
-3. 更新對應 frontmatter `last-reviewed`
+1. **分類**：依誤審類型自動歸位至三個目標卡之一（本卡 § 三 / [[erp-naming-misjudgements]] / [[ceo-review-pitfalls]]）
+2. **去重**：搜尋既有案例，相似度高建議擴充而非新增
+3. **四要素提取**：案例情境 / 誤審內容 / 實際情況（Miles 原話）/ 教訓
+4. **強制規則**：教訓 MUST 用具體場景，MUST NOT 學術理由
+5. **更新 frontmatter** `last-reviewed`
+
+詳見 [`.claude/skills/misjudgement-record/SKILL.md`](../../../../../.claude/skills/misjudgement-record/SKILL.md)。
 
 ## 五、相關卡
 

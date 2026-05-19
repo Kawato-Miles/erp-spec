@@ -46,12 +46,16 @@ last-reviewed: 2026-05-19
 
 ## 三、新增誤審案例的流程
 
-當命名 / 用語建議被 Miles 反饋為不通順 / 不直覺時：
+**MUST 觸發 `misjudgement-record` skill mode B**（不可手動寫入避免格式不一致）。skill 自動完成：
 
-1. 記錄完整資訊：日期 / change name / capability name / 誤審建議的具體內容 / Miles 原話反饋
-2. 萃取教訓（**MUST 用具體場景**，**MUST NOT** 用學術理由）
-3. 若需更新 [[erp-naming-rules]] 規則，同步更新
-4. 更新本卡 frontmatter `last-reviewed`
+1. **分類**：判定為 ERP 命名 / 用語類誤審 → 自動歸位至本卡
+2. **去重**：搜尋既有案例（如「期次待收金額」「watchlist」），相似度高建議擴充而非新增
+3. **四要素提取**：背景（change name / capability name）/ 誤審理由（agent 當時的學術理由）/ Miles 原話反饋 / 教訓
+4. **強制規則**：教訓 MUST 用具體場景（誰會在哪裡混淆），MUST NOT 用學術理由（資料模型語義學等）
+5. **規則演化**：若需更新 [[erp-naming-rules]] 規則，由 Miles 確認後同步更新
+6. **更新 frontmatter** `last-reviewed`
+
+詳見 [`.claude/skills/misjudgement-record/SKILL.md`](../../../../../.claude/skills/misjudgement-record/SKILL.md)。
 
 ## 四、相關卡
 

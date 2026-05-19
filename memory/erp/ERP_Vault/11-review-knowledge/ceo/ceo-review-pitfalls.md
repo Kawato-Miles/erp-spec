@@ -75,12 +75,17 @@ last-reviewed: 2026-05-19
 
 ## 三、誤區累積流程
 
-當 CEO 審查被 Miles 反饋為誤審時：
+**MUST 觸發 `misjudgement-record` skill mode B**（不可手動寫入避免格式不一致）。skill 自動完成：
 
-1. 判斷誤審是否屬於上述 5 條既有誤區的延伸 → 在既有條目下補充「歷史案例」
-2. 若屬新類型誤區 → 在 § 一 新增第 6+ 條
-3. 同步更新 [[review-loading-checklist]] § 三 防誤審記錄（跨 agent 通用部分）
-4. 更新本卡 frontmatter `last-reviewed`
+1. **分類**：判定為 CEO 商業推論誤區（政治成本 / 教育負擔 / 上線時程等）→ 自動歸位至本卡
+2. **去重**：搜尋 § 一 既有 5 條誤區
+   - 同類型誤審重演 → 在對應誤區 § 加「歷史案例」（mode C）
+   - 新類型誤區 → § 一 新增第 6+ 條（mode B）
+3. **四要素提取**：誤區（具體誤區描述）/ 正解 / 依據（wiki link）/ 歷史案例（日期 + 情境）
+4. **跨 agent cross-reference**：若同案例也屬跨 agent 通用，同步在 [[review-loading-checklist]] § 三 加引用
+5. **更新 frontmatter** `last-reviewed`
+
+詳見 [`.claude/skills/misjudgement-record/SKILL.md`](../../../../../.claude/skills/misjudgement-record/SKILL.md)。
 
 ## 四、相關卡
 
