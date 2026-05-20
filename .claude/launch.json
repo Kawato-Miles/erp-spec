@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sens-erp-prototype",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "/Users/b-f-03-029/sens-erp-prototype"],
+      "port": 8080
+    }
+  ]
+}

@@ -24,7 +24,7 @@ expected-resolution-at: 2026-Q3
 
 erp-consultant 三視角審查 round 1 指出：
 
-[既有 spec § 訂單備註三類分欄](../../../openspec/specs/order-management/spec.md)（spec.md:1496-1525）已將備註拆為三類：
+[既有 spec § Requirement: 訂單備註三類分欄](../../../openspec/specs/order-management/spec.md)已將備註拆為三類：
 - `customer_note`（線上單客戶端，唯讀）
 - `internal_note`（內部備註，客戶不可見）
 - `production_note`（**線下單訂單製作備註：製作 / 交易 / 出貨備註彙整**）
