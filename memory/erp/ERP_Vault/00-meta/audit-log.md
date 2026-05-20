@@ -131,6 +131,20 @@ unresolved 主要是 Vault 外引用（`.claude/agents/`、`openspec/specs/`、`
 - 補 6 個 QC 重構 OQ 進 README 清單表格 + 對應實體卡（如 [[QC]] / [[生產任務]]）建 backlink
 - 修 3 個 OQ source-link 改指向 archive 路徑
 
+## [2026-05-20 19:00] insight | audit-接續
+
+**觸發**：vault-audit 接續（4 維度需 follow-up + OQ 累計 32 + 兩個 change 連續 archive）
+
+**輸出**：
+- [[../12-insights/2026-05-20-售後ticket-reactive-補丁循環]]（priority high，4 actions）
+- [[../12-insights/2026-05-20-change-archive-OQ收尾流程缺口]]（priority high，4 actions）
+
+**關鍵推論**：
+1. 售後 ticket 模組進入「Miles 走查 → 發現 gap → 開 change → archive → 走查 → 再發現 gap」reactive 補丁循環，根因為缺乏端到端 user journey 基準文件；建議辦跨角色 workshop + 整合 change 一次性解 4 個高優 OQ
+2. `/opsx:archive` 工作流缺 OQ 收尾步驟，導致孤兒 OQ / 撞號 / 過期 source-link / 缺 expected-resolution-at / 命名規約不一致五項治理債；建議更新 archive skill 加 OQ 收尾 checklist + 一次性回溯修舊資料
+
+**下一步 actions 數**：共 8 個 actions（兩 insight 各 4 個），priority high actions 5 個，預估 6/15 前可全數完成。
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則

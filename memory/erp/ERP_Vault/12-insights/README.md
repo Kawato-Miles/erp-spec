@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-19
+last-reviewed: 2026-05-20
 ---
 
 # Insights 總覽
@@ -18,18 +18,25 @@ last-reviewed: 2026-05-19
 
 | 日期 | 主題 | status | priority | actions 數 | 對應卡 |
 |------|------|--------|----------|------------|--------|
-| — | （尚無 insight）| — | — | — | — |
+| 2026-05-20 | 售後 ticket reactive 補丁循環 | open | high | 4 | [[2026-05-20-售後ticket-reactive-補丁循環]] |
+| 2026-05-20 | change archive OQ 收尾流程缺口 | open | high | 4 | [[2026-05-20-change-archive-OQ收尾流程缺口]] |
 
 ## 二、Status 統計
 
-- open: 0
+- open: 2
 - in-progress: 0
 - resolved: 0
 - cancelled: 0
 
 ## 三、近期執行
 
-> （尚無執行紀錄）
+### 2026-05-20 售後 ticket reactive 補丁循環（vault-audit 接續）
+
+售後 ticket 模組 1.5 個月內連續 5 個 change（v0.1~v0.5）+ 11 個相關 OQ 累積；XM-004 OQ 已預警「ticket 內部端對端流程走查」缺步驟。主要 action：辦端到端 workshop（5/26~6/2）→ propose 整合 change（6/3~6/8）一次性 resolve AFT-1/2/XM-001/XM-005 四個 OQ。
+
+### 2026-05-20 change archive OQ 收尾流程缺口（vault-audit 接續）
+
+`/opsx:archive` 工作流缺「OQ 收尾」步驟，導致：7 個 QC 重構期 OQ 變孤兒、XM-006 撞號、3 個 OQ source-link 過期、9 個 OQ 缺 expected-resolution-at、OQ 命名規約不一致。主要 action：更新 archive skill 加 OQ 收尾步驟（5/22 前）+ 修本次發現的 6 個 OQ + 統一命名規約。
 
 ## 四、觸發指引
 
