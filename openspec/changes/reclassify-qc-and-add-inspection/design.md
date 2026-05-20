@@ -248,6 +248,8 @@ Rollback：spec 階段可直接還原 OpenSpec change（未歸檔前）。
 
 ## Open Questions
 
+### C1 本身衍生 OQ（design 期間識別）
+
 | OQ | 描述 | 落點 |
 |----|------|------|
 | OQ-C1-1 | `requires_inspection` 與既有 `affects_product` 的關係（兩者是否衝突 / 重複 / 互補）| spec 階段釐清 |
@@ -257,4 +259,10 @@ Rollback：spec 階段可直接還原 OpenSpec change（未歸檔前）。
 | OQ-C1-5 | 既有 QCRecord 資料 migration 範圍與時機 | 正式上線階段另議 |
 | OQ-C1-6 | 設計討論中迭代多次，Miles 反饋「還是滿奇怪的」表示設計可能仍有未盡之處 | 透過跑情境測試案例驗證；後續 change 持續修正 |
 
-Notion OQ DB 相關 OQ 補抓：歸檔前以 `oq-manage` skill 或 Notion MCP 補完整清單（關鍵字：QC、品檢、補生產、報工、入庫、齊套性、放行、議價、退款、shortfall、NCR、Disposition）。
+### Vault 既有相關 OQ（2026-05-20 透過 `oq-manage` mode A 補抓）
+
+| OQ | 相關性 | 落點 |
+|----|-------|------|
+| [[QC-001-OpenSpec 品管是否拆審稿與 QC\|QC-001]]：OpenSpec「品管」是否該拆為「審稿」+「QC」 | **高** — reclassify-qc 已動 user-roles spec，可考慮 C1 階段一併解 | 三視角審查時決定（併入 C1 或保持 open）|
+| [[PT-001-師傅報工行動裝置例外\|PT-001]]：師傅報工是否可行動裝置例外（priority: high）| 間接 — reclassify-qc 涉及 PT 報工框架，但 UI 例外議題不在 C1 範圍 | C1 範圍外（保持 open，待 Prototype 階段或 Phase 2 北極星指標規劃時處理）|
+| [[SHP-005-分批出貨觸發節點\|SHP-005]]：分批出貨觸發節點（priority: high）| 弱 — reclassify-qc 提到分批驗收（多筆 WorkRecord），與分批出貨概念類似但不重疊 | C1 範圍外（出貨層議題）|
