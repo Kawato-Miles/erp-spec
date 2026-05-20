@@ -53,19 +53,18 @@ Prototype SHALL 提供 `PrintItemTypeLabel` 共用元件用於統一呈現 `Prin
 
 所有印件列表頁 / 含印件清單的列表頁 SHALL 統一新增「印件類型」欄位，欄位內以 `PrintItemTypeLabel` 元件顯示三值。同時 SHALL 在篩選器（filter）中提供「印件類型」三選項（打樣 / 大貨 / 補印），業務可單選或多選。
 
-**適用列表頁清單**：
+**適用列表頁清單**（印件級列表頁與印件出現位置；訂單級列表頁不適用）：
 
-| 列表頁 | spec 引用 |
-|--------|---------|
-| 訂單列表 | [order-management spec](../order-management/spec.md) |
-| 訂單詳情頁印件區（表格內） | [order-management spec](../order-management/spec.md) |
-| 業務平台印件總覽 | [sales-platform spec](../sales-platform/spec.md) |
-| 印務主管印件總覽（防掉單） | [work-order spec](../work-order/spec.md) |
-| 工單列表 | [work-order spec](../work-order/spec.md) |
-| 工單詳情頁印件 / 任務區 | [work-order spec](../work-order/spec.md) |
-| 派工看板工序卡片內任務明細 | [task-dispatch-board spec](../task-dispatch-board/spec.md) |
-| 印件詳情頁 sub-header | [prototype-shared-ui spec § 印件詳情頁 Tabs 化版型](../prototype-shared-ui/spec.md) |
-| ticket 詳情頁補印印件清單區 | [after-sales-ticket spec](../after-sales-ticket/spec.md) |
+| 列表頁 | spec 引用 | 備註 |
+|--------|---------|------|
+| 訂單詳情頁印件區（表格內）| [order-management spec](../order-management/spec.md) | 同一訂單下印件總表，不需 filter |
+| 業務平台印件總覽 | [sales-platform spec](../sales-platform/spec.md) | 沿用中台版「印務主管印件總覽（防掉單）」內容 + filter 預設值差異 |
+| 印務主管印件總覽（防掉單） | [work-order spec](../work-order/spec.md) | 中台版印件總覽，業務平台 / 印務平台沿用 |
+| 工單列表 | [work-order spec](../work-order/spec.md) | 每個工單對應一個印件，反查 PrintItem.type |
+| 派工看板工序卡片內任務明細 | [task-dispatch-board spec](../task-dispatch-board/spec.md) | 任務對應印件，反查 type |
+| ticket 詳情頁補印印件清單區 | [after-sales-ticket spec](../after-sales-ticket/spec.md) | 清單區直接顯示補印 PrintItem |
+
+**訂單列表（OrderList）不適用**：訂單下可能有多筆印件（含不同 type），訂單級列表頁無單一「印件類型」可顯示。若需在訂單列表標示「訂單含補印」， 另開 follow-up change 設計「訂單級補印標示」（聚合欄位設計）。
 
 **欄位呈現規範**：
 
