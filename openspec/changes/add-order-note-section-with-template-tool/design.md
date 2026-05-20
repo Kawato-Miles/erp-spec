@@ -61,7 +61,7 @@
 
 **選擇**：訂單詳情頁資訊 Tab 呈現兩組 textarea：
 - **既有「訂單備註」區塊**（`customer_note` / `internal_note` / `production_note`，依 order_source 條件顯示）：保持原位置
-- **新增「客戶溝通備註」區塊**（`order_note` / `delivery_note` / `payment_note`，三欄全顯示）：放在訂單資訊卡與既有訂單備註區塊之間，作為對外條款集中區
+- **新增「訂單備註」區塊**（`order_note` / `delivery_note` / `payment_note`，三欄全顯示）：放在訂單資訊卡與既有訂單備註區塊之間，作為對外條款集中區
 
 **理由**：
 - **維度不同**：既有三類按「來源／可見性」（誰寫的、誰能看）拆分；新三類按「業務主題」（訂單條件／交貨條件／付款條件）拆分。兩個維度正交，理論上可並存
@@ -75,8 +75,8 @@
   - payment_detail（內部備註）
   ...
 
-[新增：客戶溝通備註 section]  ← 新增區塊
-  Section Title: 客戶溝通備註
+[新增：訂單備註 section]  ← 新增區塊
+  Section Title: 訂單備註
   Section Subtitle: 訂單階段對客戶說明的標準化條款（後續匯出至報價單／訂單確認單）
   [訂單備註 textarea] [插入常用備註]
   [交貨備註 textarea] [插入常用備註]
@@ -113,7 +113,7 @@
 
 **選擇**：兩個欄位皆顯示，**用 section 分組明確區分**：
 - `payment_terms_note`（唯讀）放在「訂單資訊卡」內（既有位置），label 加註「（來自需求單）」
-- `payment_note`（可編輯）放在「客戶溝通備註」section 內，label 加註「（訂單階段補充）」
+- `payment_note`（可編輯）放在「訂單備註」section 內，label 加註「（訂單階段補充）」
 
 **理由**：
 - **語意清晰**：兩者位置與 label 明確區分「報價約定」vs「訂單補充」
@@ -215,11 +215,31 @@ export const ORDER_NOTE_TEMPLATES: Record<OrderNoteFieldKey, NoteTemplate[]> = {
 - **不補規範，元件自由設計**：被否決。未來其他模組做類似元件時會風格不一
 - **改開獨立規範文件**：被否決。DESIGN.md 是唯一權威，分散會破壞單一來源原則
 
+### 決策 8：編輯入口採獨立 `OrderNotesEditDialog`，不沿用既有 `OrderInfoEditDialog`
+
+**選擇**：新建 `src/components/order/OrderNotesEditDialog.tsx`，獨立於既有 `OrderInfoEditDialog`：
+- OrderDetail 訂單備註 section header 右上掛「編輯」按鈕（同訂單資訊 / 出貨資訊 / 發票設定 / 客戶資訊 section pattern）
+- 點編輯 → 開啟 `OrderNotesEditDialog`（內含 3 個 textarea + 3 個 NoteTemplatePopover）
+- Section body 為 **read-only 顯示**（label + 多行文字塊，空值顯示「尚未填寫」）
+
+**理由**：
+- **編輯時機 lock 規則不同**：`OrderInfoEditDialog` 受 `isBeforeProduction`（製作前）約束，而本 change 對訂單備註的編輯時機是「訂單完成前」（含製作中、製作完成、已出貨等狀態）。若沿用 OrderInfoEditDialog 會被既有 lock 規則綁住，與決策 3 衝突。
+- **避免破壞既有 dialog 行為**：放寬 OrderInfoEditDialog 進入時機會影響該 dialog 內所有欄位（案名 / 業務負責人 / 折扣碼 / staffNotes / productionNote 等），副作用大。
+- **與其他 section 一致**：訂單資訊 / 出貨資訊 / 發票設定 / 客戶資訊 等 section 都有自己的編輯 dialog（OrderInfoEditDialog / ShippingInfoEditDialog / InvoiceSettingEditDialog 等），新增 OrderNotesEditDialog 符合既有 pattern。
+- **編輯權限與時機在 OrderDetail 父元件判斷**：父元件決定編輯按鈕是否 disabled、dialog 接到時即視為已授權（不重複判斷）。
+
+**Alternatives considered**：
+- **OrderInfoEditDialog 新增 3 欄位編輯區（原 proposal）**：被否決。如上 lock 規則衝突 + 副作用大。
+- **OrderDetail inline 編輯（不開 dialog）**：被否決。與其他 section 行為不一致，使用者體驗破碎（Miles round 2 feedback）。
+- **OrderInfoEditDialog 內部加「進階備註」分頁**：被否決。Tab 切換增加認知負擔，且 lock 規則仍需在 dialog 內部分欄位判斷。
+
+**詳見** [ORD-014](../../../memory/erp/ERP_Vault/08-open-questions/ORD-014-訂單備註與訂單資訊編輯dialog分開.md) 記錄此決策來源（apply 階段 implementation feedback）。
+
 ## Risks / Trade-offs
 
 | 風險 | 緩解 |
 |------|------|
-| **8 個 textarea 業務分不清哪欄填哪類** | 用 section 分組（「客戶溝通備註」vs「內部備註」）、label 加註語意、placeholder 引導；上線後追蹤業務填寫分佈（OQ ORD-013 待 UAT 驗證） |
+| **8 個 textarea 業務分不清哪欄填哪類** | 用 section 分組（「訂單備註」vs「內部備註」）、label 加註語意、placeholder 引導；上線後追蹤業務填寫分佈（OQ ORD-013 待 UAT 驗證） |
 | **新舊三類職責分工未明，業務寫到錯欄** | spec § Data Model 補職責分工表（見 ORD-013 OQ 候選做法 1）；下游報價單匯出只取新三類，逼業務養成正確分流習慣 |
 | **客戶看不到備註，ROI 兌現延後** | 承諾後續報價單匯出 epic（OQ ORD-012）；Phase 1 業務可手動貼到 LINE / email |
 | **欄位語意切分依附件原型作者直覺、未經 UAT 驗證** | seed 模板來自業務既有手稿、有實證基礎；上線後追蹤填寫率與業務反饋，必要時 reclassify |

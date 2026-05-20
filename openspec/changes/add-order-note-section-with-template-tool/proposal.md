@@ -27,7 +27,7 @@
 - **ADDED** seed data 28 條（依附件 `/Users/b-f-03-029/Downloads/quote_note_html.html` 搬，按新三類分配給三個欄位）
 - **ADDED** DESIGN.md 補規範：Form Field label 右側 trailing action button 規範（位置、樣式、與既有 hint icon 共存規則）
 - **ADDED** User Story US-ORD-005「業務於訂單階段補充客戶溝通備註」（依 [user-story-spec](../../../memory/erp/ERP_Vault/11-review-knowledge/protocols/user-story-spec.md) 起草）
-- **修改** `OrderInfoEditDialog` 新增三個欄位的編輯區（沿用既有編輯入口、不另開獨立 dialog）
+- **新增** `OrderNotesEditDialog`（獨立 dialog）：點訂單備註 section header 的「編輯」按鈕開啟，含 3 個 textarea + NoteTemplatePopover。不沿用既有 `OrderInfoEditDialog`，原因是兩者進入時機規則不同（OrderInfoEditDialog 受 `isBeforeProduction` 約束、本 dialog 受「訂單完成前」約束），詳見 [ORD-014](../../../memory/erp/ERP_Vault/08-open-questions/ORD-014-訂單備註與訂單資訊編輯dialog分開.md)
 
 不在本 change 範圍（明確界定）：
 - 不開模板 CRUD UI（Prototype 階段 seed data 寫死，未來路徑見 OQ [XM-006](../../../memory/erp/ERP_Vault/08-open-questions/XM-006-備註模板維護路徑.md)）
@@ -56,7 +56,7 @@
 - `src/components/shared/NoteTemplatePopover.tsx`（新增）
 - `src/data/orderNoteTemplates.ts`（新增 seed data）
 - `src/pages/OrderDetail.tsx`（修改：資訊 Tab 加新 section）
-- `src/components/order/OrderInfoEditDialog.tsx`（修改：加 3 欄位編輯）
+- `src/components/order/OrderNotesEditDialog.tsx`（新增：獨立 dialog，3 個 textarea + NoteTemplatePopover）
 - `src/store/useErpStore.ts`（修改：Order type 加 3 欄位 + update action）
 - `sens-erp-prototype/DESIGN.md`（補規範）
 
