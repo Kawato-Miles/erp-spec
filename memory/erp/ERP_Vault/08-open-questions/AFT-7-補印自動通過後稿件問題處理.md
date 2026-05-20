@@ -4,7 +4,7 @@ module:
   - after-sales-ticket
   - prepress-review
 oq-id: AFT-7
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-20
@@ -17,6 +17,8 @@ related-oq:
   - AFT-6
 related-change: refine-supplementary-print-skip-review
 expected-resolution-at:
+answered-at: 2026-05-20
+answered-by: Miles
 ---
 
 # AFT-7：補印自動通過後印務發現稿件實際有問題的標準處理動作
@@ -71,3 +73,24 @@ expected-resolution-at:
 
 - Miles 反饋（補印審稿自動通過設計）
 - change `refine-supplementary-print-skip-review` design.md § OQ-SP-2 + § Migration Plan 風險 1
+
+## 答覆（2026-05-20 Miles）
+
+**結論**：**系統外處理，不設計系統路徑**。
+
+**理由**：此情境發生頻率極低且不合邏輯 — 如果稿件真的有錯，**一開始打樣、大貨階段就應該發現**，不會等到售後補印時才浮現。換言之：
+- 打樣階段：客戶會驗稿確認 → 有錯會在這階段抓
+- 大貨階段：印務 / 審稿員會走完整審稿流程 → 有錯會在這階段抓
+- 售後補印階段：原稿已通過前兩階段檢驗，發現新問題的概率近 0
+
+**處理方式（若極端情境真的發生）**：
+- 印務與業務 / 客戶 / 審稿主管直接溝通協調（電話 / Slack / 口頭）
+- 必要時印務手動暫停工單、退回業務取消當前補印
+- 業務評估是否走 [AFT-6 答覆](AFT-6-補印改稿情境入口設計.md) 「新訂單」路徑
+
+**影響**：
+- 不在系統內新增「補印審稿回退」路徑
+- 不破壞既有審稿狀態機（合格不會被回退）
+- 業務培訓不需強調此例外處理
+
+**OQ 後續**：本卡 close，極端情境靠人工溝通處理。

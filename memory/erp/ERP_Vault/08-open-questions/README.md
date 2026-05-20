@@ -81,11 +81,12 @@ notion-page-url: <URL>               # 若已推送則記錄頁面
 | [[XM-006-備註模板維護路徑]] | 備註模板維護路徑（Phase 2） | open | medium | cross-module、order-management |
 | [[ORD-012-訂單備註匯出至客戶文件路徑]] | 訂單備註匯出至客戶文件路徑（下游 epic） | open | medium | order-management |
 | [[ORD-013-新三類與既有production_note職責分工]] | 新三類與既有 production_note 職責分工 | open | high | order-management |
-| [[AFT-6-補印改稿情境入口設計]] | 補印改稿情境入口設計（規格變更 vs 補印路徑） | open | medium | after-sales-ticket、order-management |
-| [[AFT-7-補印自動通過後稿件問題處理]] | 補印自動通過後印務發現稿件問題的標準動作 | open | medium | after-sales-ticket、prepress-review |
-| [[AFT-8-補印詳情頁來源稿件視覺強調]] | 補印詳情頁來源稿件視覺強調（UI 細節） | open | low | after-sales-ticket、prototype-shared-ui |
+| [[AFT-6-補印改稿情境入口設計]] | 補印改稿情境入口設計（規格變更 vs 補印路徑） | answered | medium | after-sales-ticket、order-management |
+| [[AFT-7-補印自動通過後稿件問題處理]] | 補印自動通過後印務發現稿件問題的標準動作 | answered | medium | after-sales-ticket、prepress-review |
+| [[AFT-8-補印詳情頁來源稿件視覺強調]] | 補印詳情頁來源稿件視覺強調（UI 細節） | answered | low | after-sales-ticket、prototype-shared-ui |
+| [[ORD-014-訂單備註與訂單資訊編輯dialog分開]] | OrderNotesEditDialog 為何不沿用 OrderInfoEditDialog | answered | medium | order-management |
 
-→ 共 **31 個 OQ**（28 既有 + 本次 change `refine-supplementary-print-skip-review` 新增 3 個：AFT-6/7/8）
+→ 共 **32 個 OQ**（28 既有 + change `refine-supplementary-print-skip-review` 新增 3 個 AFT-6/7/8 + change `add-order-note-section-with-template-tool` 加碼 1 個 ORD-014 = 32）
 
 ## 四、同步策略
 

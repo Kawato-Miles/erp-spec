@@ -4,7 +4,7 @@ module:
   - after-sales-ticket
   - prototype-shared-ui
 oq-id: AFT-8
-status: open
+status: answered
 priority: low
 audience: internal
 raised-at: 2026-05-20
@@ -15,6 +15,8 @@ related-vault:
 related-oq:
 related-change: refine-supplementary-print-skip-review
 expected-resolution-at:
+answered-at: 2026-05-20
+answered-by: Miles
 ---
 
 # AFT-8：補印 PrintItem 詳情頁 UI 是否需要視覺強調「來源稿件連結」
@@ -60,3 +62,21 @@ expected-resolution-at:
 
 - change `refine-supplementary-print-skip-review` design.md § OQ-SP-3
 - UI 細節 followup，非阻擋本 change 完成
+
+## 答覆（2026-05-20 Miles）
+
+**結論**：**不用特別處理 UI 視覺強調**。
+
+**理由**：補印 PrintItem 詳情頁的「審稿紀錄 / 印件列表」既有區塊已會帶出審稿上傳檔案（reviewFiles 拷貝自來源印件）。業務 / 客服反查「補印用哪版稿件」走既有印件詳情頁就能看到完整檔案歷史。
+
+**現況可用的反查路徑**：
+- 補印印件詳情頁 → 審稿紀錄 Tab → 看到 ReviewRound 列表（含「售後補印自動通過輪次」+ 拷貝來源的歷史輪次）
+- 補印印件詳情頁 → 印件檔案區 → 看到 reviewFiles 完整列表（拷貝自來源印件的全部稿件）
+- 售後服務單詳情頁 → 「補印印件清單區」→ 跳轉至補印印件詳情頁
+
+**影響**：
+- 不需要在 sub-header 加「來源印件連結」
+- 不需要在稿件區塊加 banner
+- 維持既有印件詳情頁設計
+
+**OQ 後續**：本卡 close，反查路徑沿用既有 UI。

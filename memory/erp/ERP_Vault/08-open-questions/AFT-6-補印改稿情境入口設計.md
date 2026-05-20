@@ -4,7 +4,7 @@ module:
   - after-sales-ticket
   - order-management
 oq-id: AFT-6
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-20
@@ -17,6 +17,8 @@ related-oq:
   - AFT-7
 related-change: refine-supplementary-print-skip-review
 expected-resolution-at:
+answered-at: 2026-05-20
+answered-by: Miles
 ---
 
 # AFT-6：「補印改稿」情境（補印同時改規格）入口設計
@@ -67,3 +69,20 @@ expected-resolution-at:
 
 - senior-pm 第 4 段（refine-after-sales-refund-and-add-supplementary-print 前期介入）風險 D
 - change `refine-supplementary-print-skip-review` design.md § OQ-SP-1
+
+## 答覆（2026-05-20 Miles）
+
+**結論**：**補印同時改稿 = 新訂單，不含在售後中**。
+
+售後服務單的「補印」路徑只處理「沿用原稿」情境（占售後補印 100% 範圍）。
+
+若客戶反映需求是「補印 + 改稿」，業務應引導客戶走**新訂單流程**：
+- 客戶確認新規格 → 業務建新需求單 → 走報價 → 成交轉訂單 → 正常審稿 → 製作 → 出貨
+- 不再從現有售後服務單建立補印 PrintItem
+
+**影響**：
+- 補印路徑入口維持單一（「建立補印印件」按鈕只負責沿用原稿情境）
+- ticket dialog 不需新增「改稿」勾選或新增入口
+- 業務培訓需強化此分流原則：補印 = 沿用原稿；改稿 = 新訂單
+
+**OQ 後續**：本卡 close，相關設計沿用 [refine-supplementary-print-skip-review 既有設計](../../../../openspec/changes/archive/2026-05-20-refine-supplementary-print-skip-review/)。
