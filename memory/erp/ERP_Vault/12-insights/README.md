@@ -18,7 +18,7 @@ last-reviewed: 2026-05-20
 
 | 日期 | 主題 | status | priority | actions 數 | 對應卡 |
 |------|------|--------|----------|------------|--------|
-| 2026-05-20 | 售後 ticket reactive 補丁循環 | open | high | 4 | [[2026-05-20-售後ticket-reactive-補丁循環]] |
+| 2026-05-20 | 售後 ticket reactive 補丁循環 | open | high | 3（Miles 移除 workshop action）| [[2026-05-20-售後ticket-reactive-補丁循環]] |
 | 2026-05-20 | change archive OQ 收尾流程缺口 | open | high | 4 | [[2026-05-20-change-archive-OQ收尾流程缺口]] |
 
 ## 二、Status 統計
@@ -32,7 +32,7 @@ last-reviewed: 2026-05-20
 
 ### 2026-05-20 售後 ticket reactive 補丁循環（vault-audit 接續）
 
-售後 ticket 模組 1.5 個月內連續 5 個 change（v0.1~v0.5）+ 11 個相關 OQ 累積；XM-004 OQ 已預警「ticket 內部端對端流程走查」缺步驟。主要 action：辦端到端 workshop（5/26~6/2）→ propose 整合 change（6/3~6/8）一次性 resolve AFT-1/2/XM-001/XM-005 四個 OQ。
+售後 ticket 模組 1.5 個月內連續 5 個 change（v0.1~v0.5）+ 11 個相關 OQ 累積；XM-004 OQ 已預警「ticket 內部端對端流程走查」缺步驟。主要 action：**PM 桌面走查 8 情境**（5/26 前，Sens 不採實體 workshop 模式）→ propose 整合 change（6/3~6/8）一次性 resolve AFT-1/2/XM-001/XM-005 四個 OQ。
 
 ### 2026-05-20 change archive OQ 收尾流程缺口（vault-audit 接續）
 

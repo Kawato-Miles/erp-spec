@@ -89,7 +89,15 @@ change 涉及以下任一情境時，propose 階段 MUST 在 `## Why` 或 `## Ba
 | 售後 / 異動 / 退款 / 補印類型 ticket 流程 | AfterSalesTicket 模組任何 change |
 | Phase 切換相關（北極星指標相關）| material-master / order-management 等核心模組 |
 
-### 4.2 走查紀錄格式
+### 4.2 走查方式（桌面走查，不採實體 workshop）
+
+Sens 採 **PM 桌面走查** 模式，**不安排跨角色實體 workshop**（2026-05-20 Miles 確認原則）：
+
+| 角色 | 走查職責 |
+|------|---------|
+| Miles（PM）| 主導：依商業情境清單逐一桌面走查、識別 gap、補 OQ、決定範疇 |
+| Claude | 協助：依走查結果整理紀錄、產 07-scenarios 卡草稿、識別跨情境模式 |
+| 業務 / 諮詢 / 印務 / 會計 | 不主動拉入 workshop；Miles 走查時若需確認某情境，透過個別非同步詢問（Slack / 對話）取得實務輸入 |
 
 走查紀錄寫入 `07-scenarios/<情境名>.md`，內容含：
 

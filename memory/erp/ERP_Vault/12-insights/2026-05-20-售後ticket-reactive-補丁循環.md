@@ -79,17 +79,20 @@ Vault 內無「售後 ticket 完整流程跨角色走查」的文件（無對應
 
 ## 下一步建議
 
-### Action 1：辦售後 ticket 端到端 user journey 走查 workshop（priority high）
+> [!info] 2026-05-20 actions 調整（Miles 反饋）
+> 原 Action 1「跨角色實體 workshop」移除（Sens 不採實體 workshop 模式）。本 insight 改以「PM + Claude 桌面走查」+「整合 change propose」兩步推進，不依賴實體會議。
 
-- **負責人**：Miles 主持
-- **參與**：業務代表 1 / 諮詢代表 1 / 印務主管 / 會計 / 印務（操作層）
-- **時程**：2026-05-26 ~ 2026-06-02（1 週內排定）
-- **時長**：90 分鐘
+### Action 1：PM 桌面端到端走查 8 個售後情境（priority high）
+
+- **負責人**：Miles（PM 主導）+ Claude（協助整理）
+- **時程**：2026-05-26 前完成
+- **方式**：PM 桌面走查，不開實體會議
 - **內容**：
-  1. 走 8 個情境組合（resolution 4 種 × responsibility 3 種，篩選實際發生的 8 個情境）
+  1. 走 8 個情境組合（resolution 4 種 × responsibility 3 種，篩選實際發生的 8 個）
   2. 每情境逐步追蹤：客戶反映 → 業務開單 → 決議 → 主管核可 → 執行 → 印件 / 退款 / 發票 → 結案 → 客戶確認
-  3. 標記每一步的當前操作步數、卡點、跨角色銜接
-- **預期產出**：1 份「售後 ticket 完整 user journey」基準文件 → 寫入 `07-scenarios/售後ticket-端到端流程.md`
+  3. 在每一步標明：操作角色、預期操作步數、卡點、跨角色銜接點、目前 spec / Prototype 是否支援
+  4. 比對 5 個既有售後相關 archived change 是否完整覆蓋這 8 個情境
+- **預期產出**：`07-scenarios/售後ticket-端到端流程.md` 基準文件
 - **驗證**：產出後 XM-004 OQ 可標 in-progress
 
 ### Action 2：依走查結果一次性 propose 整合 change（priority high）
@@ -97,24 +100,17 @@ Vault 內無「售後 ticket 完整流程跨角色走查」的文件（無對應
 - **負責人**：Miles（PM）+ Claude（draft）
 - **時程**：2026-06-03 ~ 2026-06-08
 - **內容**：彙整走查發現的 gap，propose 整合 change `refine-after-sales-flow-end-to-end`
-- **不在範圍**：個別小調整（auditional / UI 細節）
+- **不在範圍**：個別小調整（UI 細節 / 措辭）
 - **在範圍**：架構級議題（業務離職轉派替代方案 / 逾期分級 / Use-As-Is 退款 / 款項管理操作流程）
 - **預期產出**：1 個 OpenSpec change（apply + archive），一次性 resolve AFT-1 / AFT-2 / XM-001 / XM-005 四個 OQ
 - **驗證**：4 個 OQ status 從 open → answered
 
-### Action 3：建立「change propose 前必含端到端走查」流程準則（priority medium）
-
-- **負責人**：Miles 確認 + Claude 寫入
-- **時程**：與 Action 2 同步（2026-06-03 ~ 2026-06-08）
-- **內容**：更新 `11-review-knowledge/_shared/review-loading-checklist.md`，新增「change 涉及 ≥ 2 個角色或跨流程時，propose 階段須列出對應 user journey 走查紀錄（連結到 07-scenarios 卡）」
-- **預期產出**：避免未來其他模組重蹈覆轍（如目前正在進行的 `add-order-note-section-with-template-tool` 已累計 11 OQ，疑似同一模式）
-
-### Action 4：把 11 個售後相關 OQ 連結至本 insight（priority low）
+### Action 3：把 11 個售後相關 OQ 連結至本 insight（priority low，已完成）
 
 - **負責人**：Claude
-- **時程**：本週內（2026-05-20 ~ 2026-05-22）
-- **內容**：在 11 個 OQ frontmatter 加 `related-insight: 2026-05-20-售後ticket-reactive-補丁循環`，建立反向 backlink
-- **預期產出**：Vault 內可從 OQ 跳到 insight、從 insight 跳到 OQ 雙向追溯
+- **時程**：2026-05-20 已完成（本次 vault-insight 同 commit）
+- **內容**：5 個 OQ 加 `related-insight: 2026-05-20-售後ticket-reactive-補丁循環` 至 frontmatter（AFT-1/2/3/4/5、XM-001、XM-005；AFT-6/7/8 已 answered 不需）
+- **狀態**：completed
 
 ## 涉及
 
@@ -150,3 +146,4 @@ Vault 內無「售後 ticket 完整流程跨角色走查」的文件（無對應
 （status 變化時追加）
 
 - 2026-05-20：建卡 status = open
+- 2026-05-20：Miles 反饋移除實體 workshop action（Sens 不採實體會議模式）；Action 1 改為「PM 桌面走查」、原 4 actions 收斂為 3；Action 3（OQ backlink）完成

@@ -145,6 +145,21 @@ unresolved 主要是 Vault 外引用（`.claude/agents/`、`openspec/specs/`、`
 
 **下一步 actions 數**：共 8 個 actions（兩 insight 各 4 個），priority high actions 5 個，預估 6/15 前可全數完成。
 
+## [2026-05-20 19:30] insight-revision | Miles 反饋
+
+**觸發**：Miles 反饋「不會有實體的 workshop」+「後續的稽核也不用考慮 workshop」
+
+**異動**：
+- Insight 1（售後 ticket reactive 補丁循環）：移除原 Action 1「實體 workshop」；原 Action 1.2 改為「PM 桌面走查」（5/26 前）；原 Action 3 流程準則被併入既有 Action 1.3 不單獨列；actions 由 4 → 3
+- review-loading-checklist § 四 修補：新增 4.2「走查方式（桌面走查，不採實體 workshop）」明示 Sens 不安排跨角色實體會議；改為 PM 主導 + Claude 協助 + 個別非同步詢問取得實務輸入
+
+**影響範圍**：
+- 12-insights/2026-05-20-售後ticket-reactive-補丁循環.md（含「後續更新」紀錄）
+- 12-insights/README.md（actions 數 4 → 3）
+- 11-review-knowledge/_shared/review-loading-checklist.md § 4.2
+
+**對後續 vault-audit 的意涵**：審稿 / vault-audit 不再以「workshop」作為走查模式判定標準；改以「07-scenarios/ 卡是否存在 + PM 走查紀錄完整度」作判定。
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則
