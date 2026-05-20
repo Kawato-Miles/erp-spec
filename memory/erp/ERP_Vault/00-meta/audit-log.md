@@ -84,6 +84,53 @@ last-reviewed: 2026-05-20
 - 更新 03-roles/_alignment-report.md 對齊 user-roles spec 現況（11 缺漏角色是否仍存在）
 - 維度 3 改用 obsidian CLI（`obsidian orphans` 命令）重跑取得真實 orphan 清單
 
+## [2026-05-20 18:30] audit | 補測 維度 3 / 4 | obsidian CLI
+
+**模式**：補測（接續 18:00 audit）
+
+**觸發**：Miles 開啟 obsidian CLI 後補做維度 3 孤立頁面 / 維度 4 缺失連結
+
+**結果**：
+
+### 維度 3 孤立頁面（obsidian orphans）：Warning
+
+共 15 個 orphan，分類處理：
+
+**A. False positive（canvas / index 檔）**：5 個
+- `09-canvases/*.canvas` 共 5 個 — canvas 為 entry point 不需要 wiki link 反向引用，不算 orphan
+- `10-references/prototype-index.md` — index 性質，不算 orphan
+- `11-review-knowledge/README.md` — README 性質，不算 orphan
+
+**B. 跨產品邊界正常孤立**：1 個
+- `01-products/graphic-editor/product-vision.md` — 圖編 Vault 獨立，不在 ERP 引用圖內
+
+**C. 真實 orphan（需 follow-up）**：7 個 OQ 卡
+- `PT-002-QC 分批驗收派工數量機制.md`（QC 重構期間 OQ）
+- `PT-003-NCR Rework 具體實現.md`（QC 重構期間 OQ）
+- `PT-004-QCRecord 資料遷移.md`（QC 重構期間 OQ）
+- `PT-005-QC 心智模型驗證.md`（QC 重構期間 OQ）
+- `XM-005-Use-As-Is 退款流程串接.md`（QC 重構期間 OQ）
+- `XM-006-降級為次級品出貨.md`（QC 重構期間 OQ）— 注意：兩個不同 XM-006 撞號（另一個是備註模板維護路徑）需處理
+- 對應 reclassify-qc-and-add-inspection change（已 archive），但 OQ 卡未被 README 或其他卡引用
+
+**XM-006 撞號**：兩個 OQ 共用 XM-006 編號（「降級為次級品出貨」+「備註模板維護路徑」）— 需修一個編號
+
+### 維度 4 缺失連結（obsidian unresolved）：OK（過濾後）
+
+unresolved 主要是 Vault 外引用（`.claude/agents/`、`openspec/specs/`、`openspec/changes/archive/`），這些是合法的「指向 Vault 外」引用，obsidian 在 vault 邊界內找不到合理。
+
+**唯一需修**：3 個 OQ（PT-002/003、XM-006）的 source-link 指向 `openspec/changes/reclassify-qc-and-add-inspection/design.md`（active change 路徑），而該 change 已 archive。應改指向 `openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/design.md`。
+
+**主要發現（補測新增）**：
+1. 6 個 QC 重構期間 OQ 孤立（無 backlink）— 應補納入 README OQ 清單表格或對應實體卡引用
+2. XM-006 編號撞號 — 兩個不同 OQ 共用同一 ID
+3. 3 個 OQ source-link 指向已 archive 的 change 路徑
+
+**下一步建議（補測新增）**：
+- 修 XM-006 撞號（重編其中一個為 XM-007）
+- 補 6 個 QC 重構 OQ 進 README 清單表格 + 對應實體卡（如 [[QC]] / [[生產任務]]）建 backlink
+- 修 3 個 OQ source-link 改指向 archive 路徑
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則
