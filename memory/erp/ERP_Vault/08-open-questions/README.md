@@ -64,8 +64,15 @@ notion-page-url: <URL>               # 若已推送則記錄頁面
 | [[XM-003-訂單管理人 vs 業務權責邊界]] | 訂單管理人 vs 業務權責邊界 | open | medium | cross-module、order-management、work-order |
 | [[after-sales-ticket-AFT-1-業務離職轉派]] | 業務離職時 ticket 接手 | open | — | after-sales-ticket |
 | [[after-sales-ticket-AFT-2-逾期分級]] | 售後 ticket 逾期分級 | open | — | after-sales-ticket |
+| [[AFT-3-OA已核可改金額是否通知主管]] | OA 已核可改金額是否通知主管 | open | low | after-sales-ticket、order-management |
+| [[AFT-4-補印優先度規則]] | 補印印件視覺識別 vs 強制高優先度 | open | medium | after-sales-ticket、work-order、task-dispatch-board |
+| [[AFT-5-補費OA由誰建立]] | 補費 OA 業務手動 vs 系統自動帶建 | open | medium | after-sales-ticket、order-management |
+| [[ORD-002-OA核可金額閾值閘門]] | OA 已核可金額 ×% 閾值閘門 | open | low | order-management |
+| [[ORD-003-取消退款Payment是否回退OA]] | 取消退款 Payment 是否回退 OA | open | medium | order-management |
+| [[ORD-004-跨期退款SalesAllowance自動建立]] | 跨期退款折讓單自動 vs 手動 | open | medium | order-management |
+| [[XM-004-售後流程端到端走查]] | 售後 ticket 流程端到端走查 | open | medium | cross-module、after-sales-ticket |
 
-→ 共 **11 個 OQ**（Miles 既有 3 個 + Phase D 遷移 8 個）
+→ 共 **18 個 OQ**（11 既有 + 本次 change 新增 7 個：AFT-3/4/5 + ORD-002/003/004 + XM-004）
 
 ## 四、同步策略
 
