@@ -7,9 +7,11 @@ oq-id: PT-004
 status: open
 priority: medium
 audience: internal
+related-insight:
+  - 2026-05-20-change-archive-OQ收尾流程缺口
 raised-at: 2026-05-20
 raised-by: Miles
-source-link: openspec/changes/reclassify-qc-and-add-inspection/design.md § Open Questions OQ-C1-5
+source-link: openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/design.md § Open Questions OQ-C1-5
 related-vault:
   - "[[QC]]"
   - "[[生產任務]]"
@@ -34,4 +36,4 @@ production-task / qc / 正式環境資料
 
 ## 候選方案
 
-正式上線階段另議。Prototype 階段不處理。詳見 [reclassify-qc design.md § Migration Plan](../../../../openspec/changes/reclassify-qc-and-add-inspection/design.md)。
+正式上線階段另議。Prototype 階段不處理。詳見 [reclassify-qc design.md § Migration Plan](../../../../openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/design.md)。

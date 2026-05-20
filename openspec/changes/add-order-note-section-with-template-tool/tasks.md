@@ -85,18 +85,18 @@
 
 ## 10. 文件同步與驗證
 
-- [ ] 10.1 跑 `openspec validate add-order-note-section-with-template-tool` 確認 delta specs 格式正確
+- [x] 10.1 跑 `openspec validate add-order-note-section-with-template-tool` 確認 delta specs 格式正確
 - [ ] 10.2 跑 `doc-audit` skill 確認跨檔案一致性
-- [ ] 10.3 確認 ERP_Vault 訂單實體卡（`memory/erp/ERP_Vault/05-entities/訂單.md`）已記錄三個新欄位
+- [x] 10.3 確認 ERP_Vault 訂單實體卡（`memory/erp/ERP_Vault/05-entities/訂單.md`）已記錄三個新欄位
 - [ ] 10.4 確認 OQ 卡（ORD-005~013 + XM-006）frontmatter 的 `last-reviewed` 已更新
-- [ ] 10.5 更新 CLAUDE.md 規格檔清單（order-management spec 版本號 + status）
-- [ ] 10.6 commit 與 push（依 CLAUDE.md 版本控管規範）
+- [x] 10.5 更新 CLAUDE.md 規格檔清單（order-management spec 版本號 + status）
+- [x] 10.6 commit 與 push（依 CLAUDE.md 版本控管規範）
 
 ## 11. verify 與 archive 準備
 
-- [ ] 11.1 跑 `/opsx:verify` 驗證實作對齊 design.md + delta specs
-- [ ] 11.2 驗證所有 P0 OQ（ORD-005/006/007/013）design 階段定案內容是否如實實作
-- [ ] 11.3 驗證 e2e 測試全部通過、無 regression
+- [x] 11.1 跑 `/opsx:verify` 驗證實作對齊 design.md + delta specs
+- [x] 11.2 驗證所有 P0 OQ（ORD-005/006/007/013）design 階段定案內容是否如實實作
+- [x] 11.3 驗證 e2e 測試全部通過、無 regression
 - [ ] 11.4 整理 archive 摘要：本 change 完成的 Requirement 列表、影響範圍、未來路徑（P1 + Phase 2 OQ）
 - [ ] 11.5 跑 `/opsx:archive` 將 delta specs 合併回 main specs、change 歸檔
 - [ ] 11.6 archive 後 doc-audit 跨檔案一致性檢查

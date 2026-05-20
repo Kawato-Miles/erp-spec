@@ -57,13 +57,17 @@ notion-page-url: <URL>               # 若已推送則記錄頁面
 | [[PI-001-難易度分數業務含義]] | 難易度分數 1-10 業務含義 | open | medium | prepress-review、quote-request |
 | [[PI-002-免審決策準則]] | 免審決策準則 | open | medium | prepress-review、quote-request |
 | [[PT-001-師傅報工行動裝置例外]] | 師傅報工是否可行動裝置例外 | open | high | production-task |
+| [[PT-002-QC 分批驗收派工數量機制]] | QC 分批驗收派工數量機制 | open | medium | production-task、qc |
+| [[PT-003-NCR Rework 具體實現]] | NCR Rework 具體實現 | open | medium | production-task |
+| [[PT-004-QCRecord 資料遷移]] | QCRecord 資料遷移 | open | low | production-task |
+| [[PT-005-QC 心智模型驗證]] | QC 心智模型驗證 | open | medium | production-task、qc |
 | [[QC-001-OpenSpec 品管是否拆審稿與 QC]] | OpenSpec 品管是否拆審稿與 QC | open | medium | qc、prepress-review |
 | [[SHP-005-分批出貨觸發節點]] | 分批出貨觸發節點 | open | high | order-management、work-order |
 | [[XM-001-款項管理頁面業務最重要決策]] | 款項管理頁面業務最重要決策 | open | — | cross-module |
 | [[XM-002-印務 vs 印務主管權責邊界]] | 印務 vs 印務主管權責邊界 | open | medium | cross-module、work-order、production-task |
 | [[XM-003-訂單管理人 vs 業務權責邊界]] | 訂單管理人 vs 業務權責邊界 | open | medium | cross-module、order-management、work-order |
-| [[after-sales-ticket-AFT-1-業務離職轉派]] | 業務離職時 ticket 接手 | open | — | after-sales-ticket |
-| [[after-sales-ticket-AFT-2-逾期分級]] | 售後 ticket 逾期分級 | open | — | after-sales-ticket |
+| [[AFT-1-業務離職轉派]] | 業務離職時 ticket 接手 | open | — | after-sales-ticket |
+| [[AFT-2-逾期分級]] | 售後 ticket 逾期分級 | open | — | after-sales-ticket |
 | [[AFT-3-OA已核可改金額是否通知主管]] | OA 已核可改金額是否通知主管 | open | low | after-sales-ticket、order-management |
 | [[AFT-4-補印優先度規則]] | 補印印件視覺識別 vs 強制高優先度 | open | medium | after-sales-ticket、work-order、task-dispatch-board |
 | [[AFT-5-補費OA由誰建立]] | 補費 OA 業務手動 vs 系統自動帶建 | open | medium | after-sales-ticket、order-management |
@@ -78,7 +82,9 @@ notion-page-url: <URL>               # 若已推送則記錄頁面
 | [[ORD-009-訂單備註欄位業務平台可見性]] | 新欄位在業務平台列表可見性 | open | medium | order-management、sales-platform |
 | [[ORD-010-備註模板重複插入防呆]] | 備註模板重複插入防呆（Phase 2） | open | low | order-management、prototype-shared-ui |
 | [[ORD-011-備註模板變數佔位符處理]] | 變數佔位符 [日期] [金額] 處理（Phase 2） | open | medium | order-management、prototype-shared-ui |
+| [[XM-005-Use-As-Is 退款流程串接]] | Use-As-Is 退款流程串接 | open | high | cross-module、after-sales-ticket、order-management |
 | [[XM-006-備註模板維護路徑]] | 備註模板維護路徑（Phase 2） | open | medium | cross-module、order-management |
+| [[XM-007-降級為次級品出貨]] | 降級為次級品出貨給其他客戶（QC 重編 from XM-006）| open | low | cross-module、production-task、order-management |
 | [[ORD-012-訂單備註匯出至客戶文件路徑]] | 訂單備註匯出至客戶文件路徑（下游 epic） | open | medium | order-management |
 | [[ORD-013-新三類與既有production_note職責分工]] | 新三類與既有 production_note 職責分工 | open | high | order-management |
 | [[AFT-6-補印改稿情境入口設計]] | 補印改稿情境入口設計（規格變更 vs 補印路徑） | answered | medium | after-sales-ticket、order-management |
@@ -86,7 +92,13 @@ notion-page-url: <URL>               # 若已推送則記錄頁面
 | [[AFT-8-補印詳情頁來源稿件視覺強調]] | 補印詳情頁來源稿件視覺強調（UI 細節） | answered | low | after-sales-ticket、prototype-shared-ui |
 | [[ORD-014-訂單備註與訂單資訊編輯dialog分開]] | OrderNotesEditDialog 為何不沿用 OrderInfoEditDialog | answered | medium | order-management |
 
-→ 共 **32 個 OQ**（28 既有 + change `refine-supplementary-print-skip-review` 新增 3 個 AFT-6/7/8 + change `add-order-note-section-with-template-tool` 加碼 1 個 ORD-014 = 32）
+→ 共 **38 個 OQ**（32 既有 + 2026-05-20 vault-audit 補測識別 6 個 QC 重構期孤兒 OQ：PT-002/003/004/005 + XM-005 + XM-007 = 38）
+
+> [!info] 2026-05-20 OQ 治理整理（vault-insight 2026-05-20-change-archive-OQ收尾流程缺口）
+> - XM-006 撞號：QC 重構期「降級為次級品出貨」重編為 XM-007（避免與備註模板維護路徑衝突）
+> - 命名規約統一：`after-sales-ticket-AFT-1/2` 重命名為 `AFT-1/2`（去前綴，對齊新 schema）
+> - 9 個缺 `expected-resolution-at` 的 OQ 補預設 2026-Q3（標 needs-Miles-confirmation）
+> - 13 個 OQ 加 `related-insight` backlink（12 個指向 Insight 1 售後 / Insight 2 archive 治理 + XM-005 跨兩 insight）
 
 ## 四、同步策略
 

@@ -15,7 +15,7 @@ related-vault:
 related-oq:
   - ORD-005
 related-change: add-order-note-section-with-template-tool
-expected-resolution-at:
+expected-resolution-at: 2026-Q3
 ---
 
 # ORD-007：新增 paymentNote 與既有 paymentTermsNote 的 UI 共存策略

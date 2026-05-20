@@ -8,6 +8,7 @@ oq-id: XM-003
 status: open
 priority: medium
 audience: internal
+expected-resolution-at: 2026-Q3  # 預設值，待 Miles 確認實際時程
 raised-at: 2026-05-19
 raised-by: Miles
 source-link: memory/erp/ERP_Vault/03-roles/_alignment-report.md (Phase A 角色清單對齊識別)

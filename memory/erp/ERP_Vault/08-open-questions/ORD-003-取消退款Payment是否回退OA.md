@@ -8,13 +8,13 @@ priority: medium
 audience: internal
 raised-at: 2026-05-20
 raised-by: Miles (plan 階段)
-source-link: openspec/changes/refine-after-sales-refund-and-add-supplementary-print/design.md
+source-link: openspec/changes/archive/2026-05-20-refine-after-sales-refund-and-add-supplementary-print/design.md
 related-vault:
   - [[../05-entities/訂單]]
   - [[../06-state-machines/訂單狀態]]
 related-oq:
 related-change: refine-after-sales-refund-and-add-supplementary-print
-expected-resolution-at:
+expected-resolution-at: 2026-Q3
 ---
 
 # ORD-003：建立退款 Payment 後若發現錯誤，取消 Payment 是否自動回退 OA 為「已核可」

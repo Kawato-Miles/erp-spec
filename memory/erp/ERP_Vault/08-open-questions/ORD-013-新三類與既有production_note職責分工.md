@@ -15,7 +15,7 @@ related-oq:
   - ORD-005
   - ORD-007
 related-change: add-order-note-section-with-template-tool
-expected-resolution-at:
+expected-resolution-at: 2026-Q3
 ---
 
 # ORD-013：新三類備註與既有 production_note 的職責分工

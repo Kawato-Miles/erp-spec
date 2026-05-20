@@ -9,14 +9,16 @@ priority: low
 audience: internal
 raised-at: 2026-05-20
 raised-by: senior-pm (前期介入)
-source-link: openspec/changes/refine-after-sales-refund-and-add-supplementary-print/design.md
+source-link: openspec/changes/archive/2026-05-20-refine-after-sales-refund-and-add-supplementary-print/design.md
 related-vault:
   - [[../05-entities/售後服務]]
   - [[../05-entities/訂單]]
 related-oq:
   - ORD-002
 related-change: refine-after-sales-refund-and-add-supplementary-print
-expected-resolution-at:
+related-insight:
+  - 2026-05-20-售後ticket-reactive-補丁循環
+expected-resolution-at: 2026-Q3
 ---
 
 # AFT-3：OA 已核可後業務改金額是否需主動通知主管

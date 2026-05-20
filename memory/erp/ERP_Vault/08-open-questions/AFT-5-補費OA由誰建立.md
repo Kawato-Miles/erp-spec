@@ -9,13 +9,15 @@ priority: medium
 audience: internal
 raised-at: 2026-05-20
 raised-by: Miles (plan 階段)
-source-link: openspec/changes/refine-after-sales-refund-and-add-supplementary-print/design.md
+source-link: openspec/changes/archive/2026-05-20-refine-after-sales-refund-and-add-supplementary-print/design.md
 related-vault:
   - [[../05-entities/售後服務]]
   - [[../05-entities/訂單]]
 related-oq:
 related-change: refine-after-sales-refund-and-add-supplementary-print
-expected-resolution-at:
+related-insight:
+  - 2026-05-20-售後ticket-reactive-補丁循環
+expected-resolution-at: 2026-Q3
 ---
 
 # AFT-5：補印情境下補費 OA 由誰建立 — 業務手動 vs 系統自動帶建

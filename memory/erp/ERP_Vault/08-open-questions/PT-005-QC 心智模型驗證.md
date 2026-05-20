@@ -7,9 +7,11 @@ oq-id: PT-005
 status: open
 priority: medium
 audience: internal
+related-insight:
+  - 2026-05-20-change-archive-OQ收尾流程缺口
 raised-at: 2026-05-20
 raised-by: Miles
-source-link: openspec/changes/reclassify-qc-and-add-inspection/design.md § Open Questions OQ-C1-6
+source-link: openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/design.md § Open Questions OQ-C1-6
 related-vault:
   - "[[QC]]"
   - "[[生產任務]]"
@@ -36,4 +38,4 @@ production-task / qc / 使用者心智模型
 1. 精裝書情境（多個工序 → 1 個印件 QC，多 type 任務協調）
 2. 分批提前出貨情境（QC PT 分批驗收 + 出貨單建立）
 
-若 Prototype 驗證後仍奇怪，C2 `simplify-production-task-completion` 啟動時一併調整。詳見 [reclassify-qc design.md § Open Questions OQ-C1-6](../../../../openspec/changes/reclassify-qc-and-add-inspection/design.md)。
+若 Prototype 驗證後仍奇怪，C2 `simplify-production-task-completion` 啟動時一併調整。詳見 [reclassify-qc design.md § Open Questions OQ-C1-6](../../../../openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/design.md)。

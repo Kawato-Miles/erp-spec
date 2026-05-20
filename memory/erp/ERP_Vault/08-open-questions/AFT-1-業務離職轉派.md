@@ -2,12 +2,17 @@
 type: open-question
 module:
   - after-sales-ticket
+oq-id: AFT-1
 status: open
-notion-link:
+priority: medium
+audience: internal
 raised-at: 2026-05-19
 raised-by: Miles
-expected-resolution-at:
+notion-link:
+expected-resolution-at: 2026-Q3
 related-change: add-my-after-sales-action-page-and-remove-owner-transfer
+related-insight:
+  - 2026-05-20-售後ticket-reactive-補丁循環
 ---
 
 # AFT-1：業務離職 / 請假時未結案 ticket 的實務替代處理方式

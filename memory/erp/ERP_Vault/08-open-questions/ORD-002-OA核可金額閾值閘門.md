@@ -8,14 +8,14 @@ priority: low
 audience: internal
 raised-at: 2026-05-20
 raised-by: senior-pm (前期介入)
-source-link: openspec/changes/refine-after-sales-refund-and-add-supplementary-print/design.md
+source-link: openspec/changes/archive/2026-05-20-refine-after-sales-refund-and-add-supplementary-print/design.md
 related-vault:
   - [[../05-entities/訂單]]
   - [[../06-state-machines/訂單狀態]]
 related-oq:
   - AFT-3
 related-change: refine-after-sales-refund-and-add-supplementary-print
-expected-resolution-at:
+expected-resolution-at: 2026-Q3
 ---
 
 # ORD-002：OA 已核可後是否設「金額異動 ≥ 核可金額 × X% 需重新送審」閘門

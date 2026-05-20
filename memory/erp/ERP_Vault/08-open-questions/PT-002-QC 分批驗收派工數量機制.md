@@ -7,9 +7,12 @@ oq-id: PT-002
 status: open
 priority: low
 audience: internal
+related-insight:
+  - 2026-05-20-change-archive-OQ收尾流程缺口
+expected-resolution-at: 2026-Q3  # 預設值，待 Miles 確認實際時程
 raised-at: 2026-05-20
 raised-by: Miles
-source-link: openspec/changes/reclassify-qc-and-add-inspection/design.md § Open Questions OQ-C1-2
+source-link: openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/design.md § Open Questions OQ-C1-2
 related-vault:
   - "[[QC]]"
   - "[[生產任務]]"
@@ -29,4 +32,4 @@ production-task / qc
 
 ## 候選方案
 
-詳見 [reclassify-qc design.md § Decisions 3](../../../../openspec/changes/reclassify-qc-and-add-inspection/design.md)。Phase 2 驗收期觀察分批驗收實務節奏後決定：方案 A（新增 `assigned_qty` 欄位強制每次派工數量上限）vs 方案 B（強化儀表板提示，不強制阻擋）。
+詳見 [reclassify-qc design.md § Decisions 3](../../../../openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/design.md)。Phase 2 驗收期觀察分批驗收實務節奏後決定：方案 A（新增 `assigned_qty` 欄位強制每次派工數量上限）vs 方案 B（強化儀表板提示，不強制阻擋）。

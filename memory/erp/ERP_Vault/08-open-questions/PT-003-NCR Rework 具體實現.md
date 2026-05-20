@@ -7,9 +7,11 @@ oq-id: PT-003
 status: open
 priority: high
 audience: internal
+related-insight:
+  - 2026-05-20-change-archive-OQ收尾流程缺口
 raised-at: 2026-05-20
 raised-by: Miles
-source-link: openspec/changes/reclassify-qc-and-add-inspection/design.md § Open Questions OQ-C1-3
+source-link: openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/design.md § Open Questions OQ-C1-3
 related-vault:
   - "[[QC]]"
   - "[[生產任務]]"
@@ -33,4 +35,4 @@ production-task / qc / cross-module
 
 ## 候選方案
 
-C3 `add-production-task-rework` 範疇處理。設計層面要決定：方案 A（系統自動建補生產 WorkRecord）vs 方案 B（印務手動發起建 WorkRecord）。詳見 [reclassify-qc design.md § Decisions 10](../../../../openspec/changes/reclassify-qc-and-add-inspection/design.md)。
+C3 `add-production-task-rework` 範疇處理。設計層面要決定：方案 A（系統自動建補生產 WorkRecord）vs 方案 B（印務手動發起建 WorkRecord）。詳見 [reclassify-qc design.md § Decisions 10](../../../../openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/design.md)。

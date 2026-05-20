@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-19
+last-reviewed: 2026-05-20
 last-case-added: 2026-05-19
 ---
 
@@ -74,7 +74,46 @@ last-case-added: 2026-05-19
 - **適用 agent**：senior-pm（前期介入）+ erp-consultant（設計審查）
 - **相關 change**：[add-my-after-sales-action-page-and-remove-owner-transfer](../../../../../openspec/changes/archive/2026-05-19-add-my-after-sales-action-page-and-remove-owner-transfer/)（2026-05-19 歸檔 v0.2）；修正 change：refactor-my-after-sales-to-standard-list-pattern（後續開立）
 
-## 四、新增誤審案例的流程
+## 四、change propose 前的端到端走查準則（vault-insight 2026-05-20 新增）
+
+對應 [Vault Insight 2026-05-20 售後 ticket reactive 補丁循環](../../12-insights/2026-05-20-售後ticket-reactive-補丁循環.md) 的教訓：售後 ticket 模組 1.5 個月內連續 5 個 change 都因「Miles 走查 → 發現新 gap」開單，根因是 propose 階段缺端到端 user journey 整合驗證。
+
+### 4.1 何時須含端到端走查
+
+change 涉及以下任一情境時，propose 階段 MUST 在 `## Why` 或 `## Background` 段附端到端走查紀錄連結：
+
+| 觸發情境 | 範例 |
+|---------|------|
+| 涉及 ≥ 2 個角色銜接 | 業務 ↔ 主管 / 業務 ↔ 印務 / 業務 ↔ 會計 |
+| 跨流程節點（≥ 2 個 entity 狀態機協作）| OA ↔ Payment / PrintItem ↔ WorkOrder ↔ ProductionTask |
+| 售後 / 異動 / 退款 / 補印類型 ticket 流程 | AfterSalesTicket 模組任何 change |
+| Phase 切換相關（北極星指標相關）| material-master / order-management 等核心模組 |
+
+### 4.2 走查紀錄格式
+
+走查紀錄寫入 `07-scenarios/<情境名>.md`，內容含：
+
+1. **情境定義**：客戶反映類型 + responsibility + resolution 組合
+2. **逐步追蹤**：客戶反映 → 業務開單 → 決議 → 主管核可 → 執行 → 印件 / 退款 / 發票 → 結案 → 客戶確認
+3. **跨角色銜接點**：每一步標明操作角色 + 預期操作步數 + 卡點 / 待釐清
+4. **OQ 對應**：走查中發現的 gap 開 OQ 並反向連結
+
+propose `## Why` 段 wiki link 引用 `[[../07-scenarios/<情境名>]]`。
+
+### 4.3 走查 vs scenario spec 的區別
+
+- **OpenSpec spec § Scenarios**：本 change 範圍內的 user story（單一 change 視角）
+- **07-scenarios/ 卡**：跨 change 累積的端到端 user journey（多 change 連動視角，含未來 change 範圍）
+
+走查紀錄 MUST 在 07-scenarios/ 卡（不限於本 change 範圍），spec § Scenarios 只覆蓋本 change 落實的部分。
+
+### 4.4 例外（不需走查）
+
+- 純措辭 / typo 修正
+- 單一欄位異動（不影響跨角色 / 跨流程）
+- Prototype 工程細節（如 e2e 測試、UI tweaks）
+
+## 五、新增誤審案例的流程
 
 **MUST 觸發 `misjudgement-record` skill mode B**（不可手動寫入避免格式不一致）。skill 自動完成：
 
@@ -86,7 +125,7 @@ last-case-added: 2026-05-19
 
 詳見 [`.claude/skills/misjudgement-record/SKILL.md`](../../../../../.claude/skills/misjudgement-record/SKILL.md)。
 
-## 五、相關卡
+## 六、相關卡
 
 - [[prototype-stage-context]] — 階段背景
 - [[language-conventions]] — 用語規範
