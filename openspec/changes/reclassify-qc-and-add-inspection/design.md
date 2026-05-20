@@ -179,8 +179,9 @@ QC / 品檢失敗時自動建 NCR，印務做 Disposition 三選一。
 | `disposition` | 列舉 | N | rework / use_as_is / scrap |
 | `disposition_at` | 日期時間 | N | 印務做決策的時間 |
 | `disposition_by` | FK | N | 印務 FK |
-| `notes` | 文字 | N | 印務備註 |
-| `status` | 列舉 | Y | pending（待 disposition）/ resolved |
+| `defect_category` | 列舉 | Y | 不合格分類 LOV（依 erp-consultant Round 1 P1 修正）：`material` / `process` / `equipment` / `supplier` / `human`；用於年度品質報表分類統計 |
+| `notes` | 文字 | N | 印務備註（補充 defect_category 之外的具體描述）|
+| `status` | 列舉 | Y | `pending` / `resolved` / `cancelled`（cancelled 為依 erp-consultant Round 1 P1 修正新增：source WorkRecord 作廢時系統自動標記）|
 | `created_at` / `updated_at` | 日期時間 | Y | — |
 
 **NCR 觸發**：
@@ -206,6 +207,15 @@ C1 範圍 MUST NOT 實作：
 - 系統自動帶入退款項目至 OrderAdjustment.lines（留 C3 / C4）
 
 理由：避免上線後業務誤以為系統自動處理導致實際漏退款；C1 先建立通知 + 手動串接的基本路徑，C3 / C4 再做自動化。
+
+**客訴退貨 / 降級出貨邊界**（C1 範圍明示，依 erp-consultant Round 1 P2 修正）：
+
+NCR + Disposition 三選一僅涵蓋「廠內驗收當下處置」。以下情境**不走 NCR 流程**：
+
+- **客訴退貨**（客戶收貨後反映不良 → 客戶端退貨回廠）：走 [AfterSalesTicket](../../specs/after-sales-ticket/spec.md) 流程
+- **降級為次級品出貨給其他客戶**：非 C1 範圍（OQ-C1-7 追蹤）
+
+理由：NCR 的觸發時機在 ProductionTaskWorkRecord 提交（廠內驗收），與客訴退貨的觸發時機（客戶收貨後反映）不同；兩者業務流程獨立、不該在 NCR 機制混用。
 
 ### Decision 11：派工流程與角色職責
 
@@ -261,22 +271,23 @@ Rollback：spec 階段可直接還原 OpenSpec change（未歸檔前）。
 
 ## Open Questions
 
-### C1 本身衍生 OQ（design 期間識別）
+### C1 本身衍生 OQ（design 期間識別 + Review Round 1 解答）
 
 | OQ | 描述 | 落點 |
 |----|------|------|
-| OQ-C1-1 | `requires_inspection` 與既有 `affects_product` 的關係（兩者是否衝突 / 重複 / 互補）| spec 階段釐清 |
-| OQ-C1-2 | QC 分批驗收：是否需要系統強制「派工數量」機制（如 `assigned_qty`）？目前設計依靠儀表板 + 人為協調 | 後續觀察實務需求 |
+| OQ-C1-1 | `requires_inspection` 與既有 `affects_product` 的關係 | **2026-05-20 已解**（依 erp-consultant Round 1 P2 修正）：inspection PT MUST 僅可加在 `affects_product = TRUE` 的 production PT 上；兩個旗標**互補**（affects_product 控制 PT 是否影響齊套計算、requires_inspection 控制 PT 是否需對應 inspection PT 驗收）|
+| OQ-C1-2 | QC 分批驗收：是否需要系統強制「派工數量」機制（如 `assigned_qty`）？| 後續觀察實務需求 |
 | OQ-C1-3 | NCR Disposition = Rework 的具體實現（自動建補生產 WorkRecord vs 印務手動發起）| C3 範圍 |
 | OQ-C1-4 | 議價交付（Use-As-Is）下 `pi_planned_qty` 是否要鎖定？業務退款流程串接方式 | C3 / C4 |
 | OQ-C1-5 | 既有 QCRecord 資料 migration 範圍與時機 | 正式上線階段另議 |
-| OQ-C1-6 | 設計討論中迭代多次，Miles 反饋「還是滿奇怪的」表示設計可能仍有未盡之處 | 透過跑情境測試案例驗證；後續 change 持續修正 |
+| OQ-C1-6 | 設計討論中迭代多次，Miles 反饋「還是滿奇怪的」表示設計可能仍有未盡之處 | **Default 假說**（依 senior-pm Round 1 P2 修正）：可能來自「QC 從工序層翻轉為印件層」的心智落差。**驗證方式**：Prototype 階段透過 1-2 個情境跑通（精裝書 + 分批提前出貨）；若 prototype 後仍奇怪，C2 啟動時一併調整 |
+| OQ-C1-7 | 降級為次級品出貨給其他客戶的處置流程（非廠內驗收當下，現靠業務口頭協調，無系統紀錄）| C5 或之後 change 處理（範圍另議）|
 
 ### Vault 既有相關 OQ（2026-05-20 透過 `oq-manage` mode A 補抓）
 
 | OQ | 相關性 | 落點 |
 |----|-------|------|
-| [[QC-001-OpenSpec 品管是否拆審稿與 QC\|QC-001]]：OpenSpec「品管」是否該拆為「審稿」+「QC」 | **高** — reclassify-qc 已動 user-roles spec，可考慮 C1 階段一併解 | 三視角審查時決定（併入 C1 或保持 open）|
+| [[QC-001-OpenSpec 品管是否拆審稿與 QC\|QC-001]]：OpenSpec「品管」是否該拆為「審稿」+「QC」 | **高** — reclassify-qc 已實質回答 | **2026-05-20 決議**：歸檔時 close QC-001（依 erp-consultant Round 1）。理由：QC 與 prepress-review 為兩個獨立 capability，不存在「拆」問題；reclassify-qc 重新定義 QC 為「印件入庫檢查 + 工序中間品檢」執行者後，與審稿 capability 結構性分離 |
 | [[PT-001-師傅報工行動裝置例外\|PT-001]]：師傅報工是否可行動裝置例外（priority: high）| 間接 — reclassify-qc 涉及 PT 報工框架，但 UI 例外議題不在 C1 範圍 | C1 範圍外（保持 open，待 Prototype 階段或 Phase 2 北極星指標規劃時處理）|
 | [[SHP-005-分批出貨觸發節點\|SHP-005]]：分批出貨觸發節點（priority: high）| 弱 — reclassify-qc 提到分批驗收（多筆 WorkRecord），與分批出貨概念類似但不重疊 | C1 範圍外（出貨層議題）|
 
