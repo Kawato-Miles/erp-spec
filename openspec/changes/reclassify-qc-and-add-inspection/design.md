@@ -276,12 +276,12 @@ Rollback：spec 階段可直接還原 OpenSpec change（未歸檔前）。
 | OQ | 描述 | 落點 |
 |----|------|------|
 | OQ-C1-1 | `requires_inspection` 與既有 `affects_product` 的關係 | **2026-05-20 已解**（依 erp-consultant Round 1 P2 修正）：inspection PT MUST 僅可加在 `affects_product = TRUE` 的 production PT 上；兩個旗標**互補**（affects_product 控制 PT 是否影響齊套計算、requires_inspection 控制 PT 是否需對應 inspection PT 驗收）|
-| OQ-C1-2 | QC 分批驗收：是否需要系統強制「派工數量」機制（如 `assigned_qty`）？| 後續觀察實務需求 |
-| OQ-C1-3 | NCR Disposition = Rework 的具體實現（自動建補生產 WorkRecord vs 印務手動發起）| C3 範圍 |
-| OQ-C1-4 | 議價交付（Use-As-Is）下 `pi_planned_qty` 是否要鎖定？業務退款流程串接方式 | C3 / C4 |
-| OQ-C1-5 | 既有 QCRecord 資料 migration 範圍與時機 | 正式上線階段另議 |
-| OQ-C1-6 | 設計討論中迭代多次，Miles 反饋「還是滿奇怪的」表示設計可能仍有未盡之處 | **Default 假說**（依 senior-pm Round 1 P2 修正）：可能來自「QC 從工序層翻轉為印件層」的心智落差。**驗證方式**：Prototype 階段透過 1-2 個情境跑通（精裝書 + 分批提前出貨）；若 prototype 後仍奇怪，C2 啟動時一併調整 |
-| OQ-C1-7 | 降級為次級品出貨給其他客戶的處置流程（非廠內驗收當下，現靠業務口頭協調，無系統紀錄）| C5 或之後 change 處理（範圍另議）|
+| OQ-C1-2 | QC 分批驗收：是否需要系統強制「派工數量」機制（如 `assigned_qty`）？| 後續觀察實務需求 → 對應 Vault OQ：[[PT-002-QC 分批驗收派工數量機制]] |
+| OQ-C1-3 | NCR Disposition = Rework 的具體實現（自動建補生產 WorkRecord vs 印務手動發起）| C3 範圍 → 對應 Vault OQ：[[PT-003-NCR Rework 具體實現]] |
+| OQ-C1-4 | 議價交付（Use-As-Is）下 `pi_planned_qty` 是否要鎖定？業務退款流程串接方式 | C3 / C4 → 對應 Vault OQ：[[XM-005-Use-As-Is 退款流程串接]] |
+| OQ-C1-5 | 既有 QCRecord 資料 migration 範圍與時機 | 正式上線階段另議 → 對應 Vault OQ：[[PT-004-QCRecord 資料遷移]] |
+| OQ-C1-6 | 設計討論中迭代多次，Miles 反饋「還是滿奇怪的」表示設計可能仍有未盡之處 | **Default 假說**（依 senior-pm Round 1 P2 修正）：可能來自「QC 從工序層翻轉為印件層」的心智落差；Prototype 階段透過情境跑通驗證 → 對應 Vault OQ：[[PT-005-QC 心智模型驗證]] |
+| OQ-C1-7 | 降級為次級品出貨給其他客戶的處置流程（非廠內驗收當下，現靠業務口頭協調，無系統紀錄）| C5 或之後 change 處理（範圍另議）→ 對應 Vault OQ：[[XM-006-降級為次級品出貨]] |
 
 ### Vault 既有相關 OQ（2026-05-20 透過 `oq-manage` mode A 補抓）
 
