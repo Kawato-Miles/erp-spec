@@ -194,6 +194,19 @@ QC / 品檢失敗時自動建 NCR，印務做 Disposition 三選一。
 
 **C1 範圍**：定義 NCR 實體 + Disposition 列舉 + 觸發機制；具體 Rework 流程（如何建補做 WorkRecord、相依性處理）留 C3 完整設計。
 
+**use_as_is 退款流程串接邊界**（C1 範圍明示，依 ceo-reviewer Round 1 P0 修正）：
+
+C1 階段 use_as_is 觸發後僅做兩件事：
+1. 系統發送通知給該訂單的業務負責人（含 NCR id、defect_quantity、source WorkRecord 連結）
+2. 業務 SHALL 至訂單異動模組手動建立 OrderAdjustment 處理退款（沿用既有訂單異動流程）
+
+C1 範圍 MUST NOT 實作：
+- 系統自動產生 OrderAdjustment（留 C3 / C4）
+- 系統自動計算退款金額（留 C3 / C4）
+- 系統自動帶入退款項目至 OrderAdjustment.lines（留 C3 / C4）
+
+理由：避免上線後業務誤以為系統自動處理導致實際漏退款；C1 先建立通知 + 手動串接的基本路徑，C3 / C4 再做自動化。
+
 ### Decision 11：派工流程與角色職責
 
 | 角色 | 規劃期 | 生產執行 | NCR 處理 | 出貨期 |
