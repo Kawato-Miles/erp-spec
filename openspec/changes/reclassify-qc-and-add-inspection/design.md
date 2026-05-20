@@ -266,3 +266,36 @@ Rollback：spec 階段可直接還原 OpenSpec change（未歸檔前）。
 | [[QC-001-OpenSpec 品管是否拆審稿與 QC\|QC-001]]：OpenSpec「品管」是否該拆為「審稿」+「QC」 | **高** — reclassify-qc 已動 user-roles spec，可考慮 C1 階段一併解 | 三視角審查時決定（併入 C1 或保持 open）|
 | [[PT-001-師傅報工行動裝置例外\|PT-001]]：師傅報工是否可行動裝置例外（priority: high）| 間接 — reclassify-qc 涉及 PT 報工框架，但 UI 例外議題不在 C1 範圍 | C1 範圍外（保持 open，待 Prototype 階段或 Phase 2 北極星指標規劃時處理）|
 | [[SHP-005-分批出貨觸發節點\|SHP-005]]：分批出貨觸發節點（priority: high）| 弱 — reclassify-qc 提到分批驗收（多筆 WorkRecord），與分批出貨概念類似但不重疊 | C1 範圍外（出貨層議題）|
+
+## Review History
+
+### Round 1（2026-05-20）— 三視角審查
+
+**結論**：senior-pm + ceo-reviewer + erp-consultant 三視角審查均判「通過但有觀察」。詳細審查內容見 [review-round-1.md](review-round-1.md)。
+
+**P0 必修項**（archive 前處理）：
+1. use_as_is（議價接受）→ 業務退款流程串接：spec 明示「業務手動發起退款」，避免上線後業務以為自動處理（CEO 提出）
+2. proposal § Why 重寫：補現場 case 數字、使用者實際痛點場景（senior-pm + CEO）
+3. 補建 3 條 User Story 至各模組 spec § Scenarios（senior-pm 提出）
+
+**P1 觀察項**（建議 archive 前處理）：
+- OQ-C1-6「設計仍奇怪」轉具體下一步建議
+- NCR.defect_category LOV 補欄位（material / process / equipment / supplier / human）
+- QC PT.previous 定義一致性釐清
+- state-machines delta 補 Purpose 段 + 傳遞鏈 MODIFIED
+- NCR vs WorkRecord 已作廢狀態互動定義（含 NCR status=cancelled）
+- 分批出貨情境 QC PT 強制 1 個衝突驗證
+- `requires_inspection` vs `affects_product` 雙旗標互動釐清（OQ-C1-1 解掉）
+
+**P2 觀察項**（可選處理）：
+- 印件中途取消 / 數量變更時 QC PT 行為
+- Disposition 客訴退貨 / 降級邊界（補 OQ-C1-7）
+- proposal § What Changes 補業務角色影響
+- ActivityLog 稽核鉤子 4 類關鍵動作寫入 spec
+- tasks 重整：1.4 改名、新增 1.5 補 User Story、新增 4.1.5 中間檢查閘門
+
+**QC-001 決議**：採 erp-consultant 見解 — C1 歸檔時 close QC-001（status=answered）。理由：QC 與 prepress-review 為兩個獨立 capability，不存在「拆」問題；reclassify-qc 重新定義 QC 為「印件入庫檢查 + 工序中間品檢」執行者後，與審稿 capability 結構性分離。
+
+**CEO 第 6 維度 KPI 對齊結論**：C1 對 Phase 2 北極星指標「訂單流程完整完成率」**無直接貢獻**，是純前置投資。CEO 可接受但條件是 C2 必須緊接其後（拖延 1-2 個月以上會讓 C1 變沉沒成本）。
+
+**Task 1.3 範圍**：依 P0 + P1 + P2 整合 action items 修正 proposal / design / delta specs，留下個 session 執行。
