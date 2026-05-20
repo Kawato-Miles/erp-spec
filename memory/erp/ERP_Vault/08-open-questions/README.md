@@ -79,8 +79,10 @@ notion-page-url: <URL>               # 若已推送則記錄頁面
 | [[ORD-010-備註模板重複插入防呆]] | 備註模板重複插入防呆（Phase 2） | open | low | order-management、prototype-shared-ui |
 | [[ORD-011-備註模板變數佔位符處理]] | 變數佔位符 [日期] [金額] 處理（Phase 2） | open | medium | order-management、prototype-shared-ui |
 | [[XM-006-備註模板維護路徑]] | 備註模板維護路徑（Phase 2） | open | medium | cross-module、order-management |
+| [[ORD-012-訂單備註匯出至客戶文件路徑]] | 訂單備註匯出至客戶文件路徑（下游 epic） | open | medium | order-management |
+| [[ORD-013-新三類與既有production_note職責分工]] | 新三類與既有 production_note 職責分工 | open | high | order-management |
 
-→ 共 **26 個 OQ**（18 既有 + 本次 change `add-order-note-section-with-template-tool` 新增 8 個：ORD-005/006/007/008/009/010/011 + XM-006）
+→ 共 **28 個 OQ**（18 既有 + 本次 change `add-order-note-section-with-template-tool` 新增 10 個：ORD-005/006/007/008/009/010/011/012/013 + XM-006）
 
 ## 四、同步策略
 
