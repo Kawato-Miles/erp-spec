@@ -13,6 +13,9 @@ description: >
     3. 禁無下一步（「今日建議行動」每條 MUST 帶具體可開始的第一步）
     4. 禁與 audit-log 重複（複述既有事件時引用而非重寫）
     5. 禁編造（git log / audit-log / OpenSpec / Vault 沒寫的事 MUST NOT 出現在 brief）
+    6. 禁附「產出位置」（如「該寫進 07-scenarios/」之類）— Miles 知道往哪寫，重複資訊
+    7. 禁附「預估時間」（如「1.5-2 小時 / 情境」）— 估時不準，浪費資訊
+    8. 排序 MUST 用「相依性 > 優先度 > 時效性」，MUST NOT 用「快速完成」當排序依據
   不適用：週度回顧（用 weekly-review）、跨主題模式提煉（用 vault-insight）、Vault 健康稽核（用 vault-audit）。
 ---
 
@@ -174,12 +177,19 @@ Step 2：分析「今日建議行動」候選
   - 從本週有期限 OQ 找逾期或臨近項
   - 從未結案 raw 找累積到該精練的卡
   - 從 12-insights 未踐 action 找該推進的項
-  - 排序：時效性 > 阻塞性 > 複利性
+  - **排序**：**相依性（blocking）> 優先度（priority enum）> 時效性（deadline 倒數）**
+    - 相依性：A 做完了 B 才能做（如「Insight 1 Action 1 走查」必須先於「Action 2 整合 change propose」）→ 把上游排前面
+    - 優先度：依既有 priority high / medium / low 標籤
+    - 時效性：deadline 越近越前
+    - **MUST NOT 用「快速完成」「容易做完」當排序依據**（估時不準）
 
-Step 3：產出今日建議（≤ 3 條，每條附 source + 下一步 + 預估時間）
+Step 3：產出今日建議（≤ 3 條，每條附 source + 下一步 + 相依性說明）
   - 禁無 source
   - 禁無下一步
   - 禁籠統（「繼續做 X」要改為「執行 X 的第 N 步：YY」）
+  - **禁附產出位置**（Miles 知道往哪寫）
+  - **禁附預估時間**（估時不準）
+  - 「相依性說明」格式：「上游：X / 下游：Y / 平行：Z」三選填，無相依時寫「獨立」
 
 Step 4：產出昨日進度摘要
   - Commits（從 git log）
@@ -211,6 +221,9 @@ Step 5：寫入 daily 卡 + 追加 audit-log
 | 無下一步 | 強制規則 3 | 「持續推進售後 ticket」| 「下一步：跑 `/opsx:apply refine-supplementary-print-skip-review` 的 task 2」|
 | 與 audit-log 重複 | 強制規則 4 | 把 audit-log 整段複製進 daily | 引用「昨日 audit-log 條目 [[../00-meta/audit-log#2026-05-20]]」+ 摘要 1 句 |
 | 編造 | 強制規則 5 | 「本週你應該專注 KPI」（無 source）| 拒絕產出，或標「無 source 候選，建議手動補」|
+| **附產出位置** | 強制規則 6 | 「產出位置：`07-scenarios/` 開新卡」「寫入 `04-business-logic/`」 | 不寫（Miles 知道往哪寫）|
+| **附預估時間** | 強制規則 7 | 「預估時間：1.5-2 小時 / 情境」「預估：30 分鐘」 | 不寫（估時不準）|
+| **用「快速完成」當排序依據** | 強制規則 8 | 「建議 2 排前面因為可快速完成」「先做 fix 性質的容易項」 | 用「相依性 > 優先度 > 時效性」排序，理由說「Insight 1 Action 1 是 Action 2 的上游」這類|
 
 ---
 

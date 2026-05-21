@@ -14,6 +14,9 @@ description: >
     4. 禁複述（「本週學到什麼」MUST 提煉，不是「本週做了什麼」的複製）
     5. 禁與 audit-log / 本週 daily 卡重複（引用而非重寫）
     6. 禁編造（git log / audit-log / OpenSpec / Vault / 本週 daily 卡沒寫的事 MUST NOT 出現）
+    7. 禁附「產出位置」（如「該寫進 07-scenarios/」）— Miles 知道往哪寫，重複資訊
+    8. 禁附「預估時間 / 預估完成週幾」— 估時不準，浪費資訊
+    9. 「下週重點」排序 MUST 用「相依性 > 優先度 > 時效性」，MUST NOT 用「快速完成」當排序依據
   不適用：日級回顧（用 daily-brief）、跨主題模式提煉（用 vault-insight）、Vault 健康稽核（用 vault-audit）。
 ---
 
@@ -215,7 +218,11 @@ Step 3：分析「下週重點」候選
   - 從 12-insights 未踐 action 找該推進項
   - 從累積 raw 找該精練項
   - 從 vault-audit 警示找該處理項
-  - 排序：阻塞性 > 時效性 > 複利性
+  - **排序**：**相依性（blocking）> 優先度（priority enum）> 時效性（deadline 倒數）**
+    - 相依性：A 做完了 B 才能做 → 把上游排前面
+    - 優先度：依既有 priority high / medium / low 標籤
+    - 時效性：deadline 越近越前
+    - **MUST NOT 用「快速完成」「容易做完」當排序依據**（估時不準）
 
 Step 4：產出本週學到（3-5 條，每條附 source + 應用場景）
   - 禁複述（不是「本週做了什麼」）
@@ -229,7 +236,10 @@ Step 5：產出本週完成（統計區）
   - **直接引用 audit-log + 本週 daily 卡，不重寫**
 
 Step 6：產出下週重點（≤ 3 條）+ 寫入 + 追加 audit-log
-  - 每條附 source + 下一步 + 預估完成週幾
+  - 每條附 source + 下一步 + 相依性說明
+  - **禁附產出位置**（Miles 知道往哪寫）
+  - **禁附預估時間 / 預估完成週幾**（估時不準）
+  - 「相依性說明」格式：「上游：X / 下游：Y / 平行：Z」三選填，無相依時寫「獨立」
   - 寫入 14-reviews/weekly/<YYYY-WNN>.md
   - 追加 audit-log：
     ## [YYYY-MM-DD HH:MM] weekly-review | <主題簡述>
@@ -257,10 +267,13 @@ Step 6：產出下週重點（≤ 3 條）+ 寫入 + 追加 audit-log
 |--------------|------|----------|-----------|
 | 空洞讚美 | 強制規則 1 | 「本週進度很好」| 「本週 archive 2 個 change，主軸是售後 ticket」|
 | 無 source | 強制規則 2 | 「學到資料模型很重要」| 「[[../12-insights/2026-05-20-售後ticket-reactive-補丁循環]] insight 提煉出『缺端到端基準文件』根因」|
-| 無下一步 | 強制規則 3 | 「下週繼續推進」| 「下週一跑 `/opsx:apply order-management-v1.8` 第 4 task，預估週三完成」|
+| 無下一步 | 強制規則 3 | 「下週繼續推進」| 「下一步：跑 `/opsx:apply order-management-v1.8` 第 4 task；相依性：獨立」|
 | 複述（學到 = 做了） | 強制規則 4 | 「本週學到：我們做了 vault-ingest」| 「本週學到：Karpathy 的 raw 層 + Yu 防 Model Collapse 紀律可以共存 — 既能承接動態素材，又不會讓 LLM 自迭代」|
 | 與本週 daily 重複 | 強制規則 5 | 整段複製某張 daily 的內容 | 引用「見 [[../14-reviews/daily/2026-05-21]] 今日建議行動 1」+ 摘要 1 句 |
 | 編造 | 強制規則 6 | 「本週你應該感謝團隊」（無 source）| 拒絕產出，標「無 source 候選」|
+| **附產出位置** | 強制規則 7 | 「下週重點 1 — 產出位置：`07-scenarios/` 開新卡」| 不寫產出位置（Miles 知道）|
+| **附預估時間 / 完成週幾** | 強制規則 8 | 「下週重點 1 — 預估完成：週三」「預估 2 小時」| 不寫（估時不準）|
+| **用「快速完成」當排序依據** | 強制規則 9 | 「下週重點 1 排前面因為可快速完成」| 用相依性說明，如「上游 — 不解此項，整合 change propose 會卡」|
 
 ---
 
