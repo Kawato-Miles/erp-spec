@@ -52,3 +52,18 @@ expected-resolution-at: 2026-Q3
 
 - Miles plan 階段反饋（已明確排除本次範圍）
 - change `refine-after-sales-refund-and-add-supplementary-print` design.md § OQ-4 + § Migration Plan 風險 E
+
+## 補 constraint（add-payment-status-and-decouple-oa-execution change 2026-05-21）
+
+本 change 對「處理中 Payment 期間」補 constraint：
+
+- 業務在 OA 編輯介面建立**處理中**退款 Payment 時，系統 SHALL NOT 自動建立 SalesAllowance 或顯示弱提示（避免「對帳資料未齊備就開折讓單」的會計不確定性）
+- 退款 Payment 切「已完成」後才能觸發 SalesAllowance 相關提示
+
+完整 SalesAllowance 自動建立 vs 提示業務手動建的 4 候選做法決策仍 open（待 2026-Q3 決議）。
+
+Spec / Scenario 對應：
+
+- [business-processes spec § Requirement: 處理中 Payment 期間 SalesAllowance 行為](../../../../openspec/specs/business-processes/spec.md)
+- [order-management spec § Requirement: 訂單異動執行流程 § 處理中 Payment 期間禁止觸發 SalesAllowance](../../../../openspec/specs/order-management/spec.md)
+

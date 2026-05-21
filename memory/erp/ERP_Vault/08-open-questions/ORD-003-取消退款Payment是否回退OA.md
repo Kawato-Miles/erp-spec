@@ -3,7 +3,7 @@ type: open-question
 module:
   - order-management
 oq-id: ORD-003
-status: open
+status: resolved
 priority: medium
 audience: internal
 raised-at: 2026-05-20
@@ -13,9 +13,26 @@ related-vault:
   - [[../05-entities/訂單]]
   - [[../06-state-machines/訂單狀態]]
 related-oq:
-related-change: refine-after-sales-refund-and-add-supplementary-print
+related-change: add-payment-status-and-decouple-oa-execution
+resolved-at: 2026-05-21
+resolved-by: Miles
 expected-resolution-at: 2026-Q3
 ---
+
+## 決議（add-payment-status-and-decouple-oa-execution change 2026-05-21）
+
+採候選做法 1（候選做法清單見下方原問題段）並細化：
+
+- **處理中 Payment 取消** = 直接刪除，OA 維持「已核可」不動（OA 從未推進過已執行）
+- **已完成 Payment 取消** = 刪除該 Payment 後重算對應 OA 累計，若累計 ≠ OA.amount 則同 transaction 回退 OA 至「已核可」、清空 executedAt（雙筆 Payment 情境下若取消後累計仍達 OA.amount 則 OA 維持已執行）
+
+實作位置：`src/store/useErpStore.ts:cancelPayment`，含 OA 自動回退邏輯。
+
+Spec / Scenario 對應：
+
+- [order-management spec § Requirement: Payment 修正路徑](../../../../openspec/specs/order-management/spec.md)
+- [state-machines spec § 訂單異動狀態機 § Scenario: 取消已完成 Payment 致累計不足回退 OA](../../../../openspec/specs/state-machines/spec.md)
+
 
 # ORD-003：建立退款 Payment 後若發現錯誤，取消 Payment 是否自動回退 OA 為「已核可」
 
