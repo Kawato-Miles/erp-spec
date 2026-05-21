@@ -30,6 +30,7 @@ last-reviewed: 2026-05-21
 | **Wiki Schema** | `00-meta/wiki-schema.md` | Vault formal 治理規則（lint 依據）|
 | **Insights** | `12-insights/` | vault-insight skill 產出的跨主題模式識別 + 下一步建議 |
 | **Raw 素材** | `raw/` | 已驗證但未精練的觀察 / 反饋 / 研究筆記（由 vault-ingest skill 寫入；2026-05-21 新增）|
+| **Daily / Weekly Review** | `14-reviews/daily/`、`14-reviews/weekly/` | 每日進度回顧 + 今日建議；每週學到 / 完成 / 下週重點（由 daily-brief / weekly-review skill 寫入；2026-05-21 新增）|
 
 ### 收的判斷準則
 
@@ -37,6 +38,7 @@ last-reviewed: 2026-05-21
 - **WHY**（為什麼這樣設計，業務背景與動機）
 - **怎麼連**（實體 / 規則 / 角色之間的關聯）
 - **未精練的已驗證素材**（觀察 / 反饋 / 研究筆記）：進 `raw/`，由 vault-ingest skill 寫入
+- **時序回顧**（每日進度 / 每週學到）：進 `14-reviews/`，由 daily-brief / weekly-review skill 寫入
 
 ## 二、不收（屬其他層）
 

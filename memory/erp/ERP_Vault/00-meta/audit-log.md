@@ -31,6 +31,8 @@ last-reviewed: 2026-05-21
 | Vault insight | vault-insight skill 完成（既有） | `insight` |
 | 誤審記錄 | misjudgement-record 寫入 | `misjudgement` |
 | 三邊同步 | Vault → Notion / OpenSpec → Vault | `sync` |
+| Daily Brief 產出 | daily-brief skill 完成 | `daily-brief` |
+| Weekly Review 產出 | weekly-review skill 完成 | `weekly-review` |
 
 ### 統一項目格式（2026-05-21 起新事件採用）
 

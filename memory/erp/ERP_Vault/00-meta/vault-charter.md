@@ -25,6 +25,12 @@ last-reviewed: 2026-05-21
   - **audit-log 擴範圍**：從只記 audit / insight 擴大至記 ingest / OQ / change archive / 誤審 / sync 等九類操作
   - **Anti-Model-Collapse 紀律**：「思考在對話裡發生，歸檔是思考完的結果」；claude-self-capture 須 Miles 確認、claude-research 須附真實 raw-source-link
   - **既有 12 編號目錄 100% 不動**：仍走 Zettelkasten 原子卡路線，僅新增 raw/ 一個目錄
+- **2026-05-21 升級：Daily / Weekly Review**（學 Yu 全景監獄晨間 Brief + Karpathy weekly health check）
+  - **`14-reviews/daily/`**：每日進度回顧（昨日進度摘要 + 今日建議行動）
+  - **`14-reviews/weekly/`**：每週回顧（本週學到 / 本週完成 / 下週重點）
+  - **`daily-brief` skill**：人工觸發「開工」「daily」等指令產出 daily 卡
+  - **`weekly-review` skill**：人工觸發「週末整理」「weekly review」等指令產出 weekly 卡
+  - **Anti-Pattern 防護**：禁空洞讚美 / 禁無 source / 禁無下一步
 
 ## 二、三邊分工
 
@@ -69,6 +75,9 @@ ERP_Vault/
 ├── 10-references/                # 外部連結索引（Notion / OpenSpec / Prototype / decks）
 ├── 11-review-knowledge/          # 三視角審查 Agent 方法論（審查框架 / 5 設計模式 / 命名規則 / 多視角討論協議；2026-05-19 新增）
 ├── 12-insights/                  # vault-insight skill 產出的跨主題模式識別 + 下一步建議
+├── 14-reviews/                   # Daily / Weekly Review（daily-brief / weekly-review skill 寫入；2026-05-21 新增）
+│   ├── daily/                    # 每日進度回顧（YYYY-MM-DD.md）
+│   └── weekly/                   # 每週回顧（YYYY-WNN.md）
 └── raw/                          # Raw 素材承接層（vault-ingest skill 寫入；已驗證但未精練；2026-05-21 新增）
 ```
 
