@@ -328,6 +328,31 @@ CLAUDE.md：
 
 **備註**：本次擴充把 daily/weekly review 從「執行層工具」升級為「執行 + 反思 + 預警」三層工具。對應 Yu Wenhao 全景監獄文章核心觀念：「看見自己」（執行層 / 決策層 / 認知層三層可見性）
 
+## [2026-05-21 20:00] structural-change | user story 批 2 校對（US-AR-003 / 004 / 008 v2）
+
+**輸入 / 觸發**：Plan Part 2 批次 2 執行（審稿主管系列）
+
+**輸出 / 異動**：
+
+3 張 user-story 卡 v2：
+- [[../13-user-stories/prepress-review/US-AR-003-維護審稿人員能力等級]]：對齊 spec § 審稿人員能力欄位 L22-26 四要素 ActivityLog（時間 / 操作者 / 舊值 / 新值）、成功條件 1 補「必填」、business-logic 補難易度機制
+- [[../13-user-stories/prepress-review/US-AR-004-覆寫印件分派]]：「我希望」縮 31 → 17 字、補批次選取、補離職員工阻擋、補活動紀錄 wiki link、識別 spec 內部不一致（自動破例 vs 覆寫拒絕）
+- [[../13-user-stories/prepress-review/US-AR-008-追蹤部門審稿完成紀錄]]：成功條件 1 拆三條、補對帳明細具體欄位 + Summary Bar 聚合（spec L545-549 + L654）、補 ReviewRound 活動紀錄、「以便」量化「5 分鐘內調出印件」
+
+2 新 OQ：
+- [[../08-open-questions/AR-9-新審稿員建立時能力等級初值]]（priority medium）
+- [[../08-open-questions/AR-10-主管覆寫分派是否允許破例派工]]（priority high，spec 內部不一致）
+
+**驗收結果**（批 2 三張卡）：
+- 英文欄位名 grep / UI 措辭 grep / frontmatter 必填 / source 防自迭代 全 PASS
+- 「我希望」字數：US-AR-003 19 字、US-AR-004 17 字、US-AR-008 24 字（全 ≤ 30 字 PASS）
+- acceptance criteria：003 3 條 / 004 4 條 / 008 5 條（全 PASS）
+
+**備註**：
+- AR-10 揭露 spec L77-86 與 L102-108 內部不一致（自動破例派工 vs 覆寫拒絕能力不足者），屬 spec 級設計矛盾需業務拍板
+- 累積 open OQ 達 6 個（AR-5/6/7/8/9/10），觸發 plan Part 2 Risk 9「≥ 5 OQ 暫停」閾值；commit 後給 Miles 整批報告，等決定是否繼續批 3 / 4
+- 已校對 v2 卡累計 7 張：US-AR-002 / 003 / 004 / 005 / 006 / 007 / 008；剩 4 張：US-AR-001（anchor）/ 009 / 010 / 011（補件迴圈與跨模組）
+
 ## [2026-05-21 19:00] structural-change | user story 批 1 校對（US-AR-002 / 005 / 006 v2）
 
 **輸入 / 觸發**：Plan Part 2 批次 1 執行（US-AR-007 v2 pilot of pilot 通過後擴大）
