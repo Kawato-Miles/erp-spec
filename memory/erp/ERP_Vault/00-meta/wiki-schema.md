@@ -433,6 +433,11 @@ related-changes:                   # 本期涉及的 openspec change
 - stage=ui-bound 但 UI 操作段空 / 缺 ui-binding 註解
 - last-reviewed > 90 天 + status=active
 - source 指向其他 user-story 卡（疑似 LLM 自迭代）
+- 「我希望」段字數 > 30 字（違反 INVEST Small，對應 [[../11-review-knowledge/pm/user-story-spec#五、撰寫原則|user-story-spec § 五]]，2026-05-21 新增）
+- 「成功條件」單條塞 ≥ 2 個獨立業務規則（違反 Testable 單一可驗證原則，2026-05-21 新增）
+
+**Lint 例外**（2026-05-21 新增）：
+- 外部使用者角色（如 B2C 會員 / EC 註冊會員）允許 `role` 為純文字而非 wiki link 至 `03-roles/`；對應 [[../08-open-questions/AR-1-B2C會員是否納入正式角色|AR-1]] 決策
 
 > 本維度由 erp-user-story skill 引入後預留，待 vault-audit skill 第三階段擴充實作。
 

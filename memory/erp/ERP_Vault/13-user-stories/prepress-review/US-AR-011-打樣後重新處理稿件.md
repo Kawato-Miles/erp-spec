@@ -80,4 +80,4 @@ related-test-cases: []
 
 ## 相關 OQ
 
-- [[AR-2-Notion-US-AR-002編碼重複處理]]：Notion 端歷史資料如何處理待 Miles 確認
+- [[AR-2-Notion-US-AR-002編碼重複處理]]（**已解答 2026-05-21**）：Miles 拍板保留 US-AR-011 為獨立卡；Notion 端推送時改編碼 update

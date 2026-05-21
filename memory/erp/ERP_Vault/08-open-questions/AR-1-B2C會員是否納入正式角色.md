@@ -3,17 +3,32 @@ type: open-question
 module:
   - prepress-review
 oq-id: AR-1
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-21
 raised-by: claude-on-task
+answered-at: 2026-05-21
+answered-by: Miles
 source-link: pilot 遷移審稿模組 user story 時識別
 related-vault:
   - "[[13-user-stories/prepress-review/US-AR-010-B2C會員補件流程]]"
   - "[[03-roles/_alignment-report]]"
 related-oq: []
 ---
+
+## 決策（2026-05-21 Miles 拍板）
+
+**選 C**：B2C 會員視為 EC 系統範疇，**不入** ERP role 體系。
+
+實作落實：
+- US-AR-010 `role` frontmatter 標純文字「B2C 會員（外部使用者）」，**不 wiki link 至 03-roles/**
+- vault-audit 維度 13 lint 對「role 為純文字（非 wiki link）」的卡放行；新增例外條件「外部使用者角色（如 B2C 會員）允許純文字 role」
+- 03-roles/ 結構不改，保持為「公司內部員工角色」單一定位
+- 未來其他涉及外部使用者（B2C 客戶 / EC 註冊會員 / 廠商客戶）的 user story 統一採此模式
+
+---
+
 
 # AR-1 B2C 會員是否納入正式角色
 

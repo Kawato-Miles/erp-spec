@@ -3,17 +3,28 @@ type: open-question
 module:
   - prepress-review
 oq-id: AR-2
-status: open
+status: answered
 priority: low
 audience: internal
 raised-at: 2026-05-21
 raised-by: claude-on-task
+answered-at: 2026-05-21
+answered-by: Miles
 source-link: pilot 遷移審稿模組 user story 時識別
 related-vault:
   - "[[13-user-stories/prepress-review/US-AR-002-設定印件難易度與免審稿]]"
   - "[[13-user-stories/prepress-review/US-AR-011-打樣後重新處理稿件]]"
 related-oq: []
 ---
+
+## 決策（2026-05-21 Miles 拍板）
+
+**保留 US-AR-011 為獨立卡**：「打樣後重新處理稿件」業務情境獨立性足夠（打樣後識別稿件問題並重新走審稿流程，與 US-AR-001 主審稿循環的「補件迴圈」場景不同 — 補件迴圈是審稿不通過導致補件；本卡是打樣後才發現問題），應獨立成卡。
+
+Notion 端歷史資料處理：下次 mode C 推送時，將 Notion 原 US-AR-002（打樣後重新處理稿件）條目改編碼為 US-AR-011 並 update；US-AR-002（設定印件難易度與免審稿）保留原條目 update。
+
+---
+
 
 # AR-2 Notion US-AR-002 編碼重複處理
 

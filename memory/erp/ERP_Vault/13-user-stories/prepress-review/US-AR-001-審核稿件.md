@@ -11,7 +11,7 @@ status: active
 created-at: 2026-05-21
 last-reviewed: 2026-05-21
 source:
-  - "openspec/specs/prepress-review/spec.md"
+  - openspec/specs/prepress-review/spec.md
   - "[[04-business-logic/稿件管理規則]]"
   - "[[04-business-logic/審稿分配規則]]"
 related-spec: openspec/specs/prepress-review/spec.md

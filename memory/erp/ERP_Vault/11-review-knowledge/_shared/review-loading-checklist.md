@@ -74,6 +74,19 @@ last-case-added: 2026-05-19
 - **適用 agent**：senior-pm（前期介入）+ erp-consultant（設計審查）
 - **相關 change**：[add-my-after-sales-action-page-and-remove-owner-transfer](../../../../../openspec/changes/archive/2026-05-19-add-my-after-sales-action-page-and-remove-owner-transfer/)（2026-05-19 歸檔 v0.2）；修正 change：refactor-my-after-sales-to-standard-list-pattern（後續開立）
 
+### 2026-05-21「frontmatter 缺 module」誤審
+
+- **誤審 agent**：erp-consultant
+- **誤審內容**：審查 US-AR-007 v1（pilot of pilot 雙視角審查 round 1）時，於「段 2 發現的具體 gap 清單」列 G4「frontmatter 缺 `module: [prepress-review]` 欄位」並建議補入
+- **實際情況**：US-AR-007 v1 frontmatter 第 4-5 行已含 YAML list 形式的 `module:\n  - prepress-review`，是合法格式。agent 可能誤把 `module:` 與下一行縮排 `- prepress-review` 判讀為「key 存在但 value 空」，或掃過快漏看
+- **教訓**：
+  1. 審查 frontmatter 缺失項時 MUST 引用「具體鍵 + 期望值 + 實際值（含原始文字）」三項，不能只說「缺 X」
+  2. YAML list 縮排形式（`key:\n  - value`）是合法值，不是「缺值」；agent 解讀 YAML 時 MUST 認知此形式
+  3. 對 frontmatter 字段值的「缺 / 不缺」判定，MUST 先 grep / read 確認對應行內容再宣告
+  4. **規則**：審查 frontmatter 必填項時，agent MUST 在報告引用「frontmatter Line N: `key: value`」形式，不能僅以「缺 X」一句帶過
+- **適用 agent**：跨 agent 通用（任何審查 Vault 卡 frontmatter 的場景）
+- **相關情境**：[[../../13-user-stories/prepress-review/US-AR-007-執行印件審稿]] 雙視角審查（2026-05-21）
+
 ## 四、change propose 前的端到端推演準則（vault-insight 2026-05-20 新增）
 
 對應 [Vault Insight 2026-05-20 售後 ticket reactive 補丁循環](../../12-insights/2026-05-20-售後ticket-reactive-補丁循環.md) 的教訓：售後 ticket 模組 1.5 個月內連續 5 個 change 都因「Miles 推演 → 發現新 gap」開單，根因是 propose 階段缺端到端 user journey 整合驗證。
