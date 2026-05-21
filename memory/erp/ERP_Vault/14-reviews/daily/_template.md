@@ -25,7 +25,9 @@ related-changes: []
 - **現況**：
    - <事實 1：當前狀態 / 觸發背景 / 影響範圍>
    - <事實 2：附 source wiki link / commit / change-id>
-   - 相依性：<上游 / 下游 / 平行 / 獨立 + 簡述原因>
+   - 相依性：
+      - 阻擋：<本 action 完成才能輪到的下游 action / 卡 / change>
+      - 被阻擋：<必須先完成才能輪到本 action 的上游 action / 卡 / change>
 - **Next action**：
    - <具體執行動作 1：明確可開始的第一步>
    - <具體執行動作 2：後續延伸動作（可選）>

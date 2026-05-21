@@ -246,7 +246,9 @@ Step 6：產出下週重點（≤ 3 條，每條兩段「現況 / Next action」
   - **現況**：
      - <事實 1：本週狀態 / 觸發背景 / 影響範圍>
      - <事實 2：附 source wiki link / commit / change-id / insight>
-     - 相依性：<上游 / 下游 / 平行 / 獨立 + 簡述原因>
+     - 相依性：
+        - 阻擋：<本重點完成才能輪到的下游 action / 卡 / change>
+        - 被阻擋：<必須先完成才能輪到本重點的上游 action / 卡 / change>
   - **Next action**：
      - <具體執行動作 1：明確可開始的第一步>
      - <具體執行動作 2：後續延伸動作（可選）>
@@ -257,6 +259,7 @@ Step 6：產出下週重點（≤ 3 條，每條兩段「現況 / Next action」
   - **禁附預估時間 / 預估完成週幾**（估時不準）
   - 內容**MUST 條列化**（類似會議紀錄），每 bullet 一條事實或動作
   - **現況段是描述事實 / 為何要做**，**Next action 段是執行動作**，MUST NOT 混淆
+  - 「相依性」格式：兩個 sub-bullet「阻擋 / 被阻擋」（無相依時直接寫「相依性：獨立」一行）；兩格可只填一格
   - 寫入 14-reviews/weekly/<YYYY-WNN>.md
   - 追加 audit-log：
     ## [YYYY-MM-DD HH:MM] weekly-review | <主題簡述>

@@ -280,6 +280,22 @@ CLAUDE.md：
 - skill 紀律演化：daily 從 8 → 10 條強制規則；weekly 從 9 → 11 條
 - 結構約束：「現況段是事實 / 原因」、「Next action 段是執行動作」 — MUST 職責分離不混淆
 
+## [2026-05-21 13:00] skill-revision | 相依性格式改為「阻擋 / 被阻擋」兩 sub-bullet
+
+**輸入 / 觸發**：Miles 對結構重寫後的三次反饋（措辭「相依性應該是要知道該工作與其他工作的關係，所以會是阻擋 / 被阻擋」）
+
+**輸出 / 異動**：
+- `.claude/skills/daily-brief/SKILL.md`：Step 3 結構模板「相依性」從一行「上游/下游/平行/獨立」改為兩 sub-bullet「阻擋 / 被阻擋」；紀律段明示「兩格可只填一格、無相依時寫『相依性：獨立』」
+- `.claude/skills/weekly-review/SKILL.md`：Step 6 同步改寫
+- `14-reviews/daily/_template.md`：相依性欄位改為兩 sub-bullet
+- `14-reviews/weekly/_template.md`：同步
+- [[../14-reviews/daily/2026-05-21]]：3 條建議的相依性段重寫為「阻擋 / 被阻擋」格式（建議 1 阻擋建議 2 + 整合 change propose、被阻擋無；建議 2 阻擋 Insight 1 Action 2、被阻擋建議 1；建議 3 獨立）
+
+**備註**：
+- 反饋本質：「上游 / 下游」措辭抽象，Miles 認為直白的「阻擋（誰被我擋）/ 被阻擋（誰擋我）」更符合工作關係的語意
+- 用法：兩格可獨立填寫，無相依時改寫「相依性：獨立」一行不展開
+- 第三次結構演化：daily 規則仍維持 10 條（措辭調整），weekly 維持 11 條
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則
