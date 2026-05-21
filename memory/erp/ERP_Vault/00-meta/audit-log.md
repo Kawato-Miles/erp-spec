@@ -189,6 +189,17 @@ unresolved 主要是 Vault 外引用（`.claude/agents/`、`openspec/specs/`、`
 
 **對後續 vault-audit 的意涵**：審稿 / vault-audit 不再以「workshop」作為走查模式判定標準；改以「07-scenarios/ 卡是否存在 + PM 走查紀錄完整度」作判定。
 
+## [2026-05-21 10:54] daily-brief | 2026-05-21
+
+**輸入 / 觸發**：Miles 觸發「開工」（daily-brief skill v0.1 首次試跑）
+
+**輸出 / 異動**：[[../14-reviews/daily/2026-05-21]]
+
+**備註**：
+- 今日建議 3 條（PM 桌面走查售後情境 / 修治理債 / active change 收斂）
+- 昨日進度涵蓋 21 個 commit（reclassify-qc archive、refine-after-sales-refund archive、refine-supplementary-print-skip-review archive、add-order-note-section archive、vault-audit 全量、vault-insight 產 2 個 high insight）
+- 警示：12 個 active change 累積、raw 0 張（本週剛建）
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則
