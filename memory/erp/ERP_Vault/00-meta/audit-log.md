@@ -264,6 +264,22 @@ CLAUDE.md：
 - pilot 範圍：僅審稿模組 11 張；其他模組（QR / ORD / CR / AS / WO / PT / QC / SHP / MM / PM / BM）82 條目待 pilot 驗收後逐步遷移
 - Notion 端尚未推送：mode C 待 Miles 觸發；確認 schema 驗證可行性後執行
 
+## [2026-05-21 12:30] skill-revision | daily-brief / weekly-review 結構改為「現況 / Next action」兩段條列化
+
+**輸入 / 觸發**：Miles 對重寫後 daily brief 的二次反饋（措辭「Brief 結構改成 Action Title + 現況 + Next action」「內容條列化，類似會議記錄」「明確說明原因，這樣我才能判斷」）
+
+**輸出 / 異動**：
+- `.claude/skills/daily-brief/SKILL.md`：Step 3 產出結構改為「現況 / Next action」兩段條列化模板；新增強制規則 9 / 10（禁長句段落、現況/Next action 職責分離）；§ 七 Anti-Pattern 表加 2 row；強制規則 3 措辭「禁無下一步」改為「禁無 Next action」
+- `.claude/skills/weekly-review/SKILL.md`：Step 6 同步改寫；新增強制規則 10 / 11；§ 八 Anti-Pattern 表加 2 row；強制規則 3 措辭改寫
+- `14-reviews/daily/_template.md`：建議行動段重寫為新模板（現況 / Next action 兩段 + 條列化）
+- `14-reviews/weekly/_template.md`：下週重點段同步改寫
+- [[../14-reviews/daily/2026-05-21]]：再次重寫 3 條建議（套用新結構：每條 Action 標題 + 現況條列 + Next action 條列；相依性併入現況段）
+
+**備註**：
+- 反饋本質：原「為何現在做 / 下一步 / 相依性」三段太散，長句段落式難以掃；改為「現況（事實 + 相依性）/ Next action（執行動作）」兩段，會議紀錄式條列化讓 Miles 能快速判斷
+- skill 紀律演化：daily 從 8 → 10 條強制規則；weekly 從 9 → 11 條
+- 結構約束：「現況段是事實 / 原因」、「Next action 段是執行動作」 — MUST 職責分離不混淆
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則

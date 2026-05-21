@@ -10,12 +10,14 @@ description: >
   **強制規則（禁止以下 anti-pattern）**：
     1. 禁止空洞讚美（「執行順利」「進度良好」等無 actionable 內容）
     2. 禁無 source（每個觀察 MUST 指向具體 commit / OQ / 卡 / change）
-    3. 禁無下一步（「今日建議行動」每條 MUST 帶具體可開始的第一步）
+    3. 禁無 Next action（「今日建議行動」每條 MUST 帶具體可開始的第一步）
     4. 禁與 audit-log 重複（複述既有事件時引用而非重寫）
     5. 禁編造（git log / audit-log / OpenSpec / Vault 沒寫的事 MUST NOT 出現在 brief）
     6. 禁附「產出位置」（如「該寫進 07-scenarios/」之類）— Miles 知道往哪寫，重複資訊
     7. 禁附「預估時間」（如「1.5-2 小時 / 情境」）— 估時不準，浪費資訊
     8. 排序 MUST 用「相依性 > 優先度 > 時效性」，MUST NOT 用「快速完成」當排序依據
+    9. 結構 MUST 用「現況 / Next action」兩段條列化（類似會議紀錄），MUST NOT 用長句段落
+    10. 現況段（事實 / 原因）與 Next action 段（執行動作）MUST 職責分離
   不適用：週度回顧（用 weekly-review）、跨主題模式提煉（用 vault-insight）、Vault 健康稽核（用 vault-audit）。
 ---
 
@@ -183,13 +185,30 @@ Step 2：分析「今日建議行動」候選
     - 時效性：deadline 越近越前
     - **MUST NOT 用「快速完成」「容易做完」當排序依據**（估時不準）
 
-Step 3：產出今日建議（≤ 3 條，每條附 source + 下一步 + 相依性說明）
-  - 禁無 source
-  - 禁無下一步
+Step 3：產出今日建議（≤ 3 條，每條兩段「現況 / Next action」+ 條列化）
+
+  結構模板：
+  ```
+  ### <具體 action 標題>
+
+  - **現況**：
+     - <事實 1：當前狀態 / 觸發背景 / 影響範圍>
+     - <事實 2：附 source wiki link / commit / change-id>
+     - 相依性：<上游 / 下游 / 平行 / 獨立 + 簡述原因>
+  - **Next action**：
+     - <具體執行動作 1：明確可開始的第一步>
+     - <具體執行動作 2：後續延伸動作（可選）>
+  ```
+
+  紀律：
+  - 禁無 source（現況段事實 MUST 附具體 wiki link / commit hash / change-id）
+  - 禁無 Next action
   - 禁籠統（「繼續做 X」要改為「執行 X 的第 N 步：YY」）
   - **禁附產出位置**（Miles 知道往哪寫）
   - **禁附預估時間**（估時不準）
-  - 「相依性說明」格式：「上游：X / 下游：Y / 平行：Z」三選填，無相依時寫「獨立」
+  - 內容**MUST 條列化**（類似會議紀錄），每 bullet 一條事實或動作，不用長句段落
+  - **現況段是描述事實**，**Next action 段是執行動作**，MUST NOT 混淆（為何要做的原因放現況、做什麼放 Next action）
+  - 「相依性」格式：「上游：X / 下游：Y / 平行：Z」三選填，無相依時寫「獨立」
 
 Step 4：產出昨日進度摘要
   - Commits（從 git log）
@@ -224,6 +243,8 @@ Step 5：寫入 daily 卡 + 追加 audit-log
 | **附產出位置** | 強制規則 6 | 「產出位置：`07-scenarios/` 開新卡」「寫入 `04-business-logic/`」 | 不寫（Miles 知道往哪寫）|
 | **附預估時間** | 強制規則 7 | 「預估時間：1.5-2 小時 / 情境」「預估：30 分鐘」 | 不寫（估時不準）|
 | **用「快速完成」當排序依據** | 強制規則 8 | 「建議 2 排前面因為可快速完成」「先做 fix 性質的容易項」 | 用「相依性 > 優先度 > 時效性」排序，理由說「Insight 1 Action 1 是 Action 2 的上游」這類|
+| **未條列化（長句段落式）** | 強制規則 9 | 「為何現在做：當前 12 個 active change 同時開展，不收斂會反向影響 daily brief 視野...」（一整段長句）| 「現況：- 12 個 active change 同時開展 - 相依性：上游（解了才能做建議 2）」（條列）|
+| **現況與 Next action 混淆** | 強制規則 10 | 在 Next action 段寫「為何要做」原因；或在現況段寫「該執行什麼步驟」| 原因放現況段、執行動作放 Next action 段，職責分離 |
 
 ---
 
