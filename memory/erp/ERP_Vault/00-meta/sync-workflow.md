@@ -40,7 +40,8 @@ last-reviewed: 2026-05-19
    - 資料模型（自 Vault `05-entities/`）
    - 狀態機（自 Vault `06-state-machines/`）
    - 功能 Requirement（自 OpenSpec spec § Requirements）
-   - User Story（自 OpenSpec spec § Scenarios）
+   - User Story（自 Vault `13-user-stories/<module>/`，業務故事）
+   - Acceptance Scenarios（自 OpenSpec spec § Scenarios，Given/When/Then 工程驗收）
 5. **Claude 用 Notion MCP 寫入**：
    - 更新對應 Notion BRD 頁面（[[notion-index|模組 BRD URL]]）
    - 或建立新頁面（如 Feature DB 內新 entry）
@@ -51,6 +52,46 @@ last-reviewed: 2026-05-19
 - **不複製演算法 / UI 規範**（依 [[scope-boundary]] 排除）
 - 跨頁面引用用 `[可讀名稱](URL)` 格式（依 CLAUDE.md § 11 規則）
 - Notion 內容若已存在，採 update 而非 duplicate
+
+## 二之二、流程 1-B：Vault → Notion User Story DB（單向推送）
+
+### 觸發時點
+
+- 新增 / 修改 user-story 卡後，Miles 觸發推送
+- 累積數張未推送 user-story 卡後一次推送
+- 對外確認新故事時主動觸發
+
+### 步驟
+
+1. **Miles 通知 Claude**：「推 user story 到 Notion」「同步 user story」「推 [模組] user story」
+2. **Claude 觸發 [[erp-user-story]] skill mode C**
+3. **列出待推送清單**：`13-user-stories/<module>/` 內 status=active 且 notion-published-at 為空 / 過舊的卡
+4. **逐張推送**（property mapping，詳見 [[erp-user-story]] skill）：
+
+   | Vault frontmatter / 段 | Notion property |
+   |------------------------|-----------------|
+   | `us-id` | 編碼 |
+   | 標題 H1 | 名稱 |
+   | `role` | 作為（relation 至業務角色 DB）|
+   | § 我希望 內文 | 我希望 |
+   | § 以便 內文 | 以便 |
+   | § 前置條件 內文 | 前置條件 |
+   | § 業務流程 內文 | 流程說明 |
+   | § 成功條件 內文 | 成功條件 |
+   | `priority` | 優先度 |
+   | `module` | 涉及模組 |
+   | `related-spec` 對應 Feature | Feature（relation）|
+
+5. **配對既有 Notion 條目**：以 `us-id` 為唯一鍵；既有 → update；不存在 → create
+6. **回填 Vault frontmatter**：`notion-published-at: <當天>` + `notion-page-url: <URL>`
+7. **Claude 報告**：推送清單 + URL 給 Miles 確認
+
+### 注意事項
+
+- **單向 Vault → Notion**，禁反向覆寫 Vault（公司同仁反饋走 § 三流程 2）
+- **以 us-id 為唯一鍵**，禁建重複條目
+- UI 操作層（stage=ui-bound 的 H2 § UI 操作）**不推送**到 Notion；Notion 只承載業務情境層
+- 推送前必跑 lint（vault-audit 維度 13 — 第三階段實作前先人工檢查）
 
 ## 三、流程 2：Notion → Vault + OpenSpec（反饋回流）
 

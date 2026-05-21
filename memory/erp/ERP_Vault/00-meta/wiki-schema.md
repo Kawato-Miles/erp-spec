@@ -24,6 +24,7 @@ last-reviewed: 2026-05-21
 | `entity` | 資料模型實體 | `05-entities/` |
 | `state-machine` | 狀態機 | `06-state-machines/` |
 | `scenario` | 跨模組情境 | `07-scenarios/` |
+| `user-story` | 業務 User Story（單一故事，含兩階段內容）| `13-user-stories/` |
 | `open-question` | OQ 卡 | `08-open-questions/` |
 | `canvas-ref` | Canvas 對應的 markdown 描述 | `09-canvases/` |
 | `reference` | 外部連結索引 | `10-references/` |
@@ -164,6 +165,44 @@ last-reviewed: YYYY-MM-DD
 ---
 ```
 
+### type=user-story
+
+```yaml
+---
+type: user-story
+us-id: US-<MODULE>-<NNN>                   # 如 US-AR-001（沿用 Notion 既有編碼）
+module:
+  - <module>                                # 對齊本 schema § 二 module enum
+role:
+  - "[[<角色卡>]]"                          # wiki link 至 03-roles/
+priority: high | medium | low
+stage: business-only | ui-bound             # 兩階段標記（必填）
+ui-binding: draft | prototype-v1 | locked   # UI 段版本標記（stage=ui-bound 時必填）
+status: draft | active | deprecated
+created-at: YYYY-MM-DD
+last-reviewed: YYYY-MM-DD
+source:                                     # provenance（防 LLM 自迭代），必填 ≥ 1
+  - "[[<raw / spec / 業務邏輯卡>]]"
+related-spec: openspec/specs/<module>/spec.md
+related-scenarios:                          # 連到跨模組情境（可選）
+  - "[[07-scenarios/README#情境 X]]"
+related-business-logic:                     # 連到業務邏輯卡（可選）
+  - "[[<業務邏輯卡>]]"
+related-entities:                           # 連到實體卡（可選）
+  - "[[<實體卡>]]"
+related-test-cases:                         # Notion Test Case URL（選填）
+  - <URL>
+notion-published-at: YYYY-MM-DD             # 推送後填
+notion-page-url: <URL>                      # 推送後填
+---
+```
+
+**Anti-Model-Collapse 規約**：
+- 每張 user-story 卡必填 `source` ≥ 1 條（指向 raw / spec / 業務邏輯卡 / 訪談紀錄）
+- 禁止 Claude 引用其他 user-story 卡作為 source（會造成自迭代）
+- 業務情境段（H2「業務情境（穩定層）」）禁含 UI 措辭（見 § 六 維度 13）
+- stage=business-only 時 UI 操作段須保持空 / 待補；填了內容須將 stage 改為 ui-bound
+
 ### type=open-question
 
 ```yaml
@@ -298,6 +337,9 @@ related-changes:                   # 本期涉及的 openspec change
 | `09-canvases/` | `.canvas` 檔（無 frontmatter）/ `canvas-ref` |
 | `10-references/` | `reference` |
 | `12-insights/` | `insight` / `meta`（`README.md`）|
+| `13-user-stories/` | `meta`（`README.md` / `_template.md`）|
+| `13-user-stories/<module>/` | `user-story` |
+| `13-user-stories/_shared/` | `user-story`（module=cross-module）|
 | `raw/` | `raw` / `meta`（`README.md` / `_template.md`）|
 | `raw/_attachments/` | 任意檔（PDF / 圖 / docx / 訪談錄音轉文字等）；不需 frontmatter |
 | `14-reviews/` | `meta`（`README.md`）|
@@ -374,6 +416,26 @@ related-changes:                   # 本期涉及的 openspec change
 
 > 本維度由 daily-brief / weekly-review skill 引入後預留，待 vault-audit skill 第二階段擴充實作。
 
+### 維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）
+
+**Error 條件**：
+- 業務情境段缺「作為 / 我希望 / 以便 / 成功條件」任一 H3
+- 業務情境段含 UI 措辭（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器 等）
+- 內容含英文欄位名（payment / printItem / orderAdjustment / quoteRequest / workOrder / productionTask / reviewRound / paymentPlan 等）未轉中文
+- 缺 provenance（frontmatter `source` 為空或不存在）
+- stage=business-only 但 UI 操作段已填內容（stage 不一致）
+- 命名不符 `US-<MODULE>-<NNN>-<slug>.md`
+- frontmatter 缺 us-id / module / role / priority / stage / status / created-at / source 任一必填項
+
+**Warning 條件**：
+- acceptance criteria > 5 條（業界共識，建議 split story）
+- acceptance criteria < 2 條（過於模糊）
+- stage=ui-bound 但 UI 操作段空 / 缺 ui-binding 註解
+- last-reviewed > 90 天 + status=active
+- source 指向其他 user-story 卡（疑似 LLM 自迭代）
+
+> 本維度由 erp-user-story skill 引入後預留，待 vault-audit skill 第三階段擴充實作。
+
 ## 七、命名規約
 
 ### 一般卡
@@ -386,6 +448,28 @@ related-changes:                   # 本期涉及的 openspec change
 - 格式：`<MODULE>-<NNN>-<簡述 slug>.md`
 - MODULE 前綴：QR / ORD / WO / PI / PT / QC / SHP / CR / AS / XM
 - NNN 三位數字補零
+
+### User Story 卡
+
+- 格式：`US-<MODULE>-<NNN>-<簡述 slug>.md`
+- MODULE 前綴對照（保留 Notion 既有 US-AR-NNN 編碼 + 對齊 OQ 命名 + 補主檔模組）：
+  - `QR` 需求單
+  - `ORD` 訂單管理
+  - `CR` 諮詢單
+  - `AS` 售後服務
+  - `WO` 工單管理
+  - `PT` 生產任務
+  - `AR` 稿件審查（沿用 Notion 既有 US-AR-NNN 編碼）
+  - `QC` 品檢
+  - `SHP` 出貨
+  - `MM` 材料主檔
+  - `PM` 工序主檔
+  - `BM` 裝訂主檔
+  - `XM` 跨模組（放 `13-user-stories/_shared/`）
+- NNN 三位數字補零
+- 簡述 slug：繁體中文、名詞或動詞 + 名詞片語
+- 範例：`13-user-stories/prepress-review/US-AR-001-審核稿件.md`
+- 範例：`13-user-stories/_shared/US-XM-001-訂單跨帳務公司付款.md`
 
 ### Insight 卡
 
@@ -432,6 +516,11 @@ related-changes:                   # 本期涉及的 openspec change
 - ❌ 命名不合規約
 - ❌ Wiki link 到不存在的卡（dangling）
 - ❌ orphan 卡（除 README / index 性質）
+- ❌ user-story 業務情境段含 UI 措辭（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal 等）
+- ❌ user-story 內容含未轉中文的英文欄位名（payment / printItem / orderAdjustment 等）
+- ❌ user-story `source` frontmatter 為空（缺 provenance）
+- ❌ user-story `source` 指向其他 user-story 卡（LLM 自迭代風險）
+- ❌ user-story stage=business-only 但 UI 操作段已填內容（stage 不一致）
 
 ## 十、與其他規範的關係
 
