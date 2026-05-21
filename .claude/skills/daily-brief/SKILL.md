@@ -178,7 +178,7 @@ Step 2：分析「今日建議行動」候選
   - 從未結案 raw 找累積到該精練的卡
   - 從 12-insights 未踐 action 找該推進的項
   - **排序**：**相依性（blocking）> 優先度（priority enum）> 時效性（deadline 倒數）**
-    - 相依性：A 做完了 B 才能做（如「Insight 1 Action 1 走查」必須先於「Action 2 整合 change propose」）→ 把上游排前面
+    - 相依性：A 做完了 B 才能做（如「Insight 1 Action 1 推演」必須先於「Action 2 整合 change propose」）→ 把上游排前面
     - 優先度：依既有 priority high / medium / low 標籤
     - 時效性：deadline 越近越前
     - **MUST NOT 用「快速完成」「容易做完」當排序依據**（估時不準）

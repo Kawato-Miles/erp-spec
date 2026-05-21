@@ -74,7 +74,7 @@ notion-page-url: <URL>               # 若已推送則記錄頁面
 | [[ORD-002-OA核可金額閾值閘門]] | OA 已核可金額 ×% 閾值閘門 | open | low | order-management |
 | [[ORD-003-取消退款Payment是否回退OA]] | 取消退款 Payment 是否回退 OA | open | medium | order-management |
 | [[ORD-004-跨期退款SalesAllowance自動建立]] | 跨期退款折讓單自動 vs 手動 | open | medium | order-management |
-| [[XM-004-售後流程端到端走查]] | 售後 ticket 流程端到端走查 | open | medium | cross-module、after-sales-ticket |
+| [[XM-004-售後流程端到端推演]] | 售後 ticket 流程端到端推演 | open | medium | cross-module、after-sales-ticket |
 | [[ORD-005-訂單階段備註欄位編輯權限]] | 新 3 欄位編輯權限 | open | high | order-management |
 | [[ORD-006-訂單階段備註欄位編輯時機]] | 新 3 欄位編輯時機（field lock） | open | high | order-management |
 | [[ORD-007-新備註欄位與paymentTermsNote共存策略]] | paymentNote vs paymentTermsNote UI 共存 | open | high | order-management |
