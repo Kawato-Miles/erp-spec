@@ -328,6 +328,32 @@ CLAUDE.md：
 
 **備註**：本次擴充把 daily/weekly review 從「執行層工具」升級為「執行 + 反思 + 預警」三層工具。對應 Yu Wenhao 全景監獄文章核心觀念：「看見自己」（執行層 / 決策層 / 認知層三層可見性）
 
+## [2026-05-21 19:00] structural-change | user story 批 1 校對（US-AR-002 / 005 / 006 v2）
+
+**輸入 / 觸發**：Plan Part 2 批次 1 執行（US-AR-007 v2 pilot of pilot 通過後擴大）
+
+**輸出 / 異動**：
+
+3 張 user-story 卡 v2：
+- [[../13-user-stories/prepress-review/US-AR-002-設定印件難易度與免審稿]]：補 4 條 high gap（必填驗證 / 成交後不可修改 / 免審稿下游連鎖 / 以便邊界）+ frontmatter related-business-logic
+- [[../13-user-stories/prepress-review/US-AR-005-監控當日審稿工作量]]：補 3 高 gap（3 指標計算口徑 / 4 格 vs 3 格邊界釐清 / drill-down 路徑）+ 2 medium 業務化（移除 UI 規格混入）；「我希望」縮為 25 字
+- [[../13-user-stories/prepress-review/US-AR-006-比對審稿人員績效]]：「我希望」縮 32 → 25 字 / 移除「≥ 2 位審稿員」前置誤植 / 成功條件 1 拆三條 / 補「低樣本不標異常」spec L632 核心設計 / 補次排序「件數降冪」+ 平均處理時間「含排隊時間僅作參考」
+
+3 新 OQ：
+- [[../08-open-questions/AR-6-退件率分母是否排除技術退件]]（priority medium，跨 005/006/007）
+- [[../08-open-questions/AR-7-審稿主管監控異常閾值定義]]（priority low，跨 005/006）
+- [[../08-open-questions/AR-8-免審稿適用條件與核可機制]]（priority medium，跨 002）
+
+**驗收結果**（批 1 三張卡）：
+- 英文欄位名 grep / UI 措辭 grep / frontmatter 必填 / source 防自迭代 全 PASS
+- 「我希望」字數：US-AR-002 29 字、US-AR-005 25 字、US-AR-006 25 字（全 ≤ 30 字 PASS）
+- acceptance criteria：002 4 條 / 005 4 條 / 006 5 條（全 PASS）
+
+**備註**：
+- 雙 agent 平行審查 6 calls 共識率高（同題目雙視角獨立得出相近 gap，如「以便」量化、「低樣本不標異常」），驗證雙視角審查模式對 user story 校對有效
+- 衍生 OQ 跨多張 user-story 共用（AR-6 跨 005/006/007 三張、AR-7 跨 005/006 兩張），代表後續 user story 校對品質會因 OQ 解答而連動提升
+- 下批：US-AR-003 / 004 / 008（審稿主管系列）
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則
