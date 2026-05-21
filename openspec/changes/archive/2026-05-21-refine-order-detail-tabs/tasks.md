@@ -82,28 +82,28 @@
 - [x] 8.6 跨製作前 / 製作後訂單驗證印件操作欄按鈕條件顯示
 - [x] 8.7 跨線下單 / 線上單驗證金額組成顯示一致（不再依 order_source 動態切換主從）
 
-## 9. 三視角審查
+## 9. 三視角審查（Miles 指示跳過）
 
-- [ ] 9.1 觸發 senior-pm agent 審查：使用者反饋是否被準確解讀、無範疇外擴
-- [ ] 9.2 觸發 ceo-reviewer agent 審查：是否影響上線時程 / KPI；模式 A1 是否對齊業界 ERP 主流
-- [ ] 9.3 觸發 erp-consultant agent 審查：印件 Side Panel + 金額組成是否與既有狀態機 / Data Model 一致
-- [ ] 9.4 三視角審查回饋的議題追蹤至 OQ 或本 change tasks，全部解決後進入 verify 階段
+- [x] 9.1 ~~觸發 senior-pm agent 審查~~ — Miles 指示跳過（senior-pm 已於 propose 前期介入提供框架評估）
+- [x] 9.2 ~~觸發 ceo-reviewer agent 審查~~ — Miles 指示跳過
+- [x] 9.3 ~~觸發 erp-consultant agent 審查~~ — Miles 指示跳過
+- [x] 9.4 ~~三視角審查回饋追蹤~~ — 不適用（已跳過）
 
 ## 10. OQ 開檔（透過 oq-manage skill）
 
-- [ ] 10.1 開 OQ：120px 縮圖在 5+ 印件大訂單下的實際體感是否可接受、是否需降為 80px 折衷
-- [ ] 10.2 開 OQ：印件清單操作欄「檢視」按鈕的 icon 選擇（Eye / FileSearch / ExternalLink），Pass 1 暫用 Eye
-- [ ] 10.3 開 OQ：Side Panel 開啟時若使用者同時想編輯印件（製作前場景）UX 邊界
-- [ ] 10.4 開 OQ：金額組成混合稅率情境（印刷業免稅品如書籍）UI 呈現策略
-- [ ] 10.5 開 OQ：DualPriceCell → AmountCell 重命名範圍確認（本 change 內或另開 change）
+- [x] 10.1 開 OQ → [[ORD-015-印件清單120px縮圖體感驗證]]
+- [x] 10.2 ~~檢視按鈕 icon 選擇~~ — Pass 1 採用 `Eye`，待 visual review 調整，不開 OQ
+- [x] 10.3 開 OQ → [[ORD-016-印件SidePanel與編輯Panel並行邊界]]
+- [x] 10.4 開 OQ → [[ORD-017-金額組成混合稅率UI呈現]]
+- [x] 10.5 ~~DualPriceCell → AmountCell 重命名範圍~~ — 本 change 內完成，不需 OQ
 
 ## 11. 歸檔準備
 
-- [ ] 11.1 執行 `openspec validate refine-order-detail-tabs` 確認 spec 結構合法
-- [ ] 11.2 執行 doc-audit skill 檢查跨 OpenSpec spec 一致性
+- [x] 11.1 執行 `openspec validate refine-order-detail-tabs` 確認 spec 結構合法
+- [x] 11.2 執行 doc-audit skill 檢查跨 OpenSpec spec 一致性
 - [ ] 11.3 確認 CLAUDE.md § Spec 規格檔清單需要更新（order-management 版本由 v0.5 推進至 v0.6）
-- [ ] 11.4 commit prototype 異動（依 CLAUDE.md commit 規範）
-- [ ] 11.5 commit OpenSpec change 異動
-- [ ] 11.6 執行 `/opsx:verify refine-order-detail-tabs` 進入驗證階段
+- [x] 11.4 commit prototype 異動（commit f0bc335）
+- [x] 11.5 commit OpenSpec change 異動（commit 63474cf）
+- [x] 11.6 執行 `/opsx:verify refine-order-detail-tabs` 進入驗證階段
 - [ ] 11.7 全綠後執行 `/opsx:archive refine-order-detail-tabs` 歸檔
 - [ ] 11.8 歸檔後手動同步 order-management spec 至 Notion 發布版本（https://www.notion.so/32c3886511fa806bad41d755349b0567）v0.6
