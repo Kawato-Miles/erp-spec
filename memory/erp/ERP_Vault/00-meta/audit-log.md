@@ -1,21 +1,48 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-20
+last-reviewed: 2026-05-21
 ---
 
 # Vault Audit Log
 
-> 追加式日誌。每次 `vault-audit` / `vault-insight` 執行後追加一筆。**禁止覆寫歷史**。
+> 追加式日誌。記錄 Vault 所有重大操作。**禁止覆寫歷史**。
 >
 > 用途：
 > - vault-audit 跑前讀此檔，避免重複報同樣議題
 > - vault-insight 跑前讀此檔，識別「已落實」「進行中」「未落實」的議題演化
-> - Miles 回顧 Vault 健康歷程
+> - Miles 回顧 Vault 健康歷程與演化軌跡
+> - 對應 Karpathy LLM Wiki 模式中的 `log.md` 角色
 
 ## 一、紀錄格式
 
-### audit 紀錄
+### 涵蓋事件對照表（2026-05-21 起擴大）
+
+原本只記 `audit` / `insight`，2026-05-21 起擴大記錄範圍涵蓋以下九類重大操作：
+
+| 事件 | 觸發時機 | 標籤 |
+|------|---------|------|
+| Ingest A（寫入 raw） | vault-ingest Mode A 完成 | `ingest-A` |
+| Ingest B（拆解 raw → vault） | Mode B 完成 | `ingest-B` |
+| Ingest C（批次掃描）| Mode C 報告產生 | `ingest-C` |
+| OQ 新增 / 解答 / 取消 | oq-manage skill 完成 | `oq` |
+| Change archive | openspec change archive 後 | `change-archive` |
+| Vault audit | vault-audit skill 完成（既有） | `audit` |
+| Vault insight | vault-insight skill 完成（既有） | `insight` |
+| 誤審記錄 | misjudgement-record 寫入 | `misjudgement` |
+| 三邊同步 | Vault → Notion / OpenSpec → Vault | `sync` |
+
+### 統一項目格式（2026-05-21 起新事件採用）
+
+```markdown
+## [YYYY-MM-DD HH:MM] <event-tag> | <主題簡述>
+
+**輸入 / 觸發**：<wiki link 或 source>
+**輸出 / 異動**：<wiki link 列表>
+**備註**：<可選>
+```
+
+### audit 紀錄（既有格式保留）
 
 ```markdown
 ## [YYYY-MM-DD HH:MM] audit | <模式> | <維度數>
@@ -32,7 +59,7 @@ last-reviewed: 2026-05-20
 **下一步建議**：[1-3 條]
 ```
 
-### insight 紀錄
+### insight 紀錄（既有格式保留）
 
 ```markdown
 ## [YYYY-MM-DD HH:MM] insight | <觸發來源>

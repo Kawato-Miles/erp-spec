@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-19
+last-reviewed: 2026-05-21
 ---
 
 # Wiki Schema（Formal）
@@ -28,6 +28,7 @@ last-reviewed: 2026-05-19
 | `canvas-ref` | Canvas 對應的 markdown 描述 | `09-canvases/` |
 | `reference` | 外部連結索引 | `10-references/` |
 | `insight` | vault-insight 產出 | `12-insights/` |
+| `raw` | Raw 素材（已驗證的觀察 / 反饋 / 研究筆記，未精練）| `raw/` |
 
 ## 二、module Enum（多選）
 
@@ -52,6 +53,9 @@ module:
 | `cancelled` | OQ 取消（已不適用）|
 | `in-progress` | insight 進行中 |
 | `resolved` | insight 已落實 |
+| `raw` | raw 卡剛寫入，待精練 |
+| `reviewed` | raw 卡已分析，等待 Miles 確認 |
+| `ingested` | raw 卡內容已寫入既有 vault 卡 / 升級為 OQ 或 insight |
 
 ## 四、各 type 必填 Frontmatter 欄位
 
@@ -219,6 +223,33 @@ last-reviewed: YYYY-MM-DD
 ---
 ```
 
+### type=raw
+
+```yaml
+---
+type: raw
+status: raw | reviewed | ingested | cancelled
+created-at: YYYY-MM-DD
+source: miles-dialogue | claude-research | claude-self-capture | prototype-dogfood | mes-study
+captured-by: miles | claude-on-task | claude-self
+module:
+  - <候選模組或 cross-module>
+topic-tag:
+  - <自由標籤>
+related-vault:
+  - "[[候選相關卡]]"
+raw-source-link: <對話片段 / WebFetch URL / Slack URL>  # claude-research 必填
+ingested-at: YYYY-MM-DD                                # status=ingested 時填
+ingested-to:                                           # status=ingested 時填
+  - "[[寫入的既有卡]]"
+---
+```
+
+**Anti-Model-Collapse 規約**：
+- `claude-self-capture` 必須 Miles 確認才寫入
+- `claude-research` 必須附真實 raw-source-link，無來源不寫
+- raw 卡是「已驗證素材的歸檔」，不是 LLM 自編內容的暫存區
+
 ## 五、目錄允許 Page-Type 規約
 
 | 目錄 | 允許 type |
@@ -235,6 +266,7 @@ last-reviewed: YYYY-MM-DD
 | `09-canvases/` | `.canvas` 檔（無 frontmatter）/ `canvas-ref` |
 | `10-references/` | `reference` |
 | `12-insights/` | `insight` / `meta`（`README.md`）|
+| `raw/` | `raw` / `meta`（`README.md` / `_template.md`）|
 
 ## 六、Lint 規則（vault-audit 依此判定）
 
@@ -292,6 +324,13 @@ last-reviewed: YYYY-MM-DD
 **Error 條件**：多數 KPI 無法對照 Vault / spec 內容
 **Warning 條件**：少數 KPI 缺對應
 
+### 維度 11：Raw 健康度（Phase 2 待 vault-audit 實作）
+
+**Error 條件**：> 5 張 raw 卡 `status: raw` 且 `created-at` > 180 天
+**Warning 條件**：1-5 張符合上述，或同主題 raw 累積 ≥ 3 張未精練
+
+> 本維度由 vault-ingest skill 引入後預留，待 vault-audit skill 第二階段擴充實作。
+
 ## 七、命名規約
 
 ### 一般卡
@@ -308,6 +347,13 @@ last-reviewed: YYYY-MM-DD
 ### Insight 卡
 
 - 格式：`<YYYY-MM-DD>-<主題 slug>.md`
+
+### Raw 卡
+
+- 格式：`<YYYY-MM-DD>-<source-slug>-<主題 slug>.md`
+- `source-slug`：`miles-dialogue` / `claude-research` / `claude-self-capture` / `prototype-dogfood` / `mes-study`
+- 範例：`2026-05-21-prototype-dogfood-狀態卡點擊區域64px過小.md`
+- 範例：`2026-05-21-claude-research-tharstern-rma-flow.md`
 
 ### Meta 卡（00-meta）
 

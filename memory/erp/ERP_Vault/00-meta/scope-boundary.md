@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-19
+last-reviewed: 2026-05-21
 ---
 
 # Vault Scope Boundary（收 / 不收）
@@ -29,12 +29,14 @@ last-reviewed: 2026-05-19
 | **Audit Log** | `00-meta/audit-log.md` | vault-audit / vault-insight skill 追加式日誌 |
 | **Wiki Schema** | `00-meta/wiki-schema.md` | Vault formal 治理規則（lint 依據）|
 | **Insights** | `12-insights/` | vault-insight skill 產出的跨主題模式識別 + 下一步建議 |
+| **Raw 素材** | `raw/` | 已驗證但未精練的觀察 / 反饋 / 研究筆記（由 vault-ingest skill 寫入；2026-05-21 新增）|
 
 ### 收的判斷準則
 
 - **WHAT**（這是什麼業務概念）
 - **WHY**（為什麼這樣設計，業務背景與動機）
 - **怎麼連**（實體 / 規則 / 角色之間的關聯）
+- **未精練的已驗證素材**（觀察 / 反饋 / 研究筆記）：進 `raw/`，由 vault-ingest skill 寫入
 
 ## 二、不收（屬其他層）
 
@@ -94,6 +96,9 @@ last-reviewed: 2026-05-19
 | 這是「step-by-step 功能 Requirement」嗎？ | 是 | 留 OpenSpec spec |
 | 這是「商業層的 WHAT/WHY」嗎？ | 是 | 進 Vault |
 | 這是「實體間關聯 / 角色責任 / 狀態機規則」嗎？ | 是 | 進 Vault |
+| 這是「未消化已驗證素材」（觀察 / 反饋 / 研究筆記）？ | 是 | 進 `raw/`（觸發 vault-ingest mode A） |
+| 這是「明確未解問題」（不是觀察，是待回答的問題）？ | 是 | 進 OQ（不進 raw/，觸發 oq-manage mode B） |
+| 這是「LLM 自己編出來的內容」（無真實外部來源）？ | 是 | **不進 raw/**（防 Model Collapse） |
 
 ## 四、典型違反案例（不要做）
 

@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-19
+last-reviewed: 2026-05-21
 ---
 
 # ERP_Vault 章程
@@ -19,6 +19,12 @@ last-reviewed: 2026-05-19
   - **`00-meta/audit-log.md`**：追加式日誌，記錄每次 audit / insight 執行
   - **`00-meta/wiki-schema.md`**：formal schema 治理層
   - **`12-insights/`**：insight 累積階層
+- **2026-05-21 升級：Raw 承接層 + Ingest 操作**（學 Karpathy 三件事 + Yu Anti-Model-Collapse 原則）
+  - **`raw/`**：Raw 素材承接層（已驗證但未精練的觀察 / 反饋 / 研究筆記）
+  - **`vault-ingest` skill**（三 mode）：Mode A 寫入 raw / Mode B 拆解 raw → vault / Mode C 批次掃描
+  - **audit-log 擴範圍**：從只記 audit / insight 擴大至記 ingest / OQ / change archive / 誤審 / sync 等九類操作
+  - **Anti-Model-Collapse 紀律**：「思考在對話裡發生，歸檔是思考完的結果」；claude-self-capture 須 Miles 確認、claude-research 須附真實 raw-source-link
+  - **既有 12 編號目錄 100% 不動**：仍走 Zettelkasten 原子卡路線，僅新增 raw/ 一個目錄
 
 ## 二、三邊分工
 
@@ -50,7 +56,7 @@ last-reviewed: 2026-05-19
 
 ```
 ERP_Vault/
-├── 00-meta/                      # 章程 / 入口 / 編輯規約 / 邊界 / 同步流程
+├── 00-meta/                      # 章程 / 入口 / 編輯規約 / 邊界 / 同步流程 / audit-log
 ├── 01-products/                  # 產品願景 / 痛點 / 利害關係人 / Phase / 北極星指標 / KPI
 ├── 02-domain/                    # 印刷業 domain knowledge / 三份 glossary
 ├── 03-roles/                     # 角色 R&R（以 Notion 核心角色權責 DB 為 ground truth）
@@ -61,7 +67,9 @@ ERP_Vault/
 ├── 08-open-questions/            # OQ 內部正本（oq-manage skill 改寫後寫此處）
 ├── 09-canvases/                  # JSON Canvas 視覺化（角色 swimlane / 狀態機 graph / 實體關聯 / 模組依賴 / traceability）
 ├── 10-references/                # 外部連結索引（Notion / OpenSpec / Prototype / decks）
-└── 11-review-knowledge/          # 三視角審查 Agent 方法論（審查框架 / 5 設計模式 / 命名規則 / 多視角討論協議；2026-05-19 新增）
+├── 11-review-knowledge/          # 三視角審查 Agent 方法論（審查框架 / 5 設計模式 / 命名規則 / 多視角討論協議；2026-05-19 新增）
+├── 12-insights/                  # vault-insight skill 產出的跨主題模式識別 + 下一步建議
+└── raw/                          # Raw 素材承接層（vault-ingest skill 寫入；已驗證但未精練；2026-05-21 新增）
 ```
 
 ## 五、Commit 規範
