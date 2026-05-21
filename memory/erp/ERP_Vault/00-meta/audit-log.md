@@ -296,6 +296,18 @@ CLAUDE.md：
 - 用法：兩格可獨立填寫，無相依時改寫「相依性：獨立」一行不展開
 - 第三次結構演化：daily 規則仍維持 10 條（措辭調整），weekly 維持 11 條
 
+## [2026-05-21 18:30] weekly-review | 2026-W21（首次試跑）
+
+**輸入 / 觸發**：Miles 觸發「試試每週的」（weekly-review skill v0.1 首次試跑，週四提前產出）
+
+**輸出 / 異動**：[[../14-reviews/weekly/2026-W21]]
+
+**備註**：
+- 本週學到 5 條：售後 reactive 補丁循環需 PM 推演 / Karpathy + Yu 共存可不重組 vault / skill 設計需迭代不需閉門 / 跨層次穩定性分離範式（user story 兩階段）/ PRC 用語滲透需 CLAUDE.md 範例庫
+- 本週完成：68 commit、13 change archive、43 OQ 新增 / 5 解答、5 個新 skill 建置、Vault Phase A-E + 三大新中樞（raw / 14-reviews / 13-user-stories）
+- 下週重點 3 條（套阻擋 / 被阻擋格式）：收斂 active change 列表 / 推演售後情境 + propose 整合 change（涵蓋 4 個高優 OQ）/ 修治理債
+- 涵蓋區間 2026-05-18 ~ 2026-05-24（本週尚未結束，僅週四提前產出；本週 daily 卡僅 1 張）
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則
