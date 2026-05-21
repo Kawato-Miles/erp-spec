@@ -216,6 +216,54 @@ unresolved 主要是 Vault 外引用（`.claude/agents/`、`openspec/specs/`、`
 - skill 紀律演化：兩個 skill 從 5 / 6 條強制規則擴為 8 / 9 條；Anti-Pattern 防線收窄
 - 未來檢查：下次 daily-brief / weekly-review 跑時 verify 是否仍有違反
 
+## [2026-05-21 18:00] structural-change | 新增 13-user-stories 目錄 + erp-user-story skill + 審稿模組 pilot
+
+**輸入 / 觸發**：Miles 反映「User Story 匯出 Notion 耗 Token、Vault 不是正本，要納入 Vault 統一管理」+ 兩階段撰寫紀律需求（業務情境穩定層 / UI 操作易變層，避免 Prototype 變動造成 user story 失效）
+
+**輸出 / 異動**：
+
+Schema / 治理層：
+- `00-meta/wiki-schema.md`：新增 `type=user-story`（type enum / frontmatter schema / 目錄允許 type / 命名規約 / 維度 13 lint 規則 / Anti-Pattern）；MODULE 前綴新增 AR / MM / PM / BM
+- `00-meta/sync-workflow.md`：新增「§ 二之二、流程 1-B：Vault → Notion User Story DB（單向推送）」；修正 § 二步驟 4 「User Story（自 OpenSpec spec § Scenarios）」 為「User Story（自 Vault `13-user-stories/<module>/`）+ Acceptance Scenarios（自 OpenSpec spec § Scenarios）」
+
+入口 / 模板：
+- `13-user-stories/README.md`：新建（type=meta 入口，含定位 / 兩階段紀律 / 命名規約 / 目錄結構 / Provenance 規約 / 工作流 / 與 OpenSpec change 整合 / 業界來源）
+- `13-user-stories/_template.md`：新建（type=meta 標準模板，含完整 frontmatter + 兩階段 H2 範本 + INVEST 自審 + Lint 自檢清單）
+
+Skill：
+- `.claude/skills/erp-user-story/SKILL.md`：新建（Mode A 新增 / Mode B 補 UI / Mode C 推送 Notion；8 條 Anti-Pattern 強制規則；Notion property mapping；與 oq-manage / erp-test-case / vault-audit 整合）
+
+Pilot — 審稿模組（11 張 user story 卡）：
+- `13-user-stories/prepress-review/US-AR-001-審核稿件.md` 到 `US-AR-011-打樣後重新處理稿件.md` 共 11 張
+- 從 [Notion User Story DB](https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d) 抓 AR 前綴 11 條目重寫（不是直譯）
+- US-AR-002 在 Notion 有編碼重複（兩個不同條目），其中「打樣後重新處理稿件」重新編號為 US-AR-011
+- US-AR-010 B2C 會員角色不在 03-roles/，role 暫用純文字標 + 引 OQ
+
+OQ：
+- `08-open-questions/AR-1-B2C會員是否納入正式角色.md`：B2C 會員是否新增為角色 / 跨 ERP / EC 視角處理選項
+- `08-open-questions/AR-2-Notion-US-AR-002編碼重複處理.md`：Notion 端編碼衝突的處理方式
+
+CLAUDE.md：
+- § 快速索引 § 載入原則表格：「使用者故事 / 業務情境」列必讀改為 Vault `13-user-stories/<module>/`
+- § ERP 資源表格：「User Story（業務故事集）」正本改為 Vault `13-user-stories/`
+- § ERP 討論主動路由：新增「新增 / 修改 User Story」列 → erp-user-story skill
+- § PM 工作原則 § 8 用語一致性：補「User Story 禁中英夾雜」例與 wiki link
+- § 工具表格：補 erp-user-story skill 索引
+
+**驗收結果**（pilot 11 張卡）：
+- 英文欄位名 grep（payment / printItem / orderAdjustment / quoteRequest / workOrder / productionTask / reviewRound / paymentPlan / afterSalesTicket）：0 命中（PASS）
+- UI 措辭 grep（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器）：業務情境段 0 命中（PASS）
+- frontmatter 必填項：11 張全填齊（type / us-id / module / role / priority / stage / status / created-at / last-reviewed / source）（PASS）
+- source 防自迭代：11 張 source 全無指向其他 user-story 卡（PASS）
+- acceptance criteria 數量：11 張全部在 2-5 條範圍（PASS，分布 3-5 條）
+
+**備註**：
+- 概念釐清：CLAUDE.md 原宣告「User Story 正本 = OpenSpec spec § Scenarios」實為錯誤；spec § Scenarios 是 requirement-level Given/When/Then 工程驗收，不是 user story 故事格式；本次修正釐清為「Vault 13-user-stories（business-level） + OpenSpec § Scenarios（Acceptance Scenarios）互補」
+- 兩階段紀律：業務情境穩定層保證 Prototype 改版時 user story 主文不動；UI 操作易變層含 ui-binding 版本標記，Prototype 改版時只更新此段
+- Anti-Model-Collapse：每張 user story 必填 source ≥ 1 條 + 禁指向其他 user story；對應 Karpathy LLM Wiki 防自迭代原則
+- pilot 範圍：僅審稿模組 11 張；其他模組（QR / ORD / CR / AS / WO / PT / QC / SHP / MM / PM / BM）82 條目待 pilot 驗收後逐步遷移
+- Notion 端尚未推送：mode C 待 Miles 觸發；確認 schema 驗證可行性後執行
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則
