@@ -230,7 +230,7 @@ last-reviewed: YYYY-MM-DD
 type: raw
 status: raw | reviewed | ingested | cancelled
 created-at: YYYY-MM-DD
-source: miles-dialogue | claude-research | claude-self-capture | prototype-dogfood | mes-study
+source: miles-dialogue | claude-research | claude-self-capture | prototype-dogfood | mes-study | miles-upload
 captured-by: miles | claude-on-task | claude-self
 module:
   - <候選模組或 cross-module>
@@ -238,7 +238,9 @@ topic-tag:
   - <自由標籤>
 related-vault:
   - "[[候選相關卡]]"
-raw-source-link: <對話片段 / WebFetch URL / Slack URL>  # claude-research 必填
+raw-source-link: <對話片段 / WebFetch URL / Slack URL / 原始檔出處>  # claude-research / miles-upload 必填
+attached-files:                                        # source=miles-upload 必填；其他可選
+  - "_attachments/<檔名>"
 ingested-at: YYYY-MM-DD                                # status=ingested 時填
 ingested-to:                                           # status=ingested 時填
   - "[[寫入的既有卡]]"
@@ -248,6 +250,7 @@ ingested-to:                                           # status=ingested 時填
 **Anti-Model-Collapse 規約**：
 - `claude-self-capture` 必須 Miles 確認才寫入
 - `claude-research` 必須附真實 raw-source-link，無來源不寫
+- `miles-upload` 必須附真實 raw-source-link（原始檔出處）+ 原檔搬進 `raw/_attachments/<檔名>` + 在 `attached-files` 列出
 - raw 卡是「已驗證素材的歸檔」，不是 LLM 自編內容的暫存區
 
 ## 五、目錄允許 Page-Type 規約
@@ -267,6 +270,7 @@ ingested-to:                                           # status=ingested 時填
 | `10-references/` | `reference` |
 | `12-insights/` | `insight` / `meta`（`README.md`）|
 | `raw/` | `raw` / `meta`（`README.md` / `_template.md`）|
+| `raw/_attachments/` | 任意檔（PDF / 圖 / docx / 訪談錄音轉文字等）；不需 frontmatter |
 
 ## 六、Lint 規則（vault-audit 依此判定）
 
@@ -351,9 +355,17 @@ ingested-to:                                           # status=ingested 時填
 ### Raw 卡
 
 - 格式：`<YYYY-MM-DD>-<source-slug>-<主題 slug>.md`
-- `source-slug`：`miles-dialogue` / `claude-research` / `claude-self-capture` / `prototype-dogfood` / `mes-study`
+- `source-slug`：`miles-dialogue` / `claude-research` / `claude-self-capture` / `prototype-dogfood` / `mes-study` / `miles-upload`
 - 範例：`2026-05-21-prototype-dogfood-狀態卡點擊區域64px過小.md`
 - 範例：`2026-05-21-claude-research-tharstern-rma-flow.md`
+- 範例：`2026-05-21-miles-upload-客戶訪談-富禾印務.md`
+
+### Raw 附件（_attachments/）
+
+- 格式：保留原檔名（不改）；若同名衝突在前綴加日期：`<YYYY-MM-DD>-<原檔名>`
+- 範例：`_attachments/富禾印務訪談2026-05-15.docx`
+- 範例：`_attachments/2026-05-21-廠商規格書-XX.pdf`
+- 大檔案（> 10 MB）建議考慮 git-lfs 或外部存放並只在 raw-source-link 留 URL（第一版不強制）
 
 ### Meta 卡（00-meta）
 

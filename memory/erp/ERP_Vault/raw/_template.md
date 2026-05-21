@@ -2,7 +2,7 @@
 type: raw
 status: raw
 created-at: YYYY-MM-DD
-source: miles-dialogue | claude-research | claude-self-capture | prototype-dogfood | mes-study
+source: miles-dialogue | claude-research | claude-self-capture | prototype-dogfood | mes-study | miles-upload
 captured-by: miles | claude-on-task | claude-self
 module:
   - cross-module
@@ -10,7 +10,9 @@ topic-tag:
   - <自由標籤>
 related-vault:
   - "[[候選相關卡]]"
-raw-source-link: <對話片段 / WebFetch URL / Slack URL>
+raw-source-link: <對話片段 / WebFetch URL / Slack URL / 原始檔出處>
+attached-files:  # source=miles-upload 必填；其他可選；不需要時刪除整個欄位
+  - "_attachments/<檔名>"
 ---
 
 # <主題標題>
