@@ -308,6 +308,26 @@ CLAUDE.md：
 - 下週重點 3 條（套阻擋 / 被阻擋格式）：收斂 active change 列表 / 推演售後情境 + propose 整合 change（涵蓋 4 個高優 OQ）/ 修治理債
 - 涵蓋區間 2026-05-18 ~ 2026-05-24（本週尚未結束，僅週四提前產出；本週 daily 卡僅 1 張）
 
+## [2026-05-21 19:00] skill-revision | daily / weekly review 擴充反思類非待辦面向
+
+**輸入 / 觸發**：Miles 反饋「目前提供的只有局限在整理待辦有點沒有價值」+「上網查這種 weekly / daily 的機制，除了整理待辦外，是否有其他使用用途」+ 給的參考 Yu 全景監獄
+
+**輸出 / 異動**：
+- `.claude/skills/daily-brief/SKILL.md`：新增 Step 3.5「今日反目標」+ Step 4「昨日進度 + 決策紀錄 + 學到」三段；強制規則加 11 / 12 / 13（反目標禁空洞 / 決策段只記設計決策 / 學到禁超過 2 條）
+- `.claude/skills/weekly-review/SKILL.md`：新增 Step 5.5「未完成原因分析」+ Step 5.6「決策品質回顧」+ Step 6.5「Pre-mortem 預警」；強制規則加 12 / 13 / 14（未完成原因多問一層為什麼 / 決策品質聚焦邏輯 / Pre-mortem 風險具體）
+- `14-reviews/daily/_template.md`：結構重組為「今日（建議行動 / 反目標）+ 昨日（進度 / 決策 / 學到）」
+- `14-reviews/weekly/_template.md`：新增三段並重編 section 編號（七段：本週學到 / 本週完成 / 未完成原因 / 決策品質 / 下週重點 / Pre-mortem / 開放議題）
+- [[../14-reviews/daily/2026-05-21]]：補三段反思內容（反目標 3 條 / 決策紀錄 2 條 / 學到 2 條）
+- [[../14-reviews/weekly/2026-W21]]：補三段反思內容（未完成原因 3 條 / 決策品質 3 條 / Pre-mortem 3 條）
+
+**反饋本質**：原 daily/weekly review 只覆蓋「整理待辦」面向，Miles 認為價值有限。研究 Yu 全景監獄 + GTD + Forte Labs + Obsidian Periodic Notes 後識別出 7 個「非待辦」面向；Miles 選 6 個加入（不加四檔標記、不加 Lead vs Lag 指標）
+
+**skill 紀律演化（一日內五次）**：
+- daily：5 → 8（5cf781b）→ 10（e8dfc57）→ 10（223bd99 措辭）→ **13**（本次）
+- weekly：6 → 9（5cf781b）→ 11（e8dfc57）→ 11（223bd99 措辭）→ **14**（本次）
+
+**備註**：本次擴充把 daily/weekly review 從「執行層工具」升級為「執行 + 反思 + 預警」三層工具。對應 Yu Wenhao 全景監獄文章核心觀念：「看見自己」（執行層 / 決策層 / 認知層三層可見性）
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則
