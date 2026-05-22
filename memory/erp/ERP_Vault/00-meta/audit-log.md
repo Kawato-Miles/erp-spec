@@ -328,6 +328,29 @@ CLAUDE.md：
 
 **備註**：本次擴充把 daily/weekly review 從「執行層工具」升級為「執行 + 反思 + 預警」三層工具。對應 Yu Wenhao 全景監獄文章核心觀念：「看見自己」（執行層 / 決策層 / 認知層三層可見性）
 
+## [2026-05-21 22:00] structural-change | user story 批 4 校對（US-AR-001 anchor v2）+ Anchor 紀律演化
+
+**輸入 / 觸發**：Plan Part 2 批次 4 執行（anchor 故事最後校對，串接所有 v2 子故事）
+
+**輸出 / 異動**：
+
+US-AR-001 anchor v2：
+- [[../13-user-stories/prepress-review/US-AR-001-審核稿件]]：「我希望」縮 38 → 20 字、補破例派工降級路徑（spec L77-86）/ 原審稿員不在崗主管覆寫（spec L326-345）/ ActivityLog 跨輪次稽核載體（spec L347-393）/ 步驟 7 並行監控（貫穿步驟 3-6 全程而非順序步驟）/ 步驟 6 移除「合格 → 自動建工單」下游連鎖反應改 wiki link 引情境 6 / 前置條件拆兩條 / 免審稿快速路徑併入步驟 1 / 新增「相關業務情境」段引 US-AR-011 / frontmatter 補 related-oq（AR-8 / AR-10 / AR-11）/ 成功條件 5「子流程與本主骨幹整合無斷點」覆蓋 9 張子故事
+
+user-story-spec § 五紀律演化：
+- 新增「Anchor 故事例外條款」（5 條規約）：Anchor 故事 Independent 不適用 / Small ≤ 30 字例外允許但 MUST 用整體抽象描述 / 下游連鎖反應仍須 wiki link / 成功條件含子故事整合 / related-oq 反向追溯子故事衍生 OQ
+- 應用情境：模組存在「總分」結構（anchor 描述循環，子故事描述動作）；單一 US 拆出 anchor 屬過度設計
+
+**驗收結果**（US-AR-001 anchor）：
+- 英文欄位名 grep / UI 措辭 grep / frontmatter 必填 / source 防自迭代 全 PASS
+- 「我希望」20 字（anchor 例外允許）；5 條 acceptance criteria
+- **跨卡引用 10/10 全 PASS**：US-AR-002 / 003 / 004 / 005 / 006 / 007 / 008 / 009 / 010 / 011 名稱全部對齊 v2 檔名
+
+**備註**：
+- 整批 Part 2 完成：11 張卡 v2 全部校對通過（US-AR-001 anchor + US-AR-002 ~ 011 共 10 張子故事）
+- Anchor 紀律演化是雙視角審查發現的紀律 gap（spec § 五原本未涵蓋 anchor 故事的特殊性），透過 senior-pm 段 3 建議補入；屬「審查程式自我演化」案例
+- 累積 open OQ 達 8 個（AR-5/6/7/8/9/10/11/12），需 Miles 解答後才能進入 Notion 推送或下個模組 user story 校對
+
 ## [2026-05-21 21:00] structural-change | user story 批 3 校對（US-AR-009 / 010 / 011 v2）
 
 **輸入 / 觸發**：Plan Part 2 批次 3 執行（補件迴圈與跨模組系列）

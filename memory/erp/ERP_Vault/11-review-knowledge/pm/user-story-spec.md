@@ -65,6 +65,21 @@ mcp__notion__notion-query-database-view
 - **一條 User Story 只描述一個角色的一個需求**；若跨角色，**MUST** 拆成多條
 - **下游連鎖反應不入本 US**（2026-05-21 新增）：如「合格 → 自動建工單」「終態 → 棄用 + 建新印件」屬下游模組或跨模組情境的職責，本 US 以 wiki link 引用 [[07-scenarios]] 或對應 spec 處理，不在本 US 重複描述實作邏輯
 
+### Anchor 故事例外條款（2026-05-21 新增）
+
+當模組功能由多個獨立 user story 構成完整循環時（如 prepress-review 的 US-AR-001 串接 US-AR-002 ~ US-AR-010），可建立 **anchor 故事**作為總分結構入口。anchor 故事適用以下例外：
+
+- **Independent**：不適用，本質是「整合 N 張子故事」；不應視為違反 INVEST
+- **Small（≤ 30 字 + 單一動作紀律）**：例外允許違反，但 MUST 滿足：
+  - 業務流程以「步驟 + wiki link 引子故事」結構撰寫，避免 anchor 重複實作邏輯
+  - 「我希望」雖跨多動作，MUST 用「整體結構化流程」抽象描述（如「完整走完結構化審稿流程直到合格終態」），MUST NOT 列舉個別動作
+- **下游連鎖反應**：anchor 故事仍 MUST 以 wiki link 引用而非實作描述（與單一 user story 同紀律）
+- **成功條件**：MUST 包含「主骨幹 + 子故事整合無斷點」驗證，不只覆蓋主流程
+- **跨子故事引用**：anchor 故事內文引用的子故事 MUST 在 frontmatter `related-oq` 反向追溯子故事衍生的 priority high/medium OQ（讓讀者透過 anchor 可看到模組級未解項）
+- **適用場景**：模組存在「總分」結構（anchor 描述整體循環，子故事描述個別動作）；單一 user story 拆出 anchor 屬過度設計
+
+PM 規劃模組時看 anchor 理解全貌，工程實作時拆解到子故事；anchor 不是工程驗收單元，子故事才是。
+
 ## 六、寫入計畫格式
 
 放入 [[senior-pm-write-mode]] Mode B Phase 1 的 `[寫入計畫]` 區塊：
