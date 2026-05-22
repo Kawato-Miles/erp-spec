@@ -29,6 +29,7 @@ last-reviewed: 2026-05-19
 | 11 | [[#情境 11：售後事件「不處理」結局\|售後不處理]] | after-sales-ticket | AfterSalesTicket（responsibility / resolution）| L588 |
 | 12 | [[#情境 12：售後事件「補印免費」\|售後補印免費]] | after-sales-ticket / work-order | AfterSalesTicket + 補印 PrintItem（公司認賠）| L618 |
 | 13 | [[#情境 13：售後事件「補印收費」\|售後補印收費]] | after-sales-ticket / order | AfterSalesTicket + 補印 PrintItem + OrderAdjustment（補收）| L660 |
+| 14 | [[#情境 14：審稿流程端到端（單模組跨角色）\|審稿流程端到端]] | prepress-review | 印件、ReviewRound、ActivityLog（業務 / 審稿主管 / 系統 / 審稿員 / 補件方 5 角色）| — |
 
 ## 情境 1：全流程驗證
 
@@ -94,6 +95,23 @@ last-reviewed: 2026-05-19
 
 - **核心驗證**：responsibility=客戶承擔 或 共同分擔、resolution=補印 或 退款+補印
 - **行為**：建補印 PrintItem + 關聯 OrderAdjustment(adjustment_type=補退)，業務主管核可仍存在
+
+## 情境 14：審稿流程端到端（單模組跨角色）
+
+> **2026-05-22 新增**：本情境取代原 [[13-user-stories/prepress-review/US-AR-001-審核稿件|US-AR-001 anchor]]（已移除）；對應 user-story-spec § 五「禁 anchor」紀律。07-scenarios 範圍 2026-05-22 擴展為「跨模組或跨角色的端到端流程」（不限跨模組），本情境屬「單模組（prepress-review）跨多角色」的端到端串接示範。
+
+- **核心驗證**：審稿模組從業務填難易度到合格終態的完整循環，涉及 5 角色多動作串接
+- **涉及角色**：[[03-roles/業務]] + [[03-roles/審稿主管]] + 系統（自動分派 / ActivityLog）+ [[03-roles/審稿]] + 補件方（業務 / B2C 會員）
+- **流程串接**：
+  1. **業務填難易度**（[[13-user-stories/prepress-review/US-AR-002-設定印件難易度與免審稿|US-AR-002]]）：業務於需求單標註難易度與是否免審稿
+  2. **審稿主管維護能力等級**（[[13-user-stories/prepress-review/US-AR-003-維護審稿人員能力等級|US-AR-003]]）+ **異常覆寫**（[[13-user-stories/prepress-review/US-AR-004-覆寫印件分派|US-AR-004]]）
+  3. **系統自動分派**：依「能力最接近難易度 → 進行中負擔最少」挑選審稿員；候選集為空時破例派工（待 [[AR-10-主管覆寫分派是否允許破例派工]] 解答）
+  4. **審稿員執行審稿**（[[13-user-stories/prepress-review/US-AR-007-執行印件審稿|US-AR-007]]）：合格 / 不合格判定 + 10 項退件原因分類
+  5. **補件迴圈**：[[13-user-stories/prepress-review/US-AR-009-B2B業務代客戶補件|US-AR-009]] B2B / [[13-user-stories/prepress-review/US-AR-010-B2C會員補件流程|US-AR-010]] B2C；原審稿員不在崗主管覆寫（[[US-AR-004]]）
+  6. **合格終態** → 印件審稿終止進入製程審核；後續內容變更須棄用 + 建新印件（情境 6 路徑）
+  7. **並行監控**（貫穿步驟 3-6，審稿主管）：[[13-user-stories/prepress-review/US-AR-005-監控當日審稿工作量|US-AR-005]] 監控當日 + [[13-user-stories/prepress-review/US-AR-006-比對審稿人員績效|US-AR-006]] 績效比對 + [[13-user-stories/prepress-review/US-AR-008-追蹤部門審稿完成紀錄|US-AR-008]] 對帳追溯
+- **特殊路徑**：免審稿（[[US-AR-002]] 標記）→ 系統建合格輪次 → 跳至步驟 6
+- **跨階段重新進入**：合格後若打樣不合格且根因為稿件問題 → [[13-user-stories/prepress-review/US-AR-011-打樣後重新處理稿件|US-AR-011]]（與步驟 5 補件迴圈業務本質不同：本情境是「同週期內補件」、US-AR-011 是「跨階段重新進入新審稿週期」）
 
 ## 涉及角色（跨情境）
 

@@ -192,6 +192,9 @@ related-entities:                           # 連到實體卡（可選）
   - "[[<實體卡>]]"
 related-test-cases:                         # Notion Test Case URL（選填）
   - <URL>
+prerequisites:                              # 相依性（2026-05-22 新增）：本 US 執行前須完成的前置動作
+  - "[[<US-XX-NNN>]]"                       # 其他 user story（具體 wiki link）
+  - "<系統行為或角色準備動作的文字描述>"   # 如「系統自動分派完成」「審稿主管已維護能力等級」
 notion-published-at: YYYY-MM-DD             # 推送後填
 notion-page-url: <URL>                      # 推送後填
 ---
@@ -202,6 +205,12 @@ notion-page-url: <URL>                      # 推送後填
 - 禁止 Claude 引用其他 user-story 卡作為 source（會造成自迭代）
 - 業務情境段（H2「業務情境（穩定層）」）禁含 UI 措辭（見 § 六 維度 13）
 - stage=business-only 時 UI 操作段須保持空 / 待補；填了內容須將 stage 改為 ui-bound
+
+**禁 anchor 故事規約**（2026-05-22 新增）：
+- **MUST NOT** 建立「統合多角色 / 多動作」的 user story 作為總分結構入口（如 anchor 故事）
+- 違反 INVEST Independent；統合卡造成維護困難 + 隱藏相依性
+- 跨多角色 / 多動作的端到端流程 **MUST** 由 [[../07-scenarios]] 處理
+- user story 間的相依性以 `prerequisites` 欄位記錄，禁用 anchor 故事代替
 
 ### type=open-question
 

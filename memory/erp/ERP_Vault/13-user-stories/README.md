@@ -45,6 +45,35 @@ last-reviewed: 2026-05-21
 - 對應 Prototype 路徑（如 `sens-erp-prototype/src/components/prepress/...`）
 - Prototype 改版時只動 UI 操作段；業務情境段保持不動（穩定性保險）
 
+## 二之二、獨立性紀律（禁 anchor 故事）
+
+每張 user-story 卡 **MUST** 描述單一角色的單一情境，對應實務物理世界的一個動作或決策。完整工作流程由多張獨立 user story **組合**而成，**MUST NOT 建立統合多角色 / 多動作的 anchor 故事**。
+
+### 禁 anchor 紀律（2026-05-22 新增）
+
+- **MUST NOT** 寫「統合 N 張子故事」的 user story
+- 違反 INVEST Independent（每張 user story 須獨立可交付 / 可驗收）
+- 統合卡造成：(a) 改一個子情境須回溯統合卡同步、(b) 跨多角色職責邊界模糊、(c) 隱藏相依性使 PM 難以辨識「A 完成才能 B」順序
+
+### 跨多角色 / 多動作流程的處理
+
+跨多角色或多動作的端到端流程 **MUST** 由 [[07-scenarios/README|07-scenarios]] 處理（2026-05-22 擴展涵蓋「跨模組或跨角色的端到端流程」，不再限於跨模組）。
+
+例：審稿流程端到端（業務填難易度 → 系統分派 → 審稿員審稿 → 補件迴圈 → 合格終態）涉及業務 / 系統 / 審稿員 / 補件方 4 角色多動作，**MUST** 放 07-scenarios 不放 user story。
+
+### 相依性以 prerequisites 欄位記錄
+
+user story 間「A 完成才能 B」的相依性以 frontmatter `prerequisites` 欄位記錄（詳見 [[wiki-schema#type=user-story]]）：
+
+```yaml
+prerequisites:
+  - "[[US-AR-002-設定印件難易度與免審稿]]"   # 其他 user story
+  - "系統自動分派完成"                       # 系統行為描述
+  - "審稿主管已維護能力等級"                 # 角色準備動作
+```
+
+PM 從 prerequisites 鏈可看出動作順序與相依關係，不需依賴 anchor 故事的「業務流程段」串接。
+
 ## 三、命名規約
 
 - 格式：`US-<MODULE>-<NNN>-<簡述 slug>.md`

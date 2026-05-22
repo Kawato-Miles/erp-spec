@@ -12,53 +12,57 @@ created-at: 2026-05-22
 last-reviewed: 2026-05-22
 source:
   - "openspec/specs/consultation-request/spec.md#Requirement: 諮詢費付款成功觸發自動建單"
+  - "openspec/specs/consultation-request/spec.md#Requirement: 諮詢人員指派"
 related-spec: openspec/specs/consultation-request/spec.md
-related-scenarios: []
+related-scenarios:
+  - "[[07-scenarios/README#情境 15：諮詢單自動建立 webhook 串接|07-scenarios 情境 15（待補）]]"
 related-business-logic: []
 related-entities:
   - "[[05-entities/諮詢單]]"
-related-oq: []
+prerequisites:
+  - "客戶完成 surveycake 表單付款（系統外動作）"
+  - "金流平台 webhook 通道正常 + 系統自動建單機制完成（屬系統行為，詳見 spec § 諮詢費付款成功觸發自動建單 L69-95）"
+related-oq:
+  - "[[CR-1-諮詢分派模式自派他派或混合]]"
 related-test-cases: []
 ---
 
-# US-CR-001 諮詢單自動建立
+# US-CR-001 業務查看並指派新諮詢單
+
+> **重寫紀錄（2026-05-22）**：原卡名「諮詢單自動建立」描述系統自動建單行為，**不是 user story 性質**（無使用者動作）；依新「禁 anchor 故事 + user story 單角色單動作」紀律重新定位為「業務查看並指派新諮詢單」（業務動作）。系統自動建單機制（webhook 串接）作為 prerequisites 列出，端到端流程由 07-scenarios 補情境 15。
 
 ## 業務情境（穩定層）
 
 ### 作為
 [[03-roles/業務]]（值班業務）
 
-> 「作為」採受益者視角（業務）而非觸發者（客戶）：客戶填表動作在 surveycake 系統外，本 user story 描述的是 ERP 收到 webhook 後業務看到「待指派諮詢單自動出現於清單」的價值。
-
 ### 我希望
-客戶完成付款後，諮詢單自動建立並出現在待指派清單
+能於待指派清單查看新諮詢單並指派諮詢人員
 
 ### 以便
-線上進案不依賴人工開單、不漏單，且諮詢費收款即時入帳
+新進諮詢單即時分派給合適的諮詢人員，避免案件積壓影響客戶體驗
 
 ### 前置條件
-- 客戶於外部諮詢報名表單（surveycake）完成填寫並支付諮詢費
-- 金流平台 webhook 通道正常
+- 諮詢單已由系統 webhook 自動建立（狀態為「待諮詢」+ 尚未指派 consultant_id）
+- 業務角色已登入系統
 
 ### 業務流程
 
-1. 客戶於外部表單填寫 14 個必填欄位（詳見 [[05-entities/諮詢單]] 欄位定義；含客戶資料 / 諮詢主題 / 預約資訊 / 數量級距 / 諮詢費發票時點選項）並完成付款
-2. 金流平台透過 webhook 將付款成功事件 + 表單內容傳送至 ERP
-3. 系統建立諮詢單（狀態為「待諮詢」、寫入 14 表單欄位）
-4. 系統建立付款紀錄（金額 = 諮詢費、綁定至諮詢單）
-5. 系統 **不建立任何訂單**（訂單於諮詢結局明確時才依結局建立，詳見 [[US-CR-004-諮詢結束做大貨轉需求單]] / [[US-CR-005-諮詢結束不做大貨建諮詢訂單]] / [[US-CR-006-諮詢取消預約退費]]）
-6. 系統**不在 webhook 階段開立發票**（即便客戶選擇「立即開立」也延後至諮詢結局明確、訂單建立後才開立；因 webhook 階段無訂單可掛發票）
-7. 系統寫入活動紀錄（事件描述：諮詢單與付款記錄自動建立 webhook + payload 摘要）
-8. 系統通知值班業務進行諮詢人員指派
-9. 例外處理：若 webhook payload 欄位名 / 結構與預期不符，系統拒絕建單並通知工程值班「表單可能已異動，需更新 mapping」；客戶錢已收取的補救機制由工程值班依異常情境人工處理（重複 webhook / 失敗重送的防護待後續釐清）
+1. 業務於待指派諮詢單清單看到新建立的諮詢單（系統 webhook 完成建單後自動出現）
+2. 業務查看諮詢單內容（14 表單欄位 + 諮詢費收款紀錄）以判斷適合的諮詢人員
+3. 業務依諮詢人員專長 / 負載指派 consultant_id
+4. 系統將 consultant_id 寫入諮詢單；諮詢單狀態仍維持「待諮詢」（依 v2 簡化僅標示已分派）
+5. 系統寫入活動紀錄（事件描述：指派諮詢人員 + 業務姓名 + 諮詢人員姓名 + 時間）
+6. 系統通知被指派的諮詢人員
+
+> **分派模式議題**：本卡描述「值班業務指派」模式（他派）；[[US-CR-002-諮詢人員認領諮詢單]] 描述「諮詢人員自行認領」模式（自派）。實務上採他派 / 自派 / 混合的決定待 [[CR-1-諮詢分派模式自派他派或混合]] 解答後同步調整。
 
 ### 成功條件
 
-1. 客戶完成付款後，系統自動建立諮詢單（狀態為「待諮詢」）含 14 表單欄位；webhook 收到後即時建立（業務 SLA 待後續釐清）
-2. 系統同步建立付款紀錄綁定至諮詢單，但**不建立任何訂單、不開立發票**（即便客戶選擇「立即開立」）
-3. 系統寫入活動紀錄含 payload 摘要供事後稽核
-4. 若 webhook payload 結構異動，系統拒絕建單並通知工程值班，**不產生半建狀態**
-5. 業務於諮詢單清單可看到新建未指派的諮詢單，可進行指派或讓諮詢人員自行認領（[[US-CR-002-諮詢人員認領諮詢單]]）
+1. 業務於待指派清單可看到所有「待諮詢」且尚未指派的諮詢單
+2. 業務可選擇諮詢人員指派 consultant_id，系統將值寫入諮詢單
+3. 指派動作留活動紀錄（業務姓名 / 諮詢人員姓名 / 時間）
+4. 被指派的諮詢人員即時收到通知
 
 ## UI 操作（易變層）
 
@@ -76,25 +80,33 @@ related-test-cases: []
 
 ## 來源（provenance）
 
-- [`openspec/specs/consultation-request/spec.md`](../../../../openspec/specs/consultation-request/spec.md) § Requirement「諮詢費付款成功觸發自動建單（不建訂單）」L69-95 + § Requirement「諮詢費發票時間點處理」L279-294（不在 webhook 階段開立發票設計）
-- 原 Notion User Story DB `US-CR-001`（2026-05-22 遷入並依 spec 深度校對）
+- [`openspec/specs/consultation-request/spec.md`](../../../../openspec/specs/consultation-request/spec.md) § Requirement「諮詢人員指派」L98-110（業務指派路徑）
+- [`openspec/specs/consultation-request/spec.md`](../../../../openspec/specs/consultation-request/spec.md) § Requirement「諮詢費付款成功觸發自動建單」L69-95（系統 webhook 行為，作為前置條件）
+- 原 Notion User Story DB `US-CR-001`（2026-05-22 重寫；原描述系統行為改為業務動作視角）
 
 ## 校對紀錄
 
 ### 第一輪（2026-05-22 v2，直接從 Notion + spec 整合）
 
-對齊 spec L69-95 補入：14 表單欄位 / 不建任何訂單原則 / webhook 異動偵測。
+依 Notion 原內容寫為「諮詢單自動建立」描述 webhook 自動建單流程。
 
 ### 第二輪（2026-05-22 v3，雙視角審查後）
 
-erp-consultant 8.5/10 + senior-pm INVEST 5 PASS / 1 WARN，整合：
+senior-pm 建議「作為」改值班業務（受益者視角）+ 移除下游連鎖反應。
 
-| 修正項 | 來源 | 處理 |
-|--------|------|------|
-| 「作為」觸發者 vs 受益者錯位（客戶在 surveycake 動作，ERP 受益者是業務）| senior-pm 問題 1（high）| 已採納：改為「值班業務」（受益者視角）+ 「我希望」改為「客戶完成付款後諮詢單自動出現在待指派清單」 |
-| 「Invoice 不在 webhook 階段開立」反直覺設計（spec L78）未提 | erp-consultant G2（medium）| 已採納：業務流程 step 6 + 成功條件 2 明示 |
-| 「5 分鐘內」SLA 無依據 | senior-pm 問題 2（medium）| 已採納：移除「5 分鐘」改「即時建立」+ 「業務 SLA 待後續釐清」 |
-| 14 表單欄位未列舉 | erp-consultant G1（medium）| 已採納：業務流程 step 1 補 wiki link 引 [[05-entities/諮詢單]] |
-| 成功條件 5「諮詢人員可看到列表」屬下游連鎖 | senior-pm 問題 3（medium）| 已採納：改為業務（受益者）視角「業務於諮詢單清單可看到新建未指派的諮詢單」 |
-| webhook 失敗補救 / idempotency / 通知 SLA | senior-pm 痛點 | **暫不開 OQ**：屬執行層 SLA / 工程細節，業務流程 step 9 已標「待後續釐清」 |
-| 企業客必填驗證 | erp-consultant G3 | **未採納**：留在 spec § 企業客必填欄位 Scenario 層，user story 不重複描述驗證細節 |
+### 第三輪（2026-05-22 v4，「禁 anchor + 單角色單動作」紀律演化後）
+
+**重寫定位**：senior-pm v3 建議的「受益者視角」其實還是混淆「系統行為描述」與「user story」。新紀律明示：
+- user story **MUST** 描述單一角色的單一動作
+- 系統行為（webhook 自動建單）不入 user story，作為 prerequisites
+- 跨多角色情境（客戶 → 金流 → 系統 → 業務）由 07-scenarios 處理
+
+修正動作：
+| 修正項 | 處理 |
+|--------|------|
+| 卡名從「諮詢單自動建立」改為「業務查看並指派新諮詢單」 | 已採納：聚焦業務動作，系統建單行為移至 prerequisites |
+| 「我希望」聚焦業務動作（指派諮詢人員）| 已採納：「能於待指派清單查看新諮詢單並指派諮詢人員」單一動作 |
+| 業務流程移除客戶 / 金流平台 / 系統等其他角色動作 | 已採納：只描述業務動作（查看 → 指派）；系統自動建單機制列前置條件 |
+| webhook 異動偵測例外處理 | 已採納：移至 prerequisites 描述（屬系統健全性，非業務 user story 範疇） |
+| 新增 frontmatter `prerequisites` 欄位 | 已採納（紀律演化示範） |
+| 端到端流程（客戶 → webhook → 業務指派）對應的跨角色情境 | 待補：07-scenarios 補情境 15「諮詢單自動建立 webhook 串接」（本次未做，待 Miles 確認後補入；目前 related-scenarios 暫標 placeholder）|

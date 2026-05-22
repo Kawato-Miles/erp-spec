@@ -594,6 +594,39 @@ user-story-spec § 五紀律演化：
 - 維度 11 / 12 待實際有 raw 卡與多週 daily 累積後再次驗證閾值合理性
 - 維度 9 / 10 屬長期治理債，不急但需排入後續計畫（非本週重點）
 
+## [2026-05-22 18:00] structural-change | 紀律演化「禁 anchor 故事 + prerequisites 欄位」+ 拆 3 卡
+
+**輸入 / 觸發**：Miles 反饋「US-AR-001 anchor 違反 user story 獨立性原則（INVEST Independent），不應存在統合所有 story 的卡」
+
+**紀律演化（user-story-spec § 五 + wiki-schema § type=user-story + 13-user-stories/README § 二之二）**：
+- 移除「Anchor 故事例外條款」（2026-05-21 增加的折衷規約）
+- 新增「禁 anchor 故事」紀律：跨多角色 / 多動作的端到端流程 MUST 由 07-scenarios 處理（範圍 2026-05-22 擴展為「跨模組或跨角色」）
+- 新增 frontmatter `prerequisites` 欄位：記錄 user story 間「A 完成才能 B」相依性，禁用 anchor 故事代替表達
+
+**3 張卡處理**：
+- [[../13-user-stories/prepress-review/US-AR-001-審核稿件]] **已刪除**；內容移至 [[../07-scenarios/README#情境 14：審稿流程端到端（單模組跨角色）]]
+- [[../13-user-stories/consultation-request/US-CR-001-諮詢單自動建立]] 重寫為「業務查看並指派新諮詢單」（業務動作）；webhook 自動建單機制移至 prerequisites
+- [[../13-user-stories/order-management/US-ORD-011-訂單取消與退款]] 重寫為「業務取消訂單與退款申請」（業務動作）；會計動作拆出
+- **新增** [[../13-user-stories/order-management/US-ORD-013-會計執行退款處理]]（會計動作；用 prerequisites 連結至 US-ORD-011）
+
+**07-scenarios/README 範圍擴展**：新增情境 14「審稿流程端到端（單模組跨角色）」；註明 07-scenarios 2026-05-22 範圍擴展為「跨模組或跨角色的端到端流程」（不再限於跨模組）
+
+**引用清理**：US-AR-002 / US-AR-011 既有 wiki link 引 US-AR-001 改為引 07-scenarios 情境 14
+
+**驗收結果**（修改的 5 張卡 + 1 張新增）：
+- 英文欄位 / UI 措辭 / frontmatter / source / 我希望 ≤ 30 字 / AC 2-5 條 全 PASS
+- US-AR-001 已刪除（os.path.exists = False）
+
+**待補**：
+- 07-scenarios 情境 15「諮詢單自動建立 webhook 串接」（US-CR-001 對應跨角色情境）
+- 07-scenarios 情境 16「訂單取消與退款端到端」（US-ORD-011 + US-ORD-013 對應跨角色情境）
+- 既有 42 張 v2 卡的 prerequisites 欄位補入（量大；建議下次修改時逐張補，不回頭批量補）
+
+**備註**：
+- Miles 的反饋對齊 INVEST Independent 原則，糾正 senior-pm 之前建議的「Anchor 例外條款」折衷錯誤
+- 紀律演化軌跡：anchor 例外（2026-05-21）→ 全面禁止（2026-05-22）
+- 累計 user story v2/v3 數量：42 → 41（US-AR-001 刪除 - 1）+ 1（US-ORD-013 新增）= **42 張**
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則
