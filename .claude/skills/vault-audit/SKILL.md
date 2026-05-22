@@ -1,12 +1,14 @@
 ---
 name: vault-audit
 description: >
-  ERP_Vault 自審稽核 skill。對 `memory/erp/ERP_Vault/` 執行 10 維度健康檢查（Karpathy LLM Wiki 模式 6 維度 + Sens 特化 4 維度），產出對話報告 + 追加 `00-meta/audit-log.md`。
+  ERP_Vault 自審稽核 skill。對 `memory/erp/ERP_Vault/` 執行 12 維度健康檢查（Karpathy LLM Wiki 模式 6 維度 + Sens 特化 6 維度），產出對話報告 + 追加 `00-meta/audit-log.md`。
   觸發時機：
     1. Miles 說「跑 vault audit」「Vault 健康檢查」「audit vault」
     2. 主動收尾發現 ≥ 5 個 Vault 卡異動時建議
     3. change archive 後建議
     4. 每 20+ commit 後建議
+    5. raw 累積 ≥ 10 張 status=raw 時自動建議（維度 11 觸發）
+    6. 本月 daily review 缺 ≥ 工作日 50% 時自動建議（維度 12 觸發）
   範圍：**只稽核 ERP_Vault**。OpenSpec spec 層稽核由 `doc-audit` skill 處理。
   輸出：對話報告 + 寫入 `memory/erp/ERP_Vault/00-meta/audit-log.md`（追加式、禁覆寫）。
   不適用：OpenSpec spec 稽核（用 doc-audit）、Prototype 程式碼稽核（用 e2e 測試）、純對話內容稽核。
@@ -45,7 +47,7 @@ ERP_Vault 自審工具。**禁止運行於 ERP_Vault 以外的目錄**。
 
 ---
 
-## 三、10 個稽核維度
+## 三、12 個稽核維度
 
 ### 維度 1：頁面間矛盾（Karpathy）
 
@@ -248,6 +250,153 @@ done
 - OK：KPI 對照清晰、有佐證
 - Warning：少數 KPI 缺對應 Vault / spec 內容
 - Error：多數 KPI 無法對照（觸發建議跑 `vault-insight`）
+
+### 維度 11：Raw 健康度（Sens 特化，2026-05-21 實作）
+
+**檢查項目**：
+
+1. **status=raw + created-at > 180 天**：Error
+2. **status=raw + created-at > 90 天 + ≤ 180 天**：Warning
+3. **status=reviewed + 超過 5 天未確認**：Warning（Mode B step 3 完成但 Miles 未拍板）
+4. **同主題 raw 累積 ≥ 3 張**：Warning + 建議跑 vault-ingest Mode B 或 vault-insight
+5. **claude-research / miles-upload 缺 raw-source-link**：Error（違反 Anti-Model-Collapse 防線 2 / 2b）
+6. **source=miles-upload 但 attached-files 為空**：Error（違反防線 2b）
+
+**Bash**（macOS / GNU date 兼容）：
+
+```bash
+cd /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/raw
+today=$(date +%Y-%m-%d)
+threshold_90=$(date -v-90d +%Y-%m-%d 2>/dev/null || date -d "90 days ago" +%Y-%m-%d)
+threshold_180=$(date -v-180d +%Y-%m-%d 2>/dev/null || date -d "180 days ago" +%Y-%m-%d)
+threshold_5=$(date -v-5d +%Y-%m-%d 2>/dev/null || date -d "5 days ago" +%Y-%m-%d)
+
+raw_count=0; reviewed_old=0; error_180=0; warn_90=0
+declare -A topic_tag_count
+
+for f in *.md; do
+  [[ "$f" == "README.md" || "$f" == "_template.md" ]] && continue
+  status=$(grep "^status:" "$f" 2>/dev/null | head -1 | awk '{print $2}')
+  created=$(grep "^created-at:" "$f" 2>/dev/null | head -1 | awk '{print $2}')
+
+  if [[ "$status" == "raw" ]]; then
+    raw_count=$((raw_count+1))
+    if [[ "$created" < "$threshold_180" ]]; then
+      echo "ERROR: $f (status=raw, created-at: $created > 180 天)"
+      error_180=$((error_180+1))
+    elif [[ "$created" < "$threshold_90" ]]; then
+      echo "WARN: $f (status=raw, created-at: $created > 90 天)"
+      warn_90=$((warn_90+1))
+    fi
+  fi
+
+  if [[ "$status" == "reviewed" && "$created" < "$threshold_5" ]]; then
+    echo "WARN: $f (status=reviewed > 5 天未確認)"
+    reviewed_old=$((reviewed_old+1))
+  fi
+
+  # 抽 topic-tag 跨卡累積
+  tags=$(grep -A 5 "^topic-tag:" "$f" 2>/dev/null | grep "^  -" | awk '{print $2}')
+  for tag in $tags; do
+    topic_tag_count[$tag]=$((${topic_tag_count[$tag]:-0}+1))
+  done
+
+  # claude-research / miles-upload 缺 raw-source-link
+  source=$(grep "^source:" "$f" 2>/dev/null | head -1 | awk '{print $2}')
+  if [[ "$source" == "claude-research" || "$source" == "miles-upload" ]]; then
+    link=$(grep "^raw-source-link:" "$f" 2>/dev/null | head -1)
+    [[ -z "$link" || "$link" == "raw-source-link:" || "$link" == *"<"* ]] && \
+      echo "ERROR: $f (source=$source 缺 raw-source-link，違反 Anti-Model-Collapse 防線 2/2b)"
+  fi
+
+  # miles-upload 缺 attached-files
+  if [[ "$source" == "miles-upload" ]]; then
+    grep -q "^attached-files:" "$f" || \
+      echo "ERROR: $f (source=miles-upload 缺 attached-files，違反防線 2b)"
+  fi
+done
+
+# 同主題累積 ≥ 3 警示
+for tag in "${!topic_tag_count[@]}"; do
+  count=${topic_tag_count[$tag]}
+  if [[ $count -ge 3 ]]; then
+    echo "WARN: 同主題 raw 累積 $count 張（topic-tag: $tag）— 建議跑 vault-ingest Mode B 或 vault-insight"
+  fi
+done
+```
+
+**判定**：
+- OK：status=raw 卡 0 條超過 90 天，無同主題累積 ≥ 3，無 source 違反
+- Warning：1-5 卡 status=raw > 90 天 / 1-3 同主題累積 / 1-3 reviewed 超期未確認
+- Error：> 5 卡 status=raw > 180 天 / 或任何 source 違反 Anti-Model-Collapse 防線
+
+### 維度 12：Review 規律性（Sens 特化，2026-05-21 實作）
+
+**檢查項目**：
+
+1. **本月 daily review 數 < 本月工作日 × 50%**：Error
+2. **本月無 weekly review**：Error
+3. **本週 daily review 缺 ≥ 2 工作日**：Warning
+4. **上週無 weekly review**：Warning
+
+**工作日計算**：扣除週六 / 週日（不扣國定假日，估計值即可）
+
+**Bash**（macOS / GNU date 兼容）：
+
+```bash
+cd /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/14-reviews
+
+today=$(date +%Y-%m-%d)
+this_month=$(date +%Y-%m)
+this_year=$(date +%Y)
+this_week=$(date +%G-W%V 2>/dev/null || date +%Y-W%V)  # ISO 週
+
+# 本月 daily 卡數（過濾 _template / .gitkeep）
+daily_this_month=$(ls daily/${this_month}-*.md 2>/dev/null | wc -l | tr -d ' ')
+
+# 本月已過天數（每月第幾天）
+day_of_month=$(date +%-d)
+
+# 本月已過工作日數（粗估：日數 × 5/7）
+workdays_passed=$((day_of_month * 5 / 7))
+
+# 本月 weekly 卡數（涵蓋本月 4 週）
+weekly_this_month=$(ls weekly/${this_year}-W*.md 2>/dev/null | wc -l | tr -d ' ')
+# 過濾出本月對應週數的（每個月約 4-5 個 ISO 週）
+# 簡化：本月有 weekly 卡 ≥ 1 視為 OK
+
+# 本週 daily 數
+week_start_day=$(date -v-Monday +%Y-%m-%d 2>/dev/null || date -d "last Monday" +%Y-%m-%d)
+daily_this_week=$(find daily/ -name "*.md" -newer <(date -d "$week_start_day") 2>/dev/null | wc -l | tr -d ' ')
+
+# 判定
+if [[ $daily_this_month -lt $((workdays_passed / 2)) ]]; then
+  echo "ERROR: 本月 daily 卡 $daily_this_month 張 < 已過工作日 $workdays_passed × 50%"
+fi
+
+if [[ $weekly_this_month -eq 0 ]]; then
+  echo "ERROR: 本月無 weekly review"
+fi
+
+# 本週缺日數（估算：今日是週幾 → 應有幾張 daily）
+day_of_week=$(date +%u)  # 1=週一, 7=週日
+expected_daily_this_week=$((day_of_week <= 5 ? day_of_week : 5))
+missing_this_week=$((expected_daily_this_week - daily_this_week))
+if [[ $missing_this_week -ge 2 ]]; then
+  echo "WARN: 本週 daily 缺 $missing_this_week 個工作日"
+fi
+
+# 上週是否有 weekly
+last_week=$(date -v-1w +%G-W%V 2>/dev/null || date -d "1 week ago" +%Y-W%V)
+[ ! -f "weekly/${last_week}.md" ] && echo "WARN: 上週（${last_week}）無 weekly review"
+```
+
+**判定**：
+- OK：本月 daily ≥ 工作日 × 50% + 本月 weekly ≥ 1 + 本週 daily 缺 < 2 + 上週有 weekly
+- Warning：本週 daily 缺 ≥ 2 或上週無 weekly
+- Error：本月 daily < 工作日 × 50% 或本月無 weekly
+
+**注意**：第一次月份不適用（如剛上線時，無歷史資料，自動 OK）
 
 ---
 

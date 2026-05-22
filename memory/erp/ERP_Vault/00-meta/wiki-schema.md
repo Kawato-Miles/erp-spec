@@ -245,6 +245,8 @@ related-vault:
   - <wiki link>
 related-oq:
   - <oq-id>
+related-raw:                  # 2026-05-21 新增：vault-insight 從 raw 素材累積識別 pattern 時填
+  - "[[raw/<檔名>]]"          # MUST 是 status=ingested 或 reviewed 的卡（vault-ingest 防線 4）
 related-spec: <OpenSpec spec 路徑>  # 若有
 expected-action-at: YYYY-MM-DD
 resolved-at: YYYY-MM-DD  # status=resolved 時填

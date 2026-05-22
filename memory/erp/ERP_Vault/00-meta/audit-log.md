@@ -447,6 +447,28 @@ user-story-spec § 五紀律演化：
 - 本 audit focus 通過 → 可進入 `/opsx:archive` 階段
 - 後續建議跑全量 vault-audit（10 維度）整體健康檢查；本次未涵蓋的維度 2 / 3 / 4 / 5 / 9 / 10 留下次
 
+## [2026-05-21 21:00] skill-revision | Phase 3：vault-audit 維度 11/12 + vault-insight 加 raw 素材
+
+**輸入 / 觸發**：Miles 選下一步 B（直接進 Phase 3）
+
+**輸出 / 異動**：
+- `.claude/skills/vault-audit/SKILL.md`：
+  - description 更新「10 維度 → 12 維度」「Karpathy 6 + Sens 4 → Karpathy 6 + Sens 6」
+  - 觸發時機加 5 / 6（raw 累積 ≥ 10 自動建議 / 本月 daily 缺 ≥ 工作日 50% 自動建議）
+  - § 三新增維度 11「Raw 健康度」（status=raw > 90/180 天 / reviewed 超期 / 同主題累積 ≥ 3 / claude-research 或 miles-upload 缺 raw-source-link / miles-upload 缺 attached-files；含 Bash）
+  - § 三新增維度 12「Review 規律性」（本月 daily < 工作日 × 50% / 本月無 weekly / 本週 daily 缺 ≥ 2 / 上週無 weekly；含 Bash）
+- `.claude/skills/vault-insight/SKILL.md`：
+  - 強制規則加第 5 條「禁讀 status=raw 的 raw 卡」（對應 vault-ingest 防線 4）
+  - Step 2「讀目標素材」表格加 raw row 與「raw 累積（vault-audit 維度 11 觸發）」row + Bash 過濾範例
+  - Step 3 跨主題模式識別新增「3.6 Raw 跨主題累積」段
+  - Step 4 insight 卡 frontmatter 加 `related-raw` 欄位
+- `00-meta/wiki-schema.md`：type=insight frontmatter 加 `related-raw` 欄位（明示 MUST 是 status=ingested 或 reviewed 的 raw 卡）
+
+**備註**：
+- 完成 vault-ingest skill 文件中第二階段預告的「vault-audit 維度 11 / 12 + vault-insight 加 raw 為素材」
+- vault-audit 從 10 → **12 維度**；vault-insight 強制規則從 4 → **5 條**
+- 完整實作 Anti-Model-Collapse 防線 4：vault-insight 與 raw 整合但過濾 status=raw
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則

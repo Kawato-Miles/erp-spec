@@ -12,6 +12,7 @@ description: >
     2. 禁無下一步（每個 insight MUST 帶具體 action，含負責人與時程）
     3. 禁無 source（每個 insight MUST 指向具體卡 / OQ / spec / commit）
     4. 禁重複（跑前 MUST 讀 audit-log，避免報相同議題）
+    5. **禁讀 status=raw 的 raw 卡**（只讀 status=ingested 或 reviewed）— 防 self-amplification（對應 vault-ingest 防線 4）
   範圍：**只處理 ERP_Vault 內容**，不涉及 Prototype / 程式碼 / 對外發布。
   不適用：日常對話回應、單一卡片內容問題、純技術稽核（用 vault-audit）。
 ---
@@ -54,11 +55,27 @@ cat /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/00-meta/audit-log.md
 
 | 觸發情境 | 必讀素材 |
 |---------|---------|
-| **手動 / 通用** | `03-roles/_alignment-report.md` + `08-open-questions/` 全部 + `00-meta/audit-log.md` 最近 3 筆 |
+| **手動 / 通用** | `03-roles/_alignment-report.md` + `08-open-questions/` 全部 + `00-meta/audit-log.md` 最近 3 筆 + **`raw/` status=ingested 或 reviewed 卡**（2026-05-21 新增）|
 | **OQ 累積** | `08-open-questions/` 全部 + `08-open-questions/README.md` |
 | **Phase 切換** | `01-products/erp/phases.md` + `success-metrics.md` + `01-products/erp/kpi/` |
 | **change archive 後** | 該 change 的 design.md / proposal.md + Vault 受影響的 `04-business-logic/` / `05-entities/` 卡 |
 | **vault-audit 接續** | audit 報告中 Error / Warning 項對應的卡 |
+| **raw 同主題累積（vault-audit 維度 11 觸發）** | `raw/` 同主題 status=ingested 或 reviewed 卡 ≥ 3 張（**MUST 過濾 status=raw**，違反 anti-pattern 防線 5）|
+
+**Raw 過濾 Bash**（讀 raw 卡時 MUST 套用）：
+
+```bash
+cd /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/raw
+
+# 只列 status=ingested 或 reviewed 的 raw 卡（過濾 raw status 防 self-amplification）
+for f in *.md; do
+  [[ "$f" == "README.md" || "$f" == "_template.md" ]] && continue
+  status=$(grep "^status:" "$f" | head -1 | awk '{print $2}')
+  if [[ "$status" == "ingested" || "$status" == "reviewed" ]]; then
+    echo "$f"
+  fi
+done
+```
 
 ### Step 3：跨主題模式識別
 
@@ -100,6 +117,19 @@ cat /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/00-meta/audit-log.md
 git log --since="30 days ago" --pretty=format: --name-only memory/erp/ERP_Vault/ | sort | uniq -c | sort -rn | head -10
 ```
 
+#### 3.6 Raw 跨主題累積（2026-05-21 新增）
+
+> 對應 vault-audit 維度 11 觸發：同主題 raw 累積 ≥ 3 張時，可能浮現「該模組 / 該議題有系統性問題」。
+
+**檢查方法**：
+1. 從 vault-audit 維度 11 報告取「同主題累積警示」清單
+2. 對該主題的 raw 卡（**MUST 過濾 status=ingested 或 reviewed**）讀內文
+3. 識別跨卡共通 pattern
+
+例：本月累積 4 張售後相關 raw（[[raw/2026-05-XX-prototype-dogfood-售後 ticket A]] / [[B]] / [[C]] / [[D]]）→ 推論「售後 ticket 模組仍在 reactive 補丁循環」（可與既有 insight [[../12-insights/2026-05-20-售後ticket-reactive-補丁循環]] 串接）
+
+**寫入 insight 卡時**：frontmatter 加 `related-raw: ["[[raw/...]]"]` 列出來源 raw 卡（追溯性）。
+
 ### Step 4：產 insight 卡
 
 **檔名格式**：`12-insights/<YYYY-MM-DD>-<主題 slug>.md`
@@ -120,6 +150,8 @@ related-vault:
   - "[[相關卡]]"
 related-oq:
   - <OQ-id>
+related-raw:                     # 2026-05-21 新增：raw 卡素材來源（MUST 是 status=ingested 或 reviewed 的卡）
+  - "[[raw/<檔名>]]"
 related-spec: <OpenSpec spec 路徑（若有）>
 expected-action-at: YYYY-MM-DD  # 建議完成時程
 ---
