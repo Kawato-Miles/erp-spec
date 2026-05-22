@@ -328,6 +328,32 @@ CLAUDE.md：
 
 **備註**：本次擴充把 daily/weekly review 從「執行層工具」升級為「執行 + 反思 + 預警」三層工具。對應 Yu Wenhao 全景監獄文章核心觀念：「看見自己」（執行層 / 決策層 / 認知層三層可見性）
 
+## [2026-05-21 21:00] structural-change | user story 批 3 校對（US-AR-009 / 010 / 011 v2）
+
+**輸入 / 觸發**：Plan Part 2 批次 3 執行（補件迴圈與跨模組系列）
+
+**輸出 / 異動**：
+
+3 張 user-story 卡 v2：
+- [[../13-user-stories/prepress-review/US-AR-009-B2B業務代客戶補件]]：「我希望」縮 48 → 19 字、補業務權限邊界 / 原審稿員不在崗主管覆寫 / 補件檔案 round_id NULL 暫存 / 修正既存 client_note ActivityLog 稽核、移除下游連鎖反應改 wiki link 引 US-AR-007
+- [[../13-user-stories/prepress-review/US-AR-010-B2C會員補件流程]]：「我希望」縮 53 → 22 字、補跨系統介面契約 EC↔ERP / 歷史輪次清單細粒度 / 原審稿員不在崗主管覆寫 / 狀態轉移 ActivityLog、role 純文字標記符合 AR-1 拍板（Lint 例外）
+- [[../13-user-stories/prepress-review/US-AR-011-打樣後重新處理稿件]]：「我希望」縮 52 → 24 字、「作為」改業務（雙視角共識）、補根因判定者與實體機制（引 OQ AR-12）、與 US-AR-009 / 010 業務本質差異說明（跨階段重新進入審稿 vs 同週期補件）
+
+2 新 OQ：
+- [[../08-open-questions/AR-11-補件停滯處理機制與輪次上限]]（priority medium，跨 US-AR-009 / 010；合併輪次上限 / 停滯 SLA / 棄單處理三個共通痛點）
+- [[../08-open-questions/AR-12-打樣後新稿件實體機制與根因判定]]（priority high，spec 級設計議題；新印件 vs 新審稿輪次 + 根因判定者）
+
+**驗收結果**（批 3 三張卡）：
+- 英文欄位名 grep / UI 措辭 grep / frontmatter 必填 / source 防自迭代 全 PASS
+- 「我希望」字數：US-AR-009 23 字、US-AR-010 23 字、US-AR-011 30 字（全 ≤ 30 字 PASS）
+- acceptance criteria：009 5 條 / 010 5 條 / 011 4 條（全 PASS）
+
+**備註**：
+- AR-12 揭露 spec 級設計議題（合格終態 vs 新審稿輪次的實體機制選擇），涉及資料模型，priority high
+- US-AR-011 「作為」從審稿員改為業務，雙視角共識；觸發點與承接者角色不同的典型案例（紀律演化候選）
+- 累積 open OQ 達 8 個（AR-5/6/7/8/9/10/11/12），距 batch 4 anchor 校對僅 1 張卡，仍繼續執行
+- 已校對 v2 卡累計 10 張，剩餘 1 張：US-AR-001（anchor）
+
 ## [2026-05-21 20:00] structural-change | user story 批 2 校對（US-AR-003 / 004 / 008 v2）
 
 **輸入 / 觸發**：Plan Part 2 批次 2 執行（審稿主管系列）
