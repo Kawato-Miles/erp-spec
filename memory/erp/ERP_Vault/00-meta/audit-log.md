@@ -379,6 +379,25 @@ CLAUDE.md：
 - 衍生 OQ 跨多張 user-story 共用（AR-6 跨 005/006/007 三張、AR-7 跨 005/006 兩張），代表後續 user story 校對品質會因 OQ 解答而連動提升
 - 下批：US-AR-003 / 004 / 008（審稿主管系列）
 
+## [2026-05-22 11:00] vault-audit | focus（4 維度） | add-payment-status-and-decouple-oa-execution change archive 前驗證
+
+**模式**：focus（4 維度），focus 在本 change 影響的 4 個 Vault 卡 + 3 個新 OQ。其他 6 個維度（過時 / 孤立 / 缺連結 / 數據缺口 / 角色 alignment / KPI 對照）非本 change 影響範圍、保留待後續全量 audit。
+
+**結果**：
+- 維度 1 矛盾：OK ✓（訂單.md 與付款發票邏輯.md 對 paymentStatus / OA 已執行推進條件描述一致；既有 refine-after-sales-refund 與本 change 兩處引用共存無矛盾）
+- 維度 6 規則：OK ✓（3 個新 OQ 命名符合 `ORD-NNN-<簡述>.md` 格式；無 inline `[!question]` 或「待補」措辭）
+- 維度 7 對齊：OK ✓（spec change 名在 Vault 4 處引用：訂單.md / 付款發票邏輯.md / ORD-003 / ORD-004）
+- 維度 8 OQ 健康度：OK ✓（3 個新 OQ frontmatter 完整：oq-id / status / priority / raised-at / source-link / expected-resolution-at 全有）
+
+**主要發現**：
+- 本 change 的 7 個 Vault 變動（4 既有卡 modify + 3 新 OQ）全部符合既有 wiki-schema 規約
+- spec ↔ Vault 雙向引用完整（spec 引用 Vault 卡作為背景；Vault 卡引用 spec 為實作位置 + 標註 change 來源）
+- 3 個新 OQ 的 raised-at 均為 2026-05-21（本 change 提案日），priority 均 medium，expected-resolution-at 均 2026-Q3，集中分佈合理
+
+**下一步建議**：
+- 本 audit focus 通過 → 可進入 `/opsx:archive` 階段
+- 後續建議跑全量 vault-audit（10 維度）整體健康檢查；本次未涵蓋的維度 2 / 3 / 4 / 5 / 9 / 10 留下次
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則

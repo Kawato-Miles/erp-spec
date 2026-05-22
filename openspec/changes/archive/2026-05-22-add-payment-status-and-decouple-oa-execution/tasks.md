@@ -101,15 +101,15 @@
 
 ## 11. Vault 收尾
 
-- [ ] 11.1 更新 `memory/erp/ERP_Vault/08-open-questions/ORD-003-取消退款Payment是否回退OA.md`：status 改 resolved + 記錄決策（處理中刪除不動 OA、已完成取消重算累計後回退）
-- [ ] 11.2 更新 `memory/erp/ERP_Vault/08-open-questions/ORD-004-跨期退款SalesAllowance自動建立.md`：補 constraint「處理中期間禁止觸發 SalesAllowance」
-- [ ] 11.3 更新 `memory/erp/ERP_Vault/05-entities/訂單.md` § OrderAdjustment 行為摘要：「已執行」推進機制描述改為「對應 Payment 切已完成累計達 OA.amount 自動推進」
-- [ ] 11.4 更新 `memory/erp/ERP_Vault/04-business-logic/付款發票邏輯.md` § 六、三方對帳：收款淨額公式加註「僅 paymentStatus = '已完成'」
-- [ ] 11.5 新增 OQ（從 design.md § Open Questions 提煉）：
+- [x] 11.1 更新 `memory/erp/ERP_Vault/08-open-questions/ORD-003-取消退款Payment是否回退OA.md`：status 改 resolved + 記錄決策（處理中刪除不動 OA、已完成取消重算累計後回退）
+- [x] 11.2 更新 `memory/erp/ERP_Vault/08-open-questions/ORD-004-跨期退款SalesAllowance自動建立.md`：補 constraint「處理中期間禁止觸發 SalesAllowance」
+- [x] 11.3 更新 `memory/erp/ERP_Vault/05-entities/訂單.md` § OrderAdjustment 行為摘要：「已執行」推進機制描述改為「對應 Payment 切已完成累計達 OA.amount 自動推進」
+- [x] 11.4 更新 `memory/erp/ERP_Vault/04-business-logic/付款發票邏輯.md` § 六、三方對帳：收款淨額公式加註「僅 paymentStatus = '已完成'」
+- [x] 11.5 新增 OQ（從 design.md § Open Questions 提煉）：
   - OQ：處理中 Payment 老化追蹤機制（後續 change）
   - OQ：會計實務對處理中 Payment 應收應付處理（需與會計確認）
   - OQ：取消已完成 Payment 邏輯刪除 vs 物理刪除
-- [ ] 11.6 觸發 `vault-audit` skill（≥ 5 個 Vault 卡異動時建議）
+- [x] 11.6 觸發 `vault-audit` skill（≥ 5 個 Vault 卡異動時建議）
 
 ## 12. 三視角審查（specs + design 完成後觸發）
 
@@ -120,9 +120,9 @@
 
 ## 13. 文件稽核
 
-- [ ] 13.1 觸發 `doc-audit` skill（spec 異動後自動執行）
-- [ ] 13.2 確認 state-machines spec / order-management spec / business-processes spec 之間描述一致（特別是「OA 已執行」觸發條件三處同步）
-- [ ] 13.3 確認 Vault 卡與 OpenSpec spec 描述一致
+- [x] 13.1 觸發 `doc-audit` skill（spec 異動後自動執行）
+- [x] 13.2 確認 state-machines spec / order-management spec / business-processes spec 之間描述一致（特別是「OA 已執行」觸發條件三處同步）
+- [x] 13.3 確認 Vault 卡與 OpenSpec spec 描述一致
 
 ## 14. KPI 與監測（後驗）
 
@@ -132,7 +132,7 @@
 
 ## 15. Verify 與 Archive 準備
 
-- [ ] 15.1 執行 `openspec validate add-payment-status-and-decouple-oa-execution --strict`
-- [ ] 15.2 執行 `/opsx:verify add-payment-status-and-decouple-oa-execution` 確認實作對齊 spec
+- [x] 15.1 執行 `openspec validate add-payment-status-and-decouple-oa-execution --strict`
+- [x] 15.2 執行 `/opsx:verify add-payment-status-and-decouple-oa-execution` 確認實作對齊 spec
 - [ ] 15.3 commit 所有變更（包含 Prototype + Vault + Notion KPI 新增）
 - [ ] 15.4 觸發 `/opsx:archive add-payment-status-and-decouple-oa-execution`
