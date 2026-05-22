@@ -13,6 +13,7 @@ related-vault:
   - "[[13-user-stories/prepress-review/US-AR-005-監控當日審稿工作量]]"
   - "[[13-user-stories/prepress-review/US-AR-006-比對審稿人員績效]]"
 related-oq: []
+expected-resolution-at: 2026-Q4
 ---
 
 # AR-7 審稿主管監控異常閾值定義

@@ -12,6 +12,7 @@ source-link: US-CR-003 諮詢單批 a 雙視角審查
 related-vault:
   - "[[13-user-stories/consultation-request/US-CR-003-編輯諮詢內容與追蹤進度]]"
 related-oq: []
+expected-resolution-at: 2026-Q2
 ---
 
 # CR-2 `consultation_topic` 欄位定位：客戶原始填寫 vs 諮詢備註

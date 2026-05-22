@@ -14,6 +14,7 @@ related-vault:
   - "[[13-user-stories/prepress-review/US-AR-006-比對審稿人員績效]]"
   - "[[13-user-stories/prepress-review/US-AR-007-執行印件審稿]]"
 related-oq: []
+expected-resolution-at: 2026-Q3
 ---
 
 # AR-6 退件率分母是否排除技術退件

@@ -14,6 +14,7 @@ related-vault:
   - "[[13-user-stories/prepress-review/US-AR-002-設定印件難易度與免審稿]]"
   - "[[04-business-logic/免審決策樹]]"
 related-oq: []
+expected-resolution-at: 2026-Q3
 ---
 
 # AR-8 免審稿適用條件與核可機制

@@ -12,6 +12,7 @@ source-link: US-CR-006 諮詢單批 b senior-pm 審查
 related-vault:
   - "[[13-user-stories/consultation-request/US-CR-006-諮詢取消預約退費]]"
 related-oq: []
+expected-resolution-at: 2026-Q4
 ---
 
 # CR-3 諮詢取消三項擴充議題：部分退費 / 取消理由 / 退款 SLA

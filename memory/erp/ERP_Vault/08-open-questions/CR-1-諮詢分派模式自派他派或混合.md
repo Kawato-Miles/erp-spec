@@ -12,6 +12,7 @@ source-link: US-CR-002 諮詢單批 a 雙視角審查
 related-vault:
   - "[[13-user-stories/consultation-request/US-CR-002-諮詢人員認領諮詢單]]"
 related-oq: []
+expected-resolution-at: 2026-Q2
 ---
 
 # CR-1 諮詢分派模式：自派 / 他派 / 混合

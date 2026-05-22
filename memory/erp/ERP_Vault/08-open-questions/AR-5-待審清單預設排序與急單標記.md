@@ -13,6 +13,7 @@ related-vault:
   - "[[13-user-stories/prepress-review/US-AR-007-執行印件審稿]]"
   - "[[04-business-logic/審稿分配規則]]"
 related-oq: []
+expected-resolution-at: 2026-Q3
 ---
 
 # AR-5 待審清單預設排序與急單標記
