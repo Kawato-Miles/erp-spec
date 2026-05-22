@@ -20,6 +20,9 @@ related-entities:
   - "[[05-entities/訂單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "訂單已成立"
+  - "業務為訂單擁有者或職務代理人（依 spec § 訂單階段訂單備註編輯權限）"
 ---
 
 # US-ORD-006 訂單三種備註管理

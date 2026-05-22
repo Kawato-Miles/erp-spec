@@ -20,6 +20,9 @@ related-entities:
 related-oq:
   - "[[CR-1-諮詢分派模式自派他派或混合]]"
 related-test-cases: []
+prerequisites:
+  - "[[US-CR-001-諮詢單自動建立]]：諮詢單為「待諮詢」+ 尚未指派 consultant_id"
+  - "諮詢人員已登入系統"
 ---
 
 # US-CR-002 諮詢人員認領諮詢單

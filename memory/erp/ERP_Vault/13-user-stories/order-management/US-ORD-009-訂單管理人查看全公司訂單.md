@@ -20,6 +20,8 @@ related-entities:
 related-oq:
   - "[[ORD-1-Notion-US-ORD-005編碼重複處理]]"
 related-test-cases: []
+prerequisites:
+  - "使用者角色為訂單管理人"
 ---
 
 # US-ORD-009 訂單管理人查看全公司訂單

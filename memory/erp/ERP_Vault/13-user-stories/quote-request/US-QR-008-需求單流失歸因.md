@@ -19,6 +19,9 @@ related-entities:
   - "[[05-entities/需求單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "[[US-QR-002-管理需求單進度]]：需求單已進入議價中"
+  - "業務判斷客戶不成交"
 ---
 
 # US-QR-008 需求單流失歸因

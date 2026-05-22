@@ -22,6 +22,10 @@ related-entities:
 related-oq:
   - "[[AR-10-主管覆寫分派是否允許破例派工]]"
 related-test-cases: []
+prerequisites:
+  - "[[US-AR-003-維護審稿人員能力等級]]：審稿主管已維護能力等級"
+  - "印件已由系統自動分派審稿員（系統行為）"
+  - "印件尚未完成審稿（未達合格終態）"
 ---
 
 # US-AR-004 覆寫印件分派

@@ -19,6 +19,10 @@ related-entities:
   - "[[05-entities/需求單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "[[US-QR-001-建立需求單]]：需求單已建立"
+  - "業務為需求單擁有者"
+  - "業務預期缺席需委託代理"
 ---
 
 # US-QR-011 設定需求單職務代理人

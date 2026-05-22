@@ -20,6 +20,9 @@ related-entities:
   - "[[05-entities/訂單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "訂單已成立"
+  - "業務為訂單擁有者或職務代理人"
 ---
 
 # US-ORD-005 訂單發票與配送資訊編輯

@@ -19,6 +19,9 @@ related-entities:
   - "[[05-entities/訂單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "業務已建立訂單"
+  - "業務為訂單擁有者"
 ---
 
 # US-ORD-008 訂單列表分享與代理

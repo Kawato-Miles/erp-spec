@@ -30,6 +30,8 @@ last-reviewed: 2026-05-19
 | 12 | [[#情境 12：售後事件「補印免費」\|售後補印免費]] | after-sales-ticket / work-order | AfterSalesTicket + 補印 PrintItem（公司認賠）| L618 |
 | 13 | [[#情境 13：售後事件「補印收費」\|售後補印收費]] | after-sales-ticket / order | AfterSalesTicket + 補印 PrintItem + OrderAdjustment（補收）| L660 |
 | 14 | [[#情境 14：審稿流程端到端（單模組跨角色）\|審稿流程端到端]] | prepress-review | 印件、ReviewRound、ActivityLog（業務 / 審稿主管 / 系統 / 審稿員 / 補件方 5 角色）| — |
+| 15 | [[#情境 15：諮詢單自動建立 webhook 串接（跨系統跨角色）\|諮詢單自動建立 webhook 串接]] | consultation-request | ConsultationRequest、Payment（客戶 / 金流平台 / ERP 系統 / 業務 / 諮詢人員 5 角色）| — |
+| 16 | [[#情境 16：訂單取消與退款端到端（跨角色多模組連鎖）\|訂單取消與退款端到端]] | order-management / work-order / production-task | Order、WorkOrder、Task、ProductionTask、Payment、SalesAllowance（業務 / 系統 / 會計 3 角色 + top-down 連鎖）| — |
 
 ## 情境 1：全流程驗證
 
@@ -112,6 +114,45 @@ last-reviewed: 2026-05-19
   7. **並行監控**（貫穿步驟 3-6，審稿主管）：[[13-user-stories/prepress-review/US-AR-005-監控當日審稿工作量|US-AR-005]] 監控當日 + [[13-user-stories/prepress-review/US-AR-006-比對審稿人員績效|US-AR-006]] 績效比對 + [[13-user-stories/prepress-review/US-AR-008-追蹤部門審稿完成紀錄|US-AR-008]] 對帳追溯
 - **特殊路徑**：免審稿（[[US-AR-002]] 標記）→ 系統建合格輪次 → 跳至步驟 6
 - **跨階段重新進入**：合格後若打樣不合格且根因為稿件問題 → [[13-user-stories/prepress-review/US-AR-011-打樣後重新處理稿件|US-AR-011]]（與步驟 5 補件迴圈業務本質不同：本情境是「同週期內補件」、US-AR-011 是「跨階段重新進入新審稿週期」）
+
+## 情境 15：諮詢單自動建立 webhook 串接（跨系統跨角色）
+
+> **2026-05-22 新增**：對應 [[13-user-stories/consultation-request/US-CR-001-諮詢單自動建立|US-CR-001]] 卡 prerequisites 的端到端情境，涵蓋客戶（外部）→ 金流平台（外部系統）→ ERP webhook（系統）→ 業務（指派）→ 諮詢人員（執行）5 角色串接。
+
+- **核心驗證**：客戶於外部表單付款後，諮詢單由 webhook 自動建立並進入分派流程；不建任何訂單（訂單延後至諮詢結局明確時建立）
+- **涉及角色**：B2C 客戶（外部）+ 金流平台（外部系統）+ ERP webhook 處理（系統）+ [[03-roles/業務]]（值班指派）+ [[03-roles/諮詢]]（執行）
+- **流程串接**：
+  1. **客戶填表 + 付款**（外部系統 - surveycake + 金流平台）：客戶於 surveycake 表單填寫 14 必填欄位並支付諮詢費
+  2. **webhook 自動建單**（系統行為）：金流平台付款成功 webhook 傳送至 ERP；系統建立 ConsultationRequest（狀態「待諮詢」）+ Payment（綁諮詢單）；**MUST NOT 建任何 Order**；MUST NOT 在 webhook 階段開立 Invoice（即便 issue_now 也延後）
+  3. **業務指派諮詢人員** [[13-user-stories/consultation-request/US-CR-001-諮詢單自動建立|US-CR-001]]（業務動作；他派模式）或 [[13-user-stories/consultation-request/US-CR-002-諮詢人員認領諮詢單|US-CR-002]]（諮詢人員自派模式）— 分派模式待 [[08-open-questions/CR-1-諮詢分派模式自派他派或混合|CR-1]] 解答
+  4. **諮詢人員執行諮詢** [[13-user-stories/consultation-request/US-CR-003-編輯諮詢內容與追蹤進度|US-CR-003]]：諮詢人員與客戶聯繫並編輯諮詢備註
+  5. **諮詢結束分支**（諮詢人員動作）：
+     - 做大貨 → [[13-user-stories/consultation-request/US-CR-004-諮詢結束做大貨轉需求單|US-CR-004]] 轉需求單（後續流程連到情境 1 全流程或諮詢來源需求單流失情境）
+     - 不做大貨 → [[13-user-stories/consultation-request/US-CR-005-諮詢結束不做大貨建諮詢訂單|US-CR-005]] 建諮詢訂單收尾
+     - 取消預約 → [[13-user-stories/consultation-request/US-CR-006-諮詢取消預約退費|US-CR-006]] 建諮詢訂單 + 退款（連到情境 16 退款流程）
+- **跨系統介面契約**：surveycake → 金流平台 → ERP webhook payload schema 異動時 ERP MUST 拒絕建單並通知工程值班；客戶錢已收的補救機制未明（屬執行層 SLA）
+- **發票時點分支**：`issue_now` / `defer_to_main_order` 兩種選項影響後續分支建發票時機（詳見 spec § 諮詢費發票時間點處理）
+
+## 情境 16：訂單取消與退款端到端（跨角色多模組連鎖）
+
+> **2026-05-22 新增**：對應 [[13-user-stories/order-management/US-ORD-011-訂單取消與退款|US-ORD-011]] + [[13-user-stories/order-management/US-ORD-013-會計執行退款處理|US-ORD-013]] 拆分後的端到端情境，涵蓋業務（取消 + 退款申請）→ 系統（top-down 連鎖終止下游）→ 會計（執行退款 + 折讓）3 角色串接。
+
+- **核心驗證**：訂單取消後系統自動終止下游工單 / 任務 / 生產任務；退款流程跨業務與會計兩角色完成；折讓單依發票狀態自動建立
+- **涉及角色**：[[03-roles/業務]]（取消 + 退款申請）+ 系統（top-down 連鎖）+ [[03-roles/會計]]（執行退款 + 折讓）
+- **流程串接**：
+  1. **業務取消訂單** [[13-user-stories/order-management/US-ORD-011-訂單取消與退款|US-ORD-011]]：訂單轉「已取消」終態（不可逆）
+  2. **系統 top-down 連鎖終止下游**（系統行為）：
+     - 所屬工單轉「已取消」
+     - 工單下任務轉「已作廢」
+     - 生產任務依進度分流：尚未進入生產 → 「已作廢」/ 已進入生產 → 「報廢」（成本依已報工數量計算）
+  3. **業務發起退款申請**（如已收款，US-ORD-011 後段）：訂單退款狀態進入「退款申請」
+  4. **會計執行退款** [[13-user-stories/order-management/US-ORD-013-會計執行退款處理|US-ORD-013]]：會計於退款待辦清單查看「退款申請」 → 標記「退款處理中」 → 銀行作業 → 完成後標記「已退款」終態
+  5. **系統自動建折讓單**（系統行為，先記退款再開折讓）：
+     - 已開立發票 → 系統建立 SalesAllowance 關聯退款 Payment
+     - 未開立發票 → 不需建折讓單
+  6. **整體訂單終止**：訂單與所有下游實體終態確立，活動紀錄留存
+- **特殊邊界**：訂單可於任意狀態取消（依 spec § 訂單取消流程）；連鎖終止為系統自動行為，業務無須手動處理下游
+- **諮詢取消連動**：[[13-user-stories/consultation-request/US-CR-006-諮詢取消預約退費|US-CR-006]] 諮詢取消 → 建諮詢訂單 + 退款 → 進入本情境的退款流程（會計執行退款邏輯一致）
 
 ## 涉及角色（跨情境）
 

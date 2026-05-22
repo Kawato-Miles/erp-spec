@@ -15,7 +15,7 @@ source:
   - "openspec/specs/order-management/spec.md#Requirement: 折讓單（SalesAllowance）建立、確認、作廢"
 related-spec: openspec/specs/order-management/spec.md
 related-scenarios:
-  - "[[07-scenarios/README#情境 16：訂單取消與退款端到端|07-scenarios 情境 16（待補）]]"
+  - "[[07-scenarios/README#情境 16：訂單取消與退款端到端（跨角色多模組連鎖）]]"
 related-business-logic: []
 related-entities:
   - "[[05-entities/訂單]]"

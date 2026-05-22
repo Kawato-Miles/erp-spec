@@ -20,6 +20,8 @@ related-entities:
   - "[[05-entities/需求單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "[[US-QR-013-評估需求單報價]]：印務主管完成成本評估，需求單為「已評估成本」"
 ---
 
 # US-QR-002 管理需求單進度

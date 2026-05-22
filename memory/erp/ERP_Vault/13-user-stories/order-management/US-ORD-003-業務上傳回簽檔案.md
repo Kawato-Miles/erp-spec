@@ -20,6 +20,9 @@ related-entities:
   - "[[05-entities/訂單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "[[US-ORD-002-業務送出報價單給客戶]]：訂單狀態為「報價待回簽」"
+  - "客戶已透過外部管道送回回簽紙本 / 電子檔"
 ---
 
 # US-ORD-003 業務上傳回簽檔案

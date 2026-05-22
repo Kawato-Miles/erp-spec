@@ -19,6 +19,9 @@ related-entities:
   - "[[05-entities/需求單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "業務遇到與過往案件規格相似的新詢價"
+  - "過往需求單存在系統中（任意狀態）"
 ---
 
 # US-QR-009 複製需求單

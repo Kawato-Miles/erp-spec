@@ -19,6 +19,9 @@ related-entities:
   - "[[05-entities/訂單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "主訂單已建立"
+  - "業務為主訂單擁有者或職務代理人"
 ---
 
 # US-ORD-010 補收款訂單建立

@@ -26,6 +26,9 @@ related-entities:
 related-oq:
   - "[[AR-11-補件停滯處理機制與輪次上限]]"
 related-test-cases: []
+prerequisites:
+  - "[[US-AR-007-執行印件審稿]]：審稿員提交不合格判定"
+  - "業務已收到退件通知"
 ---
 
 # US-AR-009 B2B 業務代客戶補件

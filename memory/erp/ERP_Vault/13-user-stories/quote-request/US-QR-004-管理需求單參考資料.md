@@ -20,6 +20,8 @@ related-entities:
   - "[[05-entities/印件]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "[[US-QR-003-管理需求單印件]]：印件項目已建立"
 ---
 
 # US-QR-004 管理需求單參考資料

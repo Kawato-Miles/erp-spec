@@ -21,6 +21,9 @@ related-entities:
   - "[[05-entities/需求單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "客戶有詢價需求"
+  - "業務已登入系統"
 ---
 
 # US-QR-001 建立需求單

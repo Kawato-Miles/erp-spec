@@ -627,6 +627,38 @@ user-story-spec § 五紀律演化：
 - 紀律演化軌跡：anchor 例外（2026-05-21）→ 全面禁止（2026-05-22）
 - 累計 user story v2/v3 數量：42 → 41（US-AR-001 刪除 - 1）+ 1（US-ORD-013 新增）= **42 張**
 
+## [2026-05-22 19:00] structural-change | 補 07-scenarios 情境 15 / 16 + 批次補 39 張卡 prerequisites
+
+**輸入 / 觸發**：Miles 指示「依建議先做 1/2」（補 07-scenarios 情境 15/16 + 補 42 張卡 prerequisites）
+
+**輸出 / 異動**：
+
+07-scenarios/README 新增 2 情境：
+- 情境 15「諮詢單自動建立 webhook 串接（跨系統跨角色）」：涵蓋客戶 / 金流平台 / ERP webhook / 業務 / 諮詢人員 5 角色端到端；對應 [[../13-user-stories/consultation-request/US-CR-001-諮詢單自動建立|US-CR-001]] prerequisites 的跨系統情境
+- 情境 16「訂單取消與退款端到端（跨角色多模組連鎖）」：涵蓋業務 / 系統 / 會計 3 角色 + top-down 連鎖；對應 [[../13-user-stories/order-management/US-ORD-011-訂單取消與退款|US-ORD-011]] + [[../13-user-stories/order-management/US-ORD-013-會計執行退款處理|US-ORD-013]] 拆分後的端到端情境
+
+39 張既有卡批次補 prerequisites（已有 3 張：US-CR-001 / US-ORD-011 / US-ORD-013）：
+- 審稿模組 10 張（US-AR-002 ~ 011）
+- 諮詢單模組 5 張（US-CR-002 ~ 006）
+- 需求單模組 13 張（US-QR-001 ~ 013）
+- 訂單模組 11 張（US-ORD-001 ~ 010 + 012，含 US-ORD-009）
+- Python 腳本批次處理（每張卡依預先設計的 mapping 補 1-3 條 prerequisites）
+
+US-CR-001 / US-ORD-011 / US-ORD-013 卡內 related-scenarios 引用更新：從 placeholder「待補」改為已存在的情境 15 / 16 wiki link
+
+**驗收結果**：
+- 42 張卡全 PASS（frontmatter 必填齊 + 全部已有 prerequisites 欄位）
+- 0 張卡破壞既有結構
+
+**累計狀態**：
+- 42 張 user story v2/v3，全部含 prerequisites 欄位
+- 16 個 07-scenarios 情境（原 13 + 新增情境 14/15/16）
+- 9 個 open OQ（待 Miles 開新對話處理）
+
+**備註**：
+- prerequisites 欄位讓 user story 間的相依性可辨識，不再依賴 anchor 故事的「業務流程段」串接
+- 07-scenarios 範圍擴展為「跨模組或跨角色的端到端流程」（不再限跨模組），新增情境 14/15/16 屬此擴展用途
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則

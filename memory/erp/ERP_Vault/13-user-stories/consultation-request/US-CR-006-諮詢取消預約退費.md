@@ -23,6 +23,9 @@ related-entities:
 related-oq:
   - "[[CR-3-諮詢取消三項擴充議題]]"
 related-test-cases: []
+prerequisites:
+  - "諮詢單狀態為「待諮詢」（含已認領未認領）"
+  - "客戶確認取消預約"
 ---
 
 # US-CR-006 諮詢取消預約退費

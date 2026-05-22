@@ -19,6 +19,9 @@ related-entities:
   - "[[05-entities/訂單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "業務遇到老客戶重複下單需求"
+  - "原訂單仍保留於系統（任意狀態）"
 ---
 
 # US-ORD-007 訂單複製功能

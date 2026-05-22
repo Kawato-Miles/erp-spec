@@ -21,6 +21,9 @@ related-entities:
   - "[[05-entities/印件]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "審稿主管已登入系統"
+  - "部門已有歷史審稿輪次紀錄"
 ---
 
 # US-AR-008 追蹤部門審稿完成紀錄

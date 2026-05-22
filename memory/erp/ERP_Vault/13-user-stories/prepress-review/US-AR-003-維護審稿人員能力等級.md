@@ -23,6 +23,9 @@ related-entities:
 related-oq:
   - "[[AR-9-新審稿員建立時能力等級初值]]"
 related-test-cases: []
+prerequisites:
+  - "審稿員已建立於系統"
+  - "審稿主管角色已分派"
 ---
 
 # US-AR-003 維護審稿人員能力等級

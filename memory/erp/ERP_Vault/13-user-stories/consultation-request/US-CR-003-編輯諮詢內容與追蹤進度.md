@@ -21,6 +21,8 @@ related-entities:
 related-oq:
   - "[[CR-2-consultation_topic欄位定位]]"
 related-test-cases: []
+prerequisites:
+  - "[[US-CR-002-諮詢人員認領諮詢單]] 或 [[US-CR-001-諮詢單自動建立]]：諮詢單已認領（含已分派）"
 ---
 
 # US-CR-003 編輯諮詢內容與追蹤進度

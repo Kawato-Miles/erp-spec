@@ -21,6 +21,9 @@ related-entities:
   - "[[05-entities/印件]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "[[US-QR-005-待評估報價通知]]：業務已執行「送印務評估」"
+  - "當前印務主管為該需求單的指定評估人員"
 ---
 
 # US-QR-013 評估需求單報價

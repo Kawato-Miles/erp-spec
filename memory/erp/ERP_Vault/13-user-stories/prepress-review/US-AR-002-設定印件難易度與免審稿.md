@@ -30,6 +30,9 @@ related-entities:
 related-oq:
   - "[[AR-8-免審稿適用條件與核可機制]]"
 related-test-cases: []
+prerequisites:
+  - "客戶有詢價需求"
+  - "業務已建立需求單並進入印件項目建立階段"
 ---
 
 # US-AR-002 設定印件難易度與免審稿

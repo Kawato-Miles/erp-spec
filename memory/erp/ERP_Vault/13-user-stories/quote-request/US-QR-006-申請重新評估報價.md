@@ -19,6 +19,9 @@ related-entities:
   - "[[05-entities/需求單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "[[US-QR-002-管理需求單進度]]：需求單已進入議價中"
+  - "客戶要求重新報價"
 ---
 
 # US-QR-006 申請重新評估報價

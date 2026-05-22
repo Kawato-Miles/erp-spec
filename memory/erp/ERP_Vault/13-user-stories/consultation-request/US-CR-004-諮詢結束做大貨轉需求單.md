@@ -22,6 +22,9 @@ related-entities:
   - "[[05-entities/需求單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "[[US-CR-002-諮詢人員認領諮詢單]] 或 [[US-CR-001-諮詢單自動建立]]：諮詢單已認領"
+  - "客戶確認要做大貨"
 ---
 
 # US-CR-004 諮詢結束做大貨轉需求單

@@ -20,6 +20,9 @@ related-entities:
   - "[[05-entities/需求單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "[[US-QR-001-建立需求單]]：需求單為「需求確認中」狀態"
+  - "系統內存在具印務主管角色的用戶"
 ---
 
 # US-QR-012 設定評估印務主管

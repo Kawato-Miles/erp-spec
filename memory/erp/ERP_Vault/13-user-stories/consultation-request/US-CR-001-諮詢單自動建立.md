@@ -15,7 +15,7 @@ source:
   - "openspec/specs/consultation-request/spec.md#Requirement: 諮詢人員指派"
 related-spec: openspec/specs/consultation-request/spec.md
 related-scenarios:
-  - "[[07-scenarios/README#情境 15：諮詢單自動建立 webhook 串接|07-scenarios 情境 15（待補）]]"
+  - "[[07-scenarios/README#情境 15：諮詢單自動建立 webhook 串接（跨系統跨角色）]]"
 related-business-logic: []
 related-entities:
   - "[[05-entities/諮詢單]]"

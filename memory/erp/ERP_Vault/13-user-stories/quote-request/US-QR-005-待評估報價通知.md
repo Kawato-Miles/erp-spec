@@ -19,6 +19,9 @@ related-entities:
   - "[[05-entities/需求單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "[[US-QR-001-建立需求單]]：業務已完成規格確認並指定評估印務主管"
+  - "即時通訊軟體（Slack）整合通道正常"
 ---
 
 # US-QR-005 待評估報價通知

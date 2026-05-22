@@ -20,6 +20,10 @@ related-entities:
   - "[[05-entities/訂單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "業務或諮詢已建立訂單並送出主管審核"
+  - "訂單狀態為「待主管審核」"
+  - "業務主管角色已分派並為該訂單的指定審核人"
 ---
 
 # US-ORD-001 業務主管訂單審核

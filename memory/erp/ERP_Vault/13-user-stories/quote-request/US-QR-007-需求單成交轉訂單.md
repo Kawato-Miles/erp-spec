@@ -21,6 +21,8 @@ related-entities:
   - "[[05-entities/訂單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "[[US-QR-002-管理需求單進度]]：業務已標記需求單為「成交」"
 ---
 
 # US-QR-007 需求單成交轉訂單

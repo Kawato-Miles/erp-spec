@@ -22,6 +22,8 @@ related-entities:
   - "[[05-entities/印件]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "[[US-QR-001-建立需求單]]：需求單已建立（狀態「需求確認中」或「已評估成本」之前的可編輯狀態）"
 ---
 
 # US-QR-003 管理需求單印件

@@ -21,6 +21,9 @@ related-entities:
   - "[[05-entities/印件]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "訂單已成立且尚未進入製作完成階段"
+  - "業務為訂單擁有者或職務代理人"
 ---
 
 # US-ORD-004 訂單印件管理

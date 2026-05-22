@@ -22,6 +22,9 @@ related-entities:
   - "[[05-entities/訂單]]"
 related-oq: []
 related-test-cases: []
+prerequisites:
+  - "[[US-CR-002-諮詢人員認領諮詢單]] 或 [[US-CR-001-諮詢單自動建立]]：諮詢單已認領"
+  - "客戶確認不繼續做大貨"
 ---
 
 # US-CR-005 諮詢結束不做大貨建諮詢訂單
