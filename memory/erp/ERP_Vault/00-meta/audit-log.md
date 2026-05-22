@@ -469,6 +469,41 @@ user-story-spec § 五紀律演化：
 - vault-audit 從 10 → **12 維度**；vault-insight 強制規則從 4 → **5 條**
 - 完整實作 Anti-Model-Collapse 防線 4：vault-insight 與 raw 整合但過濾 status=raw
 
+## [2026-05-22 13:00] audit | 全量 | 12 維度（含新增 11 / 12 首次跑）
+
+**模式**：全量（含 Phase 3 新加維度 11 / 12 首次運作驗證）
+
+**觸發**：Miles 選 A — 驗證 vault-audit 維度 11 / 12 能正常運作 + dogfood 本日大量異動後的 vault 健康狀態
+
+**結果**：
+
+- 維度 1 矛盾：OK ✓（核心概念分布抽樣：齊套 35 卡 / QC 47 卡 / 印件 86 卡 / 工單 72 卡 / 審稿 70 卡；無明顯矛盾）
+- 維度 2 過時宣稱：OK ✓（0 卡 last-reviewed > 90 天 + status: active）
+- 維度 3 孤立頁面：（沿用 5/20 audit 結果 Warning，本次 obsidian CLI 需 app 開啟未詳跑；7 個真 orphan）
+- 維度 4 缺失連結：（沿用 5/20 audit 結果 OK，過濾 vault 外引用後 0 dangling）
+- 維度 5 數據缺口：OK ✓（entity 卡與 OQ 卡必填欄位齊全）
+- 維度 6 規則遵守：OK ✓（grep 0 個 inline [!question] callout / 0 個「待補 / 待釐清」措辭，僅 audit-log + wiki-schema 等元數據檔提及這些字串屬合法引用）
+- 維度 7 Vault ↔ OpenSpec 對齊：OK ✓（過濾 schema 範例佔位符 + change archive 目錄引用後 0 broken）
+- 維度 8 OQ 健康度：**Warning**（46 status=open；缺 expected-resolution-at 8+ OQ — 8 個 AR-5/6/7/8/9/10/11/12 + 既有 ORD-001/PI-001/002/PT-001/002/SHP-005/XM-002/003 部分仍未補；缺 source-link 2 個 AFT-1/AFT-2 為命名遷移殘留）
+- 維度 9 角色 alignment：**Warning**（持平，_alignment-report 仍有 OpenSpec 缺漏角色未補建）
+- 維度 10 KPI / Phase：**Warning**（持平，01-products/erp/kpi/ 目錄仍只有 README placeholder，未建 KPI 卡）
+- **維度 11 Raw 健康度（新，首次跑）**：OK ✓（raw/ 0 張 status=raw / reviewed / ingested 卡；本週剛建尚無實際素材，無 source 違反、無同主題累積）
+- **維度 12 Review 規律性（新，首次跑）**：OK ✓（本月 daily 1 張 + weekly 1 張；首日上線狀態屬「第一次月份不適用」依 SKILL.md 預定義為 OK）
+
+**整體狀態**：**Warning**（8 OK / 4 Warning / 0 Error）
+
+**主要發現**：
+1. **新加維度 11 / 12 首次跑 Bash 正常運作**，邏輯判定正確（無 raw 卡 → OK；首日上線不適用 → OK）— Phase 3 驗證通過
+2. **維度 8 OQ 健康度從 Warning（9 缺 ETA）升至 Warning（17+ 缺 ETA）**：本日新增 9 個 AR / ORD 系列 OQ 部分缺 expected-resolution-at；屬本日積壓非 vault-audit 維度設計缺陷
+3. 維度 9 / 10 持平於 5/20 audit 結果（角色 alignment / KPI 卡未建）— 屬本週前已記錄治理債，非新議題
+4. 本日 24 個 commit + 8 個 change archive 後 vault 健康度仍維持「Warning 而非 Error」，代表演化壓力下治理層保持穩定
+
+**下一步建議**：
+- 持續補 OQ expected-resolution-at（含本日新增 9 個 AR / ORD 系列）— 對應 [[../12-insights/2026-05-20-change-archive-OQ收尾流程缺口]] Action 3
+- 維度 3 / 4 待 obsidian CLI 配合 app 開啟時補測
+- 維度 11 / 12 待實際有 raw 卡與多週 daily 累積後再次驗證閾值合理性
+- 維度 9 / 10 屬長期治理債，不急但需排入後續計畫（非本週重點）
+
 ## 三、相關卡
 
 - [[../00-meta/wiki-schema|Wiki Schema]] — Vault 治理規則
