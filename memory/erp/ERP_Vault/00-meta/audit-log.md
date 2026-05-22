@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-21
+last-reviewed: 2026-05-22
 ---
 
 # Vault Audit Log
@@ -658,6 +658,50 @@ US-CR-001 / US-ORD-011 / US-ORD-013 卡內 related-scenarios 引用更新：從 
 **備註**：
 - prerequisites 欄位讓 user story 間的相依性可辨識，不再依賴 anchor 故事的「業務流程段」串接
 - 07-scenarios 範圍擴展為「跨模組或跨角色的端到端流程」（不再限跨模組），新增情境 14/15/16 屬此擴展用途
+
+## [2026-05-22 17:30] change-archive | resolve-consultation-request-gaps-cr-1-cr-2
+
+**輸入 / 觸發**：user story v2 校對中識別 4 個 OQ（AR-10 / AR-12 / CR-1 / CR-2），其中 CR-1 / CR-2 屬 consultation-request 模組；Miles 拍板後規劃 2 個 change（本 change 處理 CR-1 + CR-2，prepress-review change 待後續）。
+
+**拍板方案**：
+- CR-1：諮詢分派模式拍板**純自派**（諮詢人員自我認領，無業務指派路徑；保留主管代為認領彈性）
+- CR-2：諮詢備註欄位拍板**雙欄位 consultant_note**（客戶原話 consultation_topic 唯讀 + consultant_note 諮詢人員筆記可編輯；轉需求單時雙區塊合併寫入 requirement_note）
+
+**範疇擴張歷程**（apply / verify 階段識別下游影響）：
+- 初版：consultation-request 單 spec
+- apply 階段擴張：+ state-machines + quote-request（cross-spec 引用同步）
+- verify 階段擴張：+ business-processes（諮詢前置流程端到端規則 ASCII art）+ consultation-request 加 3 個 MODIFIED Requirement（諮詢單活動紀錄 / 諮詢費付款成功觸發自動建單 / 諮詢結束分支）
+
+**輸出 / 異動**：
+
+OpenSpec specs（4 main spec 已 sync）：
+- `consultation-request/spec.md`：5 MODIFIED + 1 REMOVED + 2 ADDED Requirements
+- `state-machines/spec.md`：2 MODIFIED Requirements（訂單狀態機 / 諮詢單狀態機）
+- `quote-request/spec.md`：2 MODIFIED Requirements + Data Model 表格 L540 人工同步
+- `business-processes/spec.md`：1 MODIFIED Requirement（諮詢前置流程端到端規則）
+
+Vault 同步：
+- `08-open-questions/CR-1-諮詢分派模式自派他派或混合.md`：status=closed + 補決議段
+- `08-open-questions/CR-2-consultation_topic欄位定位.md`：status=closed + 補決議段
+- `13-user-stories/consultation-request/US-CR-002-諮詢人員認領諮詢單.md`：v4 校對紀錄段 + 業務流程同步
+- `13-user-stories/consultation-request/US-CR-003-編輯諮詢內容與追蹤進度.md`：v4 校對紀錄段 + 業務流程同步
+- `05-entities/諮詢單.md`：新增 consultant_note 欄位描述 + consultation_topic 標註唯讀 + last-reviewed 更新
+
+工程索引：
+- `CLAUDE.md` § Spec 規格檔清單：諮詢單 v0.1 → v0.2 + 需求單 v3.2 → v3.3 + 狀態機 / 商業流程行補 change 備註
+
+Archive 位置：
+- `openspec/changes/archive/2026-05-22-resolve-consultation-request-gaps-cr-1-cr-2/`
+
+**doc-audit 結果**（archive 後執行）：
+- 索引層稽核：通過（1 條無關提示）
+- 跨檔案邏輯一致性：通過（5 維度檢查；殘存「指派」措辭均為合理用法或新規範描述，非過期引用）
+- 唯一不一致：CLAUDE.md § Spec 規格檔清單未反映本 change → 已補修 4 行
+
+**備註**：
+- AR-10 / AR-12 OQ 屬 prepress-review 模組，另開 change 處理
+- 本 change 未引入新 OQ
+- 33 個 task / 4 個 spec 全部 sync 完成
 
 ## 三、相關卡
 

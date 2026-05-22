@@ -11,6 +11,7 @@ status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
 source:
+  - "openspec/specs/consultation-request/spec.md#Requirement: 諮詢人員筆記欄位"
   - "openspec/specs/consultation-request/spec.md#Requirement: 諮詢單列表與檢視"
   - "openspec/specs/consultation-request/spec.md#Requirement: 諮詢單活動紀錄"
 related-spec: openspec/specs/consultation-request/spec.md
@@ -45,17 +46,19 @@ prerequisites:
 ### 業務流程
 
 1. 諮詢人員開啟諮詢單詳情頁
-2. 諮詢人員查看客戶原始填寫的 14 表單欄位（唯讀呈現，不可竄改）
-3. 諮詢人員與客戶溝通後，於諮詢備註欄位記錄討論內容
-4. 諮詢備註可隨時編輯（諮詢人員自由編修）；客戶原始 `consultation_topic` 與諮詢人員填寫的諮詢備註是否同欄位 / 雙欄位分離，待 [[CR-2-consultation_topic欄位定位]] 解答
-5. 系統將諮詢備註的每次儲存寫入活動紀錄，含**變更前 / 變更後內容**供事後查核
-6. 跨人交接情境：接手者開啟諮詢單詳情時，可看到歷次備註與操作者紀錄，理解前一位諮詢人員的脈絡
+2. 諮詢人員查看客戶原始填寫的 14 表單欄位（唯讀呈現，不可竄改，含客戶原話 `consultation_topic`）
+3. 諮詢人員與客戶溝通後，於 `consultant_note` 欄位（諮詢人員筆記，獨立於客戶原話 `consultation_topic` 的雙欄位設計）記錄討論內容
+4. `consultant_note` 可隨時編輯（諮詢人員自由編修；終態後鎖定）
+5. 系統將 `consultant_note` 的每次儲存寫入活動紀錄「諮詢備註修改」事件，含**變更前 / 變更後內容**供事後查核
+6. 跨人交接情境：接手者開啟諮詢單詳情時，可看到歷次 `consultant_note` 變更與操作者紀錄，理解前一位諮詢人員的脈絡
+
+> **CR-2 已 closed（2026-05-22）**：拍板雙欄位設計 — 客戶原話 `consultation_topic` 唯讀，諮詢人員填寫 `consultant_note`（最長 2000 字，非必填，每次編輯寫 ActivityLog from/to）。本卡業務流程已對齊。詳見 [[CR-2-consultation_topic欄位定位]]。
 
 ### 成功條件
 
-1. 諮詢人員可於諮詢單詳情編輯諮詢備註（自由文字、可多次儲存）
-2. 客戶原始填寫的 14 表單欄位以唯讀方式呈現，諮詢人員不可竄改
-3. 諮詢備註每次編輯儲存自動寫入活動紀錄，含時間 / 操作者 / **變更前內容 / 變更後內容**
+1. 諮詢人員可於諮詢單詳情編輯 `consultant_note`（自由文字、最長 2000 字、可多次儲存；終態後鎖定）
+2. 客戶原始填寫的 14 表單欄位以唯讀方式呈現（含客戶原話 `consultation_topic`），諮詢人員不可竄改
+3. `consultant_note` 每次編輯儲存自動寫入活動紀錄「諮詢備註修改」事件，含時間 / 操作者 / **變更前內容 / 變更後內容**
 4. 諮詢單狀態轉移（如：分派 / 完成諮詢 / 取消）皆寫入活動紀錄，跨人交接可完整追溯
 5. 同模組諮詢人員可互相查閱活動紀錄（含備註變更前後內容），達跨人交接目的
 
@@ -75,7 +78,7 @@ prerequisites:
 
 ## 來源（provenance）
 
-- [`openspec/specs/consultation-request/spec.md`](../../../../openspec/specs/consultation-request/spec.md) § Requirement「諮詢單列表與檢視」L318-328 + § Requirement「諮詢單活動紀錄」L330-345
+- [`openspec/specs/consultation-request/spec.md`](../../../../openspec/specs/consultation-request/spec.md) § Requirement「諮詢人員筆記欄位」（2026-05-22 resolve-consultation-request-gaps-cr-1-cr-2 archive 新增） + § Requirement「諮詢單列表與檢視」 + § Requirement「諮詢單活動紀錄」
 - 原 Notion User Story DB `US-CR-003`（2026-05-22 遷入並依 spec 深度校對）
 
 ## 校對紀錄
@@ -95,3 +98,20 @@ erp-consultant 70% + senior-pm INVEST 5 PASS / 1 WARN，整合：
 | 跨人交接情境具體場景 | erp-consultant G3 | 已採納：業務流程 step 6 補「接手者可看到歷次備註與操作者紀錄」 |
 | 權限邊界（其他諮詢員可見否）| senior-pm 問題 2 | 已採納：成功條件 5「同模組諮詢人員可互相查閱」 |
 | 「我希望」拆 US（檢視 vs 編輯）| senior-pm 問題 1 | **未採納**：保持單卡（將 14 欄位唯讀降為前置條件 + 「我希望」聚焦編輯動作），符合 user-story-spec § 五「單一動作」紀律 |
+
+### 第三輪（2026-05-22 v4，CR-2 closed 後同步）
+
+[[CR-2-consultation_topic欄位定位]] 拍板雙欄位設計（2026-05-22）— 客戶原話 `consultation_topic` 唯讀 + 諮詢人員填寫 `consultant_note`。本卡同步：
+
+| 修正項 | 處理 |
+|--------|------|
+| frontmatter `source` 補 Requirement「諮詢人員筆記欄位」（spec ADDED）| 已採納 |
+| 業務流程 step 3「諮詢備註欄位」→「`consultant_note` 欄位（諮詢人員筆記）」明示雙欄位設計 | 已採納 |
+| 業務流程 step 4「待 CR-2 解答」措辭移除 + 補 CR-2 closed 結果 | 已採納 |
+| 業務流程 step 4 補「終態後鎖定」（對齊 spec ADDED Requirement Scenario）| 已採納 |
+| 業務流程 step 5 補 ActivityLog 事件名稱「諮詢備註修改」| 已採納 |
+| 業務流程 step 2 加註客戶原話 `consultation_topic` 也在唯讀範圍 | 已採納 |
+| 成功條件 1 補「最長 2000 字」+「終態後鎖定」| 已採納 |
+| 成功條件 2 補「含客戶原話 consultation_topic」| 已採納 |
+| 成功條件 3 補 ActivityLog 事件名稱「諮詢備註修改」| 已採納 |
+| `resolve-consultation-request-gaps-cr-1-cr-2` 引用 | 已採納：來源段補新 Requirement 演變說明 |

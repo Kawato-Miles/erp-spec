@@ -3,12 +3,15 @@ type: open-question
 module:
   - consultation-request
 oq-id: CR-1
-status: open
+status: closed
 priority: high
 audience: internal
 raised-at: 2026-05-22
 raised-by: erp-consultant-agent
+resolved-at: 2026-05-22
+resolved-by: Miles
 source-link: US-CR-002 諮詢單批 a 雙視角審查
+resolution-change: resolve-consultation-request-gaps-cr-1-cr-2
 related-vault:
   - "[[13-user-stories/consultation-request/US-CR-002-諮詢人員認領諮詢單]]"
 related-oq: []
@@ -46,6 +49,26 @@ erp-consultant + senior-pm 雙視角同步指出此業務模式衝突。
 - US-CR-002 業務流程暫採「自派」模式，引此 OQ wiki link
 - spec L100 暫不改，待 Miles 拍板後同步更新
 
-## 待 Miles 確認
+## 決議（2026-05-22）
 
-實務上諮詢分派採哪個模式？是否需要諮詢主管監看待認領積壓 + 強制指派權限？
+**拍板選項 A：純自派**
+
+諮詢人員自我認領 `consultant_id`，**無業務 / 值班人員指派路徑**。
+
+**設計理由**：
+- 諮詢量規模小，不需 round-robin 自動派工兜底
+- 諮詢人員依專長 + 當前負載自主決策更符合既有日常運作
+- US-CR-002「以便」段已明示「沿用既有分流不需自動派工」
+- 若未來發生「冷門案件無人接」現象，再開新 change 補兜底機制（暫不過度設計）
+
+**實作範圍**：
+- consultation-request spec：REMOVED「諮詢人員指派」+ ADDED「諮詢人員認領」（含 4 個 Scenarios：自我認領 / 併發衝突 / 區隔顯示 / 主管代為認領）
+- consultation-request spec：MODIFIED「諮詢費付款成功觸發自動建單」Slack 通知對象從值班業務改為諮詢人員群組廣播
+- consultation-request spec：MODIFIED「諮詢結束分支」+「諮詢單轉需求單欄位帶入」+「諮詢單活動紀錄」Scenarios GIVEN「已指派」→「已認領」、ActivityLog 事件型別補「諮詢人員認領 / 主管代為認領」
+- state-machines spec：MODIFIED「訂單狀態機」+「諮詢單狀態機（v2 簡化）」對齊認領語意
+- business-processes spec：MODIFIED「諮詢前置流程端到端規則」ASCII 流程圖措辭對齊
+- quote-request spec：MODIFIED「從諮詢單轉建需求單」GIVEN「已認領」
+
+**主管代為認領**：保留主管彈性 — 諮詢主管可代為認領（指定某諮詢人員為 `consultant_id`），不視為「他派」而視為「主管代為操作的特殊認領」，ActivityLog 標示操作者與被指派者。
+
+**resolution change**：[resolve-consultation-request-gaps-cr-1-cr-2](../../../../openspec/changes/archive/2026-05-22-resolve-consultation-request-gaps-cr-1-cr-2/)（2026-05-22 archive）

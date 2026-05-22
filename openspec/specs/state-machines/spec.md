@@ -262,7 +262,7 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 
 #### Scenario: 諮詢結束不做大貨建諮詢訂單
 
-- **GIVEN** ConsultationRequest 狀態 = 待諮詢、已指派 `consultant_id`
+- **GIVEN** ConsultationRequest 狀態 = 待諮詢、已認領 `consultant_id`
 - **WHEN** 諮詢人員選「結束諮詢 - 不做大貨」
 - **THEN** 系統 SHALL 建立諮詢訂單（order_type = 諮詢）
 - **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)
@@ -1080,14 +1080,14 @@ Invoice SHALL 有獨立狀態機，狀態定義：
 
 **狀態說明**：
 
-- **待諮詢**：webhook 自動建單後的初始狀態（只建 ConsultationRequest 與 Payment，**不建任何訂單**），等待業務指派 `consultant_id`；所有諮詢結束分支動作（完成諮詢 / 轉需求單 / 取消）皆於此狀態下執行
+- **待諮詢**：webhook 自動建單後的初始狀態（只建 ConsultationRequest 與 Payment，**不建任何訂單**），等待諮詢人員自我認領 `consultant_id`（諮詢人員自行認領，主管亦可代為認領，詳見 [consultation-request spec](../consultation-request/spec.md) § 諮詢人員認領）；所有諮詢結束分支動作（完成諮詢 / 轉需求單 / 取消）皆於此狀態下執行
 - **已轉需求單**：諮詢人員選做大貨後的中間狀態（雖列為終態但可更新），系統建立 QuoteRequest，`linked_quote_request_id` 寫入；Payment 維持綁 ConsultationRequest 等需求單結局
 - **完成諮詢**：終態，諮詢訂單建立完成（兩種收尾情境之一：不做大貨 / 需求單流失），`linked_consultation_order_id` 寫入
 - **已取消**：終態，待諮詢狀態取消預約退費，已建諮詢訂單 + 退款 Payment
 
 實際終態合併為「完成諮詢」（含兩種子情境）/「已轉需求單」（後續可能再更新為完成諮詢）/「已取消」。
 
-角色權責：業務 / 諮詢人員負責諮詢單建立後的指派、結束分支決策；金流系統觸發 webhook 自動建單。諮詢進行階段不在 status 機（諮詢人員與客戶討論時無系統動作）。
+角色權責：諮詢人員負責諮詢單建立後的自我認領、結束分支決策（業務若具諮詢權限可代理）；金流系統觸發 webhook 自動建單。諮詢進行階段不在 status 機（諮詢人員與客戶討論時無系統動作）。
 
 逾時自動結案規則：OQ #4 已解 — Phase 1 不實作自動結案，由業務人工判斷處理。
 
@@ -1109,16 +1109,17 @@ Invoice SHALL 有獨立狀態機，狀態定義：
 - **AND** ConsultationRequest 狀態 SHALL 推進至「已取消」
 - **AND** `linked_consultation_order_id` MUST 寫入新諮詢訂單 ID
 
-#### Scenario: 業務指派諮詢人員
+#### Scenario: 諮詢人員自我認領
 
 - **GIVEN** ConsultationRequest 狀態為「待諮詢」且 `consultant_id` 為空
-- **WHEN** 業務於諮詢單詳情頁選擇諮詢人員指派
-- **THEN** 系統 SHALL 寫入 `consultant_id`
+- **WHEN** 諮詢人員於諮詢單清單頁點擊某張未認領諮詢單的「認領」按鈕
+- **THEN** 系統 SHALL 將該諮詢人員 user_id 寫入 `consultant_id`
 - **AND** 狀態維持「待諮詢」（標示已分派）
+- **AND** 詳見 [consultation-request spec](../consultation-request/spec.md) § Requirement: 諮詢人員認領 涵蓋併發衝突、主管代為認領等情境
 
 #### Scenario: 完成諮詢 - 不做大貨（建諮詢訂單收尾）
 
-- **GIVEN** ConsultationRequest 狀態為「待諮詢」、已指派 `consultant_id`、Payment 綁 ConsultationRequest
+- **GIVEN** ConsultationRequest 狀態為「待諮詢」、已認領 `consultant_id`、Payment 綁 ConsultationRequest
 - **WHEN** 諮詢人員點擊「完成諮詢（不做大貨）」
 - **THEN** 系統 SHALL 建立諮詢訂單（order_type = 諮詢訂單）+ OrderExtraCharge(consultation_fee, 諮詢費)
 - **AND** Payment 從 ConsultationRequest 轉移至諮詢訂單
@@ -1128,7 +1129,7 @@ Invoice SHALL 有獨立狀態機，狀態定義：
 
 #### Scenario: 轉需求單 - 做大貨（只建需求單，不建訂單）
 
-- **GIVEN** ConsultationRequest 狀態為「待諮詢」、已指派 `consultant_id`、Payment 綁 ConsultationRequest
+- **GIVEN** ConsultationRequest 狀態為「待諮詢」、已認領 `consultant_id`、Payment 綁 ConsultationRequest
 - **WHEN** 諮詢人員點擊「轉需求單（做大貨）」
 - **THEN** 系統 SHALL 建立 QuoteRequest（status = 需求確認中、linked_consultation_request_id 寫入）
 - **AND** ConsultationRequest 狀態 SHALL 推進至「已轉需求單」

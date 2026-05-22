@@ -860,9 +860,11 @@ ConsultationRequest 自動建立 (status=待諮詢)
 + Payment(linked_entity_type=ConsultationRequest, amount=諮詢費)
 （不建任何 Order）
         ↓
-業務指派 consultant_id (status=待諮詢)
+諮詢人員自我認領 consultant_id (status=待諮詢)
+（諮詢人員自行認領；主管亦可代為認領，詳見 consultation-request spec § 諮詢人員認領）
         ↓
 諮詢人員與客戶討論（諮詢進行不在 status 機，v2 簡化）
+（諮詢人員可於 consultant_note 欄位編輯溝通記錄，客戶原話 consultation_topic 唯讀）
         ↓
 諮詢人員「結束諮詢」分支：
   ├ 不做大貨 → 建諮詢訂單(type=諮詢) + OrderExtraCharge(consultation_fee)
@@ -874,6 +876,7 @@ ConsultationRequest 自動建立 (status=待諮詢)
             ConsultationRequest 狀態 = 已轉需求單
             Payment 維持綁 ConsultationRequest
             （MUST NOT 建任何 Order）
+            （需求單 requirement_note 自 consultation_topic + consultant_note 雙區塊合併帶入）
                 ↓
             需求單流程：需求確認中 → 待評估成本 → 已評估成本 → 議價中 → 成交
                 ↓

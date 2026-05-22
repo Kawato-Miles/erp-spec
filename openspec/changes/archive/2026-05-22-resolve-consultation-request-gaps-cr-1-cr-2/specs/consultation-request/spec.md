@@ -1,0 +1,368 @@
+## MODIFIED Requirements
+
+### Requirement: 諮詢單實體與表單欄位
+
+系統 SHALL 提供 ConsultationRequest 諮詢單實體，作為「客人付款後尚未進入訂單流程」的前置紀錄。實體 SHALL 包含 14 個來自外部 surveycake 表單的蒐集欄位，以及系統內生欄位（id、時間戳、狀態、結果、關聯需求單與後續訂單、**諮詢人員筆記**）。
+
+**表單蒐集欄位（webhook 帶入）：**
+
+| # | 欄位 | 類型 | 必填 | 說明 |
+|---|------|------|------|------|
+| 1 | `customer_type` | enum: `general` / `corporate` | Y | 散客 / 企業客 |
+| 2 | `company_tax_id` | string(8) | corporate 必填 | 公司統編 |
+| 3 | `company_name` | string | corporate 必填 | 公司抬頭 |
+| 4 | `consultation_invoice_option` | enum: `defer_to_main_order` / `issue_now` | Y | 諮詢費發票時間點 |
+| 5 | `company_phone` | string | Y | 市話 |
+| 6 | `extension` | string | N | 分機 |
+| 7 | `contact_name` | string | Y | 聯絡人（須與身份證件相同） |
+| 8 | `mobile` | string | Y | 手機 |
+| 9 | `email` | string | Y | 區分大小寫 |
+| 10 | `reserved_date` | date | Y | 預約日期 |
+| 11 | `reserved_time` | enum: `10:30 / 11:00 / ... / 18:30`（30 分鐘間隔） | Y | 預約時間 |
+| 12 | `visitor_count` | int(1-4) | Y | 來訪人數 |
+| 13 | `consultation_topic` | text | Y | 客戶原始填寫的討論內容（**唯讀**，不允許諮詢人員或業務覆寫；對齊 ISO 9001 客戶指示可追溯不可竄改原則） |
+| 14 | `estimated_quantity_band` | enum: `1-100` / `101-300` / `301-500` / `501-1000` / `1000+` | Y | 預計製作數量級距 |
+
+**系統內生欄位：**
+
+| 欄位 | 類型 | 說明 |
+|------|------|------|
+| `consultation_request_id` | PK | 主鍵 |
+| `created_at` | timestamp | webhook 收到付款成功時間 |
+| `consultant_id` | FK -> 使用者 | 諮詢人員自我認領時寫入（見 § 諮詢人員認領） |
+| `consulted_at` | timestamp | 實際諮詢時間（諮詢開始記錄） |
+| `status` | enum | `待諮詢` / `已轉需求單` / `完成諮詢` / `已取消` |
+| `consultation_fee` | decimal | 諮詢費（含稅，固定 NT$ 2000） |
+| `consultant_note` | text（最長 2000 字，非必填）| 諮詢人員與客戶溝通記錄；獨立於客戶原話 `consultation_topic` 的雙欄位設計（編輯規則見 § 諮詢人員筆記欄位） |
+| `linked_quote_request_id` | FK -> QuoteRequest | 諮詢結束選做大貨時建立 |
+| `linked_consultation_order_id` | FK -> Order | 諮詢訂單關聯（完成諮詢 / 需求單流失 / 諮詢取消時建立） |
+| `payments` | ConsultationPayment[] | 沿用訂單付款結構（paidAt / amount / paymentMethod / paymentRef / recordedBy / notes）|
+
+**狀態機說明（v2 簡化）**：諮詢進行中不需狀態追蹤，狀態機收斂為四值：
+
+- 待諮詢 → 已轉需求單（諮詢人員選做大貨）
+- 待諮詢 → 完成諮詢（諮詢人員選不做大貨；或諮詢來源需求單後續流失自動觸發）
+- 待諮詢 → 已取消（待諮詢階段取消預約退費）
+
+`result` 欄位於 v2 移除，由 status 直接表達結局。
+
+**Payment 關聯**：諮詢費 Payment（由 [refactor-order-payment-and-invoice-with-billing-company](../../../refactor-order-payment-and-invoice-with-billing-company) 定義並由本 change MODIFY 為 polymorphic）一開始 SHALL 關聯 ConsultationRequest（`Payment.linked_entity_type = ConsultationRequest`、`Payment.linked_entity_id = consultation_request_id`），後續依結局轉移至對應訂單（見 [order-management spec](../order-management/spec.md) § Payment 跨實體轉移）。
+
+#### Scenario: 必填欄位驗證
+
+- **WHEN** webhook 接收 surveycake 表單 payload，但缺少必填欄位（如 `contact_name` 為空）
+- **THEN** 系統 MUST 拒絕建立 ConsultationRequest
+- **AND** 系統 MUST 寫入 webhook error log（事件描述 = 「諮詢單建單失敗：必填欄位缺失」、payload 摘要）
+- **AND** 系統 SHALL 觸發 alert 通知值班業務手動補件
+
+#### Scenario: 企業客必填欄位
+
+- **GIVEN** 表單 `customer_type = corporate`
+- **WHEN** webhook 接收 payload 但 `company_tax_id` 或 `company_name` 為空
+- **THEN** 系統 MUST 拒絕建立 ConsultationRequest
+- **AND** webhook error log MUST 標示「企業客缺統編 / 抬頭」
+
+#### Scenario: 客戶原話 consultation_topic 唯讀
+
+- **GIVEN** ConsultationRequest 已自 webhook 建立、`consultation_topic` = 客戶 surveycake 填寫的原始內容
+- **WHEN** 諮詢人員或業務嘗試於諮詢單詳情頁編輯 `consultation_topic`
+- **THEN** 系統 MUST 拒絕修改並提示「客戶原話唯讀」
+- **AND** 諮詢人員須改於 `consultant_note` 欄位寫入溝通筆記
+
+#### Scenario: consultant_note 預設為空
+
+- **WHEN** webhook 自動建立 ConsultationRequest
+- **THEN** 系統 SHALL 將 `consultant_note` 預設為 NULL（諮詢人員認領後再行編輯）
+
+---
+
+### Requirement: 諮詢單轉需求單欄位帶入
+
+當諮詢結束分支為「做大貨」時，系統 SHALL 建立新需求單（[quote-request spec](../quote-request/spec.md)）並依以下規則 mapping ConsultationRequest 欄位：
+
+| 欄位類別 | ConsultationRequest 來源 | QuoteRequest 目的地 | 處理方式 |
+|---------|--------------------------|---------------------|---------|
+| 客戶資料 | customer_type / company_tax_id / company_name / contact_name / mobile / email / company_phone / extension | 需求單客戶資料區 | 直接 mapping |
+| 諮詢討論記錄 | `consultation_topic` + `consultant_note`（**合併雙區塊格式**）| 需求單 `requirement_note` | 合併 mapping，業務（即諮詢人員）可編輯（見下方雙區塊格式定義） |
+| 數量級距預填 | estimated_quantity_band | 印件項目 `quantity` 預填 | 中間值預填：1-100→50；101-300→200；301-500→400；501-1000→750；1000+→1500（皆可業務手動調整） |
+| 諮詢預約資訊 | reserved_date / reserved_time / visitor_count | 不帶入 | 已過期 |
+| 印件規格細節 | （諮詢單不蒐集）| 印件規格欄位 | 由「需求確認中」狀態下業務（即諮詢人員）與客人交互填入 |
+| 來源關聯 | consultation_request_id | `linked_consultation_request_id` | 反向關聯 |
+
+**諮詢討論記錄合併 mapping 雙區塊格式**：諮詢轉需求單時，系統 SHALL 將 `consultation_topic`（客戶原話）+ `consultant_note`（諮詢人員筆記）合併為以下格式寫入需求單 `requirement_note` 預設值：
+
+```
+[客戶原話]
+<consultation_topic 全文>
+
+[諮詢人員筆記]
+<consultant_note 全文>
+```
+
+`consultant_note` 為空時，雙區塊格式 SHALL 省略「[諮詢人員筆記]」區塊（只帶入 `[客戶原話]` 區塊）。`consultation_topic` 為空（理論上不會發生，因為是必填）時，雙區塊格式 SHALL 同樣省略對應區塊。
+
+業務在需求單 `requirement_note` 上 SHALL 可再編輯（既有規則不變）；下游 spec / Prototype MUST NOT 依賴雙區塊格式做 parsing（純文字傳輸，業務可自由編輯）。
+
+**諮詢人員 = 需求單負責業務**：諮詢人員轉需求單時，新建需求單的負責業務（owner）SHALL 設定為當前諮詢人員（即 `consultant_id`）。
+
+需求單後續結局影響 Payment 轉移目的地：
+
+- 需求單成交且業務轉訂單 → Payment 轉移至一般訂單，主訂單上建 OrderExtraCharge(consultation_fee)（見 [order-management spec](../order-management/spec.md) § Payment 跨實體轉移、§ 訂單其他費用明細）
+- 需求單流失 → 系統建諮詢訂單收尾，Payment 轉移至諮詢訂單（見「需求單流失觸發建諮詢訂單收尾」Requirement）
+
+#### Scenario: 諮詢結束建立需求單帶入欄位（含 consultant_note）
+
+- **GIVEN** ConsultationRequest 狀態為「待諮詢」、已認領 `consultant_id`、客戶資料完整、`estimated_quantity_band = 101-300`、`consultation_topic` = 「想做名片，雙面 250g」、`consultant_note` = 「客戶確認要燙金 LOGO，預計 7 月初取件」
+- **WHEN** 諮詢人員點擊「結束諮詢 - 轉需求單」
+- **THEN** 系統 SHALL 建立新 QuoteRequest（status = 需求確認中）
+- **AND** 客戶資料 MUST 自 ConsultationRequest 直接帶入
+- **AND** `requirement_note` 欄位 MUST 以雙區塊格式帶入：
+  ```
+  [客戶原話]
+  想做名片，雙面 250g
+
+  [諮詢人員筆記]
+  客戶確認要燙金 LOGO，預計 7 月初取件
+  ```
+- **AND** `linked_consultation_request_id` MUST 寫入 ConsultationRequest ID
+- **AND** 印件預填 `quantity` MUST = 200（級距 101-300 中間值）
+- **AND** 需求單負責業務 MUST = `consultant_id`
+
+#### Scenario: consultant_note 為空時雙區塊省略諮詢人員筆記區塊
+
+- **GIVEN** ConsultationRequest `consultation_topic` = 「想做 A4 海報 100 張」、`consultant_note` = NULL
+- **WHEN** 諮詢人員點擊「結束諮詢 - 轉需求單」
+- **THEN** 需求單 `requirement_note` 預設值 MUST 為：
+  ```
+  [客戶原話]
+  想做 A4 海報 100 張
+  ```
+- **AND** 系統 MUST NOT 帶入空的「[諮詢人員筆記]」區塊
+
+#### Scenario: 由諮詢轉的需求單於詳情頁顯示來源連結
+
+- **GIVEN** 需求單 `linked_consultation_request_id` 非空
+- **WHEN** 使用者開啟需求單詳情頁
+- **THEN** UI SHALL 顯示「來自諮詢單 [諮詢單編號]」可點擊連結
+- **AND** UI SHALL 顯示諮詢費已預收金額「諮詢費 X 元（轉訂單時併入主訂單應收）」資訊
+
+#### Scenario: 業務於需求單 requirement_note 自由編輯雙區塊內容
+
+- **GIVEN** 需求單已自諮詢單帶入 `requirement_note` 雙區塊預設值
+- **WHEN** 業務於需求單詳情頁編輯 `requirement_note`，修改格式或新增內容
+- **THEN** 系統 SHALL 允許自由編輯（既有 quote-request 規則不變）
+- **AND** 編輯不影響上游 ConsultationRequest 的 `consultation_topic` / `consultant_note`（兩者解耦，僅在 mapping 時刻合併）
+
+---
+
+### Requirement: 諮詢單活動紀錄
+
+系統 SHALL 記錄 ConsultationRequest 的所有操作歷程（webhook 自動建單、**諮詢人員認領 / 主管代為認領**、**諮詢備註修改**、開始諮詢、結束諮詢、轉需求單、需求單流失觸發建諮詢訂單、轉諮詢訂單、取消等），供稽核與追溯。
+
+事件型別：
+
+| 事件描述 | 觸發時機 | 主要欄位 |
+|---------|---------|---------|
+| 諮詢單與付款記錄自動建立（webhook） | webhook 自動建單 | payload 摘要 |
+| 諮詢人員認領 | 諮詢人員自我認領（actor = 諮詢人員 user_id） | actor |
+| 主管代為認領 | 主管代為指定某諮詢人員（actor = 主管 user_id；assigned_to = 諮詢人員 user_id） | actor, assigned_to |
+| 諮詢備註修改 | `consultant_note` 編輯儲存 | actor, from, to |
+| 結束諮詢 - 不做大貨 | 諮詢人員點擊「完成諮詢（不做大貨）」 | actor |
+| 結束諮詢 - 轉需求單 | 諮詢人員點擊「轉需求單（做大貨）」 | actor |
+| 需求單流失觸發建諮詢訂單 | 系統自動（需求單 side-effect） | system |
+| 待諮詢取消 | 業務 / 諮詢人員點擊「取消諮詢」 | actor |
+
+#### Scenario: 查閱諮詢單活動紀錄
+
+- **WHEN** 使用者於諮詢單詳情頁查看活動紀錄
+- **THEN** 系統 SHALL 顯示完整操作歷程（操作人、操作時間、事件描述）
+
+#### Scenario: ActivityLog 紀錄諮詢人員認領事件
+
+- **WHEN** 諮詢人員 X 認領一張 ConsultationRequest
+- **THEN** 系統 MUST 寫入 ActivityLog 事件（事件描述 = 「諮詢人員認領」、actor = X、timestamp）
+- **AND** ActivityLog MUST 不再使用「指派諮詢人員」舊措辭
+
+---
+
+### Requirement: 諮詢費付款成功觸發自動建單（不建訂單）
+
+系統 SHALL 透過金流平台 webhook，於諮詢費付款成功時自動建立：
+
+1. `ConsultationRequest`（status = 待諮詢，14 表單欄位寫入）
+2. `Payment`（金額 = 諮詢費、`linked_entity_type = ConsultationRequest`、`linked_entity_id = consultation_request_id`、payment_method 依金流回傳）
+
+**MUST NOT 建立任何 Order**。Order 在 ConsultationRequest 後續結局明確時才依結局建立（見「諮詢結束分支」與「諮詢取消觸發退費」）。
+
+`consultation_invoice_option = issue_now` 時，諮詢費 Invoice **不在** webhook 階段開立（因為沒有訂單可掛 Invoice）；Invoice 開立時點延後至諮詢訂單建立後（諮詢結束不做大貨 / 需求單流失 / 諮詢取消三種收尾情境之一）。
+
+#### Scenario: webhook 自動建立 ConsultationRequest 與 Payment
+
+- **GIVEN** 客人於 surveycake 完成表單填寫並付款成功
+- **WHEN** 金流 webhook 將付款成功事件 + 表單 payload 傳送至 ERP
+- **THEN** 系統 SHALL 建立 ConsultationRequest（status = 待諮詢）
+- **AND** 系統 SHALL 建立 Payment（amount = 諮詢費、linked_entity_type = ConsultationRequest）
+- **AND** 系統 MUST NOT 建立任何 Order
+- **AND** 系統 MUST 寫入 ActivityLog（事件描述 = 「諮詢單與付款記錄自動建立（webhook）」、含 payload 摘要）
+- **AND** 系統 SHALL 發送 Slack 通知給諮詢人員群組（廣播「新諮詢單建立，待認領」，附諮詢單編號與摘要連結，諮詢人員自行決定誰認領；對齊 CR-1 純自派模式）
+
+#### Scenario: webhook payload schema 異動偵測
+
+- **WHEN** webhook 接收 payload 但欄位名 / 結構與預期不符
+- **THEN** 系統 MUST 拒絕建單
+- **AND** 系統 MUST 觸發 alert 通知工程值班「surveycake 表單可能已異動，需更新 ConsultationRequest mapping」
+
+---
+
+### Requirement: 諮詢結束分支（v2 簡化）
+
+諮詢人員 SHALL 於諮詢結束時直接於「待諮詢」狀態下選擇分支動作（v2 簡化：移除「諮詢中」過渡狀態，諮詢進行不需 status 追蹤）：
+
+- **完成諮詢（不做大貨）**：系統建立諮詢訂單（type=諮詢訂單）+ OrderExtraCharge(consultation_fee) + Payment 從 ConsultationRequest 轉移至諮詢訂單；諮詢訂單推進至訂單完成；ConsultationRequest 推進至「完成諮詢」
+- **轉需求單（做大貨）**：系統建立需求單（QuoteRequest, status=需求確認中, linked_consultation_request_id 寫入）；ConsultationRequest 推進至「已轉需求單」；**MUST NOT 建任何訂單**；Payment 維持綁 ConsultationRequest，等需求單流程結局明確時才轉移
+
+#### Scenario: 完成諮詢 - 不做大貨（建諮詢訂單收尾）
+
+- **GIVEN** ConsultationRequest 狀態為「待諮詢」且已認領 `consultant_id`
+- **WHEN** 諮詢人員點擊「完成諮詢（不做大貨）」
+- **THEN** 系統 SHALL 建立 Order（order_type = 諮詢訂單、客戶資料來自 ConsultationRequest、總額 = 諮詢費）
+- **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費)
+- **AND** 系統 SHALL 將 Payment 從 ConsultationRequest 轉移至諮詢訂單（修改 linked_entity_type 與 linked_entity_id）
+- **AND** ConsultationRequest 狀態 MUST 推進至「完成諮詢」終態
+- **AND** `linked_consultation_order_id` MUST 寫入新建諮詢訂單 ID
+- **AND** 諮詢訂單 SHALL 推進至完成路徑（依 invoice_option 開立 Invoice → 訂單完成）
+
+#### Scenario: 轉需求單 - 做大貨（只建需求單，不建訂單）
+
+- **GIVEN** ConsultationRequest 狀態為「待諮詢」且已認領 `consultant_id`
+- **WHEN** 諮詢人員點擊「轉需求單（做大貨）」
+- **THEN** 系統 SHALL 建立 QuoteRequest（status = 需求確認中、linked_consultation_request_id 寫入）
+- **AND** ConsultationRequest 狀態 MUST 推進至「已轉需求單」終態
+- **AND** Payment 維持綁 ConsultationRequest（系統 MUST NOT 在此時建立任何 Order，等需求單結局明確才轉移）
+- **AND** `linked_quote_request_id` MUST 寫入新建需求單 ID
+- **AND** 系統 MUST NOT 建立任何 Order
+- **AND** Payment MUST 維持綁 ConsultationRequest（等需求單結局決定後再轉移）
+
+---
+
+## REMOVED Requirements
+
+### Requirement: 諮詢人員指派
+
+**Reason**：CR-1 拍板採純自派模式（諮詢人員自我認領），移除「業務或值班人員指派」單一他派路徑。原 Requirement 限定他派模式不符合實際業務運作（諮詢量小、諮詢人員依專長 + 負載自主決策、沿用既有分流不需自動派工）。
+
+**Migration**：以新增 Requirement「諮詢人員認領」取代（見 ## ADDED Requirements）。既有 `consultant_id` 欄位語意不變（仍為 FK -> 使用者），僅寫入時機與寫入者變更（從「業務 / 值班人員寫入」改為「諮詢人員自我認領寫入」）。
+
+---
+
+## ADDED Requirements
+
+### Requirement: 諮詢人員認領
+
+諮詢人員 SHALL 於 ConsultationRequest 建立後（`status = 待諮詢` 且 `consultant_id` 為空）自行認領，將自身 user_id 寫入 `consultant_id`。認領完成後狀態 SHALL 維持「待諮詢」，僅標示已分派。
+
+**設計理由**：諮詢量規模小、不需 round-robin 自動派工兜底；諮詢人員依專長與當前負載自主決策更符合既有日常運作；沿用既有分流（不引入指派層級的角色）。若未來發生「冷門案件無人認領」現象，將另開 change 補兜底機制（暫不過度設計）。
+
+**併發認領衝突處理**：同一諮詢單同時被兩位諮詢人員嘗試認領時，系統 SHALL 以資料庫層級 atomic update（如 `UPDATE ... WHERE consultant_id IS NULL`）保證僅一人成功；後續嘗試者 SHALL 收到「已被認領」提示。
+
+**權限範圍**：
+- 認領動作 SHALL 限定角色為「諮詢人員」（或具諮詢權限的業務 — 沿用既有「業務代理諮詢」彈性，由 [諮詢角色 R&R](../../../memory/erp/ERP_Vault/03-roles/諮詢.md) 定義）
+- 主管 SHALL 可代為認領（指定某諮詢人員為 `consultant_id`）— 不視為「他派」而視為「主管代為操作的特殊認領」，活動紀錄需標示操作者與被指派者
+
+#### Scenario: 諮詢人員於諮詢單清單自行認領
+
+- **GIVEN** ConsultationRequest 狀態為「待諮詢」且 `consultant_id` 為空
+- **WHEN** 諮詢人員於諮詢單清單頁點擊某張未認領諮詢單的「認領」按鈕
+- **THEN** 系統 SHALL 將該諮詢人員 user_id 寫入 `consultant_id`
+- **AND** ConsultationRequest 狀態 MUST 維持「待諮詢」（不轉「諮詢中」過渡狀態，依 spec v2 簡化）
+- **AND** 系統 MUST 寫入 ActivityLog（事件描述 = 「諮詢人員認領」、actor = 諮詢人員 user_id、timestamp）
+- **AND** 系統 SHALL 發送 Slack 通知給該諮詢人員（確認認領）
+
+#### Scenario: 併發認領衝突僅一人成功
+
+- **GIVEN** ConsultationRequest 狀態為「待諮詢」、`consultant_id` 為空
+- **WHEN** 諮詢人員 A 與諮詢人員 B 於同一時點點擊「認領」按鈕
+- **THEN** 系統 SHALL 透過資料庫 atomic update 保證僅一人成功寫入 `consultant_id`
+- **AND** 後成功者 SHALL 收到「該諮詢單已被認領」提示
+- **AND** 失敗者的清單 SHALL 即時刷新顯示為「已被認領」狀態
+
+#### Scenario: 已認領的諮詢單於清單區隔顯示
+
+- **GIVEN** 諮詢人員 A 已認領某張諮詢單
+- **WHEN** 諮詢人員 A 或 B 進入諮詢單清單頁
+- **THEN** 清單 SHALL 區隔顯示「我負責的諮詢」與「其他諮詢員負責」與「未認領」三組
+- **AND** 諮詢人員 A 的「我負責的諮詢」區 SHALL 顯示該張諮詢單
+- **AND** 諮詢人員 B 的「其他諮詢員負責」區 SHALL 顯示該張諮詢單（唯讀查閱，不可操作）
+
+#### Scenario: 主管代為認領
+
+- **GIVEN** ConsultationRequest 狀態為「待諮詢」、`consultant_id` 為空
+- **WHEN** 諮詢主管於諮詢單詳情頁選擇某諮詢人員指定為 `consultant_id`
+- **THEN** 系統 SHALL 寫入該諮詢人員 user_id 至 `consultant_id`
+- **AND** 系統 MUST 寫入 ActivityLog（事件描述 = 「主管代為認領」、actor = 主管 user_id、assigned_to = 諮詢人員 user_id、timestamp）
+- **AND** 系統 SHALL 發送 Slack 通知給被指派的諮詢人員（與自我認領通知格式區別「主管代為認領」措辭）
+
+---
+
+### Requirement: 諮詢人員筆記欄位
+
+ConsultationRequest 實體 SHALL 提供 `consultant_note` 欄位作為諮詢人員與客戶溝通記錄，獨立於客戶 surveycake 原話 `consultation_topic` 的雙欄位設計。
+
+**欄位定義**：
+- `consultant_note`：text（最長 2000 字，非必填）
+- 層級：ConsultationRequest 1:1（跟著諮詢單走）
+- 方向：諮詢人員 → 諮詢單檔案（諮詢過程的會議紀錄 / 備註）
+- 生命週期：webhook 建立 ConsultationRequest 時預設為 NULL；諮詢人員認領後可隨時編輯
+
+**編輯權限**：
+- 主編輯者：當前 `consultant_id` 對應的諮詢人員
+- 主管：可編輯任何諮詢單的 `consultant_note`（沿用既有諮詢人員 + 主管權限模型）
+- 業務（非當前 consultant_id）：唯讀查閱，不可編輯
+- 編輯時機：諮詢單狀態為「待諮詢」（已認領後）；終態（已轉需求單 / 完成諮詢 / 已取消）後 SHALL 鎖定編輯
+
+**編輯規則**：
+- 可多次儲存（不限編輯次數）
+- 每次編輯 MUST 寫入 ConsultationRequest ActivityLog 事件（event_type = 「諮詢備註修改」、from = 舊值全文、to = 新值全文、actor = 操作者 user_id、timestamp）
+
+**跨人交接**：
+- 同模組諮詢人員 SHALL 可互相查閱 `consultant_note` + ActivityLog 歷次變更
+- 接手者（如諮詢人員 A 離職、新諮詢人員 B 接手）SHALL 可看到歷次備註與操作者紀錄，理解前一位諮詢人員的脈絡
+
+#### Scenario: 諮詢人員首次編輯 consultant_note
+
+- **GIVEN** ConsultationRequest 狀態為「待諮詢」、已認領 `consultant_id` = 諮詢人員 X、`consultant_note` = NULL
+- **WHEN** 諮詢人員 X 於諮詢單詳情頁編輯 `consultant_note` 為「客戶想了解單面與雙面印刷差異」並儲存
+- **THEN** 系統 SHALL 更新 `consultant_note` 為新值
+- **AND** 系統 MUST 寫入 ActivityLog 事件（event_type = 「諮詢備註修改」、from = NULL、to = 「客戶想了解單面與雙面印刷差異」、actor = X、timestamp）
+
+#### Scenario: 諮詢人員多次編輯 consultant_note
+
+- **GIVEN** ConsultationRequest `consultant_note` 已為「初稿備註 A」
+- **WHEN** 諮詢人員 X 將 `consultant_note` 修改為「修訂版備註 A'」
+- **THEN** 系統 SHALL 更新 `consultant_note` 為新值
+- **AND** 系統 MUST 寫入 ActivityLog 事件（from = 「初稿備註 A」、to = 「修訂版備註 A'」、actor = X、timestamp）
+- **AND** ActivityLog SHALL 完整保留歷次變更（初稿與修訂版）
+
+#### Scenario: 非當前諮詢人員的同模組同事唯讀查閱
+
+- **GIVEN** ConsultationRequest 已認領 `consultant_id` = 諮詢人員 A、`consultant_note` 非空
+- **WHEN** 諮詢人員 B（同模組）開啟該諮詢單詳情頁
+- **THEN** 系統 SHALL 允許 B 查閱 `consultant_note` 全文與 ActivityLog 歷次變更
+- **AND** UI SHALL 不顯示「編輯 consultant_note」入口
+- **AND** B 嘗試 API 層直接更新 `consultant_note` 時 MUST 被系統拒絕並提示「僅當前諮詢人員或主管可編輯」
+
+#### Scenario: 主管編輯任何諮詢單的 consultant_note
+
+- **GIVEN** ConsultationRequest 已認領 `consultant_id` = 諮詢人員 A、`consultant_note` 非空
+- **WHEN** 諮詢主管於該諮詢單詳情頁編輯 `consultant_note`
+- **THEN** 系統 SHALL 允許主管編輯
+- **AND** 系統 MUST 寫入 ActivityLog 事件（actor = 主管 user_id、from = 舊值、to = 新值、timestamp）
+- **AND** 通知諮詢人員 A「主管已修改你的諮詢備註」
+
+#### Scenario: 諮詢單終態後 consultant_note 鎖定
+
+- **GIVEN** ConsultationRequest 狀態 ∈ {已轉需求單, 完成諮詢, 已取消}
+- **WHEN** 諮詢人員或主管嘗試編輯 `consultant_note`
+- **THEN** 系統 MUST 拒絕修改並提示「諮詢單已結案，備註鎖定」
+- **AND** UI SHALL 隱藏編輯入口，僅顯示唯讀內容
+
