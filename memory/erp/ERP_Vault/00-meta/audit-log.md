@@ -328,6 +328,23 @@ CLAUDE.md：
 
 **備註**：本次擴充把 daily/weekly review 從「執行層工具」升級為「執行 + 反思 + 預警」三層工具。對應 Yu Wenhao 全景監獄文章核心觀念：「看見自己」（執行層 / 決策層 / 認知層三層可見性）
 
+## [2026-05-22 14:00] structural-change | user story 諮詢單模組 6 張 v3 完整校對
+
+**輸入 / 觸發**：Plan Part 2 擴大至諮詢單模組（依 Miles 指示「諮詢單 → 需求單 → 訂單」順序）；採「直接從 spec + Notion 整合寫 v2 → 雙視角審查 → v3」單階段流程
+
+**輸出 / 異動**：
+- 6 張 v3 卡（US-CR-001 ~ 006，commit 71ee3a0）
+- 3 新 OQ：CR-1（自派 vs 他派 spec 業務模式衝突 high）/ CR-2（consultation_topic 客戶原始填寫 vs 諮詢備註 high）/ CR-3（部分退費 / 取消理由 / 退款 SLA low）
+- US-CR-001「作為」從 B2C 客戶改為值班業務（受益者視角）
+- US-CR-004 ~ 006 補 ActivityLog 稽核 + 業務化金流描述
+
+**驗收**：6 張卡 lint 全 PASS（英文欄位 0 / UI 措辭 0 / frontmatter 必填齊 / 我希望 ≤ 30 字 / AC 2-5 條）
+
+**備註**：
+- 採單階段流程比審稿模組「v1 → v2」雙階段省一輪 commit
+- 累積 open OQ 達 11 個（AR-5~12 + CR-1~3）；剩餘 25 張卡（需求單 13 + 訂單 12）
+- CR-1 / CR-2 揭露 spec 級設計議題（業務模式 / 資料模型），priority high 待 Miles 解答
+
 ## [2026-05-21 22:00] structural-change | user story 批 4 校對（US-AR-001 anchor v2）+ Anchor 紀律演化
 
 **輸入 / 觸發**：Plan Part 2 批次 4 執行（anchor 故事最後校對，串接所有 v2 子故事）
