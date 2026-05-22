@@ -328,6 +328,45 @@ CLAUDE.md：
 
 **備註**：本次擴充把 daily/weekly review 從「執行層工具」升級為「執行 + 反思 + 預警」三層工具。對應 Yu Wenhao 全景監獄文章核心觀念：「看見自己」（執行層 / 決策層 / 認知層三層可見性）
 
+## [2026-05-22 16:00] structural-change | user story 訂單模組 12 張 v2 完整校對（Plan Part 2 完成）
+
+**輸入 / 觸發**：Plan Part 2 順序「諮詢單 → 需求單 → 訂單」第三階段（訂單，最後一階段）
+
+**輸出 / 異動**：
+
+12 張 user-story 卡 v2（訂單模組全部，含編碼重整）：
+- US-ORD-001 業務主管訂單審核
+- US-ORD-002 業務送出報價單給客戶
+- US-ORD-003 業務上傳回簽檔案
+- US-ORD-004 訂單印件管理（含免審稿快速路徑連動）
+- US-ORD-005 訂單發票與配送資訊編輯
+- US-ORD-006 訂單三種備註管理（500 字 + 模板選擇器）
+- US-ORD-007 訂單複製功能（沿用 QR-009 帳務公司重新推導紀律）
+- US-ORD-008 訂單列表分享與代理（與需求單授權元件一致）
+- **US-ORD-009 訂單管理人查看全公司訂單**（原 Notion 重複 US-ORD-005 重新編號）
+- US-ORD-010 補收款訂單建立（主從關聯 + 主訂單合計）
+- US-ORD-011 訂單取消與退款（top-down 連鎖 + 退款三狀態 + 折讓單分離）
+- US-ORD-012 線下單客戶資料關聯帶出（已開發票快照例外）
+
+1 新 OQ：
+- [[../08-open-questions/ORD-1-Notion-US-ORD-005編碼重複處理]]（已 answered，沿用 AR-2 模式）
+
+**驗收結果**（12 張卡）：
+- 英文欄位名 / UI 措辭 / frontmatter 必填 / source 防自迭代 全 PASS
+- 「我希望」字數：15-24 字（全 ≤ 30）
+- acceptance criteria：4-5 條（全 PASS）
+
+**Plan Part 2 整體完成**：
+- 4 模組 user story v2/v3 校對完成：審稿 11 + 諮詢 6 + 需求單 13 + 訂單 12 = **42 張**
+- 衍生 OQ 12 個（AR-1~12 已答 2 + CR-1~3 開 + ORD-1 已答）= 9 個 open
+- audit-log 6 段紀錄（pilot of pilot / 審稿 4 批 / 諮詢 / 需求單 / 訂單）
+- 紀律演化：user-story-spec § 五累計 5 條規約（含 Anchor 例外條款）+ wiki-schema 維度 13 lint 規則 + review-loading-checklist § 三 1 個誤判案例
+
+**備註**：
+- 諮詢單採「v2 + 雙視角 + v3」雙階段；需求單 / 訂單採「v2 + lint」單階段（紀律已內化）
+- 累積 open OQ：9 個（AR-5/6/7/8/9/10/11/12 + CR-1/2/3，已扣除 ORD-1 / AR-1 / AR-2 已 answered）
+- 下一步建議：Miles 解答 OQ → 推送 Notion mode C / 推進 ERP 其他模組（QC / WO / PT / SHP 等）
+
 ## [2026-05-22 15:00] structural-change | user story 需求單模組 13 張 v2 完整校對
 
 **輸入 / 觸發**：Plan Part 2 順序「諮詢單 → 需求單 → 訂單」第二階段（需求單）
