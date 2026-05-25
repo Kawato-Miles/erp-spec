@@ -710,3 +710,19 @@ Archive 位置：
 - [[../12-insights/README|12-insights 總覽]] — insight 清單
 - `.claude/skills/vault-audit/SKILL.md` — audit skill
 - `.claude/skills/vault-insight/SKILL.md` — insight skill
+
+## [2026-05-25 17:00] weekly-review | 2026-W21 補錄（5/21 18:30 ~ 5/24 增量）
+
+**輸入 / 觸發**：Miles 觸發「告訴我上週的狀況如何」+ 識別既有 2026-W21.md 為 5/21 18:30 skill v0.1 首次試跑版（不是正式週末整理），需補 5/21 後段 + 5/22 全天 + 5/23-24 增量
+
+**輸出 / 異動**：
+- [[../14-reviews/weekly/2026-W21]] 新增 § 八「週四之後增量（5/21 18:30 ~ 5/24）」共 5 個 sub-section（8.1 ~ 8.5）
+- frontmatter 補 20 個 commit hash（5/21 後段 7 個 + 5/22 共 13 個）、2 個 change archive、1 個 related-vault link（[[../11-review-knowledge/pm/user-story-spec]]）
+
+**備註**：
+- 5/21 18:30 後段：US-AR-007 pilot of pilot 通過 + 批 1/2/3/4 共 10 張 user story v2 + add-payment-status change 新建 + daily/weekly skill 反思類擴充（Yu 全景監獄啟發）+ user-story-spec 誤審卡首次新增（Anchor 例外條款）
+- 5/22：諮詢單 CR-1/CR-2 解 + add-payment-status archive + 31 張 user story v2/v3（諮詢 6 / 需求單 13 / 訂單 12）+ 11 OQ expected-resolution-at 補完 + 跨模組情境 15/16 + 39 卡 prerequisites + vault-audit Phase 3 + dogfood 用詞範例
+- 5/23 ~ 5/24：0 commit（週末休息）
+- 對下週重點執行狀態：1（收斂 active change）未動、2（推演售後 deadline 5/26）未動、3（修治理債）partial 解（維度 8 消化 11 個、維度 3/4 仍 Warning）
+- 原 1-7 段反思保留不動（紀律：避免覆寫已有反思）
+- 本卡是「補錄」非「正式 W21 整理」；下週日跑 W22 才是 weekly-review 首次「正式」週末執行

@@ -25,6 +25,7 @@ related-entities:
 related-oq:
   - "[[AR-2-Notion-US-AR-002編碼重複處理]]"
   - "[[AR-12-打樣後新稿件實體機制與根因判定]]"
+  - "[[AR-13-打樣NG製程問題下游處理機制]]"
 related-test-cases: []
 prerequisites:
   - "印件已完成打樣，結果記錄為不合格"
@@ -50,17 +51,23 @@ prerequisites:
 打樣後發現的稿件問題能正確回到稿件源頭處理，避免誤判為製程問題而錯誤調整生產設定，並讓根因分類可被統計（稿件 vs 製程）
 
 ### 前置條件
-- 印件已完成打樣，結果記錄為「不合格」
-- 原印件審稿維度已為終態（合格）
-- 根因判定者已確認問題來自稿件（判定機制 / 判定者待 [[AR-12-打樣後新稿件實體機制與根因判定]] 解答）
+- 打樣印件對應的打樣 WorkOrder（`WorkOrder.type = 打樣`）已推進至「已完成」
+- 原打樣印件審稿維度已為終態（合格）
+- 業務（owner of 訂單）於打樣 WorkOrder 詳情頁判定 `sampleResult = NG-稿件問題`（對齊 AR-12 拍板的判定者與依據）
 
 ### 業務流程
 
-1. 印件打樣不合格後，根因判定流程確認問題來自稿件（**判定者與依據待 [[AR-12]] 解答**；初步判斷在印務 / 業務之間流轉）
-2. 業務與客戶聯繫，取得修改後的新稿件
-3. 系統處理原打樣印件與新稿件的實體關聯（**待 [[AR-12]] 解答**；候選方案：A 棄用原印件 + 建新印件，對齊 spec L244「合格為終態，後續變更內容透過棄用 + 建新印件」；B 同印件追加新審稿輪次，違反合格終態原則）
-4. 新稿件視為全新審稿生命週期，重新進入審稿流程（與 [[07-scenarios/README#情境 14：審稿流程端到端（單模組跨角色）|07-scenarios 情境 14 審稿流程端到端]] 主流程一致；不繼承原印件的審稿輪次歷史）
-5. 新稿件經審稿通過後，可重新安排打樣
+1. 打樣 WorkOrder 推進至「已完成」後，業務於該打樣 WorkOrder 詳情頁點擊「填打樣結果」按鈕，判定 `sampleResult = NG-稿件問題`（中文 enum，對齊 Prototype 既有實作）
+2. 系統 atomic 自動觸發棄用 + clone 流程：
+   - 原打樣印件 `printItemStatus = '已棄用'`（用既有 PrintItemStatus enum）+ notes 加註棄用說明
+   - clone 新打樣印件（沿用印件規格 / 客戶資訊 / 訂單關聯 / difficultyLevel；reset 審稿維度與印製維度；`sampleResult = '待確認'`）
+   - 新印件 `derived_from_print_item_id` 指向原印件 ID（**結構化追溯 FK，本 change 新增**）+ notes 加註「（由 [原印件 ID] NG-稿件問題重建）」
+   - 訂單層 ActivityLog 寫入「NG-稿件問題：棄用 [原印件號]，建立新印件 [新印件號]」
+3. 業務後續與客戶聯繫，取得修改後的新稿件
+4. 業務於新印件上傳新稿件 → 系統建立 ReviewRound 1 進入審稿流程（與 [[07-scenarios/README#情境 14：審稿流程端到端（單模組跨角色）|07-scenarios 情境 14 審稿流程端到端]] 主流程一致；不繼承原印件的審稿輪次歷史）
+5. 新稿件經審稿通過後，業務後續手動建大貨工單 / 重新安排打樣
+
+> **AR-12 已 closed（2026-05-23）**：議題 1 拍板方向 A 棄用 + 建新印件（對齊 Prototype 既有 `rebuildPrintItemForSampleNG`）+ 新增 `derived_from_print_item_id` 結構化追溯 FK；議題 2 拍板業務在打樣 WorkOrder 詳情頁判定 `sampleResult` 中文 enum（待確認 / OK / NG-製程問題 / NG-稿件問題）。詳見 [[AR-12-打樣後新稿件實體機制與根因判定]]。NG-製程問題下游處理另開 [[AR-13-打樣NG製程問題下游處理機制]]。
 
 > **與補件迴圈的業務本質差異**：本 user story 是「跨階段重新進入審稿（打樣 → 審稿）」；[[US-AR-009-B2B業務代客戶補件]] / [[US-AR-010-B2C會員補件流程]] 是「同一審稿週期內的補件修正」。兩者狀態流轉與資料模型處理皆不同。
 
@@ -120,3 +127,18 @@ erp-consultant 評 75/100，識別 5 gap；senior-pm INVEST 多 WARN，4 問題 
 | 「以便」量化 | senior-pm 問題 2（弱）| 已採納：補「根因分類可被統計（稿件 vs 製程）」量化方向 |
 | 成功條件重述「我希望」未新增可驗證 | senior-pm 問題 3 | 已採納：重構為 4 條獨立可驗證 |
 | 打樣費 / 重收費用邊界 | senior-pm 痛點 3 | **未採納**：屬訂單管理模組（訂單異動）議題，超出本 US 範疇 |
+
+### 第三輪（2026-05-23 v3，AR-12 closed 後同步）
+
+[[AR-12-打樣後新稿件實體機制與根因判定]] 議題 1 + 2 已 closed（2026-05-23）。本卡同步：
+
+| 修正項 | 處理 |
+|--------|------|
+| 前置條件改：對齊 AR-12 拍板的觸發機制（打樣 WorkOrder 已完成 + 業務在 WorkOrder 詳情頁判定 sampleResult = NG-稿件問題）| 已採納 |
+| 業務流程 step 1：「根因判定流程」改為「業務於打樣 WorkOrder 詳情頁判定 sampleResult = NG-稿件問題」（對齊 Prototype 既有 UI）| 已採納 |
+| 業務流程 step 2：補 atomic 棄用 + clone 流程細節（PrintItemStatus = '已棄用' + derived_from_print_item_id FK + notes 雙寫 + 訂單 ActivityLog）| 已採納 |
+| 業務流程 step 3 + 4 順序調整：業務取得新稿件後才上傳，系統建立 ReviewRound 1 進入審稿流程 | 已採納 |
+| 業務流程後加註「AR-12 已 closed」段，補 NG-製程問題下游 OQ AR-13 wiki link | 已採納 |
+| 「step 3 兩候選方案 A/B」措辭移除 | 已採納：拍板方向 A 對齊 spec L244 + Prototype |
+| frontmatter `related-oq` 補 [[AR-13-打樣NG製程問題下游處理機制]]（衍生 OQ）| 待補（task 5.4） |
+| `resolve-prepress-review-gaps-ar-10-ar-12` 引用 | 已採納：來源段補 archive 後 Requirement 演變說明 |
