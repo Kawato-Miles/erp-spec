@@ -777,3 +777,44 @@ Archive 位置：
 - 對下週重點執行狀態：1（收斂 active change）未動、2（推演售後 deadline 5/26）未動、3（修治理債）partial 解（維度 8 消化 11 個、維度 3/4 仍 Warning）
 - 原 1-7 段反思保留不動（紀律：避免覆寫已有反思）
 - 本卡是「補錄」非「正式 W21 整理」；下週日跑 W22 才是 weekly-review 首次「正式」週末執行
+
+## [2026-05-25 19:00] audit | 全量 | 8 維度（4 維度跳過）
+
+**模式**：全量（含本次 SidePanel 工作 + 上批 AR-10/AR-12 archive 連帶 12+ Vault 卡異動）
+
+**結果**：
+- 維度 2 過時宣稱：OK ✓（0 卡 last-reviewed > 90 天）
+- 維度 3 孤立頁面：OK ✓（ORD-018 有 ORD-019 反向引用）
+- 維度 5 數據缺口：OK ✓（entity / OQ 必填 frontmatter 0 缺漏）
+- 維度 6 規則遵守：OK ✓（1 inline `[!question]` 為 audit-log 內引用字串 false positive；inline OQ 措辭 0）
+- 維度 8 OQ 健康度：Warning（60 total / 47 open；4 OQ 缺 expected-resolution-at：AR-1 / AR-2 / ORD-1 / QC-001；2 OQ 缺 source-link：AFT-1 / AFT-2）
+- 維度 9 角色 alignment：Warning（_alignment-report.md 仍標 2 處「OpenSpec 缺漏」、< 5 不至 Error）
+- 維度 11 Raw 健康度：OK ✓（raw 目錄 0 卡）
+- 維度 12 Review 規律性：**Error**（本月 daily review 僅 1 張 / 估計工作日 17 × 50% = 8.5 應有；本月 weekly 1 ✓；上週 2026-W21 有 weekly ✓）
+
+**跳過維度**：D1 矛盾 / D4 dangling / D7 spec 引用 / D10 KPI（bash grep 全卡迴圈跑太久、本次聚焦本批 commit 影響範圍）
+
+**本次 commit 連帶異動**：11 files changed, 473 insertions, 43 deletions（含 AR-10/AR-12 OQ status / US-AR-004/US-AR-011 user story / 印件 / 審稿分配規則 / 打樣流程 / weekly 2026-W21 補錄 / audit-log / 新增 ORD-018）
+
+**主要發現**：
+1. **D12 本月 daily review 嚴重不足**（1 / 17 工作日 × 50%）— 是 vault-audit 自動發現的最高嚴重度議題
+2. D8 已知 4 OQ 缺 expected-resolution-at（早期 OQ AR-1/AR-2/ORD-1/QC-001、命名前綴尚未統一化前留下）
+3. ORD-018「混合型 SidePanel 規範時機」已被 ORD-019 反向引用（非孤立）
+4. D9 角色 alignment 缺漏已從歷次 audit 的 11 個降至 2 個（持續消化中）
+
+**下一步建議**：
+- **vault-insight** 跨主題提煉：本次 archive 2 個 change + 12+ Vault 卡異動觸發、可提煉「SidePanel 視覺對齊迭代成本 / 元件抽象時機判準」/「OQ 從 inline 遷出為獨立檔的紀律演化」等主題
+- D12 daily review 嚴重不足：建議改用 weekly summary 補（daily 強制度太高、或調整 skill 觸發頻率為週 1-2 次）
+- D8 4 個早期 OQ 補 expected-resolution-at（次要、可由下批 OQ housekeeping 處理）
+
+
+## [2026-05-25 19:15] insight | change-archive 觸發
+
+**輸出**：[[../12-insights/2026-05-25-SidePanel視覺對齊迭代成本與元件抽象時機]]
+
+**關鍵推論**：「設計與既有實作不一致」+「Miles 視覺驗收唯一守門人」+「無自動驗證」三條件同時成立 → 視覺對齊出現 N 次 apply 迭代不齊；Rule of Three trade-off（CEO challenge）已紀錄於 add-side-panel-shared-components design § D6、Miles 拍板維持元件化路線並承諾 API 可重構。
+
+**下一步 actions 數**：3 個具體 action + 1 個已內化
+1. 將 Rule of Three trade-off 寫入 [[../11-review-knowledge/ceo/ceo-review-framework]]
+2. plan 階段加 Figma visual diff 必做項（下次 SidePanel / 卡片 / 列表頁 plan 試行）
+3. 第 2 個詳情預覽型 SidePanel 出現時主動 review 元件 API
