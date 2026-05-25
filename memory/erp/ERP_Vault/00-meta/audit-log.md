@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-22
+last-reviewed: 2026-05-23
 ---
 
 # Vault Audit Log
@@ -702,6 +702,57 @@ Archive 位置：
 - AR-10 / AR-12 OQ 屬 prepress-review 模組，另開 change 處理
 - 本 change 未引入新 OQ
 - 33 個 task / 4 個 spec 全部 sync 完成
+
+## [2026-05-23 18:00] change-archive | resolve-prepress-review-gaps-ar-10-ar-12
+
+**輸入 / 觸發**：user story v2 校對中識別 4 個 OQ（AR-10 / AR-12 / CR-1 / CR-2），其中 AR-10 / AR-12 屬 prepress-review 模組；Change 2（CR-1 / CR-2）已於 2026-05-22 archive，本 change（AR-10 / AR-12）為延續。
+
+**拍板方案**：
+- AR-10：主管覆寫**嚴格門檻 + UI 層阻擋**（候選清單預先過濾能力不足者，比 spec 既有事後拒絕更嚴格；補設計理由「自動派工破例 vs 主管覆寫嚴格的動機差異」）
+- AR-12 議題 1：**棄用 + 建新印件**（對齊 Prototype 既有 `rebuildPrintItemForSampleNG` 實作；用既有 `PrintItemStatus = '已棄用'`，**不新增** `lifecycle_status` 獨立欄位）
+- AR-12 議題 2：業務在打樣 WorkOrder 詳情頁判定 `sampleResult` 中文 enum（`'待確認' / 'OK' / 'NG-製程問題' / 'NG-稿件問題'`，對齊 Prototype 既有實作）
+
+**apply 階段重大調整（task 1.8）**：對照 Prototype 既有實作後大幅重寫 spec delta — 範疇從「設計新規則」收斂為「補 spec 對齊既有實作 + 補結構化追溯 FK」：
+- 取消過度設計：`proofing_result` 英文命名 / `lifecycle_status` 獨立欄位 / `proofing_result_note` 自由文字欄位 / 印件層 ActivityLog 新事件型別
+- 對齊 Prototype：`sampleResult` 中文 enum / 打樣 WorkOrder 詳情頁觸發 / 既有 `PrintItemStatus = '已棄用'` / 訂單層弱型別 ActivityLog 文字
+- 本 change 真正新增：`PrintItem.derived_from_print_item_id` FK PrintItem nullable（結構化追溯，補 Prototype 既有 notes 文字追溯的反向查詢能力）+ AR-10 UI 層阻擋設計（Prototype 後續實作）
+
+**範疇擴張歷程**：
+- 初版：prepress-review 單 spec
+- apply 階段擴張：+ business-processes + state-machines（cross-spec 既有打樣相關 Requirement 需對齊新 enum 命名與觸發機制）
+
+**輸出 / 異動**：
+
+OpenSpec specs（3 main spec 已 sync）：
+- `prepress-review/spec.md`：1 MODIFIED（審稿主管覆寫分配）+ 3 ADDED（打樣結果業務判定 / 印件追溯欄位 / 打樣後棄用原印件建新印件）
+- `state-machines/spec.md`：2 MODIFIED（印件狀態機雙維度 + 印件打樣特殊流程）
+- `business-processes/spec.md`：1 MODIFIED（打樣流程規則）
+
+Vault 同步：
+- `08-open-questions/AR-10-主管覆寫分派是否允許破例派工.md`：status=closed + 補決議段
+- `08-open-questions/AR-12-打樣後新稿件實體機制與根因判定.md`：status=closed + 補決議段（議題 1 + 議題 2）
+- `08-open-questions/AR-13-打樣NG製程問題下游處理機制.md`：**新開 OQ**（衍生自 AR-12 議題 2 NG-製程問題下游未展開）
+- `13-user-stories/prepress-review/US-AR-004-覆寫印件分派.md`：v3 校對紀錄段 + 業務流程同步 UI 層阻擋
+- `13-user-stories/prepress-review/US-AR-011-打樣後重新處理稿件.md`：v3 校對紀錄段 + 業務流程同步 sampleResult 觸發 / 棄用 + clone 流程
+- `05-entities/印件.md`：新增 `sampleResult` + `derived_from_print_item_id` 欄位描述 + `PrintItemStatus = '已棄用'` 觸發場景說明 + last-reviewed 更新
+- `04-business-logic/打樣流程.md`：對齊 sampleResult 中文 enum + 觸發位置（打樣 WorkOrder 詳情頁）+ 三分支情境（NG-稿件問題自動棄用 + clone）+ last-reviewed 更新
+- `04-business-logic/審稿分配規則.md`：補主管覆寫 UI 層阻擋規則 + 設計理由（自動派工破例 vs 主管覆寫嚴格的動機差異）+ Prototype 既有狀態說明 + last-reviewed 更新
+
+工程索引：
+- `CLAUDE.md` § Spec 規格檔清單：稿件審查 v1.5 → v1.6 + 狀態機與商業流程行補 change 備註
+
+Archive 位置：
+- `openspec/changes/archive/2026-05-23-resolve-prepress-review-gaps-ar-10-ar-12/`
+
+**doc-audit 結果**（archive 後執行）：
+- 索引層稽核：通過（1 條無關提示 — payment-invoice-scenarios.md）
+- 跨檔案邏輯一致性：通過（grep 殘存「ng_process」措辭為 AR-13 標識符，非 enum 命名衝突）
+
+**備註**：
+- 與 Change 2（resolve-consultation-request-gaps-cr-1-cr-2）共同完成 user story v2 校對中識別的全部 4 個 OQ
+- 本 change 額外衍生 1 個新 OQ AR-13（NG-製程問題下游處理機制，待業務累積案例）
+- Prototype 後續實作待辦：覆寫 Dialog UI 層阻擋 + `derived_from_print_item_id` 結構化 FK 欄位
+- 重大方法論收穫：spec 撰寫前先檢查 Prototype 既有實作可避免雙重命名 / 雙重狀態機制 — 本 change apply 階段重寫即為此教訓
 
 ## 三、相關卡
 
