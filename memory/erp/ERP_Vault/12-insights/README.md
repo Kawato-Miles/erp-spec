@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-20
+last-reviewed: 2026-05-26
 ---
 
 # Insights 總覽
@@ -20,10 +20,12 @@ last-reviewed: 2026-05-20
 |------|------|--------|----------|------------|--------|
 | 2026-05-20 | 售後 ticket reactive 補丁循環 | open | high | 3（Miles 移除 workshop action）| [[2026-05-20-售後ticket-reactive-補丁循環]] |
 | 2026-05-20 | change archive OQ 收尾流程缺口 | open | high | 4 | [[2026-05-20-change-archive-OQ收尾流程缺口]] |
+| 2026-05-25 | SidePanel 視覺對齊迭代成本與元件抽象時機 | open | medium | 3 + 1 內化 | [[2026-05-25-SidePanel視覺對齊迭代成本與元件抽象時機]] |
+| 2026-05-26 | archive 工具假設與 Vault Schema 對齊缺口 | open | high | 3 + 1 內化 | [[2026-05-26-archive工具假設與Vault-Schema對齊缺口]] |
 
 ## 二、Status 統計
 
-- open: 2
+- open: 4
 - in-progress: 0
 - resolved: 0
 - cancelled: 0
