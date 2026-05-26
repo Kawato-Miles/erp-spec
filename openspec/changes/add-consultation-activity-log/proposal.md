@@ -15,7 +15,7 @@ quote-request spec L205-210 等價 Requirement 在 prototype 已完整實作（`
 - **新增** `ConsultationRequest.activityLogs: ActivityLog[]` 欄位（複用 `quote.ts` 既有 `ActivityLog` 型別，不另開）
 - **修訂** 4 個諮詢單 store actions：set state 時呼叫既有 `createActivityLog` helper 累加事件
 - **修訂** `updateQuoteStatus` 流失分支：諮詢來源需求單流失建諮詢訂單時，在 CR 同步寫入 activityLog（actor = 系統）
-- **新增** `ConsultationRequestDetail` 在「付款紀錄」之後新增「活動紀錄」`ErpDetailCard`（沿用 `<ActivityTimeline>` 元件）
+- **修訂** `ConsultationRequestDetail` 版型：從 vertical card stack 改為 `ErpDetailTabs` 3-tab 結構（資訊 / 付款紀錄（n）/ 活動紀錄），對齊需求單 `QuoteDetailPage` 模式；「諮詢單資訊」+「諮詢單內容」合併於資訊 Tab、付款表格與活動紀錄各自獨立 Tab；諮詢進度 stepper + 狀態說明 banner 留在 Tab 容器外
 - **修訂** `mockConsultationRequests`：為既有 5 張 mock CR 依當前狀態反推回溯 activityLog 序列
 
 ## Capabilities
@@ -52,5 +52,5 @@ quote-request spec L205-210 等價 Requirement 在 prototype 已完整實作（`
 | Trade-off | 決定 | 原因 |
 |----------|------|------|
 | 資料結構 | 完全對齊 quote 簡版 | 複用 `ActivityLog` 型別、`shared/ActivityTimeline` 元件，避免再開一套 |
-| 詳情頁版型 | 維持 vertical card stack | 不引入 Tab，與既有諮詢單頁面 4 張卡視覺一致 |
+| 詳情頁版型 | `ErpDetailTabs` 3-tab 結構（資訊 / 付款紀錄（n）/ 活動紀錄）| Miles 後續要求對齊需求單模式；stepper + 狀態說明 banner 留 Tab 容器外讓 Tab 切換時仍可見 |
 | Mock 是否回溯 | 補回溯記錄 | 既有 5 張 mock CR 都有對應狀態，補事件序列讓詳情頁打開可看 |

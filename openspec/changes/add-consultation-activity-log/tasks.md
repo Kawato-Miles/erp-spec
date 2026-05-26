@@ -13,8 +13,12 @@
 
 ## 3. UI 層
 
-- [ ] 3.1 `pages/ConsultationRequestDetail.tsx` import `ActivityTimeline` from `@/components/shared/ActivityTimeline`
-- [ ] 3.2 在「付款紀錄」`ErpDetailCard` 之後新增「活動紀錄」`ErpDetailCard`，內含 `<ActivityTimeline>`（空時顯示「尚無活動紀錄」）
+- [ ] 3.1 `pages/ConsultationRequestDetail.tsx` import `ActivityTimeline` from `@/components/shared/ActivityTimeline` + import `ErpDetailTabs` from `@/components/layout/ErpDetailTabs`
+- [ ] 3.2 詳情頁版型從 vertical card stack 改為 `ErpDetailTabs` 3-tab 結構：
+  - 資訊 Tab：合併「諮詢單資訊」+「諮詢單內容」兩個 `ErpDetailCard`
+  - 付款紀錄 Tab（label 含計數 `付款紀錄（${n}）`）：沿用既有付款表格
+  - 活動紀錄 Tab：`<ActivityTimeline logs={cr.activityLogs}>`（空時顯示「尚無活動紀錄」）
+- [ ] 3.3 諮詢進度 stepper（`ConsultationStatusStepper`）+ 狀態說明 banner 留在 Tab 容器外（在 `ErpPageHeader` 與 `ErpDetailTabs` 之間），讓 Tab 切換時仍可見
 
 ## 4. Mock 層
 
@@ -28,6 +32,7 @@
 - [ ] 5.3 操作 CR-202605-0001（待諮詢 + 無 consultantId）→ 指派諮詢人員 → 確認新增「諮詢人員認領」事件
 - [ ] 5.4 操作 CR-202605-0002（待諮詢 + 已指派）→ 取消諮詢 → 確認新增「待諮詢取消」事件
 - [ ] 5.5 截圖一張 mock CR 詳情頁活動紀錄區（已轉需求單情境）作為實作證明
+- [ ] 5.6 切換 3 個 Tab（資訊 / 付款紀錄 / 活動紀錄）驗證內容正確、付款紀錄 Tab label 計數顯示正確、stepper + banner 在 Tab 容器外
 
 ## 6. 收尾
 
