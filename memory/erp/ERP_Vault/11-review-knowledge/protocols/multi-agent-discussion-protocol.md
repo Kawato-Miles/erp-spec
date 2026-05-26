@@ -1,14 +1,18 @@
 ---
 type: meta
-status: active
-last-reviewed: 2026-05-19
+status: active-transitional
+last-reviewed: 2026-05-26
 ---
 
-# 多 Agent 輪次討論協議
+# 多 Agent 輪次討論協議（過渡期保留）
 
-> 適用情境：兩個以上 agent 共同審查或討論同一議題時，依此協議執行。不限定參與 agent 數量或組合，由呼叫方在啟動時指定本次參與的 agent 清單。
+> **2026-05-26 定位變更**：本協議降為 `/opsx:verify` 前的「最終驗收前審查」協議。`/opsx:explore` 與 `/opsx:propose` 階段改用 [[sequential-design-collaboration]] 序列協作協議。
+> **適用情境**：`/opsx:verify` 前需要三 agent 對 BRD / change 草稿做最終驗收時。
 > **單一 agent 審查**：見 [[lightweight-review-mode]]。
+> **新主協議（設計階段）**：見 [[sequential-design-collaboration]]。
 > **討論後 BRD 寫入**：見 [[senior-pm-write-mode]]。
+>
+> **過渡期淘汰計畫**：累積 3-5 個 change 確認新協議降低誤審後，本協議將標註 deprecated 並從 agent.md 移除「輪次討論模式」段。
 
 ## 核心原則
 

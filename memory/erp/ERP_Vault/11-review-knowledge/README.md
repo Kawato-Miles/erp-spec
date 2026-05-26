@@ -41,9 +41,27 @@ last-reviewed: 2026-05-26
 │   ├── erp-naming-rules.md                    用語規則 + 5 秒測試
 │   └── erp-naming-misjudgements.md            命名誤審記錄
 └── protocols/                                 流程協議
-    ├── multi-agent-discussion-protocol.md     多 Agent 輪次討論
+    ├── sequential-design-collaboration.md     **新主協議**：序列式設計協作（4-Phase）
+    ├── multi-agent-discussion-protocol.md     舊協議：多 Agent 輪次討論（過渡期保留，verify 前驗收用）
     ├── lightweight-review-mode.md             單 Agent 輕量審查
     └── senior-pm-write-mode.md                Senior PM Mode A/B 寫入流程
+```
+
+## 二之一、協議選擇決策樹
+
+```
+討論類型（依 CLAUDE.md § ERP 討論主動路由 判定）
+   ↓
+┌─ 純查詢 / 純澄清 ────────────→ 不啟動任何協議，直接回答
+│
+├─ 局部欄位調整 / 系統一致性 ─→ [[lightweight-review-mode]]（單 agent 單輪）
+│
+├─ 規格撰寫 / 變更 / 結構性變更 / 商業邏輯
+│  └─ `/opsx:explore` 階段 ───→ [[sequential-design-collaboration]] Phase 1
+│  └─ `/opsx:propose` 階段 ───→ [[sequential-design-collaboration]] Phase 1-4
+│  └─ `/opsx:verify` 前 ──────→ [[multi-agent-discussion-protocol]]（最終驗收前審查）
+│
+└─ 已 verify 完成 / 純歸檔 ───→ 不啟動，跑 doc-audit skill
 ```
 
 ## 三、引用慣例
@@ -87,7 +105,7 @@ Read: memory/erp/ERP_Vault/11-review-knowledge/erp/erp-review-framework.md
 | 5 | 對應子目錄的審查框架（如 erp-consultant 載入 [[erp-review-framework]]、[[erp-design-patterns]]、[[erp-naming-rules]]）|
 | 6 | 依議題類型載入 Vault 02-07 業務層對應卡 |
 
-多 Agent 討論時，協調者額外載入 [[multi-agent-discussion-protocol]]；單 Agent 輕量審查載入 [[lightweight-review-mode]]。
+序列協作時，協調者額外載入 [[sequential-design-collaboration]]，並依 Phase 編號傳遞前序 Phase 全文；最終驗收前審查時載入 [[multi-agent-discussion-protocol]]；單 Agent 輕量審查時載入 [[lightweight-review-mode]]。
 
 ## 六、相關卡
 

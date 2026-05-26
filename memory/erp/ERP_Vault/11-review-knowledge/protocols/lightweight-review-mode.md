@@ -1,17 +1,35 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-19
+last-reviewed: 2026-05-26
 ---
 
 # 單 Agent 輕量審查模式
 
-> 適用情境：CLAUDE.md § ERP 討論主動路由 中「功能設計有傾向（尚無 change）」或「局部欄位調整」類型，不需啟動完整多視角輪次討論。
-> **多 Agent 完整討論**：見 [[multi-agent-discussion-protocol]]。
+> 適用情境：CLAUDE.md § ERP 討論主動路由 中「功能設計有傾向（尚無 change）」或「局部欄位調整」類型，不需啟動完整多 agent 協作 / 審查。
+> **序列協作（新主協議）**：見 [[sequential-design-collaboration]]。
+> **多 Agent 完整討論（舊協議，過渡期保留）**：見 [[multi-agent-discussion-protocol]]。
 
 ## 一、定位
 
-本模式**補完** [[multi-agent-discussion-protocol]] 的 gap：CLAUDE.md 路由表早已有「輕量審查」分類，但既有 protocol 僅支援多 Agent 多輪討論。本卡定義單 Agent 單輪審查的執行規則。
+本模式為「單 Agent 單輪」執行規則，補完三個協議之間的 gap：
+
+| 觸發場景 | 對應協議 |
+|---------|---------|
+| 局部欄位 / 純探索 / 單一視角足夠 | **本協議**（單 agent 單輪）|
+| 規格撰寫 / 變更 / 結構性變更（在 `/opsx:explore` 或 `/opsx:propose` 階段）| [[sequential-design-collaboration]] |
+| 規格 verify 前最終驗收 | [[multi-agent-discussion-protocol]]（過渡期）|
+
+### 雙軌期判斷（2026-05-26 新增）
+
+新流程上線後處於過渡期，本協議的「升級條件」判斷規則調整為：
+
+- 升級信號出現時，**MUST** 先判斷是否在 `opsx` 工作流階段內
+  - 若在 `/opsx:explore` 或 `/opsx:propose` 階段 → 升級到 [[sequential-design-collaboration]]
+  - 若在 `/opsx:verify` 前 → 升級到 [[multi-agent-discussion-protocol]]
+  - 若尚未進入 `opsx` 工作流 → 由 Miles 決定是否啟動新 change 或就此結束
+
+
 
 ## 二、觸發時機
 
@@ -48,12 +66,14 @@ last-reviewed: 2026-05-19
 
 | 情況 | 升級建議格式 |
 |------|------------|
-| 議題影響跨視角（如同時涉及 KPI 與狀態機） | 「建議升級為三視角討論：本議題同時涉及 [視角 A] 與 [視角 B]，單一視角無法完整評估」 |
-| 設計決策影響重大（如新增實體、新增跨模組關聯） | 「建議升級為三視角討論：本議題屬結構性變更，需多視角共同確認」 |
-| 與既有 OQ / spec 出現矛盾 | 「建議升級為三視角討論：發現與 [[OQ 編號]] 或 [模組 spec] 存在潛在矛盾」 |
+| 議題影響跨視角（如同時涉及 KPI 與狀態機） | 「建議升級為序列協作 / 三視角討論：本議題同時涉及 [視角 A] 與 [視角 B]，單一視角無法完整評估」 |
+| 設計決策影響重大（如新增實體、新增跨模組關聯） | 「建議升級為序列協作：本議題屬結構性變更，需多視角共同確認」 |
+| 與既有 OQ / spec 出現矛盾 | 「建議升級為序列協作 / 三視角討論：發現與 [[OQ 編號]] 或 [模組 spec] 存在潛在矛盾」 |
 
 Miles 可選擇：
-- **採納升級建議**：呼叫方觸發 [[multi-agent-discussion-protocol]]，agent 角色與輪次依該 protocol
+- **採納升級建議（雙軌期判斷）**：
+  - 若在 `/opsx:explore` 或 `/opsx:propose` 階段 → 觸發 [[sequential-design-collaboration]]
+  - 若在 `/opsx:verify` 前 → 觸發 [[multi-agent-discussion-protocol]]
 - **拒絕升級**：以單 agent 結論作為最終，由 Miles 自行判斷
 
 ## 六、輸出格式
@@ -91,7 +111,8 @@ Miles 可選擇：
 
 ## 八、相關卡
 
-- [[multi-agent-discussion-protocol]] — 多 Agent 輪次討論
+- [[sequential-design-collaboration]] — 序列式設計協作協議（`/opsx:explore` 與 `/opsx:propose` 新主協議）
+- [[multi-agent-discussion-protocol]] — 多 Agent 輪次討論（過渡期保留，`/opsx:verify` 前驗收用）
 - [[senior-pm-write-mode]] — Senior PM 寫入流程
 - [[review-loading-checklist]] — 各 Agent 背景載入範圍
 - CLAUDE.md § ERP 討論主動路由 — 觸發分級主表
