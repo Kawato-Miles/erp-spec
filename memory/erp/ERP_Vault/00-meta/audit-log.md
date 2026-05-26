@@ -863,3 +863,41 @@ Archive 位置：
 4. doc-audit v1.4「Data Model section sync」維度已採納（本次 commit a5bfee5；reactive 防線完成）
 
 **串接**：本 insight 串接既有 [[../12-insights/2026-05-20-change-archive-OQ收尾流程缺口]]（同根因），Action 3 將解雙 insight
+
+
+## [2026-05-26 18:50] archive | add-sales-manager-after-sales-page
+
+**Change**：add-sales-manager-after-sales-page → `archive/2026-05-26-add-sales-manager-after-sales-page/`
+
+**Spec 異動（已 sync 至主 spec）**：
+- `after-sales-ticket/spec.md` v0.5 → v0.6：ADDED「業務主管全公司售後管理頁」Requirement（路由 / 12 欄表格 / 6 篩選器 / 3 摘要卡 / 12 Scenarios）
+- `user-roles/spec.md`：MODIFIED「業務主管角色職責」補「中台售後服務檢視」職責 + ADDED Scenario「業務主管查看非管轄業務的售後 ticket 紀律邊界」
+
+**Prototype 實作**：
+- 新 page：`src/pages/sales-manager/SalesManagerAfterSales.tsx`
+- helper 擴充：`src/types/afterSalesTicket.ts` 新建 `calcAfterSalesSummary` / `groupAfterSalesByAction`（無 owner filter wrapper）
+- sidebar 入口：「訂單管理_業務主管」group 第 4 個 sub item
+- 路由 + Toast redirect：`/sales-manager/after-sales-tickets` → `/sales-manager/after-sales`
+- e2e spec：`e2e/sales-manager-after-sales.spec.ts`（6 cases，pre-push hook 全 64 e2e 通過）
+
+**OQ 收尾**：
+- 本 change 建 OQ 數：1（AFT-9「最後活動時間 derived field 升級條件」）
+- 處理結果：close 0 / 改派 0 / 維持 open 1（priority=low，等業務反饋觸發升級）
+- 撞號修復：無（AFT-9 唯一；另發現 ORD-018 撞號既有議題，非本 change 引起）
+- source-link 更新：無（AFT-9 frontmatter `related-change` 用 change name 不含路徑）
+
+**序列協作**：
+- 變動性質分級：流程節點調整（單模組內）
+- Phase 1 senior-pm：5 釐清問題 + 6 PM 假設 + 3 PM 視角 KPI + 5 衝突 + 6 砍掉清單 + 5 對顧問反向挑戰
+- Phase 2 CEO：跳過（依分級規則）
+- Phase 3 erp-consultant：實體無變更 / 流程完整 / 狀態無影響 / 角色措辭擬定 / 6 對 PM 反向挑戰
+- Phase 4 senior-pm 匯報：6 反向挑戰決議（駁回 2 / 採納 2 / 採納部分 1 / 撤回 1）+ spec 範圍拍板
+
+**Commits**：
+- Sens repo：c0a17c3（混入既有 vault-insight commit）+ archive commit 待做
+- prototype repo：0e05530
+
+**啟示**：
+- 序列協作 Phase 1+3+4 流程跑得順，PM 為單一收斂點向 Miles 匯報的「6 challenge 逐條決議」格式有助於收斂取捨
+- 元件抽取採方案 B（各自獨立 page + 共用底層 helper），避免 premature abstraction，與 add-side-panel-shared-components Rule of Three trade-off 一致
+- 「最後活動時間」沿用 updatedAt 留 OQ 觀察的模式可重用於其他「先做 prototype + 留升級條件」場景
