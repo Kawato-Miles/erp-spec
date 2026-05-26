@@ -901,3 +901,40 @@ Archive 位置：
 - 序列協作 Phase 1+3+4 流程跑得順，PM 為單一收斂點向 Miles 匯報的「6 challenge 逐條決議」格式有助於收斂取捨
 - 元件抽取採方案 B（各自獨立 page + 共用底層 helper），避免 premature abstraction，與 add-side-panel-shared-components Rule of Three trade-off 一致
 - 「最後活動時間」沿用 updatedAt 留 OQ 觀察的模式可重用於其他「先做 prototype + 留升級條件」場景
+
+## [2026-05-26 19:15] archive | remove-aging-payment-supervisor-dashboard
+
+**Change 範疇**：拆 `complete-payment-status-ui-and-followups` change 引入的「業務主管老化處理中 Payment 清單頁」+ sidebar 入口 + 跨訂單聚合 selector；保留訂單詳情頁 row Badge「老化 N 天」+ 7 天閾值 + 判定條件。
+
+**動機**：Miles 評估後決定收回「主管看板」這條 — 業務主管追蹤跨訂單老化 Payment 改採 csv 匯出後 Excel 篩選方式；系統內維護「跨訂單聚合視圖」的成本與 Excel 篩選的彈性不對等。
+
+**分級判斷**：流程節點調整（單模組內）— 不改實體欄位、不改狀態機父子層、不影響跨模組關聯；row Badge 與判定邏輯保留，僅收回主管聚合視圖。Miles 指示輕量處理、不跑序列協作。
+
+**Spec 異動**：
+- order-management/spec.md v1.11 → v1.12
+- MODIFIED Requirement「處理中 Payment 老化追蹤」
+- Scenarios 4 → 3（移除「業務主管查看老化處理中 Payment 清單」）
+- 設計理由補註 csv 機制另議
+
+**Prototype 異動**（sens-erp-prototype repo）：
+- 刪除：src/pages/finance/AgingPaymentsPage.tsx 整檔
+- 修動：src/App.tsx（移除 import + Route）、src/components/layout/AppSidebar.tsx（移除 sidebar 入口）、src/store/useErpStore.ts（移除 getAgingPendingPayments interface + implementation）
+- 保留：src/types/payment.ts isPaymentAging helper + src/components/order/OrderPaymentSection.tsx L889 row Badge 渲染
+
+**OQ 收尾**：
+- ORD-021-處理中Payment老化追蹤機制：status open → resolved，answered-at = 2026-05-26、answered-by = Miles，補 ## 答覆 兩階段決策段（第一階段 complete-payment-status-ui-and-followups「雙層提示」+ 第二階段 remove-aging-payment-supervisor-dashboard「拆主管看板」），frontmatter oq-id 從 ORD-018 修正為 ORD-021（前次 archive 漏改）+ source-link 更新指向 archive 路徑
+- ORD-022-Payment-csv匯出機制：新建 status = open，三子問題（觸發位置 / 欄位範圍 / 權限）待釐清、預期 2026-Q3 resolve
+
+**治理品質**：
+- archive 前跑 /opsx:verify 全通過（Completeness / Correctness / Coherence 三維度）
+- 無 design.md（流程節點調整輕量範疇免設計階段）
+- 三視角審查跳過（Miles 指示）
+
+**Commits**：
+- Sens repo：（archive commit 待做）
+- prototype repo：（拆除 commit 待做）
+
+**啟示**：
+- 「拿掉某個系統內聚合視圖、改用 csv 匯出」屬於常見的「設計撤回 + 替代方案另議」場景，可重用此 change 的拆除範本（spec MODIFIED + prototype 拆四檔 + OQ 兩階段決策補註 + 新 OQ 留 csv 機制三子問題）
+- 「保留判定邏輯 + helper、拆聚合 selector + UI 入口」的拆分策略保留了未來 csv 匯出實作時可重用 `isPaymentAging` 邏輯的彈性
+- 前次 archive 的 OQ frontmatter oq-id 漏改（ORD-018 → ORD-021）此次補修正，治理債清償

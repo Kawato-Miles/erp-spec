@@ -2,22 +2,25 @@
 type: open-question
 module:
   - order-management
-oq-id: ORD-018
-status: open
+oq-id: ORD-021
+status: resolved
 priority: medium
 audience: internal
 raised-at: 2026-05-21
 raised-by: Miles + senior-pm 前期介入
-source-link: openspec/changes/add-payment-status-and-decouple-oa-execution/design.md
+answered-at: 2026-05-26
+answered-by: Miles
+source-link: openspec/changes/archive/2026-05-26-complete-payment-status-ui-and-followups/design.md
 related-vault:
   - [[../05-entities/訂單]]
   - [[../04-business-logic/付款發票邏輯]]
 related-oq:
-related-change: add-payment-status-and-decouple-oa-execution
-expected-resolution-at: 2026-Q3
+  - [[ORD-022-Payment-csv匯出機制]]
+related-change: complete-payment-status-ui-and-followups
+expected-resolution-at: 2026-05-26
 ---
 
-# ORD-018：處理中 Payment 老化追蹤機制
+# ORD-021：處理中 Payment 老化追蹤機制
 
 ## 背景
 
@@ -56,3 +59,36 @@ senior-pm 前期介入指出此「業務嫌麻煩規避」風險，但 plan 與 
 
 - senior-pm agent 前期介入指出「業務嫌麻煩規避」風險（2026-05-21）
 - change `add-payment-status-and-decouple-oa-execution` design.md § Risks 1 + § Open Questions OQ 1
+
+## 答覆
+
+### 2026-05-26 收斂兩階段決策
+
+**第一階段（complete-payment-status-ui-and-followups change，2026-05-26 上午歸檔）**：
+
+- 採候選做法 1 + 2 組合：「被動列表標示 + 主管看板可見度」
+- 老化閾值固定 7 天（對應印刷業常見「客戶說已匯款 → 銀行對帳單收到」週期）
+- 不分 paymentMethod、單一閾值
+- 訂單詳情頁 row 顯示 amber Badge「老化 N 天」
+- 業務主管 sidebar「老化處理中 Payment」清單頁入口（業務主管 / 諮詢主管 / supervisor role 可見）
+- 跨訂單聚合 selector `getAgingPendingPayments` 提供清單頁資料
+
+**第二階段（remove-aging-payment-supervisor-dashboard change，2026-05-26 下午歸檔）**：
+
+- 主管看板入口移除 — Miles 評估後決定收回「主管看板」這條：跨訂單聚合的「老化清單頁」在 ERP 系統內維護成本與 Excel 匯出後篩選的彈性不對等；業務主管更習慣用 Excel 對 Payment row data 做臨機篩選、排序、樞紐分析，系統內固定欄位的清單頁反而限制彈性
+- 改採 csv 匯出方式進行（csv 匯出機制另議，見 [[ORD-022-Payment-csv匯出機制]]）
+- row Badge「老化 N 天」保留：訂單層級的單訂單內提示仍有價值（業務看訂單時不需離開頁面就知道有 Payment 老化），保留
+- 拆除細項：AgingPaymentsPage.tsx、sidebar「老化處理中 Payment」navLink、useErpStore.getAgingPendingPayments selector
+
+### 最終決策摘要
+
+- **保留**：row Badge「老化 N 天」（單訂單內、業務焦點對齊）+ 7 天閾值 + 判定條件（處理中 + 未取消 + > 7 天）
+- **拆除**：主管看板 sidebar 入口 + 清單頁 + 跨訂單聚合 selector
+- **替代**：csv 匯出後 Excel 篩選（機制另議於 ORD-022）
+- **失敗判定指標**：KPI「處理中 Payment 老化率」UAT 累積數據後 > 20% → 機制失敗、需重新設計（指標保留於 [Notion KPI DB](https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f)）
+
+### 相關 change
+
+- `2026-05-22-add-payment-status-and-decouple-oa-execution`（引入 paymentStatus 雙態、留下 OQ）
+- `2026-05-26-complete-payment-status-ui-and-followups`（雙層提示機制初版）
+- `2026-05-26-remove-aging-payment-supervisor-dashboard`（拆主管看板）
