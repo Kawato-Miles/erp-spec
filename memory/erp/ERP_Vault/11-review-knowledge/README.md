@@ -1,12 +1,14 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-19
+last-reviewed: 2026-05-26
 ---
 
 # 11-review-knowledge 入口
 
-> 此目錄為 ERP 三視角審查 Agent（[senior-pm](../../../../.claude/agents/senior-pm.md) / [ceo-reviewer](../../../../.claude/agents/ceo-reviewer.md) / [erp-consultant](../../../../.claude/agents/erp-consultant.md)）的「審查方法論」層，與 01-10 業務層並列。
+> 此目錄為 ERP 三 agent（[senior-pm](../../../../.claude/agents/senior-pm.md) / [ceo-reviewer](../../../../.claude/agents/ceo-reviewer.md) / [erp-consultant](../../../../.claude/agents/erp-consultant.md)）的「審查與協作方法論」層，與 01-10 業務層並列。
+>
+> **2026-05-26 變更**：新增 [[sequential-design-collaboration]] 序列協作協議，取代 `/opsx:explore` 與 `/opsx:propose` 階段的舊 [[multi-agent-discussion-protocol]]。後者降為過渡期「最終驗收前審查」（`/opsx:verify` 前）保留使用。
 
 ## 一、定位
 
