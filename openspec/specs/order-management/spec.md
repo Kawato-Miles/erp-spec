@@ -1770,23 +1770,7 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 當諮詢訂單於三個收尾情境（不做大貨 / 需求單流失 / 諮詢取消）任一建立時，系統 SHALL 自動建立 PlannedInvoice 1 筆作為「待開發票提醒」，讓諮詢人員於 PendingInvoices 列表頁看到待辦並手動轉為實際 Invoice。
 
-**PlannedInvoice 實體**（Prototype 既有，[src/types/plannedInvoice.ts](../../../sens-erp-prototype/src/types/plannedInvoice.ts)）：
-
-| 欄位 | 類型 | 說明 |
-|------|------|------|
-| `id` | string PK | 主鍵 |
-| `orderId` | FK Order | 關聯訂單 |
-| `expectedDate` | date | 預計開立日 |
-| `scheduledAmount` | decimal | 預計金額（含稅）|
-| `description` | string | 描述（如「諮詢費」/「諮詢費（取消退費後）」）|
-| `status` | enum | `預計開立` / `已開立` / `已取消` |
-| `linkedInvoiceId` | FK Invoice (nullable) | 實際開立 Invoice 的關聯（status = 已開立 時必填）|
-| `createdBy` | string | 建立者 user_id 或 `system` |
-| `createdAt` | timestamp | 建立時點 |
-
-**狀態機**：
-- `預計開立` → `已開立`（諮詢人員手動轉立 Invoice、寫入 linkedInvoiceId）
-- `預計開立` → `已取消`（諮詢人員手動取消、寫入 cancelReason）
+**PlannedInvoice 實體與狀態機**：完整欄位定義與狀態轉換見 § Data Model > PlannedInvoice（align-invoice-line-items-to-ezpay-spec change 補齊；含 `items: InvoiceItem[]` 鏈式預填欄位 + cancel_reason / updated_at 等完整欄位）。Prototype 介面對應 [src/types/plannedInvoice.ts](../../../sens-erp-prototype/src/types/plannedInvoice.ts)（採 camelCase，與 spec snake_case 為慣例差異）。
 
 **自動建立規則**（依諮詢訂單收尾情境）：
 
@@ -3176,7 +3160,7 @@ Invoice.items 陣列 SHALL 對齊 ezPay 電子發票 API（[EZP_INVI_1.2.2](../.
 | 銷售額（未稅）| sales_amount | 小數 | Y | Y | 系統自動計算 |
 | 稅額 | tax_amount | 小數 | Y | Y | 系統自動計算 |
 | 發票金額（含稅）| total_amount | 小數 | Y | | 業務可微調 |
-| 商品明細 | items | JSON | Y | | 自訂單印件帶入可編輯 |
+| 商品明細 | items | InvoiceItem[] | Y | | 結構同 § InvoiceItem；可從 PlannedInvoice.items 或訂單印件預填，業務可編輯 |
 | 備註 | comment | 文字 | | | |
 | 狀態 | status | 單選 | Y | | 開立 / 作廢 |
 | 發票號碼 | invoice_number | 字串 | Y | Y | 藍新回傳 |
@@ -3189,6 +3173,53 @@ Invoice.items 陣列 SHALL 對齊 ezPay 電子發票 API（[EZP_INVI_1.2.2](../.
 | 更新時間 | updated_at | 日期時間 | Y | Y | |
 
 Invoice MUST NOT 包含 `print_flag`（索取紙本）欄位。
+
+### InvoiceItem（發票品項子結構，對應 Invoice.items[]）
+
+> align-invoice-line-items-to-ezpay-spec change 新增。
+> Invoice 實體 `items` 欄位陣列元素的明文展開結構。對應藍新 EZP_INVI 1.2.2 § 4-(一)-3 PostData ItemName / ItemCount / ItemUnit / ItemPrice / ItemAmt 五欄。
+> 外部硬約束來源：[2026-05-26-miles-upload-ezpay-invoice-api-spec raw 卡](../../../memory/erp/ERP_Vault/raw/2026-05-26-miles-upload-ezpay-invoice-api-spec.md)。
+
+| 欄位 | 英文名稱 | 對應藍新 | 型別 | 必填 | 唯讀 | 說明 |
+|------|---------|---------|------|------|------|------|
+| 商品名稱 | name | ItemName | 字串 (≤ 30) | Y | | 例：彩色名片 |
+| 商品數量 | count | ItemCount | 整數 | Y | | 純整數，0 < count ≤ 99999 |
+| 商品單位 | unit | ItemUnit | 列舉 | Y | | 來自 [prototype-shared-ui § 共用單位 LOV](../prototype-shared-ui/spec.md)（11 項：張 / 本 / 冊 / 份 / 個 / 卷 / 盒 / 套 / 批 / 式 / 組）|
+| 商品單價 | unit_price | ItemPrice | 整數 | Y | | B2B 為未稅 / B2C 為含稅；純整數 |
+| 商品小計 | item_amount | ItemAmt | 整數 | Y | Y | 系統計算 = count × unit_price |
+
+**送藍新對應**：Invoice.items 陣列 N 筆品項轉成藍新 PostData 五欄字串時，以 `|` 為分隔符（例：`ItemName="商品一|商品二"` / `ItemCount="1|2"`）。
+
+### PlannedInvoice（預計發票）
+
+> align-invoice-line-items-to-ezpay-spec change 補齊（spec 過去未定義，僅在 refine-consultation-cancellation-and-invoice-flow § Requirement: 諮詢訂單收尾自動建 PlannedInvoice 規則 內以實體欄位表簡述）。
+> 業務款項管理需求：業務需知道「哪些訂單還沒開發票」「預計幾號要開」；一張訂單通常有多筆預計發票（訂金 / 中期 / 尾款 / 加印），每筆獨立紀錄。
+> Prototype 實作對應 `src/types/plannedInvoice.ts`（介面採 camelCase，與此 Data Model snake_case 命名為慣例差異，欄位語意一致）。
+
+| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
+|------|---------|------|------|------|------|
+| 識別碼 | id | UUID | Y | Y | 主鍵 |
+| 所屬訂單 | order_id | FK | Y | Y | FK → 訂單 |
+| 預計開立日 | expected_date | 日期 | Y | | 業務規劃時填寫 |
+| 描述 | description | 字串 | Y | | 例：訂金發票 / 尾款發票 / 加印發票 / 諮詢費 |
+| 品項明細 | items | InvoiceItem[] | Y | | 預計品項清單，建立時從訂單印件預填，可編輯；結構同 § InvoiceItem |
+| 預計金額（含稅）| scheduled_amount | 整數 | Y | Y（derived）| = sum(items.item_amount)；items 為空時保留歷史填入值作兼容路徑 |
+| 狀態 | status | 單選 | Y | | 預計開立 / 已開立 / 已取消 |
+| 已開立發票連結 | linked_invoice_id | FK | | | FK → Invoice；status = 已開立時必填 |
+| 取消原因 | cancel_reason | 字串 | | | status = 已取消時填入 |
+| 建立人 | created_by | 字串 | Y | Y | 業務 user_id 或 `system`（諮詢訂單收尾自動建情境）|
+| 建立時間 | created_at | 日期時間 | Y | Y | |
+| 更新時間 | updated_at | 日期時間 | Y | Y | |
+
+**狀態轉換**：
+
+```
+預計開立 ─[業務開立發票]─▶ 已開立（linked_invoice_id 寫入）
+預計開立 ─[業務取消]──────▶ 已取消（cancel_reason 必填）
+已開立 → 不可回退（發票本身可作廢，但 PlannedInvoice 不變）
+```
+
+**自動建立規則**：諮詢訂單收尾三情境（不做大貨 / 需求單流失 / 諮詢取消）由系統自動建立 PlannedInvoice，詳見 § Requirement: 諮詢訂單收尾自動建 PlannedInvoice 規則。
 
 ### SalesAllowanceFile（折讓單回簽附件）
 
