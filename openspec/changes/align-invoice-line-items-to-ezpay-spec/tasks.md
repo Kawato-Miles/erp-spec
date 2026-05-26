@@ -75,11 +75,11 @@
 
 ## 9. 收尾
 
-- [ ] 9.1 commit 1：型別 + 共用 UnitOption + UnitSelect 元件（tasks 1-2）
-- [ ] 9.2 commit 2：開立發票 Dialog 三欄改造（task 3）
-- [ ] 9.3 commit 3：PlannedInvoice Dialog + 鏈式帶入邏輯（tasks 4-5）
-- [ ] 9.4 commit 4：需求單對齊 + mock 資料 backfill（tasks 6-7）
-- [ ] 9.5 commit 5：e2e 驗證調整（task 8）
+- [x] 9.1 commit 1：型別 + 共用 UnitOption + UnitSelect 元件（tasks 1-2）
+- [x] 9.2 commit 2：開立發票 Dialog 三欄改造（task 3）
+- [x] 9.3 commit 3：PlannedInvoice Dialog + 鏈式帶入邏輯（tasks 4-5）
+- [x] 9.4 commit 4：需求單對齊 + mock 資料 backfill（tasks 6-7）
+- [x] 9.5 commit 5：e2e 驗證調整（task 8）
 - [ ] 9.6 跑 `/opsx:verify align-invoice-line-items-to-ezpay-spec` 確認實作符合 specs
 - [ ] 9.7 跑 `/opsx:archive align-invoice-line-items-to-ezpay-spec` 歸檔
 - [ ] 9.8 archive 後更新 CLAUDE.md § Spec 規格檔清單對應 row（order-management v1.10 / quote-request v3.4 / prototype-shared-ui 新增 1 個 Requirement）
