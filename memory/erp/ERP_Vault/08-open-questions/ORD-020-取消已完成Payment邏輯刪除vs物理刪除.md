@@ -3,21 +3,59 @@ type: open-question
 module:
   - order-management
 oq-id: ORD-020
-status: open
+status: resolved
 priority: medium
 audience: internal
 raised-at: 2026-05-21
 raised-by: senior-pm 前期介入
 source-link: openspec/changes/add-payment-status-and-decouple-oa-execution/design.md
+resolved-at: 2026-05-26
+resolved-by: complete-payment-status-ui-and-followups change
 related-vault:
   - [[../05-entities/訂單]]
 related-oq:
   - ORD-003
 related-change: add-payment-status-and-decouple-oa-execution
-expected-resolution-at: 2026-Q3
 ---
 
 # ORD-020：取消已完成 Payment 的刪除模式（邏輯 vs 物理）
+
+## 決議（2026-05-26 complete-payment-status-ui-and-followups change resolve）
+
+採「候選做法 2：邏輯刪除 + 顯示劃線標註」，依 paymentStatus 分支：
+
+- **paymentStatus = '處理中' → 物理刪除**（從 Order.payments 陣列移除）：無稽核需求（業務預登記未實際發生、刪除等於放棄此登記）
+- **paymentStatus = '已完成' → 邏輯刪除**：Payment 新增 cancelled / cancelReason / cancelledAt 三欄位；不從陣列移除；保留稽核軌跡
+
+實作細節：
+
+1. Payment Data Model 加 `cancelled: boolean`（必填、預設 false）、`cancelReason: string`（cancelled = true 時必填）、`cancelledAt: string | null`（必填 ISO 8601）
+2. `cancelPayment(paymentId, options)` 對已完成 Payment 行為：若 options.cancelReason 為空字串 → 拒絕（必填驗證）；通過則設 cancelled = true / cancelReason / cancelledAt = now、不從陣列移除
+3. `calcOACompletedPaymentsTotal` 與對帳面板收款淨額計算 SHALL 排除 cancelled = true 的 Payment（既有 OA 回退邏輯自動觸發）
+4. OrderPaymentSection 列表預設隱藏 cancelled = true row、提供「顯示已取消」toggle 切換可見性
+5. 已取消 row 顯示：grey Badge「已取消」+ cancelReason hover tooltip + line-through 視覺
+6. mock data 一次性 backfill：所有既有 Payment 設 cancelled = false / cancelReason = '' / cancelledAt = null
+
+## 不採用的候選
+
+- **候選 1 物理刪除**：破壞審計連續性、會計實務抗拒、棄用
+- **候選 3 反向 Payment 對沖**：增加 Payment 筆數複雜度、業務理解難（為何同一筆款項看到雙筆紀錄）、棄用
+
+## 設計理由
+
+已完成 Payment 代表「實際金流已發生且對帳已過」，物理刪除會造成稽核軌跡缺失（無法回查「為什麼這筆 Payment 不見了」）。處理中 Payment 屬於「業務預登記未實際發生」，刪除等於放棄此登記、無稽核需求。雙態分支符合「實際發生事件不可抹除」會計準則。
+
+復原機制暫不支援（取消後不可逆）：若業務後悔、需手動建新 Payment 重做 — 等同重新發生交易、符合會計事實。
+
+## 實作
+
+- types/payment.ts、types/order.ts 加三欄位
+- store.cancelPayment 改寫（邏輯 / 物理分支 + cancelReason 必填）
+- calcOACompletedPaymentsTotal / calcPaymentsNetAmount / calcRegularPaymentsAmount / calcRefundsAmount / calcPendingPaymentsAmount 全部過濾 cancelled
+- OrderPaymentSection 列表 cancelled toggle + Badge + line-through 視覺
+- PaymentEditPanel 取消模式（cancelReason input）
+
+## 原 OQ 內容（保留歷史）
 
 ## 背景
 
