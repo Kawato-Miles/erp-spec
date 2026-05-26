@@ -24,10 +24,11 @@
 - **BREAKING**（enum 擴充）：既有 8 值（規格變更 / 加印追加 / 退印 / 折扣 / 加運費 / 急件費 / 補退 / 其他）→ 9 值
 - 新增「諮詢取消退費」專用 type，僅由系統於諮詢取消觸發點建立，業務不可手動選用
 
-### C. 諮詢取消權限限縮
+### C. 諮詢取消權限限縮 + 諮詢部門督導角色對齊既有 user-roles spec
 
-- 取消權限限定為「當前 consultant_id」（已認領該諮詢單的諮詢人員自己）+「諮詢主管」
+- 取消權限限定為「當前 consultant_id」（已認領該諮詢單的諮詢人員自己）+「業務主管」
 - **BREAKING**：移除既有 spec 內「業務點擊取消諮詢」條款，業務不可取消諮詢
+- **本 change 統一角色措辭**：既有 main spec 內 § 諮詢人員認領 / § 諮詢人員筆記欄位 使用「主管」/「諮詢主管」措辭，本 change 統一改為「業務主管」，對齊既有 [user-roles spec § 業務主管角色職責](../../specs/user-roles/spec.md)（業務主管 = 諮詢主管同一人，公司組織上由業務主管同時負責業務 / 諮詢部門督導，不另開「諮詢主管」獨立角色）。為此本 change 將既有 § 諮詢人員認領 與 § 諮詢人員筆記欄位 兩個 Requirement 納入 MODIFIED 範圍對齊措辭
 
 ### D. 新增 ConsultationRequest.cancel_reason_category 必填欄位
 
@@ -75,7 +76,7 @@
 
 ### Modified Capabilities
 
-- `consultation-request`：諮詢取消大幅改寫為半額退費 + 新增 cancel_reason_category 欄位 + 諮詢取消權限限縮 + 三情境 Invoice 自動化全面退場改 PlannedInvoice + invoice_option 降為純展示（7 段 Requirement 異動）
+- `consultation-request`：諮詢取消大幅改寫為半額退費 + 新增 cancel_reason_category 欄位 + 諮詢取消權限限縮 + 三情境 Invoice 自動化全面退場改 PlannedInvoice + invoice_option 降為純展示 + § 諮詢人員認領 與 § 諮詢人員筆記欄位 對齊「業務主管 = 諮詢主管」統一角色措辭（9 段 Requirement 異動：8 MODIFIED + 1 ADDED）
 - `order-management`：OrderAdjustment.adjustment_type enum 8 → 9 值（新增「諮詢取消退費」）+ Scenario「待諮詢取消觸發建諮詢訂單」改寫 + 不做大貨 / 需求單流失兩個建單 Scenario 補 PlannedInvoice 自動建 + 諮詢取消對帳邏輯更新 + 新增「諮詢訂單收尾自動建 PlannedInvoice 規則」Requirement（5 段異動）
 - `state-machines`：諮詢訂單完成路徑簡化為單一短路徑 + 待諮詢取消 Scenario 對齊（2 段異動）
 - `business-processes`：諮詢前置流程端到端規則 ASCII 流程圖補 PlannedInvoice 節點與半額退費路徑（1 段異動）
@@ -85,7 +86,7 @@
 - **specs（4 個 modified）**：consultation-request（主要）、order-management、state-machines、business-processes
 - **記憶檔（1 個 modified）**：Vault `08-open-questions/CR-3-諮詢取消三項擴充議題.md`（status → resolved，三議題全解、連結本 change archive 路徑）
 - **Prototype 影響**（後續另案實作）：
-  - 取消諮詢按鈕權限改寫（限 consultant_id 自己 + 諮詢主管，業務隱藏）
+  - 取消諮詢按鈕權限改寫（限 consultant_id 自己 + 業務主管，業務隱藏）
   - 取消 dialog 加 cancel_reason_category 必選下拉、防呆文案改為「退 1000 元」
   - 取消後系統建單流程拆解：諮詢訂單 + OEC + Payment 轉移 + **新增 OA(-1000)** + **新退款 Payment(-1000) 為「處理中」**（既有為 -2000 一次建完）
   - 諮詢結束不做大貨 / 需求單流失 / 諮詢取消：移除既有 Invoice 自動建立邏輯、改為自動建 PlannedInvoice

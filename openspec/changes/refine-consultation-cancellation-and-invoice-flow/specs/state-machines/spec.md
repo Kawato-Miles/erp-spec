@@ -20,7 +20,7 @@
 1. **不做大貨**（客戶最終沒做大貨製作）：兩個觸發點同歸此類
    - 觸發點 1.1：諮詢人員於諮詢單階段點「結束諮詢 - 不做大貨」
    - 觸發點 1.2：諮詢結束做大貨後，需求單流失（仍歸類為「不做大貨」結局，自動建諮詢訂單收尾）
-2. **待諮詢取消（半額退費）**：諮詢人員 / 諮詢主管於待諮詢階段點「取消諮詢」並於 dialog 確認（含 OA 自動建 + 退款 Payment）
+2. **待諮詢取消（半額退費）**：諮詢人員 / 業務主管於待諮詢階段點「取消諮詢」並於 dialog 確認（含 OA 自動建 + 退款 Payment）
 
 **重要釐清**：非諮詢來源（`linked_consultation_request_id` 為空）的需求單流失與諮詢訂單無關，不建任何訂單；需求單流失走需求單自身的退款 / 流失流程。
 
@@ -115,7 +115,7 @@
 #### Scenario: 待諮詢取消建諮詢訂單與半額退費
 
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢、已認領 `consultant_id`、Payment(P0: +2000, 已完成) 綁 ConsultationRequest
-- **WHEN** 諮詢人員 / 諮詢主管於取消 dialog 選定 cancel_reason_category 並點擊「確認取消諮詢」
+- **WHEN** 諮詢人員 / 業務主管於取消 dialog 選定 cancel_reason_category 並點擊「確認取消諮詢」
 - **THEN** 系統 SHALL 建立諮詢訂單（order_type = 諮詢）+ OrderExtraCharge(consultation_fee, 2000)
 - **AND** Payment P0 從 ConsultationRequest 轉移至諮詢訂單（+2000 不變、status 維持已完成）
 - **AND** 系統 SHALL 自動建立 OrderAdjustment（amount = -1000、adjustment_type = 諮詢取消退費、status = 已核可、approved_by = system）

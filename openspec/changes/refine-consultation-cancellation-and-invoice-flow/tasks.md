@@ -1,10 +1,18 @@
 ## 1. Spec 自審（archive 前必過）
 
-- [ ] 1.1 確認 `consultation-request/spec.md` 6 MODIFIED + 1 ADDED 區塊內容完整覆蓋既有 spec 對應 Requirement
-- [ ] 1.2 確認 `order-management/spec.md` 4 MODIFIED + 1 ADDED 區塊正確（含 OA enum 第 9 值「諮詢取消退費」）
-- [ ] 1.3 確認 `state-machines/spec.md` § 訂單狀態機 MODIFIED 完整保留非諮詢相關 Scenario、僅改寫諮詢段
-- [ ] 1.4 確認 `business-processes/spec.md` § 諮詢前置流程端到端規則 ASCII 圖含半額退費 / PlannedInvoice / OA / 退款 Payment 各節點
-- [ ] 1.5 跑 `openspec validate refine-consultation-cancellation-and-invoice-flow` 確認無語法錯誤
+- [x] 1.1 確認 `consultation-request/spec.md` 6 MODIFIED + 1 ADDED 區塊內容完整覆蓋既有 spec 對應 Requirement
+  - 修正：原 delta 把 § 諮詢取消觸發建諮詢訂單與退費 改名為「半額退費」違反 MODIFIED anchor 規則，已改回原名（spec 內文保留半額退費描述）+ 同步修兩處跨 spec 引用（consultation-request L268、order-management L117）
+- [x] 1.2 確認 `order-management/spec.md` 4 MODIFIED + 1 ADDED 區塊正確（含 OA enum 第 9 值「諮詢取消退費」）
+  - 4 個 MODIFIED header 對齊既有 spec（訂單建立 / OrderAdjustment.adjustment_type 完整 enum / 諮詢訂單發票時間點處理 / 諮詢取消對帳邏輯）
+  - 1 個 ADDED：諮詢訂單收尾自動建 PlannedInvoice 規則
+- [x] 1.3 確認 `state-machines/spec.md` § 訂單狀態機 MODIFIED 完整保留非諮詢相關 Scenario、僅改寫諮詢段
+  - 保留：線下訂單回簽 / 上傳檔案 / 線上訂單付款 / 不進入共用段 / 訂單推進至製作完成 Scenarios
+  - 改寫：諮詢結束不做大貨 / 需求單流失 / 待諮詢取消 / 待諮詢取消退款 Payment 切已完成 4 個 Scenarios
+- [x] 1.4 確認 `business-processes/spec.md` § 諮詢前置流程端到端規則 ASCII 圖含半額退費 / PlannedInvoice / OA / 退款 Payment 各節點
+  - ASCII 圖補：自動建 OA(-1000) / 自動建退款 Payment / 自動建 PlannedInvoice / cancel_reason_category 寫入 / 諮詢人員後續手動動作
+  - 對帳邏輯段：四情境分別寫清楚（應收 / 收款 / 發票淨額）
+- [x] 1.5 跑 `openspec validate refine-consultation-cancellation-and-invoice-flow` 確認無語法錯誤
+  - 結果：Change 'refine-consultation-cancellation-and-invoice-flow' is valid
 - [ ] 1.6 跑 `doc-audit` skill 對本 change 涉及 4 個 spec 做跨檔案一致性檢查（諮詢費 = 2000 / 退費 = 1000 / OA enum 9 值 / PlannedInvoice 三情境）
 
 ## 2. Vault OQ 更新（archive 時執行）
@@ -18,7 +26,7 @@
     - 議題 3：退款依原付款方式刷退由第三方金流處理、客戶通知由諮詢人員手動執行
 - [ ] 2.2 確認 Vault `05-entities/諮詢單.md` 反映新欄位 cancel_reason_category（若 Vault 卡有列欄位）
 - [ ] 2.3 確認 Vault `04-business-logic/付款發票邏輯.md` 反映 PlannedInvoice 自動建立規則三情境（若 Vault 卡涵蓋此邏輯）
-- [ ] 2.4 確認 Vault `03-roles/諮詢.md` 反映取消權限收歸（限當前 consultant_id + 諮詢主管，業務不可）
+- [ ] 2.4 確認 Vault `03-roles/諮詢.md` 反映取消權限收歸（限當前 consultant_id + 業務主管，業務不可）
 
 ## 3. Prototype 實作（後續另案，archive 後啟動）
 
@@ -30,7 +38,7 @@
 
 ### 3.2 諮詢取消按鈕權限改寫
 
-- [ ] 3.2.1 諮詢單詳情頁取消按鈕權限判斷：限當前 consultant_id 自己 + 諮詢主管，業務隱藏
+- [ ] 3.2.1 諮詢單詳情頁取消按鈕權限判斷：限當前 consultant_id 自己 + 業務主管，業務隱藏
 - [ ] 3.2.2 諮詢單列表頁取消快捷按鈕（若有）同步權限判斷
 - [ ] 3.2.3 確認業務帳號登入時看不到取消入口（UI 層）
 
@@ -96,10 +104,10 @@
 
 ## 4. 業務培訓資料
 
-- [ ] 4.1 撰寫「諮詢取消政策變更」培訓單頁（全額 → 半額、業務不可取消、諮詢人員 / 諮詢主管權限）
+- [ ] 4.1 撰寫「諮詢取消政策變更」培訓單頁（全額 → 半額、業務不可取消、諮詢人員 / 業務主管權限）
 - [ ] 4.2 撰寫「諮詢費發票手動處理」培訓單頁（諮詢訂單建立後諮詢人員手動將 PlannedInvoice 轉立 Invoice 的步驟）
 - [ ] 4.3 撰寫「客戶通知退款」SOP（諮詢人員手動以電話 / Email 通知、ERP 不入系統）
-- [ ] 4.4 業務培訓提醒：業務遇客戶要求取消諮詢時 SHALL 通知諮詢主管處理（非自行操作）
+- [ ] 4.4 業務培訓提醒：業務遇客戶要求取消諮詢時 SHALL 通知業務主管處理（非自行操作）
 
 ## 5. End-to-End 驗證情境
 
@@ -111,7 +119,7 @@
 - [ ] 5.6 E2E：客人 surveycake 付 2000 → 諮詢結束做大貨 → 需求單議價成交 → 業務轉訂單 → 一般訂單 OEC(2000) + Payment 轉移 + 系統 NOT 自動建諮詢費 PlannedInvoice
 - [ ] 5.7 E2E（權限）：業務帳號開啟諮詢單詳情頁 → 看不到「取消諮詢」按鈕 / API 直接取消回 403
 - [ ] 5.8 E2E（權限）：諮詢人員 B 開啟諮詢人員 A 負責的諮詢單 → 看不到「取消諮詢」按鈕 / API 直接取消回 403
-- [ ] 5.9 E2E（權限）：諮詢主管開啟任一諮詢單 → 可取消、ActivityLog 標明「諮詢主管代為」+ assigned_consultant_id
+- [ ] 5.9 E2E（權限）：業務主管開啟任一諮詢單 → 可取消、ActivityLog 標明「業務主管代為」+ assigned_consultant_id
 - [ ] 5.10 E2E（防呆）：取消 dialog 未選 cancel_reason_category 時「確認取消諮詢」按鈕 disabled
 
 ## 6. Archive 前最終檢查

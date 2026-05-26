@@ -818,3 +818,33 @@ Archive 位置：
 1. 將 Rule of Three trade-off 寫入 [[../11-review-knowledge/ceo/ceo-review-framework]]
 2. plan 階段加 Figma visual diff 必做項（下次 SidePanel / 卡片 / 列表頁 plan 試行）
 3. 第 2 個詳情預覽型 SidePanel 出現時主動 review 元件 API
+
+
+## [2026-05-26 18:00] event | complete-payment-status-ui-and-followups 治理收尾
+
+**背景**：
+原 change `2026-05-22-add-payment-status-and-decouple-oa-execution` 已 archive、delta 已合併回 main spec、但 tasks.md 內漏實作項目（§ 4.4 編輯入口、§ 9 銷貨折讓弱提示、§ 10 14 條 e2e、§ 12 三視角審查）導致 e2e `refund-payment-auto-execute-oa.spec.ts` 三案例失敗、業務「先填一半補齊資料」核心 user story UI 走不通。
+
+**治理債性質**：「主動收尾原則」漏項 — Claude 在 archive 階段判斷 spec 已完整、但 tasks.md 內含「未勾選核心實作」未察覺。違反 memory feedback `feedback_implement_all_spec_requirements`「change 中所有 Requirement 都必須實作 Prototype，不允許列 OQ 延後逃避實作」。
+
+**本 change 補完範疇**：
+- UI 補完：一般收款列表 row 編輯按鈕 + 銷貨折讓弱提示二者並存（dialog inline + 對帳面板 sticky）
+- 3 OQ resolve：ORD-018→021 重編號（撞號修正）+ ORD-019（會計不入 GL）+ ORD-020（邏輯刪除分支）
+- e2e 14 條（13 cases）全部通過 serial mode
+- ORD-018 撞號治理債修正（兩個不同主題的 OQ 共用 ORD-018）
+- 跨 agent 通用誤審案例寫入 11-review-knowledge/_shared/
+
+**未做**：
+- 三視角審查補跑（依 Decision 6 範疇凍結原則延後，留待下一輪 review cycle 或事後 audit 處理）
+- § 8 OrderAdjustmentEditDialog inline banner 「前往 Invoice」navigation 接線（minor、不影響 banner 顯示與 user story）
+- § 11.5 / 11.6 付款發票邏輯卡 + 訂單實體卡更新（屬背景知識同步、待下一輪 Vault housekeeping 處理）
+
+**Commits**：
+- prototype repo：acc0556 / 10eaef1 / 68f0e52 / faeab6e / f178e48（5 commits）
+- Sens repo：f29cc9b（change 草稿）/ fedec54（OQ resolve）
+
+**啟示**：
+- archive 時的「tasks.md 全部勾選」應為 hard gate；本次跳過導致 1 個 BREAKING change 翻轉後 stale 測試與漏實作項目
+- e2e 失敗應為 archive 阻擋條件；本次 archive 時 tasks.md § 10 全部未勾選、e2e 14 條未跑、archive 仍完成
+- OQ 撞號（ORD-018）反映 OQ 命名前綴自動化不足；應引入 OQ id 衝突檢測（oq-manage skill 增強）
+

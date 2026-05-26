@@ -12,7 +12,7 @@ ConsultationRequest 自動建立 (status=待諮詢, cancel_reason_category=NULL)
 （不建任何 Order）
         ↓
 諮詢人員自我認領 consultant_id (status=待諮詢)
-（諮詢人員自行認領；諮詢主管亦可代為認領，詳見 consultation-request spec § 諮詢人員認領）
+（諮詢人員自行認領；業務主管亦可代為認領，詳見 consultation-request spec § 諮詢人員認領）
         ↓
 諮詢人員與客戶討論（諮詢進行不在 status 機，v2 簡化）
 （諮詢人員可於 consultant_note 編輯溝通記錄，客戶原話 consultation_topic 唯讀）
@@ -54,7 +54,7 @@ ConsultationRequest 自動建立 (status=待諮詢, cancel_reason_category=NULL)
   → ConsultationRequest 狀態從「已轉需求單」更新為「完成諮詢」
 
 待諮詢取消（半額退費）：
-  → 諮詢人員 / 諮詢主管於取消 dialog 選定 cancel_reason_category 並確認
+  → 諮詢人員 / 業務主管於取消 dialog 選定 cancel_reason_category 並確認
   → 系統建諮詢訂單(type=諮詢) + OrderExtraCharge(consultation_fee, +2000)
   → Payment(+2000) 從 ConsultationRequest 轉移至諮詢訂單（status 維持已完成）
   → 系統自動建 OrderAdjustment(-1000, type=諮詢取消退費, status=已核可, approved_by=system,

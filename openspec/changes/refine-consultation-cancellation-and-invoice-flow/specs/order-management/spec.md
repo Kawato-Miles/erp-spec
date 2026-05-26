@@ -19,7 +19,7 @@
 3. **不做大貨**：客戶最終沒做大貨製作，涵蓋兩個觸發點：
    - 3.1 諮詢人員於諮詢單階段點「結束諮詢 - 不做大貨」時建立
    - 3.2 諮詢結束做大貨後，需求單流失：系統將此事件歸類為「不做大貨」結局，自動建諮詢訂單收尾
-4. **待諮詢取消（半額退費）**：諮詢人員 / 諮詢主管於待諮詢階段點「取消諮詢」並於 dialog 確認後建立，含退款 Payment 與 OrderAdjustment
+4. **待諮詢取消（半額退費）**：諮詢人員 / 業務主管於待諮詢階段點「取消諮詢」並於 dialog 確認後建立，含退款 Payment 與 OrderAdjustment
 
 **重要釐清**：非諮詢來源（`linked_consultation_request_id` 為空）的需求單流失與諮詢訂單無關，**不建任何訂單**；需求單流失走需求單自身的退款 / 流失流程。
 
@@ -75,7 +75,7 @@
 #### Scenario: 待諮詢取消觸發建諮詢訂單與半額退費
 
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢、Payment(P0: +2000, 已完成) 綁 ConsultationRequest
-- **WHEN** 諮詢人員 / 諮詢主管於取消 dialog 選定 cancel_reason_category 並點擊「確認取消諮詢」
+- **WHEN** 諮詢人員 / 業務主管於取消 dialog 選定 cancel_reason_category 並點擊「確認取消諮詢」
 - **THEN** 系統 SHALL 建立諮詢訂單（`order_type = 諮詢`、總額 = 諮詢費 2000）
 - **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 2000)
 - **AND** 系統 SHALL 將 Payment P0 從 ConsultationRequest 轉移至諮詢訂單（金額 +2000 不變、status 維持已完成）
@@ -114,7 +114,7 @@
 | **諮詢取消退費** | **諮詢取消觸發的半額退款（諮詢費 × 50%）；僅由系統於諮詢取消觸發點自動建立**| **系統內生（業務 UI 不顯示此選項）**|
 | 其他 | 不屬上述類別 | 業務手動 |
 
-業務透過 UI 與 API 皆 SHALL 可選用「業務手動」類別的任一 adjustment_type，系統不再依 Order.status 推算限制。「諮詢取消退費」為系統內生 type — 業務 UI 的 adjustment_type 下拉選單 MUST NOT 包含此選項，僅由系統於 [consultation-request spec § 諮詢取消觸發建諮詢訂單與半額退費](../consultation-request/spec.md) 流程自動建立。
+業務透過 UI 與 API 皆 SHALL 可選用「業務手動」類別的任一 adjustment_type，系統不再依 Order.status 推算限制。「諮詢取消退費」為系統內生 type — 業務 UI 的 adjustment_type 下拉選單 MUST NOT 包含此選項，僅由系統於 [consultation-request spec § 諮詢取消觸發建諮詢訂單與退費](../consultation-request/spec.md) 流程自動建立。
 
 當業務於 AfterSalesTicket 內建關聯 OrderAdjustment 時，UI 仍 SHALL 預填合理的 adjustment_type（例：resolution=退款 → 預填退印；resolution=補印 → 預填補退），但業務可改選（限「業務手動」類別內選項）。
 
@@ -241,7 +241,7 @@
 |---------|-----------------|-------------|--------------|
 | 諮詢結束不做大貨（諮詢人員點「結束諮詢 - 不做大貨」）| 2000 | 「諮詢費」 | 完成諮詢時點當天 |
 | 諮詢來源需求單流失歸類為不做大貨 | 2000 | 「諮詢費」 | 需求單流失時點當天 |
-| 諮詢取消（諮詢人員 / 諮詢主管點「取消諮詢」並確認）| 1000 | 「諮詢費（取消退費後）」 | 取消時點當天 |
+| 諮詢取消（諮詢人員 / 業務主管點「取消諮詢」並確認）| 1000 | 「諮詢費（取消退費後）」 | 取消時點當天 |
 
 **諮詢結束做大貨 → 需求單成交轉一般訂單情境**：系統 MUST NOT 自動於主訂單建立諮詢費 PlannedInvoice。業務於主訂單既有發票時程規劃流程自行加入諮詢費 PlannedInvoice（既有 PlannedInvoice 手動建立流程），可參考 `consultation_invoice_option` 客戶意向決定獨立 / 併入其他 PlannedInvoice。
 
@@ -262,7 +262,7 @@
 #### Scenario: 諮詢取消自動建 PlannedInvoice
 
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢
-- **WHEN** 諮詢人員 / 諮詢主管於取消 dialog 確認取消、系統建立諮詢訂單 + OA + 退款 Payment
+- **WHEN** 諮詢人員 / 業務主管於取消 dialog 確認取消、系統建立諮詢訂單 + OA + 退款 Payment
 - **THEN** 系統 SHALL 自動建立 PlannedInvoice（orderId = 諮詢訂單 ID、scheduledAmount = 1000、description = 「諮詢費（取消退費後）」、expectedDate = 取消時點當天、status = 預計開立、createdBy = system、linkedInvoiceId = NULL）
 
 #### Scenario: 自動建立的 PlannedInvoice 出現在 PendingInvoices 待辦列表
