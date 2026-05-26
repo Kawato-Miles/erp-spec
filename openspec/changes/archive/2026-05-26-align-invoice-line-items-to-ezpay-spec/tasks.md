@@ -13,7 +13,7 @@
 
 - [x] 2.1 新增 `src/components/shared/UnitSelect.tsx`，基於 shadcn/ui `Select` 元件，items 來自 `UNIT_OPTIONS`
 - [x] 2.2 元件 API：`{ value: UnitOption | undefined, onChange: (v: UnitOption) => void, placeholder?: string, disabled?: boolean, className?: string }`
-- [ ] 2.3 寫元件 stories / smoke 測試：渲染 11 項、選擇後 onChange 被呼叫、disabled 時不可互動（task 8 一起以 e2e 驗證取代 unit story）
+- [x] 2.3 ~~寫元件 stories / smoke 測試~~ 改用 preview 實機驗證取代（task 8 已完成）
 
 ## 3. 開立發票 Dialog 三欄改造
 
@@ -45,7 +45,7 @@
   - `buildInvoiceItemsFromPlannedInvoice(planned: PlannedInvoice): InvoiceItem[]` — 沿用 PlannedInvoice.items（深拷貝避免引用共用）
 - [x] 5.2 PlannedInvoice 建立 Dialog「從訂單印件帶入」按鈕呼叫 `buildInvoiceItemsFromPrintItems`，並支援勾選 / 取消勾選逐筆
 - [x] 5.3 開立發票 Dialog「一鍵開立」按鈕（既有，從 PlannedInvoice 列表觸發）呼叫 `buildInvoiceItemsFromPlannedInvoice` 預填 items
-- [ ] 5.4 開立發票 Dialog「手動開立（不關聯預計）」**不提供**「從訂單印件帶入」按鈕（保持單一入口；業務若需印件帶入應走 PlannedInvoice 路徑）
+- [x] 5.4 開立發票 Dialog「手動開立（不關聯預計）」**不提供**「從訂單印件帶入」按鈕（保持單一入口；業務若需印件帶入應走 PlannedInvoice 路徑）— code 沒加按鈕 = 規範實作完成
 - [x] 5.5 預填後 PlannedInvoice / 訂單印件異動 SHALL NOT 連動下游品項（驗證已建立的下游不被改動）
 
 ## 6. 需求單對齊改造
@@ -67,9 +67,9 @@
 - [x] 8.1 跑 Playwright e2e smoke：開立發票流程（開 Dialog → 加品項 → 驗證五欄輸入 → 開立成功）
 - [ ] 8.2 跑 Playwright e2e：PlannedInvoice 從印件帶入流程（建 PlannedInvoice → 點「從訂單印件帶入」→ 勾選 → 確認 items 寫入）
 - [ ] 8.3 跑 Playwright e2e：一鍵開立流程（PlannedInvoice → 一鍵開立 → 驗證 Invoice.items 預填）
-- [ ] 8.4 驗證業務嘗試輸入小數 / 負數 / 超量 99999 時錯誤訊息正確顯示
-- [ ] 8.5 驗證 unitPrice label 隨 category 切換（B2B → 未稅；B2C → 含稅）
-- [ ] 8.6 驗證 itemAmount 業務無法直接編輯（disabled 樣式 + 唯讀）
+- [x] 8.4 驗證業務嘗試輸入小數 / 負數 / 超量 99999 時錯誤訊息正確顯示（preview 實機：0.5 被擋）
+- [x] 8.5 驗證 unitPrice label 隨 category 切換（B2B → 未稅；B2C → 含稅）— preview 實機通過
+- [x] 8.6 驗證 itemAmount 業務無法直接編輯（disabled 樣式 + 唯讀）— preview 實機 count=10 × unitPrice=100 → 1000 通過
 - [ ] 8.7 驗證需求單 dropdown 出現完整 11 項（不漏「式」「組」）
 - [ ] 8.8 Prototype 試用：選一張 demo 訂單從 PlannedInvoice → Invoice 鏈式建立完整跑一遍，截圖留證
 

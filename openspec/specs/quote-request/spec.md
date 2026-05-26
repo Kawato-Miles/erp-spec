@@ -518,6 +518,24 @@ QuoteRequest 資料模型 SHALL 新增 `requirement_note` 欄位（text，選填
 - **THEN** 系統 SHALL 允許自由編輯
 - **AND** 編輯不影響上游 ConsultationRequest 的 `consultation_topic` / `consultant_note`（兩者解耦，僅在 mapping 時刻合併）
 
+### Requirement: 需求單印件單位來自共用 LOV
+
+需求單編輯頁的印件項目「單位」欄位 SHALL 為 dropdown 元件，選項來自 [prototype-shared-ui § 共用單位 LOV](../prototype-shared-ui/spec.md)。業務 SHALL NOT 自由輸入文字。
+
+#### Scenario: 需求單印件 dropdown 顯示完整 11 項
+
+- **GIVEN** 業務於需求單編輯頁新增 / 編輯印件項目
+- **WHEN** 業務點擊「單位」欄位
+- **THEN** dropdown SHALL 顯示 11 個選項，順序為「張、本、冊、份、個、卷、盒、套、批、式、組」
+- **AND** 業務選擇後 SHALL 寫入 QuoteRequestItem.unit
+
+#### Scenario: 既有需求單資料 unit 值在新 LOV 內可正常顯示
+
+- **GIVEN** 既有需求單印件已存有 `unit` 為 LOV 內值（如「張」/「本」）
+- **WHEN** 業務開啟編輯頁
+- **THEN** 系統 SHALL 在 dropdown 中正確選中該值
+- **AND** 系統 MUST NOT 顯示「未知單位」錯誤
+
 ## Data Model
 
 來源：本 spec § Data Model 為正本；Notion [資料欄位 DB](https://www.notion.so/32c3886511fa803e9f30edbb020d10ce) 為發布版本

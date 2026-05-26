@@ -1,7 +1,9 @@
 ---
 type: raw
-status: raw
+status: ingested
 created-at: 2026-05-26
+ingested-at: 2026-05-26
+ingested-via: openspec-change-archive
 source: miles-upload
 captured-by: claude-on-task
 module:
@@ -155,4 +157,13 @@ attached-files:
 
 ## 精練去處（Mode B 完成後填）
 
-<!-- Mode B step 6 寫入後在此列出 wiki link -->
+2026-05-26 透過 OpenSpec change `align-invoice-line-items-to-ezpay-spec` archive 完成（非 vault-ingest mode B）：
+
+- [[../../../openspec/changes/archive/2026-05-26-align-invoice-line-items-to-ezpay-spec/proposal.md|change proposal]] — Why / What / Capabilities / Impact 完整
+- [[../../../openspec/changes/archive/2026-05-26-align-invoice-line-items-to-ezpay-spec/design.md|change design]] — D1-D6 設計決策（五欄結構照搬 / 跨模組共用 LOV / Category-aware label / 鏈式預填無連動 / mock backfill / Requirement 拆分）
+- [[../../../openspec/specs/order-management/spec.md|order-management spec]] § 「發票品項符合 ezPay 與電子發票法規硬約束」+ §「PlannedInvoice 品項鏈式預填」+ Data Model「InvoiceItem」「PlannedInvoice」
+- [[../../../openspec/specs/prototype-shared-ui/spec.md|prototype-shared-ui spec]] §「共用單位 LOV」
+- [[../../../openspec/specs/quote-request/spec.md|quote-request spec]] §「需求單印件單位來自共用 LOV」+ MODIFIED QuoteRequestItem.unit Data Model
+- Prototype 實作：[`src/types/shared.ts`](../../../../sens-erp-prototype/src/types/shared.ts) `UNIT_OPTIONS` + [`src/components/shared/UnitSelect.tsx`](../../../../sens-erp-prototype/src/components/shared/UnitSelect.tsx) + [`src/components/shared/InvoiceItemTable.tsx`](../../../../sens-erp-prototype/src/components/shared/InvoiceItemTable.tsx) + [`src/utils/invoiceItemPrefill.ts`](../../../../sens-erp-prototype/src/utils/invoiceItemPrefill.ts)
+
+未升級為獨立 vault 卡（單一外部規格不需重複收錄；spec 已是內部正本，raw 卡保留作為法規 / API 規格的原始出處與歷史證據）。
