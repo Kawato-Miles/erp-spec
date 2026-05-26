@@ -201,17 +201,16 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 1. **不做大貨**（客戶最終沒做大貨製作）：兩個觸發點同歸此類
    - 觸發點 1.1：諮詢人員於諮詢單階段點「結束諮詢 - 不做大貨」
    - 觸發點 1.2：諮詢結束做大貨後，需求單流失（仍歸類為「不做大貨」結局，自動建諮詢訂單收尾）
-2. **待諮詢取消（退費）**：業務於待諮詢階段點「取消諮詢」（含退款 Payment）
+2. **待諮詢取消（半額退費）**：諮詢人員 / 業務主管於待諮詢階段點「取消諮詢」並於 dialog 確認（含 OA 自動建 + 退款 Payment）
 
 **重要釐清**：非諮詢來源（`linked_consultation_request_id` 為空）的需求單流失與諮詢訂單無關，不建任何訂單；需求單流失走需求單自身的退款 / 流失流程。
 
-兩種情境共用相同短路徑：建立 → 已開發票 → 訂單完成。其中「待諮詢取消」情境不開 Invoice（defer_to_main_order）或開 Invoice + SalesAllowance（issue_now）。
+**諮詢訂單狀態簡化（本 change 廢止 invoice_option 對狀態機分支的影響）**：諮詢訂單狀態僅在「建立」與「訂單完成」之間轉換，**不進入線下 / 線上路徑共用段任何狀態**（如稿件未上傳、等待審稿、製作中、出貨中、已開發票等皆不適用）。「已開發票」狀態於諮詢訂單路徑廢止（既不再依 invoice_option 自動開立 Invoice、Invoice 由諮詢人員手動轉立 PlannedInvoice 處理）。
 
-狀態流：
+推進至「訂單完成」的觸發條件依情境：
 
-- 不做大貨（涵蓋觸發點 1.1 與 1.2）：建立 → 已開發票（依 invoice_option 開立 Invoice）→ 訂單完成
-- 待諮詢取消（defer_to_main_order）：建立 → 訂單完成（不開 Invoice、退款 Payment 抵銷）
-- 待諮詢取消（issue_now）：建立 → 已開發票（含 SalesAllowance 抵銷）→ 訂單完成
+- **不做大貨 / 需求單流失情境**：諮詢訂單建立完成（Payment 轉移完成 + PlannedInvoice 自動建立完成）即推進至「訂單完成」。理由：Payment(+諮詢費) 已完成、應收 = 已收，無待退款動作；PlannedInvoice 是稅務待辦不影響訂單終態
+- **待諮詢取消情境**：諮詢訂單建立後維持「建立」狀態，待退款 Payment(-1000) 切「已完成」且 OA 推進至「已執行」後（依 [order-management § OA 已執行推進規則](../order-management/spec.md) 既有規則），系統 SHALL 推進至「訂單完成」
 
 **共用段（線下 / 線上適用）**：稿件未上傳 → 等待審稿 ↔ 待補件 → 製作等待中 → 工單已交付 → 製作中 → 製作完成 → 出貨中 → 訂單完成
 
@@ -226,9 +225,9 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 - 諮詢訂單 MUST NOT 進入共用段（無印件、無製作、無出貨）
 - 諮詢訂單只在兩種「沒進大貨製作」收尾情境建立（不做大貨 / 待諮詢取消），webhook 階段不建
 - 諮詢訂單建立時即在訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)，並從 ConsultationRequest 將 Payment 轉移過來
-- 諮詢訂單從「建立」推進至「已開發票」依 invoice_option 與情境觸發，詳見 [order-management spec](../order-management/spec.md) § 諮詢訂單發票時間點處理
-- 諮詢訂單從「已開發票」推進至「訂單完成」 MUST 為自動推進（無人工確認步驟）
-- 諮詢結束做大貨且需求單成交轉一般訂單情境下 MUST NOT 建立諮詢訂單；諮詢費透過 Payment 轉移至一般訂單 + 一般訂單建立 OrderExtraCharge(consultation_fee) 進入一般訂單應收
+- 諮詢訂單 Invoice 由諮詢人員手動將 PlannedInvoice 轉立、系統 MUST NOT 自動開立 Invoice（不論 `consultation_invoice_option` 值為何，本 change 廢止此自動化）
+- 待諮詢取消情境下，系統 SHALL 自動建立 OrderAdjustment(-1000, type=諮詢取消退費, status=已核可) + 退款 Payment(-1000, status=處理中)；訂單推進「訂單完成」的觸發條件為退款 Payment 切「已完成」（依 [order-management § OA 已執行推進規則](../order-management/spec.md)）
+- 諮詢結束做大貨且需求單成交轉一般訂單情境下 MUST NOT 建立諮詢訂單；諮詢費透過 Payment 轉移至一般訂單 + 一般訂單建立 OrderExtraCharge(consultation_fee) 進入一般訂單應收；諮詢費 PlannedInvoice 不自動建，由業務於主訂單既有發票時程規劃流程自行加入
 
 免審稿快速路徑（線下 / 線上適用）：當訂單下所有印件的 review_status 皆為「合格」（含免審稿設定）時，訂單 SHALL 從「已付款」或「已回簽」直接進入「製作等待中」，跳過「稿件未上傳」、「等待審稿」、「待補件」。
 
@@ -260,16 +259,18 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 - **WHEN** 線上訂單（含客製單）已完成付款（EC 自動觸發）
 - **THEN** 訂單狀態 SHALL 進入「稿件未上傳」
 
-#### Scenario: 諮詢結束不做大貨建諮詢訂單
+#### Scenario: 諮詢結束不做大貨建諮詢訂單並推進訂單完成
 
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢、已認領 `consultant_id`
 - **WHEN** 諮詢人員選「結束諮詢 - 不做大貨」
 - **THEN** 系統 SHALL 建立諮詢訂單（order_type = 諮詢）
 - **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)
 - **AND** Payment 從 ConsultationRequest 轉移至諮詢訂單
-- **AND** 系統依 invoice_option 開立 Invoice 並推進「已開發票 → 訂單完成」
+- **AND** 系統 SHALL 自動建立 PlannedInvoice 1 筆（金額 2000、description 「諮詢費」）
+- **AND** 系統 MUST NOT 自動開立 Invoice
+- **AND** 諮詢訂單 SHALL 即時推進至「訂單完成」終態（Payment +諮詢費 已完成、應收已滿足）
 
-#### Scenario: 需求單流失觸發建諮詢訂單
+#### Scenario: 需求單流失觸發建諮詢訂單並推進訂單完成
 
 - **GIVEN** ConsultationRequest 狀態 = 已轉需求單、Payment 綁 ConsultationRequest
 - **AND** 對應需求單流失
@@ -277,7 +278,9 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 - **THEN** 系統 SHALL 建立諮詢訂單（order_type = 諮詢）
 - **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)
 - **AND** Payment 從 ConsultationRequest 轉移至諮詢訂單
-- **AND** 系統依 invoice_option 開立 Invoice 並推進「已開發票 → 訂單完成」
+- **AND** 系統 SHALL 自動建立 PlannedInvoice 1 筆（金額 2000、description 「諮詢費」）
+- **AND** 系統 MUST NOT 自動開立 Invoice
+- **AND** 諮詢訂單 SHALL 即時推進至「訂單完成」終態
 - **AND** ConsultationRequest 狀態 SHALL 從「已轉需求單」更新為「完成諮詢」（最終結局）
 
 #### Scenario: 諮詢結束做大貨需求單成交時建一般訂單
@@ -288,22 +291,34 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 - **AND** 系統 SHALL 在一般訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)
 - **AND** Payment 從 ConsultationRequest 轉移至一般訂單
 - **AND** 系統 MUST NOT 建立諮詢訂單
+- **AND** 系統 MUST NOT 自動於主訂單建立諮詢費 PlannedInvoice（業務自行規劃）
 
-#### Scenario: 待諮詢取消建諮詢訂單與退款
+#### Scenario: 待諮詢取消建諮詢訂單與半額退費
 
-- **GIVEN** ConsultationRequest 狀態 = 待諮詢
-- **WHEN** 業務點擊「取消諮詢」
-- **THEN** 系統 SHALL 建立諮詢訂單（order_type = 諮詢）+ OrderExtraCharge(consultation_fee, 諮詢費)
-- **AND** Payment 從 ConsultationRequest 轉移至諮詢訂單
-- **AND** 系統 SHALL 在諮詢訂單上同步建立退款 Payment（amount = -諮詢費）
-- **AND** 若 issue_now：系統 SHALL 開立 Invoice + SalesAllowance 抵銷
-- **AND** 諮詢訂單 SHALL 推進至「訂單完成」（退費完成終態）
+- **GIVEN** ConsultationRequest 狀態 = 待諮詢、已認領 `consultant_id`、Payment(P0: +2000, 已完成) 綁 ConsultationRequest
+- **WHEN** 諮詢人員 / 業務主管於取消 dialog 選定 cancel_reason_category 並點擊「確認取消諮詢」
+- **THEN** 系統 SHALL 建立諮詢訂單（order_type = 諮詢）+ OrderExtraCharge(consultation_fee, 2000)
+- **AND** Payment P0 從 ConsultationRequest 轉移至諮詢訂單（+2000 不變、status 維持已完成）
+- **AND** 系統 SHALL 自動建立 OrderAdjustment（amount = -1000、adjustment_type = 諮詢取消退費、status = 已核可、approved_by = system）
+- **AND** 系統 SHALL 自動建立退款 Payment（amount = -1000、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述 OA.id）
+- **AND** 系統 SHALL 自動建立 PlannedInvoice 1 筆（金額 1000、description 「諮詢費（取消退費後）」）
+- **AND** 系統 MUST NOT 自動開立 Invoice 或 SalesAllowance
+- **AND** 諮詢訂單 SHALL 維持「建立」狀態（待退款 Payment 切已完成後系統再推進至「訂單完成」）
+
+#### Scenario: 待諮詢取消退款 Payment 切已完成推進訂單完成
+
+- **GIVEN** 待諮詢取消觸發後諮詢訂單已建立、退款 Payment(-1000, status=處理中, linkedOrderAdjustmentId=OA-c1) 存在、OA-c1 status = 已核可
+- **WHEN** 諮詢人員於 OA 編輯介面將退款 Payment 切「已完成」並上傳退款證明附件
+- **THEN** 系統 SHALL 依既有 OA 推進規則將 OA-c1 status 推進至「已執行」
+- **AND** 系統 SHALL 將諮詢訂單從「建立」推進至「訂單完成」終態
+- **AND** 訂單終態 MUST NOT 受發票開立狀態影響（PlannedInvoice 是否轉立 Invoice 不影響訂單完成）
 
 #### Scenario: 諮詢訂單不進入共用段
 
 - **GIVEN** 訂單 `order_type = 諮詢`
 - **WHEN** 系統檢視訂單狀態推進邏輯
 - **THEN** 訂單 MUST NOT 進入「稿件未上傳」、「等待審稿」、「製作等待中」等共用段狀態
+- **AND** 訂單 MUST NOT 進入「已開發票」狀態（本 change 廢止諮詢訂單路徑的此狀態）
 - **AND** 諮詢訂單 MUST NOT 觸發 work_order / production_task 建立
 
 #### Scenario: 訂單狀態推進至製作完成
