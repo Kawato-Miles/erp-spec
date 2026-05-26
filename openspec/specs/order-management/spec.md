@@ -2080,30 +2080,39 @@ UI 上 SHALL 依 order_source 條件顯示適用欄位，避免業務混淆。
 - 線下訂單（order_source = 線下）：業務於需求單 / 訂單階段輸入**未稅金額**，系統依稅率（預設 5%）反推含稅；雙欄同步寫入。
 - 線上訂單（order_source ∈ {線上, 線上自定義}）：EC 帶入**含稅金額**，系統反推未稅；雙欄同步寫入。
 
-**顯示規則（採業界 ERP / MES 模式 A1：分項 ErpTable 四欄 + 底部 summary stack）：**
+**顯示規則（採業界 ERP / MES 模式 A1：頂部 Info Banner + 分項 ErpTable 四欄 + 底部 summary 水平 4 欄；2026-05-26 對齊 Figma 9030:317559 更新底部 summary 為水平 4 欄）：**
 
-訂單詳情頁「付款記錄」Tab 內的「金額組成」區塊 SHALL 採以下結構，**取代原本「主從欄位（線下單主未稅、線上單主含稅）」動態切換邏輯**：
+訂單詳情頁「金額及付款狀態」Tab 內的「金額組成」區塊 SHALL 採以下結構，**取代原本「主從欄位（線下單主未稅、線上單主含稅）」動態切換邏輯**：
+
+- **頂部 Info Banner**：灰底 `bg-muted` (#f7f7f7) + `rounded-[8px]` + `p-2` + `Info` icon + 說明文字「訂單金額來源拆解；分項區雙欄並列（未稅 / 含稅），底部彙總含應收總額。對齊業界 ERP / MES 模式（SAP / NetSuite / Odoo / Dynamics 365）。」
 
 - **分項區**：ErpTableCard + `.erp-table` 結構，四欄如下：
   | 順位 | 欄位 | 對齊 | 說明 |
   |------|------|------|------|
   | 1 | 分項名稱 | 左 | 商品 / 運費 / 急件費 / 諮詢費 / 其他費用 / 折抵 / 紅利 / 訂單異動 |
   | 2 | 數量 / 說明 | 中 | 商品 row 顯示「N 個印件」；其他 row 顯示來源摘要（如「OrderExtraCharge × N」）|
-  | 3 | 小計（未稅） | 右 + font-mono | 該分項的未稅金額 |
-  | 4 | 小計（含稅） | 右 + font-mono + text-muted-foreground | 該分項的含稅金額（弱化呈現） |
+  | 3 | 小計（未稅） | 右 | 該分項的未稅金額 |
+  | 4 | 小計（含稅） | 右 + text-muted-foreground | 該分項的含稅金額（弱化呈現） |
 
   - 折抵 / 紅利 / 負值異動 row：金額前綴 `−` + `text-destructive`
   - 待審核異動 row：金額欄改顯「待核可」chip + tooltip
   - 空值分項 row：`text-muted-foreground` 弱化（保留視覺平衡）
 
-- **底部 summary stack**（分項區下方垂直堆疊三層）：
-  - 行 1：**小計（未稅）** — `text-sm text-muted-foreground` + `font-mono`
-  - 行 2：**營業稅 5%** — `text-sm text-muted-foreground` + `font-mono`
-  - 分隔線 Separator
-  - 行 3：**= 應收總額（含稅）** — `text-body-medium` label + `text-2xl font-bold text-foreground` value
-  - 行 4（條件顯示）：付款狀態 Badge（從分項區移出至 summary 結尾）
+- **底部 summary 水平 4 欄**（分項表格下方水平並列，每欄內 label 上 / value 下）：
+  | 順位 | 欄位 | flex | value 字級 | 說明 |
+  |------|------|------|-----------|------|
+  | 1 | 付款狀態 | flex-1 | PaymentStatusBadge | 從分項區移出至此欄 |
+  | 2 | 小計（未稅）| flex-1 | text-base font-medium | 全分項未稅累計 |
+  | 3 | 營業稅 5% | flex-1 | text-base font-medium | 全分項稅額累計 |
+  | 4 | = 應收總額（含稅）| shrink-0 | text-[28px] font-bold leading-8 tracking-[-0.28px] | 主視覺強調，MUST NOT 品牌色 |
 
-- 應收總額 SHALL 使用 `text-2xl font-bold text-foreground`，MUST NOT 使用品牌色（primary / emerald 等飽和色），對齊 DESIGN.md「金額本身不適合用品牌色搶視覺」原則。
+  - 外層 wrapper：`flex items-center gap-3 w-full`
+  - 前 3 欄 cell：`flex flex-1 flex-col gap-2 px-2 min-w-0 min-h-[86px]`
+  - 應收總額欄 cell：`flex flex-col gap-2 px-2 shrink-0 min-h-[86px]`
+  - 每欄 label：`text-sm font-medium text-muted-foreground leading-5`
+  - SHALL NOT 改為垂直 stack（偏離 Figma 設計、損失 KPI 對照效率）
+
+- 應收總額 SHALL 使用 `text-[28px] font-bold text-foreground leading-8 tracking-[-0.28px]`（對齊 Figma 28px Bold），MUST NOT 使用品牌色（primary / emerald 等飽和色），對齊 DESIGN.md「金額本身不適合用品牌色搶視覺」原則。
 
 - 列表 / 報表查詢 SHALL 支援以任一基準篩選與排序。
 
@@ -2137,17 +2146,24 @@ rounding 採整數（小數 0 位，與會計慣例一致）。
 
 #### Scenario: 金額組成分項區雙欄並列
 
-- **WHEN** 業務開啟訂單詳情頁「付款記錄」Tab
+- **WHEN** 業務開啟訂單詳情頁「金額及付款狀態」Tab
 - **THEN** 「金額組成」區塊分項區 SHALL 採 ErpTable 四欄結構（分項名稱 / 數量摘要 / 未稅小計 / 含稅小計）
 - **AND** 含稅小計欄 SHALL 採 `text-muted-foreground` 弱化呈現（與未稅小計欄並列但非主視覺焦點）
 - **AND** 線下單與線上單顯示結構 SHALL 一致（不再依 order_source 動態切換主從）
 
-#### Scenario: 金額組成 summary stack 三層
+#### Scenario: 金額組成 summary 水平 4 欄
 
 - **WHEN** 業務查看金額組成區塊底部
-- **THEN** SHALL 顯示三層垂直堆疊：小計（未稅）→ 營業稅 5% → = 應收總額（含稅）
-- **AND** 應收總額 value SHALL 使用 `text-2xl font-bold text-foreground`
+- **THEN** SHALL 顯示水平 4 欄並列：付款狀態 / 小計（未稅）/ 營業稅 5% / = 應收總額（含稅）
+- **AND** 每欄內 label SHALL 在上、value 在下（垂直堆疊）
+- **AND** 前 3 欄 SHALL 採 `flex-1` 平分寬度、應收總額欄 SHALL 採 `shrink-0` 自然寬度
+- **AND** 應收總額 value SHALL 使用 `text-[28px] font-bold text-foreground tracking-[-0.28px]`（對齊 Figma 9030:317559 28px Bold）
 - **AND** 應收總額 MUST NOT 使用品牌色（primary / emerald 等飽和色）
+
+#### Scenario: 金額組成頂部 Info Banner
+
+- **WHEN** 業務開啟金額組成區塊
+- **THEN** SHALL 在分項表格上方顯示頂部 Info Banner（灰底 `bg-muted` (#f7f7f7) + `rounded-[8px]` + `p-2` + `Info` icon + 業界 ERP / MES 對齊說明文字）
 
 #### Scenario: 折抵 / 紅利 row 視覺呈現
 
