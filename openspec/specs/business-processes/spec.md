@@ -916,8 +916,8 @@ ConsultationRequest 自動建立 (status=待諮詢, cancel_reason_category=NULL)
   → 諮詢人員 / 業務主管於取消 dialog 選定 cancel_reason_category 並確認
   → 系統建諮詢訂單(type=諮詢) + OrderExtraCharge(consultation_fee, +2000)
   → Payment(+2000) 從 ConsultationRequest 轉移至諮詢訂單（status 維持已完成）
-  → 系統自動建 OrderAdjustment(-1000, type=諮詢取消退費, status=已核可, approved_by=system,
-                              approved_at=取消時點)
+  → 系統自動建 OrderAdjustment(-1000, type=諮詢取消退費, status=已執行, approved_by=system,
+                              executed_at=取消時點)
   → 系統自動建退款 Payment(-1000, paymentMethod=退款, paymentStatus=處理中,
                           linkedOrderAdjustmentId=上述 OA.id)
   → 系統自動建 PlannedInvoice(scheduledAmount=1000, description=「諮詢費（取消退費後）」,
@@ -930,8 +930,7 @@ ConsultationRequest 自動建立 (status=待諮詢, cancel_reason_category=NULL)
         ↓
 諮詢人員後續手動動作：
   ├ 處理銀行退款金流 → 將退款 Payment 切「已完成」並上傳退款證明附件
-  │   → OA 推進至「已執行」（依 order-management § OA 已執行推進規則）
-  │   → 諮詢訂單從「建立」推進至「訂單完成」
+  │   → 諮詢訂單從「建立」推進至「訂單完成」（由 updatePayment 內專門邏輯處理；OA 已是「已執行」、不再經 OA 推進 chain）
   └ 將 PlannedInvoice 轉立 Invoice（金額由諮詢人員依客戶需求決定，建議 1000 元）
 ```
 
@@ -987,15 +986,14 @@ ConsultationRequest 自動建立 (status=待諮詢, cancel_reason_category=NULL)
 - **GIVEN** 客人付諮詢費 2000 元（`consultation_invoice_option = issue_now` 或 `defer_to_main_order` 任一值）、ConsultationRequest 狀態 = 待諮詢、已認領 `consultant_id` = 諮詢人員 A
 - **WHEN** 客人取消預約、諮詢人員 A 點擊「取消諮詢」按鈕、於 dialog 選定 `cancel_reason_category = 找到其他廠商` 並確認
 - **THEN** 系統 SHALL 建立諮詢訂單 + OrderExtraCharge(consultation_fee, +2000) + Payment(+2000) 從 ConsultationRequest 轉移
-- **AND** 系統 SHALL 自動建立 OrderAdjustment（amount = -1000、adjustment_type = `諮詢取消退費`、status = 已核可、approved_by = system）
+- **AND** 系統 SHALL 自動建立 OrderAdjustment（amount = -1000、adjustment_type = `諮詢取消退費`、status = 已執行、approved_by = system、executed_at = 取消時點）
 - **AND** 系統 SHALL 自動建立退款 Payment（amount = -1000、paymentMethod = 退款、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述 OA.id）
 - **AND** 系統 SHALL 自動建立 PlannedInvoice（scheduledAmount = 1000、description = 「諮詢費（取消退費後）」）
 - **AND** 系統 MUST NOT 建立 Invoice 與 SalesAllowance（不論 `consultation_invoice_option` 值為何）
 - **AND** ConsultationRequest 狀態 SHALL 推進至「已取消」
 - **AND** ConsultationRequest.cancel_reason_category SHALL = `找到其他廠商`
 - **WHEN** 諮詢人員 A 處理銀行退款金流後、於 OA 編輯介面將退款 Payment 切「已完成」並上傳退款證明
-- **THEN** OA SHALL 推進至「已執行」
-- **AND** 諮詢訂單 SHALL 推進至「訂單完成」終態
+- **THEN** 諮詢訂單 SHALL 推進至「訂單完成」終態（由 updatePayment 內專門邏輯處理；OA 已是「已執行」、不再經 OA 推進 chain）
 - **AND** 諮詢人員 A SHALL 手動將 PlannedInvoice 轉立 Invoice（金額由諮詢人員依客戶需求決定）
 - **AND** 諮詢人員 A SHALL 手動通知客戶退款已處理（不入系統）
 

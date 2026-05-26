@@ -404,7 +404,7 @@ ConsultationRequest 狀態 MUST 從「已轉需求單」更新為「完成諮詢
 1. 系統 SHALL 建立諮詢訂單（type=諮詢、客戶資料來自 ConsultationRequest、總額 = 諮詢費 2000）
 2. 諮詢訂單上建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費 2000)
 3. Payment 從 ConsultationRequest 轉移至諮詢訂單（修改 linked_entity_type 與 linked_entity_id；Payment.amount 維持 +2000、status 維持 已完成）
-4. **系統 SHALL 自動建立 OrderAdjustment**（金額 = -1000、adjustment_type = `諮詢取消退費`、status = 已核可、approved_by = system、approved_at = 取消時點、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」）— 跳過業務主管核可（退費政策事先公開、無個案判斷）
+4. **系統 SHALL 自動建立 OrderAdjustment**（金額 = -1000、adjustment_type = `諮詢取消退費`、status = 已執行、approved_by = system、executed_at = 取消時點、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」）— **直接建為「已執行」**（政策決議無兩階段審批 / 執行；應收即時認列 OA(-1000) → 應收 = OEC(2000) + OA(-1000) = 1000）
 5. **系統 SHALL 自動建立退款 Payment**（amount = -1000、paymentMethod = 退款、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述 OA.id、linked_entity_type = Order、linked_entity_id = 諮詢訂單 ID）
 6. **系統 SHALL 自動建立 PlannedInvoice 1 筆**（orderId = 諮詢訂單 ID、scheduledAmount = 1000、description = 「諮詢費（取消退費後）」、expectedDate = 取消時點當天、status = 預計開立、createdBy = system）
 7. **系統 MUST NOT 自動開立任何 Invoice 或 SalesAllowance**（不論 `consultation_invoice_option` 值為何）
@@ -413,7 +413,7 @@ ConsultationRequest 狀態 MUST 從「已轉需求單」更新為「完成諮詢
 **退款金流處理**：退款依原付款方式刷退，由第三方金流處理。ERP 只記錄取消事實與處理中退款 Payment，實際銀行撥款由第三方金流負責，撥款時程不承諾 SLA。
 
 **諮詢人員後續手動**：
-- 處理銀行退款金流（與第三方金流確認刷退完成）後，於 OA 編輯介面內將退款 Payment 切「已完成」（依既有 [order-management § OA 已執行推進](../order-management/spec.md) 規則自動推進 OA 至「已執行」、訂單推進至「訂單完成」）
+- 處理銀行退款金流（與第三方金流確認刷退完成）後，於 OA 編輯介面內將退款 Payment 切「已完成」（觸發 updatePayment 內專門邏輯推進諮詢訂單終態至「訂單完成」；OA 已是「已執行」、不再經 OA 推進 chain）
 - 將 PlannedInvoice 手動轉為實際 Invoice（金額由諮詢人員依客戶需求決定，建議 1000 元）
 - 主動通知客戶退款已處理（不入系統，由諮詢人員以電話 / Email 等管道執行）
 
@@ -432,7 +432,7 @@ ConsultationRequest 狀態 MUST 從「已轉需求單」更新為「完成諮詢
 - **THEN** 系統 SHALL 建立諮詢訂單（type = 諮詢、總額 = 2000）
 - **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 2000)
 - **AND** 系統 SHALL 將 Payment P0 的 linked_entity_type 與 linked_entity_id 改為諮詢訂單（金額不變、status 維持已完成）
-- **AND** 系統 SHALL 建立 OrderAdjustment(amount = -1000、adjustment_type = `諮詢取消退費`、status = 已核可、approved_by = system、approved_at = 取消時點、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」)
+- **AND** 系統 SHALL 建立 OrderAdjustment(amount = -1000、adjustment_type = `諮詢取消退費`、status = 已執行、approved_by = system、executed_at = 取消時點、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」)
 - **AND** 系統 SHALL 建立退款 Payment(amount = -1000、paymentMethod = 退款、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述 OA.id)
 - **AND** 系統 SHALL 建立 PlannedInvoice(scheduledAmount = 1000、description = 「諮詢費（取消退費後）」、expectedDate = 取消時點當天、status = 預計開立、createdBy = system)
 - **AND** 系統 MUST NOT 建立任何 Invoice
@@ -443,11 +443,10 @@ ConsultationRequest 狀態 MUST 從「已轉需求單」更新為「完成諮詢
 
 #### Scenario: 退款 Payment 切已完成推進諮詢訂單完成
 
-- **GIVEN** 諮詢取消後諮詢訂單已建立、退款 Payment(P1: -1000、paymentStatus = 處理中、linkedOrderAdjustmentId = OA-c1) 存在、OA-c1 status = 已核可
+- **GIVEN** 諮詢取消後諮詢訂單已建立、退款 Payment(P1: -1000、paymentStatus = 處理中、linkedOrderAdjustmentId = OA-c1) 存在、OA-c1 status = 已執行
 - **WHEN** 諮詢人員於 OA 編輯介面將退款 Payment P1 切「已完成」並上傳退款證明附件
 - **THEN** 系統 SHALL 將 P1.paymentStatus 改為「已完成」
-- **AND** 系統 SHALL 依既有 OA 推進規則將 OA-c1 status 推進至「已執行」
-- **AND** 系統 SHALL 將諮詢訂單推進至「訂單完成」終態
+- **AND** 系統 SHALL 將諮詢訂單推進至「訂單完成」終態（由 updatePayment 內專門邏輯處理；OA 已是「已執行」、不再經 OA 推進 chain）
 - **AND** 諮詢訂單終態 MUST NOT 受發票開立狀態影響（PlannedInvoice 是否轉立 Invoice 不影響訂單完成）
 
 #### Scenario: 諮詢取消不自動開 Invoice 或 SalesAllowance

@@ -97,8 +97,9 @@
 - **THEN** 系統 SHALL 建立諮詢訂單（`order_type = 諮詢`、總額 = 諮詢費 2000）
 - **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 2000)
 - **AND** 系統 SHALL 將 Payment P0 從 ConsultationRequest 轉移至諮詢訂單（金額 +2000 不變、status 維持已完成）
-- **AND** 系統 SHALL 自動建立 OrderAdjustment（amount = -1000、adjustment_type = `諮詢取消退費`、status = 已核可、approved_by = system、approved_at = 取消時點、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」）
+- **AND** 系統 SHALL 自動建立 OrderAdjustment（amount = -1000、adjustment_type = `諮詢取消退費`、status = 已執行、approved_by = system、executed_at = 取消時點、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」）
 - **AND** 系統 SHALL 自動建立退款 Payment（amount = -1000、paymentMethod = 退款、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述 OA.id、linked_entity_type = Order、linked_entity_id = 諮詢訂單 ID）
+- **AND** 應收即時認列 OA(-1000)（不待退款 Payment 切已完成），應收公式 = OEC(2000) + ∑已執行 OA(-1000) = 1000
 - **AND** 系統 SHALL 自動建立 PlannedInvoice 1 筆（orderId = 諮詢訂單 ID、scheduledAmount = 1000、description = 「諮詢費（取消退費後）」、expectedDate = 取消時點當天、status = 預計開立、createdBy = system）
 - **AND** 系統 MUST NOT 自動開立 Invoice
 - **AND** 系統 MUST NOT 自動開立 SalesAllowance
@@ -1503,9 +1504,10 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢、諮詢人員觸發取消諮詢確認流程
 - **WHEN** 系統執行「諮詢取消觸發建諮詢訂單與半額退費」流程
-- **THEN** 系統 SHALL 自動建立 OrderAdjustment（adjustment_type = `諮詢取消退費`、amount = -1000、status = 已核可、approved_by = system、approved_at = 取消時點）
+- **THEN** 系統 SHALL 自動建立 OrderAdjustment（adjustment_type = `諮詢取消退費`、amount = -1000、status = 已執行、approved_by = system、executed_at = 取消時點）
 - **AND** OA 建立 MUST NOT 經過業務 / 主管的 UI 操作
 - **AND** OA 於訂單詳情頁顯示為唯讀（業務不可編輯系統內生 type 的 OA）
+- **AND** 應收即時認列 OA(-1000)（不待退款 Payment 切已完成），應收公式 = OEC(2000) + ∑已執行 OA(-1000) = 1000
 
 ### Requirement: 三方對帳檢視面板
 
@@ -1865,10 +1867,10 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 #### Scenario: 諮詢取消退費處理中
 
-- **GIVEN** 諮詢訂單 OEC(consultation_fee, 2000) + OA(諮詢取消退費, -1000, 已核可) + Payment(+2000, 已完成) + Payment(-1000, 處理中)
+- **GIVEN** 諮詢訂單 OEC(consultation_fee, 2000) + OA(諮詢取消退費, -1000, 已執行) + Payment(+2000, 已完成) + Payment(-1000, 處理中)
 - **WHEN** 業務 / 會計開啟對帳檢視面板
 - **THEN** 收款淨額 SHALL = 2000（處理中退款 -1000 不計入既有對帳公式）
-- **AND** 應收總額 SHALL = 2000（OA 未已執行不計入既有對帳公式）
+- **AND** 應收總額 SHALL = 1000（OA 已執行即時計入應收）
 - **AND** 對帳面板 SHALL 標示「退費處理中」並顯示「另含處理中退款 1000 元」
 
 #### Scenario: 諮詢取消後發票金額不符提示
