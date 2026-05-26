@@ -848,3 +848,18 @@ Archive 位置：
 - e2e 失敗應為 archive 阻擋條件；本次 archive 時 tasks.md § 10 全部未勾選、e2e 14 條未跑、archive 仍完成
 - OQ 撞號（ORD-018）反映 OQ 命名前綴自動化不足；應引入 OQ id 衝突檢測（oq-manage skill 增強）
 
+
+
+## [2026-05-26 18:30] insight | change-archive 觸發（align-invoice-line-items-to-ezpay-spec）
+
+**輸出**：[[../12-insights/2026-05-26-archive工具假設與Vault-Schema對齊缺口]]
+
+**關鍵推論**：「openspec CLI 工具的內建 sync 機制是針對 Requirements-as-contract 設計，與我們實際使用的 schema（Requirements + Data Model + 其他子段都是 contract）有結構性 mismatch」。三個觀察事件（tasks 未勾選、OQ id 撞號、Data Model 漏合）是同一系統性議題的不同表現形式，目前都靠 archive 後 doc-audit reactive 修補，累積技術債。
+
+**下一步 actions 數**：4 個（3 個 actionable + 1 個已內化）
+1. 建立 archive 前 hard gate 5 項自查清單（更新 opsx:archive skill；≤ 1 週）
+2. openspec CLI 漏合 Data Model 工程議題分流（PR / 補強腳本 / schema 重構三選一；≤ 4 週）
+3. 與 [[../12-insights/2026-05-20-change-archive-OQ收尾流程缺口]] 合併處理 OQ resolve hard gate
+4. doc-audit v1.4「Data Model section sync」維度已採納（本次 commit a5bfee5；reactive 防線完成）
+
+**串接**：本 insight 串接既有 [[../12-insights/2026-05-20-change-archive-OQ收尾流程缺口]]（同根因），Action 3 將解雙 insight
