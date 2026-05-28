@@ -938,3 +938,66 @@ Archive 位置：
 - 「拿掉某個系統內聚合視圖、改用 csv 匯出」屬於常見的「設計撤回 + 替代方案另議」場景，可重用此 change 的拆除範本（spec MODIFIED + prototype 拆四檔 + OQ 兩階段決策補註 + 新 OQ 留 csv 機制三子問題）
 - 「保留判定邏輯 + helper、拆聚合 selector + UI 入口」的拆分策略保留了未來 csv 匯出實作時可重用 `isPaymentAging` 邏輯的彈性
 - 前次 archive 的 OQ frontmatter oq-id 漏改（ORD-018 → ORD-021）此次補修正，治理債清償
+
+---
+
+## 2026-05-28 — unify-billing-installment-and-reconciliation-csv change 立案決策軌跡
+
+**Change**：`unify-billing-installment-and-reconciliation-csv`（Phase 4 PM 匯報整合 16 OQ）
+
+**Miles Phase 4 後拍板 3 個 OQ（已決定，不另開 OQ 檔）**：
+
+- **OQ-BI-5 拆期 lineage**：採 A「保留 `split_from_installment_id` 純追溯欄位」（非 aggregation FK；配合 OrderActivityLog 7 事件 + 業務手動備註 + change_count 三管道稽核業務對訂單掌控度）；衍生 Miles 新增 2 個 KPI：**訂單收款變更率**（變更事件 / Payment 總數）+ **收款逾期天數**（沿用 v1.13 spec L1609 overdueDays）— 已寫入 design.md KPI 對齊表第 10/11 條
+- **OQ-US-1 user story 範疇**：「13 情境 + Phase 4 新增情境全覆蓋」（含 F1 預開拆退新增 US-AR-F1）
+- **OQ-BI-1 source_type enum**：拆三個值（`consultation_cancellation` / `consultation_end_no_production` / `quote_lost`）— 已落地至 `BillingInstallmentSourceType` enum
+
+**1 個 OQ 標已關閉**：
+- **OQ-BI-F 既有 PaymentPlan + PlannedInvoice 資料 migration**：依 [[scope-boundary]] § 二「資料遷移成本不納入新系統設計」紀律關閉；prototype 階段直接 backfill mock；上線遷移留待未來導入 GL 時另議
+
+**5 個高優先 OQ 開檔（本次 audit）**：
+- [[../08-open-questions/BI-1-原始日期基準凍結時點]]
+- [[../08-open-questions/BI-2-折讓後已收訖判定基準]]
+- [[../08-open-questions/BI-3-溢收預收未分配後續處理]]
+- [[../08-open-questions/BI-4-補收OA大額閾值定義]]
+- [[../08-open-questions/BI-5-CSV14欄會計實務驗證]]
+
+**剩餘 6 個 OQ 待開檔**：BI-D（CSV #10 收款日最近/結清）、BI-E（合期是否支援）、BI-6（月結閉檔批次觸發者與時點）、US-2（補收 OA 立即執行對稱破壞 spec 表述）、BI-G（作廢發票 CSV 篩選）、BI-H（三方對帳警示 banner 觸發條件細化）— 留下次 chunk 處理
+
+**Commits**：（apply chunk B-G 完成後一次 commit）
+
+**啟示**：
+- 序列協作 4 階段（Phase 1 PM 範疇 → Phase 2 CEO 9 指標 + 6 challenge → Phase 3 顧問五層設計 + 7 challenge → Phase 4 PM 整體匯報 13 challenge 全採納）讓「合併雙實體 + 補退不對稱」結構性決策有完整可追溯依據
+- Miles Phase 4 後補充 2 個 KPI（訂單收款變更率 + 收款逾期天數）反映「拆期不需審核但要留軌跡稽核」的設計精神 — 用三管道（KPI / Slack / ActivityLog）替代事前審核 gate
+- 「漸進並存」策略（task 4.12 新 BillingInstallment 區塊與舊 PaymentPlan 區塊並存）讓重構不一次性破壞 UI，但收尾 cutover（task 4.5/4.6/4.13/4.14 + 1.7/1.8/3.4）建議綁在一起做避免重複混亂
+
+---
+
+## [2026-05-28 audit] mode A 全量稽核 | 12 維度
+
+**模式**：全量（重點：2026-05-28 三 review agent 協作協議重塑相關 13 個檔）
+
+**結果**：
+- 維度 1 頁面間矛盾：OK（Phase 2.5 廢除 / PM-中介來回上限 2 / verify consistency / deprecated-verify-only / CEO 補管理層需求方 / ERP 統合需求設計者，跨 9-27 處檔案一致）
+- 維度 2 過時宣稱：OK（本次改動 13 檔 last-reviewed 統一 2026-05-28）
+- 維度 3 孤立頁面：OK（新建 3 檔 backlinks 完整：dispatch 4 個 / insight 1 個 / raw 1 個）
+- 維度 4 缺失連結：**Warning**（dispatch-prompt-template.md line 62-63 兩 placeholder `[[<framework-card>]]` `[[<protocol-card>]]` dangling）
+- 維度 5 數據缺口：OK（3 新建檔 frontmatter 必填齊全）
+- 維度 6 規則遵守：OK（無 inline `[!question]` callout、無 OQ 措辭、命名規約）
+- 維度 7 Vault ↔ OpenSpec 對齊：OK（本任務不涉及）
+- 維度 8 OQ 健康度：N/A
+- 維度 9 角色 alignment：N/A
+- 維度 10 KPI / Phase：N/A
+- 維度 11 Raw 健康度：OK（新建 raw 卡 source=claude-research + raw-source-link 5 URL 符合 Anti-Model-Collapse 防線 2）
+- 維度 12 Review 規律性：N/A
+
+**主要發現**：
+
+1. 本次 13 個檔內容一致性極佳，跨檔關鍵訊息（Phase 2.5 廢除 / PM-中介 / verify consistency / 角色定位）在 9-27 處檔案完全對齊
+2. wiki link 網路完整：新建 3 檔 backlinks 全建立、三主協議反向引用各 15-29 處
+3. 唯一需修復：dispatch-prompt-template.md 第 62-63 行 2 個 placeholder 造成 Obsidian dangling（位於 code fence 內，Obsidian CLI 仍會掃出來）
+
+**下一步建議**：
+
+1. 修復 dispatch-prompt-template.md placeholder dangling（已徵 Miles 確認）
+2. 既存 dangling（`[[業務主管]]` / `[[訂單異動]]` / `[[BOM]]` / `[[ORD-018]]` 等）屬其他工作的 Vault 治理債，不在本次稽核範圍
+3. 累積 3-5 個 change 使用新 sequential 協議後重評誤審率變化（依 insight 卡 § 五）
