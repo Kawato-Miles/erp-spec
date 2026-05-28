@@ -3,13 +3,15 @@ type: user-story
 us-id: US-ORD-013
 module:
   - order-management
+business-domain:
+  - billing-cash
 role:
   - "[[03-roles/會計]]"
 priority: high
 stage: business-only
 status: active
 created-at: 2026-05-22
-last-reviewed: 2026-05-22
+last-reviewed: 2026-05-28
 source:
   - "openspec/specs/order-management/spec.md#Requirement: 退款 Payment 與折讓分離（先記退款，再開折讓）"
   - "openspec/specs/order-management/spec.md#Requirement: 折讓單（SalesAllowance）建立、確認、作廢"

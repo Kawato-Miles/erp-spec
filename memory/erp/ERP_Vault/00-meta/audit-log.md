@@ -1053,3 +1053,88 @@ Archive 位置：
 **待 Miles 跑**：
 - `/opsx:archive remove-legacy-payment-plan-planned-invoice-junction` 觸發 doc-audit
 - CLAUDE.md § Spec 規格檔清單對應 row 延伸 dead code 移除描述
+
+---
+
+## 2026-05-28 Billing & Cash 第一輪稽核（erp-planning-pre-check skill 實證）
+
+**觸發**：本 plan「ERP Vault 業務領域雙軸分類 + 稽核框架」Phase 2 第一輪實證
+**框架**：[[erp-planning-audit-framework]] 雙軸（業務領域 × 7 卡類型）+ 5 步驟 SOP 含閉環
+**領域**：Billing & Cash（L1.6）+ 跨領域共用層
+**執行者**：Explore sub-agent（與主對話 agent 分離，受 YouTube /goal 影片啟發）
+
+### 雙軸量化矩陣（Billing & Cash × 7 卡類型）
+
+| 卡類型 | 已涵蓋 N | 待修補 M | OQ K | 細項摘要 |
+|-------|----------|---------|------|---------|
+| 1. 角色 | 4 | 1 | 1 | 會計階段標記誤 → ORD-001；業務主管 OA 核可權限未明示 → ORD-002 / BI-13 |
+| 2. 實體 | 6 | 1 | 0 | Order / Payment / Invoice / PlannedInvoice / OA / SalesAllowance / PaymentInvoice junction 欄位完整；Payment 獨立卡暫不建 |
+| 3. 流程 | 3 | 2 | 0 | 報價→訂單→收款→開票→對帳端到端完整；缺「業務追款 SOP」「會計月結對帳 SOP」→ BI-13 |
+| 4. 情境 | 13 | 0 | 1 | 13 業務情境完整（F1-F8 / C1-C4 / A1-A3）；缺邊界情境變體 → BI-13 |
+| 5. User Story | 5 | 13 | 1 | 18 張 Billing & Cash 相關 US；已 backfill 5 張（US-ORD-010/011/013/020/021）；剩 13 張 + related-test-cases 0/18 → BI-12 |
+| 6. 業務邏輯 | **3** | **0** | 1 | 付款發票邏輯 / ezPay 法規硬約束 / **連帶矩陣（本輪修補完成）** |
+| 7. 法規 | 1 | 0 | 0 | ezPay-MIG 硬約束卡獨立建（本輪新建）+ 五欄 / B2B vs B2C / 字軌 / 上傳時程齊全 |
+
+**合計**：已涵蓋 35 / 待修補 17 / OQ 4
+
+### 修補項清單（本輪執行）
+
+1. **付款發票邏輯.md 補 § 五B 七實體連帶矩陣章節**（業務邏輯維度 M=1 → 0）
+   - 5B.1 主動實體 → 連帶影響表（7 主動實體 × 連帶實體 + 影響規則）
+   - 5B.2 七實體連帶網絡圖（ASCII 圖）
+   - 5B.3 連帶檢查紀律（6 議題類型 × 必檢實體）
+   - 5B.4 外部硬約束連帶（指向 ezPay-MIG 卡）
+2. **新建 04-business-logic/發票法規硬約束-ezPay-MIG.md**（法規維度 N=1）
+3. **Backfill 5 個關鍵 User Story 的 `business-domain: billing-cash` 標籤**（US-ORD-010/011/013/020/021）
+4. **Backfill 5 個核心 Vault know-how 卡 `business-domain` 標籤**（付款發票邏輯 / 訂單 / 售後服務 / 會計 / 業務）
+
+### 新建 OQ 清單
+
+- **BI-12**：款項 User Story 批次 backfill business-domain 與 related-test-cases（13 張待 backfill + 0/18 Test Case 連結）
+- **BI-13**：第一輪稽核識別的領域缺漏項（彙整 5 項：業務主管職責 / Payment 獨立卡 / 業務追款 SOP / 會計月結 SOP / 邊界情境變體）
+- **已 open 並引用**：ORD-001（會計階段標記）/ ORD-002（OA 核可閾值）
+
+### Step 5 閉環驗證結果
+
+| 卡類型 | 修補前 M | 修補後 M | 是否轉「已涵蓋」|
+|-------|---------|---------|---------------|
+| 6. 業務邏輯（連帶矩陣）| 1 | 0 | ✓ 真轉「已涵蓋」（付款發票邏輯.md § 五B 已寫入）|
+| 7. 法規（ezPay-MIG 卡）| 1 | 0 | ✓ 真轉「已涵蓋」（新卡已建）|
+| 5. User Story（business-domain 標籤）| 18 | 13 | 部分轉移（5 張 backfill；剩 13 張標 BI-12）|
+| 1. 角色（會計階段 + 業務主管）| 1 | 1 | ✗ 未閉環（標 ORD-001 / ORD-002 / BI-13 等 Miles 拍板）|
+| 3. 流程（業務追款 SOP / 月結對帳）| 2 | 2 | ✗ 未閉環（標 BI-13 第三波處理）|
+| 4. 情境（邊界變體）| 0 | 0 | N/A（K=1 等 Miles 累積實際 case）|
+
+**閉環評估**：本輪修補 5 個 M → 0（業務邏輯 / 法規 / 5 個 User Story backfill），其餘 12 個 M 標 OQ 等後續批次處理（符合「最多 3 輪未閉環則標 OQ」紀律）。
+
+### 跨層影響檢查（商業需求 ↔ User Story ↔ spec ↔ Test Case）
+
+- **商業需求 ↔ User Story**：5 張 backfill 完成（business-domain: billing-cash）；剩 13 張標 BI-12
+- **User Story ↔ spec**：18 張 US 已對齊 order-management spec L900-3100 + business-processes spec L600-750
+- **spec ↔ Test Case**：**critical gap** — 0/18 Test Case 反向連結（解 0/56 缺漏關鍵）→ 標 BI-12 待後續配對
+- **法規層**：ezPay 五欄硬約束已在 spec L2969+ + 獨立 Vault 卡（本輪新建）+ 連帶矩陣（本輪補入付款發票邏輯.md）— 三層對齊完成
+
+### 反模式識別
+
+1. **anti-pattern「role-stage 不匹配」**（會計卡標記僅審稿階段，實際全程）→ 追加到 [[../11-review-knowledge/_shared/audit-failure-patterns]] 五大反模式之 **Scope creep**（角色卡內容跨越多階段未明示）
+2. **anti-pattern「test case 孤島」**（18 張 Billing & Cash US 0/18 related-test-cases）→ **False completion**（看似涵蓋卻漏 Test Case 反向連結）
+3. **anti-pattern「連帶關係隱形」**（7 實體跨模組影響原散佈無統一索引）→ **Immeasurable targets**（缺中心化追蹤）— **本輪修補完成**
+
+### 稽核覆蓋度評估
+
+- **修補前**：Billing & Cash 領域結構完整度約 85%（依 sub-agent 報告）
+- **修補後**：業務邏輯維度 100% + 法規維度 100%（連帶矩陣 + ezPay 法規卡）；其他維度待後續批次
+- **未來演化**：剩 12 個 M 項分批次處理（依 BI-12 / BI-13 + ORD-001 / ORD-002 處理計劃）
+
+### 反模式追加到 audit-failure-patterns.md
+
+下列 3 個反模式案例待追加到 [[../11-review-knowledge/_shared/audit-failure-patterns]]（Phase 2 收尾時補）：
+- Scope creep 案例：會計 Role 卡標記僅審稿階段但實際全程
+- False completion 案例：18 張 Billing & Cash US 0/18 related-test-cases
+- Immeasurable targets 案例：連帶關係散佈無中心化追蹤（本輪修補完成）
+
+### 後續處理計畫
+
+- **Phase 2 收尾**：本輪完成 + 追加反模式到 audit-failure-patterns.md（在 commit 前）
+- **Phase 3**：CLAUDE.md 路由 + memory（讓觸發機制生效）
+- **後續批次（Phase 2 之外）**：BI-12 / BI-13 + ORD-001 / ORD-002 處理（不在本 plan 範圍）
