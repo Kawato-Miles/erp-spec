@@ -30,14 +30,14 @@
 - **BREAKING**：`src/components/order/OrderPaymentSection.tsx` 移除「預計付款」整個區塊（line 735+）+ plans state（line 181）+ CRUD action（line 211-340）
 - 改 `src/pages/finance/Receivables.tsx` 從 MOCK_PAYMENT_PLANS 改 store.billingInstallments
 
-### Spec sync 對齊
-- 修正前 change 8 個 delta spec 內 MODIFIED Requirements 標籤錯誤（前 change archive 時 sync fail，標 MODIFIED 但 main spec 無對應 Requirement、應改 ADDED）
-- 跑 `/opsx:sync remove-legacy-payment-plan-planned-invoice-junction`（或手動 merge）把前 change 的 delta + 本 change 的 delta 對齊到 main spec
-- archive 時觸發 doc-audit 跨檔案一致性檢查
+### Spec sync 對齊（已於前 change 補救 commit 完成、本段保留為歷史紀錄）
+- ~~修正前 change 8 個 delta spec 內 MODIFIED Requirements 標籤錯誤~~ — 已於前 change 補救 commit `f453480` 完成（5 個 delta 標籤對齊 + 補 SHALL/Scenario + REMOVED 段清理、46 ADDED + 1 REMOVED 已 sync 進 main spec）
+- ~~跑 `/opsx:sync` 把 delta 對齊到 main spec~~ — 已透過正規 `openspec archive` 含正常 sync 完成
+- archive 時觸發 doc-audit 跨檔案一致性檢查（本 change 範圍延續執行）
 
 ### 配套 spec 文字更新
-- 移除前 change spec § REMOVED Requirements 「Cutover 狀態說明」段（本 change cutover 完成後該段不再適用）
-- CLAUDE.md § Spec 規格檔清單 8 行同步更新 v1.14 完整版摘要（去掉「軟 cutover」措辭、改「完整 cutover 完成」）
+- ~~移除前 change spec § REMOVED Requirements 「Cutover 狀態說明」段~~ — 已於前 change 補救 commit 一併移除
+- ~~CLAUDE.md § Spec 規格檔清單 8 行同步更新 v1.14 完整版摘要~~ — 已於前 change 補救 commit 完成（後續摘要僅需在本 change archive 時延伸 dead code 移除描述）
 
 ## Capabilities
 
