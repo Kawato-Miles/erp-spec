@@ -252,6 +252,41 @@ delta specs 合併回 main specs，歸檔 change。
 
 ---
 
+## Plan mode 撰寫規範
+
+> 進入 Plan mode（Shift+Tab Twice 或 /plan）後產出的 plan 檔，須符合以下雙層結構。
+> 完整模板：[memory/shared/plan-template.md](memory/shared/plan-template.md)
+
+### 為什麼需要
+
+Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必須 PM 看得懂（業務語言）且 Agent 執行得了（技術細節），雙層共一份避免不同步、避免 PM 跳過閘門。
+
+### 必遵守規則（MUST）
+
+1. **依模板撰寫**：A 業務段（A1 As-is/To-be 表 + A2 PM 工作體驗變動 + A3 對 PM 平時工作流影響 + A4 決策點 + A5 OQ）+ B 技術段（B1 修改檔案 + B2 資料/結構變動 + B3 可重用元件 + B4 驗證）
+2. **業務段 A 禁用工程術語當主詞**：
+   - 禁止檔名（`.ts` / `.tsx` / `.py` 等）當主詞
+   - 禁止程式碼物件（interface / type / function / class）名當主詞
+   - 必要時用括號附註，例：「印件編輯權限規則（technical: canEditPrintItemInSidePanel）」
+3. **A4 決策點顯式呈現**：每項議題附「選項 + 建議 + 理由」三件套
+4. **技術段 B 精簡**：只列 Agent 執行需要的最小資訊（檔案路徑 + 一句話描述），不重複 A 段內容
+5. **B4 驗證方式必須可執行且有成功條件**：每項驗證須含 (a) 具體指令（`grep` / `ls` / `npm test` / `playwright test` 等）或具體操作（開啟某頁面 / 點某按鈕）(b) 明確的成功條件（命令輸出含 X / 畫面出現 Y / 測試 N 項通過）；禁用「跑測試」「手動驗證」「確認檔案正確」等模糊描述
+6. **拍板前自審 6 項**：(1) A1-A5 齊備 (2) 業務段無工程術語當主詞 (3) A4 三件套齊備 (4) B 段未重複 A 段 (5) B4 每項驗證皆可執行且有成功條件 (6) 是否屬「不適用情境」
+
+### 不適用情境（免雙層）
+
+- 純錯字 / 措辭修正（< 5 行 plan）
+- 純查詢 / 研究類任務（無實作動作）
+- `/opsx:apply` 階段（tasks 清單已是執行依據，方向已 verify）
+
+### 與既有規範關係
+
+- 與「序列協作協議」（PM → CEO → 顧問 → PM）相容；雙層 Plan 是 OpenSpec 探索之前的方向對齊
+- 與「OQ 工作流」相容；A5 段對應 oq-manage skill 觸發
+- 與 karpathy-guidelines § 4「Goal-Driven Execution」相容；雙層 Plan 是該原則的展開
+
+---
+
 ## 常用印刷業術語（熱快取）
 
 | 縮寫 / 術語 | 意思 |
@@ -376,6 +411,7 @@ delta specs 合併回 main specs，歸檔 change。
 | UI 設計系統（業務規範 / 視覺 Token / UX 模式 / 元件清單，唯一權威）| `/Users/b-f-03-029/sens-erp-prototype/DESIGN.md`（Spec 撰寫前讀 §0 業務規範；Prototype 製作前完整讀） |
 | UI 業務規範細則（框架無關：禁 Emoji / 刪除流程 / Info Banner / Toast / Loading / 頁面模板 / 按鈕優先級 / 狀態標籤）| `memory/shared/ui-business-rules.md` |
 | Prototype 工作流程（製作 / 驗證 / 同步規則） | `memory/shared/prototype-guidelines.md` |
+| Plan mode 撰寫模板（雙層結構：業務段 PM 看 + 技術段 Agent 看，含 anti-pattern 提示）| `memory/shared/plan-template.md` |
 | impeccable 設計稽核 skill 使用指引（ERP 場景指令選擇決策樹）| `memory/shared/impeccable-usage.md` |
 | 共用術語（完整） | `memory/shared/glossary.md` |
 | 產業背景 | `memory/shared/context/industry.md` |
