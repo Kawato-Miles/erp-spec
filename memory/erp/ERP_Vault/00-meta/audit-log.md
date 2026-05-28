@@ -1001,3 +1001,55 @@ Archive 位置：
 1. 修復 dispatch-prompt-template.md placeholder dangling（已徵 Miles 確認）
 2. 既存 dangling（`[[業務主管]]` / `[[訂單異動]]` / `[[BOM]]` / `[[ORD-018]]` 等）屬其他工作的 Vault 治理債，不在本次稽核範圍
 3. 累積 3-5 個 change 使用新 sequential 協議後重評誤審率變化（依 insight 卡 § 五）
+
+---
+
+## [2026-05-28 cutover commit] remove-legacy-payment-plan-planned-invoice-junction Layer 1-3 cutover 完成
+
+**模式**：追加 cutover 軌跡（不跑稽核）
+
+**對象 change**：`remove-legacy-payment-plan-planned-invoice-junction`（承接 `unify-billing-installment-and-reconciliation-csv` D-final-B cutover）
+
+**完成範圍**（prototype repo 3 個 commits）：
+
+1. **Layer 1**（commit 47f6ff9）— PaymentInvoice junction 業務 UI 完整移除
+   - `src/types/invoice.ts`：PaymentInvoice interface + 4 helpers 移除
+   - `src/data/mockInvoices.ts`：SCENARIO_PAYMENT_INVOICES + MOCK_PAYMENT_INVOICES + getMockPaymentInvoicesByOrder 移除
+   - OrderInvoiceSection：selectedPaymentIds 欄位 + 「對應收款」勾選 UI 整段移除（~75 行）
+   - reconciliationCsv：legacyPaymentInvoices fallback path 移除
+   - ReconciliationCsvExportDialog：MOCK_PAYMENT_INVOICES 引用移除
+   - buildBillingInstallmentsFromLegacy：Step 3 PaymentInvoice 轉換邏輯移除
+   - 驗證：tsc 通過 + 7/8 e2e 通過（1 個 split-store 屬既有 SPLIT 事件 filter bug、留 Layer 3 修）
+
+2. **Layer 2**（commit 587e4e3）— PlannedInvoice 業務 UI 完整移除 + 開立發票流程整合 + 一期多發票 Table 欄位
+   - store / seedData：plannedInvoices state + addPlannedInvoice + 諮詢三情境雙寫移除（保留 BillingInstallment 寫入）
+   - OrderInvoiceSection：PlannedInvoice CRUD 區段 ~200 行 + 預計發票列表渲染段 ~150 行 + PlannedInvoiceStatusBadge 整段移除
+   - 「開立發票」入口從期次 row 觸發（不切 Tab + Dialog 共用）+「手動開立」維持原名 + Dialog 內加「來源請款期次」必選下拉
+   - 修 React Fragment list key warning（invoices.map 內 `<>` 改 React.Fragment key）
+   - BillingInstallmentListCard：「一鍵開票」改 icon 無文字 + 新增「歷史發票」Table 欄位（顯示「目前 X / 歷史 Y」）
+   - OrderDetail：state lift + invoices TabsContent forceMount
+   - PendingInvoices：整頁重寫從 billingInstallments 推導
+   - 新增 e2e spec 2 個：issue-invoice-from-installment-no-tab-switch / manual-invoice-issue-must-select-installment
+   - 驗證：tsc 通過 + 12 e2e 全綠（含 2 個新 spec）
+
+3. **Layer 3**（commit 513fca9）— PaymentPlan 業務 UI 完整移除 + 分期 UX 移除 + 帳齡推導改 BillingInstallment
+   - OrderPaymentSection：plans state + 「預計付款」區塊 + planDialog + handleSavePlan / handleDeletePlan / paymentPlanChangedSinceApproval banner + PlanStatusBadge / PlanRowActions 整段移除（~250 行）
+   - PaymentPlan / derivePlanStatus / calcPlansTotalAmount / calcOverdueDays / calcPlanCollectedAmount / getPaymentPlansByOrder imports 全部移除
+   - OrderReconciliationPanel + Receivables：最長逾期天數改從 BillingInstallment（cancelled=false + paymentStatus!=已收訖 + calcBillingInstallmentOverdueDays）推導
+   - 分期 UX 移除：BillingInstallmentListCard「拆此期」icon + OrderBillingInstallmentSection splitDialog state / handlers / 渲染段移除；BillingInstallmentSplitDialog 元件保留 reference；splitBillingInstallment store action 保留作系統內生（諮詢連動）
+   - 驗證：tsc 通過 + 11 e2e 通過 + 1 skipped + split-store spec 仍綠
+
+**Miles 紀律遵守**：
+- ✅ 減法設計：3 layer 累計刪除約 1000 行 dead code（-554 / +63 在 Layer 3 commit、加上 Layer 1 / 2 約 ~500 行）
+- ✅ 業務心智模型直觀：「沖銷期次」/「手動開立」/「逾期天數」直觀詞取代「分配核銷」/「臨時開立」
+- ✅ 零自動引導：移除「補規劃這筆差額」CTA / 跨 Tab 自動跳轉等過度設計
+- ✅ 業務 UI 不再引用任何 PaymentPlan / PlannedInvoice / PaymentInvoice（mock + 型別保留作 buildBillingInstallmentsFromLegacy 內部 seed data）
+
+**餘留 follow-up**（plan 餘留項 R1 / R2 / R3）：
+- BillingInstallmentAllocationTable inline 元件 + addPaymentWithAllocations store action（收款新增 Dialog 內期次勾選表）
+- PaymentPlan / PlannedInvoice 型別檔與 mock 檔正式移除（重寫 backfill 為靜態 mockBillingInstallments.ts）
+- 既有 list key warning 修補（多處 `.map` 未補 key、非本 cutover 引入）
+
+**待 Miles 跑**：
+- `/opsx:archive remove-legacy-payment-plan-planned-invoice-junction` 觸發 doc-audit
+- CLAUDE.md § Spec 規格檔清單對應 row 延伸 dead code 移除描述
