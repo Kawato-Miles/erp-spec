@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-21
+last-reviewed: 2026-05-28
 ---
 
 # Wiki Schema（Formal）
@@ -42,6 +42,29 @@ module:
   - graphic-editor          # 圖編產品
   - cross-module            # 跨模組（狀態機 / 商業流程 / 業務情境 / 使用者角色）
 ```
+
+## 二B、business-domain Enum（必填，2026-05-28 新增）
+
+> 業務領域分類，對應 [[business-domain-taxonomy]] 6 領域 + 跨領域共用層。
+> **新卡必填、舊卡視需要 backfill**（第一輪只 backfill Billing & Cash 領域卡作為實證）。
+> 對應 [[erp-planning-audit-framework]] 雙軸結構之軸 1，`erp-planning-pre-check` skill 用此欄位 grep 載入對應領域卡。
+
+```yaml
+business-domain:
+  - pre-sales                  # 商務前置：諮詢 / 報價 / 需求單
+  - order-management           # 訂單管理：訂單 / 異動（不含 Payment-Invoice）
+  - prepress                   # 印前審稿：稿件審查 / 打樣 / 印件規格
+  - production                 # 生產執行：工單 / 任務 / 排程 / QC（已併 ProductionTask）/ 派工
+  - fulfillment-after-sales    # 履約與售後：出貨 / 售後 ticket / 客訴
+  - billing-cash               # 款項與發票：收款 / 開票 / 對帳 / 退款 / OA-Payment 推進
+  - cross-domain               # 跨領域共用層：角色 / 術語 / 跨模組情境 / 狀態機 / KPI / Master Data
+```
+
+**領域邊界判斷規則**：見 [[business-domain-taxonomy#四、邊界判斷規則]]。
+
+**適用 type**：
+- `role` / `business-logic` / `entity` / `state-machine` / `scenario` / `user-story` / `insight` / `raw` **必填**
+- `meta` / `glossary` / `domain` / `product-vision` / `phase` / `metric` / `open-question` / `reference` / `review` **視需要**（多為 cross-domain）
 
 ## 三、status Enum
 
