@@ -59,9 +59,9 @@ Read-first（協調者已注入，agent 不需重複讀）：
 - [[review-loading-checklist]]
 
 Agent 仍需主動讀（視角專屬）：
-- [[<framework-card>]]（如 [[ceo-review-framework]] / [[erp-review-framework]] / [[pm-review-framework]]）
-- [[<protocol-card>]]（本協議卡）
-- [<spec-link>]（議題對應 spec）
+- 視角專屬 framework 卡（依 Phase 對應）：[[ceo-review-framework]] / [[erp-review-framework]] / [[pm-review-framework]]
+- 本協議卡：[[sequential-design-collaboration]] / [[multi-agent-discussion-protocol]] / [[lightweight-review-mode]]
+- 議題對應 OpenSpec spec（如 openspec/specs/order-management/spec.md）
 - Vault `08-open-questions/` 該模組現有 OQ
 ```
 
