@@ -1,14 +1,14 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-26
+last-reviewed: 2026-05-28
 ---
 
 # 單 Agent 輕量審查模式
 
 > 適用情境：CLAUDE.md § ERP 討論主動路由 中「功能設計有傾向（尚無 change）」或「局部欄位調整」類型，不需啟動完整多 agent 協作 / 審查。
-> **序列協作（新主協議）**：見 [[sequential-design-collaboration]]。
-> **多 Agent 完整討論（舊協議，過渡期保留）**：見 [[multi-agent-discussion-protocol]]。
+> **序列協作（主協議）**：見 [[sequential-design-collaboration]]。
+> **多 Agent 完整討論（過渡期保留，verify 前審查用）**：見 [[multi-agent-discussion-protocol]]。
 
 ## 一、定位
 
@@ -18,16 +18,7 @@ last-reviewed: 2026-05-26
 |---------|---------|
 | 局部欄位 / 純探索 / 單一視角足夠 | **本協議**（單 agent 單輪）|
 | 規格撰寫 / 變更 / 結構性變更（在 `/opsx:explore` 或 `/opsx:propose` 階段）| [[sequential-design-collaboration]] |
-| 規格 verify 前最終驗收 | [[multi-agent-discussion-protocol]]（過渡期）|
-
-### 雙軌期判斷（2026-05-26 新增）
-
-新流程上線後處於過渡期，本協議的「升級條件」判斷規則調整為：
-
-- 升級信號出現時，**MUST** 先判斷是否在 `opsx` 工作流階段內
-  - 若在 `/opsx:explore` 或 `/opsx:propose` 階段 → 升級到 [[sequential-design-collaboration]]
-  - 若在 `/opsx:verify` 前 → 升級到 [[multi-agent-discussion-protocol]]
-  - 若尚未進入 `opsx` 工作流 → 由 Miles 決定是否啟動新 change 或就此結束
+| 規格 verify 前最終驗收 | [[multi-agent-discussion-protocol]]（過渡期保留） |
 
 
 
@@ -71,9 +62,9 @@ last-reviewed: 2026-05-26
 | 與既有 OQ / spec 出現矛盾 | 「建議升級為序列協作 / 三視角討論：發現與 [[OQ 編號]] 或 [模組 spec] 存在潛在矛盾」 |
 
 Miles 可選擇：
-- **採納升級建議（雙軌期判斷）**：
-  - 若在 `/opsx:explore` 或 `/opsx:propose` 階段 → 觸發 [[sequential-design-collaboration]]
-  - 若在 `/opsx:verify` 前 → 觸發 [[multi-agent-discussion-protocol]]
+- **採納升級建議**：
+  - 一般情況（設計階段）→ 觸發 [[sequential-design-collaboration]]
+  - `/opsx:verify` 前最終驗收 → 觸發 [[multi-agent-discussion-protocol]]（過渡期保留）
 - **拒絕升級**：以單 agent 結論作為最終，由 Miles 自行判斷
 
 ## 六、輸出格式

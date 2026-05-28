@@ -1,20 +1,26 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-19
+last-reviewed: 2026-05-28
 ---
 
-# CEO 審查 6 維度
+# CEO 6 維度（審查維度 / 思考維度並列）
 
-> [ceo-reviewer](../../../../../.claude/agents/ceo-reviewer.md) 審查模式的審查框架。BRD 草稿 / 設計決策完成後，從印刷廠 CEO 視角審查時依此框架輸出。
+> [ceo-reviewer](../../../../../.claude/agents/ceo-reviewer.md) 的 6 維度框架。
+> **2026-05-28 並列雙定位**：同樣 6 維度在不同協議下扮演兩種角色（內容不變）。
 
 ## 一、適用時機
 
-| 觸發 | 對應呼叫情境 |
-|------|------------|
-| BRD 草稿完成，進入三視角審查 | 與 [senior-pm](../../../../../.claude/agents/senior-pm.md) / [erp-consultant](../../../../../.claude/agents/erp-consultant.md) 平行執行 |
-| 商業目標 / 痛點探索（前期）| [[lightweight-review-mode]] 單 Agent 模式 |
-| Miles 單獨呼叫審查既有設計 | 依此 6 維度輸出單輪審查 |
+本 6 維度同時是兩種工具：
+- **審查維度**：拿來「檢查既有設計是否有問題」（CEO 為審查者角色）
+- **思考維度**：拿來「思考該補什麼管理層需求」（CEO 為管理層需求提出方角色）
+
+| 觸發場景 | 6 維度角色 | 對應協議 / 呼叫情境 |
+|---------|-----------|------------------|
+| BRD verify 前最終審查 | 審查維度 | [[multi-agent-discussion-protocol]]（過渡期保留） |
+| 單 Agent 輕量審查 / 商業目標探索 | 審查維度 | [[lightweight-review-mode]] |
+| **序列協作 Phase 2 補管理需求** | **思考維度** | [[sequential-design-collaboration]] Phase 2 |
+| Miles 單獨呼叫審查既有設計 | 審查維度 | 直接呼叫 agent |
 
 ## 二、6 個審查維度
 

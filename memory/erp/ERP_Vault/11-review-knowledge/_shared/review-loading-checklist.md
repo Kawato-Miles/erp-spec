@@ -1,8 +1,8 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-20
-last-case-added: 2026-05-19
+last-reviewed: 2026-05-28
+last-case-added: 2026-05-21
 ---
 
 # 背景載入規則 + 設計理解摘要 + 防誤審記錄
@@ -11,7 +11,11 @@ last-case-added: 2026-05-19
 
 ## 一、各 Agent 背景載入範圍
 
-每個 agent 只載入與其視角直接相關的資源，**MUST NOT** 重複載入其他 agent 已覆蓋的範圍。跨視角的關聯問題透過 [[multi-agent-discussion-protocol]] § Round 2「跨視角質疑」步驟顯式提出。
+每個 agent 只載入與其視角直接相關的資源，**MUST NOT** 重複載入其他 agent 已覆蓋的範圍。
+
+**跨視角衝突依協議分流處理（2026-05-28 更新）**：
+- 在 [[sequential-design-collaboration]] 中：由 Phase 4 PM verify consistency 集中處理（CEO 指標 ↔ 顧問實作對齊表、PM 範疇 ↔ 顧問實作對齊表）
+- 在 [[multi-agent-discussion-protocol]] 中（過渡期保留，verify 前審查）：由 Round 2「跨視角質疑」步驟顯式提出
 
 | Agent | 載入範圍 | 不需主動載入 |
 |-------|---------|------------|

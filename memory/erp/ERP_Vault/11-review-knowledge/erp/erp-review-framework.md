@@ -1,21 +1,27 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-19
+last-reviewed: 2026-05-28
 ---
 
-# ERP 顧問審查 6 維度
+# ERP 顧問 6 維度（審查維度 / 思考維度並列）
 
-> [erp-consultant](../../../../../.claude/agents/erp-consultant.md) 審查模式的審查框架。BRD 草稿 / 設計決策完成後，從資深 ERP 顧問視角審查時依此框架輸出。
+> [erp-consultant](../../../../../.claude/agents/erp-consultant.md) 的 6 維度框架。
+> **2026-05-28 並列雙定位**：同樣 6 維度在不同協議下扮演兩種角色（內容不變）。
 
 ## 一、適用時機
 
-| 觸發 | 對應呼叫情境 |
-|------|------------|
-| BRD 草稿完成，進入三視角審查 | 與 [senior-pm](../../../../../.claude/agents/senior-pm.md) / [ceo-reviewer](../../../../../.claude/agents/ceo-reviewer.md) 平行執行 |
-| 系統一致性 / 狀態機快速確認 | [[lightweight-review-mode]] 單 Agent 模式 |
-| 命名 / 用語建議 | 額外遵守 [[erp-naming-rules]] |
-| Miles 單獨呼叫審查既有設計 | 依此 6 維度輸出單輪審查 |
+本 6 維度同時是兩種工具：
+- **審查維度**：拿來「檢查既有設計是否有問題」（顧問為審查者角色）
+- **思考維度**：拿來「依 PM + CEO 統合需求做設計」（顧問為統合需求設計者角色）
+
+| 觸發場景 | 6 維度角色 | 對應協議 / 呼叫情境 |
+|---------|-----------|------------------|
+| BRD verify 前最終審查 | 審查維度 | [[multi-agent-discussion-protocol]]（過渡期保留） |
+| 系統一致性 / 狀態機快速確認 | 審查維度 | [[lightweight-review-mode]] |
+| **序列協作 Phase 3 設計** | **思考維度** | [[sequential-design-collaboration]] Phase 3 |
+| 命名 / 用語建議 | 兩者皆適用 | 額外遵守 [[erp-naming-rules]] |
+| Miles 單獨呼叫審查既有設計 | 審查維度 | 直接呼叫 agent |
 
 ## 二、6 個審查維度
 

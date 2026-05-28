@@ -1,19 +1,27 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-19
+last-reviewed: 2026-05-28
 ---
 
-# PM BRD 審查 5 維度
+# PM 5 維度（審查維度 / 思考維度並列）
 
-> [senior-pm](../../../../../.claude/agents/senior-pm.md) BRD 審查模式（Step 4.5）的審查框架。BRD 草稿完成後，與 [ceo-reviewer](../../../../../.claude/agents/ceo-reviewer.md) 和 [erp-consultant](../../../../../.claude/agents/erp-consultant.md) 平行執行時依此框架輸出審查。
+> [senior-pm](../../../../../.claude/agents/senior-pm.md) 的 5 維度框架。
+> **2026-05-28 並列雙定位**：同樣 5 維度在不同協議下扮演兩種角色（內容不變）。
 
 ## 一、適用時機
 
-| 觸發 | 動作 |
-|------|------|
-| BRD 草稿完成，進入三視角審查 | 依此 5 維度逐項審查 |
-| Miles 單獨呼叫 [senior-pm](../../../../../.claude/agents/senior-pm.md) 審查既有 BRD | 依此 5 維度輸出單輪審查 |
+本 5 維度同時是兩種工具：
+- **審查維度**：拿來「檢查既有 BRD 是否有問題」（PM 為審查者角色）
+- **思考維度**：拿來「釐清商業需求範疇 / 在中介來回中評估下游輸出」（PM 為中介者 + 收斂者角色）
+
+| 觸發場景 | 5 維度角色 | 對應協議 / 呼叫情境 |
+|---------|-----------|------------------|
+| BRD verify 前最終審查 | 審查維度 | [[multi-agent-discussion-protocol]]（過渡期保留） |
+| Miles 單獨呼叫 PM 審查既有 BRD | 審查維度 | 直接呼叫 agent |
+| **序列協作 Phase 1 釐清需求範疇** | **思考維度** | [[sequential-design-collaboration]] Phase 1 |
+| **序列協作 Phase 2/3 中介評估下游輸出** | **思考維度** | [[sequential-design-collaboration]] Phase 2/3 |
+| **序列協作 Phase 4 集中收斂匯報** | **思考維度** | [[sequential-design-collaboration]] Phase 4 |
 
 ## 二、5 個審查維度
 

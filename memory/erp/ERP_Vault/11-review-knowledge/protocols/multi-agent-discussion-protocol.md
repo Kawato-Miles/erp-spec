@@ -1,18 +1,20 @@
 ---
 type: meta
-status: active-transitional
-last-reviewed: 2026-05-26
+status: deprecated-verify-only
+last-reviewed: 2026-05-28
 ---
 
-# 多 Agent 輪次討論協議（過渡期保留）
+# 多 Agent 輪次討論協議（已 deprecated，僅 verify 前審查保留）
 
-> **2026-05-26 定位變更**：本協議降為 `/opsx:verify` 前的「最終驗收前審查」協議。`/opsx:explore` 與 `/opsx:propose` 階段改用 [[sequential-design-collaboration]] 序列協作協議。
-> **適用情境**：`/opsx:verify` 前需要三 agent 對 BRD / change 草稿做最終驗收時。
-> **單一 agent 審查**：見 [[lightweight-review-mode]]。
+> **2026-05-28 狀態變更**：本協議標 `deprecated-verify-only`。**MUST NOT** 在 `/opsx:explore` 或 `/opsx:propose` 階段啟動，僅 `/opsx:verify` 前最終驗收使用。
 > **新主協議（設計階段）**：見 [[sequential-design-collaboration]]。
+> **適用情境**：`/opsx:verify` 前三 agent 對 BRD / change 草稿做最終驗收時。
+> **單一 agent 審查**：見 [[lightweight-review-mode]]。
 > **討論後 BRD 寫入**：見 [[senior-pm-write-mode]]。
 >
-> **過渡期淘汰計畫**：累積 3-5 個 change 確認新協議降低誤審後，本協議將標註 deprecated 並從 agent.md 移除「輪次討論模式」段。
+> **完全淘汰條件**：累積 3-5 個 change 使用 [[sequential-design-collaboration]] 驗收後，若 Phase 4 verify consistency 已足以取代 verify 前審查，本協議將完全 deprecated，三個 agent.md「輪次討論模式」段同步移除。
+>
+> **角色定位**：本協議中三 agent 仍為**審查者**角色（與 [[sequential-design-collaboration]] 角色定位變更**不衝突**，因該變更僅限 sequential 協議）。
 
 ## 核心原則
 
