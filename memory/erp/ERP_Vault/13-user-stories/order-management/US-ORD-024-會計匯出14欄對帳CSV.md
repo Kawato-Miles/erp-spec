@@ -3,6 +3,8 @@ type: user-story
 us-id: US-ORD-024
 module:
   - order-management
+business-domain:
+  - billing-cash
 role:
   - "[[../../03-roles/會計]]"
 priority: high

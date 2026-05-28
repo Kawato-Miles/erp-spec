@@ -3,6 +3,8 @@ type: user-story
 us-id: US-ORD-032
 module:
   - order-management
+business-domain:
+  - order-management
 role:
   - "[[../../03-roles/業務]]"
 priority: high

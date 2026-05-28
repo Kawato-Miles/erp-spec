@@ -3,13 +3,15 @@ type: user-story
 us-id: US-ORD-012
 module:
   - order-management
+business-domain:
+  - order-management
 role:
   - "[[03-roles/業務]]"
 priority: low
 stage: business-only
 status: active
 created-at: 2026-05-22
-last-reviewed: 2026-05-22
+last-reviewed: 2026-05-28
 source:
   - "openspec/specs/order-management/spec.md#Requirement: 訂單聯絡人"
 related-spec: openspec/specs/order-management/spec.md
