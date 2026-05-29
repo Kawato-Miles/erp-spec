@@ -27,15 +27,22 @@
 - **THEN** 該兩情境諮詢訂單 SHALL 維持 `status='訂單完成'` 終態
 - **AND** 該兩情境 SHALL 維持自動建 BillingInstallment（source_type=consultation_end_no_production / quote_lost）不變
 
-### Requirement: reconciliationCsv 差錯偵測涵蓋已取消有發票訂單
+### Requirement: reconciliationCsv 差錯偵測涵蓋已取消有收入訂單
 
-`reconciliationCsv.ts` 的 `calcReconciliationDiscrepancies` SHALL 將訂單篩選從 `orders.filter(o => o.status === '訂單完成')` 改為涵蓋 `status ∈ {訂單完成, 已取消} 且該訂單有 status=開立 Invoice` 的訂單；`calcDiscrepancyRate` 分母同步調整。CSV 匯出層 `buildReconciliationRows` 維持既有（已以已開立發票為主軸，不需改）。
+`reconciliationCsv.ts` 的 `calcReconciliationDiscrepancies` SHALL 將訂單篩選從 `orders.filter(o => o.status === '訂單完成')` 改為涵蓋 `status ∈ {訂單完成, 已取消}` 的訂單（已取消訂單須「有 status=開立 Invoice **或** 應收 ≠ 0」才納入——有發票者供對帳差錯偵測、未開票但留存收入者供差額警示兜底；全額退款應收=0 者排除以免污染）；`calcDiscrepancyRate` 分母同步調整。CSV 匯出層 `buildReconciliationRows` 維持既有（已以已開立發票為主軸，不需改）。
 
 #### Scenario: 差錯偵測納入已取消有發票訂單
 
 - **GIVEN** 已取消諮詢訂單有 status=開立 的諮詢費 Invoice
 - **WHEN** 呼叫 `calcReconciliationDiscrepancies`
 - **THEN** 該已取消訂單 SHALL 被納入差錯偵測訂單集合（不因 status=已取消 被排除）
+
+#### Scenario: 已取消未開票但留存收入納入差額警示兜底
+
+- **GIVEN** 已取消諮詢訂單尚未開立發票、應收 = 1000（≠ 0）
+- **WHEN** 呼叫 `calcReconciliationDiscrepancies`
+- **THEN** 該已取消訂單 SHALL 被納入偵測集合（依「應收 ≠ 0」條件，非「有開立發票」條件）
+- **AND** 系統 SHALL 透過「應收 > 發票淨額」差額警示提醒未開票（應收 1000 > 發票淨額 0）
 
 #### Scenario: CSV 匯出層不變
 
