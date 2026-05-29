@@ -1074,7 +1074,7 @@ remaining = invoice.total_amount - folded
 
 ### Requirement: 訂單異動（OrderAdjustment）建立與審核
 
-業務 / 諮詢 SHALL 可於訂單詳情頁建立訂單異動，記錄訂單成立後因規格變更 / 加印追加 / 退印 / 折扣 / 加運費 / 急件費 / 其他原因導致的金額異動（可正可負）。OrderAdjustment 有獨立狀態機（草稿 → 待主管審核 → 已核可 / 已退回 → 已執行 / 已取消，詳見 [state-machines spec](../state-machines/spec.md)），不影響主訂單狀態。OrderAdjustment「已執行」時觸發應收總額更新，但 PaymentPlan SHALL NOT 自動變動，由業務手動調整。
+業務 / 諮詢 SHALL 可於訂單詳情頁建立訂單異動，記錄訂單成立後因規格變更 / 加印追加 / 退印 / 折扣 / 加運費 / 急件費 / 其他原因導致的金額異動（可正可負）。OrderAdjustment 有獨立狀態機（草稿 → 待主管審核 → 已核可 / 已退回 → 已執行 / 已取消，詳見 [state-machines spec](../state-machines/spec.md)），不影響主訂單狀態。OrderAdjustment「已執行」時觸發應收總額更新，但 BillingInstallment（請款期次）SHALL NOT 自動變動，由業務手動調整。
 
 **OrderAdjustment 回歸純金額異動載具**：本 change（add-after-sales-ticket）廢止原 v1.2 「雙重身份」設計（`adjustment_phase` 欄位 + UI 「售後服務單」雙重表述）。OrderAdjustment 不再依 Order.status 自動推算 phase，所有 `adjustment_type` 皆可於任何 Order 狀態下選用（規格變更 / 加印追加 / 退印 / 折扣 / 加運費 / 急件費 / 補退 / 其他）。
 
@@ -1199,7 +1199,7 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 - **AND** 系統 SHALL 重算 OA 對應已完成 Payment 累計 = -5000 = OA.amount
 - **AND** 系統 SHALL 同 transaction 推進 OrderAdjustment.status → '已執行'、executedAt = now
 - **AND** 訂單應收總額 MUST 更新（∑ 印件費 + ∑ OrderExtraCharge.amount + ∑(已執行 OrderAdjustment.amount)）
-- **AND** PaymentPlan SHALL NOT 自動變動
+- **AND** BillingInstallment（請款期次）SHALL NOT 自動變動
 - **AND** OA 編輯介面內「關聯 Payment 卡片」SHALL 顯示「已執行（透過 Payment-{payment_no} 推進）」
 
 #### Scenario: 補收 OA 對稱化建立 Payment + 切已完成自動推進（對稱化新規）
@@ -1391,24 +1391,24 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 ### Requirement: 應收帳款帳齡底層欄位與訂單列表帳齡篩選
 
-系統 SHALL 計算 PaymentPlan 的 derived field `overdue_days`（status ≠ 已收訖 時 = TODAY - scheduled_date；scheduled_date 為空時 = NULL），作為應收帳款帳齡（AR aging）底層基礎。訂單列表頁 / 對帳檢視頁 SHALL 提供「最長逾期天數」篩選欄位（取訂單下所有未收 PaymentPlan 的 max(overdue_days)）。完整應收帳款帳齡分析表（30/60/90 天分級）、逾期自動通知、應收帳款 Dashboard 不在本次範疇。
+系統 SHALL 計算 BillingInstallment（請款期次）的 derived field `overdue_days`（收款維度狀態 ≠ 已收訖 時 = TODAY - due_date；due_date 為空時 = NULL），作為應收帳款帳齡（AR aging）底層基礎。訂單列表頁 / 對帳檢視頁 SHALL 提供「最長逾期天數」篩選欄位（取訂單下所有未收 BillingInstallment 的 max(overdue_days)）。完整應收帳款帳齡分析表（30/60/90 天分級）、逾期自動通知、應收帳款 Dashboard 不在本次範疇。
 
-#### Scenario: PaymentPlan 逾期天數自動計算
+#### Scenario: BillingInstallment 逾期天數自動計算
 
-- **GIVEN** PaymentPlan #1 status = 未收、scheduled_date = 2026-04-01
+- **GIVEN** BillingInstallment #1 收款維度 = 未收、due_date = 2026-04-01
 - **WHEN** 系統時間為 2026-05-06
-- **THEN** PaymentPlan #1.overdue_days SHALL = 35
+- **THEN** BillingInstallment #1.overdue_days SHALL = 35
 
-#### Scenario: 已收訖 PaymentPlan 不算逾期
+#### Scenario: 已收訖 BillingInstallment 不算逾期
 
-- **GIVEN** PaymentPlan #1 status = 已收訖、scheduled_date = 2026-04-01
+- **GIVEN** BillingInstallment #1 收款維度 = 已收訖、due_date = 2026-04-01
 - **WHEN** 系統計算 overdue_days
 - **THEN** overdue_days SHALL = NULL（不顯示逾期）
 
 #### Scenario: 訂單列表依最長逾期天數篩選
 
 - **WHEN** 業務 / 主管於訂單列表選擇篩選器「最長逾期天數 ≥ 30 天」
-- **THEN** 系統 SHALL 列出所有有 PaymentPlan.overdue_days ≥ 30 的訂單
+- **THEN** 系統 SHALL 列出所有有 BillingInstallment.overdue_days ≥ 30 的訂單
 - **AND** 列表 SHALL 顯示該訂單最長逾期天數欄位
 
 ### Requirement: 業務主管批次審核 OrderAdjustment（user story）
