@@ -1083,36 +1083,6 @@ Invoice SHALL 有獨立狀態機，狀態定義：
 - **THEN** 系統 SHALL 排除 status = 已作廢 的 SalesAllowance
 - **AND** 系統 SHALL 只扣減 status = 已確認 的 |allowance_amount|
 
-### Requirement: PaymentPlan 變更觸發訂單回業務主管審核
-
-訂單已通過業務主管審核後，業務 / 諮詢若變更 PaymentPlan（新增、刪除、修改期別金額或日期），訂單 SHALL 回退至「業務主管審核」狀態，等待主管重新核可。沿用 [archived change: add-sales-manager-quote-approval](../../../changes/archive/2026-04-27-add-sales-manager-quote-approval/proposal.md) 的「核可後可解鎖、變更後重審」機制。
-
-#### Scenario: 業務修改 PaymentPlan 觸發回審
-
-- **GIVEN** 訂單已通過業務主管審核，狀態 = 訂單確認
-- **WHEN** 業務修改 PaymentPlan #2.scheduled_amount
-- **THEN** 訂單狀態 SHALL → 業務主管審核
-- **AND** 活動紀錄 MUST 記載變更原因（系統自動：「付款計畫變更」）
-
-#### Scenario: 業務新增 PaymentPlan 期次觸發回審
-
-- **GIVEN** 訂單已通過業務主管審核
-- **WHEN** 業務新增 PaymentPlan #3
-- **THEN** 訂單狀態 SHALL → 業務主管審核
-
-#### Scenario: 業務主管核可後訂單恢復
-
-- **GIVEN** 訂單因 PaymentPlan 變更回到「業務主管審核」
-- **WHEN** 業務主管核可
-- **THEN** 訂單 SHALL 推進至原狀態（變更前的後續狀態）
-
-#### Scenario: PaymentPlan 變更不影響主訂單後續狀態
-
-- **GIVEN** 訂單已進入「生產中」
-- **WHEN** 業務變更 PaymentPlan
-- **THEN** 訂單 SHALL NOT 回退至業務主管審核（已過審核段，不可回退；對應 § 訂單狀態不可逆）
-- **AND** 系統 SHALL 顯示警告「訂單已進入生產段，付款計畫變更僅作記錄，無法重新審核」
-
 ### Requirement: 諮詢單狀態機（v2 簡化）
 
 諮詢單（ConsultationRequest）SHALL 依以下狀態流轉（v2 簡化：移除「諮詢中」「諮詢結束」過渡狀態，諮詢進行不需 status 追蹤；`result` 欄位移除，由 status 直接表達結局）：
