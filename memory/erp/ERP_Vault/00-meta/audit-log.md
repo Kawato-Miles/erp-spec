@@ -1204,3 +1204,12 @@ Archive 位置：
 - 維度 14 內容邊界：0 殘留越界（business-logic 卡已無 user-story / test-case 範本）
 - 維度 3 孤立：0 orphan（新建卡皆有 inbound link）
 - **總評：Error 0 / Warning 0 通過**
+
+## [2026-05-29 archive] remove-legacy-payment-plan-planned-invoice-junction（--skip-specs）
+
+- **歸檔**：`remove-legacy-payment-plan-planned-invoice-junction` → `archive/2026-05-29-remove-legacy-payment-plan-planned-invoice-junction`
+- **--skip-specs 理由**：本 change 無 spec delta（spec 已於前 change unify-billing-installment 補救 commit f453480 對齊主檔），純 prototype dead-code cutover 追蹤 change；非處置失誤（與前 change 初版 --skip-specs 失誤的差異：前 change 有 delta 需 sync，本 change 確無 delta）
+- **完成**：Layers 1-3 業務 UI 三層 dead code 移除（PaymentPlan / PlannedInvoice / PaymentInvoice junction，prototype commits 47f6ff9 / 587e4e3 / 513fca9）+ R1 收款入帳明細 inline 表 + addPaymentWithAllocations（commit 51c10ff）
+- **deferred（40/42 tasks，2 未完續用 --yes）**：R2 三型別檔正式移除（暫留作 buildBillingInstallmentsFromLegacy seed data）+ R3 既有 list key warning 修補（非本 cutover 引入）
+- **cutover 範圍外 prototype 迭代（Miles 第二輪回饋，無 spec delta）**：收款項目 15 欄表共用元件化（N1）+ 預計收款方式改名（N2）+ 發票作廢解鎖刪除（N3）+ 發票狀態 enum 簡化「已作廢」（N5）+ 首末欄釘選（N6）+ 新增收款 Dialog 不跑版 + 入帳表常駐（N7）+ 新增=編輯共用 Dialog（N8，updatePaymentWithAllocations / cancelPaymentWithAllocations）+ 對帳檔案改共用 OrderFileUploadDialog；commits 6330e9e / 8bb30c3
+- **待 Miles 決策**：上述 N1-N8 + 上傳改共用為 prototype 迭代、未進任何 spec delta；如需 spec 收斂（order-management 收款項目表結構 / prototype-data-store 新 store actions / prototype-shared-ui BillingInstallmentAllocationTable）須另開 change

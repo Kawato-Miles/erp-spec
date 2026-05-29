@@ -52,7 +52,7 @@
 
 ## 餘留項（follow-up 範圍）
 
-- [ ] R1 `BillingInstallmentAllocationTable` inline 元件 + `addPaymentWithAllocations` store action：業務「新增收款」Dialog 內 inline 期次勾選表（業務勾期 + 手動填金額 + 防呆 sum ≤ 收款金額），由 Miles 拍板下個 change 接入
+- [x] R1 `BillingInstallmentAllocationTable` inline 元件 + `addPaymentWithAllocations` store action：業務「新增收款」Dialog 內 inline 收款入帳明細表（業務勾期 + 手動填金額 + 防呆 sum ≤ 收款金額 + 溢收預收桶）已實作（prototype commit 51c10ff）。延伸 UI 精修（收款項目 15 欄表 / 發票狀態 enum 簡化「已作廢」/ 首末欄釘選 / 新增=編輯共用 Dialog / 對帳檔案改共用上傳）於 commits 6330e9e、8bb30c3 完成，屬本 cutover 範圍外之 prototype 迭代、無 spec delta（如需 spec 收斂另開 change）
 - [ ] R2 PaymentPlan / PlannedInvoice 型別檔與 mock 檔正式移除（目前保留為 buildBillingInstallmentsFromLegacy 內部 seed data，未來重寫 backfill 為靜態 mockBillingInstallments.ts 時一併處理）
 - [ ] R3 OrderInvoiceSection / OrderPaymentSection 內既有「列表頁 list key 缺失」修補（多處 `.map` 仍未補 key 屬性，本次以 e2e 過濾繞過、非本 cutover 引入問題）
 
@@ -65,9 +65,9 @@
 
 ## Archive 收尾
 
-- [ ] A1 `/opsx:archive remove-legacy-payment-plan-planned-invoice-junction` 歸檔（觸發 doc-audit 跨檔案一致性檢查）
-- [ ] A2 CLAUDE.md § Spec 規格檔清單對應 row 延伸 dead code 移除描述
-- [ ] A3 audit-log 追加本 change cutover archive 軌跡
+- [x] A1 `openspec archive remove-legacy-payment-plan-planned-invoice-junction --skip-specs` 歸檔（本 change 無 spec delta — spec 已於前 change 補救 commit f453480 對齊主檔，故 --skip-specs；非處置失誤）
+- [x] A2 CLAUDE.md § Spec 規格檔清單對應 row 延伸 dead code 移除描述
+- [x] A3 audit-log 追加本 change cutover archive 軌跡
 
 ## 驗證
 
