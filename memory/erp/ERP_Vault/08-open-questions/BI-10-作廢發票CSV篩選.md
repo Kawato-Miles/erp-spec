@@ -11,7 +11,7 @@ raised-at: 2026-05-28
 raised-by: senior-pm (Phase 4 PM 匯報) + Miles 拍板 5「作廢發票預設不列」
 source-link: openspec/changes/unify-billing-installment-and-reconciliation-csv/design.md
 related-vault:
-  - [[../05-entities/發票]]
+  - [[../04-business-logic/付款發票邏輯]]
 related-oq:
   - BI-5
 related-change: unify-billing-installment-and-reconciliation-csv

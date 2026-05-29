@@ -16,7 +16,7 @@ related-oq:
   - PT-004
   - PT-005
   - XM-005
-  - XM-006
+  - XM-007
 related-spec: openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/
 expected-action-at: 2026-06-01
 ---
@@ -40,7 +40,7 @@ vault-audit 全量稽核（2026-05-20）+ 補測（obsidian CLI orphans / unreso
 | [PT-004](../08-open-questions/PT-004-QCRecord 資料遷移.md) | QCRecord 資料遷移 | open，無 backlink | archive 已處理（spec 改 ProductionTask 框架），OQ 未 close |
 | [PT-005](../08-open-questions/PT-005-QC 心智模型驗證.md) | QC 心智模型 | open，無 backlink | 未明確 |
 | [XM-005](../08-open-questions/XM-005-Use-As-Is 退款流程串接.md) | Use-As-Is 退款 | open，無 backlink，**priority high** | 跨售後 ticket（已列入 Insight 1）|
-| [XM-006](../08-open-questions/XM-006-降級為次級品出貨.md) | 降級為次級品 | open，無 backlink | 未明確 |
+| [XM-007](../08-open-questions/XM-007-降級為次級品出貨.md) | 降級為次級品 | open，無 backlink | 未明確 |
 
 ### 2. XM-006 編號撞號（資料完整性違規）
 
@@ -132,9 +132,9 @@ ORD-001、PI-001、PI-002、PT-001、PT-002、SHP-005、XM-002、XM-003、XM-006
 - [[../08-open-questions/PT-004-QCRecord 資料遷移]]
 - [[../08-open-questions/PT-005-QC 心智模型驗證]]
 - [[../08-open-questions/XM-005-Use-As-Is 退款流程串接]]
-- [[../08-open-questions/XM-006-降級為次級品出貨]]
-- [[../08-open-questions/after-sales-ticket-AFT-1-業務離職轉派]]
-- [[../08-open-questions/after-sales-ticket-AFT-2-逾期分級]]
+- [[../08-open-questions/XM-007-降級為次級品出貨]]
+- [[../08-open-questions/AFT-1-業務離職轉派]]
+- [[../08-open-questions/AFT-2-逾期分級]]
 
 ### Skill
 - `.claude/skills/openspec-archive-change/SKILL.md`

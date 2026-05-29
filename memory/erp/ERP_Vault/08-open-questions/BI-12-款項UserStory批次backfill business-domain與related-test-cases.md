@@ -12,8 +12,8 @@ raised-at: 2026-05-28
 raised-by: erp-planning-pre-check skill 第一輪實證
 source-link: /Users/b-f-03-029/.claude/plans/prototype-effervescent-sutton.md
 related-vault:
-  - "[[../../00-meta/business-domain-taxonomy]]"
-  - "[[../../00-meta/erp-planning-audit-framework]]"
+  - "[[../00-meta/business-domain-taxonomy]]"
+  - "[[../00-meta/erp-planning-audit-framework]]"
 related-oq: []
 expected-resolution-at: 2026-06-15
 ---

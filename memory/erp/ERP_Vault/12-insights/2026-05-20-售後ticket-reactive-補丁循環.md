@@ -14,8 +14,8 @@ related-vault:
   - "[[../05-entities/訂單]]"
   - "[[../05-entities/印件]]"
 related-oq:
-  - after-sales-ticket-AFT-1
-  - after-sales-ticket-AFT-2
+  - AFT-1
+  - AFT-2
   - AFT-3
   - AFT-4
   - AFT-5
@@ -50,8 +50,8 @@ vault-audit 接續觸發；OQ 累計 32 個（28 open + 4 answered）；售後 t
 
 | OQ ID | 主題 | priority |
 |-------|------|---------|
-| [after-sales-ticket-AFT-1](../08-open-questions/after-sales-ticket-AFT-1-業務離職轉派.md) | 業務離職轉派 | — |
-| [after-sales-ticket-AFT-2](../08-open-questions/after-sales-ticket-AFT-2-逾期分級.md) | 逾期分級 | — |
+| [AFT-1](../08-open-questions/AFT-1-業務離職轉派.md) | 業務離職轉派 | — |
+| [AFT-2](../08-open-questions/AFT-2-逾期分級.md) | 逾期分級 | — |
 | [AFT-3](../08-open-questions/AFT-3-OA已核可改金額是否通知主管.md) | OA 已核可改金額通知 | low |
 | [AFT-4](../08-open-questions/AFT-4-補印優先度規則.md) | 補印優先度 | medium |
 | [AFT-5](../08-open-questions/AFT-5-補費OA由誰建立.md) | 補費 OA 由誰建 | medium |
@@ -121,8 +121,8 @@ Vault 內無「售後 ticket 完整流程跨角色推演」的文件（無對應
 - [[../04-business-logic/付款發票邏輯]]
 
 ### OQ
-- [[../08-open-questions/after-sales-ticket-AFT-1-業務離職轉派]]
-- [[../08-open-questions/after-sales-ticket-AFT-2-逾期分級]]
+- [[../08-open-questions/AFT-1-業務離職轉派]]
+- [[../08-open-questions/AFT-2-逾期分級]]
 - [[../08-open-questions/AFT-3-OA已核可改金額是否通知主管]]
 - [[../08-open-questions/AFT-4-補印優先度規則]]
 - [[../08-open-questions/AFT-5-補費OA由誰建立]]

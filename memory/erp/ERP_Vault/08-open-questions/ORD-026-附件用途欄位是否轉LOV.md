@@ -2,7 +2,7 @@
 type: open-question
 module:
   - order-management
-oq-id: ORD-019
+oq-id: ORD-026
 status: open
 priority: low
 audience: internal
@@ -16,7 +16,7 @@ related-change: relax-order-detail-edit-conditions
 expected-resolution-at: 2026-Q4
 ---
 
-# ORD-019：OrderAttachment.purposeNote 上線前驗證是否轉 LOV
+# ORD-026：OrderAttachment.purposeNote 上線前驗證是否轉 LOV
 
 ## 背景
 

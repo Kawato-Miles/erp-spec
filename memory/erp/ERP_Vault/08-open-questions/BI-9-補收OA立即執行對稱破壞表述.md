@@ -11,8 +11,7 @@ raised-at: 2026-05-28
 raised-by: senior-pm (Phase 4 PM 匯報)
 source-link: openspec/changes/unify-billing-installment-and-reconciliation-csv/design.md
 related-vault:
-  - [[../05-entities/訂單異動]]
-  - [[../06-state-machines/訂單異動狀態機]]
+  - [[../05-entities/訂單]]
 related-oq: []
 related-change: unify-billing-installment-and-reconciliation-csv
 expected-resolution-at: 2026-Q3

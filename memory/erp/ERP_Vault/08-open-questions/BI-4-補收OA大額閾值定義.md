@@ -10,7 +10,7 @@ raised-at: 2026-05-28
 raised-by: erp-consultant (Phase 3 C-PM-3 反向挑戰)
 source-link: openspec/changes/unify-billing-installment-and-reconciliation-csv/design.md
 related-vault:
-  - [[../05-entities/訂單異動]]
+  - [[../05-entities/訂單]]
   - [[../03-roles/業務主管]]
 related-oq:
   - AFT-3

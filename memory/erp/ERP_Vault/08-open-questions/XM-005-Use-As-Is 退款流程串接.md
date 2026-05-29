@@ -16,7 +16,7 @@ raised-by: ceo-reviewer (Round 1 P0)
 source-link: openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/design.md § Open Questions OQ-C1-4
 related-vault:
   - "[[QC]]"
-  - "[[訂單異動]]"
+  - "[[../05-entities/訂單]]"
   - "[[業務]]"
 related-changes:
   - reclassify-qc-and-add-inspection

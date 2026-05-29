@@ -94,7 +94,7 @@ last-reviewed: 2026-05-28
 **情境**：第一輪 Billing & Cash 稽核時識別到 `03-roles/會計.md` 參與階段標記為「審稿」階段，但實際業務職責涵蓋全程（建單 / 出貨 / 月結對帳 / 報表）。
 **領域**：Billing & Cash
 **卡類型**：1. 角色
-**修正方式**：edit `03-roles/會計.md` 補「月結對帳節奏」段 + 修正參與階段欄位（已開 [[../../08-open-questions/ORD-1-會計階段標記是否錯誤|ORD-001]] 等 Miles 拍板）
+**修正方式**：edit `03-roles/會計.md` 補「月結對帳節奏」段 + 修正參與階段欄位（已開 [[../../08-open-questions/ORD-001-會計階段標記是否錯誤|ORD-001]] 等 Miles 拍板）
 **根因**：角色卡頭部 metadata「參與階段」未追上業務範疇擴張（refine-after-sales / billing-installment 累積後職責變寬但卡未更新）
 **衍生 OQ**：[[../../08-open-questions/BI-13-第一輪稽核識別的領域缺漏項]]
 

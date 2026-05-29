@@ -106,7 +106,7 @@ last-reviewed: 2026-05-28
 | **單價小數** | `ItemPrice` 限 Int（純整數）| DM 0.5 元/張、傳單 2.5 元/張常見 | 不換算；前端 lint 擋小數（業務自行調整為「批 / 式」計價）|
 | **品項拆解** | 自由分項 | 多印件 + 多收費類型（製版 / 印刷 / 後加工 / 運費）| 業務 / 諮詢自由輸入，預設從訂單印件帶入但可改 |
 | **數量上限** | `ItemCount` Int(5)=99999 | 超大量 DM / 名片可能爆 | 拆多項或改單位（如「千張」）|
-| **單位字數** | 限中文 2 字 / 英數 6 字 | 「組合包裝」「特殊規格」太長 | 限 dropdown 強制合規（[[../../../openspec/specs/prototype-shared-ui/spec.md|prototype-shared-ui spec]] § 共用單位 LOV）|
+| **單位字數** | 限中文 2 字 / 英數 6 字 | 「組合包裝」「特殊規格」太長 | 限 dropdown 強制合規（[[../../../../openspec/specs/prototype-shared-ui/spec.md|prototype-shared-ui spec]] § 共用單位 LOV）|
 | **退款方向** | 作廢 / 折讓兩種，不可「負額發票」| 想直接負額紀錄 | MUST 走折讓單流程 |
 
 ## 七、連帶實體關聯（連帶矩陣）

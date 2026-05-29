@@ -11,7 +11,6 @@ raised-by: erp-consultant (Phase 3 C-PM-2 反向挑戰)
 source-link: openspec/changes/unify-billing-installment-and-reconciliation-csv/design.md
 related-vault:
   - [[../05-entities/訂單]]
-  - [[../05-entities/訂單異動]]
 related-oq: []
 related-change: unify-billing-installment-and-reconciliation-csv
 expected-resolution-at: apply 階段細化
