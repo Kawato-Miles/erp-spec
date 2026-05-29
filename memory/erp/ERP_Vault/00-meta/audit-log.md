@@ -1213,3 +1213,48 @@ Archive 位置：
 - **deferred（40/42 tasks，2 未完續用 --yes）**：R2 三型別檔正式移除（暫留作 buildBillingInstallmentsFromLegacy seed data）+ R3 既有 list key warning 修補（非本 cutover 引入）
 - **cutover 範圍外 prototype 迭代（Miles 第二輪回饋，無 spec delta）**：收款項目 15 欄表共用元件化（N1）+ 預計收款方式改名（N2）+ 發票作廢解鎖刪除（N3）+ 發票狀態 enum 簡化「已作廢」（N5）+ 首末欄釘選（N6）+ 新增收款 Dialog 不跑版 + 入帳表常駐（N7）+ 新增=編輯共用 Dialog（N8，updatePaymentWithAllocations / cancelPaymentWithAllocations）+ 對帳檔案改共用 OrderFileUploadDialog；commits 6330e9e / 8bb30c3
 - **待 Miles 決策**：上述 N1-N8 + 上傳改共用為 prototype 迭代、未進任何 spec delta；如需 spec 收斂（order-management 收款項目表結構 / prototype-data-store 新 store actions / prototype-shared-ui BillingInstallmentAllocationTable）須另開 change
+
+---
+
+## 2026-05-29 Billing & Cash + Order + Pre-sales 稽核（議題：諮詢取消收斂到一般訂單取消流程）
+
+**觸發**：opsx:explore 四輪收斂後進 propose 前 pre-check（change 暫名 converge-consultation-cancel-to-order-cancel-flow，結構性變更，推翻 unify-billing 部分拍板）。執行者與稽核者分離（Explore sub-agent 跑稽核 / 主對話 agent 跑判斷）。
+
+### 雙軸量化矩陣（3 領域 × 7 卡類型，格式 N 已涵蓋 / M 待修補 / K OQ）
+| 卡類型 | L1.6 Billing | L1.2 Order | L1.1 Pre-sales |
+|--|--|--|--|
+| 角色 | 3/1/1 | 2/0/0 | 2/1/1 |
+| 實體 | 4/2/3 | 3/2/2 | 2/1/2 |
+| 流程 | 3/2/2 | 4/1/1 | 2/2/2 |
+| 情境 | 13/1/1 | 2/1/1 | 2/1/2 |
+| User Story | 6/2/1 | 4/2/1 | 6/2/2 |
+| 業務邏輯 | 2/3/4 | 1/1/1 | 1/1/2 |
+| 法規 | 4/0/0 | 1/0/0 | 0/0/0 |
+| 小計 | 35/11/12 | 17/7/6 | 15/8/11 |
+
+總計 **N=67 / M=26 / K=29**。七實體連帶 **7/7 全命中**（觸發 §五B.3 三類紀律：改退款 / 改發票 / 改 OA）。
+
+### 修補決定：本次「不做卡修補」（主對話 agent 判斷擋下稽核 agent 的 10 項建議）
+稽核 sub-agent 列 M-1~M-10 修補建議，主對話 agent 判斷後**不執行**：
+- M-1/4/5/6/7/8/10 屬「類 B 待定案設計」（諮詢取消改已取消 / 對帳改主軸 / OA 分流）→ propose 序列協作 + verify 才定案，pre-check 預寫進 Vault = premature documentation + 製造新漂移。
+- M-9（BL 卡舊詞 PlannedInvoice→BillingInstallment 漂移）屬 unify-billing 議題、非本規劃範疇（insight 卡 2026-05-29 §6 已記），順手改違反 surgical + scope creep。
+- M-2/M-3（諮詢單狀態用詞 / US-CR-006 舊全額語意）涉及卡馬上被 propose 改寫，現改造成中間狀態 + 重複工。
+- 結論：M 項本質是「待 propose 定案設計」+「他議題既有漂移」，非「本規劃現可填的既有 know-how 缺漏」→ 轉 propose 輸入。
+
+### 新建 OQ（已 commit a99dcfa）
+CR-5 諮詢取消退款 OA 審核路徑 / CR-6 諮詢取消專屬待開發票是否廢除 / BI-15 對帳主軸改已開發票後未開票應收呈現。
+
+### Step 5 閉環驗證（非 false completion）
+M=26 未轉 N（本次不修卡），但經分類確認 M 項「非既有 know-how 缺漏、是待定案設計 / 他議題漂移」，已由 OQ + plan + 本稽核報告承載 → 不算假完成。已答事項 14 項彙整供 propose 避免重複問（半額 CR-3 / 金流數字 / 取消理由 / 退款 SLA / 取消 Payment 回退 OA ORD-003 / 處理中 Payment 不入 GL ORD-019 / 期次凍結 BI-1 / top-down 連鎖 / 角色分工）。
+
+### propose 須帶入 OQ
+直接 CR-5/CR-6/BI-15 + 對帳改主軸連動重審 BI-5（CSV14欄）/ BI-11（對帳警示）/ BI-10（作廢篩選）+ 退款 OA 連帶 BI-9 / ORD-004 / ORD-025。
+
+### 設計跑偏風險（9 項，關鍵 4）
+- R1/R2（最高）：四來源三層漂移 + spec 主檔仍 PlannedInvoice、prototype 已 BillingInstallment → **propose MUST 以 prototype as-built 為基準**。
+- R3/R6：諮詢訂單無工單 → top-down 連鎖空轉 + 善後走「一般訂單取消金流子集」**不走 AfterSalesTicket** → propose 須 explicit 標適用邊界。
+- R5（**需 Miles 拍板**）：半額 -1000「預設可改」vs CR-3「hardcode 鎖死」張力 → 收斂到一般訂單取消後退款 OA 本由業務依實際決定，諮詢 -1000 應為預設值還是仍 hardcode？鬆動 CR-3 resolved 需確認。
+
+### 反模式識別（追加 audit-failure-patterns）
+- **Premature documentation / scope creep**：稽核 sub-agent 把「待 propose 定案設計」列為「pre-check 修補建議」；主對話 agent 識別並擋下（pre-check 修補應限既有 know-how 缺漏，非預寫未定案設計）。
+- **執行者稽核者分離的價值體現**：稽核 agent（read-only）不知「未定案設計不該寫卡」的界線、傾向全列修補；主對話 agent 持規劃脈絡做最終判斷，正是分離設計要的互補。
