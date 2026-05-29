@@ -166,7 +166,7 @@ last-reviewed: 2026-05-19
 
 ## 用於產生 Test Case
 
-每個情境衍生 → Notion ERP Test Case DB。詳見 [memory/erp/payment-invoice-scenarios.md § 使用本文件產生 User Story / Test Case 的建議](../../payment-invoice-scenarios.md)。
+每個情境衍生 → Notion ERP Test Case DB。產 user story / test case 規範見 `erp-user-story` / `erp-test-case` skill；13 款項情境詳述見 [付款發票情境](../04-business-logic/payment-invoice-scenarios.md)。
 
 ## 來源
 

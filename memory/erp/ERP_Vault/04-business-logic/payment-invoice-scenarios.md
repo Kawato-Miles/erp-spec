@@ -1,8 +1,22 @@
+---
+type: business-logic
+module:
+  - order-management
+  - after-sales-ticket
+business-domain:
+  - billing-cash
+related-spec: openspec/specs/order-management/spec.md
+status: active
+last-reviewed: 2026-05-28
+---
+
 # 訂單款項與發票業務情境（Notion 13 情境）
+
+> 2026-05-28 從 `memory/erp/` 上層移入 ERP_Vault（BI-13 可見性修正，解 Obsidian 看不到問題）。[[付款發票邏輯]] 為本卡索引型 Zettel。
 
 **來源**：[Notion follow-up「提供收款情境」](https://www.notion.so/3573886511fa80b39093d8c76b57737a)
 **整理**：2026-05-12（refactor-order-adjustment-and-cleanup change archive 隨附）
-**用途**：後續產生 user story / test case 推送至 Notion 給外部確認的原始材料
+**用途**：付款發票領域的業務情境詳述（13 情境），作為產 user story / test case 的原始素材
 
 13 個情境分類：
 - 特殊發票開立方式 8 個（F1-F8；F9 跨訂單混合匯款屬人工流程不做）
@@ -446,30 +460,10 @@
 
 ---
 
-## 使用本文件產生 User Story / Test Case 的建議
+## 產生 User Story / Test Case 的去處
 
-每個情境可衍生：
+本文件 13 情境為產 user story / test case 的**原始素材**。**格式規範與撰寫紀律不在本卡**（避免 business-logic 卡混入 user-story / test-case 規範，對應 [[wiki-schema#十一、卡類型內容職責邊界]]）：
 
-**User Story 範本**：
-```
-作為 [角色，如 業務 / 業務主管 / 會計]
-我希望 [動作，如 開立兩張不同金額的發票]
-以便 [目的，如 滿足客戶內部報帳需求]
-
-驗收條件：
-- [取自驗證重點清單]
-```
-
-**Test Case 範本**：
-```
-測試案例：[情境標題]
-前置條件：[訂單狀態 / 既有資料]
-測試步驟：[取自實作解決方式]
-預期結果：[取自驗證重點]
-對應 Prototype 訂單：[Prototype 對應訂單]
-```
-
-Notion 推送時建議分類：
-- 對應 Notion ERP Test Case DB：https://www.notion.so/2b93886511fa817fbd65e7608726f036
-- 標籤：模組 = 訂單管理 / 發票 / 收款 / 訂單異動
-- 優先順序：依情境發生頻率與業務影響面評估
+- **產 User Story**：見 [[../11-review-knowledge/pm/user-story-spec]] + `erp-user-story` skill（兩階段紀律 / INVEST / 中英夾雜 lint）
+- **產 Test Case**：見 `erp-test-case` skill（推送 [Notion ERP Test Case DB](https://www.notion.so/2b93886511fa817fbd65e7608726f036)）
+- **情境 → acceptance criteria 對應**：13 情境各自的「驗證重點」段可作為 user story acceptance criteria / test case 預期結果的來源

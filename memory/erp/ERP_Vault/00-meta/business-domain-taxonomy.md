@@ -84,7 +84,7 @@ last-reviewed: 2026-05-28
   - 角色：`03-roles/會計.md`（主要對帳）/ `03-roles/業務.md` § 款項 / `03-roles/諮詢.md` § 諮詢費
   - 實體：`05-entities/訂單.md` § Payment / Invoice / OrderAdjustment / SalesAllowance / PlannedInvoice 段 / `售後服務.md` § OA-Payment 段
   - 業務邏輯：`04-business-logic/付款發票邏輯.md`（含 13 情境索引）
-  - 來源：`memory/erp/payment-invoice-scenarios.md`（13 業務情境 475 行）
+  - 來源：`04-business-logic/payment-invoice-scenarios.md`（13 業務情境 475 行，同目錄）
   - 法規（本 plan 新建）：`04-business-logic/發票法規硬約束-ezPay-MIG.md`
 - **觸發詞**：「款項」「發票」「收款」「對帳」「OA」「Payment」「Invoice」「PlannedInvoice」「退款」「補收」「折讓」「期次」「老化」「應收」「應付」「SalesAllowance」「PaymentInvoice」
 

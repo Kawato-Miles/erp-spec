@@ -151,7 +151,7 @@ last-reviewed: 2026-05-28
 - [[../05-entities/售後服務]]（OA-Payment 段）
 - [[../03-roles/會計]]（對帳 / 發票開立角色）
 - [[../03-roles/業務]]（款項追款）
-- [[../../payment-invoice-scenarios]]（13 業務情境細節）
+- [[payment-invoice-scenarios]]（13 業務情境細節，同目錄）
 - [[../00-meta/business-domain-taxonomy]] § L1.6 Billing & Cash
 - [[../../../../openspec/specs/order-management/spec.md|order-management spec]] § 「發票品項符合 ezPay 與電子發票法規硬約束」（L2969+）
 - [[../../../../openspec/specs/prototype-shared-ui/spec.md|prototype-shared-ui spec]] § 共用單位 LOV

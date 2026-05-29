@@ -1160,3 +1160,39 @@ Archive 位置：
 **驗證**：tsc 通過、12 e2e 全綠（4 個 billing-installment 系列 spec 文字 / selector 對齊新標題與欄位名）
 
 **OQ 狀態變化**：BI-1（原始日期基準凍結時點）open → resolved
+
+---
+
+## 2026-05-28 第一輪稽核 follow-up（BI-12/13/14 + business-logic 內容規範）
+
+**觸發**：Miles 要求處理第一輪稽核剩餘項（vault-audit / BI-12 / BI-13）+ 對談中發現 business-logic 缺內容規範
+
+### BI-12（13 款項 User Story backfill business-domain）
+- 10 張 billing-cash（US-ORD-022~031）+ 3 張 order-management（US-ORD-005/012/032）
+- 累計 18 張 User Story 有 business-domain（13 本次 + 5 既有）
+- related-test-cases 仍待後續（0/18，需 Notion Test Case 產生後配對，留 BI-12）
+
+### BI-13（領域缺漏項）
+- 角色維度 ✅：新建 03-roles/業務主管.md（從 user-roles spec L572-614 提取、有 source、非自編；明示 ≠ Supervisor）
+- 流程維度 ✅：Miles 對談收集寫入 業務.md（款項追款流程）+ 會計.md（月結對帳節奏）
+- 情境維度 ✅修正：sub-agent over-report（13 情境已涵蓋發票拆開/作廢/折讓），閉環驗證 + Miles 確認修正
+- 可見性 ✅：payment-invoice-scenarios.md git mv 移入 04-business-logic/（Miles 選 A）+ 加 frontmatter + 更新 9 處引用路徑
+
+### BI-14（新開 OQ）
+- 8 張款項 User Story 業務情境段含 UI 措辭違反紀律（022/024/025/026/027/028/031/032）→ 標批次處理
+
+### business-logic 內容職責邊界（Miles 對談發現）
+- **問題**：business-logic 卡內容沒被規範 → 沒被稽核（例：發票說明卻寫 user-story 規範）
+- **修補**：wiki-schema 新增 § 十一「卡類型內容職責邊界」（6 卡類型該寫/不該寫）+ 維度 14 lint
+- **清理**：付款發票邏輯.md § 九 + payment-invoice-scenarios.md § 使用建議 移除 user-story / test-case 格式模板，改 cross-reference erp-user-story / erp-test-case skill
+
+### 反模式追蹤（audit-failure-patterns 新增 2 案例）
+- Over-report（稽核把已涵蓋情境誤判為缺漏）— False completion 的相反
+- Scope creep（business-logic 卡混入 user-story / test-case 格式模板）
+
+### 待處理（不在本次範圍）
+- align-business-consultation-coverage-gaps change 引用的 payment-invoice-scenarios.md 路徑已變（memory/erp/ → memory/erp/ERP_Vault/04-business-logic/），該 change 執行時須用新路徑（本次未改別的 change 文件，避免越界）
+- BI-12 related-test-cases 配對（0/18）+ BI-14 UI 措辭清理（8 張）
+
+### 待跑
+- vault-audit 12 維度（本次 follow-up 後）

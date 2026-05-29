@@ -475,6 +475,21 @@ related-changes:                   # 本期涉及的 openspec change
 
 > 本維度由 erp-user-story skill 引入後預留，待 vault-audit skill 第三階段擴充實作。
 
+### 維度 14：卡類型內容職責邊界（2026-05-28 新增）
+
+> 之前 schema 只規範 frontmatter（§ 四）+ user-story 內容（維度 13），其他卡類型正文無邊界 → business-logic / scenario 卡易混入 user-story 格式模板 / test-case 範本等越界內容。本維度補此缺口。詳見 § 十一。
+
+**Error 條件**：
+- business-logic / scenario / entity / role / state-machine 卡正文含 **user-story 格式模板**（「作為 [」+「我希望」+「以便」三者連續出現於同一程式碼區塊或段落）
+- business-logic / scenario 卡正文含 **test-case 範本**（「測試案例：」+「前置條件：」+「測試步驟：」+「預期結果：」連續出現）
+
+**Warning 條件**：
+- business-logic 卡正文含完整實體 Data Model 表格（疑似 entity 內容越界）
+- scenario 卡正文含計價公式細節（疑似 business-logic 越界）
+- 任一卡正文用「複製格式模板」而非「cross-reference skill / spec」說明如何產 user story / test case
+
+> 本維度 2026-05-28 由 `erp-planning-pre-check` 第一輪稽核發現 business-logic 卡缺內容規範後新增（付款發票邏輯.md § 九 + payment-invoice-scenarios.md § 使用建議曾混入 user-story 範本，已清理為 cross-reference）。對應 [[../11-review-knowledge/_shared/audit-failure-patterns]] Scope creep 反模式。
+
 ## 七、命名規約
 
 ### 一般卡
@@ -569,3 +584,24 @@ related-changes:                   # 本期涉及的 openspec change
 | `scope-boundary.md` | Vault 收 / 不收 | 與本 schema 配合：scope-boundary 決定什麼進 Vault，本 schema 決定怎麼寫 |
 | `vault-charter.md` | KM 章程 | 本 schema 是 charter § 編輯規約 的展開 |
 | `sync-workflow.md` | 三邊同步流程 | 本 schema 不涉及 sync，sync 由 sync-workflow 處理 |
+
+## 十一、卡類型內容職責邊界（2026-05-28 新增）
+
+> 各卡類型的「正文內容職責」。之前 schema 只規範 frontmatter（§ 四）+ user-story 內容（§ 六維度 13），其他卡類型正文無邊界 → business-logic / scenario 卡易混入 user-story 格式模板 / test-case 範本 / UI 措辭等越界內容（對應 [[../11-review-knowledge/_shared/audit-failure-patterns]] Scope creep 反模式）。維度 14 依本節 lint。
+
+### 11.1 各卡類型內容職責
+
+| 卡類型 | 正文該寫（職責內容）| 不該寫（越界內容）|
+|-------|------------------|------------------|
+| `business-logic` | 業務規則 / 計算邏輯 / 連帶矩陣 / 情境分類索引 | user-story 格式模板（作為/我希望/以便）/ test-case 步驟範本 / UI 措辭 / 完整實體 Data Model |
+| `scenario` | 跨模組端到端情境（角色傳遞 / 狀態鏈）| user-story 格式模板 / test-case 範本 / 計價公式細節（屬 business-logic）|
+| `entity` | 實體欄位 / 關聯 / 狀態 | 業務流程敘述（屬 business-logic / scenario）/ user-story |
+| `role` | 角色職責 / 權限 / 工作流 / 痛點 | 跨角色流程細節（屬 scenario）/ 實體欄位定義 |
+| `state-machine` | 狀態定義 / 轉換條件 / 觸發事件 | 業務情境敘述（屬 scenario）/ UI 措辭 |
+| `user-story` | 業務情境（穩定層）+ UI 操作（易變層）| 詳見 § 六維度 13（已規範）|
+
+### 11.2 共通原則
+
+- **產 user story / test case 一律 cross-reference 而非複製模板**：business-logic / scenario 卡若要說明「如何產 user story / test case」，MUST 指向 [[../11-review-knowledge/pm/user-story-spec]] + `erp-user-story` / `erp-test-case` skill，**禁複製格式模板進卡**
+- **越界內容移到對應卡類型**：發現越界內容時移到該內容職責所屬的卡類型（如實體 Data Model 從 business-logic 移到 entity）
+- **cross-reference 用 wiki link / skill 名稱**，不複製內容（避免雙份維護 + model collapse）

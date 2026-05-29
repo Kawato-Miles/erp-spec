@@ -119,6 +119,28 @@ last-reviewed: 2026-05-28
 
 ---
 
+### 2026-05-28 反模式：Over-report（稽核 over-report 把已涵蓋情境誤判為缺漏）
+
+**情境**：第一輪 Billing & Cash 稽核時，sub-agent 報「情境維度 K=1 缺邊界情境變體（跨期作廢折讓 / 拆票 / 合期）」。但 Miles 確認 + 核對 payment-invoice-scenarios.md 後發現：跨期作廢折讓已涵蓋（情境 7 + 8）、拆票已涵蓋（情境 2）、合期已涵蓋（特殊收款）。sub-agent 誤把已涵蓋的情境判為缺漏。
+**領域**：Billing & Cash
+**卡類型**：4. 情境
+**修正方式**：閉環驗證 + Miles 確認時核對既有情境檔，修正稽核判斷（BI-13 § 4 標明組 3 修正）
+**根因**：sub-agent 稽核未實際讀完 payment-invoice-scenarios.md 全 13 情境就判缺漏（憑印象 over-report）
+**教訓**：稽核「缺漏」判斷 MUST 先讀完該卡類型既有內容才能下結論；over-report 是 False completion 的相反（false completion = 漏報、over-report = 誤報），兩者都靠「Step 5 閉環驗證 + Miles 確認」修正
+**衍生紀律**：稽核 Step 3 判「待修補 M」前 MUST 完整讀既有卡，禁憑印象判缺漏
+
+### 2026-05-28 反模式：Scope creep（business-logic 卡混入 user-story / test-case 格式模板）
+
+**情境**：Miles 發現 business-logic 卡內容沒被規範 → 沒被稽核。具體例：付款發票邏輯.md § 九 + payment-invoice-scenarios.md § 使用建議 混入 user-story 格式模板（作為/我希望/以便/驗收條件）+ test-case 範本，這些屬 erp-user-story / erp-test-case skill 職責，不該複製進 business-logic 卡。
+**領域**：Billing & Cash（cross-domain 規範問題）
+**卡類型**：6. 業務邏輯
+**修正方式**：(1) wiki-schema 新增 § 十一「卡類型內容職責邊界」+ 維度 14 lint (2) 清理兩卡越界內容改為 cross-reference skill
+**根因**：wiki-schema 只對 user-story 有內容 lint（維度 13），business-logic / scenario / entity / role / state-machine 只規範 frontmatter、正文無邊界 → 任何卡可混入其他卡類型內容不被稽核抓到
+**教訓**：每個卡類型須有「正文內容職責邊界」（該寫什麼 / 不該寫什麼）+ 對應 lint；產 user story / test case 一律 cross-reference skill 而非複製模板
+**衍生紀律**：[[../../00-meta/wiki-schema]] § 十一 + 維度 14
+
+---
+
 （後續累積實證案例）
 
 ## 三、預防機制
