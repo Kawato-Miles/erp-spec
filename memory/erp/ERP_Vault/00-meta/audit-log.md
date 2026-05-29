@@ -1258,3 +1258,34 @@ M=26 未轉 N（本次不修卡），但經分類確認 M 項「非既有 know-h
 ### 反模式識別（追加 audit-failure-patterns）
 - **Premature documentation / scope creep**：稽核 sub-agent 把「待 propose 定案設計」列為「pre-check 修補建議」；主對話 agent 識別並擋下（pre-check 修補應限既有 know-how 缺漏，非預寫未定案設計）。
 - **執行者稽核者分離的價值體現**：稽核 agent（read-only）不知「未定案設計不該寫卡」的界線、傾向全列修補；主對話 agent 持規劃脈絡做最終判斷，正是分離設計要的互補。
+
+---
+
+## [2026-05-29] vault-audit | 全量 | 12 維度（觸發：converge change propose 後 5 卡異動 ≥5）
+
+**模式**：全量（執行者與稽核者分離，Explore sub-agent 跑檢查）
+
+**結果**：
+- 維度 1 矛盾：OK（0 真矛盾；諮詢取消退款 OA 三卡 CR-3/CR-5/BI-9 為設計張力已分流）
+- 維度 2 過時：OK（0 卡 last-reviewed > 90 天）
+- 維度 3 孤立：Warning（3 新 OQ 非孤立；~24 US 卡屬 leaf 結構性 orphan、非本次；12-insights 2026-05-29 卡未列 README）
+- 維度 4 dangling：**Error（21 處）**—— 訂單異動家族 9 處（CR-5 本次引入 3 處 + 既有 BI-9/BI-4/BI-11/XM-005）、折讓單/發票 entity 卡未建 4 處、編號拼錯 4 處（ORD-1/ORD-2/XM-006/XM-005）、相對路徑深度錯 8 處、舊命名 after-sales-ticket-AFT-* 殘留 3 處
+- 維度 5 frontmatter：**Error** —— 3 新 OQ 9 必填欄全齊 ✓；但 oq-id **ORD-019 重號**（附件用途轉LOV / 會計處理中Payment 兩卡）；缺 source-link 3 張、缺 expected-resolution-at 11 張
+- 維度 6 規則：OK（5 異動卡 0 違規、無 inline OQ / callout）
+- 維度 7 Vault↔OpenSpec：OK（related-change converge... 存在）
+- 維度 8 OQ 健康：Warning（open 63 張、無逾期 > 30 天、缺欄如維度 5）
+- 維度 9 角色 alignment：Warning（11 角色既有落後、穩定未惡化）
+- 維度 10 KPI：OK（本次與 KPI 無連動）
+- 維度 11 Raw：OK（1 張 status=raw 1 天未逾期、有 raw-source-link）
+- 維度 12 Review：**Error**（5 月 21 工作日僅 1 daily ≈5%、本週 W22 無 weekly）
+
+**本次 5 卡異動專項**：3 新 OQ frontmatter 全齊 + 無規則違規 + related-change 對齊 + 非孤立；誤審卡四要素齊全 + frontmatter 更新；audit-log pre-check 條目完整。**唯一本次引入問題：CR-5 訂單異動家族 dangling（已即修，改指 [[../05-entities/訂單]]）**。
+
+**本次處置**：CR-5 frontmatter L15-16 + 內文 dangling 已修（訂單異動 / 訂單異動狀態機 → 訂單.md，因 OrderAdjustment 嵌於訂單卡無獨立卡）。
+
+**下一步建議（既有問題，非本次造成，建議 Miles 批次處理）**：
+1. 訂單異動家族 dangling 系統性修：決定建獨立 entity/state-machine 卡 vs 全 6 處（BI-9/BI-4/BI-11/XM-005）改指 訂單.md
+2. oq-id ORD-019 重號：附件用途轉LOV 卡改編 ORD-026（現最大 ORD-025）
+3. 補 weekly-review（2026-W22）+ daily 頻率回穩
+4. 折讓單/發票卡未建 + 編號拼錯 4 處 + 路徑深度 8 處 + 舊命名 3 處
+5. 稽核框架補強：pre-check / vault-audit 維度 4 納入 frontmatter related-vault 路徑式 wiki link 存在性驗證（本次 + unify-billing 連兩輪漏報訂單異動 dangling）

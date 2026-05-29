@@ -12,8 +12,7 @@ raised-at: 2026-05-29
 raised-by: Claude (opsx:explore 諮詢取消收斂)
 source-link: opsx:explore「諮詢取消收斂到一般訂單取消流程」討論（2026-05-29，plan：~/.claude/plans/stateful-chasing-hennessy.md）
 related-vault:
-  - [[../05-entities/訂單異動]]
-  - [[../06-state-machines/訂單異動狀態機]]
+  - [[../05-entities/訂單]]
   - [[../05-entities/諮詢單]]
 related-oq:
   - BI-9
@@ -32,7 +31,7 @@ expected-resolution-at: propose 階段
 ## 涉及範圍
 
 - 模組：consultation-request（諮詢取消觸發）、order-management（OA 流程）、state-machines（OA 狀態機）
-- 相關卡：[[../05-entities/訂單異動]]、[[../06-state-machines/訂單異動狀態機]]
+- 相關卡：[[../05-entities/訂單]]（OrderAdjustment 行為摘要 + 狀態機段嵌於此，OrderAdjustment 無獨立卡）
 - 影響範圍：諮詢取消自動建單流程、OA 已執行 invariant、業務主管審核負擔
 
 ## 討論記錄
