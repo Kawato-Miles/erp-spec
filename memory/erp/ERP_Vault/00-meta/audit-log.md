@@ -1196,3 +1196,11 @@ Archive 位置：
 
 ### 待跑
 - vault-audit 12 維度（本次 follow-up 後）
+
+### vault-audit 12 維度結果（2026-05-28，sub-agent 跑，執行者與稽核者分離）
+- 維度 4 dangling link：0（[[payment-invoice-scenarios]] / [[業務主管]] / [[wiki-schema#十一...]] / 業務↔會計互引 等全解析）
+- 維度 5 frontmatter：0 缺失（新建 6 卡 + 移入 payment-invoice-scenarios 皆合規含 business-domain）
+- 維度 6 規則：0 違規（無 callout / inline OQ）
+- 維度 14 內容邊界：0 殘留越界（business-logic 卡已無 user-story / test-case 範本）
+- 維度 3 孤立：0 orphan（新建卡皆有 inbound link）
+- **總評：Error 0 / Warning 0 通過**
