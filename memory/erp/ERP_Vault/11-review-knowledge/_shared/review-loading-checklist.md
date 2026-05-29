@@ -1,8 +1,8 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-28
-last-case-added: 2026-05-21
+last-reviewed: 2026-05-29
+last-case-added: 2026-05-29
 ---
 
 # 背景載入規則 + 設計理解摘要 + 防誤審記錄
@@ -90,6 +90,19 @@ last-case-added: 2026-05-21
   4. **規則**：審查 frontmatter 必填項時，agent MUST 在報告引用「frontmatter Line N: `key: value`」形式，不能僅以「缺 X」一句帶過
 - **適用 agent**：跨 agent 通用（任何審查 Vault 卡 frontmatter 的場景）
 - **相關情境**：[[../../13-user-stories/prepress-review/US-AR-007-執行印件審稿]] 雙視角審查（2026-05-21）
+
+### 2026-05-29「諮詢取消退款 OA 可調誤綁人工核可」誤審
+
+- **誤審 agent**：senior-pm（序列協作 Phase 1）
+- **誤審內容**：釐清「諮詢取消退款 OA(-1000) 的金額彈性與審核路徑」時，假設「金額可調 → 必須綁人工主管核可」（否則業務可繞過核可隨意改退款金額、留沒人把關的洞），把「可調」與「人工事前核可」綁定成「成對二擇一」決策（B+B 可調+主管核可 / A+A 鎖死+系統自動）
+- **實際情況**：既有規則「OrderAdjustment 已核可後修改不需重新送審」（order-management spec § 業務於已核可狀態調整金額 L1184-1191，refine-after-sales-refund 既有設計）——「核可」把關的是「建立時的金額」，「已核可後調整金額」是既有免重審能力（顯示「核可金額 vs 當前金額」對照 + audit log）。Miles 原話糾正：「之前說的訂單異動要審核，是『負項建立時要審核』，但『審核後的修改就不用審核』，訂單目前就是這個規則」+「調整訂單異動的金額時，主管不需要核可才對」。所以「可調」與「人工核可」本可解耦：諮詢取消 OA 系統建「已核可」（approved_by=system 免人工）即同時滿足「系統審核通過 + 可調」，根本不需引入人工核可關卡
+- **教訓**：
+  1. 設計 OrderAdjustment 審核流程 / 金額可調性時，agent MUST 先查「已核可後修改不需重審」既有規則（order-management § 業務於已核可狀態調整金額），不要憑直覺假設「金額可調必須綁人工事前核可」
+  2. 「核可」把關的是「建立時的金額」；「已核可後調整」是既有免重審能力——兩者是不同關卡，把它們綁成同一決策（可調就要核可）是過度推論
+  3. 對「系統內生 OA」（如諮詢取消半額退費），系統 approved_by=system 直接已核可即可同時達成「免人工 + 可調」，毋須引入人工核可
+  4. **規則**：提「可調 → 需核可」這類綁定前，MUST 先確認既有狀態機是否已有「核可後可改」的免重審設計；把「事前核可」與「事後可調」當成互斥綁定，是漏查既有規則的過度推論
+- **適用 agent**：跨 agent 通用（任何設計 OrderAdjustment / 審核流程 / 金額可調性的場景）
+- **相關 change**：converge-consultation-cancel-to-order-cancel-flow（序列協作 Phase 1 + C-1 拍板）
 
 ## 四、change propose 前的端到端推演準則（vault-insight 2026-05-20 新增）
 
