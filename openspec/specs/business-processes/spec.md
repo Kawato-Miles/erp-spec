@@ -877,21 +877,21 @@ ConsultationRequest 自動建立 (status=待諮詢, cancel_reason_category=NULL)
   → 諮詢人員 / 業務主管於取消 dialog 選定 cancel_reason_category 並確認
   → 系統建諮詢訂單(type=諮詢) + OrderExtraCharge(consultation_fee, +2000)
   → Payment(+2000) 從 ConsultationRequest 轉移至諮詢訂單（status 維持已完成）
-  → 系統自動建 OrderAdjustment(-1000, type=諮詢取消退費, status=已執行, approved_by=system,
-                              executed_at=取消時點)
+  → 系統自動建 OrderAdjustment(-1000, type=諮詢取消退費, status=已核可, approved_by=system,
+                              executed_at=NULL, requires_supervisor_approval=false)
   → 系統自動建退款 Payment(-1000, paymentMethod=退款, paymentStatus=處理中,
                           linkedOrderAdjustmentId=上述 OA.id)
-  → 系統自動建 PlannedInvoice(scheduledAmount=1000, description=「諮詢費（取消退費後）」,
-                              expectedDate=取消時點當天, status=預計開立, createdBy=system)
+  → （MUST NOT 為諮詢取消自動建待開發票：留存 1000 收入由業務手動開票、未開票由對帳差額警示兜底）
   → （MUST NOT 自動開立 Invoice 或 SalesAllowance、不論 consultation_invoice_option 值）
-  → 諮詢訂單 status 直接 = 訂單完成、paymentStatus = 已付款（諮詢取消不需製作 / 退款中間態）
+  → 諮詢訂單 status 直接 = 已取消、paymentStatus = 已付款（諮詢取消不需製作 / 退款中間態）
   → ConsultationRequest 狀態 = 已取消、cancel_reason_category 寫入 dialog 選定值
   → 退款撥付：依原付款方式刷退、由第三方金流處理
   → 客戶通知：諮詢人員手動執行（不入系統）
         ↓
-諮詢人員後續手動動作（諮詢訂單已是「訂單完成」、以下為訂單完成後的金流 / 稅務動作）：
-  ├ 處理銀行退款金流 → 將退款 Payment 切「已完成」並上傳退款證明附件（金流完結、不影響訂單狀態）
-  └ 將 PlannedInvoice 轉立 Invoice（金額由諮詢人員依客戶需求決定，建議 1000 元）
+諮詢人員後續手動動作（諮詢訂單已是「已取消」、以下為已取消後的金流 / 稅務動作）：
+  ├ 處理銀行退款金流 → 將退款 Payment 切「已完成」並上傳退款證明附件
+  │   （累計達 -1000 推進 OA「已執行」；金流完結、不影響「已取消」終態）
+  └ 業務手動開立 Invoice（金額由業務 / 諮詢人員依客戶需求決定，建議 1000 元；未開票由對帳差額警示兜底）
 ```
 
 **諮詢費的對帳邏輯（本 change 後）**：
@@ -899,9 +899,9 @@ ConsultationRequest 自動建立 (status=待諮詢, cancel_reason_category=NULL)
 - 諮詢結束**不做大貨**：建諮詢訂單收尾，應收 = OEC(2000) = 收款 = 2000；發票淨額由諮詢人員手動開立決定（建議 2000 元）
 - 諮詢結束**做大貨 + 需求單成交**：Payment 轉至一般訂單，一般訂單應收含 OEC(2000)，三方對帳通過；諮詢費 PlannedInvoice 由業務於主訂單發票時程規劃自行加入
 - 諮詢結束**做大貨 + 需求單流失**：建諮詢訂單收尾（複用「不做大貨」路徑），對帳通過；自動建 PlannedInvoice 2000
-- **待諮詢取消（半額退費）**：應收 = OEC(2000) + OA(-1000) = 1000；收款淨額 = +2000 - 1000 = 1000（兩筆 Payment 都已完成）；發票淨額由諮詢人員手動開立決定（建議 1000 元）；標示「對帳通過 - 退費完成」（既有 [order-management § 諮詢取消對帳邏輯](../order-management/spec.md)）
+- **待諮詢取消（半額退費）**：應收 = OEC(2000) + OA(-1000) = 1000（OA 退費處理中為已核可、退費完成推進已執行，皆計入應收）；收款淨額 = +2000 - 1000 = 1000（兩筆 Payment 都已完成）；發票淨額由業務 / 諮詢人員手動開立決定（建議 1000 元、系統不自動建待開發票、未開票由對帳差額警示兜底）；標示「對帳通過 - 退費完成」（既有 [order-management § 諮詢取消對帳邏輯](../order-management/spec.md)）；訂單終態 = 已取消（見 state-machines § 諮詢取消諮詢訂單終態收斂）
 
-**統一規則**：所有「最終沒進入大貨製作」的路徑都建諮詢訂單收尾。複用單一收尾流程，不增加新訂單類型。所有諮詢費 Invoice 統一由諮詢人員於 PlannedInvoice 手動轉立流程處理（廢止 `consultation_invoice_option` 對發票自動化的影響）。
+**統一規則**：所有「最終沒進入大貨製作」的路徑都建諮詢訂單收尾。複用單一收尾流程，不增加新訂單類型。諮詢費 Invoice 統一由諮詢人員 / 業務手動開立（廢止 `consultation_invoice_option` 對發票自動化的影響）；不做大貨 / 需求單流失情境系統自動建待開發票提醒、諮詢取消情境系統 MUST NOT 自動建待開發票（未開票由對帳差額警示兜底）。終態分流：不做大貨 / 需求單流失 = 訂單完成、諮詢取消 = 已取消。
 
 **`consultation_invoice_option` 欄位定位變更**：本 change 後此欄位保留於 ConsultationRequest 實體作為「客戶意向參考」純展示，**不再驅動系統行為**（不影響 Invoice / SalesAllowance / PlannedInvoice 的自動建立或不建立）。業務於主訂單發票時程規劃時可參考此意向。
 
@@ -946,18 +946,19 @@ ConsultationRequest 自動建立 (status=待諮詢, cancel_reason_category=NULL)
 - **GIVEN** 客人付諮詢費 2000 元（`consultation_invoice_option = issue_now` 或 `defer_to_main_order` 任一值）、ConsultationRequest 狀態 = 待諮詢、已認領 `consultant_id` = 諮詢人員 A
 - **WHEN** 客人取消預約、諮詢人員 A 點擊「取消諮詢」按鈕、於 dialog 選定 `cancel_reason_category = 找到其他廠商` 並確認
 - **THEN** 系統 SHALL 建立諮詢訂單 + OrderExtraCharge(consultation_fee, +2000) + Payment(+2000) 從 ConsultationRequest 轉移
-- **AND** 系統 SHALL 自動建立 OrderAdjustment（amount = -1000、adjustment_type = `諮詢取消退費`、status = 已執行、approved_by = system、executed_at = 取消時點）
+- **AND** 系統 SHALL 自動建立 OrderAdjustment（amount = -1000、adjustment_type = `諮詢取消退費`、status = 已核可、approved_by = system、executed_at = NULL、requires_supervisor_approval = false）
 - **AND** 系統 SHALL 自動建立退款 Payment（amount = -1000、paymentMethod = 退款、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述 OA.id）
-- **AND** 系統 SHALL 自動建立 PlannedInvoice（scheduledAmount = 1000、description = 「諮詢費（取消退費後）」）
+- **AND** 系統 MUST NOT 為諮詢取消自動建待開發票（留存 1000 收入由業務手動開票、未開票由對帳差額警示兜底）
 - **AND** 系統 MUST NOT 建立 Invoice 與 SalesAllowance（不論 `consultation_invoice_option` 值為何）
-- **AND** 諮詢訂單 status SHALL 直接推進至「訂單完成」、paymentStatus = 已付款（諮詢取消不需製作 / 退款中間態）
-- **AND** 退款 Payment 維持「處理中」（訂單完成後的金流動作）
+- **AND** 諮詢訂單 status SHALL 直接推進至「已取消」、paymentStatus = 已付款（諮詢取消不需製作 / 退款中間態）
+- **AND** 退款 Payment 維持「處理中」（已取消後的金流動作）
 - **AND** ConsultationRequest 狀態 SHALL 推進至「已取消」
 - **AND** ConsultationRequest.cancel_reason_category SHALL = `找到其他廠商`
 - **WHEN** 諮詢人員 A 處理銀行退款金流後、於 OA 編輯介面將退款 Payment 切「已完成」並上傳退款證明
 - **THEN** 退款 Payment.paymentStatus SHALL 改為「已完成」（金流完結）
-- **AND** 諮詢訂單 status MUST 維持「訂單完成」（退款 Payment 切已完成不再推進訂單狀態）
-- **AND** 諮詢人員 A SHALL 手動將 PlannedInvoice 轉立 Invoice（金額由諮詢人員依客戶需求決定）
+- **AND** 系統 SHALL 重算 OA 對應已完成 Payment 累計 = -1000 = OA.amount、推進 OA status → 已執行、executed_at = now
+- **AND** 諮詢訂單 status MUST 維持「已取消」（退款 Payment 切已完成不再推進訂單狀態）
+- **AND** 業務 / 諮詢人員 A SHALL 手動開立 Invoice（金額依客戶需求決定、系統不自動建待開發票）
 - **AND** 諮詢人員 A SHALL 手動通知客戶退款已處理（不入系統）
 
 ---

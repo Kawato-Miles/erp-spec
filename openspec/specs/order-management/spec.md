@@ -41,7 +41,7 @@
 
 **重要釐清**：非諮詢來源（`linked_consultation_request_id` 為空）的需求單流失與諮詢訂單無關，**不建任何訂單**；需求單流失走需求單自身的退款 / 流失流程。
 
-兩種情境共同的建立動作：(a) 訂單金額 = 諮詢費全額（2000），(b) 建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費)，(c) Payment 從 ConsultationRequest 轉移至此諮詢訂單，(d) **自動建立 PlannedInvoice 1 筆作為待開發票提醒**（金額依情境決定：不做大貨 / 需求單流失 = 2000；諮詢取消 = 1000），(e) 取消情境額外建立 OrderAdjustment(-1000) + 退款 Payment(-1000)，(f) **MUST NOT 自動開立 Invoice 或 SalesAllowance**（廢止 `consultation_invoice_option` 對發票自動化的影響）。
+兩種情境共同的建立動作：(a) 訂單金額 = 諮詢費全額（2000），(b) 建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費)，(c) Payment 從 ConsultationRequest 轉移至此諮詢訂單，(d) **不做大貨 / 需求單流失情境自動建立待開發票 1 筆作為提醒**（金額 2000）；**諮詢取消情境 MUST NOT 自動建待開發票**（留存 1000 收入由業務手動開票、未開票由對帳差額警示兜底），(e) 取消情境額外建立 OrderAdjustment(-1000, status=已核可, approved_by=system, executed_at=NULL) + 退款 Payment(-1000, 處理中)，(f) **MUST NOT 自動開立 Invoice 或 SalesAllowance**（廢止 `consultation_invoice_option` 對發票自動化的影響）。終態：不做大貨 / 需求單流失 = 訂單完成；諮詢取消 = 已取消（見 § Requirement: 諮詢取消諮詢訂單終態收斂 / 諮詢取消退費 OA 系統建已核可，於 state-machines spec）。
 
 訂單實體 SHALL 包含 `order_type` 欄位（enum: `線下` / `線上` / `諮詢`，必填，建立時設定不可變更）。
 
@@ -97,12 +97,13 @@
 - **THEN** 系統 SHALL 建立諮詢訂單（`order_type = 諮詢`、總額 = 諮詢費 2000）
 - **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 2000)
 - **AND** 系統 SHALL 將 Payment P0 從 ConsultationRequest 轉移至諮詢訂單（金額 +2000 不變、status 維持已完成）
-- **AND** 系統 SHALL 自動建立 OrderAdjustment（amount = -1000、adjustment_type = `諮詢取消退費`、status = 已執行、approved_by = system、executed_at = 取消時點、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」）
+- **AND** 系統 SHALL 自動建立 OrderAdjustment（amount = -1000、adjustment_type = `諮詢取消退費`、status = 已核可、approved_by = system、executed_at = NULL、requires_supervisor_approval = false、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」）
 - **AND** 系統 SHALL 自動建立退款 Payment（amount = -1000、paymentMethod = 退款、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述 OA.id、linked_entity_type = Order、linked_entity_id = 諮詢訂單 ID）
-- **AND** 應收即時認列 OA(-1000)（不待退款 Payment 切已完成），應收公式 = OEC(2000) + ∑已執行 OA(-1000) = 1000
-- **AND** 系統 SHALL 自動建立 PlannedInvoice 1 筆（orderId = 諮詢訂單 ID、scheduledAmount = 1000、description = 「諮詢費（取消退費後）」、expectedDate = 取消時點當天、status = 預計開立、createdBy = system）
+- **AND** 應收認列已核可 OA(-1000)（公式 = OEC(2000) + ∑已執行或已核可 OA(-1000) = 1000）；退款 Payment 切「已完成」累計達 -1000 後推進 OA「已執行」
+- **AND** 系統 MUST NOT 為諮詢取消自動建待開發票（留存 1000 收入由業務手動開票、未開票由對帳差額警示兜底）
 - **AND** 系統 MUST NOT 自動開立 Invoice
 - **AND** 系統 MUST NOT 自動開立 SalesAllowance
+- **AND** 諮詢訂單 SHALL 直接推進至「已取消」終態（見 § Requirement: 諮詢取消諮詢訂單終態收斂，於 state-machines spec）
 - **AND** 諮詢訂單應收 = OEC(2000) + OA(-1000) = 1000
 
 #### Scenario: EC 訂單進入節點預留
@@ -1289,10 +1290,10 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢、諮詢人員觸發取消諮詢確認流程
 - **WHEN** 系統執行「諮詢取消觸發建諮詢訂單與半額退費」流程
-- **THEN** 系統 SHALL 自動建立 OrderAdjustment（adjustment_type = `諮詢取消退費`、amount = -1000、status = 已執行、approved_by = system、executed_at = 取消時點）
+- **THEN** 系統 SHALL 自動建立 OrderAdjustment（adjustment_type = `諮詢取消退費`、amount = -1000、status = 已核可、approved_by = system、executed_at = NULL、requires_supervisor_approval = false）
 - **AND** OA 建立 MUST NOT 經過業務 / 主管的 UI 操作
-- **AND** OA 於訂單詳情頁顯示為唯讀（業務不可編輯系統內生 type 的 OA）
-- **AND** 應收即時認列 OA(-1000)（不待退款 Payment 切已完成），應收公式 = OEC(2000) + ∑已執行 OA(-1000) = 1000
+- **AND** 業務 SHALL 可於 OA 已核可狀態調整退款金額（沿用既有「已核可後修改不需重審」）；退款 Payment 切已完成累計達 -1000 推進 OA 已執行
+- **AND** 應收認列已核可 OA(-1000)，應收公式 = OEC(2000) + ∑已執行或已核可 OA(-1000) = 1000
 
 ### Requirement: 三方對帳檢視面板
 
@@ -1537,7 +1538,7 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 ### Requirement: 諮詢訂單發票時間點處理
 
-諮詢訂單（`order_type = 諮詢`）的 Invoice **MUST NOT 由系統自動開立**。所有諮詢費 Invoice 統一由諮詢人員於 PlannedInvoice 既有手動轉立流程處理（見 § 諮詢訂單收尾自動建 PlannedInvoice 規則）。
+諮詢訂單（`order_type = 諮詢`）的 Invoice **MUST NOT 由系統自動開立**。發票開立依情境分流：不做大貨 / 需求單流失情境由系統自動建待開發票提醒、諮詢人員手動轉立 Invoice（見 § 諮詢訂單收尾自動建 PlannedInvoice 規則）；**諮詢取消情境系統 MUST NOT 自動建待開發票**，留存 1000 收入由業務手動開立 Invoice、未開票由對帳差額警示兜底（見 § Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單）。
 
 本 change 廢止既有「依 `consultation_invoice_option` 自動開立 Invoice」邏輯：
 - `issue_now` 與 `defer_to_main_order` 兩值在任何諮詢訂單收尾情境（不做大貨 / 需求單流失 / 諮詢取消）下，系統 MUST NOT 自動觸發 Invoice 開立
@@ -1547,11 +1548,12 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 #### Scenario: 諮詢訂單建立時不自動開立 Invoice（任一 invoice_option）
 
 - **GIVEN** ConsultationRequest `consultation_invoice_option` ∈ {`issue_now`, `defer_to_main_order`}（任一值）
-- **AND** 諮詢訂單因任一收尾情境（不做大貨 / 需求單流失 / 諮詢取消）建立
+- **AND** 諮詢訂單因不做大貨 / 需求單流失情境建立
 - **WHEN** 系統建立諮詢訂單
 - **THEN** 系統 MUST NOT 自動開立任何 Invoice 或 SalesAllowance
-- **AND** 系統 SHALL 依情境自動建立對應金額的 PlannedInvoice（見 § 諮詢訂單收尾自動建 PlannedInvoice 規則）
-- **AND** 諮詢人員 SHALL 後續手動將 PlannedInvoice 轉為實際 Invoice（金額由諮詢人員依客戶需求決定）
+- **AND** 系統 SHALL 依情境自動建立對應金額的待開發票（見 § 諮詢訂單收尾自動建 PlannedInvoice 規則）
+- **AND** 諮詢人員 SHALL 後續手動將待開發票轉為實際 Invoice（金額由諮詢人員依客戶需求決定）
+- **AND** 諮詢取消情境系統 MUST NOT 自動開立 Invoice 亦 MUST NOT 自動建待開發票（見 § Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單）
 
 #### Scenario: 諮詢結束做大貨主訂單不自動建諮詢費 PlannedInvoice
 
@@ -1565,7 +1567,7 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 ### Requirement: 諮詢訂單收尾自動建 PlannedInvoice 規則
 
-當諮詢訂單於三個收尾情境（不做大貨 / 需求單流失 / 諮詢取消）任一建立時，系統 SHALL 自動建立 PlannedInvoice 1 筆作為「待開發票提醒」，讓諮詢人員於 PendingInvoices 列表頁看到待辦並手動轉為實際 Invoice。
+當諮詢訂單於不做大貨 / 需求單流失兩收尾情境任一建立時，系統 SHALL 自動建立 PlannedInvoice 1 筆作為「待開發票提醒」，讓諮詢人員於 PendingInvoices 列表頁看到待辦並手動轉為實際 Invoice。諮詢取消情境系統 MUST NOT 自動建待開發票（見下方「諮詢取消情境例外」）。
 
 **PlannedInvoice 實體與狀態機**：完整欄位定義與狀態轉換見 § Data Model > PlannedInvoice（align-invoice-line-items-to-ezpay-spec change 補齊；含 `items: InvoiceItem[]` 鏈式預填欄位 + cancel_reason / updated_at 等完整欄位）。Prototype 介面對應 [src/types/plannedInvoice.ts](../../../sens-erp-prototype/src/types/plannedInvoice.ts)（採 camelCase，與 spec snake_case 為慣例差異）。
 
@@ -1575,7 +1577,8 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 |---------|-----------------|-------------|--------------|
 | 諮詢結束不做大貨（諮詢人員點「結束諮詢 - 不做大貨」）| 2000 | 「諮詢費」 | 完成諮詢時點當天 |
 | 諮詢來源需求單流失歸類為不做大貨 | 2000 | 「諮詢費」 | 需求單流失時點當天 |
-| 諮詢取消（諮詢人員 / 業務主管點「取消諮詢」並確認）| 1000 | 「諮詢費（取消退費後）」 | 取消時點當天 |
+
+**諮詢取消情境例外**：諮詢取消（待諮詢狀態半額退費）情境系統 **MUST NOT 自動建待開發票**（推翻既有自動建 1000 待開發票拍板）。留存 1000 收入由業務手動開立 Invoice、未開票由對帳差額警示兜底（見 § Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單）。
 
 **諮詢結束做大貨 → 需求單成交轉一般訂單情境**：系統 MUST NOT 自動於主訂單建立諮詢費 PlannedInvoice。業務於主訂單既有發票時程規劃流程自行加入諮詢費 PlannedInvoice（既有 PlannedInvoice 手動建立流程），可參考 `consultation_invoice_option` 客戶意向決定獨立 / 併入其他 PlannedInvoice。
 
@@ -1593,11 +1596,12 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 - **WHEN** 系統處理需求單流失事件、建立諮詢訂單
 - **THEN** 系統 SHALL 自動建立 PlannedInvoice（orderId = 諮詢訂單 ID、scheduledAmount = 2000、description = 「諮詢費」、expectedDate = 流失時點當天、status = 預計開立、createdBy = system、linkedInvoiceId = NULL）
 
-#### Scenario: 諮詢取消自動建 PlannedInvoice
+#### Scenario: 諮詢取消不自動建待開發票
 
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢
 - **WHEN** 諮詢人員 / 業務主管於取消 dialog 確認取消、系統建立諮詢訂單 + OA + 退款 Payment
-- **THEN** 系統 SHALL 自動建立 PlannedInvoice（orderId = 諮詢訂單 ID、scheduledAmount = 1000、description = 「諮詢費（取消退費後）」、expectedDate = 取消時點當天、status = 預計開立、createdBy = system、linkedInvoiceId = NULL）
+- **THEN** 系統 MUST NOT 自動建立待開發票（留存 1000 收入由業務手動開立 Invoice）
+- **AND** 未開票由對帳差額警示兜底（應收 1000 > 發票淨額 0，見 § Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單）
 
 #### Scenario: 自動建立的 PlannedInvoice 出現在 PendingInvoices 待辦列表
 
@@ -1609,7 +1613,7 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 #### Scenario: 諮詢人員手動轉立 PlannedInvoice 為 Invoice
 
-- **GIVEN** PlannedInvoice(scheduledAmount = 1000、description = 「諮詢費（取消退費後）」、status = 預計開立)
+- **GIVEN** PlannedInvoice(scheduledAmount = 2000、description = 「諮詢費」、status = 預計開立)（不做大貨 / 需求單流失情境自動建）
 - **WHEN** 諮詢人員於諮詢訂單詳情頁發票區點「開立」並確認金額
 - **THEN** 系統 SHALL 建立 Invoice（金額由諮詢人員確認、預設帶入 PlannedInvoice.scheduledAmount）
 - **AND** 系統 SHALL 將 PlannedInvoice.status 改為「已開立」、linkedInvoiceId 寫入新建 Invoice ID
@@ -1629,15 +1633,15 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 諮詢取消（待諮詢狀態半額退費）情境下，諮詢訂單三方對帳檢視面板 MUST 識別此特殊情境並依新公式計算與標示。
 
 **新對帳公式**：
-- 應收總額 = OEC(2000) + ∑(已執行 OA(-1000)) = 1000
+- 應收總額 = OEC(2000) + ∑(已執行或已核可 OA(-1000)) = 1000
 - 收款淨額 = Payment(+2000, 已完成) + Payment(-1000, 已完成) = 1000
-- 發票淨額 = ∑ 開立 Invoice.total_amount - ∑ 已確認 SalesAllowance（由諮詢人員手動開立、預設目標 1000）
+- 發票淨額 = ∑ 開立 Invoice.total_amount - ∑ 已確認 SalesAllowance（由業務 / 諮詢人員手動開立、預設目標 1000）
 - 差額 = 應收總額 - 發票淨額 - 收款淨額 = 1000 - 發票淨額 - 1000 = -發票淨額
 
 對帳狀態標示規則：
-- 退款 Payment 仍處理中（OA 未已執行）：標示「退費處理中」、應收 SHALL 顯示為 2000（OA 未計入）、收款淨額顯示為 2000（含+2000、扣除處理中-1000 = 不計入處理中 Payment 規則，依既有對帳規則）；發票淨額 0 = 預期當下尚未開
-- 退款 Payment 已完成（OA 已執行）且發票淨額 = 1000：標示「對帳通過 - 退費完成」
-- 退款 Payment 已完成（OA 已執行）且發票淨額 ≠ 1000：標示「待對帳 - 發票金額需確認」、差額由既有對帳警示 banner 提示諮詢人員處理
+- 退款 Payment 仍處理中（OA 為已核可、未推進已執行）：標示「退費處理中」、應收 SHALL 顯示為 1000（已核可 OA 即時計入應收）、收款淨額顯示為 2000（含+2000、扣除處理中-1000 = 不計入處理中 Payment 規則，依既有對帳規則）；發票淨額 0 = 預期當下尚未開
+- 退款 Payment 已完成（OA 已推進已執行）且發票淨額 = 1000：標示「對帳通過 - 退費完成」
+- 退款 Payment 已完成（OA 已推進已執行）且發票淨額 ≠ 1000：標示「待對帳 - 發票金額需確認」、差額由既有對帳警示 banner 提示業務 / 諮詢人員處理
 
 #### Scenario: 諮詢取消退費完成對帳通過
 
@@ -1648,10 +1652,10 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 #### Scenario: 諮詢取消退費處理中
 
-- **GIVEN** 諮詢訂單 OEC(consultation_fee, 2000) + OA(諮詢取消退費, -1000, 已執行) + Payment(+2000, 已完成) + Payment(-1000, 處理中)
+- **GIVEN** 諮詢訂單 OEC(consultation_fee, 2000) + OA(諮詢取消退費, -1000, 已核可) + Payment(+2000, 已完成) + Payment(-1000, 處理中)
 - **WHEN** 業務 / 會計開啟對帳檢視面板
 - **THEN** 收款淨額 SHALL = 2000（處理中退款 -1000 不計入既有對帳公式）
-- **AND** 應收總額 SHALL = 1000（OA 已執行即時計入應收）
+- **AND** 應收總額 SHALL = 1000（已核可 OA 即時計入應收）
 - **AND** 對帳面板 SHALL 標示「退費處理中」並顯示「另含處理中退款 1000 元」
 
 #### Scenario: 諮詢取消後發票金額不符提示
@@ -3786,7 +3790,7 @@ Invoice MUST NOT 包含 `print_flag`（索取紙本）欄位。
 已開立 → 不可回退（發票本身可作廢，但 PlannedInvoice 不變）
 ```
 
-**自動建立規則**：諮詢訂單收尾三情境（不做大貨 / 需求單流失 / 諮詢取消）由系統自動建立 PlannedInvoice，詳見 § Requirement: 諮詢訂單收尾自動建 PlannedInvoice 規則。
+**自動建立規則**：諮詢訂單收尾不做大貨 / 需求單流失兩情境由系統自動建立 PlannedInvoice；諮詢取消情境 MUST NOT 自動建（留存收入由業務手動開票、未開票由對帳差額警示兜底），詳見 § Requirement: 諮詢訂單收尾自動建 PlannedInvoice 規則。
 
 ### SalesAllowanceFile（折讓單回簽附件）
 
