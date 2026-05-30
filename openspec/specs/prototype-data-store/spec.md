@@ -535,7 +535,7 @@ Prototype 資料層 SHALL 新增 BillingInstallment TypeScript 型別與對應 Z
 
 **完整欄位**（對齊 order-management spec § Data Model）：
 ```typescript
-type InvoicingStatus = '未開立' | '已開立' | '已作廢回未開立';
+type InvoicingStatus = '未開立' | '已開立' | '已作廢';
 type PaymentStatus = '未收' | '部分收款' | '已收訖';
 type BillingInstallmentSourceType =
   | 'manual'

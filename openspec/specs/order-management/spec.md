@@ -3075,7 +3075,7 @@ Invoice.items 陣列 SHALL 對齊 ezPay 電子發票 API（[EZP_INVI_1.2.2](../.
 
 - **GIVEN** BillingInstallment BI-002.invoicing_status = 已開立、linked_invoice_id = INV-002
 - **WHEN** 業務再次點 BI-002「一鍵開立發票」
-- **THEN** 系統 SHALL 隱藏「一鍵開立」按鈕（按鈕只在 invoicing_status = 未開立 / 已作廢回未開立 顯示）
+- **THEN** 系統 SHALL 隱藏「一鍵開立」按鈕（按鈕只在 invoicing_status = 未開立 / 已作廢 顯示）
 
 ### Requirement: 拆票 = 拆期（產生獨立平輩期次 + 純追溯欄位）
 
@@ -3112,7 +3112,7 @@ Invoice.items 陣列 SHALL 對齊 ezPay 電子發票 API（[EZP_INVI_1.2.2](../.
 ### Requirement: 期次雙維度狀態（開票維度 + 收款維度獨立）
 
 BillingInstallment SHALL 維護兩個獨立狀態維度：
-- **開票維度（invoicing_status）**：`未開立` → `已開立`（業務一鍵開票觸發）；`已開立` → `已作廢回未開立`（Invoice 作廢觸發，linked_invoice_id 設 NULL，可重新開票）
+- **開票維度（invoicing_status）**：`未開立` → `已開立`（業務一鍵開票觸發）；`已開立` → `已作廢`（Invoice 作廢觸發，linked_invoice_id 設 NULL，可重新開票）
 - **收款維度（payment_status，derived）**：依未取消已完成 PaymentAllocation 累計推導
   - 累計 = 0：未收
   - 0 < 累計 < scheduled_amount：部分收款
@@ -3134,48 +3134,44 @@ BillingInstallment SHALL 維護兩個獨立狀態維度：
 - **GIVEN** BI-031.invoicing_status = 已開立、linked_invoice_id = INV-031
 - **WHEN** 業務於 Invoice 詳情頁作廢 INV-031（填入作廢原因）
 - **THEN** 系統 SHALL 設定 INV-031.status = 作廢
-- **AND** BI-031.invoicing_status SHALL → 已作廢回未開立、linked_invoice_id 設 NULL
+- **AND** BI-031.invoicing_status SHALL → 已作廢、linked_invoice_id 設 NULL
 - **AND** BI-031.payment_status SHALL 不受影響（保留稽核）
 - **AND** 業務 MAY 於 BI-031 重新點「一鍵開立發票」建立新 Invoice INV-031'
 
-### Requirement: 收款核銷分配（PaymentAllocation 依序填滿 + 業務手動覆寫）
+### Requirement: 收款核銷分配（PaymentAllocation 業務手動入帳）
 
-業務登錄一筆 Payment（amount > 0、paymentMethod ∈ 一般收款）後，系統 SHALL 自動建立 PaymentAllocation 分配明細，依「應收日（due_date）由早到晚」順序填滿至各 BillingInstallment 待收金額至 Payment.amount 用罄。每筆 PaymentAllocation 初始時 auto_allocated = true、manually_overridden = false。業務在 PaymentEditDialog 內 MAY 手動覆寫各期 allocated_amount，UI SHALL 即時校驗 sum(allocated_amount) = Payment.amount，差額時禁存檔並顯示提示。Dialog SHALL 提供「自動回填差額」按鈕將 sum 差額補至最後一期。實收 > 全部待收金額時，溢收部分 SHALL 標記為「預收（未分配）」（PaymentAllocation.billing_installment_id = NULL）。
+業務登錄一筆 Payment（amount > 0、paymentMethod ∈ 一般收款）時，系統 SHALL 於「新增收款」Dialog 內 inline 顯示該訂單所有未取消收款項目（BillingInstallment where cancelled = false），不需先填收款金額即顯示。業務 SHALL 勾選要入帳的收款項目並逐筆手動填入帳金額（PaymentAllocation.allocated_amount）。系統 SHALL NOT 自動依序填滿、SHALL NOT 提供「自動回填差額」按鈕——入帳金額由業務全手動決定（Miles 拍板）。
 
-#### Scenario: 一筆 Payment 結清頭尾兩期（依序填滿 + 系統自動分配）
+校驗（防呆）：系統 SHALL 即時校驗「勾選入帳金額合計 ≤ Payment.amount」，超過時 Input 紅標 + 禁止送出並提示「入帳合計不可大於收款金額」。允許合計 < Payment.amount（溢收場景）：剩餘金額 SHALL 自動記為「預收（未分配）」桶（PaymentAllocation.billing_installment_id = NULL）。
+
+PaymentAllocation 的 auto_allocated / manually_overridden 欄位於業務手動入帳模型下恆為 false（無系統自動預設值可供覆寫），保留為相容欄位；變更率類指標 MUST NOT 依「覆寫事件」計算（見 § 訂單收款變更率指標）。Payment 切「已完成」時系統 SHALL 觸發各對應 BillingInstallment 收款維度狀態（payment_status）依累計已完成入帳金額推導（未收 / 部分收款 / 已收訖）。
+
+#### Scenario: 一筆 Payment 業務手動入帳兩期
 
 - **GIVEN** 訂單兩筆未收期次：BI-040（scheduled_amount=30000, due_date=2026-06-01）+ BI-041（scheduled_amount=70000, due_date=2026-07-01）
-- **WHEN** 業務登錄 Payment P-040（amount=100000, paymentMethod=銀行轉帳）並選擇結清兩期
-- **THEN** 系統 SHALL 建立兩筆 PaymentAllocation：PA-040a（payment_id=P-040.id, billing_installment_id=BI-040.id, allocated_amount=30000, auto_allocated=true, manually_overridden=false）+ PA-040b（同上但 billing_installment_id=BI-041.id, allocated_amount=70000）
+- **WHEN** 業務於「新增收款」Dialog 填 Payment P-040（amount=100000, paymentMethod=銀行轉帳），於入帳明細勾選 BI-040 填 30000、勾選 BI-041 填 70000
+- **THEN** 系統 SHALL 校驗入帳合計 100000 = Payment.amount（PASS）並建立兩筆 PaymentAllocation（PA-040a → BI-040 allocated 30000、PA-040b → BI-041 allocated 70000；auto_allocated=false、manually_overridden=false）
 - **AND** 業務切 P-040 為已完成後，BI-040.payment_status 與 BI-041.payment_status SHALL 均推進至「已收訖」
 
-#### Scenario: 不足額分配（實收 4000 < 期1 3000 + 期2 2000，依序填滿）
+#### Scenario: 業務只入帳部分金額（某期部分收款）
 
-- **GIVEN** 訂單兩筆未收期次：BI-050（scheduled_amount=3000, due_date 早）+ BI-051（scheduled_amount=2000, due_date 晚）
-- **WHEN** 業務登錄 Payment 4000 並選擇核銷兩期
-- **THEN** 系統 SHALL 依序填滿：PaymentAllocation 1（billing_installment_id=BI-050.id, allocated=3000）+ PaymentAllocation 2（billing_installment_id=BI-051.id, allocated=1000）
+- **GIVEN** 訂單兩筆未收期次：BI-050（scheduled_amount=3000）+ BI-051（scheduled_amount=2000）
+- **WHEN** 業務登錄 Payment 4000，勾 BI-050 填 3000、勾 BI-051 填 1000
+- **THEN** 系統 SHALL 校驗入帳合計 4000 = Payment.amount（PASS）並建立兩筆 PaymentAllocation（BI-050 allocated 3000、BI-051 allocated 1000）
 - **AND** 業務切 Payment 為已完成後，BI-050.payment_status = 已收訖（累計達 3000）、BI-051.payment_status = 部分收款（累計 1000 < 2000）
 
-#### Scenario: 業務手動覆寫核銷分配（diff-based 判定）
+#### Scenario: 入帳合計超過收款金額被擋（防呆）
 
-- **GIVEN** 系統依序填滿建立 PaymentAllocation 1（allocated=3000, auto_allocated=true, manually_overridden=false）+ PaymentAllocation 2（allocated=1000, 同）
-- **WHEN** 業務於 PaymentEditDialog 內手動修改 PA1 為 2000 + PA2 為 2000
-- **THEN** UI SHALL 即時校驗 sum = 4000 = Payment.amount（PASS）
-- **AND** 業務按儲存後，PA1.manually_overridden SHALL = true（diff 後 allocated 2000 ≠ 系統填值 3000）、PA2.manually_overridden = true
-- **AND** PA1.auto_allocated 維持 true（系統初次建立 flag 不變）
-
-#### Scenario: 業務改值後又改回原值（diff-based 不算 overridden）
-
-- **GIVEN** 系統依序填滿建立 PA1（allocated=3000）
-- **WHEN** 業務點輸入框後輸入 3000（與初值相同）然後儲存
-- **THEN** PA1.manually_overridden SHALL = false（diff 後 allocated 3000 = 系統填值 3000，未實際改值）
+- **GIVEN** 業務登錄 Payment 5000
+- **WHEN** 業務勾 BI-050 填 3000、勾 BI-051 填 3000（合計 6000 > 5000）
+- **THEN** 系統 SHALL 將超額 Input 紅標 + 禁止送出，提示「入帳合計不可大於收款金額」
 
 #### Scenario: 溢收標記為「預收（未分配）」桶
 
 - **GIVEN** 訂單兩筆未收期次合計 5000，業務登錄 Payment 6000
-- **WHEN** 系統依序填滿
-- **THEN** 系統 SHALL 建立 PaymentAllocation 1（billing_installment_id=期1.id, allocated=3000）+ PA2（=期2.id, allocated=2000）+ PA3（billing_installment_id=NULL, allocated=1000）
-- **AND** PA3 視為「預收（未分配）」桶、後續業務可手動核銷至新期次或退款處理（後續路徑見 OQ-BI-C）
+- **WHEN** 業務勾兩期入帳合計 5000（剩 1000 未指定收款項目）
+- **THEN** 系統 SHALL 額外建立 PaymentAllocation（billing_installment_id=NULL, allocated_amount=1000）作「預收（未分配）」桶
+- **AND** 預收桶後續業務可手動核銷至新期次或退款處理（後續路徑見 OQ-BI-C）
 
 ### Requirement: 補收 OA（正項）跳過審核中間態直達已執行
 
@@ -3764,7 +3760,7 @@ Invoice MUST NOT 包含 `print_flag`（索取紙本）欄位。
 ### PlannedInvoice（預計發票）— 已廢止，由 BillingInstallment 取代
 
 > **BREAKING（unify-billing-installment-and-reconciliation-csv 2026-05-28 歸檔）**：PlannedInvoice 實體已廢止，由 BillingInstallment（請款期次）統一實體取代（合併原 PaymentPlan + PlannedInvoice 雙頭維護）。
-> 欄位對應：`status`（預計開立 / 已開立 / 已取消）→ `invoicing_status`（未開立 / 已開立 / 已作廢回未開立）+ `cancelled` boolean（對應見 [state-machines spec](../state-machines/spec.md) § BillingInstallment 取代 PlannedInvoice 狀態機）；`expected_date` → `due_date` / `scheduled_issue_date`；`scheduled_amount` / `description` / `items: InvoiceItem[]` / `linked_invoice_id` / `created_by` / `created_at` / `updated_at` 沿用語意。
+> 欄位對應：`status`（預計開立 / 已開立 / 已取消）→ `invoicing_status`（未開立 / 已開立 / 已作廢）+ `cancelled` boolean（對應見 [state-machines spec](../state-machines/spec.md) § BillingInstallment 取代 PlannedInvoice 狀態機）；`expected_date` → `due_date` / `scheduled_issue_date`；`scheduled_amount` / `description` / `items: InvoiceItem[]` / `linked_invoice_id` / `created_by` / `created_at` / `updated_at` 沿用語意。
 > `items: InvoiceItem[]` 品項鏈式預填語意（建立時從訂單印件預填、印件異動不連動、一鍵開票深拷貝至 Invoice）已移轉至 § Requirement: BillingInstallment 品項鏈式預填 + § Requirement: 期次↔發票 1:1 嚴格約束 + 一鍵開票繼承。
 > 自動建立規則（諮詢訂單收尾不做大貨 / 需求單流失自動建、諮詢取消 MUST NOT 自動建）見 § Requirement: 諮詢訂單收尾自動建 BillingInstallment 規則。
 > Prototype 階段三型別檔（`src/types/plannedInvoice.ts` 等）暫留作 `buildBillingInstallmentsFromLegacy` seed data（R2 deferred），業務 UI 三層 dead code 已於 remove-legacy-payment-plan-planned-invoice-junction（2026-05-29）移除。

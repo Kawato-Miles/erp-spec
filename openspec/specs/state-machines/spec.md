@@ -1188,8 +1188,8 @@ BillingInstallment SHALL 維護兩個獨立狀態維度，互相不耦合：
 **開票維度（invoicing_status）**：
 ```
 未開立 ──[業務一鍵開票]──▶ 已開立（linked_invoice_id 寫入、Invoice.source_billing_installment_id 寫入）
-已開立 ──[Invoice 作廢]──▶ 已作廢回未開立（linked_invoice_id 設 NULL，可重新開票）
-已作廢回未開立 ──[業務一鍵開票]──▶ 已開立（重啟）
+已開立 ──[Invoice 作廢]──▶ 已作廢（linked_invoice_id 設 NULL，可重新開票）
+已作廢 ──[業務一鍵開票]──▶ 已開立（重啟）
 ```
 
 **收款維度（payment_status，derived）**：
@@ -1203,7 +1203,7 @@ BillingInstallment SHALL 維護兩個獨立狀態維度，互相不耦合：
 兩維度推導獨立，支援：
 - 先收後開：收款維度先到「已收訖」、開票維度仍「未開立」
 - 先開後收：開票維度先到「已開立」、收款維度仍「未收」
-- 開票後作廢重開：開票維度從「已開立」回「已作廢回未開立」、收款維度不動（保留稽核）
+- 開票後作廢重開：開票維度從「已開立」回「已作廢」、收款維度不動（保留稽核）
 - 拆期：原期次 cancelled = true 不入兩維度推導；兩筆新期次各自獨立推導
 
 #### Scenario: 先收後開雙維度獨立推進
@@ -1221,7 +1221,7 @@ BillingInstallment SHALL 維護兩個獨立狀態維度，互相不耦合：
 - **GIVEN** BI-002（invoicing_status=已開立, linked_invoice_id=INV-002, payment_status=已收訖）
 - **WHEN** 業務於 INV-002 詳情頁作廢（填入作廢原因「統編誤填」）
 - **THEN** INV-002.status SHALL = 作廢
-- **AND** BI-002.invoicing_status SHALL → 已作廢回未開立、linked_invoice_id 設 NULL
+- **AND** BI-002.invoicing_status SHALL → 已作廢、linked_invoice_id 設 NULL
 - **AND** BI-002.payment_status SHALL 維持 = 已收訖（收款歷史保留）
 
 #### Scenario: 拆期原期次 cancelled 不入推導
@@ -1251,13 +1251,13 @@ BillingInstallment SHALL 維護兩個獨立狀態維度，互相不耦合：
 
 ### Requirement: BillingInstallment 取代 PlannedInvoice 狀態機
 
-系統 SHALL 廢止 v1.13 PlannedInvoice.status 三態（預計開立 / 已開立 / 已取消），由 BillingInstallment.invoicing_status 三態（未開立 / 已開立 / 已作廢回未開立）+ cancelled boolean 取代。
+系統 SHALL 廢止 v1.13 PlannedInvoice.status 三態（預計開立 / 已開立 / 已取消），由 BillingInstallment.invoicing_status 三態（未開立 / 已開立 / 已作廢）+ cancelled boolean 取代。
 
-**BREAKING**：v1.13 PlannedInvoice.status 三態（預計開立/已開立/已取消）廢止，由 BillingInstallment.invoicing_status 三態（未開立/已開立/已作廢回未開立）+ cancelled boolean 取代：
+**BREAKING**：v1.13 PlannedInvoice.status 三態（預計開立/已開立/已取消）廢止，由 BillingInstallment.invoicing_status 三態（未開立/已開立/已作廢）+ cancelled boolean 取代：
 - PlannedInvoice.status = 預計開立 → invoicing_status = 未開立 + cancelled = false
 - PlannedInvoice.status = 已開立 → invoicing_status = 已開立 + cancelled = false
 - PlannedInvoice.status = 已取消 → cancelled = true + cancel_reason 補寫
-- 新增：invoicing_status = 已作廢回未開立（Invoice 作廢觸發回退，PlannedInvoice 既有設計無此態）
+- 新增：invoicing_status = 已作廢（Invoice 作廢觸發回退，PlannedInvoice 既有設計無此態）
 
 #### Scenario: BillingInstallment.invoicing_status 狀態流轉
 
@@ -1265,7 +1265,7 @@ BillingInstallment SHALL 維護兩個獨立狀態維度，互相不耦合：
 - **WHEN** 業務於 BI-001 點「一鍵開立發票」、系統建立 Invoice INV-001 並回寫 BI-001.linked_invoice_id
 - **THEN** BI-001.invoicing_status SHALL = 已開立
 - **WHEN** INV-001 被作廢
-- **THEN** BI-001.invoicing_status SHALL 回退至「已作廢回未開立」、BI-001.linked_invoice_id SHALL 清空
+- **THEN** BI-001.invoicing_status SHALL 回退至「已作廢」、BI-001.linked_invoice_id SHALL 清空
 - **WHEN** 業務於 BI-001 點「取消期次」並補 cancel_reason
 - **THEN** BI-001.cancelled SHALL = true、業務 SHALL 不再可於該期次新增開票或核銷動作
 
