@@ -1015,7 +1015,7 @@ Invoice SHALL 有獨立狀態機，狀態定義：
 
 | 狀態 | 說明 |
 |------|------|
-| 開立 | 藍新 Mockup 開立成功；可被引用至 PaymentInvoice 與 SalesAllowance |
+| 開立 | 藍新 Mockup 開立成功；可被 SalesAllowance 引用；與收款的對應透過 BillingInstallment 中介（期次↔發票 1:1、期次↔收款 N:M）|
 | 作廢 | 業務作廢（含作廢原因）；終態 |
 
 狀態轉換：
@@ -1209,7 +1209,7 @@ BillingInstallment SHALL 維護兩個獨立狀態維度，互相不耦合：
 #### Scenario: 先收後開雙維度獨立推進
 
 - **GIVEN** BI-001（scheduled_amount=30000, invoicing_status=未開立, payment_status=未收, cancelled=false）
-- **WHEN** 業務登錄 Payment 30000 → 系統依序填滿建 PaymentAllocation（allocated=30000）→ 業務切 Payment 為已完成
+- **WHEN** 業務登錄 Payment 30000 → 於入帳明細手動勾選該期次建 PaymentAllocation（allocated=30000）→ 業務切 Payment 為已完成
 - **THEN** BI-001.payment_status SHALL = 已收訖（已完成 PaymentAllocation 累計達 30000）
 - **AND** BI-001.invoicing_status SHALL 維持 = 未開立
 - **WHEN** 業務於 BI-001「一鍵開票」

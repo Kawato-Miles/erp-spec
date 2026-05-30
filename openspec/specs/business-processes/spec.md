@@ -1214,19 +1214,19 @@ Migration 不涉及 OA 狀態變動（既有已執行 OA 維持已執行）。
    ↓
 一鍵開票（從 BillingInstallment 繼承應收日 / 備註 / 品項 → Invoice，期次↔發票 1:1）
    ↓
-登錄 Payment（系統依序填滿 PaymentAllocation 至各期 + 業務可手動覆寫）
+登錄 Payment（業務於入帳明細手動勾選收款項目 + 填金額，防呆入帳合計 ≤ 收款金額）
    ↓
 Payment 切已完成 → BillingInstallment.payment_status derived 更新
 ```
 
-業務在規劃階段一次建期次即同時定義「何時收 + 何時開票 + 開什麼品項」三個面向，不再雙頭維護。事實層 PaymentAllocation 取代 PaymentInvoice junction 手動勾選，依「應收日早→晚」自動分配 + 業務可手動覆寫 + UI 即時校驗 sum 等於實收。
+業務在規劃階段一次建期次即同時定義「何時收 + 何時開票 + 開什麼品項」三個面向，不再雙頭維護。事實層 PaymentAllocation 取代 PaymentInvoice junction（發票↔期次 1:1、期次↔收款 N:M）。收款入帳由業務手動勾選收款項目 + 逐筆填金額、UI 即時校驗入帳合計 ≤ 收款金額、溢收進預收桶（Miles 拍板手動，系統不做自動依序填滿）。
 
 #### Scenario: 完整請款 + 核銷流程（一期一票一款情境 A）
 
 - **GIVEN** 訂單成立後總額 30000
 - **WHEN** 業務建立 BillingInstallment BI-001（scheduled_amount=30000, due_date=2026-06-01, expected_invoice_date=2026-05-15, items=[訂金品項], note=「訂金 30%」）
 - **AND** 業務於 BI-001 點「一鍵開立發票」→ 系統建立 Invoice INV-001（total_amount=30000, items=深拷貝, source_billing_installment_id=BI-001.id）
-- **AND** 業務登錄 Payment P-001（amount=30000）→ 系統依序填滿建 PaymentAllocation PA-001（payment_id=P-001, billing_installment_id=BI-001, allocated=30000, auto_allocated=true）
+- **AND** 業務登錄 Payment P-001（amount=30000）→ 於入帳明細手動勾選 BI-001 填 30000 建 PaymentAllocation PA-001（payment_id=P-001, billing_installment_id=BI-001, allocated=30000, auto_allocated=false）
 - **AND** 業務切 P-001 為已完成
 - **THEN** BI-001.invoicing_status = 已開立、payment_status = 已收訖（兩維度均推進完成）
 - **AND** 全流程業務操作步數從 v1.13 預估 ≥ 8 次降至 ≤ 4 次（CEO 指標 3）
@@ -1275,7 +1275,7 @@ Payment 切已完成 → BillingInstallment.payment_status derived 更新
 #### Scenario: 客戶先付訂金 30000 業務後開票
 
 - **GIVEN** BI-030.scheduled_amount = 30000, invoicing_status = 未開立, payment_status = 未收
-- **WHEN** 業務於 BI-030 登錄 Payment 30000、系統依序填滿建 PaymentAllocation、業務切 Payment 為已完成
+- **WHEN** 業務於 BI-030 登錄 Payment 30000、於入帳明細手動勾選 BI-030 建 PaymentAllocation、業務切 Payment 為已完成
 - **THEN** BI-030.payment_status SHALL = 已收訖
 - **AND** BI-030.invoicing_status SHALL 維持 = 未開立
 - **WHEN** 業務後續點 BI-030「一鍵開立發票」

@@ -641,7 +641,7 @@ interface PaymentAllocation {
 - **WHEN** 呼叫端建 allocations 時補一筆 billingInstallmentId=NULL allocatedAmount=1000
 - **THEN** `addPaymentWithAllocations` SHALL 寫入該預收桶 allocation
 
-### Requirement: OrderActivityLog 擴充 7 個事件型別
+### Requirement: OrderActivityLog 擴充 6 個事件型別
 
 Prototype 資料層 SHALL 擴充 OrderActivityLog 型別 + Zustand store action：
 
