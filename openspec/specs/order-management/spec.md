@@ -1347,15 +1347,16 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 - **AND** 差額 SHALL = 0（對帳通過，因處理中退款仍未實際發生）
 - **AND** 對帳面板 SHALL 標示「處理中退款 5000（不計入）」
 
-#### Scenario: 諮詢訂單退費對帳通過（已完成退款條件）
+#### Scenario: 諮詢取消訂單退費對帳通過（半額退費、OA 模型、已完成退款條件）
 
-- **GIVEN** 諮詢訂單 OrderExtraCharge(consultation_fee, 1000) = 1000、issue_now 路徑
-- **AND** Payment 綁諮詢訂單：諮詢費 1000（已完成）+ 退款 -1000（已完成）= 0
-- **AND** Invoice 1000 + SalesAllowance -1000，發票淨額 = 0
+- **GIVEN** 諮詢取消後諮詢訂單（status = 已取消）OrderExtraCharge(consultation_fee, 2000) = 2000
+- **AND** OrderAdjustment(諮詢取消退費, -1000, 已執行)
+- **AND** Payment 綁諮詢訂單：諮詢費 +2000（已完成）+ 退款 -1000（已完成）= 1000
+- **AND** Invoice 1000（已開立，由諮詢人員手動開立），無自動 SalesAllowance
 - **WHEN** 開啟對帳檢視面板
-- **THEN** 應收 = 1000、發票淨額 = 0、收款淨額 = 0、差額 = 1000
+- **THEN** 應收 = 1000（OEC 2000 + 已執行 OA -1000）、發票淨額 = 1000、收款淨額 = 1000、差額 = 0
 
-**註**：此情境差額 = 1000 反映「應收沒沖銷」，但實務上退費完成的諮詢訂單視為合法終態。對帳面板 SHALL 標示「退費完成（OrderExtraCharge 與 SalesAllowance / 退款抵銷）」而非「對帳通過」（細節見「諮詢取消對帳邏輯」既有 ADDED Requirement）。
+**註**：諮詢取消收斂為半額退費（2026-05-30 converge-consultation-cancel-to-order-cancel-flow）——諮詢費 2000、退款走 OrderAdjustment(-1000) + 退款 Payment(-1000)、不自動建 SalesAllowance、諮詢訂單終態為「已取消」。留存 1000 收入由諮詢人員手動開立 Invoice，未開票時對帳「應收 > 發票淨額」差額警示兜底。完整對帳公式與標示規則見「諮詢取消對帳邏輯」既有 ADDED Requirement。
 
 #### Scenario: 訂單異動 + 折讓退款的三方對帳（已完成 Payment 條件）
 
@@ -1664,7 +1665,7 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 - **WHEN** 業務 / 會計開啟對帳檢視面板
 - **THEN** 應收總額 SHALL = 1000、收款淨額 SHALL = 1000、發票淨額 SHALL = 2000、差額 SHALL = -1000
 - **AND** 對帳面板 SHALL 標示「待對帳 - 發票金額需確認」
-- **AND** 既有對帳警示 banner SHALL 提示諮詢人員開立 SalesAllowance(-1000) 或作廢部分 Invoice
+- **AND** 既有對帳警示 banner SHALL 提示諮詢人員修正誤開的發票（將 2000 發票作廢重開為 1000，或開立 SalesAllowance(-1000) 將發票淨額降至 1000）——此為**發票開立金額更正**動作；退款本身已由系統自動建立的 OA(-1000) + 退款 Payment(-1000) 處理，非以折讓退費（對齊 converge-consultation-cancel OA 退款模型、退款 Payment 與 SalesAllowance 分離設計）
 
 ### Requirement: 對帳警示 banner 觸發條件
 

@@ -129,7 +129,7 @@ last-reviewed: 2026-05-19
   5. **諮詢結束分支**（諮詢人員動作）：
      - 做大貨 → [[13-user-stories/consultation-request/US-CR-004-諮詢結束做大貨轉需求單|US-CR-004]] 轉需求單（後續流程連到情境 1 全流程或諮詢來源需求單流失情境）
      - 不做大貨 → [[13-user-stories/consultation-request/US-CR-005-諮詢結束不做大貨建諮詢訂單|US-CR-005]] 建諮詢訂單收尾
-     - 取消預約 → [[13-user-stories/consultation-request/US-CR-006-諮詢取消預約退費|US-CR-006]] 建諮詢訂單 + 退款（連到情境 16 退款流程）
+     - 取消預約 → [[13-user-stories/consultation-request/US-CR-006-諮詢取消預約退費|US-CR-006]] 建諮詢訂單（已取消終態）+ 半額退款（連到情境 16 退款流程）
 - **跨系統介面契約**：surveycake → 金流平台 → ERP webhook payload schema 異動時 ERP MUST 拒絕建單並通知工程值班；客戶錢已收的補救機制未明（屬執行層 SLA）
 - **發票時點分支**：`issue_now` / `defer_to_main_order` 兩種選項影響後續分支建發票時機（詳見 spec § 諮詢費發票時間點處理）
 
@@ -152,7 +152,7 @@ last-reviewed: 2026-05-19
      - 未開立發票 → 不需建折讓單
   6. **整體訂單終止**：訂單與所有下游實體終態確立，活動紀錄留存
 - **特殊邊界**：訂單可於任意狀態取消（依 spec § 訂單取消流程）；連鎖終止為系統自動行為，業務無須手動處理下游
-- **諮詢取消連動**：[[13-user-stories/consultation-request/US-CR-006-諮詢取消預約退費|US-CR-006]] 諮詢取消 → 建諮詢訂單 + 退款 → 進入本情境的退款流程（會計執行退款邏輯一致）
+- **諮詢取消連動**：[[13-user-stories/consultation-request/US-CR-006-諮詢取消預約退費|US-CR-006]] 諮詢取消 → 建諮詢訂單（**終態=已取消**，2026-05-30 converge-consultation-cancel 收斂、取代既有訂單完成）+ 半額退款 → 進入本情境的退款善後流程（退款 Payment 切已完成推進退款 OA 已執行邏輯一致）。諮詢訂單無印件 / 工單 / 生產任務，故 step 2 的 top-down 連鎖對諮詢訂單為 no-op（無下游可終止）；系統不自動開發票 / 折讓 / 待開發票，留存 1000 收入由業務手動開票、未開票由對帳差額警示兜底
 
 ## 涉及角色（跨情境）
 
