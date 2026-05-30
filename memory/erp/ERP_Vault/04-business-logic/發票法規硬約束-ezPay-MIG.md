@@ -115,17 +115,17 @@ last-reviewed: 2026-05-28
 
 | 主動實體 | 連帶實體 | 影響規則 |
 |---------|---------|---------|
-| **Invoice 開立** | `InvoiceItem`（五欄）/ `PaymentInvoice` junction / `PlannedInvoice`（鏈式預填）| 五欄硬約束 + 鏈式預填規則 |
+| **Invoice 開立** | `InvoiceItem`（五欄）/ `PaymentAllocation`（核銷分配）/ `BillingInstallment`（鏈式預填、取代 PlannedInvoice）| 五欄硬約束 + 鏈式預填規則 |
 | **Invoice 作廢** | `SalesAllowance`（超過時限改折讓）/ `Payment`（退款 Payment 反向）| 作廢期限 14 天 + 超期走折讓 |
 | **SalesAllowance 確認** | `Invoice`（折讓金額）/ `Payment.refundPaymentId`（退款 Payment 反向關聯）| 折讓單跨 Invoice / Payment 紀錄 |
 | **Payment 退款（負值）** | `OrderAdjustment.adjustment_type=退款`（執行）/ `SalesAllowance`（金額對齊）/ `Invoice`（作廢或折讓）| OA 推進 + SalesAllowance 反向 |
 | **OrderAdjustment 已執行** | `Payment`（綁退款 Payment 建立事件）/ `Invoice`（作廢或折讓）/ `SalesAllowance`（建立）| Payment 累計推進 OA |
-| **PlannedInvoice 自動建** | `Order`（諮詢訂單）/ `Invoice`（一鍵開立沿用 items[]）| 鏈式預填 + 不自動開立發票 |
+| **BillingInstallment 自動建**（取代 PlannedInvoice）| `Order`（諮詢訂單收尾）/ `Invoice`（一鍵開票繼承 items[]）| 鏈式預填 + 不自動開立發票 |
 | **AfterSalesTicket 退款** | OA (responsibility=公司認賠 / 補退) / Payment / SalesAllowance | 跨售後 ticket 容器 |
 
 **七實體連帶圖**：
 - Payment ↔ OA / PaymentPlan / Invoice / SalesAllowance
-- Invoice ↔ PlannedInvoice / PaymentInvoice junction / ezPay 約束 / SalesAllowance
+- Invoice ↔ BillingInstallment（取代 PlannedInvoice）/ PaymentAllocation（取代 PaymentInvoice junction）/ ezPay 約束 / SalesAllowance
 - OA ↔ Payment / 補收 / 折讓 / 售後 / 訂單異動
 - SalesAllowance ↔ Invoice / Payment（refund）
 - AfterSalesTicket ↔ OA / PrintItem / Payment / Invoice
@@ -147,7 +147,7 @@ last-reviewed: 2026-05-28
 ## 十、相關卡
 
 - [[付款發票邏輯]]（13 業務情境索引）
-- [[../05-entities/訂單]]（訂單實體 / Payment / Invoice / OrderAdjustment / SalesAllowance / PlannedInvoice 段）
+- [[../05-entities/訂單]]（訂單實體 / Payment / Invoice / OrderAdjustment / SalesAllowance / BillingInstallment（取代 PlannedInvoice）段）
 - [[../05-entities/售後服務]]（OA-Payment 段）
 - [[../03-roles/會計]]（對帳 / 發票開立角色）
 - [[../03-roles/業務]]（款項追款）

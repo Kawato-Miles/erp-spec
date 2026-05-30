@@ -840,17 +840,18 @@ ConsultationRequest 自動建立 (status=待諮詢, cancel_reason_category=NULL)
 諮詢人員「結束諮詢」分支：
   ├ 不做大貨 → 建諮詢訂單(type=諮詢) + OrderExtraCharge(consultation_fee, +2000)
   │           Payment(+2000) 從 ConsultationRequest 轉移至諮詢訂單
-  │           系統自動建 PlannedInvoice(scheduledAmount=2000, description=「諮詢費」,
-  │                                    expectedDate=當天, status=預計開立, createdBy=system)
+  │           系統自動建 BillingInstallment(scheduled_amount=2000, description=「諮詢費」,
+  │                                    due_date=當天, source_type=consultation_end_no_production,
+  │                                    invoicing_status=未開立, created_by=system)
   │           （MUST NOT 自動開立 Invoice、不論 consultation_invoice_option 值）
   │           諮詢訂單即時推進至「訂單完成」
   │           ConsultationRequest 狀態 = 完成諮詢
-  │           後續：諮詢人員於 PendingInvoices 列表手動將 PlannedInvoice 轉立 Invoice
+  │           後續：諮詢人員手動將 BillingInstallment 一鍵開立 Invoice
   │
   └ 做大貨 → 建需求單 (status=需求確認中)
             ConsultationRequest 狀態 = 已轉需求單
             Payment 維持綁 ConsultationRequest
-            （MUST NOT 建任何 Order、MUST NOT 建任何 PlannedInvoice）
+            （MUST NOT 建任何 Order、MUST NOT 建任何 BillingInstallment）
             （需求單 requirement_note 自 consultation_topic + consultant_note 雙區塊合併帶入）
                 ↓
             需求單流程：需求確認中 → 待評估成本 → 已評估成本 → 議價中 → 成交
@@ -859,16 +860,17 @@ ConsultationRequest 自動建立 (status=待諮詢, cancel_reason_category=NULL)
             （訂單階段業務主管 gate 由獨立 change 處理）
                 + Payment(+2000) 從 ConsultationRequest 轉移至一般訂單
                 + 一般訂單建立 OrderExtraCharge(consultation_fee, +2000)
-                + 諮詢費 PlannedInvoice 不自動建（業務於主訂單既有發票時程規劃流程自行加入；
-                  可參考 consultation_invoice_option 客戶意向決定獨立 / 併入其他 PlannedInvoice）
+                + 諮詢費 BillingInstallment 不自動建（業務於主訂單既有發票時程規劃流程自行加入；
+                  可參考 consultation_invoice_option 客戶意向決定獨立 / 併入其他 BillingInstallment）
                 ↓
             訂單流程：報價待回簽 → ... → 訂單完成
 
 需求單在議價中或更早任何狀態流失（做大貨分支的另一條路徑）：
   → 系統建諮詢訂單(type=諮詢) + OrderExtraCharge(consultation_fee, +2000)
   → Payment(+2000) 從 ConsultationRequest 轉移至諮詢訂單
-  → 系統自動建 PlannedInvoice(scheduledAmount=2000, description=「諮詢費」,
-                              expectedDate=當天, status=預計開立, createdBy=system)
+  → 系統自動建 BillingInstallment(scheduled_amount=2000, description=「諮詢費」,
+                              due_date=當天, source_type=quote_lost,
+                              invoicing_status=未開立, created_by=system)
   → （MUST NOT 自動開立 Invoice、不論 consultation_invoice_option 值）
   → 諮詢訂單即時推進至「訂單完成」
   → ConsultationRequest 狀態從「已轉需求單」更新為「完成諮詢」
@@ -897,13 +899,13 @@ ConsultationRequest 自動建立 (status=待諮詢, cancel_reason_category=NULL)
 **諮詢費的對帳邏輯（本 change 後）**：
 
 - 諮詢結束**不做大貨**：建諮詢訂單收尾，應收 = OEC(2000) = 收款 = 2000；發票淨額由諮詢人員手動開立決定（建議 2000 元）
-- 諮詢結束**做大貨 + 需求單成交**：Payment 轉至一般訂單，一般訂單應收含 OEC(2000)，三方對帳通過；諮詢費 PlannedInvoice 由業務於主訂單發票時程規劃自行加入
-- 諮詢結束**做大貨 + 需求單流失**：建諮詢訂單收尾（複用「不做大貨」路徑），對帳通過；自動建 PlannedInvoice 2000
+- 諮詢結束**做大貨 + 需求單成交**：Payment 轉至一般訂單，一般訂單應收含 OEC(2000)，三方對帳通過；諮詢費 BillingInstallment 由業務於主訂單發票時程規劃自行加入
+- 諮詢結束**做大貨 + 需求單流失**：建諮詢訂單收尾（複用「不做大貨」路徑），對帳通過；自動建 BillingInstallment 2000
 - **待諮詢取消（半額退費）**：應收 = OEC(2000) + OA(-1000) = 1000（OA 退費處理中為已核可、退費完成推進已執行，皆計入應收）；收款淨額 = +2000 - 1000 = 1000（兩筆 Payment 都已完成）；發票淨額由業務 / 諮詢人員手動開立決定（建議 1000 元、系統不自動建待開發票、未開票由對帳差額警示兜底）；標示「對帳通過 - 退費完成」（既有 [order-management § 諮詢取消對帳邏輯](../order-management/spec.md)）；訂單終態 = 已取消（見 state-machines § 諮詢取消諮詢訂單終態收斂）
 
 **統一規則**：所有「最終沒進入大貨製作」的路徑都建諮詢訂單收尾。複用單一收尾流程，不增加新訂單類型。諮詢費 Invoice 統一由諮詢人員 / 業務手動開立（廢止 `consultation_invoice_option` 對發票自動化的影響）；不做大貨 / 需求單流失情境系統自動建待開發票提醒、諮詢取消情境系統 MUST NOT 自動建待開發票（未開票由對帳差額警示兜底）。終態分流：不做大貨 / 需求單流失 = 訂單完成、諮詢取消 = 已取消。
 
-**`consultation_invoice_option` 欄位定位變更**：本 change 後此欄位保留於 ConsultationRequest 實體作為「客戶意向參考」純展示，**不再驅動系統行為**（不影響 Invoice / SalesAllowance / PlannedInvoice 的自動建立或不建立）。業務於主訂單發票時程規劃時可參考此意向。
+**`consultation_invoice_option` 欄位定位變更**：本 change 後此欄位保留於 ConsultationRequest 實體作為「客戶意向參考」純展示，**不再驅動系統行為**（不影響 Invoice / SalesAllowance / BillingInstallment 的自動建立或不建立）。業務於主訂單發票時程規劃時可參考此意向。
 
 #### Scenario: 諮詢費走「不做大貨」分支端到端
 
@@ -913,22 +915,22 @@ ConsultationRequest 自動建立 (status=待諮詢, cancel_reason_category=NULL)
 - **AND** 系統 MUST NOT 建立任何 Order
 - **WHEN** 諮詢人員結束諮詢選擇「不做大貨」
 - **THEN** 系統 SHALL 建立諮詢訂單 + OrderExtraCharge(consultation_fee, +2000) + Payment 轉移
-- **AND** 系統 SHALL 自動建立 PlannedInvoice 1 筆（scheduledAmount = 2000、description = 「諮詢費」）
+- **AND** 系統 SHALL 自動建立 BillingInstallment 1 筆（scheduled_amount = 2000、description = 「諮詢費」、source_type = consultation_end_no_production、invoicing_status = 未開立）
 - **AND** 系統 MUST NOT 自動開立 Invoice（不論 `consultation_invoice_option` 值為何）
 - **AND** 諮詢訂單 SHALL 即時推進至「訂單完成」
 - **AND** ConsultationRequest 狀態 = 完成諮詢
-- **AND** 諮詢人員 SHALL 後續手動將 PlannedInvoice 轉立 Invoice
+- **AND** 諮詢人員 SHALL 後續手動將 BillingInstallment 一鍵開立 Invoice
 
 #### Scenario: 諮詢費走「做大貨 + 需求單成交」分支端到端
 
 - **GIVEN** 客人付諮詢費 2000 元、諮詢結束選「做大貨」、後續需求單議價成交報價總額 4000 元（印件費）
 - **WHEN** webhook 觸發、諮詢結束、需求單建立、議價成交
 - **THEN** 系統 MUST NOT 建立任何 Order（Payment 維持綁 ConsultationRequest）
-- **AND** 系統 MUST NOT 建立任何 PlannedInvoice
+- **AND** 系統 MUST NOT 建立任何 BillingInstallment
 - **WHEN** 業務於「成交」需求單執行「轉訂單」
 - **THEN** 系統 SHALL 建立一般訂單 + OrderExtraCharge(consultation_fee, +2000) + Payment 從 ConsultationRequest 轉移至一般訂單
 - **AND** 一般訂單應收 = 6000、已收 = 2000、待繳 = 4000
-- **AND** 系統 MUST NOT 自動於主訂單建立諮詢費的 PlannedInvoice（業務自行規劃）
+- **AND** 系統 MUST NOT 自動於主訂單建立諮詢費的 BillingInstallment（業務自行規劃）
 - **AND** 業務 SHALL 可參考 `consultation_invoice_option` 客戶意向決定主訂單發票時程
 
 #### Scenario: 諮詢費走「做大貨 + 需求單流失」分支端到端
@@ -936,7 +938,7 @@ ConsultationRequest 自動建立 (status=待諮詢, cancel_reason_category=NULL)
 - **GIVEN** 客人付諮詢費 2000 元、諮詢結束選「做大貨」、Payment 綁 ConsultationRequest
 - **WHEN** 後續需求單於議價中流失
 - **THEN** 系統 SHALL 建立諮詢訂單 + OrderExtraCharge(consultation_fee, +2000) + Payment 從 ConsultationRequest 轉移至諮詢訂單
-- **AND** 系統 SHALL 自動建立 PlannedInvoice 1 筆（scheduledAmount = 2000、description = 「諮詢費」）
+- **AND** 系統 SHALL 自動建立 BillingInstallment 1 筆（scheduled_amount = 2000、description = 「諮詢費」、source_type = quote_lost、invoicing_status = 未開立）
 - **AND** 系統 MUST NOT 自動開立 Invoice
 - **AND** 諮詢訂單 SHALL 即時推進至「訂單完成」
 - **AND** ConsultationRequest 狀態 SHALL 從「已轉需求單」更新為「完成諮詢」

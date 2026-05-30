@@ -225,9 +225,9 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 - 諮詢訂單 MUST NOT 進入共用段（無印件、無製作、無出貨）
 - 諮詢訂單只在兩種「沒進大貨製作」收尾情境建立（不做大貨 / 待諮詢取消），webhook 階段不建
 - 諮詢訂單建立時即在訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)，並從 ConsultationRequest 將 Payment 轉移過來
-- 諮詢訂單 Invoice 由諮詢人員手動將 PlannedInvoice 轉立、系統 MUST NOT 自動開立 Invoice（不論 `consultation_invoice_option` 值為何，本 change 廢止此自動化）
+- 諮詢訂單 Invoice 由諮詢人員手動將 BillingInstallment 一鍵開立、系統 MUST NOT 自動開立 Invoice（不論 `consultation_invoice_option` 值為何，本 change 廢止此自動化）
 - 待諮詢取消情境下，系統 SHALL 自動建立 OrderAdjustment(-1000, type=諮詢取消退費, status=已核可, approved_by=system, executed_at=NULL) + 退款 Payment(-1000, status=處理中)；**諮詢訂單建立即推進至「已取消」終態**（不需製作 / 退款中間態）；退款 Payment 切「已完成」累計達 -1000 推進 OA「已執行」，但不影響「已取消」終態（退款 Payment 切已完成只是金流完結、不再推進訂單狀態）；系統 MUST NOT 為諮詢取消自動建待開發票（見 § Requirement: 諮詢取消諮詢訂單終態收斂 / 諮詢取消退費 OA 系統建已核可）
-- 諮詢結束做大貨且需求單成交轉一般訂單情境下 MUST NOT 建立諮詢訂單；諮詢費透過 Payment 轉移至一般訂單 + 一般訂單建立 OrderExtraCharge(consultation_fee) 進入一般訂單應收；諮詢費 PlannedInvoice 不自動建，由業務於主訂單既有發票時程規劃流程自行加入
+- 諮詢結束做大貨且需求單成交轉一般訂單情境下 MUST NOT 建立諮詢訂單；諮詢費透過 Payment 轉移至一般訂單 + 一般訂單建立 OrderExtraCharge(consultation_fee) 進入一般訂單應收；諮詢費 BillingInstallment 不自動建，由業務於主訂單既有發票時程規劃流程自行加入
 
 免審稿快速路徑（線下 / 線上適用）：當訂單下所有印件的 review_status 皆為「合格」（含免審稿設定）時，訂單 SHALL 從「已付款」或「已回簽」直接進入「製作等待中」，跳過「稿件未上傳」、「等待審稿」、「待補件」。
 
@@ -266,7 +266,7 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 - **THEN** 系統 SHALL 建立諮詢訂單（order_type = 諮詢）
 - **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)
 - **AND** Payment 從 ConsultationRequest 轉移至諮詢訂單
-- **AND** 系統 SHALL 自動建立 PlannedInvoice 1 筆（金額 2000、description 「諮詢費」）
+- **AND** 系統 SHALL 自動建立 BillingInstallment 1 筆（scheduled_amount 2000、description 「諮詢費」、source_type = consultation_end_no_production、invoicing_status = 未開立）
 - **AND** 系統 MUST NOT 自動開立 Invoice
 - **AND** 諮詢訂單 SHALL 即時推進至「訂單完成」終態（Payment +諮詢費 已完成、應收已滿足）
 
@@ -278,7 +278,7 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 - **THEN** 系統 SHALL 建立諮詢訂單（order_type = 諮詢）
 - **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)
 - **AND** Payment 從 ConsultationRequest 轉移至諮詢訂單
-- **AND** 系統 SHALL 自動建立 PlannedInvoice 1 筆（金額 2000、description 「諮詢費」）
+- **AND** 系統 SHALL 自動建立 BillingInstallment 1 筆（scheduled_amount 2000、description 「諮詢費」、source_type = quote_lost、invoicing_status = 未開立）
 - **AND** 系統 MUST NOT 自動開立 Invoice
 - **AND** 諮詢訂單 SHALL 即時推進至「訂單完成」終態
 - **AND** ConsultationRequest 狀態 SHALL 從「已轉需求單」更新為「完成諮詢」（最終結局）
@@ -291,7 +291,7 @@ THEN 系統 SHALL 允許為該工單建立生產任務
 - **AND** 系統 SHALL 在一般訂單上建立 OrderExtraCharge(consultation_fee, 諮詢費)
 - **AND** Payment 從 ConsultationRequest 轉移至一般訂單
 - **AND** 系統 MUST NOT 建立諮詢訂單
-- **AND** 系統 MUST NOT 自動於主訂單建立諮詢費 PlannedInvoice（業務自行規劃）
+- **AND** 系統 MUST NOT 自動於主訂單建立諮詢費 BillingInstallment（業務自行規劃）
 
 #### Scenario: 待諮詢取消建諮詢訂單與半額退費
 
