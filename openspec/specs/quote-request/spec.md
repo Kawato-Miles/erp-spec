@@ -536,6 +536,33 @@ QuoteRequest 資料模型 SHALL 新增 `requirement_note` 欄位（text，選填
 - **THEN** 系統 SHALL 在 dropdown 中正確選中該值
 - **AND** 系統 MUST NOT 顯示「未知單位」錯誤
 
+### Requirement: 需求單負責業務改派
+
+業務主管 SHALL 可於需求單詳情頁改派負責業務（`sales_id`）。改派為改 owner 的管理動作，與「分享」（[§ Requirement: 檢視權限管理](../quote-request/spec.md)，不改 owner、業務可做）為兩種獨立機制。改派的通用規則（理由分類五值必填、五要素留痕、候選人以 Role 模組權限篩選、全公司範圍、改派不改狀態）沿用 [user-roles § 業務主管改派負責業務職責](../user-roles/spec.md)。
+
+**允許改派狀態**：需求單非終態（需求確認中 / 待評估成本 / 已評估成本 / 議價中）SHALL 可改派；成交（已轉訂單，負責業務應改訂單而非需求單）/ 流失（無後續）為終態，禁改派。
+
+#### Scenario: 業務主管改派進行中需求單負責業務
+
+- **GIVEN** 需求單 `status ∈ {需求確認中, 待評估成本, 已評估成本, 議價中}`
+- **WHEN** 業務主管點「改派負責人」、選新負責人（候選 = 具需求單權限的使用者）、必選理由分類、確認
+- **THEN** 系統 SHALL 更新 `sales_id` 為新負責人
+- **AND** SHALL 寫入活動紀錄五要素（原 / 新負責人、改派時間、理由分類與補述、操作主管）
+- **AND** MUST NOT 改變需求單狀態
+
+#### Scenario: 成交 / 流失需求單禁止改派
+
+- **GIVEN** 需求單 `status ∈ {成交, 流失}`
+- **WHEN** 業務主管開啟該需求單詳情頁
+- **THEN** 「改派負責人」入口 SHALL disabled
+- **AND** 成交需求單 SHALL 顯示提示（已成交，請於對應訂單改派負責業務）
+
+#### Scenario: 改派與分享為獨立機制
+
+- **WHEN** 業務主管於需求單詳情頁
+- **THEN** 「改派負責人」（改 owner，限業務主管）與「分享 / 檢視權限管理」（不改 owner，業務可做）SHALL 為分開的入口
+- **AND** 分享 SHALL NOT 改變需求單負責業務
+
 ## Data Model
 
 來源：本 spec § Data Model 為正本；Notion [資料欄位 DB](https://www.notion.so/32c3886511fa803e9f30edbb020d10ce) 為發布版本
