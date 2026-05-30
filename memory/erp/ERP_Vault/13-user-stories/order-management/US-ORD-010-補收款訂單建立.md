@@ -9,9 +9,9 @@ role:
   - "[[03-roles/業務]]"
 priority: medium
 stage: business-only
-status: active
+status: deprecated
 created-at: 2026-05-22
-last-reviewed: 2026-05-28
+last-reviewed: 2026-05-29
 source:
   - "openspec/specs/order-management/spec.md#Requirement: 訂單建立"
 related-spec: openspec/specs/order-management/spec.md
@@ -28,7 +28,7 @@ prerequisites:
 
 # US-ORD-010 補收款訂單建立
 
-> **模型對齊狀態（2026-05-29 收斂 Step 3d）**：本卡「補收款訂單（parent_order_id 主從關聯）模式」與 [[US-ORD-026-業務建補收OA免主管核可直接執行]]「補收訂單異動（OrderAdjustment）模式」**並存**。現行 spec 與 as-built prototype 的補收採 **OA 模式**（沿用既有訂單異動流程、不另開補收款訂單；對齊 MEMORY「補收等場景能用既有流程涵蓋就不另開例外路徑」）。本「補收款訂單」模式是否保留為獨立情境（如大額追加另立子訂單）或標為 deprecated，**待 Miles 拍板**；拍板前本卡 status 暫不變動。
+> **已廢止（deprecated，2026-05-29 收斂 Step 3d，Miles 拍板）**：補收統一走 [[US-ORD-026-業務建補收OA免主管核可直接執行]]「補收訂單異動（OrderAdjustment）模式」（正項免審直達已執行 + 自動帶請款期次 + 開發票，連獨立發票需求都靠期次↔發票 1:1 涵蓋）。本「補收款訂單（parent_order_id 子訂單）模式」是 spec 與 as-built prototype 都未採用的平行路徑，違反「補收用既有流程、不另開例外路徑」原則（MEMORY），故廢止。其原涵蓋需求的歸屬：純費用補收（急件費 / 版費 / 折扣）→ 補收 OA；加印需生產 → 訂單內加印件（製作中）或售後補印（AfterSalesTicket → 補印 PrintItem）。本卡保留作歷史，不再作為現行需求依據。
 
 ## 業務情境（穩定層）
 
