@@ -3,11 +3,14 @@ type: open-question
 module:
   - consultation-request
 oq-id: CR-4
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-29
 raised-by: Miles
+resolved-at: 2026-05-30
+resolved-by: Miles
+resolution-change: add-sales-manager-reassign-owner
 source-link: /opsx:explore add-sales-manager-reassign-owner 探索（2026-05-29）
 related-vault:
   - "[[諮詢單]]"
@@ -40,6 +43,17 @@ expected-resolution-at: 2026-Q2
 - [ ] 哪些諮詢單狀態允許主管改派（待諮詢 / 諮詢中 / 已結束？）
 - [ ] 改派後諮詢單狀態是否回退（如從「諮詢中」回「待諮詢」），還是維持現狀僅換人
 - [ ] 改派後是否通知原認領人（與 [[XM-008-業務主管改派負責業務的權限邊界與機制|XM-008]] 子項 2 通知機制呼應）
+
+## 決議與理由（2026-05-30）
+
+由 change `add-sales-manager-reassign-owner` 拍板並實作（2026-05-30 archive）：
+
+- **可改派狀態**：限「待諮詢」且已認領（consultantId 有值）；「完成諮詢 / 已轉需求單 / 已取消」終態禁止改派（store gate + UI 互斥）。
+- **改派不回退狀態**（design D2）：改派只重新指定 consultantId、不改變諮詢單狀態。
+- **通知**：改派後通知原認領人（`reassignNotifiesPrevious`，非離職情境）。
+- **與認領互斥**：未認領顯示「指派諮詢人員」、已認領顯示「改派負責人」。
+
+**決策者**：Miles（2026-05-30）
 
 ## 相關 OQ
 
