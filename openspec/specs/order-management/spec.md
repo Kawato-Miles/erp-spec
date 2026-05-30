@@ -915,7 +915,7 @@ Supervisor SHALL 擁有「解鎖並重新指定訂單 `approved_by_sales_manager
 
 ### Requirement: 發票開立（藍新 Mockup）
 
-業務 / 諮詢 SHALL 可於訂單詳情頁開立電子發票。系統送藍新（Mockup）時帶入 BillingCompany.ezpay_merchant_id 對應的 MerchantID_，自訂編號（MerchantOrderNo）格式為 `{order_no}-INV-{流水}`，限英數 + 底線、20 字元內。藍新 Mockup 回傳 InvoiceTransNo（17 碼時間戳）、InvoiceNumber（兩碼大寫英文 + 8 碼數字遞增）、RandomNum（4 碼隨機）、CreateTime。發票時序與 PaymentPlan / Payment 解耦：可先開後收、後收先開、合併（多筆 Payment 對一張 Invoice）、拆分（一筆 Payment 對多張 Invoice）。
+業務 / 諮詢 SHALL 可於訂單詳情頁開立電子發票。系統送藍新（Mockup）時帶入 BillingCompany.ezpay_merchant_id 對應的 MerchantID_，自訂編號（MerchantOrderNo）格式為 `{order_no}-INV-{流水}`，限英數 + 底線、20 字元內。藍新 Mockup 回傳 InvoiceTransNo（17 碼時間戳）、InvoiceNumber（兩碼大寫英文 + 8 碼數字遞增）、RandomNum（4 碼隨機）、CreateTime。發票時序與收款解耦：可先開後收、後收先開（開票維度與收款維度獨立）。發票與收款的對應透過「請款期次」中介——一張發票對應唯一一個請款期次（期次↔發票業務 1:1，見 § 期次↔發票 1:1 嚴格約束）、一個期次可被多筆收款入帳、一筆收款可入帳多個期次（PaymentAllocation N:M，見 § 收款核銷分配）；不再是發票↔收款直接多對多（舊 PaymentInvoice junction 已廢止）。
 
 **品項欄位送藍新對應**（本次新增）：每張 Invoice.items 陣列轉換為藍新 PostData 五欄序列（`ItemName` / `ItemCount` / `ItemUnit` / `ItemPrice` / `ItemAmt`），多項以 `|` 分隔。送出前 SHALL 通過「發票品項符合 ezPay 與電子發票法規硬約束」Requirement 全部 Scenario 驗證。
 

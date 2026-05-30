@@ -838,28 +838,35 @@ Prototype 共用 UI SHALL 提供 `BillingInstallmentSplitDialog` 元件，於拆
 - **AND** Store SHALL 建立 BI-010-A（scheduledAmount=2500, sourceType=manual, splitFromInstallmentId=BI-010.id, note='原一期拆兩期，源期次描述：「活動小冊」'）+ BI-010-B（scheduledAmount=75500, 同欄位）
 - **AND** Store SHALL 寫入 SPLIT + 兩筆 BILLING_INSTALLMENT_CREATED ActivityLog 事件
 
-### Requirement: PaymentAllocationDialog 核銷分配 UI
+### Requirement: BillingInstallmentAllocationTable 收款入帳明細 UI（inline，業務手動）
 
-Prototype 共用 UI SHALL 提供 `PaymentAllocationDialog` 元件，於業務登錄 Payment 後顯示系統依序填滿分配結果、業務 MAY 手動覆寫：
+Prototype 共用 UI SHALL 提供 `BillingInstallmentAllocationTable` 元件，於「新增收款」/「編輯收款」Dialog 內 **inline** 顯示（非另開 Dialog），讓業務手動勾選要入帳的收款項目並逐筆填金額（取代原 `PaymentAllocationDialog` 另開 Dialog + 系統依序填滿模型，Miles 拍板手動）。
 
 **初始狀態**：
-- 系統呼叫 `allocatePaymentSequentially(orderId, paymentAmount)` 取得 PaymentAllocation 列表（auto_allocated=true）
-- Dialog 顯示每筆 row：BillingInstallment 摘要（description / dueDate / 未收金額）+ 分配額輸入欄位（預填系統依序填滿值）
-- 溢收部分顯示「預收（未分配）{N} 元」row、billing_installment_id=NULL
+- 訂單有未取消收款項目時，入帳明細表**一開始即顯示**（不需先填收款金額），各列預設不勾選、入帳金額空
+- 每列：[勾選 | 收款項目（description）| 預計收款日（dueDate）| 項目金額（scheduledAmount）| 本次入帳金額 Input]
+- 系統 SHALL NOT 依序填滿、SHALL NOT 預填分配值（業務全手動）
 
 **業務互動**：
-- 業務 MAY 修改任一 row.allocatedAmount
-- UI SHALL 即時校驗 sum(allocatedAmount) = Payment.amount，差額時顯示提示「總和必須等於實收 {N} 元，目前差額 {diff} 元」+ 禁止儲存
-- 「自動回填差額」按鈕：點擊後 helper `autoFillDifferenceToLast` 將 sum 差額補至最後一期或預收桶（業務選擇）
-- 儲存後 helper `markManuallyOverriddenByDiff` 依 diff 判定 manually_overridden（最終值 ≠ 初值時 true）
+- 業務勾選收款項目並逐筆填入帳金額；未勾選列 Input disabled
+- UI SHALL 即時校驗「勾選入帳金額合計 ≤ Payment.amount」，超過時超額 Input 紅標 + 底部提示「入帳合計不可大於收款金額」+ 禁止送出
+- 允許合計 < Payment.amount：底部提示「剩餘 {N} 元將記為預收（未指定收款項目）」，送出時由父層補一筆 billingInstallmentId=NULL 預收桶
+- 收款金額未填（= 0）時顯示中性提示「填寫收款金額後，於此分配各期入帳金額」，不報錯
+- SHALL NOT 提供「自動回填差額」按鈕、SHALL NOT 做 sum 強制相等校驗（業務手動入帳模型）
 
-#### Scenario: 業務手動覆寫核銷分配總和校驗
+**已廢止**：`PaymentAllocationDialog`（另開 Dialog + 系統依序填滿 + 自動回填 + sum 強制相等 + diff-based 覆寫）元件廢止，由本 inline 元件取代。
 
-- **GIVEN** Dialog 顯示初值 [PA1.allocated=3000 (BI-A), PA2.allocated=1000 (BI-B)]，Payment.amount=4000
-- **WHEN** 業務修改 PA1 為 2000、PA2 維持 1000
-- **THEN** UI 即時校驗 sum = 3000 ≠ 4000、差額 1000、顯示提示「總和必須等於實收 4000 元，目前差額 1000 元」+ 儲存按鈕 disabled
-- **WHEN** 業務按「自動回填差額」+ 選「補至 PA2（BI-B）」
-- **THEN** UI SHALL 自動填入 PA2.allocated = 2000、sum = 4000 PASS、儲存按鈕 enabled
+#### Scenario: 業務於新增收款 Dialog inline 手動入帳兩期
+
+- **GIVEN** 訂單兩筆未收期次 BI-A（scheduledAmount=3000）+ BI-B（scheduledAmount=2000），業務開「新增收款」Dialog
+- **WHEN** 入帳明細表一開始即顯示；業務填收款金額 4000、勾 BI-A 填 3000、勾 BI-B 填 1000
+- **THEN** UI SHALL 校驗入帳合計 4000 = 收款金額（PASS）、可送出
+
+#### Scenario: 入帳合計超過收款金額被擋
+
+- **GIVEN** 業務填收款金額 5000
+- **WHEN** 業務勾兩期填合計 6000
+- **THEN** UI SHALL 將超額 Input 紅標 + 底部提示「入帳合計不可大於收款金額」+ 禁止送出
 
 ### Requirement: ReconciliationCsvExportDialog 對帳 CSV 匯出元件
 
