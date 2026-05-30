@@ -9,11 +9,16 @@ export const meta = {
   ],
 }
 
-// ---- 入口參數 ----
+// ---- 入口參數（robust：Workflow args 可能以物件或 JSON 字串注入）----
 // args: { topic: "議題描述（如：補收 OA 執行條件）", domains: ["L1.6 Billing & Cash", "L1.2 Order Management"] }
 // 領域依 business-domain-taxonomy § 二 觸發詞 mapping 判定（由 skill Step 1 或協調者帶入）。
-const topic = (args && args.topic) || ''
-const domains = (args && Array.isArray(args.domains) && args.domains) || []
+let _args = args
+if (typeof _args === 'string') {
+  try { _args = JSON.parse(_args) } catch (e) { _args = {} }
+}
+const topic = (_args && _args.topic) || ''
+const domains = (_args && Array.isArray(_args.domains) && _args.domains) || []
+log(`入口參數：topic="${topic}"、domains=${JSON.stringify(domains)}（args 原始型別：${typeof args}）`)
 
 if (!topic || domains.length === 0) {
   log('缺少入口參數。請以 args 傳入 {topic, domains:[...]}；domains 依 business-domain-taxonomy § 二觸發詞 mapping 判定（單次 ≤ 2-3 領域，§七 Token exhaustion 反模式）。')
