@@ -1289,3 +1289,17 @@ M=26 未轉 N（本次不修卡），但經分類確認 M 項「非既有 know-h
 3. 補 weekly-review（2026-W22）+ daily 頻率回穩
 4. 折讓單/發票卡未建 + 編號拼錯 4 處 + 路徑深度 8 處 + 舊命名 3 處
 5. 稽核框架補強：pre-check / vault-audit 維度 4 納入 frontmatter related-vault 路徑式 wiki link 存在性驗證（本次 + unify-billing 連兩輪漏報訂單異動 dangling）
+
+---
+
+## [2026-05-30] vault-audit fix + weekly-review | 批次 Error 修補 + W22 週回顧
+
+**批次 Error 修補（vault-audit mode C 式）**：
+- A 訂單異動家族 dangling（BI-9/BI-4/BI-11/XM-005）→ 改指 [[訂單]]；B 折讓單/發票（BI-2/BI-10/BI-6）→ 改指 [[付款發票邏輯]]；C 編號拼錯 4 處（ORD-1/ORD-2/XM-006→007/XM-005 空格）；D 路徑深度（發票法規卡/raw ezpay/BI-12/BI-13）；E 舊命名 after-sales-ticket-AFT-* → AFT-*；F oq-id ORD-019 重號 → 附件用途卡 ORD-026
+- 18 檔 + 1 rename，依 BI-13/禁建新卡原則改指既有卡；全 vault dangling A-F 21 處全解；3 範圍外既有問題（audit-log narration / raw 英文別名 / phases Windows 路徑）依 surgical 未動（commit 60845d8）
+
+**weekly-review W22**（補 vault-audit 維度 12 Error：本週無 weekly）：
+- 輸出：[[../14-reviews/weekly/2026-W22]]
+- 學到 5 條（收斂例外路徑暴露既有 bug / 執行者稽核者分離擋 premature doc / 可調vs核可誤綁 / 補需求對照資料模型驗落點 / 稽核 wiki link 盲區）
+- 下週重點 3 條：converge verify+archive（首要）/ review 規律性回穩 / vault 既有問題收尾
+- W22 0 daily，素材從 git log（Sens 40+ / prototype 30+ commits）+ audit-log
