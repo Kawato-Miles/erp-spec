@@ -29,8 +29,8 @@
 ## 5. 驗證與收尾
 
 - [x] 5.1 `tsc` 型別檢查通過
-- [x] 5.2 完整 e2e 套件通過（106 passed / 1 pre-existing skip / 0 failed，含新增 5 案例）
-- [ ] 5.3 更新 OQ（archive 前）：[CR-5](../../../memory/erp/ERP_Vault/08-open-questions/CR-5-諮詢取消退款OA審核路徑.md)（OA 建已核可）/ [CR-6](../../../memory/erp/ERP_Vault/08-open-questions/CR-6-諮詢取消專屬待開發票是否廢除.md)（廢自動建 + 保留 source_type）/ [BI-15](../../../memory/erp/ERP_Vault/08-open-questions/BI-15-對帳主軸改已開發票後未開票應收呈現.md)（差額警示兜底）標 answered（oq-manage mode C）
-- [ ] 5.4 開新 OQ（oq-manage mode B）：差額警示文案區分「應收>發票淨額（待開票）」vs「收款淨額>應收（退款待執行）」（顧問 C-2，上線前驗證）
-- [ ] 5.5 `/opsx:verify` 前三視角審查（依 multi-agent-discussion-protocol，過渡期保留）
+- [x] 5.2 完整 e2e 套件通過（105 passed / 1 pre-existing skip / 0 change-related failure，含新增 5 案例；1 pre-existing flaky「relax-order-detail Tab 9 附件上傳」與本 change 無關 — 單獨重跑全綠、不觸及 cancelConsultation/reconciliationCsv）
+- [x] 5.3 更新 OQ：CR-5（採方案 C 已核可）/ CR-6（採方案 A 廢自動建 + 保留 source_type）/ BI-15（採方案 A 差額警示兜底）標 answered（oq-manage mode C，決議四要素寫入）
+- [x] 5.4 開新 OQ BI-16：差額警示文案區分「應收>發票淨額（待開票）」vs「收款淨額>應收（退款待執行）」（顧問 C-2，priority low / 上線前驗證，去重連結 BI-11/BI-15）
+- [x] 5.5 三視角審查跳過：本 change 已走完整序列協作 Phase 1-4（含 Phase 4 verify consistency 兩張對照表，PM/CEO/顧問三視角已參與）；沿用前例（unify-billing verify 跳過三視角）
 - [ ] 5.6 doc-audit 跨檔一致性（特別檢查 consultation-request L398 舊版 PlannedInvoice 描述與本 change MODIFIED 後的一致性）

@@ -5,7 +5,7 @@ module:
   - order-management
   - state-machines
 oq-id: CR-5
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-29
@@ -16,8 +16,10 @@ related-vault:
   - [[../05-entities/諮詢單]]
 related-oq:
   - BI-9
-related-change: converge-consultation-cancel-to-order-cancel-flow（規劃中）
+related-change: converge-consultation-cancel-to-order-cancel-flow
 expected-resolution-at: propose 階段
+answered-at: 2026-05-30
+answered-by: Miles
 ---
 
 # CR-5：諮詢取消自動建退款 OA(-1000) 的狀態流轉路徑
@@ -59,3 +61,13 @@ expected-resolution-at: propose 階段
 ### 方案 C：系統自動建「已核可」+ 綁退款 Payment 切已完成才「已執行」
 - 優點：對齊 BI-9 退款 invariant（已執行必有已完成退款 Payment 累計達 OA.amount）
 - 缺點：流程多一步，與現況「即時認列應收」體驗不同
+
+## 決議與理由
+
+**決議**：採方案 C（系統自動建「已核可」approved_by=system + 綁退款 Payment 切已完成累計達 -1000 才推進「已執行」）。
+
+**理由**：序列協作 Phase 3 顧問（C-1）揭露 as-built 現況「一建即已執行」是 bug——「已執行」鎖死金額（order-management L1230）使業務無法調退款金額（違反 Phase 1「可調」），且配「處理中」退款 Payment 破壞 invariant（已執行 → 必有已完成 Payment 累計達 OA.amount）。方案 C 的「已核可」同時滿足：系統審核通過（approved_by=system 免人工核可，達成方案 A 的「無需人工決策」）+ 可調（已核可後修改不需重審 L1184）+ 善後歸一（沿用一般退款推進）+ 修 invariant bug。方案 A 鎖金額不可調、方案 B 逐筆人工核可增無謂負擔，皆不採。
+
+**決策者**：Miles（2026-05-29，C-1 拍板）
+
+**參考**：converge-consultation-cancel-to-order-cancel-flow design D1 + state-machines delta「諮詢取消退費 OA 系統建已核可」

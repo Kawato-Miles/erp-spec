@@ -4,7 +4,7 @@ module:
   - consultation-request
   - order-management
 oq-id: CR-6
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-29
@@ -15,8 +15,10 @@ related-vault:
   - [[../04-business-logic/付款發票邏輯]]
 related-oq:
   - CR-5
-related-change: converge-consultation-cancel-to-order-cancel-flow（規劃中）
+related-change: converge-consultation-cancel-to-order-cancel-flow
 expected-resolution-at: propose 階段
+answered-at: 2026-05-30
+answered-by: Miles
 ---
 
 # CR-6：諮詢取消專屬「自動建待開發票」是否完全廢除
@@ -55,3 +57,13 @@ expected-resolution-at: propose 階段
 ### 方案 B：保留自動建 BillingInstallment 作為待開提醒，只改訂單狀態
 - 優點：保留提醒、改動最小
 - 缺點：諮詢專屬邏輯未消除（與收斂目標部分背離）
+
+## 決議與理由
+
+**決議**：採方案 A（完全廢除諮詢專屬自動建待開發票 BillingInstallment），保留 `source_type=consultation_cancellation` enum 語意；方案 A 的「忘記開票」缺點由對帳「應收 > 發票淨額」差額警示兜底（連動 BI-15）。
+
+**理由**：自動建待開發票是諮詢專屬例外路徑，保留即違反「能用既有流程不另開例外」。廢除後留存 1000 收入由業務循一般訂單取消發票開立路徑手動開立；未開票風險由差額警示提醒（取代自動建提醒）。source_type enum 保留供業務手動建期次標示來源、避免 unify-billing 拆 enum 白做。既有 mock：cancelConsultation 不再寫入新 BillingInstallment，既有 mock 諮詢取消訂單 status 改已取消（不影響 buildBillingInstallmentsFromLegacy）。
+
+**決策者**：Miles（2026-05-29，Phase 1 Q3+Q4 拍板）
+
+**參考**：converge design D4 + consultation-request delta「諮詢取消半額退費自動建請款期次（廢除）」
