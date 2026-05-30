@@ -7,7 +7,7 @@ business-domain:
   - billing-cash
 related-spec: openspec/specs/order-management/spec.md
 status: active
-last-reviewed: 2026-05-28
+last-reviewed: 2026-05-29
 ---
 
 # 訂單款項與發票業務情境（Notion 13 情境）
@@ -24,6 +24,8 @@ last-reviewed: 2026-05-28
 - 訂單異動情境 3 個（A1-A3；A4 重新報價屬需求單議價）
 
 每個情境結構：業務情境（Notion 原文）→ 實作解決方式 → 驗證重點 → Prototype 對應訂單。
+
+> **模型已更新（2026-05-29 收斂 Step 2b/3）**：以下情境文字內的舊機制標註（PaymentPlan / PlannedInvoice / PaymentInvoice junction /「依序填滿」自動分配）**一律以新模型為準**——收款規劃 = BillingInstallment（收款項目，雙維度：開票 / 收款）；收款入帳 = PaymentAllocation（業務**手動**勾選收款項目 + 填金額、防呆 sum ≤ 收款金額、溢收進預收桶，**非系統依序填滿**）；發票↔期次業務 1:1（客戶要多張票走「拆票 = 拆期」）；發票開票維度 enum =「已作廢」。canonical 定義見 [[付款發票邏輯]] § 五 + order-management spec § 收款核銷分配 / § 期次↔發票 1:1。各情境的「業務情境」本身（F1-F8 / C1-C4 / A1-A3）不變，僅實作機制對應更新；逐情境細節文字深度改寫列為後續（detail card，非 canonical）。
 
 ---
 
