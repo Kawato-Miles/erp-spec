@@ -107,3 +107,45 @@ Miles 可選擇：
 - [[senior-pm-write-mode]] — Senior PM 寫入流程
 - [[review-loading-checklist]] — 各 Agent 背景載入範圍
 - CLAUDE.md § ERP 討論主動路由 — 觸發分級主表
+
+---
+
+## 九、explore 輕量商業邏輯衝突檢查變體（2026-05-30 新增）
+
+> 對應 CLAUDE.md 路由「`/opsx:explore` → 輕量商業邏輯衝突檢查」。Miles 拍板：explore 階段不跑完整序列協作 Phase 1，改跑此輕量檢查（平衡探索自由 vs 早期防呆）。
+
+### 觸發
+`/opsx:explore` 開新需求、或「功能設計有傾向」討論進入探索時。
+
+### 職責：廣度發現（不是深度釐清）
+- **讀**：依議題領域載入對應 Vault `04-business-logic/` 卡（商業正本）+ 查相關 `08-open-questions/` OQ。
+- **產「衝突筆記」**：本方向撞了哪些既有商業規則（附檔:行）+ 既有解法是什麼 + 初步方向，給早期 go/no-go 警示。
+- **MUST NOT**：跑完整 Phase 1（不產正式 OQ 候選、不啟動 CEO / 顧問、不做完整需求邊界釐清）——那是 propose 階段 PM Phase 1 的職責。
+
+### 發現衝突後的處置分岔（決策權在 Miles，agent MUST NOT 替決定）
+attach 三選項給 Miles：
+- **A 繞過**：用既有機制（如棄用+clone）滿足痛點 → 可能不進 propose，省下整條設計+實作成本。
+- **B 推翻**：確認要改既有規則 → 帶「MODIFIED 既有 Requirement」任務進 propose。
+- **C 待釐清**：取捨需現場數據 → 開 OQ，暫緩 propose 或帶 OQ 進 propose 由 CEO Phase 2 補輸入。
+
+### 承接（避免 explore↔propose 重工）
+決定推進 propose 時，衝突筆記經 [[dispatch-prompt-template]] context bridging 傳入 propose PM Phase 1；PM Phase 1 **承接深化、增量讀（只讀 explore 未覆蓋 / 需求具體化後新涉及者）、MUST NOT 重新掃描已發現衝突**，將衝突轉為正式 OQ 候選 + 給 CEO / 顧問輸入。
+
+### 輸出格式
+
+```
+[explore 輕量商業邏輯衝突檢查]
+
+議題領域：<L1.X 領域>
+已讀商業正本：<04-business-logic 卡清單 + 相關 OQ>
+
+衝突筆記：
+- 衝突 1：本方向 <動作> 撞 <既有規則>（<檔:行>）；既有解法 <...>
+- 衝突 2：...
+- （或）無衝突：本方向與既有商業規則無衝突，可直接進 propose
+
+處置選項（待 Miles 拍板）：
+- A 繞過：<用哪個既有機制>，影響 <...>
+- B 推翻：<要 MODIFIED 哪條既有規則>，影響 <...>
+- C 待釐清：<開哪個 OQ>，影響 <...>
+```

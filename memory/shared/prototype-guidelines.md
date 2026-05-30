@@ -4,7 +4,7 @@
 >
 > **適用範圍**：所有產品 Prototype 製作（ERP、圖編器等）
 >
-> 最後更新：2026-03-26
+> 最後更新：2026-05-30（正本表對齊 OpenSpec/Vault 遷移）
 
 ---
 
@@ -16,18 +16,18 @@
 
 | 資料 | 正本位置 | 必需 | 用途 |
 |------|---------|------|------|
-| **功能規格（BRD）** | Notion Feature Database | ✓ | 功能需求、邊界條件 |
-| **資料欄位定義** | Notion 資料欄位 DB | ✓ | 各模組欄位名稱、型別、說明（撰寫 prompt 時以此為準） |
-| **業務情境** | Notion 業務情境 DB | ✓ | 完整操作步驟與分支情況 |
-| **使用者故事 / 角色權責** | Notion User Story DB + Notion 使用者情境 | ✓ | 各角色的工作內容、期望結果 |
-| **狀態機** | Notion 狀態變化 | ✓ | 業務狀態轉移規則 |
-| **測試案例** | Notion ERP Test Case DB | 視需要 | 邊界測試、異常情況 |
-| **業務流程** | Notion 商業流程 | 視需要 | 核心商業規則 |
-| **Open Questions** | Notion Follow-up DB | 視需要 | 待確認項目對 Prototype 的影響 |
+| **功能規格（BRD）** | OpenSpec spec（`openspec/specs/`）；Notion Feature DB 為發布版 | ✓ | 功能需求、邊界條件 |
+| **資料欄位定義** | OpenSpec spec § Data Model；Notion 資料欄位 DB 為發布版（查詢用） | ✓ | 各模組欄位名稱、型別、說明（以 OpenSpec spec § Data Model 為準） |
+| **業務情境** | OpenSpec business-scenarios spec + Vault `07-scenarios/`；Notion 業務情境 DB 為發布版 | ✓ | 完整操作步驟與分支情況 |
+| **使用者故事 / 角色權責** | Vault `13-user-stories/` + OpenSpec user-roles spec；Notion 為發布版 | ✓ | 各角色的工作內容、期望結果 |
+| **狀態機** | OpenSpec state-machines spec + Vault `06-state-machines/`；Notion 狀態變化為發布版 | ✓ | 業務狀態轉移規則 |
+| **測試案例** | Notion ERP Test Case DB（正本，尚未遷移） | 視需要 | 邊界測試、異常情況 |
+| **業務流程** | OpenSpec business-processes spec + Vault `04-business-logic/`；Notion 商業流程為發布版 | 視需要 | 核心商業規則 |
+| **Open Questions** | Vault `08-open-questions/`（內部正本）；Notion Follow-up DB 為對外確認版 | 視需要 | 待確認項目對 Prototype 的影響 |
 
 > Notion 各資源 URL 見 `memory/shared/notion-index.md`。
 
-> **撰寫 Lovable / Prototype prompt 時**：表單欄位名稱、欄位型別、必填規則一律查 Notion 資料欄位 DB，不得自行命名或憑印象填入。
+> **撰寫 Lovable / Prototype prompt 時**：表單欄位名稱、欄位型別、必填規則一律查 OpenSpec spec § Data Model（正本），不得自行命名或憑印象填入；Notion 資料欄位 DB 僅為發布版查詢用。
 
 ---
 

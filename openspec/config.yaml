@@ -64,6 +64,9 @@ context: |
   - Notion 推送：累積數個 change 後手動決定推送時機
 
 rules:
+  explore:
+    - "[2026-05-30] explore 開新需求時 MUST 跑輕量商業邏輯衝突檢查（依 lightweight-review-mode § 九 explore 變體）：讀對應領域 Vault 04-business-logic/ 卡 + 查相關 08-open-questions/ OQ，給「此方向與既有商業規則有無衝突」早期警示（附檔:行 + OQ 編號），不跑完整序列協作 Phase 1"
+    - "[2026-05-30] explore 衝突檢查產「衝突筆記」交 propose Phase 1 承接深化（PM 不重掃已發現衝突）；發現衝突時攤三選項（A 繞過用既有機制 / B 推翻改既有規則 / C 待釐清開 OQ），決策權在 Miles，agent MUST NOT 替 Miles 決定方向"
   proposal:
     - 使用繁體中文撰寫
     - Capabilities 名稱使用英文 kebab-case

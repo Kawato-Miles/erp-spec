@@ -35,11 +35,14 @@ last-reviewed: 2026-05-19
 
 ## 三、必讀（每次執行前必載入）
 
-1. **商業流程**（`openspec/specs/business-processes/spec.md`）— 業務規則與流程全貌
-2. **使用者情境**（`openspec/specs/user-roles/spec.md`）— 角色職責與痛點來源
-3. **User Story** — 確認新功能是否有對應故事基礎（嵌入各模組 spec）
-4. **Notion 產品目標** — 確認新功能能真實貢獻哪個 KPI
-5. **Vault `08-open-questions/`** — 避免重複設計已討論過的問題；查詢時 **MUST** 同時閱讀「決議與理由」，了解已解答 OQ 的最終決策，確保新設計不與既有決策衝突
+> **載入順序（對齊 CLAUDE.md「先讀 wiki 商業正本 → 再 openspec 實作規格」，2026-05-30 補）**：商業層 **MUST 先讀 Vault `04-business-logic/` 正本，再讀 openspec 實作規格**，順序不可顛倒（漏讀 wiki 正本會漏看既有商業規則）。
+
+1. **Vault `04-business-logic/` 對應領域卡**（商業邏輯正本，**MUST 先於 openspec 讀取**）— 依本次議題領域載入（如審稿 → 審稿分配規則 / 免審決策樹 / 打樣流程 / 稿件管理規則 / 印件生產流程；款項 → 付款發票邏輯 等），這是商業規則的 ground truth
+2. **商業流程**（`openspec/specs/business-processes/spec.md`）— 業務規則與流程全貌（實作規格層）
+3. **使用者情境**（`openspec/specs/user-roles/spec.md`）— 角色職責與痛點來源
+4. **User Story** — 確認新功能是否有對應故事基礎（Vault `13-user-stories/` 內部正本 + 嵌入各模組 spec）
+5. **Notion 產品目標** — 確認新功能能真實貢獻哪個 KPI
+6. **Vault `08-open-questions/`** — 避免重複設計已討論過的問題；查詢時 **MUST** 同時閱讀「決議與理由」，了解已解答 OQ 的最終決策，確保新設計不與既有決策衝突
 
 ## 四、依討論類型追加載入
 
