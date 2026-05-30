@@ -79,6 +79,8 @@ rules:
     - 不使用 emoji
     - 新增或修改 Requirement 前，須確認與 state-machines / business-processes / user-roles specs 的一致性
     - "[2026-05-19] 涉及商業邏輯 / 角色 R&R / 實體關聯時，必須對照 ERP_Vault 對應卡（04-business-logic/ / 03-roles/ / 05-entities/）；發現不一致時優先更新 Vault 卡（內部正本）"
+    - "[2026-05-30] 撰寫 delta 前 MUST 先枚舉所有相關既有規則：grep openspec/specs/** + ERP_Vault（04-business-logic / 05-entities / 06-state-machines / 07-scenarios / 13-user-stories）內提及本主題的既有 Requirement / 規則，逐條決定 ADDED / MODIFIED / REMOVED 再動筆（防漏看；converge change 漏看 order-management 三條 + wiki 6 卡的教訓）"
+    - "[2026-05-30] ADDED vs MODIFIED 紀律：新 Requirement 若語意取代既有 Requirement / Scenario，MUST 用 ## MODIFIED Requirements（copy 完整既有再改）或 ## REMOVED，MUST NOT 用 ## ADDED——archive sync 按 exact-title 比對、ADDED 新標題只增不刪、會與被取代的舊 Requirement 物理並存致矛盾；僅對『巨大且多數不變』的 Requirement（如整個訂單狀態機）才可 ADDED 修訂局部 + archive 後手動清理舊描述"
   design:
     - 使用繁體中文撰寫
     - 著重 Prototype 設計決策，非實作程式碼
@@ -108,3 +110,5 @@ rules:
     - "[2026-05-19] design.md / proposal.md 原處 OQ 條目改為「→ 對應 Vault OQ：[[<MODULE>-<NNN>-<簡述>]]」雙向引用，不刪除原 section"
     - "[2026-05-19] 已解 OQ 在 design.md 內保留「決議與理由」標注；若決議影響跨 change 商業邏輯，同步遷 Vault OQ 卡並標 status: answered"
     - "[2026-05-19] 上述步驟全部完成後才能 archive；oq-manage skill mode D 可協助批次處理"
+    - "[2026-05-30] archive 後 MUST 驗證 ADDED 殘留：對每個 delta ## ADDED Requirement，確認是否語意取代某既有 main spec Requirement / Scenario；若是，手動清理被取代的舊描述（避免新舊並存矛盾，converge 9 CRITICAL 教訓；doc-audit v1.5/v1.6 維度）"
+    - "[2026-05-30] archive 後 MUST 對齊 wiki 商業邏輯正本：依 pre-check 產出的「wiki 回補清單」，將 ERP_Vault 商業邏輯卡（04-business-logic / 05-entities / 06-state-machines / 07-scenarios / 13-user-stories）對齊本 change 已定案內容（wiki 為商業邏輯正本、openspec 為實作規格，定案後正本不可停留舊版）；由 doc-audit 擴展為 openspec + wiki 雙層稽核兜底"

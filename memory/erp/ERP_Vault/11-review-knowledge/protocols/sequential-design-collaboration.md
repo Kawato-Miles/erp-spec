@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-28
+last-reviewed: 2026-05-30
 ---
 
 # 序列式設計協作協議（Sequential Design Collaboration Protocol）
@@ -52,7 +52,7 @@ last-reviewed: 2026-05-28
 | **MUST NOT** 提「製作效益不高」這類否定 | CEO（主要）、顧問 | 不具設計依據、無法轉化為調整方向，屬已知誤審 pattern |
 | PM 在 Phase 4 **MUST** 列「砍掉的功能清單」 | PM | 過濾決策必須透明，Miles 可追溯 |
 | PM 在 Phase 4 **MUST** 對每個 challenge 逐條回應 | PM | 避免 PM 隱性過濾、下游 agent 工具人化 |
-| PM 在 Phase 4 **MUST** 輸出 verify consistency 兩張對照表 | PM | 集中處理跨 agent 不一致，取代舊協議 Round 2 跨視角質疑 |
+| PM 在 Phase 4 **MUST** 輸出 verify consistency 三張對照表 | PM | 集中處理跨 agent 不一致 + 既有規則全覆蓋分類，取代舊協議 Round 2 跨視角質疑 |
 
 這五項在每個 Phase agent 提示中**強制重述**（依 [[dispatch-prompt-template]] § 4 key rules 區塊），不可省略。
 
@@ -151,6 +151,7 @@ Claude 協調者依 CLAUDE.md § ERP 討論主動路由 識別到本次討論為
 **ERP 顧問主任務**：依 [[erp-review-framework]] 6 維度 + [[erp-design-patterns]] 5 設計模式作為**思考維度**，**依統合需求做設計**
 - 對照狀態機 spec（`openspec/specs/state-machines/spec.md`） / 業務流程 spec（`openspec/specs/business-processes/spec.md`） / 既有實體 spec
 - 輸出實體變更 / 流程節點 / 狀態機 / 角色責任四層
+- **列出所有受影響的既有 Requirement / 規則（跨 wiki ERP_Vault + openspec specs 雙層）**：逐條標 ADDED / MODIFIED / REMOVED + 理由；supersession（取代既有 Requirement / Scenario）**MUST** 標 MODIFIED 不可 ADDED（archive sync 按 exact-title 只增不刪，ADDED 取代會導致主 spec 新舊並存矛盾）
 
 **顧問紀律**：
 - **MUST NOT** 否定 Miles 商業需求
@@ -192,11 +193,13 @@ Claude 協調者依 CLAUDE.md § ERP 討論主動路由 識別到本次討論為
    - 砍掉理由 **MUST NOT** 用「效益不高」「ROI 低」等措辭
 4. **逐條回應 challenge**（紀律 4）：對 CEO / 顧問每個 challenge 標記「採納 / 部分採納 / 駁回」+ 具體理由
    - 駁回 **MUST NOT** 用「效益不高」措辭，**MUST** 引用商業需求 / 範疇 / 衝突的具體依據
-5. **verify consistency 區塊**（紀律 5，2026-05-28 新增）：
+5. **verify consistency 區塊**（紀律 5，2026-05-28 新增；2026-05-30 擴為三張表）：
    - CEO 指標 ↔ 顧問實作對齊表
    - PM 範疇 ↔ 顧問實作對齊表
-   - 即使全部對齊（無不一致），兩張表 **MUST** 列出
+   - **既有規則（wiki + openspec）↔ 本次設計 覆蓋 / 分類對照表**（2026-05-30 新增，欄位：既有規則出處（ERP_Vault 卡 / openspec spec Requirement）/ 本次處理方式 / delta op（ADDED / MODIFIED / REMOVED）/ 是否已對齊 wiki 正本）
+   - 即使全部對齊（無不一致），三張表 **MUST** 列出
    - 不對齊項 **MUST** 標明處置（如「指標 X 未被實作覆蓋 → 開 OQ」）
+   - 第三張表 supersession 列 **MUST** 標 MODIFIED（不可 ADDED）；任一既有規則「未對齊 wiki 正本」**MUST** 標處置（archive 後回補 wiki 商業邏輯卡）
 6. **未解爭議 → OQ**：擬觸發 [[oq-manage]] mode B 開立的 OQ 清單
 
 **「未滿足商業需求」的處理**（PM 自決，選 A 或 B 並在輸出明示選了哪條與理由）：

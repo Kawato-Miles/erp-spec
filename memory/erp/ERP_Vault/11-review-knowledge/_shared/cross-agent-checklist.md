@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-19
+last-reviewed: 2026-05-30
 ---
 
 # 跨 Agent 共用 Checklist
@@ -51,6 +51,11 @@ last-reviewed: 2026-05-19
 - [ ] 指出問題 / 漏洞 / 不合理之處時 **MUST** 附解法或設計方向
 - [ ] 純商業決策需 Miles 拍板時，**MUST** 說明 A / B 方向的影響，不可空白
 
+### 6. 既有規則全覆蓋 + delta op 分類一致
+
+- [ ] **既有規則全覆蓋**：枚舉 wiki（ERP_Vault `04-business-logic/` `05-entities/` `06-state-machines/`）+ openspec specs 雙層所有提及本主題的既有 Requirement / 規則，無漏看（漏看會導致 supersession 誤判、新舊並存）
+- [ ] **delta op 分類一致**：supersession（取代既有 Requirement / Scenario）**MUST** 標 MODIFIED 不用 ADDED（`openspec archive` sync 按 exact-title 只增不刪，ADDED 取代會致主 spec 新舊兩套描述物理並存、直接矛盾）
+
 ## 三、Checklist 使用方式
 
 - 在審查輸出中**不一定逐項列出**「已檢查」（避免冗長）
@@ -66,6 +71,7 @@ last-reviewed: 2026-05-19
 | 跨模組整合節點 | ERP 視角重點 |
 | 業界參考附 URL | PM 視角：產品設計案例；CEO 視角：印刷業案例；ERP 視角：ERP 設計模式 |
 | 每問題附解法 | 所有視角都掃 |
+| 既有規則全覆蓋 + delta op 分類 | ERP 視角重點：枚舉雙層既有 Requirement + supersession 標 MODIFIED |
 
 ## 五、相關卡
 

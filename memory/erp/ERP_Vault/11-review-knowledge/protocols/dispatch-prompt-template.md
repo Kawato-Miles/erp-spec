@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-28
+last-reviewed: 2026-05-30
 ---
 
 # Dispatch Prompt Template — Sub-agent 呼叫 5 區塊標準
@@ -62,10 +62,11 @@ Agent 仍需主動讀（視角專屬）：
 - 視角專屬 framework 卡（依 Phase 對應）：[[ceo-review-framework]] / [[erp-review-framework]] / [[pm-review-framework]]
 - 本協議卡：[[sequential-design-collaboration]] / [[multi-agent-discussion-protocol]] / [[lightweight-review-mode]]
 - 議題對應 OpenSpec spec（如 openspec/specs/order-management/spec.md）
+- **枚舉所有提及本主題的既有 Requirement / 規則（wiki ERP_Vault 商業邏輯卡 + openspec specs 雙層）**：grep 本主題在 `openspec/specs/**` 與 ERP_Vault `04-business-logic/` `05-entities/` `06-state-machines/` 的所有 `### Requirement:` / 規則，避免漏看既有規則致 supersession 誤判
 - Vault `08-open-questions/` 該模組現有 OQ
 ```
 
-**設計**：協調者把 `_shared/` 5 卡內容**摘要注入 prompt**，agent 不需用 Read 工具再開檔。視角專屬卡仍由 agent 主動讀（因內容專屬且改動較頻繁）。
+**設計**：協調者把 `_shared/` 5 卡內容**摘要注入 prompt**，agent 不需用 Read 工具再開檔。視角專屬卡仍由 agent 主動讀（因內容專屬且改動較頻繁）。**既有 Requirement 枚舉（wiki + openspec 雙層）由 agent 主動 grep**，因清單依議題而異、無法預注入。
 
 ### 區塊 3：Context bridging（必填）
 
@@ -98,7 +99,10 @@ Key rules（本次呼叫 MUST 遵守）：
 2. MUST NOT 提「製作效益不高 / ROI 太低」這類否定
 3. PM 在 Phase 4 MUST 列「砍掉的功能清單」
 4. PM 在 Phase 4 MUST 對每個 challenge 逐條回應
-5. PM 在 Phase 4 MUST 輸出 verify consistency 兩張對照表
+5. PM 在 Phase 4 MUST 輸出 verify consistency 三張對照表（含既有規則覆蓋 / 分類對照表）
+
+delta op 分類紀律（Phase 3 顧問 + Phase 4 PM MUST 遵守）：
+- supersession（取代既有 Requirement / Scenario）MUST 標 MODIFIED 非 ADDED（archive sync 按 exact-title 只增不刪，ADDED 取代會致主 spec 新舊並存矛盾）
 
 本 Phase 專屬禁止項：
 - [依 Phase 列出，例如 Phase 2 CEO 禁止項：「MUST NOT 否定 Miles 商業需求」「補需求 MUST 標明『管理層補需求』」]

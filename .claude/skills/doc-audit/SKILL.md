@@ -13,6 +13,16 @@ description: >
 
 負責在每次文件異動後確保整體文件庫的一致性，並隨專案迭代自我演化稽核範圍。
 
+**稽核層級（2026-05-30 擴展為雙層）**：archive 後稽核從「只 openspec」擴為 **openspec + wiki（ERP_Vault 商業邏輯卡）雙層**。
+
+**與 vault-audit 的範圍分工**：
+
+| 稽核對象 | 由哪個 skill 負責 |
+|---------|-----------------|
+| OpenSpec spec 層（delta sync / 跨檔案邏輯一致性）| 本 skill（doc-audit）|
+| ERP_Vault **整體健康檢查**（12 維度）| `vault-audit` skill |
+| ERP_Vault **商業邏輯卡對齊已 archive 的 change**（防 wiki 停留舊版）| 本 skill（doc-audit）archive 後雙層稽核涵蓋（見 Step 2「archive 後 wiki 商業邏輯卡對齊」維度）|
+
 ---
 
 ## 觸發時機
@@ -54,6 +64,7 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | 平台容器 spec 一致性 | 新增或修改「平台容器 spec」（如 sales-platform / consultation-platform / factory-platform 等）時稽核：(1) 容器名稱與 user-roles spec § Requirement: 平台歸屬分類 對應（業務平台 / 中台 / 印務平台 / 審稿平台 / 工廠平台 / 中國供應商平台）；(2) 容器內每條 Requirement 是否引用對應的中台版功能 spec 作為內容基準（避免重複描述）；(3) 業務平台版與中台版差異點是否明確（過濾規則 / 動作可見性 / 預設 UI / Tab 閹割等）；(4) user-roles spec 是否同步開放對應 Role 使用該容器內功能（含同平台不同 Role 的差異處理，如業務平台內業務 / 諮詢開放、會計沿用既有限制） |
 | Data Model section sync | `openspec archive` 內建 sync **只處理 `## ADDED Requirements` / `## MODIFIED Requirements`**，**不會自動合 `## ADDED Data Model` / `## MODIFIED Data Model` section**。archive 後**必須手動驗證**：(1) delta `specs/<capability>/spec.md` 是否含 `## ADDED Data Model` 或 `## MODIFIED Data Model` section；(2) 若有，對應內容是否已合進主 spec `openspec/specs/<capability>/spec.md` 的 `## Data Model` 段落；(3) 若漏合，手動補（含子實體 cross-link 修正、命名慣例對齊 snake_case / camelCase 差異）。同時注意：跨 change 同期 archive 時可能對同一實體有不同描述（如 PlannedInvoice 在 refine-consultation-cancellation-and-invoice-flow 內已有 camelCase 簡述、align-invoice-line-items-to-ezpay-spec 補 snake_case 完整定義），須整併至單一權威來源（§ Data Model），既有 Requirement 內描述改為 cross-link 引用 |
 | ADDED 修訂既有 Requirement 的 archive sync 殘留 | 當 change 用「ADDED 新 Requirement 修訂/取代既有 Requirement 或 Scenario」（而非 MODIFIED 該既有 Requirement）時，`openspec archive` sync 只**新增** ADDED Requirement、**不會移除**被語意取代的舊 Requirement/Scenario，導致同一 main spec 內新舊兩套描述物理並存、直接矛盾。archive 後 **MUST 手動驗證**：(1) 每個 ADDED Requirement 是否語意上取代了某既有 Requirement/Scenario（尤其跨 spec 的狀態機 / 流程 / 對帳邏輯）；(2) 被取代的舊描述是否仍殘留主 spec；(3) 殘留則手動對齊新版或標 deprecated。**預防**：對「獨立、非巨大」的既有 Requirement（如「諮詢取消對帳邏輯」單條）應優先用 `## MODIFIED Requirements`（sync 會替換），只有對「巨大且多數內容不變」的 Requirement（如整個訂單狀態機）才用 ADDED 新 Requirement 修訂局部 + archive 後手動清理舊描述 |
+| archive 後 wiki 商業邏輯卡對齊 | `openspec archive` sync 只處理 openspec delta → main spec，**完全不觸及 ERP_Vault**。wiki（ERP_Vault）是商業邏輯正本、openspec 是實作規格，archive 後若只對齊 openspec、漏 wiki，會導致 wiki 商業邏輯卡停留舊版（converge change 漏 wiki 6 卡教訓）。archive 後 **MUST 檢查** ERP_Vault 內提及本 change 主題的商業邏輯卡是否對齊已定案內容，涵蓋目錄：`04-business-logic/`（業務邏輯規則 / 連帶矩陣 / 計算邏輯）/ `05-entities/`（實體欄位 / 狀態 / 關聯）/ `06-state-machines/`（狀態機節點 / 轉換 / 終態）/ `07-scenarios/`（端到端情境）/ `13-user-stories/`（業務故事）。**做法**：用本 skill § 「archive 後雙層稽核 grep 片段」列出本主題在 openspec specs + ERP_Vault 商業邏輯卡的所有 Requirement / 規則 → 逐條比對 wiki 卡是否停留 archive 前舊版 → 停舊版則手動回補（依 `erp-planning-pre-check` skill pre-check 階段產出的「wiki 商業邏輯卡回補清單」執行）|
 
 ### Step 3：自我演化 — 識別新稽核維度
 
@@ -87,6 +98,28 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 
 ---
 
+## archive 後雙層稽核 grep 片段（可重用）
+
+> archive 後執行 Step 2「archive 後 wiki 商業邏輯卡對齊」維度時，用以下片段列出某主題在 openspec specs + ERP_Vault 商業邏輯卡的所有既有 `### Requirement:` / 規則，逐條比對 wiki 卡是否停留 archive 前舊版。將 `<主題關鍵字>` 換成本 change 主題（如「諮詢取消」「對帳」「期次」）。
+
+```bash
+# 1. openspec specs 層：列本主題所有 Requirement 標題與所在檔
+grep -rn "### Requirement:" openspec/specs/ | grep "<主題關鍵字>"
+
+# 2. wiki ERP_Vault 商業邏輯卡層：列本主題所在卡與行
+grep -rn "<主題關鍵字>" \
+  memory/erp/ERP_Vault/04-business-logic/ \
+  memory/erp/ERP_Vault/05-entities/ \
+  memory/erp/ERP_Vault/06-state-machines/ \
+  memory/erp/ERP_Vault/07-scenarios/ \
+  memory/erp/ERP_Vault/13-user-stories/
+
+# 3. 比對：openspec 已定案的新規則（終態 / 狀態 / 公式）是否已同步進 wiki 卡；
+#    wiki 卡仍寫 archive 前舊版者 MUST 手動回補（依 erp-planning-pre-check 產出的 wiki 回補清單）
+```
+
+---
+
 ## 稽核範圍演化紀錄
 
 > 每次採納新稽核維度後，在此記錄版本與理由，確保稽核範圍有跡可循。
@@ -99,3 +132,4 @@ bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
 | v1.3 | 2026-05-14 | 新增「平台容器 spec 一致性」稽核維度 | `add-print-item-overview-to-sales-platform` change 引入新 capability 類型「平台容器 spec」（首例為 sales-platform，承載業務平台所有功能 spec），未來會有諮詢 / 印務 / 審稿 / 工廠 / 中國供應商平台對應容器。需獨立稽核項確保容器名稱對齊 user-roles § 平台歸屬分類、容器內 Requirement 正確引用中台版功能 spec、平台版與中台版差異點明確、user-roles 同步開放對應 Role |
 | v1.4 | 2026-05-26 | 新增「Data Model section sync」稽核維度 | `align-invoice-line-items-to-ezpay-spec` archive 後發現 CRITICAL bug：openspec CLI `archive` 內建 sync 只處理 `## ADDED/MODIFIED Requirements` section，**完全不處理** `## ADDED/MODIFIED Data Model` section。本次漏合 InvoiceItem 子結構（不存在於主 spec）+ PlannedInvoice 完整表格（與既有 refine-consultation-cancellation-and-invoice-flow camelCase 簡述衝突）+ Invoice.items 欄位描述（仍是 JSON 未改 InvoiceItem[]）。本維度強制 archive 後手動驗證 Data Model section 合入主 spec，含整併跨 change 同實體多版本描述至單一權威來源 |
 | v1.5 | 2026-05-30 | 新增「ADDED 修訂既有 Requirement 的 archive sync 殘留」稽核維度 | `converge-consultation-cancel-to-order-cancel-flow` archive 後發現 9 CRITICAL：change 用「ADDED 新 Requirement 取代既有」（仿 unify-billing 慣例避免 copy 巨大訂單狀態機），但 archive sync 不移除被取代的舊 Requirement/Scenario，致 state-machines + order-management 內新舊終態（訂單完成 vs 已取消）/ OA 狀態（已執行 vs 已核可）並存矛盾；其中 order-management 三整條獨立諮詢取消 Requirement（發票時間點/收尾自動建/對帳邏輯）本應用 MODIFIED 卻漏改、business-processes 整段未納 delta（範圍遺漏）。本維度強制 archive 後驗證 ADDED 是否取代既有並手動清理殘留 |
+| v1.6 | 2026-05-30 | 定位擴展為「openspec + wiki 雙層」+ 新增「archive 後 wiki 商業邏輯卡對齊」稽核維度 | converge archive 後 Miles 指出防範只看 openspec、漏 wiki 商業邏輯正本（converge change 漏對齊 ERP_Vault 6 卡）。wiki（ERP_Vault）是商業邏輯正本、openspec 是實作規格，archive sync 不觸及 ERP_Vault，只對齊 openspec 會致 wiki 卡停留舊版。本維度強制 archive 後檢查 ERP_Vault（04-business-logic / 05-entities / 06-state-machines / 07-scenarios / 13-user-stories）內提及本 change 主題的商業邏輯卡對齊已定案內容；同步釐清與 vault-audit 範圍分工（vault-audit = 整體健康檢查 / doc-audit archive = 商業邏輯卡對齊已 archive change）|
