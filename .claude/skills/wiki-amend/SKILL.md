@@ -1,0 +1,347 @@
+---
+name: wiki-amend
+status: draft
+description: >
+  change 後 wiki 增修機制 skill（草案 draft）。每次 OpenSpec change archive 後，大量 delta 內容合併回 wiki（ERP_Vault），本 skill 負責把變更增修進 wiki 各位階，維持正確性與一致水平。
+  正本方法論：[[wiki-architecture]]（位階 / 溯源 / 引用方向）+ [[business-logic-writing-guide]]（§4.0 原子化職責 / §4.1 共通骨架）+ [[wiki-schema]]（§四 frontmatter / §十一 內容職責邊界）+ [[business-logic-changelog]]（卡為主鍵迭代史）。
+  觸發時機：
+    1. OpenSpec change archive 後（對齊 CLAUDE.md § 主動收尾第 10 條「change archive 後 MUST 對齊 wiki 商業邏輯卡」）
+    2. `/opsx:archive` → `doc-audit` → `doc-audit-archive` workflow 產出「wiki 商業邏輯卡回補清單」後，由本 skill 執行實際增修
+    3. Miles 說「把這個 change 的變更增修進 wiki」「對齊 wiki」「wiki 回補」
+  範圍：**只處理「change 後內容增修進 wiki 各位階」**。
+  輸出：對話報告（建議 + 影響分析 + 優缺點三件套）+ 增修 / 新增 wiki 卡 + 同步 [[business-logic-changelog]] + 標明哪些卡被異動。
+  不適用：規劃前 know-how 稽核（用 erp-planning-pre-check）、Vault 整體健康稽核（用 vault-audit）、OpenSpec spec 層稽核（用 doc-audit）、純查詢術語 / 狀態機、識別不確定項（用 oq-manage mode B）、raw 素材精練（用 vault-ingest）。
+  **執行者與稽核者分離**：偵測「回補清單」由 `doc-audit-archive` workflow 的稽核 sub-agent 跑；本 skill 由主對話 agent 跑實際增修。MUST NOT 同 agent 自偵測自回補。
+---
+
+# change 後 wiki 增修機制（wiki-amend）
+
+> **status: draft** —— 此 SKILL.md 為草案，待 Miles 確認後轉 active。方法論基礎為 [[wiki-architecture]]（從「分層體系」到「完整依據鏈範例」各節，該憲章本身亦為 draft，部分位階 type 與目錄屬待建項，見本檔「誠實標注」一節）。
+
+---
+
+## 一、定位與範圍
+
+### 為什麼需要這個 skill
+
+OpenSpec change archive 時，delta spec 合併回 main spec，大量商業規則 / 實體 / 狀態 / 角色 / 情境同時定案。若不在 archive 當下把這些變更增修進 wiki（ERP_Vault），會反覆吃三種虧（[[wiki-architecture#為什麼需要這份結構規範]]）：
+
+1. 同一規則散在多卡、改一處漏其他處（version drift，「converge change 漏對齊 wiki 6 卡」教訓）。
+2. 等到定期稽核（vault-audit）時，數十個 change 已累積無人追蹤的漂移（drift）。
+3. wiki 商業邏輯正本（04-business-logic / 05-entities / 06-state-machines / 07-scenarios / 13-user-stories）停留舊版，後續 change 漏看既有商業規則。
+
+本 skill 把「change 後內容增修進 wiki」做成**結構性流程**而非靠自律：歸類決策樹判位階 → 涵攝邏輯判歸既有卡 vs 新增 → 依各位階 Template 撰寫 / 迭代 → 自審稽核 → 標明哪些卡被異動 + 同步 changelog。
+
+### 核心設計理念：authoring guide = audit rubric 一份兩用
+
+本 skill 的各位階 Template 與自審清單，**同一份既是「寫 wiki 時照著填」（authoring guide）也是「archive 後 doc-audit 照著勾」（audit rubric）**。寫的標準與審的標準同源，避免「寫的人一套、審的人另一套」造成的對不齊。
+
+### 範圍切分（與既有 skill 分工）
+
+| 稽核 / 增修對象 | 由哪個 skill / workflow 負責 |
+|----------------|----------------------------|
+| **規劃 ERP 功能前**的 know-how 缺漏稽核（補既有真實狀況）| `erp-planning-pre-check`（雙軸 6 領域 × 7 卡類型）|
+| **change archive 後**偵測「哪些 wiki 卡停留舊版」（產回補清單）| `doc-audit` Step 2 雙層稽核 + `doc-audit-archive` workflow（稽核 sub-agent）|
+| **change archive 後**把變更**實際增修進 wiki 各位階**（執行回補）| **本 skill（wiki-amend），主對話 agent** |
+| OpenSpec spec 層 delta sync / 跨檔案一致性 | `doc-audit`（索引層 grep + 跨檔案邏輯）|
+| ERP_Vault **整體健康檢查**（14 維度，定期 / 週期）| `vault-audit` |
+| 識別到不確定項（待確認 / 待釐清）| `oq-manage` mode B（開獨立 OQ 卡，禁 inline）|
+| raw 素材精練成卡 | `vault-ingest` mode B |
+
+> **本 skill 與 doc-audit 的接力關係**：`doc-audit-archive` workflow 的稽核 sub-agent **只偵測**（產「wiki 商業邏輯卡回補清單」），本 skill 的主對話 agent **只回補**。兩者執行者與稽核者分離（對齊 erp-planning-pre-check 既有紀律 + YouTube /goal 影片啟發）。
+
+### 不可違反 vs 明示彈性（核心常規 + 明示彈性破口）
+
+**不可違反（憲法級硬規則，極少且硬）**：
+
+- 禁中英夾雜（技術詞須括號附註，不得當主詞 / 形容詞 / 主動詞）。
+- 業務語言段禁工程術語（檔名 / interface / type / function / class）當主詞。
+- 識別到不確定項 MUST 觸發 `oq-manage` mode B 開獨立 OQ 卡（禁 inline、禁 `[!question]` callout）。
+- `source` frontmatter 禁指同層 / 下層 / OpenSpec（只往上指更高位階卡 / 外部已驗證原點）。
+- 正本卡正文零迭代史（迭代史在 [[business-logic-changelog]]）。
+- 規則單一正本（Single Source of Truth）：同規則只在正本卡寫本體，他卡 wiki link 引用不複寫。
+
+**可因案調整（明示彈性破口）**：
+
+- 純 UI change（如 refine-invoice-tab 類）回補極輕：通常只動 user-story 易變層 + prototype implemented-by，不動 business-logic 正本。
+- 局部欄位調整（單模組內）：通常只 MODIFIED 對應 entity 卡單一 section，不觸發跨位階回補。
+- 無爭議事實段落可用敘述代替問句（待決問句段非強制每段皆問句形式）。
+
+---
+
+## 二、SOP（六步，archive 後立即執行）
+
+> 觸發時機綁 **delta spec 合併事件**（`/opsx:archive` 當下），point-of-change 觸發，不累積到 vault-audit。
+
+### Step 0：守門（先問三題，任一為「是」即不進 wiki）
+
+1. 是 UI 規範 / 視覺 token / step-by-step Requirement / 演算法？→ 不進 wiki（留 DESIGN.md / OpenSpec / code，依 [[scope-boundary]]）。
+2. 是「不確定項」（待確認 / 待釐清 / 需確認 / 待補）？→ 不寫進任一位階卡，立即觸發 `oq-manage` mode B 開 `08-open-questions/` 獨立卡（憲法級硬規則）。
+3. 是 LLM 自編、無外部可驗證來源的內容？→ 不寫（Anti-Model-Collapse）；若是已驗證但未精練素材 → 走 `vault-ingest` 進 `raw/`。
+
+### Step 1：沿 delta 三分類（ADDED / MODIFIED / REMOVED）
+
+對每條 delta 標 ADDED / MODIFIED / REMOVED（OpenSpec delta 本就用此三標籤），決定 wiki 動作：
+
+| delta 標籤 | wiki 動作 |
+|-----------|----------|
+| MODIFIED | 就地改既有正本卡對應 section（block-level，不整卡重寫）|
+| ADDED（新規則 / 新實體 / 新狀態 / 新角色 / 新情境）| 過 § 四「新增 vs 掛既有」三門檻判新卡 vs 掛既有；新實體須補 cross-link |
+| REMOVED | 刪正本卡對應條文 + 沿 backlink 反查所有引用處確認引用不再懸空 |
+
+> **驗證基準**：delta 標 MODIFIED 但 main spec 無對應 Requirement = 標籤錯置（unify-billing 曾 8 個 delta 標錯應為 ADDED）。archive 前 validate 須通過，本 skill 回補時若發現標籤與 main spec 不符 → 退回請 archive 修正，不照錯標籤回補。
+
+### Step 2：五步式變更影響分析（CIA），攤開回補清單
+
+沿 directional anchor 反查，**列出本次變動的回補清單**（Jama 五步 + Sens 連帶矩陣）：
+
+1. 沿七實體連帶矩陣（[[付款發票邏輯#五B、七實體連帶矩陣]]）攤開連帶影響範圍。
+2. 沿正本卡 backlink 反查所有 wiki link 引用該規則的下游卡（規則卡 / state-machine / entity / role / scenario / user-story / test-case）。
+3. 量化每個受影響領域（雙軸 6 領域 × 7 卡類型，每格 N/M/K 三數字；**禁「大致 OK」非量化結論**，對齊 CLAUDE.md）。
+4. 比較回補的 benefit / 工時 / 風險定優先。
+5. 產出「wiki 商業邏輯卡回補清單」（對應 erp-planning-pre-check 既有產出 + doc-audit archive 後雙層稽核）。
+
+> **跳過代價**：「Skipping impact analysis just turns the size into a surprise」——跳過 CIA 直接改 = converge change 漏看既有商業規則的根因。
+
+### Step 3：各位階回補寫法（block-level、單一正本）
+
+依 § 三歸類決策樹判位階 → 依 § 四判歸既有卡 vs 新增 → 依 § 五各位階 Template 撰寫 / 迭代。回補落點與寫法：
+
+| 位階 | 回補落點 | 寫法 |
+|------|---------|------|
+| 憲法（operating-principle）| 僅當 change 影響 product-vision / 分權方向時動（極少）| 改原則措辭 MUST Miles 拍板；source 終止於外部原點不再上溯 |
+| 法律總則 / 分則（business-logic）| 規則正本卡對應 section / 規則條 | 改「規則 / 營運動機」欄；單一正本——同規則只此處改，他處 wiki link 自動反映 |
+| 命令（state-machine）| 狀態清單 / 轉換 section | 只改狀態 / 轉換 / 觸發；規則動機指 business-logic 正本，不重述規則本體 |
+| 命令（scenario）| 對應情境 section | 改角色傳遞 / 狀態鏈；每步規則 wiki link 指 business-logic，不複寫 |
+| 命令（entity）| 核心欄位 / 關聯 section | 改欄位 / 關聯；行為規則指 business-logic |
+| 命令（role）| 職責 / 邊界 section | 改職責動作；分權判準指 business-logic |
+| 施行辦法（user-story）| 業務情境段（穩定層）/ UI 操作段（易變層）| 業務規則變 → 改穩定層；Prototype 變 → 只改易變層、stage 標記同步 |
+| 判決（test-case）| Notion 正文 + Vault frontmatter related-test-cases 回連 | Vault 內只更新連結，正文在 Notion 改 |
+
+### Step 4：同步 changelog（卡為主鍵）
+
+在 [[business-logic-changelog]] 對每張被異動的正本卡 section 追加一筆：**日期 +（change-id）+ 一句話變更 + 動機**，反向時序（最新在上）。正本卡正文零迭代史，「來源」段只留 `迭代脈絡見 [[business-logic-changelog#<卡名>]]`。
+
+> changelog 的雙向反查：
+> - **change → 卡**（哪個 change 改了哪些卡）：全檔 grep change-id 跨 section 聚合。
+> - **卡 → change**（這張卡被哪些 change 改過）：該卡在 changelog 的 section（反向時序）。
+
+### Step 5：review-alongside-diff + 三層驗證（與 archive 同批，不另開 PR）
+
+wiki 回補與 archive 同批 commit。三層驗證：
+
+- **(a) 機器層**：`audit-erp-docs.sh` grep 連結完整性 + `doc-audit-archive` workflow 三類偵測（ADDED sync 殘留 / Data Model section 漏合 / wiki 卡停舊版）。
+- **(b) 一致性層**：verify consistency 三張對照表（spec ↔ wiki ↔ prototype 無矛盾）。
+- **(c) 人審層**：對抗式互審找漏（稽核 sub-agent 找漏、主對話 agent 回補；執行者 / 稽核者分離）。
+
+> **關鍵紀律**：機器偵測 PASS ≠ 正確。機器擋得住「漏更新」，擋不住「更錯」；稽核者仍須人審該卡 prose 是否忠實反映 delta，禁「grep 過了就當對齊」。
+
+### Step 6：閉環驗證
+
+回補後重跑 Step 2 稽核，量化矩陣應無新增缺漏格；連帶矩陣列出的七實體影響須逐一確認已處理。
+
+> **「完美是良善之敵」收尾紀律**：禁為追求 Template 100% 合規而無限期拖延 change archive。機器層 + 一致性層 PASS 且人審無漏即可 archive，殘餘 polish 進 follow-up（對齊 daily-brief / weekly-review 禁估時、重 actionable）。
+
+---
+
+## 三、歸類決策樹（新內容進來 → 哪位階）
+
+> 法官 rubric 第一原則「議題驅動的預設結構」：歸類前先把新內容拆成「問句」，每個問句獨立判位階。原則「結構須事前定好」：歸類在動筆寫卡前完成，不邊寫邊改落點。
+
+### 第 1 步：判位階（沿「問句的抽象度」由高到低）
+
+依新內容回答的問句性質，對照六位階單一職責（[[business-logic-writing-guide]] §4.0、[[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]]）：
+
+| 新內容回答的問句 | 可否驗算 | 位階 | type / 載體 | 目錄 |
+|----------------|---------|------|------------|------|
+| 「公司在這件事上的價值 / 分權方向是什麼」（不可驗算、Miles 拍板）| 否 | 憲法 | operating-principle | `01-products/erp/operating-principles.md`（待建）|
+| 「這個領域所有規則共用的基礎不變式是什麼」（如對帳一致性 應收 = 發票淨額 = 收款淨額）| 是 | 法律總則 | business-logic（總則卡）| `04-business-logic/` |
+| 「什麼情況套什麼規則」（單一 if-then 要件 + 計算公式）| 是 | 法律分則 | business-logic（規則正本卡）| `04-business-logic/` |
+| 「這條規則展開成什麼資料狀態 / 跨模組流程 / 角色職責 / 實體欄位」| — | 命令 | state-machine / scenario / role / entity | `06 / 07 / 03 / 05-*` |
+| 「某角色為落實某規則，要執行哪些步驟」| — | 施行辦法 | user-story | `13-user-stories/<module>/` |
+| 「某具體輸入下實作後該驗出什麼結果」（UAT 業務層）| 是 | 判決 | test-case（frontmatter + 連結在 Vault、正文在 Notion）| `15-test-cases/<module>/`（待建）|
+
+### 切分判準（最易混的三組）
+
+- **總則 vs 分則**（business-logic 內部，[[wiki-architecture#business-logic 內部分層：共用規則 vs 業務規則]]）：問「這是『跨多條規則共用、被破壞則整個領域失效』的基礎不變式，還是『單一決策點的 if-then』？」前者總則（如對帳一致性），後者分則（如 補收免審）。
+- **命令層四選一**（[[business-logic-writing-guide]] §4.0.1）：
+  - 回答「資料的狀態怎麼變（狀態清單 / 轉換條件 / 觸發事件）」→ state-machine。
+  - 回答「一件事從頭到尾、跨角色傳遞怎麼走完」→ scenario（口訣：「這是一段有先後順序、跨角色傳遞的旅程嗎？」是 → scenario）。
+  - 回答「這個角色做什麼 / 把關什麼」→ role。
+  - 回答「這個實體有哪些欄位 / 關聯 / 狀態名」→ entity。
+- **business-logic vs scenario**（最易混，Miles 2026-05-30 特別要求）：「這是一條 if-then 規則嗎？」是 → business-logic；「這是跨角色傳遞的旅程嗎？」是 → scenario。同一主題會同時有兩種卡（訂單異動既有規則卡也有退款 → 折讓端到端情境卡），互補不重複。
+
+---
+
+## 四、新增一條獨立卡 vs 掛既有卡（明確判準）
+
+> 預設立場（呼應 CLAUDE.md「禁新建抽象卡」+ feedback「修補既有卡」+ DeepDocs「It only updates what needs to be updated」）：**先試掛既有，過硬門檻才新增**。
+> 誤判代價：誤 add 成 modify → 平行重複內容未來不同步；誤 modify 成 add → 新內容硬塞舊卡造成語意污染。
+
+### 三道硬門檻（AND，全過才新增獨立卡）
+
+| 門檻 | 判準（問句）| 過 = 傾向新增 | 不過 = 掛既有 |
+|------|------------|--------------|--------------|
+| 涵攝失敗 | 「既有任一卡的職責範圍 + 既有規則語意，能否把這條新內容讀懂並涵蓋？」| 否（語意不被涵蓋）| 是（是既有規則的細化 / 例子 / 邊界）|
+| Rule of Three | 「未來是否會有『另一張卡 / 另一個 change / 另一條 OQ』需要**單獨引用**這條內容？」| 是（將被多處引用）| 否（只單處使用，如寫死常數）|
+| 位階 / 職責純度 | 「這條內容塞進候選既有卡會不會造成越界（規則塞進 state-machine、Data Model 塞進 business-logic）？」| 是（會越界 → 須獨立到正確 type）| 否（同 type 同職責，可併）|
+
+### 新增的下限（原子性，[[business-logic-writing-guide]] 原則 6）
+
+即使過了三門檻，也不可拆過頭：
+
+- **一張卡至少能被「一位角色在一個情境下獨立讀懂並執行」**。
+- 一條規則的四要素（觸發條件 + 審核路徑 + 終態 + 不變條件 invariant）MUST 留同一張卡，不可再拆。
+- 反例：把「補收免審」的「免審」與「直達已執行」拆兩張卡 → 違反原子下限。
+
+### 掛既有卡時的落點精度（block-level 回補、非整檔）
+
+掛既有卡時**精準到 section / 規則條**，不整卡重寫：
+
+- 改既有規則 → 改該規則的「規則 / 營運動機」欄，標明改了哪條（語意 slug）。
+- 補例子 → 加到該規則「具體例子」段。
+- 補關聯 → 加到「相關連結」段對應語意類別。
+
+### 判準速查（三類典型）
+
+1. **新規則但同領域**（如「諮詢結束未做大貨退費」規則）→ 涵攝失敗 + 會被 scenario / user-story 引用 + 屬 business-logic 職責 → **新增 business-logic 規則卡**，給語意 slug 錨點。
+2. **既有規則的金額調整**（如半額退費 50% 改 40%）→ 涵攝成功（仍是「諮詢取消退費」規則）→ **掛既有卡**改規則欄 + 同步 changelog。
+3. **跨多角色端到端新流程**（如「退款 → 折讓 / 作廢重開」全鏈）→ 屬 scenario 職責、會被多 user-story 引用 → **新增 scenario 卡**，規則步驟 wiki link 指既有 business-logic 卡（不複寫規則本體）。
+
+### 新增後強制（避免新卡變孤島）
+
+新增獨立卡 MUST 同時：
+
+- 補 `source`（往上指更高位階 / 外部原點，禁指同層 / 下層 / OpenSpec）。
+- 補 `implemented-by`（往下指 OpenSpec Requirement 標題層，導航用）。
+- 與被拆出的母卡 / 引用卡互設 wiki link（雙向可達，否則 vault-audit 維度 3 報 orphan）。
+- 若源自某 change → changelog 開該卡 section 記首筆。
+
+---
+
+## 五、各位階 Template（一致水平）
+
+> Template 元規格保證六位階一致——不同人 / agent 寫同類卡落在同一結構。對齊 [[wiki-schema]] § 四 frontmatter + § 十一內容職責邊界 + [[business-logic-writing-guide]] §4.0 / §4.1。
+
+### 5.0 共同骨架（所有位階套用）
+
+**Frontmatter 共同欄位**（對齊 [[wiki-schema]] § 四）：
+
+- `type`（該位階 type）/ `module` / `business-domain`（role / business-logic / entity / state-machine / scenario / user-story 必填）/ `status`（draft / active / deprecated）/ `last-reviewed`。
+
+**溯源雙欄（[[wiki-architecture#依據往上、實作往下，連結不繞回自己]] 單向溯源，前進標準）**：
+
+- `source`：往**上游** = 正確性根據。只准指更高位階卡 / 外部已驗證原點。**嚴禁指同層 / 下層 / OpenSpec**。
+- `implemented-by`：往**下游** = 導航 / 覆蓋。指 OpenSpec Requirement 標題層 / prototype / test-case。不承載正確性。
+- `provenance-commit`（可選但建議）：記上次對齊的 commit SHA，供 doc-audit stale 偵測。
+
+**正文共同段**（對齊 [[business-logic-writing-guide]] §4.1）：
+
+1. 一句話定位（卡頂 `>` 引言）：是什麼、屬哪位階 / 哪業務領域、規則正本歸屬聲明。
+2. `## 待決問句`：列這張卡要回答的關鍵業務問句，每個問句正文有對應結論（判斷「卡完整了沒」= 每個問句是否都有結論，取代「大致 OK」非量化結論）。
+3. `## 營運背景`：公司營運上遇到什麼情況才有這張卡，2-4 句業務語言、無實作術語當主詞。
+4. `## 相關連結`：依五類（上層情境 / 下層步驟 / 相關角色 / 相關規則 / 相關狀態 / 相關實體）設 wiki link，語意分類、雙向可達。
+5. `## 來源`：連回可獨立驗證外部出處；末行 `迭代脈絡見 [[business-logic-changelog#<卡名>]]`。
+
+**語意 slug 錨點**（[[wiki-architecture#Template 元規格（七支共同骨架）]]）：規則 / 狀態 / 條文用語意 slug（`#補收免審`），不用流水號（R1）、不重排、不重用。改規則只改內容、slug 不變 → backlink 不斷。
+
+**推理範式**（法官 rubric IRAC / LOPP-FLOPP）：
+
+- 規則型卡用 IRAC 變體：意圖（Issue）→ 既有規則 / 不變式（Rule，引用更高位階卡）→ 套用本案（Application）→ 結論（Conclusion）。
+- 設計理由用 LOPP-FLOPP：先寫被駁回的方案 / 立場，再逐條給駁回理由並承認被採納的好建議。
+
+### 5.1 各位階特有章節
+
+| 位階 / type | 載體路徑（含落地狀態）| 特有章節 | MUST NOT（越界禁項）|
+|------------|---------------------|---------|---------------------|
+| 憲法 / operating-principle | `01-products/erp/operating-principles.md`（待建）+ `_template-operating-principle.md`（待建）| `## 原則陳述`（一句話價值 / 分權方向）+ `## 分權方向`（誰把關什麼、誰不被阻擋）+ `## 為何 presupposed`（為何此原則是價值原點、不再上溯）。source 終止於外部原點（Miles 拍板 + 印刷業實務）、禁再上溯、禁指任何內部卡；status 轉 active 須 Miles 拍板；無 implemented-by | 可驗算的不變式（屬法律總則 business-logic）|
+| 法律總則 / 分則 / business-logic | `04-business-logic/` + `_template-business-logic.md`（待建）| 規則型：`## 規則與營運動機`（逐條 IRAC：意圖 → 規則 → 營運動機）+ `## 具體例子`（1-3 個真實格式含具體數字，正例 + 邊界反例，禁 UI 措辭）+ `## 不變條件`（invariant，可驗算）+ `## 邊界`。索引型額外：`## 分類概覽` + `## 連帶矩陣`（七實體 depends-on / affects）。規則用語意 slug；總則卡標「領域基礎不變式」、分則 source 可往上指總則卡 | 跨模組完整流程（→ scenario）/ 狀態轉換圖（→ state-machine）/ 角色職責清單（→ role）/ user-story 模板 / test-case 範本 / 完整實體 Data Model（→ entity）|
+| 命令 / state-machine | `06-state-machines/` + `_template-state-machine.md`（待建）| `## 狀態清單`（含「狀態 / 說明 / 對應營運需求」三欄）+ `## 狀態轉換`（流程圖 / 轉換規則）+ `## 關鍵狀態 / 轉換的營運動機`（逐條：轉換 → 動機 → 1 例子）+ `## 與其他狀態機 / 實體的關係`。轉換動機 wiki link 指 business-logic 正本 | 規則本體 / 計算公式 / 跨情境例子（→ business-logic）/ UI 措辭 / 業務情境敘述（→ scenario）|
+| 命令 / scenario | `07-scenarios/` + `_template-scenario.md`（待建）| `## 情境清單`（逐情境：情境名 → 觸發狀況 → 角色傳遞 / 狀態鏈 → 1 例子含真實編號 / 金額）+ `## 範疇外`（不涵蓋的情境 + 走哪張卡）。每步「依某規則」wiki link 指 business-logic 正本 | 規則本體與計算公式（→ business-logic）/ 單一步驟細節（→ user-story）/ test-case 範本 |
+| 命令 / role | `03-roles/` + `_template-role.md`（待建）| `## 基本資料` + `## 主要工作職責`（非顯然把關理由補營運動機）+ `## 職責邊界`（每條附「為什麼這樣切」）+ `## 關切點` + `## 預期阻力`。分權判斷準則細則指 business-logic 正本。Lint 例外：外部使用者角色（B2C 會員）允許 role 為純文字非 wiki link | 跨角色流程細節（→ scenario）/ 實體欄位定義（→ entity）/ 分權規則判斷準則細則（→ business-logic）|
+| 命令 / entity | `05-entities/` + `_template-entity.md`（待建）| `## 核心欄位`（非顯然營運理由的欄位在說明欄補「為什麼要存」）+ `## 關鍵關聯` + `## 相關狀態機`（指 state-machine 卡）。欄位承載規則 wiki link 指 business-logic | 業務流程敘述（→ business-logic / scenario）/ user-story / 完整狀態轉換邏輯（→ state-machine）|
+| 施行辦法 / user-story | `13-user-stories/<module>/` + `_template.md`（**既有**，依本元規格更新：補待決問句段 + source / implemented-by 對齊 + 自審 checklist 全面化）| 兩階段紀律：`## 業務情境（穩定層）`（作為 / 我希望 / 以便 / 前置條件 / 業務流程 / 成功條件 2-5 條）+ `## UI 操作（易變層）`（stage=ui-bound 才填）+ `## 來源`。source ≥ 1 條且禁指其他 user-story 卡；stage 標記；us-id | 業務情境段含 UI 措辭 / 中英夾雜 / 跨多角色端到端流程（→ scenario）/ 規則本體（以 source 引用 business-logic）|
+| 判決 / test-case | `15-test-cases/<module>/`（待建）+ `_template-test-case.md`（待建）| CDV 三段：`## 前置條件`（觸發條件，可觀測具體值）+ `## 測試步驟`（業務動作，禁 UI 點擊措辭）+ `## 預期結果`（可勾稽驗收值，非「做了沒」）。**Vault 內只放 frontmatter + source（往上指 user-story）+ implemented-by + 連結；正文存 Notion**。happy path 與 edge case 實體分區、MECE、明確結束點 | Vault 內放正文（正文在 Notion）/ SIT / UT 技術測試 |
+
+### 5.2 Template 自審清單（一份兩用：撰寫檢查 = doc-audit / vault-audit 稽核維度）
+
+每張回補 / 新增的卡，逐項勾：
+
+- [ ] frontmatter 共同欄 + 位階特有欄全填；`source` 不指同層 / 下層 / OpenSpec。
+- [ ] 待決問句段每個問句正文有對應結論（取代「大致 OK」）。
+- [ ] 營運背景段無實作術語當主詞、無中英夾雜（技術詞括號附註）。
+- [ ] 正文零迭代史（迭代史在 changelog）；正文零「待確認 / 待釐清」inline OQ 措辭（→ oq-manage mode B）。
+- [ ] 越界檢查（[[business-logic-writing-guide]] §4.0 越界表）：未寫入不屬本 type 職責的內容。
+- [ ] 相關連結雙向可達、語意分類；無 dangling link、非 orphan。
+- [ ] 規則單一正本：未在第二張卡複寫規則本體。
+- [ ] 「隔壁鄰居測試」：營運背景抽一句，問「Miles / 主管不看程式碼能否懂」。
+
+---
+
+## 六、每次增修必附「建議 + 影響分析 + 優缺點」（Miles 硬要求）
+
+> 每筆增修（無論掛既有或新增）MUST 在對話中附三件套給 Miles 決定，**不可逕自寫入既有卡 / 新建卡**。沒把握判斷要明說「不知道、背景不足」，**不假裝**（對齊全域偏好「agent 無把握時明說」+ vault-ingest 防線「禁 LLM 自迭代」）。
+
+| 件套 | 內容 |
+|------|------|
+| **建議** | 歸哪位階、掛既有卡哪個 section 還是新增、給什麼語意 slug |
+| **影響分析** | 依 Step 2 CIA，沿七實體連帶矩陣 + backlink 列出連帶影響的卡清單（量化 N/M/K，不可「大致 OK」）|
+| **優缺點** | 掛既有 vs 新增的 trade-off（如掛既有避免碎片化但可能職責不純；新增職責純但增 cross-link 維護成本）|
+
+> **不知道時的處置**：若無法判斷某 delta 歸哪位階 / 是否涵攝，MUST 明說「此項背景不足，無法判斷，建議開 OQ 或請 Miles 拍板」，並走 `oq-manage` mode B；禁自行猜一個位階硬塞。
+
+---
+
+## 七、如何標明哪些卡被異動（雙向可反查）
+
+- **change → 卡**：[[business-logic-changelog]] 全檔 grep change-id 跨 section 聚合（卡為主鍵分節，每節記 change-id）。
+- **卡 → change**：該卡在 changelog 的 section（反向時序）。
+- **directional anchor 標記**：被異動的正本卡 frontmatter 補 `implemented-by`（往下指 spec Requirement）+ 建議補 `provenance-commit`（記上次對齊的 commit SHA）；doc-audit 可 grep「某 spec Requirement 有 delta 但無任一 wiki 卡 provenance-commit 更新」→ 報 stale。
+- **對話報告**：本 skill 收尾在對話中列「本次異動卡清單」（卡名 + ADDED / MODIFIED / REMOVED + 一句話變更），供 Miles 確認 + commit message 引用。
+
+---
+
+## 八、驗證基準（前進標準 + 兜底）
+
+| 驗證維度 | 基準 | 兜底機制 |
+|---------|------|---------|
+| source 方向 | 只往上指（更高位階卡 / 外部原點），禁指同層 / 下層 / OpenSpec | vault-audit 偵測 source 指 OpenSpec 報 Error |
+| 無循環 | 結構上 DAG（source 與 implemented-by 永不同向）| doc-audit-archive / vault-audit 可加 DAG 環偵測 |
+| 下不抵觸上 | 分則不抵觸總則、總則不抵觸憲法 | 三視角審查 / 人審層勾稽推理是否跳過既有規則 |
+| Template 自審 | § 5.2 八項全過 | 同清單既撰寫檢查也 doc-audit 稽核維度 |
+| 機器 PASS ≠ 正確 | 機器擋「漏更新」、人審擋「更錯」 | 對抗式互審（稽核 / 執行分離）|
+
+---
+
+## 九、與其他規範 / skill 的關係
+
+- **CLAUDE.md § 主動收尾第 10 條**：本 skill 是「change archive 後 MUST 對齊 wiki 商業邏輯卡」的執行載體。
+- **`doc-audit` / `doc-audit-archive`**：上游偵測（產回補清單），本 skill 下游執行回補；執行者與稽核者分離。
+- **`erp-planning-pre-check`**：規劃**前**補既有 know-how 缺漏；本 skill 規劃**後**（archive）增修變更進 wiki。兩者一前一後、不重疊。
+- **`vault-audit`**：定期 / 週期整體健康（14 維度）；本 skill point-of-change 即時回補。兩者一定期一即時。
+- **`oq-manage`**：本 skill Step 0 守門識別不確定項時觸發 mode B。
+- **`vault-ingest`**：本 skill Step 0 守門識別「已驗證未精練素材」時轉介進 raw。
+- **`erp-user-story`**：user-story 位階回補可委由該 skill（兩階段紀律 + 中英夾雜 lint + INVEST 自審）。
+
+---
+
+## 十、版本歷史
+
+- **2026-05-31**（草案 draft）：建立 SKILL.md 草案。方法論輸入整合自本對話累積（歸類決策樹 / 新增 vs 掛既有判準 / 六步增修機制 / Template 元規格 / 各位階 Template）+ 既有 meta 卡（[[wiki-architecture]] / [[business-logic-writing-guide]] / [[wiki-schema]] / [[business-logic-changelog]]）+ change→wiki 研究七原則（point-of-change 觸發 / ADD-MODIFY-DELETE 三分類 / directional anchor / change-log 雙向追溯 / review-alongside-diff / 五步 CIA / block-level 單一正本）。待 Miles 確認後轉 active。
+
+---
+
+## 十一、誠實標注（落地路徑待建項，不假裝）
+
+> 本 skill 採用的部分位階 type 與目錄為 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]] 標注的**待建項**，現況尚未存在。本 skill 不要求一次全建，採「新卡 / 被 change 異動的卡優先補」漸進策略。
+
+| 項目 | 現況 | 落地依據 |
+|------|------|---------|
+| `operating-principle` type | [[wiki-schema]] 現用 `product-vision` type 承載憲法層；`operating-principle` 曾為候選**目標 type 名**，已決議沿用 `product-vision`、不新增此 type（記入 [[business-logic-changelog]]）| [[wiki-architecture#範本清單]]（營運原則層沿用 product-vision type 之註）|
+| `01-products/erp/operating-principles.md` | **尚未建立**（現有 product-vision.md / success-metrics.md 等）| [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]] |
+| `15-test-cases/<module>/` 目錄 | **尚未建立**（test-case 正文現於 Notion）| [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]] |
+| 各位階 `_template-*.md`（business-logic / state-machine / scenario / role / entity / test-case / operating-principle）| **尚未建立**（僅 user-story `_template.md` 既有）| [[business-logic-writing-guide]] § 四範式（待落地為獨立 template 檔）|
+| `source` / `implemented-by` frontmatter | 現況 0 張 business-logic 卡有此雙欄，全部僅 `related-spec`（指 OpenSpec，方向顛倒）| [[wiki-architecture#依據往上、實作往下，連結不繞回自己]] 試點；`related-spec` 過渡期保留，語意等同 implemented-by 弱版；補不出 source 的標 `source-gap` 待專輪 |
+| `provenance-commit` frontmatter | **尚未納入** wiki-schema | [[wiki-architecture#依據往上、實作往下，連結不繞回自己]]（drift 偵測建議，待 schema 補）|
+
+> **遷移誠實原則**：本 skill 是「前進標準」（新卡照此填）。既有卡的全面遷移屬 [[wiki-architecture#依據往上、實作往下，連結不繞回自己]] 試點範圍，本 skill 不要求一次全改。執行時若遇待建項尚未就緒（如 operating-principle 卡不存在但 change 影響憲法層），MUST 在對話中明說「此位階載體尚未建立，建議先觸發落地路徑或請 Miles 拍板」，不假裝已有。

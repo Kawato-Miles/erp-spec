@@ -15,9 +15,12 @@ last-reviewed: 2026-05-28
 source:
   - openspec/changes/unify-billing-installment-and-reconciliation-csv/specs/order-management/spec.md
 related-spec: openspec/specs/order-management/spec.md
-related-scenarios: []
-related-business-logic: []
-related-entities: []
+related-scenarios:
+  - "[[../../07-scenarios/訂單異動流程#旅程 A：訂單期間加印補收（情境 8）]]"
+related-business-logic:
+  - "[[../../04-business-logic/訂單異動規則#R1：補收正項免審，直達已執行]]"
+related-entities:
+  - "[[../../05-entities/訂單]]"
 related-test-cases: []
 ---
 
