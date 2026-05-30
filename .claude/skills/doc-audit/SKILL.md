@@ -120,6 +120,21 @@ grep -rn "<主題關鍵字>" \
 
 ---
 
+## archive 後三類對抗式找漏 workflow（2026-05-30 新增，試點）
+
+> Step 2 最後三個維度（**Data Model section 漏合 / ADDED sync 殘留 / wiki 商業邏輯卡停舊版**）是「需逐條語意比對 + 對抗式找漏」的片段——單 agent 序列檢查易遺漏（v1.4 / v1.5 / v1.6 三個 CRITICAL 都是「archive sync 漏掉什麼」）。archive 涉及多 spec + wiki 卡時，MAY 觸發 `/doc-audit-archive` workflow（腳本 `.claude/workflows/doc-audit-archive.js`）將三類 fan-out + 對抗式互審：
+
+- 傳入 `args: { topic, changeRef, affectedSpecs }`（`topic` = 本 change 主題關鍵字）。
+- workflow 內 3 個 **sonnet** agent 各偵測一類（ADDED 殘留 / Data Model 漏合 / wiki 停舊版）+ 1 個對抗式互審 agent 找三類漏掉的，回傳結構化「待回補清單」（location + issue + fixDirection + severity）。
+- **嚴守 costCaveat 邊界（與 erp-planning-pre-check 同模式）**：
+  - Step 1 索引層 `audit-erp-docs.sh` + 上方「grep 片段」**留 bash 零 agent**（先撈候選 Requirement / wiki 卡行）。
+  - 實際**回補**（edit 主 spec / wiki 卡、整併 Data Model、清殘留）**留主對話 agent 在 workflow 外執行**（執行者 / 稽核者分離：workflow 偵測、主 agent 回補）。
+  - Step 3 自我演化（問 Miles 採納新維度）留主對話 agent。
+- **升級門檻**：archive 涉及多 spec + wiki 卡時用 workflow；**單檔小改 / 純措辭用既有序列檢查**（不值 ~10x token）。
+- **前置 + fallback**：需 Claude Code 版本支援 Dynamic Workflows（約 v2.1.154+）；版本不足時 fallback 既有單 agent 序列檢查（功能不受阻）。
+
+---
+
 ## 稽核範圍演化紀錄
 
 > 每次採納新稽核維度後，在此記錄版本與理由，確保稽核範圍有跡可循。
@@ -133,3 +148,4 @@ grep -rn "<主題關鍵字>" \
 | v1.4 | 2026-05-26 | 新增「Data Model section sync」稽核維度 | `align-invoice-line-items-to-ezpay-spec` archive 後發現 CRITICAL bug：openspec CLI `archive` 內建 sync 只處理 `## ADDED/MODIFIED Requirements` section，**完全不處理** `## ADDED/MODIFIED Data Model` section。本次漏合 InvoiceItem 子結構（不存在於主 spec）+ PlannedInvoice 完整表格（與既有 refine-consultation-cancellation-and-invoice-flow camelCase 簡述衝突）+ Invoice.items 欄位描述（仍是 JSON 未改 InvoiceItem[]）。本維度強制 archive 後手動驗證 Data Model section 合入主 spec，含整併跨 change 同實體多版本描述至單一權威來源 |
 | v1.5 | 2026-05-30 | 新增「ADDED 修訂既有 Requirement 的 archive sync 殘留」稽核維度 | `converge-consultation-cancel-to-order-cancel-flow` archive 後發現 9 CRITICAL：change 用「ADDED 新 Requirement 取代既有」（仿 unify-billing 慣例避免 copy 巨大訂單狀態機），但 archive sync 不移除被取代的舊 Requirement/Scenario，致 state-machines + order-management 內新舊終態（訂單完成 vs 已取消）/ OA 狀態（已執行 vs 已核可）並存矛盾；其中 order-management 三整條獨立諮詢取消 Requirement（發票時間點/收尾自動建/對帳邏輯）本應用 MODIFIED 卻漏改、business-processes 整段未納 delta（範圍遺漏）。本維度強制 archive 後驗證 ADDED 是否取代既有並手動清理殘留 |
 | v1.6 | 2026-05-30 | 定位擴展為「openspec + wiki 雙層」+ 新增「archive 後 wiki 商業邏輯卡對齊」稽核維度 | converge archive 後 Miles 指出防範只看 openspec、漏 wiki 商業邏輯正本（converge change 漏對齊 ERP_Vault 6 卡）。wiki（ERP_Vault）是商業邏輯正本、openspec 是實作規格，archive sync 不觸及 ERP_Vault，只對齊 openspec 會致 wiki 卡停留舊版。本維度強制 archive 後檢查 ERP_Vault（04-business-logic / 05-entities / 06-state-machines / 07-scenarios / 13-user-stories）內提及本 change 主題的商業邏輯卡對齊已定案內容；同步釐清與 vault-audit 範圍分工（vault-audit = 整體健康檢查 / doc-audit archive = 商業邏輯卡對齊已 archive change）|
+| v1.7 | 2026-05-30 | 三類語意比對維度（Data Model 漏合 / ADDED 殘留 / wiki 停舊版）新增 workflow 化試點接線（`/doc-audit-archive` fan-out + 對抗式互審）| skill-workflow-fit 分析（用 workflow 評估）評 doc-audit 為 medium：三類「archive sync 漏掉什麼」的對抗式找漏適合 fan-out + 互審（單 agent 序列易遺漏，正是 v1.4/v1.5/v1.6 三個 CRITICAL 成因），但嚴守 costCaveat — 範圍限單 change delta、索引 grep 留 bash 零 agent、實際回補留主對話 agent（執行者/稽核者分離）。新增 `.claude/workflows/doc-audit-archive.js`（3 偵測 + 1 互審 sonnet agent）+ 本 SKILL.md「archive 後三類對抗式找漏 workflow」段；升級門檻 archive 涉多 spec + wiki 才用、版本不足 fallback 既有序列檢查 |
