@@ -1303,3 +1303,19 @@ M=26 未轉 N（本次不修卡），但經分類確認 M 項「非既有 know-h
 - 學到 5 條（收斂例外路徑暴露既有 bug / 執行者稽核者分離擋 premature doc / 可調vs核可誤綁 / 補需求對照資料模型驗落點 / 稽核 wiki link 盲區）
 - 下週重點 3 條：converge verify+archive（首要）/ review 規律性回穩 / vault 既有問題收尾
 - W22 0 daily，素材從 git log（Sens 40+ / prototype 30+ commits）+ audit-log
+
+## [2026-05-30] audit | 聚焦（本 change 異動 + 腳本化健康指標）| 6 維度
+
+**模式**：聚焦稽核（add-sales-manager-reassign-owner archive 後 8 卡異動觸發：6 wiki 商業邏輯卡 + 2 OQ）
+
+**結果**：
+- 維度 4 缺失連結：OK（本次 6 個 wiki link 目標全存在、無 dangling）
+- 維度 6 規則遵守：OK（本次異動卡 0 inline [!question] / 0 inline OQ 措辭）
+- 維度 8 OQ 健康：Warning（open 62 偏高 > 門檻 15；ORD-025 缺 expected-resolution-at，並發 session 開）；XM-008 / CR-4 標 answered 正確
+- 維度 11 Raw：OK（2 張、無超期）
+- 維度 12 Review：Warning（本月 daily 1 張偏少）
+- 維度 1/2/3/5/7/9/10：本次聚焦未深掃（context 考量，建議獨立全量 audit）
+
+**主要發現**：本次 8 卡異動（業務/業務主管/諮詢角色卡 + 訂單/需求單/諮詢單實體卡 + XM-008/CR-4 OQ）一致性全健康（規則/連結/OQ answered 三項通過）。整體 open OQ 62 偏高達 vault-insight 門檻。
+
+**下一步建議**：(1) 跑 vault-insight 識別 open OQ 62 系統性議題 (2) 本月 daily review 規律化 (3) 全量 vault-audit 補深度維度（矛盾/對齊/角色/KPI）
