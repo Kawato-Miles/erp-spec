@@ -4,9 +4,8 @@ us-id: US-AR-007
 module:
   - prepress-review
 role:
-  - "[[審稿]]"
+  - "[[審稿人員]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-21
 last-reviewed: 2026-05-21
@@ -33,10 +32,10 @@ prerequisites:
 
 # US-AR-007 執行印件審稿
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
-[[審稿]]
+[[審稿人員]]
 
 ### 我希望
 能完成單一印件單輪審稿（合格 / 不合格判定），並在送出後修正本輪審稿備註
@@ -75,20 +74,6 @@ prerequisites:
 3. 合格判定須上傳審稿後檔案與縮圖（兩者皆必填），可選填審稿備註；提交後印件推進至製程審核階段
 4. 不合格判定須選退件原因（10 項分類擇一）並填審稿備註補充說明；系統自動通知補件方；技術性退件分類獨立統計不計入不合格率 KPI
 5. 審稿員可於送出後修改本輪審稿備註（含合格 / 不合格輪次），每次修改留稽核紀錄並通知補件頁停留中的補件方；合格輪次修改不影響已建工單的檔案鎖定範圍
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/prepress/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: high
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -27,7 +26,7 @@ prerequisites:
 
 # US-ORD-003 業務上傳回簽檔案
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -55,20 +54,6 @@ prerequisites:
 2. 上傳成功後訂單狀態自動推進至「已回簽」
 3. 回簽檔案保留於訂單供事後追溯（含上傳時間、操作者）
 4. 活動紀錄留上傳事件供稽核
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

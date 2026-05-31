@@ -8,7 +8,6 @@ business-domain:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: deprecated
 created-at: 2026-05-22
 last-reviewed: 2026-05-29
@@ -30,7 +29,7 @@ prerequisites:
 
 > **已廢止（deprecated，2026-05-29 收斂 Step 3d，Miles 拍板）**：補收統一走 [[US-ORD-026-業務建補收OA免主管核可直接執行]]「補收訂單異動（OrderAdjustment）模式」（正項免審直達已執行 + 自動帶請款期次 + 開發票，連獨立發票需求都靠期次↔發票 1:1 涵蓋）。本「補收款訂單（parent_order_id 子訂單）模式」是 spec 與 as-built prototype 都未採用的平行路徑，違反「補收用既有流程、不另開例外路徑」原則（MEMORY），故廢止。其原涵蓋需求的歸屬：純費用補收（急件費 / 版費 / 折扣）→ 補收 OA；加印需生產 → 訂單內加印件（製作中）或售後補印（AfterSalesTicket → 補印 PrintItem）。本卡保留作歷史，不再作為現行需求依據。
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -60,20 +59,6 @@ prerequisites:
 2. 補收款訂單可獨立走付款流程，不影響主訂單付款狀態
 3. 主訂單頁面顯示補收款訂單合計金額（隨補收款新增 / 修改 / 刪除即時更新）
 4. 業務可於同一主訂單建立多筆補收款訂單
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

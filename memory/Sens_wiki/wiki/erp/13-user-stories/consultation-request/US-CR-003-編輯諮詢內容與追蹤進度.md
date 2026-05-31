@@ -6,7 +6,6 @@ module:
 role:
   - "[[諮詢]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -28,7 +27,7 @@ prerequisites:
 
 # US-CR-003 編輯諮詢內容與追蹤進度
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[諮詢]]
@@ -61,20 +60,6 @@ prerequisites:
 3. `consultant_note` 每次編輯儲存自動寫入活動紀錄「諮詢備註修改」事件，含時間 / 操作者 / **變更前內容 / 變更後內容**
 4. 諮詢單狀態轉移（如：分派 / 完成諮詢 / 取消）皆寫入活動紀錄，跨人交接可完整追溯
 5. 同模組諮詢人員可互相查閱活動紀錄（含備註變更前後內容），達跨人交接目的
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/consultation/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

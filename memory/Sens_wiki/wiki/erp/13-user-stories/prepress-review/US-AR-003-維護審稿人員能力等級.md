@@ -6,7 +6,6 @@ module:
 role:
   - "[[審稿主管]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-21
 last-reviewed: 2026-05-21
@@ -30,7 +29,7 @@ prerequisites:
 
 # US-AR-003 維護審稿人員能力等級
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[審稿主管]]
@@ -57,20 +56,6 @@ prerequisites:
 1. 每位審稿員有可維護的能力等級欄位（1-10 整數，**必填，未填不可儲存**）
 2. 等級調整事件留有活動紀錄（含時間、操作者、舊值、新值）供事後追蹤
 3. 等級調整後新進印件即時套用新等級進行能力門檻判定；既有未完成分派維持原指派（避免中途換手影響審稿員工作節奏）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/prepress/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -26,7 +25,7 @@ prerequisites:
 
 # US-QR-008 需求單流失歸因
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -57,20 +56,6 @@ prerequisites:
 3. 流失終態**不可逆**（標記後無法退回議價）
 4. 流失原因依結構化分類記錄，管理層可分析比例（如：價格過高佔 X%、找其他廠商佔 Y%）
 5. 諮詢來源需求單流失時系統自動建諮詢訂單並轉移付款（連動 [[07-scenarios]] 諮詢流程）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/quote/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

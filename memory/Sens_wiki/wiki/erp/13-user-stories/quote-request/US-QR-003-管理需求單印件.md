@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -28,7 +27,7 @@ prerequisites:
 
 # US-QR-003 管理需求單印件
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -59,20 +58,6 @@ prerequisites:
 3. 系統自動計算毛利率；毛利率低於 0 時 UI 顯示警告
 4. 多印件金額隨異動即時彙總更新（無需手動重整）
 5. 預計產線（多選）成交轉訂單時自動帶入對應印件
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/quote/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

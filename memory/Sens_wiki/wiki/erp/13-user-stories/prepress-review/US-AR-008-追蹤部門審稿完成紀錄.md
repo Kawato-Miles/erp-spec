@@ -6,7 +6,6 @@ module:
 role:
   - "[[審稿主管]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-21
 last-reviewed: 2026-05-21
@@ -28,7 +27,7 @@ prerequisites:
 
 # US-AR-008 追蹤部門審稿完成紀錄
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[審稿主管]]
@@ -57,20 +56,6 @@ prerequisites:
 3. 審稿主管可依狀態（合格 / 不合格 / 取消）查詢
 4. 查詢結果含印件清單（印件編號 / 訂單編號 / 客戶名稱 / 合格時間）+ 頂部摘要「待處理 N / 合格 N / 不合格 N」三聚合（隨篩選即時重算）
 5. 每筆印件可追溯原始審稿紀錄（檔案 / 輪次 / 結果 / 退件原因 / 備註 + ReviewRound 活動紀錄）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/prepress/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

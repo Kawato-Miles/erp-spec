@@ -8,7 +8,6 @@ business-domain:
 role:
   - "[[會計]]"
 priority: high
-stage: ui-bound
 status: draft
 created-at: 2026-05-28
 last-reviewed: 2026-05-28
@@ -23,7 +22,7 @@ related-test-cases: []
 
 # US-ORD-024 會計匯出 14 欄對帳 CSV
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[會計]]
@@ -53,21 +52,6 @@ related-test-cases: []
 3. 收款狀態 derived（依累計核銷金額 vs 發票面額三態：未收 / 部分收款 / 已收訖）
 4. 帳期天數 = 應收日 − 開立日（給客戶的付款期 Net N，正值代表寬限天數）
 5. 月結基準（開立日期月底）= 開立日該月的最後一天（EOM 計算）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: prototype-v1 -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/finance/ReconciliationCsvExportDialog.tsx + sens-erp-prototype/src/pages/finance/Receivables.tsx -->
-
-### 介面入口
-- 財務 / 應收款項頁 → 操作列「匯出對帳 CSV」按鈕
-
-### 操作步驟
-- 點按鈕開 ReconciliationCsvExportDialog
-- 選日期範圍、篩選 → 預覽 → 點「匯出 CSV」下載
-
-### 介面元素
-- ReconciliationCsvExportDialog 含日期 / 帳務公司 / 業務 / 含作廢 篩選 + 14 欄預覽 + 匯出按鈕含計數
 
 ## 來源（provenance）
 

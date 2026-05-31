@@ -8,7 +8,6 @@ business-domain:
 role:
   - "[[業務]]"
 priority: high
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-28
@@ -30,7 +29,7 @@ related-test-cases: []
 
 > **重寫紀錄（2026-05-22）**：原卡涵蓋「業務取消 + 系統 top-down 連鎖 + 業務退款申請 + 會計執行退款 + 已退款」跨多角色多動作，違反「user story 單角色單動作」紀律。本卡重新定位為**業務動作**（取消 + 退款申請）；會計執行退款部分拆出為 [[US-ORD-013-會計執行退款處理]]；端到端跨角色串接由 07-scenarios 情境 16 處理。
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -63,20 +62,6 @@ related-test-cases: []
 3. 已進入生產的生產任務轉「報廢」（成本依已報工數量計算）；尚未進入的轉「已作廢」
 4. 業務可對已收款訂單發起退款申請；退款申請寫入活動紀錄供事後追蹤
 5. 取消動作與下游連鎖終止清單寫入活動紀錄供事後稽核
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

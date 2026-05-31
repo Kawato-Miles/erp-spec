@@ -6,7 +6,6 @@ module:
 role:
   - "[[印務主管]]"
 priority: low
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -28,7 +27,7 @@ prerequisites:
 
 # US-QR-013 評估需求單報價
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[印務主管]]
@@ -60,20 +59,6 @@ prerequisites:
 3. 所有印件項目成本填寫完畢後才允許執行「評估完成」（任一未填則阻擋）
 4. 執行「評估完成」後系統自動建立報價紀錄並通知業務
 5. 需求單狀態推進至「已評估成本」，業務可進入議價流程（[[US-QR-002-管理需求單進度]]）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/quote/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

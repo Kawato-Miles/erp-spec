@@ -7,7 +7,6 @@ module:
 role:
   - "[[諮詢]]"
 priority: high
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-29
@@ -29,7 +28,7 @@ prerequisites:
 
 # US-CR-005 諮詢結束不做大貨建諮詢訂單
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[諮詢]]
@@ -63,20 +62,6 @@ prerequisites:
 3. 系統自動建立諮詢費待開票收款項目（不自動開立發票）；諮詢人員於需要時手動一鍵開立發票，未開票由對帳差額警示兜底
 4. 諮詢單狀態推進至「完成諮詢」終態，諮詢訂單即時推進至「訂單完成」終態（不經「已開發票」中間態，該狀態已廢止）
 5. 諮詢訂單與諮詢單建立雙向關聯（諮詢訂單在諮詢單可追溯、諮詢單於詳情顯示對應訂單）；完成諮詢、付款轉移、開票皆寫入活動紀錄供事後稽核
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/consultation/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

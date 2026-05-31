@@ -8,7 +8,6 @@ business-domain:
 role:
   - "[[業務]]"
 priority: high
-stage: business-only
 status: draft
 created-at: 2026-05-28
 last-reviewed: 2026-05-28
@@ -26,7 +25,7 @@ related-test-cases: []
 
 # US-ORD-032 製作後印件規格異動觸發系統自動通知印務
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -59,26 +58,6 @@ related-test-cases: []
 3. 訂單管理人未指派時，通知對象自動退化為訂單負責業務（不靜默失敗）
 4. 訂單活動紀錄記錄每筆規格異動的變更前後對照與實際通知對象清單
 5. 售價欄位於製作後仍維持唯讀並引導去訂單異動流程，不在本流程處理
-
-## UI 操作（易變層）
-
-<!-- ui-binding: prototype-v1 -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/pages/OrderDetail.tsx + src/components/order/EditOrderPrintItemPanel.tsx -->
-
-### 介面入口
-- 訂單詳情頁「訂單項目」Tab → 印件清單表格 row 操作欄「編輯印件」按鈕
-
-### 操作步驟
-1. 業務點訂單詳情頁「訂單項目」Tab 上的印件「編輯印件」按鈕
-2. Side Panel 開啟、顯示 Info Banner「規格類欄位仍可編輯（系統將自動通知印務 / 印務主管 / 訂單管理人）；售價變更需走訂單異動 Tab」
-3. 業務修改規格備註 / 購買數量 / 單位 / 難易度任一欄位後點「確認」
-4. Side Panel 關閉，畫面顯示 Toast「印件已更新，已通知印務團隊」+ 通知對象姓名清單
-
-### 介面元素
-- 印件清單操作欄「編輯印件」按鈕：v1.13 後不再限製作前才顯示，訂單未取消即顯示
-- Side Panel Info Banner：訂單進入製作階段時顯示提示
-- Side Panel 售價欄位：disabled + Tooltip「訂單已進入製作階段，售價變更需走『訂單異動』Tab 建立補收 / 折讓單」
-- Toast：含通知對象姓名清單（印務 / 印務主管 / 訂單管理人 fallback 業務）
 
 ## 來源（provenance）
 

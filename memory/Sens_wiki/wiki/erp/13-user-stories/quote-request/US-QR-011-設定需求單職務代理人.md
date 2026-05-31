@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -27,7 +26,7 @@ prerequisites:
 
 # US-QR-011 設定需求單職務代理人
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -58,20 +57,6 @@ prerequisites:
 2. 被授權同事可代為編輯需求單與推進狀態，操作紀錄歸屬被授權同事（活動紀錄含實際操作者）
 3. 業務可檢視當前授權清單並隨時移除
 4. 授權移除即時生效（被移除者編輯操作會被系統拒絕）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/quote/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

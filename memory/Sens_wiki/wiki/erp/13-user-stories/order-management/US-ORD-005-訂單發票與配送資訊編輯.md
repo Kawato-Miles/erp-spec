@@ -8,7 +8,6 @@ business-domain:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-28
@@ -29,7 +28,7 @@ prerequisites:
 
 # US-ORD-005 訂單發票與配送資訊編輯
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -58,20 +57,6 @@ prerequisites:
 2. 出貨地址 / 方式 / 預計出貨日可獨立編輯
 3. 變更於活動紀錄留痕（含變更前 / 變更後內容）
 4. 後續開立發票 / 建立出貨單時自動帶入對應資訊
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

@@ -7,7 +7,6 @@ module:
 role:
   - "[[諮詢]]"
 priority: high
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -29,7 +28,7 @@ prerequisites:
 
 # US-CR-004 諮詢結束做大貨轉需求單
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[諮詢]]
@@ -68,20 +67,6 @@ prerequisites:
 3. 新需求單的負責業務自動設定為當前諮詢人員（即諮詢人員自動成為負責業務）
 4. 諮詢單狀態推進至「已轉需求單」終態，活動紀錄寫入「轉需求單」事件
 5. 系統 **不建立任何訂單**，付款紀錄維持綁諮詢單（等需求單結局明確時才轉移）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/consultation/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

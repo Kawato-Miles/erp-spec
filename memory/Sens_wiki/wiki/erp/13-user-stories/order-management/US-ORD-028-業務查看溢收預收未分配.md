@@ -8,7 +8,6 @@ business-domain:
 role:
   - "[[業務]]"
 priority: low
-stage: business-only
 status: draft
 created-at: 2026-05-28
 last-reviewed: 2026-05-28
@@ -23,7 +22,7 @@ related-test-cases: []
 
 # US-ORD-028 業務查看溢收「預收（未分配）」桶
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -50,12 +49,6 @@ related-test-cases: []
 2. 預收金額在訂單款項區塊或對帳 UI 有明確 badge 標示（「預收（未分配）」）
 3. 預收後續處理路徑列為 OQ-BI-3 待 Miles 拍板（兩者皆可 / 強制退款 / 強制核銷新期次）
 4. 對帳 CSV 預設不列預收（CSV 主軸 = 一張已開立發票一列）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-
-> 對帳 / 訂單款項區塊「預收（未分配）」顯示與業務後續處理入口待 task 4.x 後續整合時細化。
 
 ## 來源（provenance）
 

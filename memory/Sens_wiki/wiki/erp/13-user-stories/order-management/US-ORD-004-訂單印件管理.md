@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -28,7 +27,7 @@ prerequisites:
 
 # US-ORD-004 訂單印件管理
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -57,20 +56,6 @@ prerequisites:
 2. 免審稿印件自動跳過審稿環節進入製程審核（連動 [[US-AR-002]]）
 3. 訂單階段印件規格編輯時機依 spec 限制（金額異動由訂單異動流程處理；本卡涵蓋規格編輯）
 4. 印件異動寫入 ActivityLog 供事後稽核
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

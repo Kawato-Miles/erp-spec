@@ -7,7 +7,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -27,7 +26,7 @@ prerequisites:
 
 # US-QR-007 需求單成交轉訂單
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -61,20 +60,6 @@ prerequisites:
 3. 印件預計產線自動帶入訂單對應印件的預計產線欄位
 4. 若需求單來自諮詢單，諮詢付款紀錄轉移至本訂單並建諮詢費明細
 5. 業務於訂單階段可補填發票 / 配送 / 付款計畫等訂單特有資訊（不在本卡範疇）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/quote/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

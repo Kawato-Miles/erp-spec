@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -26,7 +25,7 @@ prerequisites:
 
 # US-QR-004 管理需求單參考資料
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -54,20 +53,6 @@ prerequisites:
 1. 每個印件項目支援多附件上傳（圖片 / PDF），數量無上限（依儲存配額）
 2. 業務與印務主管均可預覽附件（縮圖或內嵌檢視）並下載原檔
 3. 附件版本保留：上傳新檔案不覆蓋舊版，供歷史追溯
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/quote/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

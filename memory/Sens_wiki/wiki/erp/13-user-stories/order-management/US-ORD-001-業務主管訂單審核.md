@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務主管]]"
 priority: high
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -28,7 +27,7 @@ prerequisites:
 
 # US-ORD-001 業務主管訂單審核
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務主管]]
@@ -59,20 +58,6 @@ prerequisites:
 2. 核可後訂單狀態推進至「審核通過」，業務可繼續推進
 3. 退回時必須填寫退回原因；訂單狀態回「草稿」供業務修正
 4. 核可 / 退回動作皆寫入活動紀錄供事後稽核
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

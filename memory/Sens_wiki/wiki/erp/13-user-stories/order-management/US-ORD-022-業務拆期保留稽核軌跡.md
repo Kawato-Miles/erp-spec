@@ -8,7 +8,6 @@ business-domain:
 role:
   - "[[業務]]"
 priority: medium
-stage: ui-bound
 status: draft
 created-at: 2026-05-28
 last-reviewed: 2026-05-28
@@ -23,7 +22,7 @@ related-test-cases: []
 
 # US-ORD-022 業務拆期保留稽核軌跡
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -52,17 +51,6 @@ related-test-cases: []
 2. 兩筆新期次無父子彙整關聯（不可透過 split_from_installment_id 做 query / aggregation；該欄位僅供 CSV lineage 追溯）
 3. 拆期事件寫入活動紀錄（含原期次 id / 兩筆新期次 id / 拆分規格），新期次變更次數從 0 起算（不繼承原期次變更歷史）
 4. 兩條入口（規劃階段「拆此期」+ 開票時 Dialog 內「拆此期」捷徑）共用同一拆分邏輯
-
-## UI 操作（易變層）
-
-<!-- ui-binding: prototype-v1 -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/BillingInstallmentSplitDialog.tsx -->
-
-### 介面入口
-- 訂單詳情頁「款項」Tab → 請款期次列表 → 該期「拆此期」按鈕（兩條入口共用此 Dialog）
-
-### 介面元素
-- BillingInstallmentSplitDialog 顯示原期次資訊 + A/B 兩期表單 + 即時合計校驗（不等時 disable 儲存）
 
 ## 來源（provenance）
 

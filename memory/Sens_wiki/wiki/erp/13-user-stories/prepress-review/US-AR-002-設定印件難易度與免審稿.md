@@ -7,7 +7,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-21
 last-reviewed: 2026-05-21
@@ -37,7 +36,7 @@ prerequisites:
 
 # US-AR-002 設定印件難易度與免審稿
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -69,20 +68,6 @@ prerequisites:
 2. 印件可標註是否免審稿（適用條件與核可機制待 [[AR-8-免審稿適用條件與核可機制]] 解答後補完）
 3. 需求單成交轉訂單時，難易度與免審稿標記自動繼承至訂單印件，無需業務重新輸入
 4. 成交轉訂單後，訂單階段不可再修改難易度與免審稿標記（變更須走訂單異動流程）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/quote/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: low
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -26,7 +25,7 @@ prerequisites:
 
 # US-ORD-008 訂單列表分享與代理
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -58,20 +57,6 @@ prerequisites:
 3. 業務可檢視當前授權清單並隨時移除
 4. 授權移除即時生效，被移除者立即無法存取
 5. 分享行為與 [[US-QR-010-分享需求單給同事參考]] / [[US-QR-011-設定需求單職務代理人]] 採同一授權邏輯元件（跨模組一致）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

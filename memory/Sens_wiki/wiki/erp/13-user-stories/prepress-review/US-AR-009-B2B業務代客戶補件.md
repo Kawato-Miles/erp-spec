@@ -7,7 +7,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-21
 last-reviewed: 2026-05-21
@@ -33,7 +32,7 @@ prerequisites:
 
 # US-AR-009 B2B 業務代客戶補件
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -68,20 +67,6 @@ prerequisites:
 3. 補件完成後印件狀態自動轉為「已補件」
 4. 補件動作留印件活動紀錄（操作業務 / 補件時間 / 上傳檔案），訂單詳情可回查
 5. 業務僅能檢視訂單層級資料；既存稿件備註若需修改須至印件編輯介面執行，觸發活動紀錄稽核事件
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

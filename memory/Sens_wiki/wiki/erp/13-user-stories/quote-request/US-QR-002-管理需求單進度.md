@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -26,7 +25,7 @@ prerequisites:
 
 # US-QR-002 管理需求單進度
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -58,20 +57,6 @@ prerequisites:
 3. 每次狀態變更（含議價 / 重新評估 / 成交 / 流失）自動寫入活動紀錄
 4. 管理層可於需求單列表依狀態篩選追蹤進度（待評估成本 / 已評估成本 / 議價中 / 成交 / 流失）
 5. 流失終態不可逆；成交終態觸發後續轉訂單流程
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/quote/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

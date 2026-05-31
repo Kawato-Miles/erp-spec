@@ -8,7 +8,6 @@ business-domain:
 role:
   - "[[會計]]"
 priority: medium
-stage: business-only
 status: draft
 created-at: 2026-05-28
 last-reviewed: 2026-05-28
@@ -23,7 +22,7 @@ related-test-cases: []
 
 # US-ORD-029 會計收到月結差錯訂單警示清單
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[會計]]
@@ -51,12 +50,6 @@ related-test-cases: []
 2. 差錯判定使用三方對帳 invariant：應收 ≠ 發票淨額 OR 應收 ≠ 收款淨額
 3. 差錯訂單率 = 差錯訂單數 / 總已完成訂單數，目標 ≤ 1%（CEO 指標 2）
 4. 會計收到清單後透過 Slack / Email 人工聯絡業務追查（不需要系統內回饋系統，避免額外開發成本）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-
-> 月結批次觸發者與時點待 BI-8 OQ 拍板（會計手動 / 定時批次 / 混合）。
 
 ## 來源（provenance）
 

@@ -9,7 +9,6 @@ role:
   - "[[業務]]"
   - "[[業務主管]]"
 priority: medium
-stage: ui-bound
 status: draft
 created-at: 2026-05-28
 last-reviewed: 2026-05-28
@@ -24,7 +23,7 @@ related-test-cases: []
 
 # US-ORD-025 業務查看期次原始 vs 現況對照
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]（自己檢視操作軌跡）或 [[業務主管]]（事後稽核業務操作穩定性）
@@ -52,17 +51,6 @@ related-test-cases: []
 2. 對照顯示須使用業務一眼可辨識的視覺差異（紅色 / 變更 badge / 線刪除原值）
 3. 變更次數的警示閾值對齊 CEO 指標 4（健康 ≤ 1.5 per-installment 平均、警示 1.5-3、異常 ≥ 3）
 4. 拆期產生的新期次變更次數從 0 起算（拆期事件本身寫入活動紀錄、不計入 changeCount）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: prototype-v1 -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/OriginalVsCurrentDateLabel.tsx + BillingInstallmentListCard.tsx -->
-
-### 介面入口
-- 訂單詳情頁「款項」Tab → 請款期次列表 → 每期 row 的應收日 / 預計開票日欄位
-
-### 介面元素
-- OriginalVsCurrentDateLabel 共用元件：依 originalValue vs currentValue 顯示單一日期或雙日期對照
 
 ## 來源（provenance）
 

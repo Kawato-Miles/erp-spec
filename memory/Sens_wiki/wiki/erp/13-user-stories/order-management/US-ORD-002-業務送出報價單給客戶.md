@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: high
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -26,7 +25,7 @@ prerequisites:
 
 # US-ORD-002 業務送出報價單給客戶
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -54,20 +53,6 @@ prerequisites:
 2. 送出動作須於系統內手動觸發（系統不自動推進，因外部送出動作系統無法偵測）
 3. 活動紀錄留送出時間與操作者，便於後續追蹤回簽進度
 4. 狀態為「報價待回簽」的訂單於業務待辦清單顯示為「等候回簽」分類，便於業務批次追客戶
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

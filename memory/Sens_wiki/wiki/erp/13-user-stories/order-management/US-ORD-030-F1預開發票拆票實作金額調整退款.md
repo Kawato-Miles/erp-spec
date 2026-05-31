@@ -8,7 +8,6 @@ business-domain:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: draft
 created-at: 2026-05-28
 last-reviewed: 2026-05-28
@@ -24,7 +23,7 @@ related-test-cases: []
 
 # US-ORD-030 F1 情境：預開發票 + 拆 2 張 + 實作金額調整退款
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -57,12 +56,6 @@ related-test-cases: []
 3. 退款 Payment 不入正向期次的核銷分配（PaymentAllocation），透過 SalesAllowance.refundPaymentId 連結
 4. 折讓金額大於單張發票金額時，業務可拆成多筆 SalesAllowance 各自關聯不同發票
 5. 三方對帳差額 = 0（含負項對齊），對帳警示 banner 因執行時點跨期觸發
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-
-> 全鏈路涉及 OrderPaymentSection / OrderInvoiceSection / OrderAdjustmentSection 多區塊跨流程，UI 路徑待 task 4.5-4.14 整合後填寫。
 
 ## 來源（provenance）
 

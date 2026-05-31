@@ -9,7 +9,6 @@ role:
   - "[[業務]]"
   - "[[諮詢]]"
 priority: high
-stage: business-only
 status: draft
 created-at: 2026-05-28
 last-reviewed: 2026-05-28
@@ -24,7 +23,7 @@ related-test-cases: []
 
 # US-ORD-021 業務於請款期次一鍵開立發票
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -53,13 +52,6 @@ related-test-cases: []
 2. 發票自動繼承來源期次的品項與業務備註（後續期次品項異動不連動既有發票，沿用 v1.13 鏈式預填無連動規則）
 3. 期次開票後「開票維度」狀態 = 已開立、「收款維度」狀態保留不動（雙維度獨立）
 4. 若期次已有對應發票（已開立 / 已作廢回未開立），一鍵開票按鈕不顯示重複開立入口
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/OrderInvoiceSection.tsx（task 4.5 整合中）-->
-
-> task 4.5 整合 OrderInvoiceSection 後填寫具體 UI 步驟。
 
 ## 來源（provenance）
 

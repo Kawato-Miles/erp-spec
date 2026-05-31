@@ -9,7 +9,6 @@ role:
   - "[[業務]]"
   - "[[諮詢]]"
 priority: high
-stage: ui-bound
 status: draft
 created-at: 2026-05-28
 last-reviewed: 2026-05-28
@@ -25,7 +24,7 @@ related-test-cases: []
 
 # US-ORD-020 業務建立請款期次
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]（或 [[諮詢]]）
@@ -53,23 +52,6 @@ related-test-cases: []
 2. 系統凍結首次儲存當下的「原始應收日」「原始預計開票日」作為事後稽核基準（業務之後修改不影響此基準）
 3. 訂單應收與期次合計差額時系統顯示警示但允許儲存（沿用 v1.13 spec L915 既有規則）
 4. 業務 / 諮詢 兩個角色都能建立期次（諮詢角色等價沿用 after-sales-ticket § 諮詢角色等價原則）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: prototype-v1 -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/BillingInstallmentEditDialog.tsx -->
-
-### 介面入口
-- 訂單詳情頁「款項」Tab → 「請款期次（v2 統一規劃）」區塊 → 「新增期次」按鈕
-
-### 操作步驟
-- 點「新增期次」開 BillingInstallmentEditDialog
-- 填入描述 / 預計金額 / 應收日 / 預計開票日（選填）/ 備註
-- 點「建立期次」儲存
-
-### 介面元素
-- BillingInstallmentEditDialog 表單欄位：description / scheduledAmount / dueDate / expectedInvoiceDate / note
-- 訂單應收 vs 期次合計差額警示橫幅（amber-50 + AlertCircle）
 
 ## 來源（provenance）
 

@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -26,7 +25,7 @@ prerequisites:
 
 # US-QR-006 申請重新評估報價
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -58,20 +57,6 @@ prerequisites:
 3. 歷史報價紀錄**保留不覆蓋**（業務 / 印務主管 / 管理層可查看前一次與本次評估的差異）
 4. 印務主管重新評估完成後系統建立新報價紀錄並通知業務
 5. 重新進入「已評估成本」後業務可直接進「議價中」（不需業務主管重新核可）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/quote/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

@@ -6,7 +6,6 @@ module:
 role:
   - "[[審稿主管]]"
 priority: low
-stage: business-only
 status: active
 created-at: 2026-05-21
 last-reviewed: 2026-05-21
@@ -30,7 +29,7 @@ prerequisites:
 
 # US-AR-006 比對審稿人員績效
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[審稿主管]]
@@ -65,20 +64,6 @@ prerequisites:
 3. 審稿主管可比對部門所有審稿員的平均處理時間（含排隊時間，僅作參考不作異常判定）
 4. 比對資料可依「今日 / 本週 / 本月」三種時間範圍切換
 5. 系統依退件率降冪排序、件數降冪次序；**系統不自動標示異常徽章**（依 spec L632 設計決策由主管肉眼判斷）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/prepress/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

@@ -6,7 +6,6 @@ module:
 role:
   - "[[審稿主管]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-21
 last-reviewed: 2026-05-21
@@ -30,7 +29,7 @@ prerequisites:
 
 # US-AR-005 監控當日審稿工作量
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[審稿主管]]
@@ -65,20 +64,6 @@ prerequisites:
 2. 各指標計算口徑符合業務流程 step 2 定義（以審稿輪次為計數單位、含明確時間錨點）
 3. 主管處理部門其他作業時，仍能即時察覺指標變動，無需主動回到監控頁（持續性需求；UI 解法由 Prototype 階段決定）
 4. 主管識別異常後可從指標進入具體印件清單（與 [[US-AR-008-追蹤部門審稿完成紀錄]] 互通）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/prepress/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

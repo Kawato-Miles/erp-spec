@@ -8,7 +8,6 @@ business-domain:
 role:
   - "[[業務]]"
 priority: high
-stage: business-only
 status: draft
 created-at: 2026-05-28
 last-reviewed: 2026-05-28
@@ -23,7 +22,7 @@ related-test-cases: []
 
 # US-ORD-023 業務登錄收款並由系統依序填滿核銷分配
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -53,13 +52,6 @@ related-test-cases: []
 3. 業務手動修改後與系統初次填滿值不同的紀錄會標「手動覆寫」（diff-based 判定，避免業務只是點輸入框沒實際改值被誤標）
 4. 實收超過全部未收金額時，溢收部分掛「預收（未分配）」桶供後續核銷新期次或退款處理
 5. 業務切收款為「已完成」前可隨意調整分配；切已完成後仍可調整但留異動軌跡（保留可修正性，避免硬鎖死污染對帳紀錄）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: prototype-v1 -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/PaymentAllocationDialog.tsx -->
-
-> 待 task 4.5/4.6 OrderInvoiceSection 整合後接入完整 Payment 登錄流程。
 
 ## 來源（provenance）
 

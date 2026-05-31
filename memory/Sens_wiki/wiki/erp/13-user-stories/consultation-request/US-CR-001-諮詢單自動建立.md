@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: high
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -31,7 +30,7 @@ related-test-cases: []
 
 > **重寫紀錄（2026-05-22）**：原卡名「諮詢單自動建立」描述系統自動建單行為，**不是 user story 性質**（無使用者動作）；依新「禁 anchor 故事 + user story 單角色單動作」紀律重新定位為「業務查看並指派新諮詢單」（業務動作）。系統自動建單機制（webhook 串接）作為 prerequisites 列出，端到端流程由 07-scenarios 補情境 15。
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]（值班業務）
@@ -63,20 +62,6 @@ related-test-cases: []
 2. 業務可選擇諮詢人員指派 consultant_id，系統將值寫入諮詢單
 3. 指派動作留活動紀錄（業務姓名 / 諮詢人員姓名 / 時間）
 4. 被指派的諮詢人員即時收到通知
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/consultation/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

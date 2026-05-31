@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: low
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -27,7 +26,7 @@ prerequisites:
 
 # US-QR-012 設定評估印務主管
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -56,20 +55,6 @@ prerequisites:
 2. 可選清單限定為具印務主管角色的用戶
 3. 送印務評估後欄位鎖定為唯讀，業務無法再改
 4. 指定的印務主管於待辦清單看到此需求單
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/quote/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

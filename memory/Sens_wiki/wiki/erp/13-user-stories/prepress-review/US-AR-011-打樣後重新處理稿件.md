@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-21
 last-reviewed: 2026-05-21
@@ -37,7 +36,7 @@ prerequisites:
 
 > 本卡為原 Notion 上重複編碼之 US-AR-002 重新編號而來。詳見 [[AR-2-Notion-US-AR-002編碼重複處理]]。
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -77,20 +76,6 @@ prerequisites:
 2. 新稿件視為全新審稿生命週期，重新走完整審稿流程，不繼承原印件審稿輪次歷史
 3. 新稿件經審稿通過後可重新安排打樣，無需重複先前已通過的審稿動作
 4. 系統留印件活動紀錄反映「打樣後重提稿件」事件（事件細節與實體關聯方式待 [[AR-12]] 解答後補入）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/prepress/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

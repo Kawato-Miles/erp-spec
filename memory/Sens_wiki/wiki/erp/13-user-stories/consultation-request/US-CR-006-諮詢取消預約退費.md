@@ -7,7 +7,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-30
@@ -31,7 +30,7 @@ prerequisites:
 
 # US-CR-006 諮詢取消預約退費
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -73,20 +72,6 @@ prerequisites:
 3. 系統不自動開立諮詢費發票、不自動建立銷貨折讓單、不自動建立待開發票；留存 1000 元收入由操作者於需要時手動開立發票，未開票由對帳差額警示兜底提醒
 4. 操作者與第三方金流確認刷退完成後將退款付款紀錄切「已完成」，系統推進退款訂單異動至「已執行」；此善後金流不再變動諮詢訂單「已取消」終態
 5. 諮詢訂單與諮詢單狀態皆推進至「已取消」終態不可逆；離開「待諮詢」狀態後系統拒絕重複取消動作；取消原因分類與取消動作寫入活動紀錄供事後稽核
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/consultation/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

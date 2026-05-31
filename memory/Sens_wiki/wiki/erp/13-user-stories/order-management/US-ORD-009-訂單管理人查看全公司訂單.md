@@ -6,7 +6,6 @@ module:
 role:
   - "[[訂單管理人]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -28,7 +27,7 @@ prerequisites:
 
 > 本卡為原 Notion 上重複編碼 US-ORD-005 重新編號（補既有 ORD-009 缺號）。詳見 [[ORD-1-Notion-US-ORD-005編碼重複處理]]。
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[訂單管理人]]
@@ -57,20 +56,6 @@ prerequisites:
 2. 業務角色列表頁預設只顯示自己的訂單（含被授權的）
 3. 篩選功能可依業務 / 狀態 / 交期 / 客戶任意組合
 4. 角色視角差異由系統依角色自動套用，無需手動切換
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

@@ -8,7 +8,6 @@ business-domain:
 role:
   - "[[會計]]"
 priority: high
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-28
@@ -31,7 +30,7 @@ related-test-cases: []
 
 > **新增紀錄（2026-05-22）**：本卡為 [[US-ORD-011-訂單取消與退款]] 拆分新增；依「user story 單角色單動作」紀律，業務動作（取消 + 退款申請）與會計動作（執行退款 + 折讓）拆為兩張 user story。
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[會計]]
@@ -65,20 +64,6 @@ related-test-cases: []
 3. 銀行作業完成後會計可標記「已退款」終態（不可逆）
 4. 已開發票的訂單於標記「已退款」時系統自動建立折讓單關聯退款付款紀錄
 5. 退款執行寫入活動紀錄供事後稽核（含時間 / 操作會計 / 退款金額）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

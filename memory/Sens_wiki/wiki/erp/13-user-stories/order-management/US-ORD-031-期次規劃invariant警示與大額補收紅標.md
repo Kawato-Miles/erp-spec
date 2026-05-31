@@ -9,7 +9,6 @@ role:
   - "[[業務]]"
   - "[[業務主管]]"
 priority: medium
-stage: ui-bound
 status: draft
 created-at: 2026-05-28
 last-reviewed: 2026-05-28
@@ -24,7 +23,7 @@ related-test-cases: []
 
 # US-ORD-031 期次規劃 invariant 警示與大額補收紅標
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]（接收警示）/ [[業務主管]]（接收大額補收事後通知）
@@ -55,19 +54,6 @@ related-test-cases: []
 3. 大額閾值 derived from 系統常數 SUPPLEMENTARY_CHARGE_HIGH_AMOUNT_THRESHOLD（值待 OQ-BI-4 Miles 拍板實務值，目前起始 50000）
 4. Slack 通知為 mock（prototype 階段不真實發送）；上線時整合實際 Slack API
 5. 廢止 v1.13「付款計畫變更觸發訂單回業務主管審核」事前 gate，改採「留軌跡 + 警示提示 + Slack 通知」三管道事後稽核
-
-## UI 操作（易變層）
-
-<!-- ui-binding: prototype-v1 -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/OrderBillingInstallmentSection.tsx + OrderAdjustmentEditDialog.tsx -->
-
-### 介面入口
-- 訂單詳情頁「款項」Tab → 「請款期次（v2 統一規劃）」區塊頂部警示橫幅
-- 訂單異動編輯 Dialog → 大額補收觸發 amber 警示 + BellRing 提示
-
-### 介面元素
-- OrderBillingInstallmentSection 內 invariant 警示橫幅含 action button「建立期次」
-- OrderAdjustmentEditDialog 大額補收 amber 橫幅 + BellRing 圖示
 
 ## 來源（provenance）
 

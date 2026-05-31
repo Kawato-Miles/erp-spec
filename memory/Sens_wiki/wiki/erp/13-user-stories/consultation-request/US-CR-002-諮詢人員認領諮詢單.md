@@ -6,7 +6,6 @@ module:
 role:
   - "[[諮詢]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -27,7 +26,7 @@ prerequisites:
 
 # US-CR-002 諮詢人員認領諮詢單
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[諮詢]]
@@ -59,20 +58,6 @@ prerequisites:
 3. 認領動作留活動紀錄（人員姓名 / 時間）供事後追蹤
 4. 並發認領衝突處理：同一諮詢單同時被兩人認領時，僅一人成功，其餘提示「已被認領」
 5. 已認領的諮詢單於清單區隔顯示為「我負責的諮詢」與「其他諮詢員負責」，避免重複認領
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/consultation/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

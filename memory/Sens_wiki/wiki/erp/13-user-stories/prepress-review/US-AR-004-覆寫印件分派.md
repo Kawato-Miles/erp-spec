@@ -6,7 +6,6 @@ module:
 role:
   - "[[審稿主管]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-21
 last-reviewed: 2026-05-21
@@ -30,7 +29,7 @@ prerequisites:
 
 # US-AR-004 覆寫印件分派
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[審稿主管]]
@@ -62,20 +61,6 @@ prerequisites:
 3. 覆寫必須填寫原因（自由文字；分類選項待後續業務累積後評估）
 4. **覆寫候選清單預先過濾能力不足者 + 離職停用者**（UI 層阻擋，AR-10 拍板）；轉派執行寫入活動紀錄（含時間 / 原審稿員 / 新審稿員 / 原因）
 5. 可選清單為空時 UI 顯示 actionable 提示「無可選審稿人員，請先調整審稿員能力等級或恢復原審稿員」
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/prepress/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

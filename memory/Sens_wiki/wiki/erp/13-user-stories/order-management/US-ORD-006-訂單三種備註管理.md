@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -27,7 +26,7 @@ prerequisites:
 
 # US-ORD-006 訂單三種備註管理
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -57,20 +56,6 @@ prerequisites:
 3. 訂單詳情頁分區清楚顯示三類備註（不混在同一欄位）
 4. 備註變更寫入活動紀錄，便於事後追蹤
 5. 編輯權限依 spec § 訂單階段訂單備註編輯權限與時機決定（限訂單擁有者 / 代理人）
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/order/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 

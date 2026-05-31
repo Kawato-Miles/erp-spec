@@ -6,7 +6,6 @@ module:
 role:
   - "[[業務]]"
 priority: medium
-stage: business-only
 status: active
 created-at: 2026-05-22
 last-reviewed: 2026-05-22
@@ -28,7 +27,7 @@ prerequisites:
 
 # US-QR-001 建立需求單
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[業務]]
@@ -59,20 +58,6 @@ prerequisites:
 3. 送印務評估後需求單狀態推進為「待評估成本」，指定印務主管可於待辦清單看到此需求單
 4. 系統發送通知含案名 / 客戶 / 業務 / 接單公司 / 帳務公司 / 連結
 5. 需求單建立與送印務評估動作皆寫入活動紀錄供事後稽核
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/components/quote/（待 Prototype 定案後補） -->
-
-### 介面入口
-- Prototype 定案後補
-
-### 操作步驟
-- Prototype 定案後補
-
-### 介面元素
-- Prototype 定案後補
 
 ## 來源（provenance）
 
