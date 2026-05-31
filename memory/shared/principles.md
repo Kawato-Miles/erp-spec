@@ -154,7 +154,7 @@
 
 > **2026-05-19 已遷移**：本章 5 個設計模式（當前版本指針 `current_X_id` / 狀態碼結構化 LOV+備註 / 合格完成終態 / B2C-B2B 自動化分流 / 稽核鉤子）已整段遷至 ERP_Vault：
 >
-> - 正本：[`memory/erp/ERP_Vault/11-review-knowledge/erp/erp-design-patterns.md`](../erp/ERP_Vault/11-review-knowledge/erp/erp-design-patterns.md)（Vault 內 `[[erp-design-patterns]]`）
-> - 審查框架對照：[`memory/erp/ERP_Vault/11-review-knowledge/erp/erp-review-framework.md`](../erp/ERP_Vault/11-review-knowledge/erp/erp-review-framework.md) § 1（[[erp-consultant]] 審查時必對照 5 設計模式）
+> - 正本：[`memory/Sens_wiki/wiki/erp/11-review-knowledge/erp/erp-design-patterns.md`](../erp/ERP_Vault/11-review-knowledge/erp/erp-design-patterns.md)（Vault 內 `[[erp-design-patterns]]`）
+> - 審查框架對照：[`memory/Sens_wiki/wiki/erp/11-review-knowledge/erp/erp-review-framework.md`](../erp/ERP_Vault/11-review-knowledge/erp/erp-review-framework.md) § 1（[[erp-consultant]] 審查時必對照 5 設計模式）
 >
 > 本檔不再維護該章內容。新增 ERP 設計模式請更新 Vault 對應卡。

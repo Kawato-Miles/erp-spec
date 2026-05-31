@@ -1191,7 +1191,7 @@ Archive 位置：
 - Scope creep（business-logic 卡混入 user-story / test-case 格式模板）
 
 ### 待處理（不在本次範圍）
-- align-business-consultation-coverage-gaps change 引用的 payment-invoice-scenarios.md 路徑已變（memory/erp/ → memory/erp/ERP_Vault/04-business-logic/），該 change 執行時須用新路徑（本次未改別的 change 文件，避免越界）
+- align-business-consultation-coverage-gaps change 引用的 payment-invoice-scenarios.md 路徑已變（memory/erp/ → memory/Sens_wiki/wiki/erp/04-business-logic/），該 change 執行時須用新路徑（本次未改別的 change 文件，避免越界）
 - BI-12 related-test-cases 配對（0/18）+ BI-14 UI 措辭清理（8 張）
 
 ### 待跑

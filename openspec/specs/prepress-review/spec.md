@@ -141,7 +141,7 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 - `print_item_id`：FK PrintItem
 - `round_no`：該印件內遞增序號，從 1 開始
 - `reviewer_id`：FK User（審稿人員）；免審稿路徑為 NULL
-- `source`：enum（**審稿 / 免審稿 / 售後補印**）。`售後補印` 由 after-sales-ticket 模組於補印 PrintItem 建立同 transaction 系統自動產生（refine-supplementary-print-skip-review 2026-05-20 歸檔），沿用來源印件最終合格稿件、reviewerId 為 NULL、result 自動 = 合格、`sourcePrintItemId` 指向來源印件；詳見 [印件實體業務語意](../../../memory/erp/ERP_Vault/05-entities/印件.md) § 補印印件特殊規則
+- `source`：enum（**審稿 / 免審稿 / 售後補印**）。`售後補印` 由 after-sales-ticket 模組於補印 PrintItem 建立同 transaction 系統自動產生（refine-supplementary-print-skip-review 2026-05-20 歸檔），沿用來源印件最終合格稿件、reviewerId 為 NULL、result 自動 = 合格、`sourcePrintItemId` 指向來源印件；詳見 [印件實體業務語意](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) § 補印印件特殊規則
 - `submitted_at`：送審時間（免審稿路徑為印件建立時間；售後補印路徑為補印 PrintItem 建立時間）
 - `result`：enum（合格 / 不合格）
 - `reject_reason_category`：enum LOV（不合格時必填）。**PI-009 定案 10 項**：出血不足 / 解析度過低 / 色彩模式錯誤（RGB 未轉 CMYK）/ 缺少必要元素（圖 / 文字 / 字型）/ 版面超出安全區 / 尺寸不符 / 特殊工藝圖層異常（燙金 / 白墨 / 模切）/ 字型未外框 / 技術性退件（檔案損毀 / 無法開啟等；KPI 不合格率分母排除） / 其他（需 review_note 補充）。**對齊 quote-request spec § 需求單流失歸因的 LOV 設計模式**，以結構化方式記錄便於統計分析與圖編器 Preflight 規則對映

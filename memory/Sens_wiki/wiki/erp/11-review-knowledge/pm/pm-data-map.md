@@ -31,7 +31,7 @@ last-reviewed: 2026-05-19
 | 資料欄位 DB | 現有資料模型與欄位定義 | 嵌入各模組 spec（已遷至 OpenSpec）|
 | Follow-up DB（OQ）| 對外確認版（內部正本在 Vault `08-open-questions/`）| [Notion Follow-up](https://www.notion.so/32c3886511fa808e9754ea1f18248d92) |
 | 既有 Spec（BRD）| 已設計的模組清單 | CLAUDE.md § Spec 規格檔清單 |
-| Vault 商業需求 KM | 商業層內部正本 | `memory/erp/ERP_Vault/`（[[vault-charter]]）|
+| Vault 商業需求 KM | 商業層內部正本 | `memory/Sens_wiki/wiki/`（[[vault-charter]]）|
 
 ## 三、必讀（每次執行前必載入）
 

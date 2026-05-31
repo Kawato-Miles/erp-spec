@@ -13,7 +13,7 @@ status: draft
 created-at: 2026-05-28
 last-reviewed: 2026-05-28
 source:
-  - memory/erp/ERP_Vault/04-business-logic/payment-invoice-scenarios.md
+  - memory/Sens_wiki/wiki/erp/04-business-logic/payment-invoice-scenarios.md
   - openspec/changes/unify-billing-installment-and-reconciliation-csv/design.md
 related-spec: openspec/specs/order-management/spec.md
 related-scenarios: []
@@ -66,5 +66,5 @@ related-test-cases: []
 
 ## 來源（provenance）
 
-- memory/erp/ERP_Vault/04-business-logic/payment-invoice-scenarios.md § 1 預開發票 + 拆 2 筆發票開立 + 實際製作金額調整（情境 F1）
+- memory/Sens_wiki/wiki/erp/04-business-logic/payment-invoice-scenarios.md § 1 預開發票 + 拆 2 筆發票開立 + 實際製作金額調整（情境 F1）
 - openspec/changes/unify-billing-installment-and-reconciliation-csv/design.md § Open Questions OQ-US-1 + 顧問 C-PM-4 採納

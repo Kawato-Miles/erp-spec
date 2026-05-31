@@ -10,7 +10,7 @@ last-reviewed: 2026-05-21
 
 ## 一、定位
 
-- **路徑**：`Sens/memory/erp/ERP_Vault/`，沿用 Sens 主 repo（不獨立 repo、不用 submodule）
+- **路徑**：`Sens/memory/Sens_wiki/`，沿用 Sens 主 repo（不獨立 repo、不用 submodule）
 - **採用範式**：PARA + Zettelkasten 混合，目錄前綴 00 ~ 12 為 PARA 階層，內容卡片本身遵循 Zettelkasten 原子化原則
 - **服務對象**：Miles（PM）、Claude Code（撰寫 spec 時的背景資料來源）、未來公司同仁（透過 Vault → Notion 推送的發布版本）
 - **2026-05-19 升級：Self-Maintaining KM**（仿 [Karpathy LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) 模式）

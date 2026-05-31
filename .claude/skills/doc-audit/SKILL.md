@@ -108,11 +108,11 @@ grep -rn "### Requirement:" openspec/specs/ | grep "<主題關鍵字>"
 
 # 2. wiki ERP_Vault 商業邏輯卡層：列本主題所在卡與行
 grep -rn "<主題關鍵字>" \
-  memory/erp/ERP_Vault/04-business-logic/ \
-  memory/erp/ERP_Vault/05-entities/ \
-  memory/erp/ERP_Vault/06-state-machines/ \
-  memory/erp/ERP_Vault/07-scenarios/ \
-  memory/erp/ERP_Vault/13-user-stories/
+  memory/Sens_wiki/wiki/erp/04-business-logic/ \
+  memory/Sens_wiki/wiki/erp/05-entities/ \
+  memory/Sens_wiki/wiki/erp/06-state-machines/ \
+  memory/Sens_wiki/wiki/erp/07-scenarios/ \
+  memory/Sens_wiki/wiki/erp/13-user-stories/
 
 # 3. 比對：openspec 已定案的新規則（終態 / 狀態 / 公式）是否已同步進 wiki 卡；
 #    wiki 卡仍寫 archive 前舊版者 MUST 手動回補（依 erp-planning-pre-check 產出的 wiki 回補清單）

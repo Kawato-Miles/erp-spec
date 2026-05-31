@@ -2,7 +2,7 @@
 name: erp-user-story
 description: >
   ERP 商業 User Story 撰寫與管理 skill。
-  正本：Vault `memory/erp/ERP_Vault/13-user-stories/`（2026-05-21 新增）。
+  正本：Vault `memory/Sens_wiki/wiki/erp/13-user-stories/`（2026-05-21 新增）。
   Notion User Story DB 降為對外發布版本（推送自 Vault，單向）。
   觸發時機：Miles 說「寫 user story」「新增故事」「補 user story」「寫 [模組] 故事」「推 user story 到 Notion」「同步 user story」，
   或撰寫 spec / 討論需求中識別到須具體化為業務故事時。
@@ -23,7 +23,7 @@ description: >
 
 統一管理 ERP 商業 User Story。**操作正本在 Vault**，Notion User Story DB 為對外發布版本。
 
-詳見 [[../../memory/erp/ERP_Vault/13-user-stories/README|13-user-stories/README]] 與 [[../../memory/erp/ERP_Vault/00-meta/wiki-schema#type=user-story|wiki-schema § type=user-story]]。
+詳見 [[../../memory/Sens_wiki/wiki/erp/13-user-stories/README|13-user-stories/README]] 與 [[../../memory/Sens_wiki/wiki/erp/00-meta/wiki-schema#type=user-story|wiki-schema § type=user-story]]。
 
 ---
 
@@ -39,9 +39,9 @@ description: >
 
 ## Vault 位置與檔名規約
 
-- **目錄**：`/Users/b-f-03-029/Sens/memory/erp/ERP_Vault/13-user-stories/<module>/`
+- **目錄**：`/Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/13-user-stories/<module>/`
 - **檔名格式**：`US-<MODULE>-<NNN>-<簡述 slug>.md`
-- **MODULE 前綴對照**：QR / ORD / CR / AS / WO / PT / AR / QC / SHP / MM / PM / BM / XM（詳見 [[../../memory/erp/ERP_Vault/00-meta/wiki-schema#User Story 卡]]）
+- **MODULE 前綴對照**：QR / ORD / CR / AS / WO / PT / AR / QC / SHP / MM / PM / BM / XM（詳見 [[../../memory/Sens_wiki/wiki/erp/00-meta/wiki-schema#User Story 卡]]）
 - **範例**：
   - `13-user-stories/prepress-review/US-AR-001-審核稿件.md`
   - `13-user-stories/order-management/US-ORD-001-建立訂單草稿.md`
@@ -129,7 +129,7 @@ Claude 讀取：
 
 ### Step A3：套模板撰寫業務情境
 
-1. 複製 [[../../memory/erp/ERP_Vault/13-user-stories/_template|_template.md]] 內容
+1. 複製 [[../../memory/Sens_wiki/wiki/erp/13-user-stories/_template|_template.md]] 內容
 2. 填 frontmatter（必填項全填，stage 預設 business-only）
 3. 寫 § 作為（wiki link 至 03-roles/）
 4. 寫 § 我希望（一句話，介面中文，禁英文欄位名）
@@ -172,7 +172,7 @@ frontmatter `source` 必填 ≥ 1 條，指向：
 
 ### Step A7：跑 lint（人工檢查或 vault-audit 維度 13）
 
-對照 [[../../memory/erp/ERP_Vault/13-user-stories/_template#Lint 自檢（提交前）|_template § Lint 自檢]] 清單逐項檢查。
+對照 [[../../memory/Sens_wiki/wiki/erp/13-user-stories/_template#Lint 自檢（提交前）|_template § Lint 自檢]] 清單逐項檢查。
 
 關鍵 grep（業務情境段）：
 
@@ -188,7 +188,7 @@ grep -E "payment|printItem|orderAdjustment|quoteRequest|workOrder|productionTask
 
 ### Step A8：commit
 
-依 [[../../memory/erp/ERP_Vault/00-meta/vault-charter#五、Commit 規範|vault-charter § 五]]：
+依 [[../../memory/Sens_wiki/wiki/erp/00-meta/vault-charter#五、Commit 規範|vault-charter § 五]]：
 
 ```
 feat: 新增 [模組] User Story US-XX-NNN <標題>
@@ -239,7 +239,7 @@ last-reviewed: <當天>
 
 ### Step B5：跑 lint
 
-對照 [[../../memory/erp/ERP_Vault/13-user-stories/_template#Lint 自檢（提交前）|_template § Lint 自檢]] 確認：
+對照 [[../../memory/Sens_wiki/wiki/erp/13-user-stories/_template#Lint 自檢（提交前）|_template § Lint 自檢]] 確認：
 - stage=ui-bound 但 UI 操作段不為空（一致性）
 - ui-binding 有填
 - 業務情境段保持不動（穩定性）
@@ -374,11 +374,11 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 
 ## 參考
 
-- [[../../memory/erp/ERP_Vault/13-user-stories/README]] — 13-user-stories 入口
-- [[../../memory/erp/ERP_Vault/13-user-stories/_template]] — 模板與 lint 自檢清單
-- [[../../memory/erp/ERP_Vault/00-meta/wiki-schema#type=user-story]] — frontmatter 正式規格
-- [[../../memory/erp/ERP_Vault/00-meta/wiki-schema#維度 13：User Story 撰寫紀律]] — lint 規則
-- [[../../memory/erp/ERP_Vault/00-meta/sync-workflow#二之二、流程 1-B：Vault → Notion User Story DB（單向推送）]] — 同步流程
+- [[../../memory/Sens_wiki/wiki/erp/13-user-stories/README]] — 13-user-stories 入口
+- [[../../memory/Sens_wiki/wiki/erp/13-user-stories/_template]] — 模板與 lint 自檢清單
+- [[../../memory/Sens_wiki/wiki/erp/00-meta/wiki-schema#type=user-story]] — frontmatter 正式規格
+- [[../../memory/Sens_wiki/wiki/erp/00-meta/wiki-schema#維度 13：User Story 撰寫紀律]] — lint 規則
+- [[../../memory/Sens_wiki/wiki/erp/00-meta/sync-workflow#二之二、流程 1-B：Vault → Notion User Story DB（單向推送）]] — 同步流程
 - [[oq-manage]] — 不確定項處理
 - [[erp-test-case]] — Test Case 撰寫
 - [[vault-audit]] — Vault 健康稽核

@@ -1,7 +1,7 @@
 ---
 name: vault-insight
 description: >
-  ERP_Vault insight 提煉 skill。對累積的 Vault 內容做跨主題模式識別，產出帶具體「下一步建議」的 insight 卡，寫入 `memory/erp/ERP_Vault/12-insights/<YYYY-MM-DD>-<主題>.md`。
+  ERP_Vault insight 提煉 skill。對累積的 Vault 內容做跨主題模式識別，產出帶具體「下一步建議」的 insight 卡，寫入 `memory/Sens_wiki/wiki/erp/12-insights/<YYYY-MM-DD>-<主題>.md`。
   觸發時機：
     1. Miles 說「跑 insight」「精練 insight」「找下一步」「找系統性議題」
     2. `08-open-questions/` 達 15 個 open OQ 時（建議 Miles 跑）
@@ -44,7 +44,7 @@ ERP_Vault 跨主題模式識別與下一步提煉工具。
 ### Step 1：讀 audit-log（避免重複）
 
 ```bash
-cat /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/00-meta/audit-log.md
+cat /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/00-meta/audit-log.md
 ```
 
 - 最近 3 筆 audit / insight 紀錄
@@ -65,7 +65,7 @@ cat /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/00-meta/audit-log.md
 **Raw 過濾 Bash**（讀 raw 卡時 MUST 套用）：
 
 ```bash
-cd /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/raw
+cd /Users/b-f-03-029/Sens/memory/Sens_wiki/raw
 
 # 只列 status=ingested 或 reviewed 的 raw 卡（過濾 raw status 防 self-amplification）
 for f in *.md; do
@@ -114,7 +114,7 @@ done
 例：哪些卡近 30 天被改 ≥ 3 次？這代表設計仍在收斂，相關卡可能需要 review。
 
 ```bash
-git log --since="30 days ago" --pretty=format: --name-only memory/erp/ERP_Vault/ | sort | uniq -c | sort -rn | head -10
+git log --since="30 days ago" --pretty=format: --name-only memory/Sens_wiki/wiki/ | sort | uniq -c | sort -rn | head -10
 ```
 
 #### 3.6 Raw 跨主題累積（2026-05-21 新增）

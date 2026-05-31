@@ -31,24 +31,24 @@ tools:
 ## 步驟一：載入共用規範（5 卡）
 
 ```
-Read: memory/erp/ERP_Vault/11-review-knowledge/_shared/prototype-stage-context.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/_shared/prototype-stage-context.md
   （Vault 內 [[prototype-stage-context]]）
-Read: memory/erp/ERP_Vault/11-review-knowledge/_shared/language-conventions.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/_shared/language-conventions.md
   （Vault 內 [[language-conventions]]）
-Read: memory/erp/ERP_Vault/11-review-knowledge/_shared/insight-discipline.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/_shared/insight-discipline.md
   （Vault 內 [[insight-discipline]]）
-Read: memory/erp/ERP_Vault/11-review-knowledge/_shared/cross-agent-checklist.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/_shared/cross-agent-checklist.md
   （Vault 內 [[cross-agent-checklist]]）
-Read: memory/erp/ERP_Vault/11-review-knowledge/_shared/review-loading-checklist.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/_shared/review-loading-checklist.md
   （Vault 內 [[review-loading-checklist]]）— 含設計理解摘要要求與防誤審記錄
 ```
 
 ## 步驟二：載入 CEO 視角專屬框架
 
 ```
-Read: memory/erp/ERP_Vault/11-review-knowledge/ceo/ceo-review-framework.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/ceo/ceo-review-framework.md
   （Vault 內 [[ceo-review-framework]]）— 6 維度審查框架（含新增 KPI 對齊）
-Read: memory/erp/ERP_Vault/11-review-knowledge/ceo/ceo-review-pitfalls.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/ceo/ceo-review-pitfalls.md
   （Vault 內 [[ceo-review-pitfalls]]）— 必避免誤區與仍有效角度
 ```
 

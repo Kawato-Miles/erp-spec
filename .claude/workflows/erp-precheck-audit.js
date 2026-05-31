@@ -106,8 +106,8 @@ function auditPrompt(domain) {
 本次稽核領域：${domain}
 
 ## MUST 執行
-1. 先讀 memory/erp/ERP_Vault/00-meta/business-domain-taxonomy.md 確認此領域邊界與所屬卡。
-2. 依領域載入 memory/erp/ERP_Vault/ 對應卡：04-business-logic（商業邏輯正本）/ 05-entities / 06-state-machines / 07-scenarios / 13-user-stories / 03-roles，並讀跨領域共用層（02-domain glossary / 01-products）。
+1. 先讀 memory/Sens_wiki/wiki/erp/00-meta/business-domain-taxonomy.md 確認此領域邊界與所屬卡。
+2. 依領域載入 memory/Sens_wiki/wiki/erp/ 對應卡：04-business-logic（商業邏輯正本）/ 05-entities / 06-state-machines / 07-scenarios / 13-user-stories / 03-roles，並讀跨領域共用層（02-domain glossary / 01-products）。
 3. 對此領域 × 7 卡類型（角色 / 實體 / 流程 / 情境 / User Story / 業務邏輯 / 法規）逐格稽核，每格給「已涵蓋 N / 待修補 M / 待確認 OQ K」三個明確整數（禁「大致 OK」非量化結論）。
 4. User Story 卡類型 MUST 檢查 related-test-cases 欄位是否齊備。
 5. 業務邏輯卡類型 MUST 檢查連帶矩陣（連帶實體 / 跨模組影響）。
@@ -124,7 +124,7 @@ function verifyPrompt(audit, domain) {
 ${JSON.stringify(audit, null, 2)}
 
 ## MUST 執行
-1. 實際讀對應 Vault 卡查證（memory/erp/ERP_Vault/ 對應領域），不可只憑稽核結果推斷。
+1. 實際讀對應 Vault 卡查證（memory/Sens_wiki/wiki/erp/ 對應領域），不可只憑稽核結果推斷。
 2. 找出第一輪「未稽核到的角度」「未識別的連帶影響」「未列的 OQ」「該 edit 卻沒列的既有卡」。
 3. 每個漏掉項指向 targetCard。
 4. 若第一輪確實完整，missedGaps 回空陣列並在 assessment 說明。

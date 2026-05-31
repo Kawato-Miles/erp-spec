@@ -78,7 +78,7 @@ last-reviewed: 2026-05-28
 Claude Code 的 Read 工具吃絕對路徑，wikilink 在工具層失效。`.claude/agents/<name>.md` 中採絕對路徑 + wikilink 雙寫格式，便於 Miles 在 Obsidian 中跳轉：
 
 ```
-Read: memory/erp/ERP_Vault/11-review-knowledge/erp/erp-review-framework.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/erp/erp-review-framework.md
 （Vault 內 [[erp-review-framework]]）
 ```
 

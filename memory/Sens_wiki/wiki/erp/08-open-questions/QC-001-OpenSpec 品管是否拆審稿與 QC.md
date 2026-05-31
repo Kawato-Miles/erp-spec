@@ -12,7 +12,7 @@ raised-at: 2026-05-19
 raised-by: Miles
 answered-at: 2026-05-20
 answered-by: Miles (依 erp-consultant Round 1 審查建議)
-source-link: memory/erp/ERP_Vault/03-roles/_alignment-report.md (Phase A 角色清單對齊識別)
+source-link: memory/Sens_wiki/wiki/erp/03-roles/_alignment-report.md (Phase A 角色清單對齊識別)
 related-vault:
   - "[[wiki/erp/03-roles/QC]]"
   - "[[審稿]]"

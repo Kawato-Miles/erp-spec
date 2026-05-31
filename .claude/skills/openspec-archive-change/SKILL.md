@@ -73,10 +73,10 @@ Archive a completed change in the experimental workflow.
 
    ```bash
    # 方法 A：透過 source-link 反查
-   grep -rn "source-link:.*<change-name>" memory/erp/ERP_Vault/08-open-questions/ --include="*.md"
+   grep -rn "source-link:.*<change-name>" memory/Sens_wiki/wiki/erp/08-open-questions/ --include="*.md"
 
    # 方法 B：透過 related-change 欄位反查
-   grep -rn "related-change: <change-name>" memory/erp/ERP_Vault/08-open-questions/ --include="*.md"
+   grep -rn "related-change: <change-name>" memory/Sens_wiki/wiki/erp/08-open-questions/ --include="*.md"
    ```
 
    若無 OQ → 跳過此步驟。
@@ -91,7 +91,7 @@ Archive a completed change in the experimental workflow.
 
    ```bash
    # 全域唯一性檢查
-   grep -rh "^oq-id:" memory/erp/ERP_Vault/08-open-questions/ --include="*.md" \
+   grep -rh "^oq-id:" memory/Sens_wiki/wiki/erp/08-open-questions/ --include="*.md" \
      | sort | uniq -d
    ```
 
@@ -103,7 +103,7 @@ Archive a completed change in the experimental workflow.
 
    ```bash
    # 找指向 active change 的 source-link
-   grep -rn "openspec/changes/<change-name>/" memory/erp/ERP_Vault/08-open-questions/ --include="*.md"
+   grep -rn "openspec/changes/<change-name>/" memory/Sens_wiki/wiki/erp/08-open-questions/ --include="*.md"
 
    # 改為 archive 路徑（archive 完成後跑）
    # sed 替換 openspec/changes/<change-name>/ → openspec/changes/archive/<YYYY-MM-DD>-<change-name>/
@@ -111,7 +111,7 @@ Archive a completed change in the experimental workflow.
 
    **5.5 補納入 OQ README 清單表格**：
 
-   檢查 `memory/erp/ERP_Vault/08-open-questions/README.md` 內 OQ 清單表格是否含本 change 新建的 OQ。若無 → 補上。
+   檢查 `memory/Sens_wiki/wiki/erp/08-open-questions/README.md` 內 OQ 清單表格是否含本 change 新建的 OQ。若無 → 補上。
 
    **5.6 在 audit-log 記錄 OQ 收尾結果**：
 
@@ -171,4 +171,4 @@ All artifacts complete. All tasks complete.
 - Show clear summary of what happened
 - If sync is requested, use openspec-sync-specs approach (agent-driven)
 - If delta specs exist, always run the sync assessment and show the combined summary before prompting
-- **OQ 收尾**：archive 前必走 Step 5 OQ 收尾流程；若 Vault 內無對應 change 的 OQ 則跳過。對應 [Vault Insight 2026-05-20 change-archive-OQ收尾流程缺口](../../../memory/erp/ERP_Vault/12-insights/2026-05-20-change-archive-OQ收尾流程缺口.md)
+- **OQ 收尾**：archive 前必走 Step 5 OQ 收尾流程；若 Vault 內無對應 change 的 OQ 則跳過。對應 [Vault Insight 2026-05-20 change-archive-OQ收尾流程缺口](../../../memory/Sens_wiki/wiki/erp/12-insights/2026-05-20-change-archive-OQ收尾流程缺口.md)

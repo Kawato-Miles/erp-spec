@@ -34,33 +34,33 @@ tools:
 ## 步驟一：載入共用規範（5 卡）
 
 ```
-Read: memory/erp/ERP_Vault/11-review-knowledge/_shared/prototype-stage-context.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/_shared/prototype-stage-context.md
   （Vault 內 [[prototype-stage-context]]）
-Read: memory/erp/ERP_Vault/11-review-knowledge/_shared/language-conventions.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/_shared/language-conventions.md
   （Vault 內 [[language-conventions]]）
-Read: memory/erp/ERP_Vault/11-review-knowledge/_shared/insight-discipline.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/_shared/insight-discipline.md
   （Vault 內 [[insight-discipline]]）
-Read: memory/erp/ERP_Vault/11-review-knowledge/_shared/cross-agent-checklist.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/_shared/cross-agent-checklist.md
   （Vault 內 [[cross-agent-checklist]]）
-Read: memory/erp/ERP_Vault/11-review-knowledge/_shared/review-loading-checklist.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/_shared/review-loading-checklist.md
   （Vault 內 [[review-loading-checklist]]）— 含設計理解摘要要求與防誤審記錄
 ```
 
 ## 步驟二：載入 PM 視角專屬框架（3 卡，全部載入避免執行時模式切換）
 
 ```
-Read: memory/erp/ERP_Vault/11-review-knowledge/pm/early-intervention-framework.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/pm/early-intervention-framework.md
   （Vault 內 [[early-intervention-framework]]）— 前期介入 5 維度
-Read: memory/erp/ERP_Vault/11-review-knowledge/pm/pm-review-framework.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/pm/pm-review-framework.md
   （Vault 內 [[pm-review-framework]]）— BRD 審查 5 維度
-Read: memory/erp/ERP_Vault/11-review-knowledge/pm/user-story-spec.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/pm/user-story-spec.md
   （Vault 內 [[user-story-spec]]）— 偵測到功能缺對應 US 時起草用
 ```
 
 ## 步驟三：載入資料地圖
 
 ```
-Read: memory/erp/ERP_Vault/11-review-knowledge/pm/pm-data-map.md
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/pm/pm-data-map.md
   （Vault 內 [[pm-data-map]]）
 ```
 

@@ -132,7 +132,7 @@ TBD - created by archiving change add-consultation-request-and-revise-approval-g
 **併發認領衝突處理**：同一諮詢單同時被兩位諮詢人員嘗試認領時，系統 SHALL 以資料庫層級 atomic update（如 `UPDATE ... WHERE consultant_id IS NULL`）保證僅一人成功；後續嘗試者 SHALL 收到「已被認領」提示。
 
 **權限範圍**：
-- 認領動作 SHALL 限定角色為「諮詢人員」（或具諮詢權限的業務 — 沿用既有「業務代理諮詢」彈性，由 [諮詢角色 R&R](../../../memory/erp/ERP_Vault/03-roles/諮詢.md) 定義）
+- 認領動作 SHALL 限定角色為「諮詢人員」（或具諮詢權限的業務 — 沿用既有「業務代理諮詢」彈性，由 [諮詢角色 R&R](../../../memory/Sens_wiki/wiki/erp/03-roles/諮詢.md) 定義）
 - **業務主管** SHALL 可代為認領（指定某諮詢人員為 `consultant_id`）— 不視為「他派」而視為「業務主管代為操作的特殊認領」，活動紀錄需標示操作者與被指派者。本 change 後業務主管統一負責業務 / 諮詢部門督導（業務主管 = 諮詢主管同一人），不另開「諮詢主管」獨立角色
 
 **認領 vs 改派的區分**：「業務主管代為認領」（`consultant_id` 為**空**時的首次指定）與「改派負責人」（`consultant_id` **已有值**時的覆寫，見 § Requirement: 諮詢單負責人改派）為兩種不同途徑，UI 與活動紀錄事件型別 SHALL 區分。`consultant_id` 為空 → 顯示「認領 / 代為認領」；`consultant_id` 已有值 → 顯示「改派負責人」（限業務主管）；兩入口互斥。

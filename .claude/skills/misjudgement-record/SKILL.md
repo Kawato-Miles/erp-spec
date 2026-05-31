@@ -3,7 +3,7 @@ name: misjudgement-record
 description: >
   三視角審查 Agent（senior-pm / ceo-reviewer / erp-consultant）誤審記錄管理 skill。
   目的：累積誤審案例庫讓 agent 自學避免重複犯錯。
-  正本位置：Vault `memory/erp/ERP_Vault/11-review-knowledge/` 內三個誤審卡（分類存放）。
+  正本位置：Vault `memory/Sens_wiki/wiki/erp/11-review-knowledge/` 內三個誤審卡（分類存放）。
   觸發時機：
     1. Miles 反駁 agent 的審查建議（「這不對」「審錯了」「以後別這樣審」）
     2. Miles 說「記下來」「這是誤審」「補誤審案例」
@@ -33,9 +33,9 @@ description: >
 
 | 誤審類型 | 判斷標準 | 目標卡 |
 |---------|---------|--------|
-| **跨 agent 通用** | 任一 agent 都可能犯的誤審（設計理解不充分、過度推論、跳防誤審步驟）| [`_shared/review-loading-checklist.md`](../../../memory/erp/ERP_Vault/11-review-knowledge/_shared/review-loading-checklist.md) § 三 |
-| **ERP 顧問命名 / 用語** | erp-consultant 提改名 / 新術語時違反 5 秒測試（英文 ERP 術語直接搬、學術名稱衝突推論、直譯外來語）| [`erp/erp-naming-misjudgements.md`](../../../memory/erp/ERP_Vault/11-review-knowledge/erp/erp-naming-misjudgements.md) |
-| **CEO 商業推論誤區** | ceo-reviewer 以「政治成本」「教育負擔」「上線時程壓力」等 prototype 階段不存在的因素為由建議延後 / 不做 | [`ceo/ceo-review-pitfalls.md`](../../../memory/erp/ERP_Vault/11-review-knowledge/ceo/ceo-review-pitfalls.md) § 一 |
+| **跨 agent 通用** | 任一 agent 都可能犯的誤審（設計理解不充分、過度推論、跳防誤審步驟）| [`_shared/review-loading-checklist.md`](../../../memory/Sens_wiki/wiki/erp/11-review-knowledge/_shared/review-loading-checklist.md) § 三 |
+| **ERP 顧問命名 / 用語** | erp-consultant 提改名 / 新術語時違反 5 秒測試（英文 ERP 術語直接搬、學術名稱衝突推論、直譯外來語）| [`erp/erp-naming-misjudgements.md`](../../../memory/Sens_wiki/wiki/erp/11-review-knowledge/erp/erp-naming-misjudgements.md) |
+| **CEO 商業推論誤區** | ceo-reviewer 以「政治成本」「教育負擔」「上線時程壓力」等 prototype 階段不存在的因素為由建議延後 / 不做 | [`ceo/ceo-review-pitfalls.md`](../../../memory/Sens_wiki/wiki/erp/11-review-knowledge/ceo/ceo-review-pitfalls.md) § 一 |
 
 ### 分類決策樹（Step B1 使用）
 
@@ -73,19 +73,19 @@ description: >
 ### A1：列出特定卡的所有案例
 
 ```
-Read: memory/erp/ERP_Vault/11-review-knowledge/<目標卡路徑>
+Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/<目標卡路徑>
 ```
 
 或 grep 找特定關鍵字：
 
 ```bash
-grep -n "案例\|2026" memory/erp/ERP_Vault/11-review-knowledge/erp/erp-naming-misjudgements.md
+grep -n "案例\|2026" memory/Sens_wiki/wiki/erp/11-review-knowledge/erp/erp-naming-misjudgements.md
 ```
 
 ### A2：跨卡搜尋（特定關鍵字）
 
 ```bash
-grep -rn "<關鍵字>" memory/erp/ERP_Vault/11-review-knowledge/{_shared,erp,ceo}/
+grep -rn "<關鍵字>" memory/Sens_wiki/wiki/erp/11-review-knowledge/{_shared,erp,ceo}/
 ```
 
 ### A3：回報格式

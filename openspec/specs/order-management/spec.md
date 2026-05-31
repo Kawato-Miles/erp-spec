@@ -2379,7 +2379,7 @@ Payment.amount 不拆雙欄（實際收款金額為含稅實收）。
 
 - **GIVEN** 訂單未完成（completed_at IS NULL）且使用者具編輯權限
 - **WHEN** 業務點訂單備註 section header 右上的「編輯」按鈕
-- **THEN** 系統 SHALL 開啟獨立的 `OrderNotesEditDialog`（不沿用既有 `OrderInfoEditDialog`，原因見 [ORD-014](../../../memory/erp/ERP_Vault/08-open-questions/ORD-014-訂單備註與訂單資訊編輯dialog分開.md)）
+- **THEN** 系統 SHALL 開啟獨立的 `OrderNotesEditDialog`（不沿用既有 `OrderInfoEditDialog`，原因見 [ORD-014](../../../memory/Sens_wiki/wiki/erp/08-open-questions/ORD-014-訂單備註與訂單資訊編輯dialog分開.md)）
 - **AND** Dialog 內 SHALL 包含三個 textarea（訂單備註 / 交貨備註 / 付款備註）並預填當前 Order 對應欄位值
 - **AND** 每個 textarea label 列右側 SHALL 顯示「插入常用備註」按鈕（NoteTemplatePopover）+ 字數計數
 - **AND** 業務 SHALL 可同時編輯多個欄位後一次儲存
@@ -2759,7 +2759,7 @@ Payment Data Model SHALL 新增以下三個欄位：
 
 ### Requirement: 發票品項符合 ezPay 與電子發票法規硬約束
 
-Invoice.items 陣列 SHALL 對齊 ezPay 電子發票 API（[EZP_INVI_1.2.2](../../../../memory/erp/ERP_Vault/raw/_attachments/EZP_INVI_1.2.2.pdf)）對品項的五欄結構要求 + 平台檢核硬性條件。法規源頭：財政部電子發票整合服務平台 MIG（Message Implementation Guideline）。詳細規格與印刷業實務衝突點參見 raw 卡 [2026-05-26-miles-upload-ezpay-invoice-api-spec](../../../../memory/erp/ERP_Vault/raw/2026-05-26-miles-upload-ezpay-invoice-api-spec.md)。
+Invoice.items 陣列 SHALL 對齊 ezPay 電子發票 API（[EZP_INVI_1.2.2](../../../memory/Sens_wiki/raw/_attachments/EZP_INVI_1.2.2.pdf)）對品項的五欄結構要求 + 平台檢核硬性條件。法規源頭：財政部電子發票整合服務平台 MIG（Message Implementation Guideline）。詳細規格與印刷業實務衝突點參見 raw 卡 [2026-05-26-miles-upload-ezpay-invoice-api-spec](../../../memory/Sens_wiki/raw/2026-05-26-miles-upload-ezpay-invoice-api-spec.md)。
 
 每個 InvoiceItem MUST 包含五欄：
 
@@ -3828,7 +3828,7 @@ Invoice MUST NOT 包含 `print_flag`（索取紙本）欄位。
 
 > align-invoice-line-items-to-ezpay-spec change 新增。
 > Invoice 實體 `items` 欄位陣列元素的明文展開結構。對應藍新 EZP_INVI 1.2.2 § 4-(一)-3 PostData ItemName / ItemCount / ItemUnit / ItemPrice / ItemAmt 五欄。
-> 外部硬約束來源：[2026-05-26-miles-upload-ezpay-invoice-api-spec raw 卡](../../../memory/erp/ERP_Vault/raw/2026-05-26-miles-upload-ezpay-invoice-api-spec.md)。
+> 外部硬約束來源：[2026-05-26-miles-upload-ezpay-invoice-api-spec raw 卡](../../../memory/Sens_wiki/raw/2026-05-26-miles-upload-ezpay-invoice-api-spec.md)。
 
 | 欄位 | 英文名稱 | 對應藍新 | 型別 | 必填 | 唯讀 | 說明 |
 |------|---------|---------|------|------|------|------|

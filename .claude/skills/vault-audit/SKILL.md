@@ -1,7 +1,7 @@
 ---
 name: vault-audit
 description: >
-  ERP_Vault 自審稽核 skill。對 `memory/erp/ERP_Vault/` 執行 12 維度健康檢查（Karpathy LLM Wiki 模式 6 維度 + Sens 特化 6 維度），產出對話報告 + 追加 `00-meta/audit-log.md`。
+  ERP_Vault 自審稽核 skill。對 `memory/Sens_wiki/wiki/` 執行 12 維度健康檢查（Karpathy LLM Wiki 模式 6 維度 + Sens 特化 6 維度），產出對話報告 + 追加 `00-meta/audit-log.md`。
   觸發時機：
     1. Miles 說「跑 vault audit」「Vault 健康檢查」「audit vault」
     2. 主動收尾發現 ≥ 5 個 Vault 卡異動時建議
@@ -10,7 +10,7 @@ description: >
     5. raw 累積 ≥ 10 張 status=raw 時自動建議（維度 11 觸發）
     6. 本月 daily review 缺 ≥ 工作日 50% 時自動建議（維度 12 觸發）
   範圍：**只稽核 ERP_Vault**。OpenSpec spec 層稽核由 `doc-audit` skill 處理。
-  輸出：對話報告 + 寫入 `memory/erp/ERP_Vault/00-meta/audit-log.md`（追加式、禁覆寫）。
+  輸出：對話報告 + 寫入 `memory/Sens_wiki/wiki/erp/00-meta/audit-log.md`（追加式、禁覆寫）。
   不適用：OpenSpec spec 稽核（用 doc-audit）、Prototype 程式碼稽核（用 e2e 測試）、純對話內容稽核。
 ---
 
@@ -22,7 +22,7 @@ ERP_Vault 自審工具。**禁止運行於 ERP_Vault 以外的目錄**。
 
 ## 一、定位與範圍
 
-**目標**：對 `memory/erp/ERP_Vault/` 102+ 卡執行健康檢查，產出可 actionable 的稽核報告。
+**目標**：對 `memory/Sens_wiki/wiki/` 102+ 卡執行健康檢查，產出可 actionable 的稽核報告。
 
 **對標**：Karpathy LLM Wiki 模式的 `lint` 操作 — 「**找出矛盾 / 過時 / 孤立 / 缺連結 / 缺口 / 需調查方向**」。
 
@@ -60,7 +60,7 @@ ERP_Vault 自審工具。**禁止運行於 ERP_Vault 以外的目錄**。
 
 ```bash
 # 範例：抓「齊套邏輯」在哪些卡定義
-grep -rln "齊套\|kitting" /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/ --include="*.md"
+grep -rln "齊套\|kitting" /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/ --include="*.md"
 ```
 
 **判定**：
@@ -76,7 +76,7 @@ grep -rln "齊套\|kitting" /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/ --inclu
 # 找 last-reviewed > 90 天且 status: active 的卡
 today=$(date +%Y-%m-%d)
 threshold=$(date -v-90d +%Y-%m-%d 2>/dev/null || date -d "90 days ago" +%Y-%m-%d)
-grep -rn "^last-reviewed:" /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/ --include="*.md" \
+grep -rn "^last-reviewed:" /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/ --include="*.md" \
   | awk -F: -v t="$threshold" '$NF < " "t {print}'
 ```
 
@@ -126,7 +126,7 @@ obsidian unresolved
 
 ```bash
 # 例：所有 entity 卡必須有 type / module / related-spec
-for f in /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/05-entities/*.md; do
+for f in /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/05-entities/*.md; do
   grep -L "^type:" "$f" && echo "$f 缺 type"
 done
 ```
@@ -149,14 +149,14 @@ done
 1. **無 inline `[!question]` callout**（Phase D 強制規則）：
 
 ```bash
-grep -rn "\[!question\]" /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/ --include="*.md" | grep -v "08-open-questions/README.md"
+grep -rn "\[!question\]" /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/ --include="*.md" | grep -v "08-open-questions/README.md"
 # 應為 0 筆（除 README 教示文字）
 ```
 
 2. **無 inline OQ 措辭**（待確認 / 待釐清 / 需確認 / 尚未確認 / 待補）：
 
 ```bash
-grep -rn "（待補\|（待釐清\|（待確認）" /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/ --include="*.md" \
+grep -rn "（待補\|（待釐清\|（待確認）" /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/ --include="*.md" \
   | grep -v "08-open-questions/" | grep -v "wiki-schema"
 ```
 
@@ -174,7 +174,7 @@ grep -rn "（待補\|（待釐清\|（待確認）" /Users/b-f-03-029/Sens/memor
 1. **Vault 卡引用的 spec 是否存在**：
 
 ```bash
-grep -rn "related-spec:" /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/ --include="*.md" \
+grep -rn "related-spec:" /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/ --include="*.md" \
   | awk -F"related-spec: " '{print $2}' \
   | while read spec_path; do
       [ ! -f "/Users/b-f-03-029/Sens/$spec_path" ] && echo "缺 spec: $spec_path"
@@ -203,7 +203,7 @@ grep -rn "related-spec:" /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/ --include=
 2. **缺 `expected-resolution-at`**：
 
 ```bash
-for f in /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/08-open-questions/*.md; do
+for f in /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/08-open-questions/*.md; do
   [ "$(basename "$f")" = "README.md" ] && continue
   grep -L "^expected-resolution-at:" "$f"
 done
@@ -265,7 +265,7 @@ done
 **Bash**（macOS / GNU date 兼容）：
 
 ```bash
-cd /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/raw
+cd /Users/b-f-03-029/Sens/memory/Sens_wiki/raw
 today=$(date +%Y-%m-%d)
 threshold_90=$(date -v-90d +%Y-%m-%d 2>/dev/null || date -d "90 days ago" +%Y-%m-%d)
 threshold_180=$(date -v-180d +%Y-%m-%d 2>/dev/null || date -d "180 days ago" +%Y-%m-%d)
@@ -344,7 +344,7 @@ done
 **Bash**（macOS / GNU date 兼容）：
 
 ```bash
-cd /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/14-reviews
+cd /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/14-reviews
 
 today=$(date +%Y-%m-%d)
 this_month=$(date +%Y-%m)

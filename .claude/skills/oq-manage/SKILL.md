@@ -2,7 +2,7 @@
 name: oq-manage
 description: >
   OQ（Open Question）管理 skill。
-  正本：Vault `memory/erp/ERP_Vault/08-open-questions/`（Vault Charter v2026-05-19 變更）。
+  正本：Vault `memory/Sens_wiki/wiki/erp/08-open-questions/`（Vault Charter v2026-05-19 變更）。
   觸發時機：發現設計不確定項、Miles 說「新增 OQ」「這個要記下來」「有個問題要確認」，
   或任何 Spec / 規劃 / 討論中需要新增、查詢、更新 OQ 時（不限於 Spec 撰寫情境）。
   此 skill 強制執行去重邏輯：新增前先搜尋相似 OQ，由 Claude 分析並建議，由 Miles 決定。
@@ -23,14 +23,14 @@ description: >
 
 ## 重要變更（2026-05-19 v2）
 
-依 [[../../memory/erp/ERP_Vault/00-meta/vault-charter|Vault Charter]] § 三同步方向：
+依 [[../../memory/Sens_wiki/wiki/erp/00-meta/vault-charter|Vault Charter]] § 三同步方向：
 
 | 項 | 舊（v1）| 新（v2，本版）|
 |---|--------|--------------|
 | OQ 操作正本 | Notion Follow-up DB | Vault `08-open-questions/` |
 | skill 寫入位置 | Notion（透過 MCP）| Vault markdown 檔（Write） |
 | Notion 角色 | 內部正本 | 對外確認版（彙整推送時更新） |
-| 推送 Notion 時機 | 即時 | Miles 觸發（見 [[../../memory/erp/ERP_Vault/00-meta/sync-workflow]]）|
+| 推送 Notion 時機 | 即時 | Miles 觸發（見 [[../../memory/Sens_wiki/wiki/erp/00-meta/sync-workflow]]）|
 
 ---
 
@@ -47,7 +47,7 @@ description: >
 
 ## Vault 位置與檔名規約
 
-- **目錄**：`/Users/b-f-03-029/Sens/memory/erp/ERP_Vault/08-open-questions/`
+- **目錄**：`/Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/08-open-questions/`
 - **檔名格式**：`<MODULE>-<NNN>-<簡述 slug>.md`
 - **範例**：
   - `ORD-008-訂單審核權限是否分層.md`
@@ -100,21 +100,21 @@ notion-page-url: <URL>              # 若已推送則記錄頁面
 ### 查單一模組所有未解 OQ
 
 ```bash
-cd /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/08-open-questions
+cd /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/08-open-questions
 grep -l "status: open" *.md | xargs grep -l "module:.*<模組>"
 ```
 
 或用 Obsidian CLI（若已啟用）：
 
 ```bash
-obsidian base:query path=memory/erp/ERP_Vault filter='type == "open-question" AND status == "open" AND module contains "<模組>"' format=md
+obsidian base:query path=memory/Sens_wiki/wiki/erp filter='type == "open-question" AND status == "open" AND module contains "<模組>"' format=md
 ```
 
 或 Grep 工具：
 
 ```
 pattern: "status: open"
-path: memory/erp/ERP_Vault/08-open-questions/
+path: memory/Sens_wiki/wiki/erp/08-open-questions/
 output_mode: files_with_matches
 ```
 
@@ -146,7 +146,7 @@ output_mode: files_with_matches
    ```
    Grep
    pattern: "module:" 
-   path: memory/erp/ERP_Vault/08-open-questions/
+   path: memory/Sens_wiki/wiki/erp/08-open-questions/
    output_mode: content
    ```
 
@@ -181,7 +181,7 @@ output_mode: files_with_matches
 **查詢現有最大序號**：
 
 ```bash
-ls /Users/b-f-03-029/Sens/memory/erp/ERP_Vault/08-open-questions/ \
+ls /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/08-open-questions/ \
   | grep "^<MODULE>-" \
   | sort -t- -k2 -n -r \
   | head -1
@@ -400,7 +400,7 @@ OQ 清單：
 
 ## 推送 Notion 對外確認版
 
-依 [[../../memory/erp/ERP_Vault/00-meta/sync-workflow|Sync Workflow]] § 流程 1：
+依 [[../../memory/Sens_wiki/wiki/erp/00-meta/sync-workflow|Sync Workflow]] § 流程 1：
 
 - 本 skill **不主動推送 Notion**
 - 由 Miles 觸發「Vault → Notion 彙整推送」時，OQ 與其他 Vault 內容一起被組合成 BRD 推送
@@ -410,7 +410,7 @@ OQ 清單：
 
 ## 既有 Notion OQ 漸進式遷移
 
-依 [[../../memory/erp/ERP_Vault/08-open-questions/README]]：
+依 [[../../memory/Sens_wiki/wiki/erp/08-open-questions/README]]：
 
 - **不需大量遷移**（既有 Notion OQ 量大）
 - 新 OQ 直接寫 Vault
