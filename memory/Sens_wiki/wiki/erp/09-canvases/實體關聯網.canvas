@@ -1,0 +1,35 @@
+{
+	"nodes":[
+		{"id":"title","type":"text","text":"# 實體關聯網\n\n工單需求 ↔ 齊套邏輯 ↔ 印件 ↔ 生產任務\n\n→ Miles 提到的「工單需求與齊套邏輯關聯」可視化","x":-700,"y":0,"width":600,"height":200,"color":"5"},
+		{"id":"e-quote","type":"file","file":"wiki/erp/05-entities/需求單.md","x":0,"y":-100,"width":240,"height":100,"color":"2"},
+		{"id":"e-consultation","type":"file","file":"wiki/erp/05-entities/諮詢單.md","x":280,"y":-100,"width":240,"height":100,"color":"2"},
+		{"id":"e-order","type":"file","file":"wiki/erp/05-entities/訂單.md","x":140,"y":80,"width":260,"height":100,"color":"4"},
+		{"id":"e-print-item","type":"file","file":"wiki/erp/05-entities/印件.md","x":140,"y":240,"width":260,"height":100,"color":"4"},
+		{"id":"e-work-order","type":"file","file":"wiki/erp/05-entities/工單.md","x":140,"y":400,"width":260,"height":100,"color":"4"},
+		{"id":"e-task","type":"file","file":"wiki/erp/05-entities/任務.md","x":480,"y":400,"width":240,"height":100,"color":"3"},
+		{"id":"e-production-task","type":"file","file":"wiki/erp/05-entities/生產任務.md","x":480,"y":560,"width":240,"height":100,"color":"3"},
+		{"id":"e-qc","type":"file","file":"wiki/erp/05-entities/QC.md","x":760,"y":560,"width":220,"height":100,"color":"6"},
+		{"id":"e-shipping","type":"file","file":"wiki/erp/05-entities/出貨單.md","x":760,"y":240,"width":220,"height":100,"color":"1"},
+		{"id":"e-after-sales","type":"file","file":"wiki/erp/05-entities/售後服務.md","x":760,"y":80,"width":220,"height":100,"color":"2"},
+		{"id":"logic-kitting","type":"file","file":"wiki/erp/04-business-logic/齊套邏輯.md","x":-300,"y":400,"width":280,"height":100,"color":"6"},
+		{"id":"logic-quantity","type":"file","file":"wiki/erp/04-business-logic/數量換算規則.md","x":-300,"y":540,"width":280,"height":100,"color":"6"},
+		{"id":"logic-payment","type":"file","file":"wiki/erp/04-business-logic/付款發票邏輯.md","x":-300,"y":80,"width":280,"height":100,"color":"6"},
+		{"id":"logic-pre-review","type":"file","file":"wiki/erp/04-business-logic/稿件管理規則.md","x":-300,"y":240,"width":280,"height":100,"color":"6"}
+	],
+	"edges":[
+		{"id":"e-q-o","fromNode":"e-quote","fromSide":"bottom","toNode":"e-order","toSide":"top","label":"成交生成"},
+		{"id":"e-c-o","fromNode":"e-consultation","fromSide":"bottom","toNode":"e-order","toSide":"top","label":"諮詢轉訂單"},
+		{"id":"e-o-pi","fromNode":"e-order","fromSide":"bottom","toNode":"e-print-item","toSide":"top","label":"含 N 個印件"},
+		{"id":"e-pi-wo","fromNode":"e-print-item","fromSide":"bottom","toNode":"e-work-order","toSide":"top","label":"1 印件 N 工單"},
+		{"id":"e-wo-task","fromNode":"e-work-order","fromSide":"right","toNode":"e-task","toSide":"left","label":"工單按廠商分任務"},
+		{"id":"e-task-pt","fromNode":"e-task","fromSide":"bottom","toNode":"e-production-task","toSide":"top","label":"任務含 N 生產任務"},
+		{"id":"e-pt-qc","fromNode":"e-production-task","fromSide":"right","toNode":"e-qc","toSide":"left","label":"報工 → QC"},
+		{"id":"e-pi-shipping","fromNode":"e-print-item","fromSide":"right","toNode":"e-shipping","toSide":"left","label":"出貨"},
+		{"id":"e-o-aftersales","fromNode":"e-order","fromSide":"right","toNode":"e-after-sales","toSide":"left","label":"已完成後售後"},
+		{"id":"e-kitting-wo","fromNode":"logic-kitting","fromSide":"right","toNode":"e-work-order","toSide":"left","label":"min() 邏輯"},
+		{"id":"e-kitting-pi","fromNode":"logic-kitting","fromSide":"right","toNode":"e-print-item","toSide":"left","label":"印件完成數"},
+		{"id":"e-quantity-pt","fromNode":"logic-quantity","fromSide":"right","toNode":"e-production-task","toSide":"left","label":"三欄位定義"},
+		{"id":"e-payment-order","fromNode":"logic-payment","fromSide":"right","toNode":"e-order","toSide":"left","label":"13 情境"},
+		{"id":"e-prereview-pi","fromNode":"logic-pre-review","fromSide":"right","toNode":"e-print-item","toSide":"left","label":"ReviewRound + client_note"}
+	]
+}
