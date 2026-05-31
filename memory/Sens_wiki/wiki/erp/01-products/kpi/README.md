@@ -48,7 +48,6 @@ last-reviewed: 2026-05-19
 
 依 [[vault-charter#三、Source of Truth 規則|Vault Charter]]：
 
-- Vault 為內部正本
 - Notion KPI DB 為發布版本
 - 重要里程碑後由 Miles 觸發「Vault → Notion 彙整推送」
 

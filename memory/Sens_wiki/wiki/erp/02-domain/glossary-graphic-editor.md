@@ -9,9 +9,6 @@ last-reviewed: 2026-05-19
 
 # 線上圖編輯器術語表（完整版）
 
-> [!info] 本卡為 Vault 內部正本
-> 內容遷自 `memory/graphic-editor/glossary.md`。Phase C Stage 8 後，原 memory 檔將降為指向本卡。
-
 線上圖編輯器（B2B SaaS 設計工具）專用術語，涵蓋編輯器功能、印刷規格整合、平台架構三大面向。
 
 ## 核心編輯器功能術語

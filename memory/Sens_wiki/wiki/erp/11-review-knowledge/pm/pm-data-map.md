@@ -29,7 +29,7 @@ last-reviewed: 2026-05-19
 | 狀態機（下層）| 任務 / 生產任務 / QC / 出貨單 | 同上檔案下半段 |
 | 業務情境 DB | PM 視角情境驗證與邊界案例 | [Notion 業務情境](https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05) |
 | 資料欄位 DB | 現有資料模型與欄位定義 | 嵌入各模組 spec（已遷至 OpenSpec）|
-| Follow-up DB（OQ）| 對外確認版（內部正本在 Vault `08-open-questions/`）| [Notion Follow-up](https://www.notion.so/32c3886511fa808e9754ea1f18248d92) |
+| Follow-up DB（OQ）| 對外確認版 | [Notion Follow-up](https://www.notion.so/32c3886511fa808e9754ea1f18248d92) |
 | 既有 Spec（BRD）| 已設計的模組清單 | CLAUDE.md § Spec 規格檔清單 |
 | Vault 商業需求 KM | 商業層內部正本 | `memory/Sens_wiki/wiki/`（[[vault-charter]]）|
 

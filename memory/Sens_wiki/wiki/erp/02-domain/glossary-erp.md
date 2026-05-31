@@ -10,7 +10,6 @@ last-reviewed: 2026-05-19
 # ERP 系統術語表（完整版）
 
 > [!info] 本卡為 Vault 內部正本
-> 內容遷自 `memory/erp/glossary.md`。Phase C Stage 8 後，原 memory 檔將降為指向本卡。
 
 印刷業 ERP 系統專用術語，涵蓋生產排程、採購、倉儲、訂單管理四大模組。
 

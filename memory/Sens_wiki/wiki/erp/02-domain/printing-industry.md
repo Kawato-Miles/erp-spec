@@ -9,9 +9,6 @@ last-reviewed: 2026-05-19
 
 # 印刷業產業背景知識
 
-> [!info] 本卡為 Vault 內部正本
-> 內容遷自 `memory/shared/context/industry.md`。Phase C Stage 8 後，原 memory 檔將降為指向本卡。
-
 ## 一、產業概述
 
 印刷業是高度客製化、流程複雜的製造業，同時也正在進行數位化轉型。主要分為：

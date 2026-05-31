@@ -1,6 +1,6 @@
 ---
 name: Notion 資源索引
-description: 所有 ERP 相關 Notion 頁面的統一 URL 索引與 BRD 引用格式，為唯一正本
+description: 所有 ERP 相關 Notion 頁面的統一 URL 索引與 BRD 引用格式
 type: reference
 ---
 

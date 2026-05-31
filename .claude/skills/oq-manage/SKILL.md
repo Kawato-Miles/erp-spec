@@ -19,21 +19,6 @@ description: >
 
 統一管理 ERP 模組的 Open Questions。**操作正本在 Vault**，Notion OQ DB 留作對外確認版。
 
----
-
-## 重要變更（2026-05-19 v2）
-
-依 [[../../memory/Sens_wiki/wiki/erp/00-meta/vault-charter|Vault Charter]] § 三同步方向：
-
-| 項 | 舊（v1）| 新（v2，本版）|
-|---|--------|--------------|
-| OQ 操作正本 | Notion Follow-up DB | Vault `08-open-questions/` |
-| skill 寫入位置 | Notion（透過 MCP）| Vault markdown 檔（Write） |
-| Notion 角色 | 內部正本 | 對外確認版（彙整推送時更新） |
-| 推送 Notion 時機 | 即時 | Miles 觸發（見 [[../../memory/Sens_wiki/wiki/erp/00-meta/sync-workflow]]）|
-
----
-
 ## 四種操作模式
 
 | 模式 | 觸發時機 |

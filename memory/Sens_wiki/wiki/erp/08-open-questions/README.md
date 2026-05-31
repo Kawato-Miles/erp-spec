@@ -118,12 +118,13 @@ notion-page-url: <URL>               # 若已推送則記錄頁面
 - [[ORD-020-取消已完成Payment邏輯刪除vs物理刪除]] — 取消已完成 Payment 邏輯刪除 vs 物理刪除
 - [[ORD-025-完成後非售後補收入口歸屬]] — 完成後非售後補收入口歸屬
 - [[ORD-026-附件用途欄位是否轉LOV]] — 附件用途欄位是否轉 LOV
+- [[QC-002-QC兩張wiki卡退役或保留]] — QC 兩張 wiki 卡退役並重導向生產任務或保留
+- [[SHP-006-出貨模組spec待建立]] — 何時建立出貨模組 spec（補 Data Model + 狀態機）
 
 ## 四、同步策略
 
 依 [[vault-charter#三、Source of Truth 規則|Vault Charter]] + [[sync-workflow|Sync Workflow]]：
 
-- **Vault 為內部正本**（本目錄）
 - **Notion OQ DB 為對外確認版**（彙整推送時更新）
 - 推送依 Miles 觸發，oq-manage skill 不主動推 Notion
 - 推送後 OQ 卡 frontmatter 補 `notion-published-at` 與 `notion-page-url`

@@ -9,9 +9,6 @@ last-reviewed: 2026-05-19
 
 # 印刷業共用術語表（完整版）
 
-> [!info] 本卡為 Vault 內部正本
-> 內容遷自 `memory/shared/glossary.md`。Phase C Stage 8 後，原 memory 檔將降為指向本卡。
-
 跨 ERP 與圖編輯器產品共用的術語、縮寫與行業語言。
 
 ## 印刷流程術語
