@@ -34,19 +34,17 @@ last-reviewed: 2026-05-31
 
 ## 二、三邊分工
 
+> Vault 與 OpenSpec 的分工（各收什麼 / 不收什麼、引用方向、單一正本鐵則）見 [CLAUDE.md](../../../../../CLAUDE.md) § wiki 與 OpenSpec 分工。
+
 | 層級 | 角色 | 收什麼 | 不收什麼 |
 |------|------|--------|----------|
-| **Obsidian Vault（本 Vault）** | 商業需求 KM（內部正本） | 商業目標 / 印刷業 domain / 角色 R&R / 商業邏輯（齊套、報價、付款發票、審稿分配等）/ 資料模型實體與欄位定義 / 跨模組情境 / KPI / OQ | 功能 step-by-step Requirement、change workflow、delta spec |
-| **OpenSpec** | 功能規格層（內部正本） | 各模組 spec § Requirements / § Scenarios（功能級）/ change workflow / delta / archive / tasks | 商業層知識（以 wiki link 從 Vault 引用） |
 | **Notion** | 對外確認介面（發布版本） | Prototype 階段完成後 Vault + OpenSpec 彙整推送的 BRD / user story / 需求頁面，給公司同仁與外部單位確認 | 工作版本、迭代中的探索（內部正本在 Vault / OpenSpec） |
 
 詳細「收 / 不收」邊界見 [[scope-boundary]]。
 
 ## 三、Source of Truth 規則
 
-- 商業邏輯異動 → 先改 Vault，OpenSpec 受影響的 spec 在 change proposal 中以 wiki link 引用
-- 功能規格異動（不涉及商業邏輯）→ 走既有 OpenSpec change 流程
-- 跨層異動（如新業務規則影響規格）→ Vault + OpenSpec 同 change 內處理
+> Vault 與 OpenSpec 誰是正本、商業 / 功能 / 跨層異動各改哪邊，見 [CLAUDE.md](../../../../../CLAUDE.md) § wiki 與 OpenSpec 分工。
 
 ### 同步方向
 
@@ -65,7 +63,7 @@ ERP_Vault/
 ├── 00-meta/                      # 章程 / 入口 / 編輯規約 / 邊界 / 同步流程 / audit-log
 ├── 01-products/                  # 產品願景 / 痛點 / 利害關係人 / Phase / 北極星指標 / KPI
 ├── 02-domain/                    # 印刷業 domain knowledge / 三份 glossary
-├── 03-roles/                     # 角色 R&R（以 Notion 核心角色權責 DB 為 ground truth）
+├── 03-roles/                     # 角色 R&R（以 Vault 03-roles 為正本）
 ├── 04-business-logic/            # 商業邏輯 Zettel 卡（齊套、報價、付款發票、審稿分配等）
 ├── 05-entities/                  # 資料模型實體（需求單 / 訂單 / 工單 / 印件 / 生產任務 / QC / 出貨 / 售後）
 ├── 06-state-machines/            # 各實體狀態機獨立檔
@@ -112,7 +110,7 @@ ERP_Vault/
 3. [[editing-conventions]] — 人類友善版規約（schema 簡化版）
 4. [[scope-boundary]] — 哪些收進來、哪些不收
 5. [[sync-workflow]] — Vault ↔ OpenSpec ↔ Notion 同步流程
-6. [[wiki/erp/00-meta/index|ERP 主題入口]] — 載入決策表 + 卡片 registry（**查找一律從這裡開始**）
+6. [[erp_index|ERP 主題入口]] — 載入決策表 + 卡片 registry（**查找一律從這裡開始**）
 7. [[audit-log]] — 自審追加式日誌（最近 audit / insight 紀錄）
 8. [[wiki/erp/01-products/product-vision|產品願景（ERP）]] — 願景與痛點
 9. `03-roles/` — 角色 R&R + `_alignment-report`

@@ -76,5 +76,5 @@ paths:
 
 ## 七、各主題專屬規則入口
 
-- **ERP**（產品，以業務需求 BRD / PRD 角度管理）：`wiki/erp/00-meta/`（[[wiki-schema]] / [[wiki-architecture]] / [[vault-charter]] 等）。
+- **ERP**（產品，wiki 與 OpenSpec 的 BRD / PRD 分工見 [CLAUDE.md](../../CLAUDE.md) § wiki 與 OpenSpec 分工）：導航入口 `wiki/erp/00-meta/`（[[wiki-schema]] / [[wiki-architecture]] / [[vault-charter]] 等）。
 - **編輯器 canvas**（產品）：`wiki/canvas/`，內部結構待依需求定義。
