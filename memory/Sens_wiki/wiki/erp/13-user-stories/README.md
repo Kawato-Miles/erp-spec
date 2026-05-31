@@ -7,7 +7,7 @@ last-reviewed: 2026-05-21
 # 13-user-stories — User Story 中樞
 
 > ERP 商業 User Story 的**內部正本**。Notion User Story DB（[發布版本](https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d)）由本目錄推送，禁反向覆寫。
-> 由 [[erp-user-story]] skill 自動化新增 / 補 UI / 推送，由 [[wiki-schema#維度 13：User Story 撰寫紀律|vault-audit 維度 13]] 做 lint。
+> 由 [[erp-user-story]] skill 自動化新增 / 推送，由 [[wiki-schema#維度 13：User Story 撰寫紀律|vault-audit 維度 13]] 做 lint。
 
 ## 一、定位
 
@@ -24,26 +24,29 @@ last-reviewed: 2026-05-21
 - Cross-module Scenarios（[[wiki/erp/07-scenarios/README|07-scenarios/]]）：**端到端流程視角**，跨多模組多實體狀態流轉
 - 三者**互補不衝突**，透過 frontmatter `related-spec` / `related-scenarios` 雙向連結
 
-## 二、兩階段撰寫紀律
+## 二、單階段撰寫紀律（2026-06-01 自兩階段收斂）
 
-每張 user-story 卡採「同檔分兩段」結構：
+每張 user-story 卡為**單階段純業務情境卡**：只寫業務情境（含 Gherkin 成功條件），不含 UI 操作層。
 
-### 階段 1：業務情境（穩定層）
+### 業務情境（H2「業務情境」）
 
-- frontmatter `stage: business-only`
-- 內容含 H3：作為 / 我希望 / 以便 / 前置條件 / 業務流程 / 成功條件（acceptance criteria）
-- **禁含 UI 措辭**（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器）
+- 內容含 H3：作為 / 我希望 / 以便 / 成功條件（必填）+ 前置條件 / 業務流程（可選）
+- **全卡禁含 UI 措辭**（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器）
 - **禁含未轉中文的英文欄位名**（payment → 付款紀錄 / printItem → 印件 / orderAdjustment → 訂單異動 / quoteRequest → 需求單 等）
-- acceptance criteria 數量 2-5 條（業界共識，超過 5 建議 split story）
 - 引自 [Atlassian](https://www.atlassian.com/agile/project-management/user-stories)：「This statement should be implementation free — if you're describing any part of the UI you're missing the point」
 
-### 階段 2：UI 操作（易變層）
+### 成功條件（Gherkin 框架）
 
-- 觸發：對應 Prototype 功能定案後
-- frontmatter `stage: ui-bound` + `ui-binding: prototype-v1` 等版本標記
-- 內容含 H3：介面入口 / 操作步驟 / 介面元素
-- 對應 Prototype 路徑（如 `sens-erp-prototype/src/components/prepress/...`）
-- Prototype 改版時只動 UI 操作段；業務情境段保持不動（穩定性保險）
+- 每條寫成 Gherkin 情境（Scenario / Given / When / Then）；2-5 條（超過 5 建議 split story）。
+- 守**單一 When + 單一 Then**（多個獨立 When → 拆條或 split）；Given 可疊加。
+- 涵蓋**正向達成型**（Given 前置 → When 動作 → Then 達成）與**禁止/守衛型**（Given 某狀態 → When 嘗試 → Then 不允許，如「訂單完成後不可建訂單異動」）。
+- 業務 outcome 級、禁 UI；守衛規則本體 wiki link 指 [[../04-business-logic|business-logic]] 正本。
+- 與 OpenSpec § Scenarios 層級區隔（業務驗收意圖 vs requirement 工程驗收）。
+
+### UI 與驗收的去向
+
+- **UI 操作層已移除**（原階段 2）。介面層級驗收下移 [[erp-test-case]]（業務級 happy/edge）；真正的 UI 點擊操作歸 Prototype 端對端測試（Playwright spec，frontmatter `implemented-by` 指向）。
+- 成功條件是 test-case 的取材種子：正向→happy、守衛→edge。
 
 ## 二之二、獨立性紀律（禁 anchor 故事）
 
@@ -146,20 +149,11 @@ PM 從 prerequisites 鏈可看出動作順序與相依關係，不需依賴 anch
 7. 跑 lint（vault-audit 維度 13 — 第三階段實作前先人工檢查）
 8. commit
 
-### 補 UI 操作層（Mode B）
+### 推送 Notion（Mode B）
 
-觸發：對應 Prototype 功能定案
+觸發詞「推 user story 到 Notion」「同步 user story」→ [[erp-user-story]] skill mode B
 
-1. 讀對應 Prototype 路徑
-2. 填 ui-binding 標記
-3. 填介面入口 / 操作步驟 / 介面元素
-4. frontmatter `stage` 改為 `ui-bound`
-5. 跑 lint
-6. commit
-
-### 推送 Notion（Mode C）
-
-觸發詞「推 user story 到 Notion」「同步 user story」→ [[erp-user-story]] skill mode C
+> 原「補 UI 操作層（Mode B）」已隨 2026-06-01 單階段化移除；介面層級驗收改由 [[erp-test-case]] 承接、UI 點擊歸 Prototype e2e。
 
 1. 列出 status=active + notion-published-at 為空 / 過舊的卡
 2. 批次推送（property mapping 詳見 skill）
@@ -175,7 +169,7 @@ PM 從 prerequisites 鏈可看出動作順序與相依關係，不需依賴 anch
 
 ## 八、相關 skill / agent
 
-- [[erp-user-story]] — 新增 / 補 UI / 推送 Notion 主 skill
+- [[erp-user-story]] — 新增 / 推送 Notion 主 skill
 - [[oq-manage]] — 識別到不確定項時觸發
 - [[vault-audit]] — 維度 13 lint（第三階段實作）
 - [[erp-test-case]] — Test Case 撰寫時引用本目錄 user story 的 acceptance criteria
