@@ -113,7 +113,7 @@
 
 ```bash
 # ERP 稽核腳本
-bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
+bash .claude/skills/doc-audit/scripts/audit-erp-docs.sh
 ```
 
 稽核涵蓋：
@@ -164,7 +164,7 @@ feat: [ERP 模組] 迭代 Spec
 - Notion 資料欄位 DB ↔ Spec：✓ 一致
 
 ### ③ 自動稽核
-- 執行：bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
+- 執行：bash .claude/skills/doc-audit/scripts/audit-erp-docs.sh
 - 結果：✓ 通過
 
 ## 解決與新增的 OQ
@@ -210,7 +210,7 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
 
 ```bash
 # ERP 稽核腳本
-bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
+bash .claude/skills/doc-audit/scripts/audit-erp-docs.sh
 
 # 檢查 OQ 狀態
 cat open-questions.md | grep "^##"

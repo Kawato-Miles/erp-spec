@@ -6,7 +6,7 @@
 #       CLAUDE.md 快速索引 與 SKILL.md 參考資源
 #
 # 執行方式（從 workspace 根目錄）：
-#   bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
+#   bash .claude/skills/doc-audit/scripts/audit-erp-docs.sh
 #
 # 退出碼：
 #   0 = 無問題

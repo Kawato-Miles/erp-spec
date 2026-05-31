@@ -41,7 +41,7 @@ description: >
 ### Step 1：索引層稽核（bash）
 
 ```bash
-bash .claude/skills/erp-spec/scripts/audit-erp-docs.sh
+bash .claude/skills/doc-audit/scripts/audit-erp-docs.sh
 ```
 
 - 出現 ⚠️ → 依提示補充索引後繼續，補完再執行一次確認
