@@ -154,7 +154,7 @@ wiki 回補與 archive 同批 commit。三層驗證：
 
 | 新內容回答的問題 | 可否驗算 | 位階 | type / 載體 | 目錄 |
 |----------------|---------|------|------------|------|
-| 「公司在這件事上的價值 / 分權方向是什麼」（不可驗算、Miles 拍板）| 否 | 營運原則 | operating-principle | `01-products/erp/operating-principles.md`（待建）|
+| 「公司在這件事上的價值 / 分權方向是什麼」（不可驗算、Miles 拍板）| 否 | 營運原則 | operating-principle | `01-products/operating-principles.md`（待建）|
 | 「這個領域所有規則共用、一定要成立的底線是什麼」（如對帳一致性 應收 = 發票淨額 = 收款淨額）| 是 | 共用規則 | business-logic（共用規則卡）| `04-business-logic/` |
 | 「什麼情況套什麼規則」（單一 if-then 要件 + 計算公式）| 是 | 業務規則 | business-logic（規則正本卡）| `04-business-logic/` |
 | 「這條規則展開成什麼資料狀態 / 跨模組流程 / 角色職責 / 實體欄位」| — | 流程・狀態・角色・資料 | state-machine / scenario / role / entity | `06 / 07 / 03 / 05-*` |
@@ -254,7 +254,7 @@ wiki 回補與 archive 同批 commit。三層驗證：
 
 | 位階 / type | 載體路徑（含落地狀態）| 特有章節 | MUST NOT（越界禁項）|
 |------------|---------------------|---------|---------------------|
-| 營運原則 / operating-principle | `01-products/erp/operating-principles.md`（待建）+ `_template-operating-principle.md`（待建）| `## 原則陳述`（一句話價值 / 分權方向）+ `## 分權方向`（誰把關什麼、誰不被阻擋）+ `## 為什麼這是最上層、不再往上追`（說明為何此原則是最上層依據、不再上溯）。source 終止於外部原點（Miles 拍板 + 印刷業實務）、禁再上溯、禁指任何內部卡；status 轉 active 須 Miles 拍板；無 implemented-by | 可驗算的底線（屬共用規則 business-logic）|
+| 營運原則 / operating-principle | `01-products/operating-principles.md`（待建）+ `_template-operating-principle.md`（待建）| `## 原則陳述`（一句話價值 / 分權方向）+ `## 分權方向`（誰把關什麼、誰不被阻擋）+ `## 為什麼這是最上層、不再往上追`（說明為何此原則是最上層依據、不再上溯）。source 終止於外部原點（Miles 拍板 + 印刷業實務）、禁再上溯、禁指任何內部卡；status 轉 active 須 Miles 拍板；無 implemented-by | 可驗算的底線（屬共用規則 business-logic）|
 | 共用規則 / 業務規則 / business-logic | `04-business-logic/` + `_template-business-logic.md`（待建）| 規則型：`## 規則與營運動機`（逐條照意圖 → 規則 → 營運動機）+ `## 具體例子`（1-3 個真實格式含具體數字，正例 + 邊界反例，禁 UI 措辭）+ `## 一定要成立的規則`（可驗算）+ `## 邊界`。索引型額外：`## 分類概覽` + `## 連帶矩陣`（七實體 depends-on / affects）。規則用語意 slug；共用規則卡標「領域一定要成立的底線」、業務規則 source 可往上指共用規則卡 | 跨模組完整流程（→ scenario）/ 狀態轉換圖（→ state-machine）/ 角色職責清單（→ role）/ user-story 模板 / test-case 範本 / 完整實體 Data Model（→ entity）|
 | 狀態 / state-machine | `06-state-machines/` + `_template-state-machine.md`（待建）| `## 狀態清單`（含「狀態 / 說明 / 對應營運需求」三欄）+ `## 狀態轉換`（流程圖 / 轉換規則）+ `## 關鍵狀態 / 轉換的營運動機`（逐條：轉換 → 動機 → 1 例子）+ `## 與其他狀態機 / 實體的關係`。轉換動機 wiki link 指 business-logic 正本 | 規則本體 / 計算公式 / 跨情境例子（→ business-logic）/ UI 措辭 / 業務情境敘述（→ scenario）|
 | 流程 / scenario | `07-scenarios/` + `_template-scenario.md`（待建）| `## 情境清單`（逐情境：情境名 → 觸發狀況 → 角色傳遞 / 狀態鏈 → 1 例子含真實編號 / 金額）+ `## 範疇外`（不涵蓋的情境 + 走哪張卡）。每步「依某規則」wiki link 指 business-logic 正本 | 規則本體與計算公式（→ business-logic）/ 單一步驟細節（→ user-story）/ test-case 範本 |
@@ -338,7 +338,7 @@ wiki 回補與 archive 同批 commit。三層驗證：
 | 項目 | 現況 | 落地依據 |
 |------|------|---------|
 | `operating-principle` type | [[wiki-schema]] 現用 `product-vision` type 承載營運原則層；`operating-principle` 曾為候選**目標 type 名**，已決議沿用 `product-vision`、不新增此 type（記入 [[business-logic-changelog]]）| [[wiki-architecture#範本清單]]（營運原則層沿用 product-vision type 之註）|
-| `01-products/erp/operating-principles.md` | **尚未建立**（現有 product-vision.md / success-metrics.md 等）| [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]] |
+| `01-products/operating-principles.md` | **尚未建立**（現有 product-vision.md / success-metrics.md 等）| [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]] |
 | `15-test-cases/<module>/` 目錄 | **尚未建立**（test-case 正文現於 Notion）| [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]] |
 | 各位階 `_template-*.md`（business-logic / state-machine / scenario / role / entity / test-case / operating-principle）| **尚未建立**（僅 user-story `_template.md` 既有）| [[business-logic-writing-guide]] § 四範式（待落地為獨立 template 檔）|
 | `source` / `implemented-by` frontmatter | 現況 0 張 business-logic 卡有此雙欄，全部僅 `related-spec`（指 OpenSpec，方向顛倒）| [[wiki-architecture#依據往上、實作往下，連結不繞回自己]] 試點；`related-spec` 過渡期保留，語意等同 implemented-by 弱版；補不出 source 的標 `source-gap` 待專輪 |

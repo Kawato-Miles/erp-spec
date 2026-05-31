@@ -238,8 +238,8 @@ done
 
 **檢查方法**：
 
-1. 讀 `01-products/erp/phases.md` + `success-metrics.md`
-2. 對照 `01-products/erp/kpi/` 各 KPI 卡：
+1. 讀 `01-products/phases.md` + `success-metrics.md`
+2. 對照 `01-products/kpi/` 各 KPI 卡：
    - 是否有對應 Vault 內容佐證進度？
    - 是否有對應 OpenSpec spec / change 落實？
 3. Phase 1（EC 規格品 BOM 覆蓋率）：對照 `material-master` / `process-master` / `binding-master` spec 與 Prototype 實作

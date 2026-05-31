@@ -57,7 +57,7 @@ cat /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/00-meta/audit-log.md
 |---------|---------|
 | **手動 / 通用** | `03-roles/_alignment-report.md` + `08-open-questions/` 全部 + `00-meta/audit-log.md` 最近 3 筆 + **`raw/` status=ingested 或 reviewed 卡**（2026-05-21 新增）|
 | **OQ 累積** | `08-open-questions/` 全部 + `08-open-questions/README.md` |
-| **Phase 切換** | `01-products/erp/phases.md` + `success-metrics.md` + `01-products/erp/kpi/` |
+| **Phase 切換** | `01-products/phases.md` + `success-metrics.md` + `01-products/kpi/` |
 | **change archive 後** | 該 change 的 design.md / proposal.md + Vault 受影響的 `04-business-logic/` / `05-entities/` 卡 |
 | **vault-audit 接續** | audit 報告中 Error / Warning 項對應的卡 |
 | **raw 同主題累積（vault-audit 維度 11 觸發）** | `raw/` 同主題 status=ingested 或 reviewed 卡 ≥ 3 張（**MUST 過濾 status=raw**，違反 anti-pattern 防線 5）|
