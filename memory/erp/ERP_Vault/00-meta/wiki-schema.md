@@ -643,7 +643,7 @@ related-changes:                   # 本期涉及的 openspec change
 - MODULE 前綴對照同 User Story 卡（QR / ORD / CR / AS / WO / PT / AR / QC / SHP / MM / PM / BM / XM）
 - NNN 三位數字補零
 - frontmatter `tc-id` 與檔名前綴一致（如檔名 `TC-ORD-001-...`、`tc-id: TC-ORD-001`）
-- 簡述 slug：繁體中文、名詞或動詞 + 名詞片語，描述被驗收的判決對象
+- 簡述 slug：繁體中文、名詞或動詞 + 名詞片語，描述被驗收的對象
 - 範例：`15-test-cases/order-management/TC-ORD-001-補收免審直達已執行.md`
 - 範例：`15-test-cases/billing-cash/TC-ORD-002-諮詢取消半額退費.md`
 
