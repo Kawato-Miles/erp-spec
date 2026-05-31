@@ -225,7 +225,7 @@ Round 3（視需要，僅針對未解爭議）：同 Round 2 格式
 
 ### Step 5：識別與同步 Open Questions（Notion）
 
-OQ 唯一正本在 Notion Follow-up DB。
+OQ 唯一正本在 Vault `memory/Sens_wiki/wiki/erp/08-open-questions/`（由 `oq-manage` skill 管理；Notion Follow-up DB 為對外確認版）。
 
 **撰寫 Spec 中識別到不確定項時，觸發 `oq-manage` skill（模式 B：新增）。**
 

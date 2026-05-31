@@ -19,7 +19,7 @@
 
 ## 二、Open Question 管理
 
-**核心原則：各專案的 `open-questions.md` 為該專案 OQ 的唯一正本。**
+**核心原則：每個專案的 OQ 集中於該專案指定的 OQ 正本，為唯一正本（Sens ERP 為 Vault `08-open-questions/`，由 `oq-manage` skill 管理；下列通用流程在 Sens 以 `oq-manage` skill 為準）。**
 所有 Task 或 Spec 中識別的新問題，必須集中管理，避免散落各處造成遺漏或重複載入。
 
 ### 2.1 新 OQ 產生時
