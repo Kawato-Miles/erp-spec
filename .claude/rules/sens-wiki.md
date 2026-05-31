@@ -71,4 +71,4 @@ paths:
 ## 七、各主題專屬規則入口
 
 - **ERP**（產品，以業務需求 BRD / PRD 角度管理）：`wiki/erp/00-meta/`（[[wiki-schema]] / [[wiki-architecture]] / [[vault-charter]] 等）。
-- **圖編 cavans**（產品）：`wiki/cavans/`，內部結構待依需求定義。
+- **圖編 canvas**（產品）：`wiki/canvas/`，內部結構待依需求定義。

@@ -100,6 +100,25 @@ notion-page-url: <URL>               # 若已推送則記錄頁面
 > - 9 個缺 `expected-resolution-at` 的 OQ 補預設 2026-Q3（標 needs-Miles-confirmation）
 > - 13 個 OQ 加 `related-insight` backlink（12 個指向 Insight 1 售後 / Insight 2 archive 治理 + XM-005 跨兩 insight）
 
+### 三-B、孤兒 OQ 補登（2026-05-31，恢復檢索可達）
+
+> 以下 OQ 卡於 2026-05-31 obsidian-cli `orphans` 稽核中無任何入鏈（從主 index → 本 README 的檢索鏈無法到達），補登恢復可達。
+> 待辦（`oq-manage` 全表策展）：本目錄現有 **88 張 OQ**，上方主表僅策展至 ORD-014（38 張）；其餘約 37 張雖已有他處入鏈、暫未列主表，下次 `oq-manage` 全表整理時連同狀態 / 優先度 / 模組一併併入主表。
+
+- [[AFT-9-最後活動時間derived欄位]] — 售後最後活動時間 derived 欄位升級條件
+- [[BI-6-CSV收款日最近或結清]] — 對帳 CSV 收款日取「最近」或「結清」
+- [[BI-7-合期開一張發票是否支援]] — 合期開一張發票是否支援
+- [[BI-10-作廢發票CSV篩選]] — 作廢發票於對帳 CSV 的篩選
+- [[BI-14-款項UserStory業務情境段含UI措辭違反紀律]] — 款項 US 業務情境段含 UI 措辭
+- [[BI-17-BillingInstallment缺完整DataModel實體表]] — BillingInstallment 缺完整資料模型實體表
+- [[BI-18-手動開票是否一律需關聯期次]] — 手動開票是否一律需關聯期次
+- [[ORD-015-印件清單120px縮圖體感驗證]] — 印件清單 120px 縮圖體感驗證
+- [[ORD-017-金額組成混合稅率UI呈現]] — 金額組成混合稅率 UI 呈現
+- [[ORD-019-會計處理中Payment應收應付處理]] — 會計處理中 Payment 應收應付處理
+- [[ORD-020-取消已完成Payment邏輯刪除vs物理刪除]] — 取消已完成 Payment 邏輯刪除 vs 物理刪除
+- [[ORD-025-完成後非售後補收入口歸屬]] — 完成後非售後補收入口歸屬
+- [[ORD-026-附件用途欄位是否轉LOV]] — 附件用途欄位是否轉 LOV
+
 ## 四、同步策略
 
 依 [[vault-charter#三、Source of Truth 規則|Vault Charter]] + [[sync-workflow|Sync Workflow]]：

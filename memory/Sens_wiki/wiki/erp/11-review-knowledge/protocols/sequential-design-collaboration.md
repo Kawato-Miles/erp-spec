@@ -87,7 +87,7 @@ Claude 協調者依 CLAUDE.md § ERP 討論主動路由 識別到本次討論為
 
 **輸入**：
 - Miles 提出的商業需求原話
-- 對應 Vault 業務卡（依議題從 `01-products/erp/`、`04-business-logic/`、`03-roles/` 載入）
+- 對應 Vault 業務卡（依議題從 `01-products/`、`04-business-logic/`、`03-roles/` 載入）
 - 既有 OQ 中與本議題相關者
 
 **PM 主任務**：

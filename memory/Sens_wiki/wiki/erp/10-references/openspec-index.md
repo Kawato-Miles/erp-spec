@@ -14,7 +14,7 @@ last-reviewed: 2026-05-19
 
 | Spec | Vault 對應 |
 |------|-----------|
-| [config.yaml](../../../openspec/config.yaml) § 產品背景與目標 | [[wiki/erp/01-products/erp/product-vision]]、[[phases]] |
+| [config.yaml](../../../openspec/config.yaml) § 產品背景與目標 | [[wiki/erp/01-products/product-vision]]、[[phases]] |
 | [business-processes/spec.md](../../../openspec/specs/business-processes/spec.md) | [[齊套邏輯]]、[[數量換算規則]]、[[印件生產流程]]、[[打樣流程]]、[[稿件管理規則]] |
 | [state-machines/spec.md](../../../openspec/specs/state-machines/spec.md) | `06-state-machines/*.md`（9 個狀態機卡） |
 | [user-roles/spec.md](../../../openspec/specs/user-roles/spec.md) | `03-roles/`（OpenSpec 5 角色 + Vault 補 11 角色，見 [[_alignment-report]]）|

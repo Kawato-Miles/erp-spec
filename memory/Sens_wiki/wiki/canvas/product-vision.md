@@ -11,8 +11,7 @@ last-reviewed: 2026-05-19
 > [!warning] Phase A 暫為 placeholder
 > 圖編產品（線上圖編輯器，B2B SaaS）的需求 KM 內容暫未遷入 Vault。Phase A MVP 階段僅維持骨架。
 >
-> 未來若決定圖編 KM 也納入此 Vault，可在 Phase D（後續規劃）將圖編產品內容遷入：
-> - `01-products/graphic-editor/`
+> 圖編已自 ERP 主題獨立為 canvas 主題（`wiki/canvas/`），本卡即其產品願景。未來若決定圖編 KM 也納入此 Vault，可在 Phase D（後續規劃）於本主題下擴充：
 > - `02-domain/glossary-graphic-editor.md`（已規劃，Stage 2.4 寫）
 > - 圖編特定的角色、商業邏輯、實體
 

@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-21
+last-reviewed: 2026-05-31
 ---
 
 # ERP_Vault 章程
@@ -102,3 +102,26 @@ ERP_Vault/
 | 跨產品通用工作原則（Spec 撰寫 / OQ 管理 / PM 視角 / 迭代工作流） | `memory/shared/principles.md` § 一~五（§ 六 ERP 設計模式 2026-05-19 已遷至 Vault [[erp-design-patterns]]）|
 | 演算法 / 計算公式 / 自動分配步驟 | Prototype `src/utils/` 與各模組 spec § Requirements |
 | 功能 step-by-step Requirement | OpenSpec 各模組 spec § Requirements |
+
+## 七、人類首次閱讀順序
+
+> 給 Miles / 新進同仁第一次認識本 Vault 的線性路徑。日常查找請直接從 ERP 主題入口的「載入決策表」開始，不必每次重讀本順序。
+
+1. 本章程（定位 / 三邊分工 / Source of Truth）
+2. [[wiki-schema]] — formal schema 治理規則（建任何卡前必讀，lint 依據）
+3. [[editing-conventions]] — 人類友善版規約（schema 簡化版）
+4. [[scope-boundary]] — 哪些收進來、哪些不收
+5. [[sync-workflow]] — Vault ↔ OpenSpec ↔ Notion 同步流程
+6. [[wiki/erp/00-meta/index|ERP 主題入口]] — 載入決策表 + 卡片 registry（**查找一律從這裡開始**）
+7. [[audit-log]] — 自審追加式日誌（最近 audit / insight 紀錄）
+8. [[wiki/erp/01-products/product-vision|產品願景（ERP）]] — 願景與痛點
+9. `03-roles/` — 角色 R&R + `_alignment-report`
+10. `09-canvases/` — JSON Canvas 視覺化（在 Obsidian app 開啟最佳）
+11. [[wiki/erp/12-insights/README|12-insights 洞察]] — 跨主題模式識別 + 下一步建議
+
+## 八、工具
+
+- **Obsidian Desktop**：人工編輯介面 / Graph view / Canvas / Backlinks panel
+- **Obsidian CLI**（需 Obsidian app 開著）：Vault 稽核 / 查詢一律走此（見操作契約 [[CLAUDE]] § 五）——`search` / `backlinks` / `orphans` / `deadends` / `unresolved` / `eval` 等；**不以 grep 當 vault 稽核手段**
+- **kepano obsidian skills**：`obsidian-markdown`（wiki link / callout / frontmatter）、`obsidian-bases`（`.base`）、`json-canvas`（`.canvas`）、`obsidian-cli`（CLI 高階查詢包裝）
+- **Sens 自建 skills**（見 `.claude/skills/`）：`oq-manage`、`vault-audit`、`vault-insight`、`vault-ingest`、`daily-brief`、`weekly-review`、`erp-user-story`、`erp-planning-pre-check`、`doc-audit`、`misjudgement-record`、`wiki-amend` 等

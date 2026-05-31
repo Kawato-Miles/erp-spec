@@ -30,7 +30,7 @@ last-reviewed: YYYY-MM-DD
 |------|------|
 | `meta` | `00-meta/` 下的章程、規約、流程 |
 | `product-vision` | `01-products/` 願景、痛點、利害關係人 |
-| `phase` | `01-products/erp/phases.md`、各 Phase 拆分卡 |
+| `phase` | `01-products/phases.md`、各 Phase 拆分卡 |
 | `metric` | KPI、北極星指標、Impact Score 框架 |
 | `domain` | `02-domain/` 印刷業 domain |
 | `glossary` | 術語表 |

@@ -34,7 +34,7 @@ last-reviewed: 2026-05-19
 2. **Claude 讀取 Vault**：相關卡（如 [[訂單]] / [[齊套邏輯]] / [[業務]]）
 3. **Claude 讀取 OpenSpec**：對應 spec 的 § Requirements / § Scenarios
 4. **Claude 組裝 BRD 格式**：
-   - 商業背景（自 Vault [[wiki/erp/01-products/erp/product-vision]] / [[pain-points]]）
+   - 商業背景（自 Vault [[wiki/erp/01-products/product-vision]] / [[pain-points]]）
    - 角色 R&R（自 Vault `03-roles/`）
    - 商業邏輯（自 Vault `04-business-logic/`）
    - 資料模型（自 Vault `05-entities/`）

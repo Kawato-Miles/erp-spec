@@ -14,8 +14,8 @@ last-reviewed: 2026-05-21
 
 | 類別 | 對應目錄 | 範例 |
 |------|---------|------|
-| 營運原則（最高層）（分權方向，不可驗算、Miles 拍板）| `01-products/erp/` | [[operating-principles]]（type=product-vision，沿用既有 type 不新增；如「現金流出須把關、客戶加單不阻擋」「彈性優先、事後對帳兜底」）|
-| 商業目標 / Phase / 北極星指標 | `01-products/` | [[wiki/erp/01-products/erp/product-vision]]、[[phases]]、[[success-metrics]] |
+| 營運原則（最高層）（分權方向，不可驗算、Miles 拍板）| `01-products/` | [[operating-principles]]（type=product-vision，沿用既有 type 不新增；如「現金流出須把關、客戶加單不阻擋」「彈性優先、事後對帳兜底」）|
+| 商業目標 / Phase / 北極星指標 | `01-products/` | [[wiki/erp/01-products/product-vision]]、[[phases]]、[[success-metrics]] |
 | 痛點 / 利害關係人 / Impact Score | 同上 | [[pain-points]]、[[stakeholders]]、[[impact-score-framework]] |
 | 印刷業 domain | `02-domain/` | [[printing-industry]]、glossary 三份 |
 | 角色 R&R | `03-roles/` | 16 角色 + [[_alignment-report]] |
@@ -27,7 +27,7 @@ last-reviewed: 2026-05-21
 | OQ | `08-open-questions/` | oq-manage skill 改寫後寫入 |
 | User Story（操作步驟）| `13-user-stories/` | 各模組業務故事（兩階段：業務情境 / UI 操作）|
 | Test Case（驗收項目，**限 UAT 業務層**）| `15-test-cases/` | UAT 驗收索引卡：角色 / 前置 / 業務動作 / 可觀察結果；正文存 Notion ERP Test Case DB、Vault 僅承載索引與依據（source 往上指 user-story）。**技術 SIT / UT / 端對端測試（Playwright e2e）不收、留 Prototype** |
-| KPI | `01-products/erp/kpi/` | 各模組 KPI |
+| KPI | `01-products/kpi/` | 各模組 KPI |
 | 視覺化 | `09-canvases/` | 6 張 Canvas |
 | 外部連結索引 | `10-references/` | Notion / OpenSpec / Prototype / decks |
 | **Audit Log** | `00-meta/audit-log.md` | vault-audit / vault-insight skill 追加式日誌 |

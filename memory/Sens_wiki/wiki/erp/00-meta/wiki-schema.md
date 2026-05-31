@@ -15,8 +15,8 @@ last-reviewed: 2026-05-31
 |------|------|---------|
 | `meta` | Vault 元數據（章程 / 入口 / 規約 / 邊界 / 流程 / log） | `00-meta/` |
 | `product-vision` | 產品願景 / 痛點 / 利害關係人 | `01-products/` |
-| `phase` | 產品 Phase 定義 | `01-products/erp/phases.md` |
-| `metric` | KPI / 北極星指標 / Impact Score | `01-products/erp/`、`01-products/erp/kpi/` |
+| `phase` | 產品 Phase 定義 | `01-products/phases.md` |
+| `metric` | KPI / 北極星指標 / Impact Score | `01-products/`、`01-products/kpi/` |
 | `domain` | 印刷業 domain knowledge | `02-domain/` |
 | `glossary` | 術語表 | `02-domain/glossary-*.md` |
 | `role` | 角色 R&R | `03-roles/` |
@@ -37,7 +37,7 @@ last-reviewed: 2026-05-31
 
 | 分層 | 定位 | 對應 type | 對應目錄 |
 |------|---------|----------|---------|
-| 營運原則（最高層）| 最高價值 / 分權方向（由 Miles 拍板、不可驗算）| `product-vision`（沿用，**不新增 type**）| `01-products/erp/` |
+| 營運原則（最高層）| 最高價值 / 分權方向（由 Miles 拍板、不可驗算）| `product-vision`（沿用，**不新增 type**）| `01-products/` |
 | 共用規則 | 這個領域所有規則都一定要遵守的底線（如對帳一致性，跨多條業務規則的恆定約束）| `business-logic`（共用規則卡，見 § 四 business-logic 內部分層）| `04-business-logic/` |
 | 業務規則 | 具體規則（可驗算的 if-then 業務規則）| `business-logic`（業務規則卡）| `04-business-logic/` |
 | 流程／狀態／角色／資料 | 個案執行指令（情境 / 狀態 / 角色 / 實體）| `scenario` / `state-machine` / `role` / `entity` | `07-scenarios/` / `06-state-machines/` / `03-roles/` / `05-entities/` |

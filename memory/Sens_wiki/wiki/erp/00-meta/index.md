@@ -27,8 +27,7 @@ last-reviewed: 2026-05-31
 ## 二、卡片清單（registry）
 
 ### 產品與領域（01-products / 02-domain）
-- [[wiki/erp/01-products/erp/product-vision|產品願景（ERP）]] — ERP 願景與範疇
-- [[wiki/erp/01-products/graphic-editor/product-vision|產品願景（圖編）]] — 圖編產品願景
+- [[wiki/erp/01-products/product-vision|產品願景（ERP）]] — ERP 願景與範疇
 - [[operating-principles]] — 營運原則（最高層，分權方向）
 - [[success-metrics]] — 成功指標 / KPI
 - [[impact-score-framework]] — Impact Score（G.U.N. 框架）
@@ -104,15 +103,17 @@ last-reviewed: 2026-05-31
 - [[2026-05-20-售後ticket-reactive-補丁循環]]
 - [[2026-05-20-change-archive-OQ收尾流程缺口]]
 
-## 三、高量 / 生成層（指向資料夾，不列每卡）
+## 三、高量 / 生成層（指向各層 README / 子索引，不列每卡）
 
-- **待確認問題（OQ）**：`08-open-questions/`（前綴 ORD / BI / AR / AFT / XM / CR / PT / PI / SHP / QC）
-- **使用者故事**：`13-user-stories/<module>/`（quote-request / order-management / prepress-review / consultation-request）
-- **驗收項目**：`15-test-cases/<module>/`
-- **每日 / 每週回顧**：`14-reviews/daily/`、`14-reviews/weekly/`
-- **視覺化**：`09-canvases/`
-- **外部索引**：`10-references/`
-- **審查方法論**：`11-review-knowledge/`（`_shared` / `pm` / `ceo` / `erp` / `protocols`，見其 README）
+> 高量 / 生成層不在本入口逐卡列，改連各層 README / 子索引（MOC）；各卡由所屬層 README 收束。
+
+- **待確認問題（OQ）**：[[wiki/erp/08-open-questions/README|OQ 索引]]（`08-open-questions/`，前綴 ORD / BI / AR / AFT / XM / CR / PT / PI / SHP / QC）
+- **使用者故事**：[[wiki/erp/13-user-stories/README|US 中樞與撰寫紀律]]（`13-user-stories/<module>/`：quote-request / order-management / prepress-review / consultation-request）
+- **驗收項目**：`15-test-cases/<module>/`（無獨立 README）
+- **每日 / 每週回顧**：[[wiki/erp/14-reviews/README|回顧層說明]]（`14-reviews/daily/`、`weekly/`）
+- **外部索引**（`10-references/`）：[[decks-index]] — 過程圖解 / [[notion-index]] — Notion 資源 / [[openspec-index]] — OpenSpec spec 對照 / [[prototype-index]] — Prototype 對照
+- **審查方法論**：[[wiki/erp/11-review-knowledge/README|審查方法論入口]]（`_shared` / `pm` / `ceo` / `erp` / `protocols`）
+- **視覺化（`09-canvases/`）**：[[角色×流程-swimlane.canvas|角色×流程 swimlane]] / [[狀態機全景.canvas|狀態機全景]] / [[實體關聯網.canvas|實體關聯網]] / [[模組依賴.canvas|模組依賴]] / [[商業情境-traceability.canvas|商業情境 traceability]] / [[prototype-業務邏輯對應.canvas|prototype 業務邏輯對應]]
 
 ## 四、治理工具
 
