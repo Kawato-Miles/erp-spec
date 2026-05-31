@@ -10,13 +10,7 @@ last-reviewed: 2026-05-19
 
 ## 一、總原則
 
-依 [[vault-charter#三、Source of Truth 規則|Vault Charter]]：
-
-| 層 | 角色 |
-|---|-----|
-| **Vault** | 商業需求 KM（內部正本） |
-| **OpenSpec** | 功能規格層（內部正本） |
-| **Notion** | 對外確認介面（發布版本） |
+三邊分工（Vault 內部正本 / OpenSpec 功能規格 / Notion 發布版）的定義見 [[vault-charter#三、Source of Truth 規則|Vault Charter]]。
 
 **Vault + OpenSpec → Notion**（彙整推送）+ **Notion → Vault + OpenSpec**（反饋回流），都是人工觸發。
 
