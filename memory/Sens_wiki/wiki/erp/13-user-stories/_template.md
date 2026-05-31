@@ -8,7 +8,9 @@ last-reviewed: 2026-05-31
 
 > 給 [[erp-user-story]] skill 與 Miles 手動撰寫時複製套用。這類卡的定位：操作步驟（單一角色執行某條規則的步驟，照著做的流程），見 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]]。
 > 本範本同時是「寫的時候照著填」與「事後照著檢查」。底部「自審稽核清單」同一份既是提交前自檢、也是 [[wiki-schema#維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）|vault-audit 維度 13]] / [[doc-audit]] 的稽核維度。
-> 規範正本：[[wiki/erp/13-user-stories/README]]（兩階段紀律 / 命名 / 來源）+ [[wiki-schema#type=user-story]]（frontmatter 正式 schema + 維度 13 lint）+ [[business-logic-writing-guide#4.0 各類卡的單一職責（六層由大到細、只連不重抄）|writing-guide § 4.0]]（各類卡的職責邊界）。本範本是上述三者在 user-story 這層的展開，不衝突。
+> 規範正本：[[wiki/erp/13-user-stories/README]]（命名 / 來源）+ [[wiki-schema#type=user-story]]（frontmatter 正式 schema + 維度 13 lint）+ [[business-logic-writing-guide#4.0 各類卡的單一職責（六層由大到細、只連不重抄）|writing-guide § 4.0]]（各類卡的職責邊界）。本範本是上述三者在 user-story 這層的展開，不衝突。
+>
+> **單階段（2026-06-01 自兩階段收斂）**：user story 只寫業務情境（含 Gherkin 成功條件），不含 UI 操作層。介面驗收下移 [[erp-test-case]]（業務級）+ Prototype 端對端測試（UI 點擊層）。已移除 `stage` / `ui-binding` 欄位與「UI 操作（易變層）」段。
 
 ## 怎麼用這份範本
 
@@ -22,7 +24,7 @@ last-reviewed: 2026-05-31
 > 對齊 [[business-logic-writing-guide]] 骨架七「不可違反的硬規則搭配可視情況調整的彈性」。下列兩層界線明示在範本，禁作者私自偏離。
 
 ### 不可違反（硬規則，極少且硬）
-- 業務情境段（穩定層）**禁含 UI 措辭**（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器）。
+- 全卡**禁含 UI 措辭**（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器）；UI 點擊操作不寫進 user story（歸 Prototype e2e），介面層級驗收歸 [[erp-test-case]]。
 - 全卡**禁中英夾雜**：英文欄位名 / 實體名一律轉介面中文（付款紀錄 / 印件 / 訂單異動 / 需求單 / 工單 / 生產任務 / 審稿輪次 / 付款計畫 / 售後服務單 等），技術代號須以括號附註、不得當主詞。
 - **規則本體不寫進 user-story 卡**：本卡只描述「角色怎麼執行某條規則的步驟」，規則的觸發條件 / 判斷 / 計算公式以 `source` 指向 [[../04-business-logic|business-logic]] 規則正本卡，不在本卡重述。
 - `source` ≥ 1 條，且**禁指向其他 user-story 卡**（防止 AI 拿自己寫的東西當依據再生出新東西）；`source` 往上指依據（規則正本 / 最上層的依據），**不指同層 / 下層 / OpenSpec 當正確性根據**（見 [[wiki-architecture#依據往上、實作往下，連結不繞回自己]]）。
@@ -30,9 +32,9 @@ last-reviewed: 2026-05-31
 - **單一角色單一情境**：禁統合多角色 / 多動作的串接故事（跨多角色端到端流程 → [[wiki/erp/07-scenarios/README|07-scenarios]]）。
 
 ### 可視情況調整（彈性破口）
-- `stage: business-only` 階段 **UI 操作段保持空 / 待補**；Prototype 功能定案後才填，填了 MUST 將 stage 改 `ui-bound` 並補 `ui-binding`（兩階段紀律，見 [[wiki/erp/13-user-stories/README#二、兩階段撰寫紀律]]）。
 - **「這張卡要回答的問題」段**：若本故事的執行步驟全屬無爭議事實（無待拍板項），該段可只寫「無待回答問題」一行，不強行湊問題。
-- **前置條件 / 業務流程**步驟數依故事複雜度增減；但 acceptance criteria 維持 2-5 條（超過 5 建議 split story）。
+- **前置條件 / 業務流程**步驟數依故事複雜度增減；但成功條件維持 2-5 條 Gherkin 情境（超過 5 建議 split story），每條守單一 When + 單一 Then。
+- **成功條件涵蓋類型**：依故事性質可只正向達成型、或併含禁止/守衛型（如「訂單完成後不可建訂單異動」），以可驗證為準。
 
 ---
 
@@ -49,8 +51,6 @@ business-domain:
 role:
   - "[[../../03-roles/<角色卡>]]"               # wiki link 至 03-roles/；單一角色（外部 B2C 會員可純文字，見 wiki-schema 維度 13 Lint 例外）
 priority: high | medium | low
-stage: business-only | ui-bound                 # 兩階段標記（必填）
-ui-binding: draft | prototype-v1 | locked       # stage=ui-bound 時必填
 status: draft | active | deprecated
 created-at: 2026-MM-DD
 last-reviewed: 2026-MM-DD
@@ -59,7 +59,7 @@ source:                                         # 往上指依據＝正確性根
   - "<最上層的依據：Miles 拍板 / 印刷業實務 / raw 卡 / 訪談紀錄>" # 或可獨立驗證的外部出處
 implemented-by:                                 # 往下指被誰實作＝導航 / 覆蓋（不承載正確性），可選
   - "openspec/specs/<module>/spec.md#Requirement: <標題>"
-  - "sens-erp-prototype/src/<...>"             # Prototype 對應檔（stage=ui-bound 後填）
+  - "sens-erp-prototype/tests/e2e/<spec>.spec.ts"  # Prototype 端對端測試（UI 點擊層歸此）
 provenance-commit: <SHA>                         # 可選但建議：上次對齊的 commit，供 doc-audit stale 偵測
 related-spec: openspec/specs/<module>/spec.md   # 過渡期保留（語意＝implemented-by 弱版）；新卡優先填 source / implemented-by
 related-scenarios:                              # 上層情境：本故事被哪個端到端情境串起（可選）
@@ -68,8 +68,8 @@ related-business-logic:                         # 相關規則：本故事執行
   - "[[../../04-business-logic/<規則卡>]]"
 related-entities:                              # 相關實體：本故事作用的資料實體（可選）
   - "[[../../05-entities/<實體卡>]]"
-related-test-cases:                            # 往下的驗收：Notion Test Case URL（實作後回填）
-  - <URL>
+related-test-cases:                            # 往下的驗收：Vault test-case 卡 wiki link（2026-06-01 由 Notion URL 改）
+  - "[[../../15-test-cases/<module>/TC-<MODULE>-<NNN>-<簡述>]]"
 prerequisites:                                 # 相依性：本 US 執行前須完成的前置（禁用串接故事代替）
   - "[[US-<MODULE>-<NNN>-<前置故事>]]"          # 其他 user story（具體 wiki link）
   - "<系統行為或角色準備動作的文字描述>"        # 如「系統自動分派完成」「審稿主管已維護能力等級」
@@ -91,9 +91,9 @@ notion-page-url: <URL>                          # 推送後填
 - <問題 1：本故事在某步驟的執行決策？> → 結論見「<對應段落>」
 - <問題 2：邊界情況怎麼處理？> → 結論見「成功條件第 N 條」
 
-## 業務情境（穩定層）
+## 業務情境
 
-> 階段 1：純業務描述。**禁含 UI 措辭**（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器）；**禁中英夾雜**（付款紀錄 / 印件 / 訂單異動 等介面中文）。本段是穩定層，Prototype 改版不動此段。
+> 純業務描述。**禁含 UI 措辭**（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器）；**禁中英夾雜**（付款紀錄 / 印件 / 訂單異動 等介面中文）。UI 改版不動本卡（UI 點擊歸 Prototype e2e、介面層級驗收歸 [[erp-test-case]]）。
 
 ### 作為
 [[../../03-roles/<角色名>]]
@@ -122,27 +122,16 @@ notion-page-url: <URL>                          # 推送後填
 
 ### 成功條件（acceptance criteria）
 
-> 2-5 條（業界共識，超過 5 建議 split story）。對應前提→動作→驗收結果三段之「要驗收到的結果（可觀測結果驗證）」：每條用**可觀測具體值**（金額 / 狀態名 / 數量 / 角色）描述「驗收什麼」，非「做了沒」；每條單一可驗證（一條塞 ≥ 2 個獨立規則 → 拆條）；Test Case 能直接從每條設計。
+> Gherkin 框架：每條寫成一個情境（Scenario / Given / When / Then）。2-5 條（超過 5 建議 split story）；每條守**單一 When + 單一 Then**（多個獨立 When → 拆條或 split story），Given 可疊加。業務 outcome 級、**禁 UI 措辭**（UI 點擊歸 Prototype e2e）；守衛規則本體以 wiki link 指 [[../../04-business-logic/<規則卡>]]，本段只寫「驗收得到什麼」。涵蓋正向達成型與禁止/守衛型。每條為一個 Test Case 取材種子（正向→happy / 守衛→edge）。
 
-1. <可驗證條件 1：含具體可觀測值，如「異動狀態直接從草稿到已執行，不經待主管審核中間態」>
-2. <可驗證條件 2>
-3. <可驗證條件 3：含邊界 / 反向驗收，如「已推進已執行後金額鎖定、不可再校正」>
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft | prototype-v1 | locked-v1.0 -->
-<!-- 對應 Prototype 路徑：sens-erp-prototype/src/<...> -->
-
-> 階段 2：Prototype 對應功能定案後填寫；填寫時 frontmatter `stage` 改為 `ui-bound`、補 `ui-binding`、`implemented-by` 補 Prototype 路徑。穩定層（業務情境段）不因 UI 改版而動。
-
-### 介面入口
-- <Prototype 定案前：待補>
-
-### 操作步驟
-- <Prototype 定案前：待補>
-
-### 介面元素
-- <Prototype 定案前：待補>
+- 情境：<正向達成，一行描述>
+  - Given <前置狀態，可多條>
+  - When <單一業務動作，對應「我希望」>
+  - Then <單一可觀測結果，如「產生與需求單一致的訂單草稿」>
+- 情境：<禁止/守衛，一行描述>
+  - Given <某狀態，如 訂單狀態=訂單完成>
+  - When <嘗試某動作，如 業務嘗試建立訂單異動>
+  - Then <不允許/被擋下，如 系統不允許建立>
 
 ## 來源
 
@@ -172,7 +161,6 @@ business-domain:
 role:
   - "[[../../03-roles/<角色>]]"
 priority: medium
-stage: business-only
 status: draft
 created-at: 2026-MM-DD
 last-reviewed: 2026-MM-DD
@@ -192,7 +180,7 @@ source-gap: false
 ## 這張卡要回答的問題
 - <問題>？ → 結論見「成功條件第 N 條」
 
-## 業務情境（穩定層）
+## 業務情境
 
 ### 作為
 [[../../03-roles/<角色>]]
@@ -211,23 +199,14 @@ source-gap: false
 2. <依某規則時 wiki link 指 [[../../04-business-logic/<規則卡>#<slug>]]，不重述規則>
 
 ### 成功條件（acceptance criteria）
-1. <可觀測具體值的驗收 1>
-2. <含邊界 / 反向驗收 2>
-
-## UI 操作（易變層）
-
-<!-- ui-binding: draft -->
-
-> 階段 1：UI 操作層待 Prototype 定案後補（觸發 erp-user-story mode B）。
-
-### 介面入口
-- 待補
-
-### 操作步驟
-- 待補
-
-### 介面元素
-- 待補
+- 情境：<正向達成>
+  - Given <前置狀態>
+  - When <業務動作>
+  - Then <可觀測結果>
+- 情境：<禁止/守衛>
+  - Given <某狀態>
+  - When <嘗試某動作>
+  - Then <不允許/被擋下>
 
 ## 來源
 - 規則正本：[[../../04-business-logic/<規則卡>#<slug>]]
@@ -241,10 +220,9 @@ source-gap: false
 > 一份兩用：寫的時候照著勾、審的時候照著驗。對齊 [[wiki-schema#維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）|維度 13]] + [[wiki-schema#維度 14：卡類型內容職責邊界（2026-05-28 新增）|維度 14]] + [[business-logic-writing-guide#六、營運驗證寫法 該做 / 不該做|writing-guide § 六]]。分四面向。
 
 ### A. Frontmatter（schema 對齊）
-- [ ] 共同必填全填：`type=user-story` / `us-id` / `module` / `business-domain` / `role` / `priority` / `stage` / `status` / `created-at` / `last-reviewed`。
+- [ ] 共同必填全填：`type=user-story` / `us-id` / `module` / `business-domain` / `role` / `priority` / `status` / `created-at` / `last-reviewed`。
 - [ ] `source` ≥ 1 條，且**不指向其他 user-story 卡**、**不指 OpenSpec 當正確性根據**（OpenSpec / Prototype 寫 `implemented-by`）。
 - [ ] `source` 往上指依據（規則正本 / 最上層的依據）；補不出時 `source-gap: true` 並於來源段註明。
-- [ ] `stage=business-only` 時 UI 操作段空 / 待補；`stage=ui-bound` 時 `ui-binding` 已填、`implemented-by` 補 Prototype 路徑。
 - [ ] `role` 為 wiki link 至 `03-roles/`（外部 B2C 會員例外，見維度 13 Lint 例外）。
 - [ ] 跨故事相依以 `prerequisites` 記錄（非靠串接故事串起來）。
 
@@ -255,13 +233,13 @@ source-gap: false
 - [ ] 「這張卡要回答的問題」段每個問題正文（前置條件 / 業務流程 / 成功條件）有對應結論；無待拍板項時寫「無待回答問題」。
 
 ### C. 硬規則（不可違反）
-- [ ] 業務情境段 grep 無 UI 措辭（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器）。
+- [ ] 全卡 grep 無 UI 措辭（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器）；UI 點擊歸 Prototype e2e。
 - [ ] 全卡 grep 無未轉中文的英文欄位名（payment / printItem / orderAdjustment / quoteRequest / workOrder / productionTask / reviewRound / paymentPlan / afterSalesTicket 等）；技術代號皆括號附註不當主詞。
 - [ ] 正文只寫現在的規則（改版歷史在 [[business-logic-changelog]]）；正文不出現待釐清的問題措辭（「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」→ 已觸發 [[oq-manage]] mode B 開卡、原處改 wiki link 引用）。
 - [ ] 全卡無 emoji / 視覺符號。
 
 ### D. 可驗證性與可達性（前提→動作→驗收結果 + 完整關聯）
-- [ ] acceptance criteria 2-5 條；每條用可觀測具體值（金額 / 狀態名 / 數量 / 角色）描述「驗收什麼」非「做了沒」；單條不塞 ≥ 2 個獨立規則。
+- [ ] 成功條件為 Gherkin 情境（每條含 Given/When/Then）；2-5 條；每條守單一 When + 單一 Then（多個獨立 When → 拆條或 split）；Then 用可觀測具體值（金額 / 狀態名 / 是否允許）非「做了沒」；涵蓋正向達成型，視情況含禁止/守衛型。
 - [ ] 「我希望」≤ 30 字（INVEST 之 Small＝夠小、一個 Sprint 可完成）；「以便」明示業務價值（INVEST 之 Valuable＝對使用者有價值）。
 - [ ] 卡內提到的每個被 Vault 收錄的概念（角色 / 規則 / 狀態 / 實體 / 情境）皆設 wiki link，語意分類（上層情境 / 相關規則 / 相關角色 / 相關實體 / 相關狀態），不連到不存在的卡（dangling），也不是沒有任何卡連到它的孤島卡（orphan）。
 - [ ] 「最後驗收：抽一句問主管不看程式也看得懂嗎」：業務情境段抽一句，問「Miles / 主管不看程式碼能否懂這個角色在做什麼」。
@@ -282,7 +260,7 @@ source-gap: false
 
 ## 參考
 
-- [[wiki/erp/13-user-stories/README]] — 13-user-stories 入口（兩階段紀律 / 命名 / 來源 / 禁串接故事）
+- [[wiki/erp/13-user-stories/README]] — 13-user-stories 入口（命名 / 來源 / 禁串接故事）
 - [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]] — 操作步驟層定位 + 往上指依據、連結不繞回自己
 - [[wiki-schema#type=user-story]] — frontmatter 正式 schema
 - [[wiki-schema#維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）]] — 維度 13 lint 規則

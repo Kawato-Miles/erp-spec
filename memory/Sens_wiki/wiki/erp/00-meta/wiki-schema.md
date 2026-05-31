@@ -24,7 +24,7 @@ last-reviewed: 2026-05-31
 | `entity` | 資料模型實體 | `05-entities/` |
 | `state-machine` | 狀態機 | `06-state-machines/` |
 | `scenario` | 跨模組情境 | `07-scenarios/` |
-| `user-story` | 業務 User Story（單一故事，含兩階段內容）| `13-user-stories/` |
+| `user-story` | 業務 User Story（單一故事，單階段業務情境）| `13-user-stories/` |
 | `open-question` | OQ 卡 | `08-open-questions/` |
 | `canvas-ref` | Canvas 對應的 markdown 描述 | `09-canvases/` |
 | `reference` | 外部連結索引 | `10-references/` |
@@ -259,8 +259,6 @@ module:
 role:
   - "[[<角色卡>]]"                          # wiki link 至 03-roles/
 priority: high | medium | low
-stage: business-only | ui-bound             # 兩階段標記（必填）
-ui-binding: draft | prototype-v1 | locked   # UI 段版本標記（stage=ui-bound 時必填）
 status: draft | active | deprecated
 created-at: YYYY-MM-DD
 last-reviewed: YYYY-MM-DD
@@ -275,8 +273,8 @@ related-business-logic:                     # 連到業務邏輯卡（可選）
   - "[[<業務邏輯卡>]]"
 related-entities:                           # 連到實體卡（可選）
   - "[[<實體卡>]]"
-related-test-cases:                         # Notion Test Case URL（選填）
-  - <URL>
+related-test-cases:                         # 往下的驗收：Vault test-case 卡 wiki link（2026-06-01 由 Notion URL 改；選填）
+  - "[[../15-test-cases/<module>/TC-<MODULE>-<NNN>-<簡述>]]"
 prerequisites:                              # 相依性（2026-05-22 新增）：本 US 執行前須完成的前置動作
   - "[[<US-XX-NNN>]]"                       # 其他 user story（具體 wiki link）
   - "<系統行為或角色準備動作的文字描述>"   # 如「系統自動分派完成」「審稿主管已維護能力等級」
@@ -288,8 +286,7 @@ notion-page-url: <URL>                      # 推送後填
 **防止 AI 拿自己寫的東西當依據再生內容的規約**：
 - 每張 user-story 卡必填 `source` ≥ 1 條（指向 raw / spec / 業務邏輯卡 / 訪談紀錄）
 - 禁止 Claude 引用其他 user-story 卡作為 source（會造成 AI 拿自己寫的東西當依據再生內容）
-- 業務情境段（H2「業務情境（穩定層）」）禁含 UI 措辭（見 § 六 維度 13）
-- stage=business-only 時 UI 操作段須保持空 / 待補；填了內容須將 stage 改為 ui-bound
+- 全卡（H2「業務情境」）禁含 UI 措辭（見 § 六 維度 13）；UI 點擊操作不在 user-story（歸 Prototype e2e）、介面層級驗收歸 test-case（2026-06-01 單階段化，移除原「UI 操作（易變層）」段與 stage / ui-binding 欄位）
 
 **禁彙整型入口故事規約**（2026-05-22 新增）：
 - **MUST NOT** 建立「統合多角色 / 多動作」的 user story 作為總分結構入口（彙整型入口故事）
@@ -549,21 +546,21 @@ related-changes:                   # 本期涉及的 openspec change
 
 **Error 條件**：
 - 業務情境段缺「作為 / 我希望 / 以便 / 成功條件」任一 H3
-- 業務情境段含 UI 措辭（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器 等）
+- 全卡含 UI 措辭（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器 等）
 - 內容含英文欄位名（payment / printItem / orderAdjustment / quoteRequest / workOrder / productionTask / reviewRound / paymentPlan 等）未轉中文
 - 缺來源（frontmatter `source` 為空或不存在）
-- stage=business-only 但 UI 操作段已填內容（stage 不一致）
+- 成功條件非 Gherkin 格式（缺 Given/When/Then 結構）
 - 命名不符 `US-<MODULE>-<NNN>-<slug>.md`
-- frontmatter 缺 us-id / module / role / priority / stage / status / created-at / source 任一必填項
+- frontmatter 缺 us-id / module / role / priority / status / created-at / source 任一必填項
 
 **Warning 條件**：
-- acceptance criteria > 5 條（業界共識，建議 split story）
-- acceptance criteria < 2 條（過於模糊）
-- stage=ui-bound 但 UI 操作段空 / 缺 ui-binding 註解
+- 成功條件 > 5 條（業界共識，建議 split story）
+- 成功條件 < 2 條（過於模糊）
+- 單一成功條件含多個獨立 When/Then（疑似 scope creep，建議拆條或 split story）
 - last-reviewed > 90 天 + status=active
 - source 指向其他 user-story 卡（疑似 AI 拿自己寫的東西當依據再生內容）
 - 「我希望」段字數 > 30 字（違反 INVEST Small，對應 [[user-story-spec#五、撰寫原則|user-story-spec § 五]]，2026-05-21 新增）
-- 「成功條件」單條塞 ≥ 2 個獨立業務規則（違反 Testable 單一可驗證原則，2026-05-21 新增）
+- 「成功條件」單一情境塞 ≥ 2 個獨立業務規則（違反 Testable 單一可驗證原則，2026-05-21 新增）
 
 **Lint 例外**（2026-05-21 新增）：
 - 外部使用者角色（如 B2C 會員 / EC 註冊會員）允許 `role` 為純文字而非 wiki link 至 `03-roles/`；對應 [[AR-1-B2C會員是否納入正式角色|AR-1]] 決策
@@ -742,7 +739,7 @@ related-changes:                   # 本期涉及的 openspec change
 | `entity` | 實體欄位 / 關聯 / 狀態 | 業務流程敘述（屬 business-logic / scenario）/ user-story |
 | `role` | 角色職責 / 權限 / 工作流 / 痛點 | 跨角色流程細節（屬 scenario）/ 實體欄位定義 |
 | `state-machine` | 狀態定義 / 轉換條件 / 觸發事件 | 業務情境敘述（屬 scenario）/ UI 措辭 |
-| `user-story` | 業務情境（穩定層）+ UI 操作（易變層）| 詳見 § 六維度 13（已規範）|
+| `user-story` | 業務情境（單階段：作為 / 我希望 / 以便 / Gherkin 成功條件）| 詳見 § 六維度 13；UI 操作不在此（歸 Prototype e2e）、介面層級驗收歸 test-case |
 | `test-case` | frontmatter（含往上指依據）+ 一句話定位 + 相關連結（正文「前提條件→動作→驗收結果」三段存 Notion）| **正文三段重抄**（前置條件 / 測試步驟 / 預期結果屬 Notion）/ 規則動機長篇（屬 business-logic）/ user-story 格式模板 |
 
 ### 11.2 共通原則
