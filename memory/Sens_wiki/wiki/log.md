@@ -59,3 +59,7 @@ last-reviewed: 2026-05-31
 - 變更：[[訂單狀態]] 卡補「線下前段插入審核通過把關」營運動機（含 ORD-027 訂單額外費用凍結點前移、連 [[ORD-027-訂單額外費用凍結時點與審核通過成交鎖定對齊]]）、last-reviewed 更新；spec-registry 訂單管理 v1.18→v1.19、售後 v0.7→v0.8。
 - doc-audit：4 main spec delta 合併驗證無誤、Data Model 無漏合；ADDED 殘留（廢止 stub vs 分階段稽核）歸 BI-19 收斂；索引層 3 個 ⚠️（impeccable-usage / notion-mcp-guidelines / principles 未列 CLAUDE.md）為 pre-existing 與本 change 無關、未處理。
 - 衝突：BI-19 / ORD-028 兩欄位重疊維持 open（Miles 決定留待以後 change）。
+
+## [2026-06-01] 同步 | align- task 3.x 補發票情境（I7 / I10）
+- 變更：[[payment-invoice-scenarios]] §8 補 I7「跨齊報稅期作廢失敗→引導折讓」明確錯誤訊息流程（cross-ref OpenSpec 發票作廢與折讓 UI 與規則）；新增 §9「多品項發票進位尾差核銷」(I10)，業務情境 + 規則指向 OpenSpec 發票金額誤差核銷規則（不複述驗算數字，避免雙正本）。
+- 衝突：無。align- 文件任務（§1-5）至此全部完成；剩 §6 Prototype（須本機環境）+ BI-19/ORD-028（留待以後 change）。
