@@ -9,15 +9,15 @@
 
 > 三視角審查（1.1~1.4）完成後，補入「草稿初始狀態 + 業務送主管審核（草稿 → 待業務主管審核）+ 審核欄位鎖定錨點前移 + 待辦頁 filter」三段（線下單需求單轉訂單三狀態前段，2026-06-01）。已跑 erp-planning-pre-check 訂單領域稽核（含 payment_terms_note 鎖定漏洞 §5c、state-machines L188/L234 不一致 §5a）。下列為補審查項。
 
-- [ ] 1b.1 對新增 / 修訂段（order-management「業務送出訂單審核」、「訂單業務主管審核欄位」鎖定前移、「業務主管於訂單模組的資料可見範圍」filter + state-machines 補段）補三視角或 erp-consultant 輕量審查
-- [ ] 1b.2 確認鎖定錨點前移（payment_terms_note / approved_by_sales_manager_id 自報價待回簽 → 審核通過）無下游回歸
+- [x] 1b.1 對新增 / 修訂段補 erp-consultant 輕量審查（2026-06-01 完成，5 審查點：鎖定前移回歸 / 三態編輯邊界 / 狀態機一致性 / sync 機制風險 / 新欄位設計）
+- [x] 1b.2 處理審查 P1：(a) sync 機制風險 → 改用 MODIFIED 整條納入 § 訂單狀態機 + § 訂單建立（見 2.3b）；(b) Supervisor 重指派語境 → 收斂為「僅待業務主管審核階段解卡、審核通過後為核可者歷史紀錄不再重指派」；(c) 送審角色守衛 → 補「僅訂單可編輯角色可送主管審核」scenario
 
 ## 2. Spec 同步至 main specs（archive 階段）
 
 - [ ] 2.1 執行 `openspec archive align-business-consultation-coverage-gaps`
-- [ ] 2.2 確認 order-management/spec.md 全部 ADDED（含新增「業務送出訂單審核」）+ MODIFIED（含新增「訂單業務主管審核欄位」「業務主管於訂單模組的資料可見範圍」）Requirement 已 merge 至 main spec
-- [ ] 2.3 確認 state-machines/spec.md「訂單前段審核通過狀態」Requirement（含草稿入口 + 送主管審核 scenario）已 merge 至 main spec
-- [ ] 2.3b **校正 main spec 既有 staleness（單行、低風險，sync 時直接改 main spec、不重製整條 Requirement）**：(a) state-machines § 訂單狀態機 線下路徑「報價待回簽 → 已回簽 → [共用段]」改為完整「草稿 → 待業務主管審核 → 審核通過 → 報價待回簽 → 已回簽 → [共用段]」並刪除其下「業務主管審核狀態由獨立 change 處理、本 change 不涉及」過時備註；(b) order-management § 訂單建立 Scenario US-ORD-001 之 THEN「進入報價待回簽」改為「進入草稿」
+- [ ] 2.2 確認 order-management/spec.md 全部 ADDED（含新增「業務送出訂單審核」）+ MODIFIED（含新增「訂單業務主管審核欄位」「業務主管於訂單模組的資料可見範圍」「訂單建立」）Requirement 已 merge 至 main spec
+- [ ] 2.3 確認 state-machines/spec.md「訂單前段審核通過狀態」ADDED + 「訂單狀態機」MODIFIED 已 merge 至 main spec
+- [ ] 2.3b **驗證既有 staleness 已由 MODIFIED 自動 sync 校正（非人工單行編輯）**：sync 後確認 (a) main spec § 訂單狀態機 線下路徑已為完整「草稿 → 待業務主管審核 → 審核通過 → 報價待回簽 → 已回簽 → [共用段]」且「業務主管審核狀態由獨立 change 處理、本 change 不涉及」過時備註已消失；(b) order-management § 訂單建立 US-ORD-001 THEN 已為「進入草稿」。三者皆由本 change MODIFIED 整條 Requirement 取代達成，archive sync 自動完成、無需人工改 main spec
 - [ ] 2.4 確認 after-sales-ticket/spec.md 售後場景退款流程三組件組合 Requirement 已 ADDED 至 main spec
 - [ ] 2.5 確認 business-processes/spec.md 跨齊報稅期作廢 vs 折讓流程節點 Requirement 已 ADDED 至 main spec
 

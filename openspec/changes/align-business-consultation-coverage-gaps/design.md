@@ -48,6 +48,8 @@
 - 鎖定前移確保 `lastApprovedPaymentTermsNote` 快照與實際鎖定時點一致，維持業務主管把關完整性
 - 沿用既有 UI 與權限機制（業務主管核准動作不變，只是目標狀態調整）
 
+**既有主 spec staleness 的修法（MODIFIED 整條取代，非延後人工校正）**：主 spec § 訂單狀態機 線下路徑列舉（L188「報價待回簽 → 已回簽」+ L234 過時備註）與 § 訂單建立 US-ORD-001 入口（「進入報價待回簽」）為 archived `relocate-sales-manager-approval-from-quote-to-order` 遺留的不一致。OpenSpec sync 以 exact-title 整條 Requirement 比對，ADDED 不會觸及既有 Requirement 內文的散落字句——若僅靠 ADDED + 文字宣告「取代」，archive 後主 spec 會新舊路徑並存矛盾（erp-consultant 審查點 4）。故改以 MODIFIED 整條納入 § 訂單狀態機 與 § 訂單建立（byte-faithful 重製 + 僅改目標行），讓 sync 自動取代、零人工依賴。代價是 delta 較長，但消除「上線後才發現主 spec 矛盾」的風險。
+
 **Alternatives 拒絕的選項**：
 - 「業務主管核准直接進報價待回簽」（既有）：無法區分審完未送 vs 已送，業務追蹤工作困難
 - 「審核通過後系統自動寄送報價單」：未來功能，目前報價單透過外部管道送出，系統不參與寄送

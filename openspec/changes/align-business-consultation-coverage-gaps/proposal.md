@@ -16,6 +16,8 @@
 - 業務送出報價單給客戶 Requirement：業務手動推進「審核通過」→「報價待回簽」；新增 `quote_sent_at` 時戳
 - **修正 `payment_terms_note` / `approved_by_sales_manager_id` 鎖定錨點**：自「進入報價待回簽後鎖定」前移至「進入審核通過後鎖定」（業務主管核准當下即鎖），避免新增「審核通過」中間態後出現「核准後、外發前偷改收款條件繞過把關」的漏洞
 - 訂單審核待辦頁 filter 納入「審核通過」（供主管追蹤已核准未外發）、排除「草稿」（業務側未送審）；預設排序改用 `submitted_for_review_at`
+- **校正既有主 spec staleness（以 MODIFIED 整條取代、archive sync 自動完成）**：state-machines § 訂單狀態機 線下路徑列舉補完五階段並移除過時備註、order-management § 訂單建立 US-ORD-001 入口改為「草稿」（避免新增前段狀態後主 spec 出現新舊路徑並存矛盾）
+- 角色守衛：送主管審核僅訂單可編輯角色（業務 / 諮詢）可發起；Supervisor 重新指定業務主管收斂為「僅待業務主管審核階段解卡、審核通過後為核可者歷史紀錄不再重指派」
 
 ### B. 訂單複製功能（對應 US-ORD-007 / 灰色情境 I1）
 
@@ -71,7 +73,7 @@
 ### Modified Capabilities
 
 - `order-management`：草稿初始狀態 + 業務「送主管審核」動作、訂單「審核通過」新狀態、業務主管審核欄位鎖定錨點前移（含 `submitted_for_review_at` / `quote_sent_at` 新欄位）、訂單審核待辦頁 filter 調整、訂單複製、客戶資料 relation 規則、多印件出貨追蹤、付款計劃稽核、發票金額誤差核銷、發票作廢 vs 折讓規則（Requirement 補齊 / 修訂）
-- `state-machines`：訂單狀態機線下前段補完（草稿 → 待業務主管審核 → 審核通過 → 報價待回簽 → 已回簽）+ 「送主管審核」轉換 + 草稿入口
+- `state-machines`：新增 ADDED「訂單前段審核通過狀態」（草稿入口 + 送主管審核 + 審核通過）+ MODIFIED「訂單狀態機」線下路徑補完五階段並移除過時備註
 - `after-sales-ticket`：退款流程三組件組合在售後場景的應用（明示 ticket → 訂單異動單 + 退款款項處理 + 發票異動）
 - `business-processes`：跨齊報稅期作廢 vs 折讓流程節點補完
 
