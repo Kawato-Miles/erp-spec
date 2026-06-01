@@ -156,6 +156,7 @@ description: >
 - 評審任一維度非「通過」→ 修正草稿 → **MUST 重新跑 Step 4（senior-pm 重評）**；**禁止用實作者自審代替重評、禁止未重評就進 Step 6 寫入**
 - 重複「評審 → 修正 → 重評」直到 senior-pm 判 4 維度全「通過」；維度 4（真實性）任一處捏造即整體不通過（一票否決）
 - 每輪 MUST 記 Iteration Policy：第 N 輪改了什麼 / 哪些維度仍未過 / 下一步修正方向
+- 評審判「部分 / 未通過」的項目 MUST 追加進 `references/blocked-cases-log.md`（不論最終是否達標，當 Rubric 迭代原料）
 
 **防 reward hacking（核心）**：達標標準鎖死在 `rubric.md`，**MUST NOT 為了收斂而放水、降標或表面改字騙過關**；修正 MUST 是「真實修正」（評審以 evidence-anchored 驗證實質改善，非字面挪移）。
 
@@ -190,7 +191,7 @@ description: >
 當交付出現新型錯誤、或要新增 / 調整評分維度時，依此 SOP 演化 `references/rubric.md` 與 `delivery-template.md`：
 
 1. **跑基準**：對新模組讓交付草稿自由產出，看初始品質落點
-2. **記錄皺眉原因**：Miles / 評審看了會皺眉的具體原因全記下（= 新禁令雛形）
+2. **記錄皺眉原因**：Miles / 評審看了會皺眉的具體原因全記下（= 新禁令雛形）→ 記進 `references/blocked-cases-log.md`（append-only 原料層，每次被擋即追加）
 3. **分門別類**：收斂為 3-4 個大維度（避免維度爆炸）
 4. **提供具體拒絕案例（核心）**：把抽象要求轉成精確的「絕對不要做的事」（禁令越具體，評審越好抓違規）
 5. **多樣化引導**：標準模板提供多個可行結構 / 風格方向，避免過度擬合單一範例
@@ -219,3 +220,4 @@ description: >
 |------|------|
 | `references/delivery-template.md` | 自包含標準模板（project 描述 + Task issue + 狀態機規範）|
 | `references/rubric.md` | 4 維度評分標準 + 具體禁令 + 正反案例 + 演化紀錄 |
+| `references/blocked-cases-log.md` | 被擋案例 append-only log（Rubric 迭代原料；每次評審擋下即追加，累積後提煉）|
