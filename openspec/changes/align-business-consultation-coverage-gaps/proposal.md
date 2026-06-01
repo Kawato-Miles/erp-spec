@@ -15,7 +15,7 @@
 - 業務主管訂單審核 Requirement：核可推進至「審核通過」；**業務主管不核准時維持「待業務主管審核」、走 Slack 討論，不設退回鈕**（無「退回草稿」動作；業務可於待審核態持續修改）
 - 業務送出報價單給客戶 Requirement：業務手動推進「審核通過」→「報價待回簽」；新增 `quote_sent_at` 時戳
 - **修正 `payment_terms_note` / `approved_by_sales_manager_id` 鎖定錨點**：自「進入報價待回簽後鎖定」前移至「進入審核通過後鎖定」（業務主管核准當下即鎖），避免新增「審核通過」中間態後出現「核准後、外發前偷改收款條件繞過把關」的漏洞
-- **修正 OrderExtraCharge（OEC）凍結時點（解 [[ORD-027-OEC凍結時點與審核通過成交鎖定對齊]]，方案 A）**：線下訂單 OEC 凍結點自「報價待回簽」前移至「審核通過」，與成交條件鎖定一致——審核通過後新增任何影響報價總額的費用（含運費 / 急件費）一律走 OrderAdjustment + 主管審核；OEC 可直接新增視窗收斂為「草稿 / 待業務主管審核」兩態。順手校正該 Requirement 舊版 legacy 狀態詞（「訂單確認」「報價評估階段」）對齊現行線下狀態機
+- **修正訂單額外費用凍結時點（解 [[ORD-027-訂單額外費用凍結時點與審核通過成交鎖定對齊]]，方案 A）**：線下訂單訂單額外費用凍結點自「報價待回簽」前移至「審核通過」，與成交條件鎖定一致——審核通過後新增任何影響報價總額的費用（含運費 / 急件費）一律走訂單異動 + 主管審核；訂單額外費用可直接新增視窗收斂為「草稿 / 待業務主管審核」兩態。順手校正該 Requirement 舊版 legacy 狀態詞（「訂單確認」「報價評估階段」）對齊現行線下狀態機
 - 訂單審核待辦頁 filter 納入「審核通過」（供主管追蹤已核准未外發）、排除「草稿」（業務側未送審）；預設排序改用 `submitted_for_review_at`
 - **校正既有主 spec staleness（以 MODIFIED 整條取代、archive sync 自動完成）**：state-machines § 訂單狀態機 線下路徑列舉補完五階段並移除過時備註、order-management § 訂單建立 US-ORD-001 入口改為「草稿」（避免新增前段狀態後主 spec 出現新舊路徑並存矛盾）
 - 角色守衛：送主管審核僅訂單可編輯角色（業務 / 諮詢）可發起；Supervisor 重新指定業務主管收斂為「僅待業務主管審核階段解卡、審核通過後為核可者歷史紀錄不再重指派」
@@ -91,4 +91,4 @@
   - 訂單複製功能 UI
 - **User Story（已匯入 Notion）**：US-ORD-001 ~ 012、US-PO-001 ~ 013、US-AS-001 ~ 006、US-CR-001 ~ 006、US-SP-001 ~ 005、US-PI-002 ~ 003，共 44 個 user story（含本輪改寫與重編號）
 - **業務培訓**：作廢 vs 折讓的選擇邏輯、退款流程三組件組合、訂單前段審核流程的新狀態與動作
-- **ORD-027 已解（方案 A，Miles 2026-06-01 拍板）**：[[ORD-027-OEC凍結時點與審核通過成交鎖定對齊]]——OEC 凍結時點自「報價待回簽」前移至「審核通過」，已於本 change order-management delta 新增 MODIFIED Requirement「OrderExtraCharge vs OrderAdjustment.fee 時間邊界」整條取代校正。其餘設計決議已於 user story / 本輪 Miles 拍板確認
+- **ORD-027 已解（方案 A，Miles 2026-06-01 拍板）**：[[ORD-027-訂單額外費用凍結時點與審核通過成交鎖定對齊]]——訂單額外費用凍結時點自「報價待回簽」前移至「審核通過」，已於本 change order-management delta 新增 MODIFIED Requirement「OrderExtraCharge vs OrderAdjustment.fee 時間邊界」整條取代校正。其餘設計決議已於 user story / 本輪 Miles 拍板確認

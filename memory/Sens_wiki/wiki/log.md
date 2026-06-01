@@ -34,3 +34,8 @@ last-reviewed: 2026-05-31
 ## [2026-06-01] 同步 | wiki↔OpenSpec 分工契約收斂 CLAUDE.md 單一處 + 17 卡單一正本化 + CLAUDE.md 去胖
 - 變更：分工契約只在 root `CLAUDE.md` 宣告一次（新增 § wiki 與 OpenSpec 分工），[[wiki-architecture]] / [[vault-charter]] / `.claude/rules/sens-wiki.md` 三處重述改單行指向；9 實體卡（需求單 / 訂單 / 印件 / 工單 / 生產任務 / 任務 / 諮詢單 / 售後服務 砍與 OpenSpec § Data Model 重複欄位表、留業務 WHY + implemented-by；出貨單僅修死引用不砍）+ 8 狀態卡（訂單 / 工單 / 生產任務 / 印件 / 諮詢單 / 需求單 / 任務 砍狀態列舉留轉換動機；分期請款補 implemented-by）單一正本化；諮詢單修 stale 諮詢費 1000→2000；`CLAUDE.md` 去胖 555→444（Spec 規格檔清單 → `memory/erp/spec-registry.md`、ERP/共用資源/工具/Prototype 進度 → `memory/shared/resource-index.md`、術語 hot-cache 砍剩指標、行為規則措辭原樣）；標籤矛盾「（正本）」→「（實作規格正本，相對 Notion 發布版）」；`openspec/config.yaml` main spec 數 7→23。commits 04e295c / 6893bf9 / 965f246。
 - 衝突：無。另案待辦：出貨單（OpenSpec 無 Data Model）見 [[SHP-006-出貨模組spec待建立]]；QC 實體 / 狀態卡（QCRecord 廢止併入生產任務 + NCR）退役策展見 [[QC-002-QC兩張wiki卡退役或保留]]；`index → erp_index` 改名飛行中，故 index / log 排序未動。
+
+## [2026-06-01] 同步 | ORD-027 解（方案 A）+ 縮寫 OEC/OA 中文化
+- 變更：[[ORD-027-訂單額外費用凍結時點與審核通過成交鎖定對齊]] 標 resolved（Miles 採方案 A，訂單額外費用凍結點前移至審核通過），檔名由 ORD-027-OEC… 改為 ORD-027-訂單額外費用…（去縮寫）；align-business-consultation-coverage-gaps change（order-management / state-machines delta + proposal + tasks）內縮寫 OEC→訂單額外費用、OA→訂單異動全數中文化（Miles：縮寫日後看不懂）。
+- 保留不動：資料模型物件式 OrderExtraCharge(...) / OrderAdjustment(...)（與 Data Model 一致）、MODIFIED Requirement 標題（archive sync 對應鍵）、跨檔 Requirement 名稱引用「諮詢取消退費 OA 系統建已核可」。
+- 衝突：發現 main spec Requirement 標題「諮詢取消退費 OA 系統建已核可」仍含 OA 縮寫，且被 [[訂單異動規則]] / [[訂單異動狀態]] frontmatter source 錨點引用——全域改名屬另案，未在本 change 處理。
