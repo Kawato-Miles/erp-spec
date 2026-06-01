@@ -54,3 +54,8 @@ last-reviewed: 2026-05-31
 ## [2026-06-01] 健檢 | align- archive 合併後驗收發現兩處欄位重疊
 - 變更：開 [[BI-19-付款計畫變更稽核與既有BillingInstallment變更追蹤重疊]]（high）+ [[ORD-028-印件shipment_quantity與既有pi_shipped_qty欄位重疊]]（medium）。
 - 衝突：align- 新增的 change_count/original_expected_date 與 [[BI-1-原始日期基準凍結時點]] 已解的 BillingInstallment.changeCount 重疊（疑用統一前舊命名重造輪子）；shipment_quantity 與既有 pi_shipped_qty 重疊。兩者已合併進 main spec，待 Miles 裁決收斂方向。
+
+## [2026-06-01] 同步 | align- archive 後 wiki 回補 + doc-audit
+- 變更：[[訂單狀態]] 卡補「線下前段插入審核通過把關」營運動機（含 ORD-027 訂單額外費用凍結點前移、連 [[ORD-027-訂單額外費用凍結時點與審核通過成交鎖定對齊]]）、last-reviewed 更新；spec-registry 訂單管理 v1.18→v1.19、售後 v0.7→v0.8。
+- doc-audit：4 main spec delta 合併驗證無誤、Data Model 無漏合；ADDED 殘留（廢止 stub vs 分階段稽核）歸 BI-19 收斂；索引層 3 個 ⚠️（impeccable-usage / notion-mcp-guidelines / principles 未列 CLAUDE.md）為 pre-existing 與本 change 無關、未處理。
+- 衝突：BI-19 / ORD-028 兩欄位重疊維持 open（Miles 決定留待以後 change）。
