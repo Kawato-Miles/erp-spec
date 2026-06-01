@@ -42,8 +42,8 @@ last-reviewed: YYYY-MM-DD
 # ── source / implemented-by（前進標準，見 § 二補充說明）──
 source:                          # 往上指依據（這張卡為什麼對）。只准指更上層的卡 / 真實外部素材
   - "[[../01-products/operating-principles#<分權方向>]] 或 <外部素材：Notion 角色權責表 / OpenSpec user-roles spec / Miles 拍板>"
-implemented-by:                  # 往下指被誰實作 / 導航。指 OpenSpec Requirement 標題層 / prototype / test-case，不承載正確性
-  - "openspec/specs/user-roles/spec.md#Requirement: <角色職責標題>"
+implemented-by:                  # 往下指被誰實作 / 導航。指 OpenSpec spec 檔層，不綁標題錨點 / prototype / test-case，不承載正確性
+  - "openspec/specs/user-roles/spec.md"
 provenance-commit: <SHA>         # 可選但建議：記上次對齊的 commit，供 doc-audit stale 偵測
 
 # ── 過渡期保留欄（既有 16 張 role 卡現用，遷移期不強制移除）──
@@ -173,7 +173,7 @@ business-domain:
 source:
   - "<Notion 角色權責表 - 角色X> / Miles <YYYY-MM-DD> 拍板"
 implemented-by:
-  - "openspec/specs/user-roles/spec.md#Requirement: 角色X職責"
+  - "openspec/specs/user-roles/spec.md"
 related-spec: openspec/specs/user-roles/spec.md
 status: draft
 last-reviewed: <YYYY-MM-DD>

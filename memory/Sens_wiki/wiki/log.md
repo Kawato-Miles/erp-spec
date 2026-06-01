@@ -39,3 +39,9 @@ last-reviewed: 2026-05-31
 - 變更：[[ORD-027-訂單額外費用凍結時點與審核通過成交鎖定對齊]] 標 resolved（Miles 採方案 A，訂單額外費用凍結點前移至審核通過），檔名由 ORD-027-OEC… 改為 ORD-027-訂單額外費用…（去縮寫）；align-business-consultation-coverage-gaps change（order-management / state-machines delta + proposal + tasks）內縮寫 OEC→訂單額外費用、OA→訂單異動全數中文化（Miles：縮寫日後看不懂）。
 - 保留不動：資料模型物件式 OrderExtraCharge(...) / OrderAdjustment(...)（與 Data Model 一致）、MODIFIED Requirement 標題（archive sync 對應鍵）、跨檔 Requirement 名稱引用「諮詢取消退費 OA 系統建已核可」。
 - 衝突：發現 main spec Requirement 標題「諮詢取消退費 OA 系統建已核可」仍含 OA 縮寫，且被 [[訂單異動規則]] / [[訂單異動狀態]] frontmatter source 錨點引用——全域改名屬另案，未在本 change 處理。
+
+## [2026-06-01] 同步 | 撰寫規約：implemented-by 不綁 Requirement 標題錨點
+- 變更：[[wiki-schema]] § 4.0（implemented-by 定義 + 新增「不用標題錨點寫關聯」規則 + 7 處範本範例去錨點）、[[wiki-architecture]]（前進標準 + 過渡期修法措辭）、5 張範本（_template-test-case / _template-role / _template / _template-scenario / _template-business-logic）範例值去 `#Requirement: <標題>` 改為 spec 檔層。
+- 理由：OpenSpec Requirement 標題會改名（縮寫中文化等），標題錨點一改即斷鏈、反過來卡住改名（ORD-027 教訓）。關聯改指 spec 檔層級，Requirement 名稱只當文字描述。
+- 範圍：僅規約 + 範本（前瞻）。既有已寫標題錨點的卡 Miles 指示先留著、不回頭批量改。
+- 衝突：無。

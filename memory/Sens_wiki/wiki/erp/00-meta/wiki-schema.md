@@ -105,10 +105,11 @@ business-domain:
 | 欄位 | 方向 | 用途 | 指向對象 | 硬規則 |
 |------|------|------|---------|--------|
 | `source` | 往**上層**（更上層）| **正確性根據**（這張卡為什麼對 → 上層卡授權）| 更上層的 Vault 卡（營運原則 / 共用規則 / 業務規則 / 流程狀態角色資料 / 操作步驟），或最上層的依據（Miles 拍板 / 法規 / 客戶訪談）| **禁指 OpenSpec spec**（OpenSpec 是實作規格，不是正確性來源，方向顛倒）；**禁指同層卡**（平行卡不互為正確性根據，容易繞回自己）；**禁指下層卡**（下層不授權上層）|
-| `implemented-by` | 往**下層**（實作層）| **導航 / 覆蓋**（這張卡落到哪 → 下層實作位置）| OpenSpec Requirement 標題層（`openspec/specs/<module>/spec.md#Requirement: <標題>`）/ Prototype 端對端測試 / Prototype 型別檔 | **不承載正確性**（只是導航）；**可多值**；**可留空 = 待實作**（漸進填寫，不強制）|
+| `implemented-by` | 往**下層**（實作層）| **導航 / 覆蓋**（這張卡落到哪 → 下層實作位置）| OpenSpec spec 檔（`openspec/specs/<module>/spec.md`，**不綁 `#Requirement: <標題>` 標題錨點**）/ Prototype 端對端測試 / Prototype 型別檔 | **不承載正確性**（只是導航）；**可多值**；**可留空 = 待實作**（漸進填寫，不強制）；**禁用標題錨點寫關聯**（見下）|
 
 - `source` 的「往上指更上層」原則，使依據鏈終止於最上層的依據（如營運原則的 source 終止於 Miles 拍板），不在 Vault 內部繞回自己。
-- `implemented-by` 連到 OpenSpec **Requirement 標題層**（非整份 spec、非行號），方便 change archive 後對齊；留空代表該卡尚未落到 OpenSpec / Prototype，屬待實作狀態。
+- `implemented-by` 連到 OpenSpec **spec 檔層**（非行號、**非 `#Requirement: <標題>` 標題錨點**）；要標明對應哪條 Requirement 時，於卡內文字描述（如「實作於 § <標題>」），**不綁進連結錨點**。留空代表該卡尚未落到 OpenSpec / Prototype，屬待實作狀態。
+  - **不用標題錨點寫關聯（2026-06-01 ORD-027 教訓）**：OpenSpec Requirement 標題會改名（如縮寫中文化 / 措辭調整），標題錨點一改即斷鏈、且反過來卡住標題改名（牽動所有引用它的卡）。故關聯一律指 spec 檔層級，Requirement 名稱只當文字描述。既有已寫標題錨點的卡先留著、不回頭批量改，新卡 / 被 change 異動的卡採新寫法。
 - 連結不繞回自己由 § 六維度 15 lint 把關（`source` 鏈繞回自己報 Error、`source` 指向 OpenSpec 報 Error）。
 
 ### type=meta
@@ -156,8 +157,8 @@ module:
   - <主要模組>
 source:                          # 往上層 = 正確性根據（營運原則 / 商業流程共用規則 / Miles 拍板），禁指 OpenSpec / 同層 / 下層；見 § 4.0
   - "[[<上層卡或最上層依據>]]"
-implemented-by:                  # 往下層 = 導航（OpenSpec Requirement 標題層），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/user-roles/spec.md#Requirement: <標題>"
+implemented-by:                  # 往下層 = 導航（OpenSpec spec 檔層，不綁標題錨點），可多值 / 可留空=待實作；見 § 4.0
+  - "openspec/specs/user-roles/spec.md"
 related-spec: openspec/specs/user-roles/spec.md  # 若 OpenSpec 有（補充參照，非正確性來源）
 related-notion: <Notion 核心角色權責 DB 連結>
 status: active
@@ -175,8 +176,8 @@ module:
 logic-tier: general | specific   # 內部分層（2026-05-31 新增）：general=共用規則（這個領域所有規則都一定要遵守的底線）/ specific=業務規則（具體規則）；見下方「business-logic 內部分層」
 source:                          # 往上層 = 正確性根據；共用規則卡指營運原則 / 最上層依據，業務規則卡可指所屬共用規則卡；禁指 OpenSpec / 同層平行業務規則 / 下層；見 § 4.0
   - "[[<上層卡或最上層依據>]]"
-implemented-by:                  # 往下層 = 導航（OpenSpec Requirement 標題層 / Prototype 型別檔），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/<模組>/spec.md#Requirement: <標題>"
+implemented-by:                  # 往下層 = 導航（OpenSpec spec 檔層不綁標題錨點 / Prototype 型別檔），可多值 / 可留空=待實作；見 § 4.0
+  - "openspec/specs/<模組>/spec.md"
 related-spec: openspec/specs/<模組>/spec.md  # 若 OpenSpec 有（補充參照，非正確性來源）
 related-prototype: sens-erp-prototype/src/types/<...>.ts  # 若 Prototype 有
 status: active
@@ -205,8 +206,8 @@ module:
   - <模組>
 source:                          # 往上層 = 正確性根據（所屬 business-logic 規則 / 流程狀態角色資料層情境），禁指 OpenSpec / 同層 / 下層；見 § 4.0
   - "[[<上層卡>]]"
-implemented-by:                  # 往下層 = 導航（OpenSpec Requirement 標題層 / Prototype 型別檔），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/<模組>/spec.md#Requirement: <標題>"
+implemented-by:                  # 往下層 = 導航（OpenSpec spec 檔層不綁標題錨點 / Prototype 型別檔），可多值 / 可留空=待實作；見 § 4.0
+  - "openspec/specs/<模組>/spec.md"
 related-spec: openspec/specs/<模組>/spec.md  # 補充參照，非正確性來源
 status: active
 last-reviewed: YYYY-MM-DD
@@ -222,8 +223,8 @@ module:
   - <模組>
 source:                          # 往上層 = 正確性根據（所屬 business-logic 規則 / 流程狀態角色資料層情境），禁指 OpenSpec / 同層 / 下層；見 § 4.0
   - "[[<上層卡>]]"
-implemented-by:                  # 往下層 = 導航（OpenSpec Requirement 標題層），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/state-machines/spec.md#Requirement: <標題>"
+implemented-by:                  # 往下層 = 導航（OpenSpec spec 檔層，不綁標題錨點），可多值 / 可留空=待實作；見 § 4.0
+  - "openspec/specs/state-machines/spec.md"
 related-spec: openspec/specs/state-machines/spec.md  # 補充參照，非正確性來源
 status: active
 last-reviewed: YYYY-MM-DD
@@ -239,8 +240,8 @@ module:
   - cross-module
 source:                          # 往上層 = 正確性根據（所依據的 business-logic 規則 / 商業流程共用規則），禁指 OpenSpec / 同層 / 下層；見 § 4.0
   - "[[<上層卡>]]"
-implemented-by:                  # 往下層 = 導航（OpenSpec Requirement 標題層），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/business-scenarios/spec.md#Requirement: <標題>"
+implemented-by:                  # 往下層 = 導航（OpenSpec spec 檔層，不綁標題錨點），可多值 / 可留空=待實作；見 § 4.0
+  - "openspec/specs/business-scenarios/spec.md"
 related-spec: openspec/specs/business-scenarios/spec.md  # 補充參照，非正確性來源
 related-notion: <Notion 業務情境 DB 連結>
 status: active
@@ -264,8 +265,8 @@ created-at: YYYY-MM-DD
 last-reviewed: YYYY-MM-DD
 source:                                     # 往上層 = 正確性根據 + 來源（防 AI 拿自己寫的東西當依據再生內容），必填 ≥ 1；指更上層卡（business-logic 規則 / scenario）或最上層依據（raw / 訪談）；禁指其他 user-story 卡（同層繞回自己）、禁指 OpenSpec（方向顛倒）；見 § 4.0
   - "[[<raw / 業務邏輯卡 / scenario>]]"
-implemented-by:                             # 往下層 = 導航（OpenSpec Requirement 標題層 / Prototype e2e），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/<module>/spec.md#Requirement: <標題>"
+implemented-by:                             # 往下層 = 導航（OpenSpec spec 檔層不綁標題錨點 / Prototype e2e），可多值 / 可留空=待實作；見 § 4.0
+  - "openspec/specs/<module>/spec.md"
 related-spec: openspec/specs/<module>/spec.md  # 補充參照，非正確性來源
 related-scenarios:                          # 連到跨模組情境（可選）
   - "[[07-scenarios/README#情境 X]]"
@@ -310,8 +311,8 @@ status: draft | active | deprecated         # 必填
 last-reviewed: YYYY-MM-DD                    # 必填
 source:                                      # 往上層 = 正確性根據，必填 ≥ 1；MUST 指 user-story 卡（驗收項目依操作步驟）；禁指同層 test-case / business-logic / OpenSpec；見 § 4.0
   - "[[../13-user-stories/<module>/US-<MODULE>-<NNN>-<簡述>]]"
-implemented-by:                              # 往下層 = 導航 / 覆蓋，可多值 / 可留空=待實作；指 OpenSpec Requirement 標題層 / Prototype e2e；見 § 4.0
-  - "openspec/specs/<module>/spec.md#Requirement: <標題>"
+implemented-by:                              # 往下層 = 導航 / 覆蓋，可多值 / 可留空=待實作；指 OpenSpec spec 檔層不綁標題錨點 / Prototype e2e；見 § 4.0
+  - "openspec/specs/<module>/spec.md"
   - "sens-erp-prototype/tests/e2e/<spec>.spec.ts"   # 若已實作
 notion-page-url: <Notion ERP Test Case DB 該卡 URL>   # 必填（正文落點，Vault 不放正文；推送後填）
 provenance-commit: <SHA>                     # 可選但建議：上次對齊 commit，供 doc-audit stale 偵測
