@@ -598,6 +598,9 @@ related-changes:                   # 本期涉及的 openspec change
 - 承載商業邏輯的卡（business-logic / entity / state-machine / scenario / role / user-story / test-case）`source` 欄位為空 — 缺正確性根據（漸進補齊，非硬性）
 - `implemented-by` 全空且 status=active 超過 90 天 — 疑似 active 卡長期未落到實作（提示而非錯誤，因 implemented-by 可留空=待實作）
 
+**提示（Info）條件**：
+- `implemented-by`（或 `source`）值含 `#Requirement:` 標題錨點（如 `openspec/specs/<module>/spec.md#Requirement: <標題>`）— 標題錨點易因 Requirement 改名斷鏈（2026-06-01 ORD-027 教訓），建議改指 spec 檔層、Requirement 名稱以文字描述。**僅對本輪新增 / 異動的卡提示**（既有存量卡 Miles 指示先留著、不回頭批量改，故不對未異動卡報此項，避免噪音）。
+
 > `source` 往上層 + `implemented-by` 往下層的兩欄設計，使依據鏈終止於最上層的依據（營運原則的 source 指 Miles 拍板），下層導航鏈終止於 OpenSpec / Prototype，整張圖的連結不會繞回自己。本維度待 vault-audit skill 擴充實作「檢查有沒有繞回自己」的偵測邏輯。
 
 ## 七、命名規約

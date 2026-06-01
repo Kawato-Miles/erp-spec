@@ -45,3 +45,8 @@ last-reviewed: 2026-05-31
 - 理由：OpenSpec Requirement 標題會改名（縮寫中文化等），標題錨點一改即斷鏈、反過來卡住改名（ORD-027 教訓）。關聯改指 spec 檔層級，Requirement 名稱只當文字描述。
 - 範圍：僅規約 + 範本（前瞻）。既有已寫標題錨點的卡 Miles 指示先留著、不回頭批量改。
 - 衝突：無。
+
+## [2026-06-01] 健檢 | vault-audit 維度 15 加標題錨點 Info 檢查
+- 變更：[[wiki-schema]] § 六維度 15 新增「提示（Info）條件」= implemented-by/source 含 `#Requirement:` 標題錨點；vault-audit SKILL 補維度 15（部分）可執行 grep（git 範圍限定本輪異動卡、Info 級不阻擋）。
+- 理由：承接同日「不綁標題錨點」規約，給自動把關（不靠記性），且只提示本輪異動卡、不掃既有存量。
+- 衝突：無。
