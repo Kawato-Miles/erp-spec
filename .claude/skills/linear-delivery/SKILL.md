@@ -47,6 +47,64 @@ description: >
 | **Iteration Policy（迭代策略）** | 修完 MUST 重新評審（餵完整草稿、不暗示改動）；每輪記錄第 N 輪改了什麼 / 哪些維度未過 / 下一步；達標才停、硬上限 3 輪、卡住停下問 Miles |
 | **Error Handling（錯誤處理）** | 規格來源未定義某邏輯（無法不捏造）→ 停下來觸發 `oq-manage` mode B 記 OQ + 交付文件標「另案處理」，並回報 Miles 卡點，不硬編 |
 
+### /goal prompt 範例（每次交付前複製套用）
+
+> 每次交付前，把任務複製成下方 /goal、替換 `<...>` 占位，作為本次交付的 Goal 宣告，據此跑 Step 1-6。確保每次「完工標準 / 驗證 / 限制 / 迭代 / 錯誤處理」一致。風格對齊 dispatch-prompt-template（標準 + 具體範例）。
+
+**通用模板（複製改占位即用）**：
+
+```text
+# /goal：交付「<模組名>」到 Linear（project <project-id>）
+
+## Outcome（完工標準）
+<模組> 的 project 描述（模組層 What）+ 各角色 Task issue（角色層 How）齊備〔狀態密集模組另含每個狀態機 UML〕，且經 senior-pm 評審判 references/rubric.md 4 維度（D1 正本邊界 / D2 分層顆粒度 / D3 完整性 / D4 真實性）全「通過」。實作者不得自判完成。
+
+## Verification（驗證方式）
+由 senior-pm（PM agent）跑 references/rubric.md：逐維度給通過 / 部分 / 未通過 + evidence-anchored（引用草稿具體位置）+ 違反禁令 + 修正方向。D4 真實性一票否決。
+
+## Constraint（限制條件）
+- 交付內容只引用 Notion BRD / Notion 資料欄位 DB / Linear 互指；MUST NOT 外露 openspec 路徑或 PM 內部術語
+- 依 references/delivery-template.md 自包含模板產出；MUST NOT 抓單一既有 issue 當對照
+- save_project 帶 state:<交付前原狀態> 防 Kick off；save_issue 只傳 id + description，保留 estimate / assignee / cycle / priority / milestone / labels
+- 視圖層模組（複用中台）沿用中台狀態機、不另繪
+
+## Iteration Policy（迭代策略）
+評審未通過 → 修正 → MUST 重新跑 senior-pm 評審（餵完整修正後草稿、不暗示改了什麼）→ 直到 4 維度全通過。每輪記「第 N 輪改了什麼 / 哪維度未過 / 下一步」。
+
+## Error Handling（錯誤處理）
+- 規格來源未定義（無法不捏造）→ 記 oq-manage mode B + 交付文件標「另案處理」（不算未通過）
+- 連 2 輪同維度未過 / 滿 3 輪未全通過 → 停下回報 Miles（已試什麼 / 卡哪 / 需要什麼），不放水 / 不降標 / 不表面改字騙過關
+
+在 senior-pm 判 4 維度全「通過」之前，持續迭代不要停；卡住則停下與 Miles 討論。
+```
+
+**已填示範：業務平台 - 訂單管理（2026-06-01 第一個真實案例）**：
+
+```text
+# /goal：交付「業務平台 - 訂單管理」到 Linear（project af83dbd3）
+
+## Outcome（完工標準）
+業務平台 - 訂單管理的 project 描述（模組層 What）+ FE-259（訂單列表與詳情）/ BE-168（訂單 API）/ FE-258（售後頁）/ BE-167（售後 API）四個 Task issue 齊備；業務平台為視圖層、沿用中台訂單管理狀態機不另繪；經 senior-pm 評審判 references/rubric.md 4 維度全「通過」。實作者不得自判完成。
+
+## Verification（驗證方式）
+由 senior-pm（PM agent）跑 references/rubric.md：逐維度給通過 / 部分 / 未通過 + evidence-anchored（實際 Read sales-platform / order-management / after-sales-ticket spec 查證每條規則來源）+ 違反禁令 + 修正方向。D4 真實性一票否決。
+
+## Constraint（限制條件）
+- 交付內容只引用 Notion BRD / Notion 資料欄位 DB / Linear 互指；不外露 openspec 路徑
+- 依 references/delivery-template.md 自包含模板產出；不抓單一既有 issue 當對照
+- save_project 帶 state: Planned（業務平台交付前原狀態）防 Kick off；save_issue 只傳 id + description，保留 assignee（Yana / Eric）/ estimate / cycle 等
+- 業務平台為視圖層，沿用中台訂單 / 印件 / 售後服務單狀態機、不另繪
+
+## Iteration Policy（迭代策略）
+評審未通過 → 修正 → 重新跑 senior-pm 評審（餵完整修正後草稿、不暗示改了什麼）→ 直到 4 維度全通過。
+（實跑紀錄）第 1 輪 senior-pm 判 D1 通過 / D2 部分 / D3 部分 / D4 通過：FE-258 漏 next action 第四組「待建關聯動作」、摘要卡 3 張 vs next action 欄 4 值顆粒度混淆、BE-167/168 依賴段重述 project 已宣告內容 → 修正三項 → 第 2 輪全新 senior-pm 獨立重評 → 4 維度全通過 → 寫入。
+
+## Error Handling（錯誤處理）
+訂單詳情頁 Tab 閹割範圍 sales-platform spec 未定義（只定義印件詳情頁閹割）→ 記 oq-manage mode B（ORD-028）+ 交付文件標「另案處理」（D4 不扣分、不捏造閹割清單）。
+
+在 senior-pm 判 4 維度全「通過」之前持續迭代不要停 —— 本案第 2 輪達標才寫入。
+```
+
 ---
 
 ## 工作流程
