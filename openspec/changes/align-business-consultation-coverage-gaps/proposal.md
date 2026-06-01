@@ -90,4 +90,4 @@
   - 訂單複製功能 UI
 - **User Story（已匯入 Notion）**：US-ORD-001 ~ 012、US-PO-001 ~ 013、US-AS-001 ~ 006、US-CR-001 ~ 006、US-SP-001 ~ 005、US-PI-002 ~ 003，共 44 個 user story（含本輪改寫與重編號）
 - **業務培訓**：作廢 vs 折讓的選擇邏輯、退款流程三組件組合、訂單前段審核流程的新狀態與動作
-- **無新 OQ**（本 change 為 spec 補齊，所有設計決議已於 user story 階段確認）
+- **新增 1 OQ**：[[ORD-027-OEC凍結時點與審核通過成交鎖定對齊]]（doc-audit archive 前查出——OEC 凍結時點「報價待回簽」與本 change 成交條件鎖定錨點「審核通過」在審核通過態矛盾，待 archive 前決定是否前移 OEC 凍結時點）。其餘設計決議已於 user story / 本輪 Miles 拍板確認

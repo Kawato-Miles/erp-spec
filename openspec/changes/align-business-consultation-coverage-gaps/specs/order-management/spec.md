@@ -633,3 +633,16 @@ Order 資料模型 SHALL 新增以下業務主管審核相關欄位：
   - 仍未過業務主管核准的訂單：付款計畫變更不留稽核（沿用舊邏輯的「未過審核」行為，但不再強制阻擋修改）
   - 已過業務主管核准的訂單：付款計畫變更不再回審核，但自動填入 `original_expected_date`（首次變更時）+ `change_count + 1`
 - Prototype 補實作 task 6.5 需拆除既有「變更回業務主管審核」邏輯（OrderPaymentSection.tsx:154-171）並改為分階段稽核
+
+## MODIFIED Data Model
+
+> `openspec archive` 內建 sync **不處理 Data Model section**（doc-audit v1.4），archive 時 MUST 手動將下列異動合入主 spec `openspec/specs/order-management/spec.md` § Data Model § Order。下表僅列**異動 / 新增列**，其餘 Order 欄位不變。
+
+### Order
+
+| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
+|------|---------|------|------|------|------|
+| 審核業務主管 | approved_by_sales_manager_id | FK | Y（線下單）| | FK -> 使用者；訂單**草稿建立時**指派；草稿 / 待業務主管審核階段可由 Supervisor 重新指定（解卡待審訂單，見 § Supervisor 重新指定訂單業務主管）；**進入「審核通過」後鎖定**為實際核可者歷史紀錄、不再重指派（原為「進入報價待回簽後鎖定」） |
+| 收款條件備註 | payment_terms_note | 文字 | | | 從來源需求單帶入；最長 500 字；業務於草稿 / 待業務主管審核態可編輯、業務主管於審核時查看作為決策依據；**進入「審核通過」後鎖定**（核准當下即鎖；原為「進入報價待回簽後鎖定」） |
+| 送審時間 | submitted_for_review_at | datetime | | Y | 新增；業務點「送主管審核」（草稿 → 待業務主管審核）時寫入；供訂單審核待辦頁排序 |
+| 報價單外發時間 | quote_sent_at | datetime | | Y | 新增；業務點「已送報價單」（審核通過 → 報價待回簽）時寫入；供「核准到外發」「外發到回簽」落差量測 |

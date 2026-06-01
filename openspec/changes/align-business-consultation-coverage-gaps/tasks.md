@@ -20,6 +20,8 @@
 - [ ] 2.3b **驗證既有 staleness 已由 MODIFIED 自動 sync 校正（非人工單行編輯）**：sync 後確認 (a) main spec § 訂單狀態機 線下路徑已為完整「草稿 → 待業務主管審核 → 審核通過 → 報價待回簽 → 已回簽 → [共用段]」且「業務主管審核狀態由獨立 change 處理、本 change 不涉及」過時備註已消失；(b) order-management § 訂單建立 US-ORD-001 THEN 已為「進入草稿」。三者皆由本 change MODIFIED 整條 Requirement 取代達成，archive sync 自動完成、無需人工改 main spec
 - [ ] 2.4 確認 after-sales-ticket/spec.md 售後場景退款流程三組件組合 Requirement 已 ADDED 至 main spec
 - [ ] 2.5 確認 business-processes/spec.md 跨齊報稅期作廢 vs 折讓流程節點 Requirement 已 ADDED 至 main spec
+- [ ] 2.6 **手動合入 § Data Model（archive sync 不處理 Data Model section，doc-audit v1.4）— 本 change §A 部分**：依 order-management delta § MODIFIED Data Model § Order，將主 spec § Data Model § Order 表 (a) `approved_by_sales_manager_id` / `payment_terms_note` 鎖定錨點由「報價待回簽」改為「審核通過」（修補與 § 訂單業務主管審核欄位 Requirement 的矛盾）；(b) 新增 `submitted_for_review_at` / `quote_sent_at` 兩列
+- [ ] 2.7 **手動合入 § Data Model — 本 change B–I 新欄位（change-wide gap）**：doc-audit 查出 `source_order_id`（§B）/ `shipment_quantity`（§D）/ `original_expected_date`、`change_count`（§E）皆未在主 spec § Data Model，archive 時依各 Requirement mini-table 一併補入對應實體（Order / 印件 / PaymentPlan）的 § Data Model 表
 
 ## 3. memory 檔案補情境範例
 
