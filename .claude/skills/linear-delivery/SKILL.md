@@ -41,10 +41,10 @@ description: >
 
 | 元素 | 本 skill 的填法 |
 |------|----------------|
-| **Outcome（最終成果）** | Linear project 描述（What）+ 各角色 Task issue（How）+ 狀態機 UML 齊備，且 Rubric 4 維度全數通過 |
-| **Verification（驗證方式）** | 跑 `references/rubric.md` 4 維度評分；逐條對照「絕對不要」禁令清單 |
+| **Outcome（最終成果）** | Linear project 描述（What）+ 各角色 Task issue（How）+ 狀態機 UML 齊備，且 Rubric 4 維度經 senior-pm 評審判**全「通過」**才算完成（非實作者自判）|
+| **Verification（驗證方式）** | 由 senior-pm（PM agent）評審跑 `references/rubric.md` 4 維度評分；逐條對照「絕對不要」禁令清單 |
 | **Constraint（限制條件）** | 只改本次交付的 project 描述與指定 issue 描述；**絕對不動** issue 的 estimate / assignee / cycle / priority / milestone / labels；不外露 OpenSpec 路徑 |
-| **Iteration Policy（迭代策略）** | 每輪記錄：改了哪個容器、哪些維度未通過、下一步修正方向 |
+| **Iteration Policy（迭代策略）** | 修完 MUST 重新評審（餵完整草稿、不暗示改動）；每輪記錄第 N 輪改了什麼 / 哪些維度未過 / 下一步；達標才停、硬上限 3 輪、卡住停下問 Miles |
 | **Error Handling（錯誤處理）** | 規格來源未定義某邏輯（無法不捏造）→ 停下來觸發 `oq-manage` mode B 記 OQ + 交付文件標「另案處理」，並回報 Miles 卡點，不硬編 |
 
 ---
@@ -56,9 +56,9 @@ description: >
 - [ ] Step 1：抓已定案規格（OpenSpec spec + 狀態機 + 對外正本連結）
 - [ ] Step 2：依自包含標準模板產出交付草稿（不抓單一既有 issue 當對照）
 - [ ] Step 3：實作者自審（對照 Rubric 禁令清單）
-- [ ] Step 4：評審稽核（sub-agent 跑 Rubric 評分，執行者 / 評審分離）
-- [ ] Step 5：未通過則迭代修正，直到 4 維度全通過
-- [ ] Step 6：寫入 Linear（save_project / save_issue）+ 回報 URL 與 mermaid 渲染確認
+- [ ] Step 4：評審稽核（senior-pm 跑 Rubric 評分，執行者 / 評審分離、evidence-anchored）
+- [ ] Step 5：剛性閉環 — 未通過 → 修正 → 重新評審，直到 senior-pm 判 4 維度全通過（硬上限 3 輪、卡住問 Miles、不放水）
+- [ ] Step 6：通過才寫入 Linear（save_project / save_issue）+ 回報 URL 與 mermaid 渲染確認
 ```
 
 ### Step 1：抓已定案規格
@@ -83,17 +83,32 @@ description: >
 
 ### Step 4：評審稽核（執行者 / 評審分離）
 
-開一個 sub-agent 當**評審**，餵入交付草稿 + `references/rubric.md`，要求逐維度給「通過 / 部分 / 未通過」+ 引用違反的具體禁令 + 修正方向。**實作者與評審 MUST 分離**（同一 agent 自審易盲點，呼應 erp-planning-pre-check 模式）。
+調用 **senior-pm（PM agent）** 當**評審**（取代通用 sub-agent），餵入交付草稿 + `references/rubric.md`，明確要求「擔任交付文件評審、依 rubric.md 4 維度逐維度給通過 / 部分 / 未通過 + 引用違反的具體禁令 + **每維度引用草稿具體位置為證據（evidence-anchored，非空泛評語）** + 修正方向」（**非**跑其序列協作 / BRD 審查模式）。**實作者與評審 MUST 分離**（同一 agent 自審易盲點，呼應 erp-planning-pre-check 模式）。
 
-> 規模小的單 issue 微調 MAY 由主 agent 自審即可，不強制開評審 sub-agent；結構性交付（新 project / 多 issue / 含狀態機）SHALL 開評審。
+**重評獨立性（第 2 輪起 MUST）**：重評時 MUST 餵**完整修正後草稿**、MUST NOT 暗示「改了什麼 / 上輪哪維度被扣」，讓 senior-pm 如完全獨立的 supervisor 重新判（對齊 /goal 完全獨立評審、防誘導與 leniency bias 放水）。
 
-### Step 5：迭代至通過
+> **為何用 senior-pm 而非通用 sub-agent**：通用 agent 對 ERP spec 細節不熟，D4 真實性查證易誤判（實測：通用評審把 order-management「訂單列表最長逾期天數篩選」誤判為無據捏造，混淆了它與已移除的「Payment 老化主管聚合」，在一票否決維度卡最久仍判錯）。senior-pm 熟 ERP spec / Vault，能正確查證來源真偽。
+>
+> 規模小的單 issue 微調 MAY 由主 agent 自審即可，不強制調用評審；結構性交付（新 project / 多 issue / 含狀態機）SHALL 調用 senior-pm 評審。
 
-依評審回報修正 → 重評，直到 4 維度全「通過」。維度 4（真實性）任一處捏造即整體不通過（一票否決）。記錄每輪 Iteration Policy。
+### Step 5：迭代至通過（剛性閉環）
 
-### Step 6：寫入 Linear
+這是 Goal 的核心 —— **評審判未通過就重複修改、修到通過為止**，實作者不能自判完成：
 
-依 § Linear 操作 know-how 寫入，回報每個容器 URL + 請 Miles 確認 mermaid 渲染。
+- 評審任一維度非「通過」→ 修正草稿 → **MUST 重新跑 Step 4（senior-pm 重評）**；**禁止用實作者自審代替重評、禁止未重評就進 Step 6 寫入**
+- 重複「評審 → 修正 → 重評」直到 senior-pm 判 4 維度全「通過」；維度 4（真實性）任一處捏造即整體不通過（一票否決）
+- 每輪 MUST 記 Iteration Policy：第 N 輪改了什麼 / 哪些維度仍未過 / 下一步修正方向
+
+**防 reward hacking（核心）**：達標標準鎖死在 `rubric.md`，**MUST NOT 為了收斂而放水、降標或表面改字騙過關**；修正 MUST 是「真實修正」（評審以 evidence-anchored 驗證實質改善，非字面挪移）。
+
+**終止與 Error Handling**：
+- 達標（4 維度全通過）→ 進 Step 6
+- **硬上限 3 輪**：連續 2 輪同一維度仍未過、或達 3 輪仍未全通過 → 停下回報 Miles（列「已試什麼 / 卡在哪 / 需要你提供什麼」），不無限迴圈、不放水
+- 遇 spec 缺口無法不捏造 → 記 `oq-manage` mode B + 標「另案處理」（屬合法缺口顯性化，不算未通過）
+
+### Step 6：寫入 Linear（通過才寫）
+
+**前提閘門：Step 4 評審判 4 維度全「通過」才可寫入；未通過 MUST NOT 寫入。** 依 § Linear 操作 know-how 寫入，回報每個容器 URL + 請 Miles 確認 mermaid 渲染。
 
 ---
 
