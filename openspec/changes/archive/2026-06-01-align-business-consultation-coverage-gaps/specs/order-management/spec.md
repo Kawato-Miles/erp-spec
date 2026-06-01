@@ -28,9 +28,11 @@
 
 ### Requirement: 審核通過狀態下訂單修改
 
-訂單於「審核通過」狀態下，業務 / 諮詢 SHALL 可直接修改訂單內容（如印件規格細節、備註、配送資訊等），修改 MUST NOT 觸發回業務主管重新審核。業務主管核可後對訂單的進一步調整為業務自主範圍。
+訂單於「審核通過」狀態下，業務 / 諮詢 SHALL 可直接修改訂單內容（如印件規格細節、訂單須知 / 交貨備註等一般備註、配送資訊等），修改 MUST NOT 觸發回業務主管重新審核。業務主管核可後對訂單的進一步調整為業務自主範圍。此處「可直接修改」**不含成交條件鎖定欄位**（見下「鎖定欄位」）。
 
-**核心欄位變更例外**：若需變更下列「核心欄位」（影響業務主管已核可的成交條件），業務 MUST 走訂單異動單流程（建立訂單異動單 + 業務主管審核 + 業務執行重算應收），不直接修改：
+**鎖定欄位（進入審核通過起唯讀）**：`payment_terms_note`（收款條件備註）與 `approved_by_sales_manager_id`（審核業務主管）自進入「審核通過」起鎖定為唯讀（見「訂單業務主管審核欄位」Requirement），**MUST NOT** 於審核通過後被業務直接修改（避免核准後外發前竄改業務主管已審視的收款條件繞過把關）。`approved_by_sales_manager_id` 進入審核通過後即為「實際核可者」歷史紀錄、鎖定唯讀；Supervisor 的「重新指定業務主管」機制（見 § Supervisor 重新指定訂單業務主管）僅作用於**核可前的「待業務主管審核」階段**以解卡待審訂單，審核通過後不再重指派（重指派會竄改實際核可者紀錄）。
+
+**核心欄位變更例外**：若需變更下列「核心欄位」（影響業務主管已核可的成交條件金額 / 結構 / 對象），業務 MUST 走訂單異動單流程（建立訂單異動單 + 業務主管審核 + 業務執行重算應收），不直接修改：
 - 報價總額（含 OrderExtraCharge 加總）
 - 付款條件結構（PaymentPlan 期次的金額 / 期數結構新增 / 刪除；單一期次的日期變更由「付款計畫變更分階段稽核」Requirement 處理）
 - 客戶（廠客變更直接影響核可前的成交對象，需重審）
@@ -359,6 +361,45 @@
 - **AND** `change_count` MUST 變為 2
 - **AND** ActivityLog MUST 記載「PaymentPlan 期次 X 變更：2026-06-15 → 2026-07-01」
 
+### Requirement: 業務送出訂單審核（草稿 → 待業務主管審核）
+
+線下訂單由需求單「成交」轉入後 SHALL 以「草稿」為初始狀態（僅適用 `order_type = 線下`；線上訂單由 EC 付款自動推進、諮詢訂單為短路徑收尾，皆不進入草稿態）。**本 Requirement 取代既有「訂單建立」§ Scenario US-ORD-001 與 state-machines § 訂單狀態機 線下路徑列舉中「轉訂單直接進入報價待回簽 / 待業務主管審核」的描述**（既有主 spec 該兩處已由本 change MODIFIED § 訂單建立 與 state-machines § 訂單狀態機 整條取代校正，archive sync 自動完成）。
+
+業務 SHALL 於草稿態調整自需求單帶入的內容（交期、印件規格、報價金額、收款條件備註等），確認無誤後於訂單詳情頁點擊「送主管審核」，系統 SHALL 將訂單狀態自「草稿」推進至「待業務主管審核」並寫入 `submitted_for_review_at = 當前時間`。
+
+業務於「草稿」與「待業務主管審核」兩態 SHALL 皆可自由編輯訂單全部內容（業務主管核准前訂單視為內部初版，修改 MUST NOT 要求改走訂單異動單、MUST NOT 觸發回審）；自進入「審核通過」起鎖定成交條件（見「訂單業務主管審核欄位」與既有「審核通過狀態下訂單修改」Requirement）。業務主管不核准時訂單維持「待業務主管審核」、業務可持續修改後等待主管再次審視，**無需「退回草稿」動作**（沿用不設退回鈕、Slack 討論之既有設計；新增「送主管審核」為業務前向動作，不涉及主管退回）。
+
+業務主管（`approved_by_sales_manager_id`）SHALL 於「草稿」建立時即自動指派（見「訂單業務主管審核欄位」Requirement）；「送主管審核」僅推進狀態、不重新指派。
+
+#### Scenario: 業務於草稿態送主管審核
+
+- **GIVEN** 線下訂單狀態為「草稿」、`approval_required = true`
+- **WHEN** 業務於訂單詳情頁點擊「送主管審核」
+- **THEN** 訂單狀態 SHALL 自「草稿」推進至「待業務主管審核」
+- **AND** 系統 MUST 寫入 `submitted_for_review_at` = 當前時間
+- **AND** 系統 MUST 寫入 OrderActivityLog（操作者 = 業務、事件描述 = 「送主管審核」）
+- **AND** 該訂單 SHALL 出現在指定業務主管的訂單審核待辦頁
+
+#### Scenario: 僅訂單可編輯角色可送主管審核
+
+- **GIVEN** 線下訂單狀態為「草稿」
+- **WHEN** 系統判斷「送主管審核」按鈕顯示對象
+- **THEN** 系統 SHALL 僅對訂單可編輯角色（建立 / 負責該訂單的業務 / 諮詢人員）顯示「送主管審核」按鈕
+- **AND** 業務主管（審核者）、印務主管、會計等非訂單可編輯角色 MUST NOT 看到「送主管審核」按鈕
+- **AND** 任何由非可編輯角色發起的送審 API 請求 MUST 回傳權限不足錯誤
+
+- **GIVEN** 線下訂單狀態為「草稿」或「待業務主管審核」
+- **WHEN** 業務修改訂單內容（含核心欄位：報價金額 / 付款條件 / 收款條件備註，及一般欄位：交期 / 印件規格 / 備註）
+- **THEN** 系統 SHALL 直接儲存修改、MUST NOT 要求改走訂單異動單
+- **AND** 訂單狀態 MUST 維持原狀（草稿維持草稿、待審核維持待審核，不觸發回審）
+- **AND** OrderActivityLog MUST 記載修改
+
+#### Scenario: 線下訂單轉入初始狀態為草稿
+
+- **WHEN** 業務於「成交」需求單執行「轉訂單」（`order_type = 線下`）
+- **THEN** 系統 SHALL 建立訂單並使其進入「草稿」狀態（取代既有「直接進入報價待回簽 / 待業務主管審核」描述）
+- **AND** 系統 SHALL 依「訂單業務主管審核欄位」Requirement 於建立時自動指派業務主管、設定 `approval_required = true`、帶入 `payment_terms_note`
+
 ## MODIFIED Requirements
 
 ### Requirement: 業務主管核准訂單
@@ -422,6 +463,199 @@
 - **THEN** 系統 MUST NOT 顯示該按鈕
 - **AND** 該訂單 MUST NOT 出現在當前業務主管的「訂單審核」待辦清單
 
+### Requirement: 訂單業務主管審核欄位
+
+Order 資料模型 SHALL 新增以下業務主管審核相關欄位：
+
+| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
+|------|---------|------|------|------|------|
+| 審核業務主管 | approved_by_sales_manager_id | FK | Y（線下單）| | FK->使用者；訂單**草稿建立時**指派；草稿 / 待業務主管審核階段可由 Supervisor 重新指定（見 § Supervisor 重新指定訂單業務主管，解卡待審訂單）；進入「審核通過」後鎖定為實際核可者歷史紀錄、不再重指派 |
+| 是否需審核 | approval_required | boolean | Y | Y | 系統設定，Phase 1 線下單預設 true、線上 / 諮詢訂單預設 false |
+| 收款條件備註 | payment_terms_note | text(500) | | | 從來源 QuoteRequest 帶入；業務於草稿 / 待業務主管審核態可編輯、業務主管於審核時查看作為決策依據；**進入「審核通過」後鎖定**（核准當下即鎖，避免核准後外發前被改動繞過把關） |
+| 上次核准備註快照 | lastApprovedPaymentTermsNote | text(500) | | Y | 業務主管核准時系統寫入 `payment_terms_note` 快照；用於後續若訂單退回需重審時的條件對照 |
+| 送審時間 | submitted_for_review_at | datetime | | Y | 業務點「送主管審核」（草稿 → 待業務主管審核）時寫入；供訂單審核待辦頁「進入待審核時間」排序依據 |
+| 報價單外發時間 | quote_sent_at | datetime | | Y | 業務點「已送報價單」（審核通過 → 報價待回簽）時寫入；與 `signed_at` 對稱，供「核准到外發」「外發到回簽」落差量測 |
+
+`approved_by_sales_manager_id` 欄位的可選範圍 MUST 限定為具業務主管角色的用戶。
+
+#### Scenario: 線下訂單草稿建立時自動指派業務主管
+
+- **WHEN** 業務於需求單成交後點擊「轉訂單」建立線下訂單（初始狀態 = 草稿）
+- **THEN** 系統 SHALL 自動將 `approved_by_sales_manager_id` 設為預設業務主管（Phase 1 第一位）
+- **AND** 系統 SHALL 將 `approval_required` 設為 `true`
+- **AND** 系統 SHALL 將來源需求單的 `payment_terms_note` 內容寫入訂單同名欄位
+- **AND** 系統 SHALL 將 `lastApprovedPaymentTermsNote` 預設為 `null`
+
+#### Scenario: 進入審核通過後業務主管欄位與成交條件鎖定
+
+- **GIVEN** 訂單狀態為「審核通過」或更後狀態
+- **WHEN** 一般使用者（業務、業務主管、印務主管）嘗試修改 `approved_by_sales_manager_id` 或 `payment_terms_note`
+- **THEN** 系統 MUST 拒絕變更
+- **AND** UI MUST 將該等欄位顯示為唯讀
+- **AND** Supervisor「重新指定業務主管」機制僅作用於核可前的「待業務主管審核」階段（解卡待審訂單，見 § Supervisor 重新指定訂單業務主管）；進入審核通過後 `approved_by_sales_manager_id` 為實際核可者歷史紀錄、不再重指派
+
+### Requirement: 業務主管於訂單模組的資料可見範圍
+
+業務主管 SHALL 於訂單模組的可見範圍依頁面區分：
+
+| 頁面 | 業務主管可見範圍 |
+|------|----------------|
+| 訂單列表頁（`/orders`）| 所有訂單（提供部門總覽能力）|
+| 訂單審核待辦頁（`/sales-manager/approvals`）| `approved_by_sales_manager_id = self` AND `status ∈ {待業務主管審核, 審核通過, 報價待回簽, 已回簽, 已取消}`（草稿態屬業務側未送審、MUST NOT 出現於主管待辦頁）|
+| 訂單詳情頁（`/orders/{id}`）| 所有訂單可瀏覽；「核准訂單」按鈕僅在 `approved_by_sales_manager_id = self` 時顯示 |
+
+預設篩選 `status = 待業務主管審核`，按 `submitted_for_review_at` ASC 排序（最久未審優先）；「審核通過」於待辦頁僅供主管追蹤已核准未外發訂單，不需主管再操作。
+
+#### Scenario: 業務主管於訂單審核頁僅見自己被指派的訂單
+
+- **GIVEN** 訂單 `approved_by_sales_manager_id` 不等於當前業務主管
+- **WHEN** 業務主管登入並開啟 `/sales-manager/approvals`
+- **THEN** 系統 MUST NOT 在審核清單中顯示此訂單
+
+#### Scenario: 草稿態訂單不出現於業務主管待辦頁
+
+- **GIVEN** 線下訂單狀態為「草稿」、`approved_by_sales_manager_id = self`
+- **WHEN** 業務主管開啟 `/sales-manager/approvals`
+- **THEN** 系統 MUST NOT 顯示此訂單（業務尚未點「送主管審核」）
+
+#### Scenario: 業務主管於訂單列表頁可見全部
+
+- **WHEN** 業務主管登入並開啟 `/orders`
+- **THEN** 列表 SHALL 顯示所有訂單（含其他業務主管被指定、含未進入審核的訂單）
+- **AND** 業務主管點開非自己被指定的訂單詳情頁，MUST NOT 顯示「核准訂單」按鈕
+
+### Requirement: 訂單建立
+
+系統 SHALL 支援以下訂單建立路徑（按 `order_type` 分類）：
+
+**`order_type = 線下`（一般訂單）**：
+
+1. 業務於需求單「成交」狀態點擊「轉訂單」，自動帶入印件規格、客戶資料、交期、報價金額。若需求單來源為 ConsultationRequest（`linked_consultation_request_id` 非空），主訂單建立時 SHALL 自動：(a) 在主訂單建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費)、(b) 將 Payment 從 ConsultationRequest 轉移至主訂單（修改 Payment 的 polymorphic 關聯）。**諮詢費 BillingInstallment 由業務於主訂單既有發票時程規劃流程自行加入，系統 MUST NOT 自動建立諮詢費 BillingInstallment 於主訂單**。`consultation_invoice_option` 作為客戶意向參考保留於 ConsultationRequest 實體，業務可參考決定主訂單發票時程，但不驅動系統行為。
+
+**`order_type = 線上`（EC 訂單）**：
+
+2. EC 線上單：Phase 1 暫不實作自動同步（狀態機已預留進入節點），納入 Phase 2。
+
+**`order_type = 諮詢`（諮詢訂單）**：
+
+諮詢訂單只在以下**兩種**收尾情境之一才建立（webhook 階段不建）：
+
+3. **不做大貨**：客戶最終沒做大貨製作，涵蓋兩個觸發點：
+   - 3.1 諮詢人員於諮詢單階段點「結束諮詢 - 不做大貨」時建立
+   - 3.2 諮詢結束做大貨後，需求單流失：系統將此事件歸類為「不做大貨」結局，自動建諮詢訂單收尾
+4. **待諮詢取消（半額退費）**：諮詢人員 / 業務主管於待諮詢階段點「取消諮詢」並於 dialog 確認後建立，含退款 Payment 與 OrderAdjustment
+
+**重要釐清**：非諮詢來源（`linked_consultation_request_id` 為空）的需求單流失與諮詢訂單無關，**不建任何訂單**；需求單流失走需求單自身的退款 / 流失流程。
+
+兩種情境共同的建立動作：(a) 訂單金額 = 諮詢費全額（2000），(b) 建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費)，(c) Payment 從 ConsultationRequest 轉移至此諮詢訂單，(d) **不做大貨 / 需求單流失情境自動建立待開發票 1 筆作為提醒**（金額 2000）；**諮詢取消情境 MUST NOT 自動建待開發票**（留存 1000 收入由業務手動開票、未開票由對帳差額警示兜底），(e) 取消情境額外建立 OrderAdjustment(-1000, status=已核可, approved_by=system, executed_at=NULL) + 退款 Payment(-1000, 處理中)，(f) **MUST NOT 自動開立 Invoice 或 SalesAllowance**（廢止 `consultation_invoice_option` 對發票自動化的影響）。終態：不做大貨 / 需求單流失 = 訂單完成；諮詢取消 = 已取消（見 § Requirement: 諮詢取消諮詢訂單終態收斂 / 諮詢取消退費 OA 系統建已核可，於 state-machines spec）。
+
+訂單實體 SHALL 包含 `order_type` 欄位（enum: `線下` / `線上` / `諮詢`，必填，建立時設定不可變更）。
+
+#### Scenario: 線下單由需求單轉入
+
+- **WHEN** 業務在「成交」需求單點擊「轉訂單」
+- **THEN** 系統建立訂單草稿（`order_type = 線下`），自動帶入印件規格、客戶資料、交期
+- **AND** 帶入規則詳見[商業流程 spec](../business-processes/spec.md) § 需求單轉訂單欄位帶入規則
+
+#### Scenario: 諮詢來源主訂單建立時自動建 OrderExtraCharge 與轉移 Payment
+
+- **GIVEN** 需求單 `linked_consultation_request_id` 非空，諮詢費 = 2000、印件費 = 4000
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
+- **THEN** 系統 SHALL 建立主訂單（`order_type = 線下`）
+- **AND** 系統 SHALL 自動建立 OrderExtraCharge（charge_type = consultation_fee、amount = 2000、description = 「諮詢費（諮詢單編號 [CR-XXX]）」）
+- **AND** 系統 SHALL 將 Payment 從 ConsultationRequest 轉移至主訂單（修改 linked_entity_type 與 linked_entity_id）
+- **AND** 系統 MUST NOT 自動建立諮詢費的 BillingInstallment（業務於主訂單既有發票時程規劃流程自行加入）
+- **AND** 系統 MUST NOT 依 `consultation_invoice_option` 自動開立 Invoice（欄位降為客戶意向參考）
+- **AND** 主訂單三方對帳：應收 = 6000 = 已收 2000 + 待繳 4000
+
+#### Scenario: 諮詢結束不做大貨建諮詢訂單（觸發點 3.1）
+
+- **WHEN** ConsultationRequest 諮詢結束，諮詢人員選「不做大貨」
+- **THEN** 系統 SHALL 建立諮詢訂單（`order_type = 諮詢`、總額 = 諮詢費 2000）
+- **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 2000)
+- **AND** 系統 SHALL 將 Payment 從 ConsultationRequest 轉移至諮詢訂單
+- **AND** 系統 SHALL 自動建立 BillingInstallment 1 筆（order_id = 諮詢訂單 ID、scheduled_amount = 2000、description = 「諮詢費」、due_date / scheduled_issue_date = 完成諮詢時點當天、source_type = consultation_end_no_production、invoicing_status = 未開立、created_by = system）
+- **AND** 系統 MUST NOT 自動開立 Invoice（不論 `consultation_invoice_option` 值為何）
+
+#### Scenario: 諮詢來源需求單流失歸類為「不做大貨」（觸發點 3.2）
+
+- **GIVEN** ConsultationRequest 狀態 = 已轉需求單、Payment 綁 ConsultationRequest
+- **AND** 對應需求單流失（流失事件由需求單模組觸發）
+- **WHEN** 系統處理需求單流失事件，且需求單 `linked_consultation_request_id` 非空
+- **THEN** 系統 SHALL 將此事件歸類為「不做大貨」結局
+- **AND** 系統 SHALL 建立諮詢訂單（`order_type = 諮詢`、總額 = 諮詢費 2000）
+- **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 2000)
+- **AND** 系統 SHALL 將 Payment 從 ConsultationRequest 轉移至諮詢訂單
+- **AND** 系統 SHALL 自動建立 BillingInstallment 1 筆（order_id = 諮詢訂單 ID、scheduled_amount = 2000、description = 「諮詢費」、due_date / scheduled_issue_date = 流失時點當天、source_type = quote_lost、invoicing_status = 未開立、created_by = system）
+- **AND** 系統 MUST NOT 自動開立 Invoice
+
+#### Scenario: 非諮詢來源的需求單流失不建諮詢訂單
+
+- **GIVEN** 需求單 `linked_consultation_request_id` 為空（非諮詢來源）
+- **WHEN** 需求單流失
+- **THEN** 系統 MUST NOT 建立諮詢訂單
+- **AND** 需求單流失走需求單自身的退款 / 流失流程，與諮詢訂單無關
+
+#### Scenario: 待諮詢取消觸發建諮詢訂單與半額退費
+
+- **GIVEN** ConsultationRequest 狀態 = 待諮詢、Payment(P0: +2000, 已完成) 綁 ConsultationRequest
+- **WHEN** 諮詢人員 / 業務主管於取消 dialog 選定 cancel_reason_category 並點擊「確認取消諮詢」
+- **THEN** 系統 SHALL 建立諮詢訂單（`order_type = 諮詢`、總額 = 諮詢費 2000）
+- **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 2000)
+- **AND** 系統 SHALL 將 Payment P0 從 ConsultationRequest 轉移至諮詢訂單（金額 +2000 不變、status 維持已完成）
+- **AND** 系統 SHALL 自動建立 OrderAdjustment（amount = -1000、adjustment_type = `諮詢取消退費`、status = 已核可、approved_by = system、executed_at = NULL、requires_supervisor_approval = false、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」）
+- **AND** 系統 SHALL 自動建立退款 Payment（amount = -1000、paymentMethod = 退款、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述訂單異動.id、linked_entity_type = Order、linked_entity_id = 諮詢訂單 ID）
+- **AND** 應收認列已核可訂單異動(-1000)（公式 = 訂單額外費用(2000) + ∑已執行或已核可訂單異動(-1000) = 1000）；退款 Payment 切「已完成」累計達 -1000 後推進訂單異動「已執行」
+- **AND** 系統 MUST NOT 為諮詢取消自動建待開發票（留存 1000 收入由業務手動開票、未開票由對帳差額警示兜底）
+- **AND** 系統 MUST NOT 自動開立 Invoice
+- **AND** 系統 MUST NOT 自動開立 SalesAllowance
+- **AND** 諮詢訂單 SHALL 直接推進至「已取消」終態（見 § Requirement: 諮詢取消諮詢訂單終態收斂，於 state-machines spec）
+- **AND** 諮詢訂單應收 = 訂單額外費用(2000) + 訂單異動(-1000) = 1000
+
+#### Scenario: EC 訂單進入節點預留
+
+- **WHEN** EC 訂單同步功能上線（Phase 2）
+- **THEN** 系統透過 API 全自動同步 EC 訂單（`order_type = 線上`），進入已有狀態機節點
+
+#### Scenario: US-ORD-001 建立線下訂單（回簽觸發）
+
+- **WHEN** 業務在需求單執行「轉建訂單」
+- **THEN** 系統 SHALL 建立訂單並使其進入「草稿」狀態（線下單以草稿為初始狀態，業務調整帶入內容後點「送主管審核」推進；見 § 業務送出訂單審核）；活動紀錄 MUST 記錄操作人與時間戳
+
+### Requirement: OrderExtraCharge vs OrderAdjustment.fee 時間邊界
+
+訂單額外費用（資料模型實體 `OrderExtraCharge`）SHALL 限於「訂單成交條件確定前」的費用使用。成交條件鎖定錨點依 `order_type` 對齊現行狀態機（取代舊版以「報價待回簽」為凍結點、並校正舊版 legacy 狀態詞「訂單確認」「報價評估階段」）：
+
+- **線下訂單**：訂單額外費用可於「草稿」「待業務主管審核」兩態由業務直接新增（運費 / 急件費等，不需業務主管審核，因該兩態本可自由編輯）；**自進入「審核通過」起訂單額外費用凍結，不可直接新增**。審核通過後任何影響報價總額的費用 SHALL 走訂單異動的 `item_type = fee` 明細（即使費用類型相同，如後加運費），與「審核通過鎖定成交條件」一致（見 § 審核通過狀態下訂單修改、§ 訂單業務主管審核欄位）——業務主管核可成交條件後，再動報價總額一律經訂單異動 + 主管審核把關。
+- **線上訂單**：訂單額外費用由 EC 結帳帶入、無業務手動新增視窗；訂單成立（EC 付款）後新增費用走訂單異動。
+- **諮詢訂單**：訂單額外費用為建立時的諮詢費；成立後費用變更走訂單異動。
+
+（前移理由：舊版凍結點為「報價待回簽」，與本 change 將成交鎖定錨點前移至「審核通過」矛盾——審核通過後、報價待回簽前若仍可直接加訂單額外費用改動報價總額，將繞過業務主管把關，正是本 change 要修補的漏洞型態。本次將線下凍結點前移至「審核通過」對齊，解 ORD-027。）
+
+UI SHALL 在訂單額外費用凍結後（線下：進入「審核通過」起）隱藏「新增訂單額外費用」按鈕，引導業務走訂單異動流程。系統 SHALL 在 API 層拒絕凍結後的訂單額外費用寫入請求。
+
+#### Scenario: 業務於審核通過前加運費走訂單額外費用
+
+- **GIVEN** 線下訂單 SO-001 處於「待業務主管審核」狀態
+- **WHEN** 業務新增 200 元運費
+- **THEN** 系統 SHALL 建立 OrderExtraCharge(charge_type = shipping_fee, amount = 200)
+- **AND** 不需業務主管審核
+
+#### Scenario: 業務於審核通過後加運費走訂單異動
+
+- **GIVEN** 線下訂單 SO-001 處於「審核通過」狀態（業務主管已核可成交條件）
+- **WHEN** 業務發現需要補收 200 元運費
+- **THEN** UI SHALL 隱藏「新增訂單額外費用」按鈕
+- **AND** 業務 SHALL 建立 OrderAdjustment(adjustment_type = 加運費，明細：item_type = fee，amount = 200)
+- **AND** 該訂單異動走業務主管審核流程
+
+#### Scenario: API 拒絕審核通過後新增訂單額外費用
+
+- **GIVEN** 線下訂單 SO-001 處於「審核通過」或更後續狀態
+- **WHEN** 系統收到訂單額外費用寫入請求
+- **THEN** 系統 SHALL 拒絕並回傳 400 錯誤
+- **AND** 錯誤訊息 SHALL 為「訂單成交條件已鎖定，新增費用請走訂單異動單流程」
+
 ## REMOVED Requirements
 
 ### Requirement: 付款計畫變更觸發訂單回業務主管審核
@@ -433,3 +667,16 @@
   - 仍未過業務主管核准的訂單：付款計畫變更不留稽核（沿用舊邏輯的「未過審核」行為，但不再強制阻擋修改）
   - 已過業務主管核准的訂單：付款計畫變更不再回審核，但自動填入 `original_expected_date`（首次變更時）+ `change_count + 1`
 - Prototype 補實作 task 6.5 需拆除既有「變更回業務主管審核」邏輯（OrderPaymentSection.tsx:154-171）並改為分階段稽核
+
+## MODIFIED Data Model
+
+> `openspec archive` 內建 sync **不處理 Data Model section**（doc-audit v1.4），archive 時 MUST 手動將下列異動合入主 spec `openspec/specs/order-management/spec.md` § Data Model § Order。下表僅列**異動 / 新增列**，其餘 Order 欄位不變。
+
+### Order
+
+| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
+|------|---------|------|------|------|------|
+| 審核業務主管 | approved_by_sales_manager_id | FK | Y（線下單）| | FK -> 使用者；訂單**草稿建立時**指派；草稿 / 待業務主管審核階段可由 Supervisor 重新指定（解卡待審訂單，見 § Supervisor 重新指定訂單業務主管）；**進入「審核通過」後鎖定**為實際核可者歷史紀錄、不再重指派（原為「進入報價待回簽後鎖定」） |
+| 收款條件備註 | payment_terms_note | 文字 | | | 從來源需求單帶入；最長 500 字；業務於草稿 / 待業務主管審核態可編輯、業務主管於審核時查看作為決策依據；**進入「審核通過」後鎖定**（核准當下即鎖；原為「進入報價待回簽後鎖定」） |
+| 送審時間 | submitted_for_review_at | datetime | | Y | 新增；業務點「送主管審核」（草稿 → 待業務主管審核）時寫入；供訂單審核待辦頁排序 |
+| 報價單外發時間 | quote_sent_at | datetime | | Y | 新增；業務點「已送報價單」（審核通過 → 報價待回簽）時寫入；供「核准到外發」「外發到回簽」落差量測 |

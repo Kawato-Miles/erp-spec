@@ -400,6 +400,36 @@ last_week=$(date -v-1w +%G-W%V 2>/dev/null || date -d "1 week ago" +%Y-W%V)
 
 ---
 
+### 維度 15（部分）：依據鏈標題錨點檢查（Sens 特化，2026-06-01 實作）
+
+> 維度 15 完整定義見 [[wiki-schema]] § 六維度 15（含 source 繞回自己 / 指 OpenSpec 的 Error 條件，其餘待實作）。本段先實作其中的「**標題錨點**」Info 檢查：`implemented-by` / `source` 不應綁 `#Requirement: <標題>` 標題錨點（Requirement 改名即斷鏈、反過來卡住改名，ORD-027 教訓）。
+> **只對本輪新增 / 異動的卡提示**（既有存量卡 Miles 指示先留著、不回頭批量改，故不掃未異動卡，避免噪音）。
+
+```bash
+cd <vault repo root>
+# 本輪異動的 wiki 卡 = 相對 main fork 點的 diff + 工作區未提交變更
+base=$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null || echo HEAD~1)
+changed=$( { git diff --name-only "$base" HEAD -- 'memory/Sens_wiki/wiki/'; \
+             git diff --name-only -- 'memory/Sens_wiki/wiki/'; \
+             git diff --name-only --cached -- 'memory/Sens_wiki/wiki/'; } | sort -u )
+
+hit=0
+for f in $changed; do
+  [ -f "$f" ] || continue
+  if grep -qE 'spec\.md#Requirement:' "$f"; then
+    echo "INFO: $f — implemented-by/source 仍含 #Requirement: 標題錨點，建議改指 spec 檔層 + Requirement 名稱以文字描述（維度 15，ORD-027 教訓）"
+    hit=1
+  fi
+done
+[ $hit -eq 0 ] && echo "OK：本輪異動卡無標題錨點"
+```
+
+**判定**：
+- OK：本輪異動卡 `implemented-by` / `source` 皆無 `#Requirement:` 標題錨點
+- Info：本輪異動卡仍含標題錨點（提示改寫，**不計入 Error / Warning**，不阻擋）
+
+---
+
 ## 四、執行流程
 
 ### Step 1：宣告稽核範圍

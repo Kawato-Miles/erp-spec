@@ -58,7 +58,7 @@ source:                                         # 往上指依據＝正確性根
   - "[[../../04-business-logic/<規則正本卡>#<業務語意定位點>]]"   # 本故事執行的規則正本（首選）
   - "<最上層的依據：Miles 拍板 / 印刷業實務 / raw 卡 / 訪談紀錄>" # 或可獨立驗證的外部出處
 implemented-by:                                 # 往下指被誰實作＝導航 / 覆蓋（不承載正確性），可選
-  - "openspec/specs/<module>/spec.md#Requirement: <標題>"
+  - "openspec/specs/<module>/spec.md"
   - "sens-erp-prototype/tests/e2e/<spec>.spec.ts"  # Prototype 端對端測試（UI 點擊層歸此）
 provenance-commit: <SHA>                         # 可選但建議：上次對齊的 commit，供 doc-audit stale 偵測
 related-spec: openspec/specs/<module>/spec.md   # 過渡期保留（語意＝implemented-by 弱版）；新卡優先填 source / implemented-by
@@ -168,7 +168,7 @@ source:
   - "[[../../04-business-logic/<規則卡>#<slug>]]"
   - "<Miles 拍板 / raw 卡>"
 implemented-by:
-  - "openspec/specs/<module>/spec.md#Requirement: <標題>"
+  - "openspec/specs/<module>/spec.md"
 related-spec: openspec/specs/<module>/spec.md
 source-gap: false
 ---

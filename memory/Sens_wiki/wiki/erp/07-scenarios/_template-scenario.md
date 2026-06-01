@@ -43,8 +43,8 @@ status: draft                             # draft | active | deprecated
 last-reviewed: 2026-MM-DD
 source:                                   # 往上指依據（這張卡為什麼對）；只准指更上層的卡 / 真實外部素材（business-logic 規則卡 / 拍板 OQ / 業務情境 / 法規）。禁指同層 / 下層 / OpenSpec
   - "[[<更上層的卡>]] 或 <最上層依據：Miles 拍板 / 印刷業實務 / 拍板 OQ>"
-implemented-by:                           # 往下指被誰實作；指 OpenSpec Requirement 標題層 / prototype / test-case。不承載正確性（可選；過渡期用下方 related-spec 亦可）
-  - "openspec/specs/<模組>/spec.md#Requirement: <標題>"
+implemented-by:                           # 往下指被誰實作；指 OpenSpec spec 檔層，不綁標題錨點 / prototype / test-case。不承載正確性（可選；過渡期用下方 related-spec 亦可）
+  - "openspec/specs/<模組>/spec.md"
 related-spec: openspec/specs/<模組>/spec.md   # 過渡期保留，語意等同 implemented-by 弱版
 provenance-commit: <SHA>                  # 可選；記上次對齊 commit，供 doc-audit stale 偵測
 ---

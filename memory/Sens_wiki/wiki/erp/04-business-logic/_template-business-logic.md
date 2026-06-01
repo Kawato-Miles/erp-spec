@@ -46,10 +46,10 @@ last-reviewed: 2026-MM-DD
 source:
   - "[[<本領域共用規則卡，如 對帳一致性>]]"
   - "<最上層的依據：Miles 拍板 XXX ／ 台灣印刷業實務 ／ 某法規>"
-# implemented-by：往下指被誰實作。指 OpenSpec Requirement 標題層 / prototype / test-case。
+# implemented-by：往下指被誰實作。指 OpenSpec spec 檔層，不綁標題錨點 / prototype / test-case。
 #                 不承載正確性，可多條。
 implemented-by:
-  - "openspec/specs/<模組>/spec.md#Requirement: <標題>"
+  - "openspec/specs/<模組>/spec.md"
 # provenance-commit：可選但建議（防同一條規則散在多張卡、改一處漏其他處）。記上次對齊的 commit，供 doc-audit stale 偵測。
 provenance-commit: <SHA 或留空>
 # related-spec：過渡期保留（語意等同 implemented-by 的弱版）。補不出 source 時暫標 source-gap。
@@ -152,7 +152,7 @@ related-prototype: sens-erp-prototype/src/types/<...>.ts  # 若 Prototype 有，
 
 ## 來源
 
-> 連回可獨立驗證的外部出處（OpenSpec Requirement 標題層 / 業務情境 / 訪談 / 法規 / 拍板 OQ）。**禁指向其他同類業務規則卡**（循環論證 / 防止 AI 拿自己寫的東西當依據再生出新東西）。
+> 連回可獨立驗證的外部出處（OpenSpec spec 檔層，不綁標題錨點 / 業務情境 / 訪談 / 法規 / 拍板 OQ）。**禁指向其他同類業務規則卡**（循環論證 / 防止 AI 拿自己寫的東西當依據再生出新東西）。
 > 末行 MUST 加「迭代脈絡見 [[business-logic-changelog#<卡名>]]」——正文零迭代史、零「待確認 / 待釐清」inline OQ 措辭（識別到不確定項 → 觸發 `oq-manage` skill mode B 開獨立 OQ 卡）。
 
 - OpenSpec [<模組>/spec.md § <Requirement 標題>](../../../../openspec/specs/<模組>/spec.md)
@@ -180,7 +180,7 @@ last-reviewed: 2026-MM-DD
 source:
   - "[[<本領域共用規則卡 / 最上層的依據>]]"
 implemented-by:
-  - "openspec/specs/<模組>/spec.md#Requirement: <標題>"
+  - "openspec/specs/<模組>/spec.md"
 related-spec: openspec/specs/<模組>/spec.md
 ---
 
@@ -264,7 +264,7 @@ source:
   - "[[<營運原則卡 operating-principles# 對應原則>]]"
   - "<最上層的依據：Miles 拍板 + 印刷業實務>"
 implemented-by:
-  - "openspec/specs/<模組>/spec.md#Requirement: <標題>"
+  - "openspec/specs/<模組>/spec.md"
 related-spec: openspec/specs/<模組>/spec.md
 ---
 
@@ -362,7 +362,7 @@ source:
   - "[[<共用規則卡 Z>]]"
   - "<Miles 拍板 W>"
 implemented-by:
-  - "openspec/specs/<模組 X>/spec.md#Requirement: <標題 V>"
+  - "openspec/specs/<模組 X>/spec.md"
 related-spec: openspec/specs/<模組 X>/spec.md
 ---
 
@@ -416,7 +416,7 @@ related-spec: openspec/specs/<模組 X>/spec.md
 ### 共同骨架（所有層）
 - [ ] frontmatter 共同 5 欄全填（type / module / business-domain / status / last-reviewed）。
 - [ ] `source` 已填且**不指同層業務規則卡 / 下層 / OpenSpec**；補不出真 source 暫標 `source-gap`。
-- [ ] `implemented-by`（或過渡期 `related-spec`）指 OpenSpec Requirement 標題層 / prototype，不承載正確性。
+- [ ] `implemented-by`（或過渡期 `related-spec`）指 OpenSpec spec 檔層，不綁標題錨點 / prototype，不承載正確性。
 - [ ] 「這張卡要回答的問題」段每個問句正文有對應明確結論（或屬無爭議純事實，已用敘述代替——彈性破口）。
 - [ ] 營運背景段無實作術語當主詞、無中英夾雜（技術詞括號附註）、無 UI 措辭。
 - [ ] 正文零迭代史（迭代史在 [[business-logic-changelog]] 對應 section）；「來源」段末行有「迭代脈絡見 [[business-logic-changelog#<卡名>]]」。
