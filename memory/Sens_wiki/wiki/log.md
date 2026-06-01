@@ -50,3 +50,7 @@ last-reviewed: 2026-05-31
 - 變更：[[wiki-schema]] § 六維度 15 新增「提示（Info）條件」= implemented-by/source 含 `#Requirement:` 標題錨點；vault-audit SKILL 補維度 15（部分）可執行 grep（git 範圍限定本輪異動卡、Info 級不阻擋）。
 - 理由：承接同日「不綁標題錨點」規約，給自動把關（不靠記性），且只提示本輪異動卡、不掃既有存量。
 - 衝突：無。
+
+## [2026-06-01] 健檢 | align- archive 合併後驗收發現兩處欄位重疊
+- 變更：開 [[BI-19-付款計畫變更稽核與既有BillingInstallment變更追蹤重疊]]（high）+ [[ORD-028-印件shipment_quantity與既有pi_shipped_qty欄位重疊]]（medium）。
+- 衝突：align- 新增的 change_count/original_expected_date 與 [[BI-1-原始日期基準凍結時點]] 已解的 BillingInstallment.changeCount 重疊（疑用統一前舊命名重造輪子）；shipment_quantity 與既有 pi_shipped_qty 重疊。兩者已合併進 main spec，待 Miles 裁決收斂方向。
