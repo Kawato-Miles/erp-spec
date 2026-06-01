@@ -28,9 +28,11 @@
 
 ### Requirement: 審核通過狀態下訂單修改
 
-訂單於「審核通過」狀態下，業務 / 諮詢 SHALL 可直接修改訂單內容（如印件規格細節、備註、配送資訊等），修改 MUST NOT 觸發回業務主管重新審核。業務主管核可後對訂單的進一步調整為業務自主範圍。
+訂單於「審核通過」狀態下，業務 / 諮詢 SHALL 可直接修改訂單內容（如印件規格細節、訂單須知 / 交貨備註等一般備註、配送資訊等），修改 MUST NOT 觸發回業務主管重新審核。業務主管核可後對訂單的進一步調整為業務自主範圍。此處「可直接修改」**不含成交條件鎖定欄位**（見下「鎖定欄位」）。
 
-**核心欄位變更例外**：若需變更下列「核心欄位」（影響業務主管已核可的成交條件），業務 MUST 走訂單異動單流程（建立訂單異動單 + 業務主管審核 + 業務執行重算應收），不直接修改：
+**鎖定欄位（進入審核通過起唯讀）**：`payment_terms_note`（收款條件備註）與 `approved_by_sales_manager_id`（審核業務主管）自進入「審核通過」起鎖定為唯讀（見「訂單業務主管審核欄位」Requirement），**MUST NOT** 於審核通過後被業務直接修改（避免核准後外發前竄改業務主管已審視的收款條件繞過把關）；`approved_by_sales_manager_id` 僅 Supervisor 可解鎖重指派。
+
+**核心欄位變更例外**：若需變更下列「核心欄位」（影響業務主管已核可的成交條件金額 / 結構 / 對象），業務 MUST 走訂單異動單流程（建立訂單異動單 + 業務主管審核 + 業務執行重算應收），不直接修改：
 - 報價總額（含 OrderExtraCharge 加總）
 - 付款條件結構（PaymentPlan 期次的金額 / 期數結構新增 / 刪除；單一期次的日期變更由「付款計畫變更分階段稽核」Requirement 處理）
 - 客戶（廠客變更直接影響核可前的成交對象，需重審）
@@ -359,6 +361,39 @@
 - **AND** `change_count` MUST 變為 2
 - **AND** ActivityLog MUST 記載「PaymentPlan 期次 X 變更：2026-06-15 → 2026-07-01」
 
+### Requirement: 業務送出訂單審核（草稿 → 待業務主管審核）
+
+線下訂單由需求單「成交」轉入後 SHALL 以「草稿」為初始狀態（僅適用 `order_type = 線下`；線上訂單由 EC 付款自動推進、諮詢訂單為短路徑收尾，皆不進入草稿態）。**本 Requirement 取代既有「訂單建立」§ Scenario US-ORD-001 與 state-machines § 訂單狀態機 線下路徑列舉中「轉訂單直接進入報價待回簽 / 待業務主管審核」的描述**（既有主 spec 該兩處於本 change sync 時一併校正，詳見 tasks）。
+
+業務 SHALL 於草稿態調整自需求單帶入的內容（交期、印件規格、報價金額、收款條件備註等），確認無誤後於訂單詳情頁點擊「送主管審核」，系統 SHALL 將訂單狀態自「草稿」推進至「待業務主管審核」並寫入 `submitted_for_review_at = 當前時間`。
+
+業務於「草稿」與「待業務主管審核」兩態 SHALL 皆可自由編輯訂單全部內容（業務主管核准前訂單視為內部初版，修改 MUST NOT 要求改走訂單異動單、MUST NOT 觸發回審）；自進入「審核通過」起鎖定成交條件（見「訂單業務主管審核欄位」與既有「審核通過狀態下訂單修改」Requirement）。業務主管不核准時訂單維持「待業務主管審核」、業務可持續修改後等待主管再次審視，**無需「退回草稿」動作**（沿用不設退回鈕、Slack 討論之既有設計；新增「送主管審核」為業務前向動作，不涉及主管退回）。
+
+業務主管（`approved_by_sales_manager_id`）SHALL 於「草稿」建立時即自動指派（見「訂單業務主管審核欄位」Requirement）；「送主管審核」僅推進狀態、不重新指派。
+
+#### Scenario: 業務於草稿態送主管審核
+
+- **GIVEN** 線下訂單狀態為「草稿」、`approval_required = true`
+- **WHEN** 業務於訂單詳情頁點擊「送主管審核」
+- **THEN** 訂單狀態 SHALL 自「草稿」推進至「待業務主管審核」
+- **AND** 系統 MUST 寫入 `submitted_for_review_at` = 當前時間
+- **AND** 系統 MUST 寫入 OrderActivityLog（操作者 = 業務、事件描述 = 「送主管審核」）
+- **AND** 該訂單 SHALL 出現在指定業務主管的訂單審核待辦頁
+
+#### Scenario: 草稿與待審核態業務可編輯訂單全部內容
+
+- **GIVEN** 線下訂單狀態為「草稿」或「待業務主管審核」
+- **WHEN** 業務修改訂單內容（含核心欄位：報價金額 / 付款條件 / 收款條件備註，及一般欄位：交期 / 印件規格 / 備註）
+- **THEN** 系統 SHALL 直接儲存修改、MUST NOT 要求改走訂單異動單
+- **AND** 訂單狀態 MUST 維持原狀（草稿維持草稿、待審核維持待審核，不觸發回審）
+- **AND** OrderActivityLog MUST 記載修改
+
+#### Scenario: 線下訂單轉入初始狀態為草稿
+
+- **WHEN** 業務於「成交」需求單執行「轉訂單」（`order_type = 線下`）
+- **THEN** 系統 SHALL 建立訂單並使其進入「草稿」狀態（取代既有「直接進入報價待回簽 / 待業務主管審核」描述）
+- **AND** 系統 SHALL 依「訂單業務主管審核欄位」Requirement 於建立時自動指派業務主管、設定 `approval_required = true`、帶入 `payment_terms_note`
+
 ## MODIFIED Requirements
 
 ### Requirement: 業務主管核准訂單
@@ -421,6 +456,67 @@
 - **WHEN** 業務主管嘗試於訂單詳情頁點擊「核准訂單」
 - **THEN** 系統 MUST NOT 顯示該按鈕
 - **AND** 該訂單 MUST NOT 出現在當前業務主管的「訂單審核」待辦清單
+
+### Requirement: 訂單業務主管審核欄位
+
+Order 資料模型 SHALL 新增以下業務主管審核相關欄位：
+
+| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
+|------|---------|------|------|------|------|
+| 審核業務主管 | approved_by_sales_manager_id | FK | Y（線下單）| | FK->使用者；訂單**草稿建立時**指派、進入「審核通過」後鎖定（僅 Supervisor 可解鎖） |
+| 是否需審核 | approval_required | boolean | Y | Y | 系統設定，Phase 1 線下單預設 true、線上 / 諮詢訂單預設 false |
+| 收款條件備註 | payment_terms_note | text(500) | | | 從來源 QuoteRequest 帶入；業務於草稿 / 待業務主管審核態可編輯、業務主管於審核時查看作為決策依據；**進入「審核通過」後鎖定**（核准當下即鎖，避免核准後外發前被改動繞過把關） |
+| 上次核准備註快照 | lastApprovedPaymentTermsNote | text(500) | | Y | 業務主管核准時系統寫入 `payment_terms_note` 快照；用於後續若訂單退回需重審時的條件對照 |
+| 送審時間 | submitted_for_review_at | datetime | | Y | 業務點「送主管審核」（草稿 → 待業務主管審核）時寫入；供訂單審核待辦頁「進入待審核時間」排序依據 |
+| 報價單外發時間 | quote_sent_at | datetime | | Y | 業務點「已送報價單」（審核通過 → 報價待回簽）時寫入；與 `signed_at` 對稱，供「核准到外發」「外發到回簽」落差量測 |
+
+`approved_by_sales_manager_id` 欄位的可選範圍 MUST 限定為具業務主管角色的用戶。
+
+#### Scenario: 線下訂單草稿建立時自動指派業務主管
+
+- **WHEN** 業務於需求單成交後點擊「轉訂單」建立線下訂單（初始狀態 = 草稿）
+- **THEN** 系統 SHALL 自動將 `approved_by_sales_manager_id` 設為預設業務主管（Phase 1 第一位）
+- **AND** 系統 SHALL 將 `approval_required` 設為 `true`
+- **AND** 系統 SHALL 將來源需求單的 `payment_terms_note` 內容寫入訂單同名欄位
+- **AND** 系統 SHALL 將 `lastApprovedPaymentTermsNote` 預設為 `null`
+
+#### Scenario: 進入審核通過後業務主管欄位與成交條件鎖定
+
+- **GIVEN** 訂單狀態為「審核通過」或更後狀態
+- **WHEN** 一般使用者（業務、業務主管、印務主管）嘗試修改 `approved_by_sales_manager_id` 或 `payment_terms_note`
+- **THEN** 系統 MUST 拒絕變更
+- **AND** UI MUST 將該等欄位顯示為唯讀
+- **AND** 此規則 MUST NOT 限制 Supervisor 的解鎖權限（見 § Supervisor 重新指定訂單業務主管）
+
+### Requirement: 業務主管於訂單模組的資料可見範圍
+
+業務主管 SHALL 於訂單模組的可見範圍依頁面區分：
+
+| 頁面 | 業務主管可見範圍 |
+|------|----------------|
+| 訂單列表頁（`/orders`）| 所有訂單（提供部門總覽能力）|
+| 訂單審核待辦頁（`/sales-manager/approvals`）| `approved_by_sales_manager_id = self` AND `status ∈ {待業務主管審核, 審核通過, 報價待回簽, 已回簽, 已取消}`（草稿態屬業務側未送審、MUST NOT 出現於主管待辦頁）|
+| 訂單詳情頁（`/orders/{id}`）| 所有訂單可瀏覽；「核准訂單」按鈕僅在 `approved_by_sales_manager_id = self` 時顯示 |
+
+預設篩選 `status = 待業務主管審核`，按 `submitted_for_review_at` ASC 排序（最久未審優先）；「審核通過」於待辦頁僅供主管追蹤已核准未外發訂單，不需主管再操作。
+
+#### Scenario: 業務主管於訂單審核頁僅見自己被指派的訂單
+
+- **GIVEN** 訂單 `approved_by_sales_manager_id` 不等於當前業務主管
+- **WHEN** 業務主管登入並開啟 `/sales-manager/approvals`
+- **THEN** 系統 MUST NOT 在審核清單中顯示此訂單
+
+#### Scenario: 草稿態訂單不出現於業務主管待辦頁
+
+- **GIVEN** 線下訂單狀態為「草稿」、`approved_by_sales_manager_id = self`
+- **WHEN** 業務主管開啟 `/sales-manager/approvals`
+- **THEN** 系統 MUST NOT 顯示此訂單（業務尚未點「送主管審核」）
+
+#### Scenario: 業務主管於訂單列表頁可見全部
+
+- **WHEN** 業務主管登入並開啟 `/orders`
+- **THEN** 列表 SHALL 顯示所有訂單（含其他業務主管被指定、含未進入審核的訂單）
+- **AND** 業務主管點開非自己被指定的訂單詳情頁，MUST NOT 顯示「核准訂單」按鈕
 
 ## REMOVED Requirements
 
