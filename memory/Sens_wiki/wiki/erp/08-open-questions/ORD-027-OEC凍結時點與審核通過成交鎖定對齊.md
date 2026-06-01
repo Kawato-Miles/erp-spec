@@ -4,7 +4,9 @@ module:
   - order-management
   - payment
 oq-id: ORD-027
-status: open
+status: resolved
+resolved-at: 2026-06-01
+resolved-by: Miles（採方案 A）
 priority: medium
 audience: internal
 raised-at: 2026-06-01
@@ -47,3 +49,11 @@ related-oq:
 ### 方案 B：維持 OEC 凍結於「報價待回簽」、核心欄位鎖定例外放行 OEC
 - 優點：保留審核通過態加 OEC 的彈性
 - 缺點：與「審核通過鎖定成交條件」的把關設計直接衝突，等於核可後仍可改報價總額繞過把關（正是本 change 要修補的漏洞型態）
+
+## 解答（2026-06-01，Miles 拍板）
+
+採**方案 A**：OEC 凍結時點自「報價待回簽」前移至「審核通過」，與成交條件鎖定一致。已於本 change `align-business-consultation-coverage-gaps` order-management delta 新增 MODIFIED Requirement「OrderExtraCharge vs OrderAdjustment.fee 時間邊界」整條取代校正：
+
+- 線下訂單 OEC 可直接新增視窗收斂為「草稿 / 待業務主管審核」兩態；自進入「審核通過」起凍結，之後任何影響報價總額的費用走 OrderAdjustment + 主管審核。
+- 順手校正該 Requirement 舊版 legacy 狀態詞（「訂單確認」「報價評估階段」）對齊現行線下狀態機。
+- 同步：proposal § 範圍與 § OQ、tasks 2.3c（sync 驗證）+ 6.1c（Prototype OEC UI 凍結點）。

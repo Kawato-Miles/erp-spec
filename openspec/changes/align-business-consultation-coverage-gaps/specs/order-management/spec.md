@@ -622,6 +622,40 @@ Order 資料模型 SHALL 新增以下業務主管審核相關欄位：
 - **WHEN** 業務在需求單執行「轉建訂單」
 - **THEN** 系統 SHALL 建立訂單並使其進入「草稿」狀態（線下單以草稿為初始狀態，業務調整帶入內容後點「送主管審核」推進；見 § 業務送出訂單審核）；活動紀錄 MUST 記錄操作人與時間戳
 
+### Requirement: OrderExtraCharge vs OrderAdjustment.fee 時間邊界
+
+`OrderExtraCharge`（OEC）SHALL 限於「訂單成交條件確定前」的費用使用。成交條件鎖定錨點依 `order_type` 對齊現行狀態機（取代舊版以「報價待回簽」為凍結點、並校正舊版 legacy 狀態詞「訂單確認」「報價評估階段」）：
+
+- **線下訂單**：OEC 可於「草稿」「待業務主管審核」兩態由業務直接新增（運費 / 急件費等，不需業務主管審核，因該兩態本可自由編輯）；**自進入「審核通過」起 OEC 凍結，不可直接新增**。審核通過後任何影響報價總額的費用 SHALL 走 `OrderAdjustment` 的 `item_type = fee` 明細（即使費用類型相同，如後加運費），與「審核通過鎖定成交條件」一致（見 § 審核通過狀態下訂單修改、§ 訂單業務主管審核欄位）——業務主管核可成交條件後，再動報價總額一律經 OrderAdjustment + 主管審核把關。
+- **線上訂單**：OEC 由 EC 結帳帶入、無業務手動新增視窗；訂單成立（EC 付款）後新增費用走 OrderAdjustment。
+- **諮詢訂單**：OEC 為建立時的諮詢費；成立後費用變更走 OrderAdjustment。
+
+（前移理由：舊版凍結點為「報價待回簽」，與本 change 將成交鎖定錨點前移至「審核通過」矛盾——審核通過後、報價待回簽前若仍可直接加 OEC 改動報價總額，將繞過業務主管把關，正是本 change 要修補的漏洞型態。本次將線下凍結點前移至「審核通過」對齊，解 ORD-027。）
+
+UI SHALL 在 OEC 凍結後（線下：進入「審核通過」起）隱藏「新增 OrderExtraCharge」按鈕，引導業務走 OrderAdjustment 流程。系統 SHALL 在 API 層拒絕凍結後的 OrderExtraCharge 寫入請求。
+
+#### Scenario: 業務於審核通過前加運費走 OrderExtraCharge
+
+- **GIVEN** 線下訂單 SO-001 處於「待業務主管審核」狀態
+- **WHEN** 業務新增 200 元運費
+- **THEN** 系統 SHALL 建立 OrderExtraCharge(charge_type = shipping_fee, amount = 200)
+- **AND** 不需業務主管審核
+
+#### Scenario: 業務於審核通過後加運費走 OrderAdjustment
+
+- **GIVEN** 線下訂單 SO-001 處於「審核通過」狀態（業務主管已核可成交條件）
+- **WHEN** 業務發現需要補收 200 元運費
+- **THEN** UI SHALL 隱藏「新增 OrderExtraCharge」按鈕
+- **AND** 業務 SHALL 建立 OrderAdjustment(adjustment_type = 加運費，明細：item_type = fee，amount = 200)
+- **AND** 該 OrderAdjustment 走業務主管審核流程
+
+#### Scenario: API 拒絕審核通過後新增 OrderExtraCharge
+
+- **GIVEN** 線下訂單 SO-001 處於「審核通過」或更後續狀態
+- **WHEN** 系統收到 OrderExtraCharge 寫入請求
+- **THEN** 系統 SHALL 拒絕並回傳 400 錯誤
+- **AND** 錯誤訊息 SHALL 為「訂單成交條件已鎖定，新增費用請走訂單異動單流程」
+
 ## REMOVED Requirements
 
 ### Requirement: 付款計畫變更觸發訂單回業務主管審核

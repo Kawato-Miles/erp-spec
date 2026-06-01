@@ -18,6 +18,7 @@
 - [ ] 2.2 確認 order-management/spec.md 全部 ADDED（含新增「業務送出訂單審核」）+ MODIFIED（含新增「訂單業務主管審核欄位」「業務主管於訂單模組的資料可見範圍」「訂單建立」）Requirement 已 merge 至 main spec
 - [ ] 2.3 確認 state-machines/spec.md「訂單前段審核通過狀態」ADDED + 「訂單狀態機」MODIFIED 已 merge 至 main spec
 - [ ] 2.3b **驗證既有 staleness 已由 MODIFIED 自動 sync 校正（非人工單行編輯）**：sync 後確認 (a) main spec § 訂單狀態機 線下路徑已為完整「草稿 → 待業務主管審核 → 審核通過 → 報價待回簽 → 已回簽 → [共用段]」且「業務主管審核狀態由獨立 change 處理、本 change 不涉及」過時備註已消失；(b) order-management § 訂單建立 US-ORD-001 THEN 已為「進入草稿」。三者皆由本 change MODIFIED 整條 Requirement 取代達成，archive sync 自動完成、無需人工改 main spec
+- [ ] 2.3c 確認 order-management/spec.md MODIFIED「OrderExtraCharge vs OrderAdjustment.fee 時間邊界」已整條取代 merge 至 main spec（凍結點為「審核通過」、legacy 狀態詞已校正；解 ORD-027）
 - [ ] 2.4 確認 after-sales-ticket/spec.md 售後場景退款流程三組件組合 Requirement 已 ADDED 至 main spec
 - [ ] 2.5 確認 business-processes/spec.md 跨齊報稅期作廢 vs 折讓流程節點 Requirement 已 ADDED 至 main spec
 - [ ] 2.6 **手動合入 § Data Model（archive sync 不處理 Data Model section，doc-audit v1.4）— 本 change §A 部分**：依 order-management delta § MODIFIED Data Model § Order，將主 spec § Data Model § Order 表 (a) `approved_by_sales_manager_id` / `payment_terms_note` 鎖定錨點由「報價待回簽」改為「審核通過」（修補與 § 訂單業務主管審核欄位 Requirement 的矛盾）；(b) 新增 `submitted_for_review_at` / `quote_sent_at` 兩列
@@ -46,6 +47,7 @@
 
 - [ ] 6.1 Prototype：訂單前段審核流程實作（草稿 / 待業務主管審核 / 審核通過 / 報價待回簽 四階段 UI；轉訂單落點 = 草稿 + 草稿態可編輯全部內容 + 業務「送主管審核」按鈕 + 業務「已送報價單」按鈕；草稿與待業務主管審核兩態可改、進入審核通過鎖定成交條件）
 - [ ] 6.1b Prototype：Order 新增 `submitted_for_review_at` / `quote_sent_at` 欄位 + 業務主管審核待辦頁 filter（納入審核通過、排除草稿、按 submitted_for_review_at 排序）+ payment_terms_note / approved_by_sales_manager_id 鎖定時機前移至審核通過
+- [ ] 6.1c Prototype：OrderExtraCharge 凍結時點前移至「審核通過」——「新增 OrderExtraCharge」按鈕僅於草稿 / 待業務主管審核兩態顯示，進入審核通過起隱藏並引導走 OrderAdjustment（解 ORD-027）
 - [ ] 6.2 Prototype：Order 新增 `source_order_id` 欄位 + 訂單列表「複製訂單」按鈕
 - [ ] 6.3 Prototype：客戶資料 relation 帶出邏輯（已開發票仍保留快照）
 - [ ] 6.4 Prototype：印件層 `shipment_quantity` 累計欄位 + 印件出貨狀態三態 + 出貨單列表分次進度
