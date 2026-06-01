@@ -53,3 +53,7 @@ main order-management § Data Model 現同時存在兩套（既有 BillingInstal
 ### 方案 B：兩套並存（不建議）
 - 若「scheduled_date 變更」與「dueDate/expectedInvoiceDate 變更」確為兩個獨立業務指標則保留。
 - 缺點：同實體兩個 change_count 易混淆、Prototype 與量測歧義。
+
+## 處理決定（Miles 2026-06-01）
+
+留待**以後的 change** 收斂（不在 align- archive 當下改正本）。本 OQ 維持 open，待後續聚焦 change 處理 change_count / original 系列欄位的單一正本化（對齊 BI-1 既有 BillingInstallment 機制）。

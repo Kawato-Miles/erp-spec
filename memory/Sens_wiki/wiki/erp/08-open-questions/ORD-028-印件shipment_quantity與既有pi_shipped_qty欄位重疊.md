@@ -47,3 +47,7 @@ related-oq: []
 ### 方案 B：兩欄各有語意則保留並明示差異（待確認是否真有差異）
 - 若 `pi_shipped_qty` 為單次 / 某語意、`shipment_quantity` 為跨出貨單累計，則保留並在欄位說明明示。
 - 缺點：兩個「出貨數量」欄位易混淆，需強說明。
+
+## 處理決定（Miles 2026-06-01）
+
+留待**以後的 change** 收斂（不在 align- archive 當下改正本）。本 OQ 維持 open，待後續 change 決定 pi_shipped_qty / shipment_quantity 二擇一與印件出貨三態綁定欄位。
