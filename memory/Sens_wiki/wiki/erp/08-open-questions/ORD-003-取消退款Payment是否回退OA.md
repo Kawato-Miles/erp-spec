@@ -33,6 +33,14 @@ Spec / Scenario 對應：
 - [order-management spec § Requirement: Payment 修正路徑](../../../../openspec/specs/order-management/spec.md)
 - [state-machines spec § 訂單異動狀態機 § Scenario: 取消已完成 Payment 致累計不足回退 OA](../../../../openspec/specs/state-machines/spec.md)
 
+## 2026-06-02 路 C 取代（回退機制移除）
+
+路 C（訂單收退款通用方案，方向書 `~/.claude/plans/1-2-pure-dewdrop.md`）把 OA「已執行」改為「核可後應收調整生效」、移除「綁 Payment 累計達標才推進已執行」整套機制 → **本 OQ 的「取消已完成 Payment 致累計不足回退 OA」回退機制隨之移除**（不再有「累計不足」概念）。
+
+誤建退款 Payment 的修正路徑改為：取消退款 Payment → 應退差額重新出現 → 對帳差額警示引導業務重退；OA 已執行（應收已調整生效）維持不動（與補收對稱）。
+
+原 2026-05-21 決議保留作溯源；路 C 落實後此回退邏輯 deprecated。（序列協作 Phase 3 顧問 + Phase 4 PM 匯報確認，audit-log 2026-06-02 路 C pre-check）
+
 
 # ORD-003：建立退款 Payment 後若發現錯誤，取消 Payment 是否自動回退 OA 為「已核可」
 

@@ -52,6 +52,12 @@ senior-pm Phase 1 + 顧問 C-PM-1 未明確「預收桶」後續流向。
 - 會計實務上預收的記帳處理
 - 客戶端是否接受預收金額抵充未來請款（vs 要求退款）
 
+## 2026-06-02 路 C 範圍界定
+
+路 C（訂單收退款通用方案）Miles 決策：**本 change 範圍內，「收款淨額 > 應收」一律當「退款待執行」處理**（核銷應退差額、不阻擋）。
+
+「溢收（誤多收）vs 預收（客戶預付未來訂金）」的細分**另議**——本 OQ 候選 A（核銷新期次）/ B（退款）/ C（兩者）的選擇留待溢收 / 預收場景單獨處理時拍板，不在路 C 本 change。維持 open（細分待決）。
+
 ## 來源
 
 - senior-pm Phase 1 假設（unify-billing-installment-and-reconciliation-csv change）

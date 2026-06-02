@@ -4,11 +4,13 @@ module:
   - order-management
   - state-machines
 oq-id: BI-9
-status: open
+status: resolved
 priority: medium
 audience: internal
 raised-at: 2026-05-28
 raised-by: senior-pm (Phase 4 PM 匯報)
+answered-at: 2026-06-02
+answered-by: Miles（路 C 序列協作 Phase 4 確認採方案 D）
 source-link: openspec/changes/unify-billing-installment-and-reconciliation-csv/design.md
 related-vault:
   - [[../05-entities/訂單]]
@@ -56,6 +58,16 @@ spec 如何表述兩條獨立 invariant？
 - **方案 D（路 C）**：退款 OA「已執行」= 核可後應收調整生效（與補收對稱、不綁 Payment）；退款完成改看「對帳應退差額歸零」，物理錨點為退款款項自身切「已完成」。即補收與退款的「已執行」語意對稱（都 = 應收生效）。
 - 風險（pre-check 2026-06-02 攔截）：拆「OA 已執行 = 一定退完」單筆硬約束換對帳軟兜底，重開「帳上已退、實際沒退」；Miles 拍板補強（退款款項已完成錨點破循環 + 差額警示不可忽略）。
 - BI-9 須與路 C 收斂或併入處理（不再是「兩條 invariant 如何並存」，而是「是否整個改採方案 D」）。
+
+## 決議與理由（2026-06-02，路 C 序列協作 Phase 4）
+
+**決議**：採方案 D——退款 OA「已執行」= 核可後應收調整生效（與補收對稱、不綁 Payment 累計）；退款完成改看「對帳應退差額歸零」+ 退款款項自身切「已完成」物理錨點。原 A/B/C 三案前提（退款 OA 綁 Payment 如何與補收並存）消失。
+
+**理由**：路 C 把退款完成判定從「逐筆 OA 綁 Payment 達標」改為「對帳三軸帳平」，OA 退化為審核閘門 + 應收生效載具。補收與退款的「已執行」語意統一（都 = 應收生效），spec 表述簡化為單一 invariant，不再需要兩條並存。
+
+**決策者**：Miles（2026-06-02，序列協作 Phase 1-4 收斂）
+
+**落實**：本 change `refactor-order-receivable-refund-model`（spec MODIFIED：order-management OA 已執行語意 + state-machines OA 狀態機）
 
 ## 來源
 
