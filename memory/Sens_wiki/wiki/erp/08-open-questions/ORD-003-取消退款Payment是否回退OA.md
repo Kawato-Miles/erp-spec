@@ -13,7 +13,9 @@ related-vault:
   - [[../05-entities/訂單]]
   - [[../06-state-machines/訂單狀態]]
 related-oq:
-related-change: add-payment-status-and-decouple-oa-execution
+  - ORD-031
+  - CR-5
+related-change: refactor-order-receivable-refund-model
 resolved-at: 2026-05-21
 resolved-by: Miles
 expected-resolution-at: 2026-Q3
