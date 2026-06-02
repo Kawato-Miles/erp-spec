@@ -157,7 +157,7 @@ unresolved 主要是 Vault 外引用（`.claude/agents/`、`openspec/specs/`、`
 
 **下一步建議（補測新增）**：
 - 修 XM-006 撞號（重編其中一個為 XM-007）
-- 補 6 個 QC 重構 OQ 進 README 清單表格 + 對應實體卡（如 [[wiki/erp/03-roles/QC]] / [[生產任務]]）建 backlink
+- 補 6 個 QC 重構 OQ 進 README 清單表格 + 對應實體卡（如 [[品檢人員]] / [[生產任務]]）建 backlink
 - 修 3 個 OQ source-link 改指向 archive 路徑
 
 ## [2026-05-20 19:00] insight | audit-接續
@@ -1319,3 +1319,38 @@ M=26 未轉 N（本次不修卡），但經分類確認 M 項「非既有 know-h
 **主要發現**：本次 8 卡異動（業務/業務主管/諮詢角色卡 + 訂單/需求單/諮詢單實體卡 + XM-008/CR-4 OQ）一致性全健康（規則/連結/OQ answered 三項通過）。整體 open OQ 62 偏高達 vault-insight 門檻。
 
 **下一步建議**：(1) 跑 vault-insight 識別 open OQ 62 系統性議題 (2) 本月 daily review 規律化 (3) 全量 vault-audit 補深度維度（矛盾/對齊/角色/KPI）
+
+---
+
+## [2026-06-02] erp-planning-pre-check | L1.2 訂單列表篩選優化 | 單一稽核 sub-agent
+
+**議題**：訂單列表補「業務負責人」下拉 + 「交期」起訖區間 + 「清空篩選」鍵，對齊範式 B + Figma 中台設計（filter node 9223:18748）。局部欄位調整，不改狀態機 / 實體 / 角色權限。
+
+### 雙軸量化矩陣（L1.2 Order Management）
+| | 角色 | 實體 | 流程 | 情境 | User Story | 業務邏輯 | 法規 |
+|--|--|--|--|--|--|--|--|
+| L1.2 | 2/1/1 | 5/1/0 | 0/1/0 | 0/1/0 | 1/1/1 | 2/1/1 | 1/0/0 |
+
+### 最關鍵發現（編碼校正）
+- 議題沿用 spec L270 舊 scenario 號 US-ORD-005 指涉「訂單列表篩選」，實為 [[ORD-1]]（answered）已重編的 **US-ORD-009**；vault US-ORD-005 卡是「發票與配送編輯」（無關）。後續 spec / test-case MUST 掛 US-ORD-009；OpenSpec change 應順手對齊 spec scenario 號。
+
+### 修補項清單（本輪）
+- 無。依比例原則（輕量篩選功能）+ XM-003 open（角色卡可見範圍修補有誤掛風險），wiki 卡修補不在 pre-check 做，列「定案後回補」交 archive 階段 doc-audit。
+
+### 新建 OQ 清單
+- 無新建。相關 open OQ：[[XM-003]]（訂單管理人 vs 業務主管權責邊界 / 誰看全公司）— 影響「業務負責人」下拉的全視角對象，但不阻擋核心篩選（對當前角色可見集再依業務負責人收斂，任何 XM-003 結論下皆成立）。
+
+### wiki 商業邏輯卡清單（定案後回補，交棒 archive 階段 doc-audit）
+- `13-user-stories/order-management/US-ORD-009`：criteria 補「業務負責人下拉 / 交期起訖 / 清空」+ 回填 related-test-cases + related-scenarios
+- `03-roles/業務.md`、`03-roles/訂單管理人.md`：補訂單列表可見範圍 R&R（目前只在 spec + ORD-024）
+- `05-entities/訂單.md`：sales_id 作篩選欄位定位 + 交期跨 PrintItem 註記
+- `06-state-machines/訂單狀態.md`：「訂單狀態」篩選下拉選項對齊狀態枚舉
+- 新建候選：`07-scenarios/` 一張「找單 / 篩選」情境卡（目前缺）
+
+### Step 5 閉環驗證
+- M 細項本輪未轉 N（依比例延後至定案後回補 + OQ）；非 false completion，已明示延後依據；核心篩選設計不被未轉 M 阻擋。
+
+### 反模式識別
+- 編碼漂移（US-ORD-005 vs US-ORD-009）：已攔截，列後續 MUST 校正。
+- 範式 B `grid-cols-4` 上限：5 個篩選控制逼近 4 欄上限，實作須處理版面（換行 / 區間跨欄），勿為此擴大為 ListPageLayout 抽取（守「先做 A」）。
+- 交期勿擴成跨 PrintItem 聚合查詢（交期在印件層；列表篩 order.deadline 即可）。
