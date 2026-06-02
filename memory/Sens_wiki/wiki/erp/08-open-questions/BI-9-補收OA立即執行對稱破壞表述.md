@@ -49,6 +49,14 @@ spec 如何表述兩條獨立 invariant？
 - spec 表述清晰度（讓未來新業務員看到能理解）
 - 是否需要在 state-machines § OA 狀態機加分流圖（補收路徑 vs 退款路徑）
 
+## 2026-06-02 更新：路 C 引入方案 D（推翻本 OQ 共同前提）
+
+路 C（訂單收退款通用方案，方向書 `~/.claude/plans/1-2-pure-dewdrop.md`）把「退款 OA 已執行綁 Payment 累計達標」整條拆掉，使本 OQ 原 A/B/C 三案（圍繞「退款 OA 綁 Payment」如何與補收免審並存）的共同前提消失：
+
+- **方案 D（路 C）**：退款 OA「已執行」= 核可後應收調整生效（與補收對稱、不綁 Payment）；退款完成改看「對帳應退差額歸零」，物理錨點為退款款項自身切「已完成」。即補收與退款的「已執行」語意對稱（都 = 應收生效）。
+- 風險（pre-check 2026-06-02 攔截）：拆「OA 已執行 = 一定退完」單筆硬約束換對帳軟兜底，重開「帳上已退、實際沒退」；Miles 拍板補強（退款款項已完成錨點破循環 + 差額警示不可忽略）。
+- BI-9 須與路 C 收斂或併入處理（不再是「兩條 invariant 如何並存」，而是「是否整個改採方案 D」）。
+
 ## 來源
 
 - senior-pm Phase 4 PM 匯報（unify-billing-installment-and-reconciliation-csv change）
