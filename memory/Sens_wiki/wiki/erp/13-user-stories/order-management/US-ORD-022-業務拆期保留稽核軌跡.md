@@ -10,7 +10,7 @@ role:
 priority: medium
 status: draft
 created-at: 2026-05-28
-last-reviewed: 2026-05-28
+last-reviewed: 2026-06-03
 source:
   - openspec/changes/unify-billing-installment-and-reconciliation-csv/specs/order-management/spec.md
 related-spec: openspec/specs/order-management/spec.md
@@ -40,7 +40,7 @@ related-test-cases: []
 
 ### 業務流程
 1. 業務於請款期次列表點「拆此期」（或於一鍵開票時臨時點「拆此期」捷徑）
-2. 系統預設帶入原期次金額平分 + 兩筆新期次描述自動加「拆 1/2」「拆 2/2」前綴
+2. 系統預設帶入原期次金額平分，兩筆新期次 note 自動帶「原一期拆兩期，源期次描述：「{原 description}」」前綴
 3. 業務確認或調整兩筆新期次的金額、應收日、預計開票日（系統即時校驗兩期合計 = 原期次金額）
 4. 業務送出後系統將原期次標為「已取消」（cancel_reason = '拆兩期'）保留稽核軌跡，建立兩筆獨立平輩期次
 5. 兩筆新期次沿用原期次的來源類型（如諮詢取消半額退費的拆期，新期次仍標 source_type = consultation_cancellation）

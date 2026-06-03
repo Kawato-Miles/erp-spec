@@ -1,0 +1,554 @@
+{
+ "mapping_affected": [
+  {
+   "usId": "US-ORD-001",
+   "file": "US-ORD-001-業務主管訂單審核.md",
+   "changes": [
+    "2026-06-01-align-business-consultation-coverage-gaps"
+   ],
+   "behaviorChanged": "線下訂單初始狀態改為草稿，業務主管核可後推進至「審核通過」（不再直接到報價待回簽），草稿建立時自動指派審核業務主管、payment_terms_note 進入審核通過即鎖定、不核可走 Slack 不設退回鈕"
+  },
+  {
+   "usId": "US-ORD-002",
+   "file": "US-ORD-002-業務送出報價單給客戶.md",
+   "changes": [
+    "2026-06-01-align-business-consultation-coverage-gaps"
+   ],
+   "behaviorChanged": "新增「審核通過 → 業務手動點『已送報價單』→ 報價待回簽」三段前段階段，明確切分主管內部核可、已核可未外發、已送待回簽，並寫入 quote_sent_at"
+  },
+  {
+   "usId": "US-ORD-003",
+   "file": "US-ORD-003-業務上傳回簽檔案.md",
+   "changes": [
+    "2026-05-28-relax-order-detail-edit-conditions"
+   ],
+   "behaviorChanged": "回簽附件（OrderSignedFile）上傳時機放寬為訂單未取消皆可上傳，僅首次於報價待回簽觸發狀態推進與 signed_at，後續追加 append 不重複推進；已取消禁上傳"
+  },
+  {
+   "usId": "US-ORD-004",
+   "file": "US-ORD-004-訂單印件管理.md",
+   "changes": [
+    "2026-05-22-add-payment-status-and-decouple-oa-execution",
+    "2026-05-28-relax-order-detail-edit-conditions",
+    "2026-06-02-refactor-order-receivable-refund-model"
+   ],
+   "behaviorChanged": "印件規格與金額編輯時機從「製作前/製作後+售價門控」收斂為以訂單完成/已取消終態為界：未進終態業務可直接改規格與單價（含調降，弱把關留痕 pre_completion_amount_decrease、印件費與應收即時重算）；進終態唯讀走訂單異動。表格改 14 欄單層 row、操作欄移除申請異動鈕"
+  },
+  {
+   "usId": "US-ORD-005",
+   "file": "US-ORD-005-訂單發票與配送資訊編輯.md",
+   "changes": [
+    "2026-05-28-relax-order-detail-edit-conditions"
+   ],
+   "behaviorChanged": "資訊 Tab 四個編輯型 Section（訂單資訊/備註/出貨資訊/發票設定）統一編輯時機為「訂單未取消即可編輯」（取代製作前+completed_at 雙閘門控），移除製作後「需走訂單異動」toast，角色權限對齊 user-roles 粗粒度"
+  },
+  {
+   "usId": "US-ORD-006",
+   "file": "US-ORD-006-訂單三種備註管理.md",
+   "changes": [
+    "2026-05-28-relax-order-detail-edit-conditions"
+   ],
+   "behaviorChanged": "三種訂單備註編輯放寬為訂單未取消皆可編輯（不再限 completed_at IS NULL），移除業務主管代編破例（對齊訂單模組 X 邊界），會計/Supervisor 唯讀，已取消鎖定"
+  },
+  {
+   "usId": "US-ORD-007",
+   "file": "US-ORD-007-訂單複製功能.md",
+   "changes": [
+    "2026-06-01-align-business-consultation-coverage-gaps"
+   ],
+   "behaviorChanged": "明定訂單複製功能：帶入客戶/印件規格/價格/付款條件、寫 source_order_id、新訂單進草稿、雙向 ActivityLog；不複製工單/稿件/ActivityLog"
+  },
+  {
+   "usId": "US-ORD-008",
+   "file": "US-ORD-008-訂單列表分享與代理.md",
+   "changes": [
+    "2026-06-02-enhance-order-list-filter"
+   ],
+   "behaviorChanged": "訂單列表新增多維度篩選（業務負責人/訂單狀態/類型/付款狀態/售後狀態/交期區間/關鍵字）與一鍵清空；訂單狀態選項涵蓋所選類型完整狀態集而非僅現有資料出現的狀態"
+  },
+  {
+   "usId": "US-ORD-009",
+   "file": "US-ORD-009-訂單管理人查看全公司訂單.md",
+   "changes": [
+    "2026-06-02-enhance-order-list-filter"
+   ],
+   "behaviorChanged": "訂單管理人預設全公司訂單、業務預設自己負責；篩選作用於當前角色可見集（不擴大範圍），付款狀態以訂單層比較、交期以訂單交期不跨印件聚合"
+  },
+  {
+   "usId": "US-ORD-010",
+   "file": "US-ORD-010-補收款訂單建立.md",
+   "changes": [
+    "2026-05-22-add-payment-status-and-decouple-oa-execution",
+    "2026-05-28-unify-billing-installment-and-reconciliation-csv",
+    "2026-06-02-refactor-order-receivable-refund-model"
+   ],
+   "behaviorChanged": "補收 OA 流程演進：先對稱化「業務於 OA 介面建處理中 Payment、切已完成累計達 OA.amount 才推進已執行」（廢止執行 OA 自動建補收 Payment）；再改補收正項 OA 跳過審核中間態直達已執行、應收即時 +N、不綁 Payment 切已完成"
+  },
+  {
+   "usId": "US-ORD-011",
+   "file": "US-ORD-011-訂單取消與退款.md",
+   "changes": [
+    "2026-05-26-refine-consultation-cancellation-and-invoice-flow",
+    "2026-05-30-converge-consultation-cancel-to-order-cancel-flow",
+    "2026-06-01-align-business-consultation-coverage-gaps",
+    "2026-06-02-refactor-order-receivable-refund-model"
+   ],
+   "behaviorChanged": "諮詢取消收斂為一般訂單取消流程：諮詢訂單三收尾情境（不做大貨/需求單流失/諮詢取消）建立規則、取消半額退費自動建 OA(-1000)+退款 Payment、終態收斂為已取消、取消情境不自動建待開發票由對帳差額警示兜底；退款核銷改「應退差額」不綁單一 OA 累計、退款完成錨點為退款 Payment 切已完成、差額警示不可忽略"
+  },
+  {
+   "usId": "US-ORD-013",
+   "file": "US-ORD-013-會計執行退款處理.md",
+   "changes": [
+    "2026-05-22-add-payment-status-and-decouple-oa-execution",
+    "2026-06-02-refactor-order-receivable-refund-model"
+   ],
+   "behaviorChanged": "退款款項處理引入 Payment 處理中/已完成雙狀態（切已完成需附對帳附件+paidAt、已完成不可改回處理中只能取消重建、處理中不計入收款淨額）；路 C 退款 Payment 核銷應退差額、不進期次、每筆各挂匯款證明、取消後差額重現無 OA 回退"
+  },
+  {
+   "usId": "US-ORD-020",
+   "file": "US-ORD-020-業務建立請款期次.md",
+   "changes": [
+    "2026-05-28-unify-billing-installment-and-reconciliation-csv",
+    "2026-05-29-remove-superseded-paymentplan-requirements"
+   ],
+   "behaviorChanged": "以請款期次（BillingInstallment）統一實體合併 PaymentPlan+PlannedInvoice 雙頭維護，承載應收日/預計開票日/品項/雙維度狀態；廢止並移除舊 PaymentPlan Requirement 與 paymentPlanId 必填（改 PaymentAllocation 推導）"
+  },
+  {
+   "usId": "US-ORD-021",
+   "file": "US-ORD-021-業務於期次一鍵開立發票.md",
+   "changes": [
+    "2026-05-26-align-invoice-line-items-to-ezpay-spec",
+    "2026-05-28-unify-billing-installment-and-reconciliation-csv",
+    "2026-05-29-refine-invoice-tab"
+   ],
+   "behaviorChanged": "期次↔發票 1:1 嚴格約束 + 一鍵開票自動繼承品項/應收日/備註；發票品項對齊 ezPay 五欄硬約束（itemAmount=count×unitPrice 系統計算、unit 來自共用 LOV）；發票 Tab 改雙層展開+詳情 Side Panel、開立 Dialog 五欄品項版型"
+  },
+  {
+   "usId": "US-ORD-022",
+   "file": "US-ORD-022-業務拆期保留稽核軌跡.md",
+   "changes": [
+    "2026-05-28-unify-billing-installment-and-reconciliation-csv"
+   ],
+   "behaviorChanged": "拆票=拆期：原期次拆兩個獨立平輩期次、原期次 cancelled=true 保留稽核、split_from_installment_id 純追溯、廢止付款計畫變更觸發回審改為 ActivityLog 留痕"
+  },
+  {
+   "usId": "US-ORD-023",
+   "file": "US-ORD-023-業務登錄收款核銷分配.md",
+   "changes": [
+    "2026-05-28-unify-billing-installment-and-reconciliation-csv"
+   ],
+   "behaviorChanged": "收款核銷分配（PaymentAllocation）依應收日由早到晚依序填滿、業務可手動覆寫（diff-based 判定 manually_overridden）、即時校驗 sum=Payment.amount、溢收標記預收未分配桶"
+  },
+  {
+   "usId": "US-ORD-024",
+   "file": "US-ORD-024-會計匯出14欄對帳CSV.md",
+   "changes": [
+    "2026-05-28-unify-billing-installment-and-reconciliation-csv"
+   ],
+   "behaviorChanged": "對帳 CSV 14 欄定稿（一列=一張已開立發票、UTF-8 with BOM、應收日/備註繼承來源期次、收款日與狀態 derived）；含訂單收款變更率與收款逾期天數指標"
+  },
+  {
+   "usId": "US-ORD-025",
+   "file": "US-ORD-025-業務查看期次原始vs現況對照.md",
+   "changes": [
+    "2026-05-28-unify-billing-installment-and-reconciliation-csv"
+   ],
+   "behaviorChanged": "期次凍結 original_due_date/original_expected_invoice_date 基準、每次日期變更寫 ActivityLog（DUE_DATE_CHANGED/EXPECTED_DATE_CHANGED）、change_count 統計、UI 顯示原始 vs 現況對照與變更次數"
+  },
+  {
+   "usId": "US-ORD-026",
+   "file": "US-ORD-026-業務建補收OA免主管核可直接執行.md",
+   "changes": [
+    "2026-05-28-unify-billing-installment-and-reconciliation-csv",
+    "2026-06-02-refactor-order-receivable-refund-model"
+   ],
+   "behaviorChanged": "補收正項 OA 依 amount/type 自動判定 requires_supervisor_approval=false、跳過待主管審核與已核可中間態直達已執行、應收即時 +N、不綁 Payment 切已完成；OA 已執行語意統一為核可後應收調整生效"
+  },
+  {
+   "usId": "US-ORD-027",
+   "file": "US-ORD-027-業務主管核可退款訂單異動.md",
+   "changes": [
+    "2026-05-28-unify-billing-installment-and-reconciliation-csv",
+    "2026-06-02-refactor-order-receivable-refund-model"
+   ],
+   "behaviorChanged": "退款負項 OA 沿用業務主管核可把關（requires_supervisor_approval=true）、不進期次；路 C 將「已執行」語意改為核可後應收調整即生效（移除綁退款 Payment 累計達標推進與取消 Payment 回退機制）"
+  },
+  {
+   "usId": "US-ORD-028",
+   "file": "US-ORD-028-業務查看溢收預收未分配.md",
+   "changes": [
+    "2026-05-28-unify-billing-installment-and-reconciliation-csv"
+   ],
+   "behaviorChanged": "實收 > 全部待收時溢收部分標記為「預收（未分配）」桶（PaymentAllocation.billing_installment_id=NULL），後續可手動核銷至新期次或退款處理"
+  },
+  {
+   "usId": "US-ORD-029",
+   "file": "US-ORD-029-會計收到月結差錯訂單警示.md",
+   "changes": [
+    "2026-05-28-unify-billing-installment-and-reconciliation-csv",
+    "2026-05-30-converge-consultation-cancel-to-order-cancel-flow"
+   ],
+   "behaviorChanged": "對帳三方差錯偵測範圍從「限訂單完成」擴為涵蓋「status∈{訂單完成,已取消}且有開立發票」的訂單，根治已取消但有認列收入訂單漏帳（諮詢取消留存 1000+一般訂單取消保留部分收入），未開票由應收>發票淨額差額警示兜底"
+  },
+  {
+   "usId": "US-ORD-030",
+   "file": "US-ORD-030-F1預開發票拆票實作金額調整退款.md",
+   "changes": [
+    "2026-05-26-align-invoice-line-items-to-ezpay-spec",
+    "2026-05-28-unify-billing-installment-and-reconciliation-csv",
+    "2026-06-02-refactor-order-receivable-refund-model"
+   ],
+   "behaviorChanged": "整合預開發票（PlannedInvoice→BillingInstallment 品項鏈式預填）、期次拆票、發票品項金額調整與退款核銷的端到端情境；對齊 ezPay 五欄與路 C 退款核銷應退差額"
+  },
+  {
+   "usId": "US-ORD-031",
+   "file": "US-ORD-031-期次規劃invariant警示與大額補收紅標.md",
+   "changes": [
+    "2026-05-28-unify-billing-installment-and-reconciliation-csv",
+    "2026-06-02-refactor-order-receivable-refund-model"
+   ],
+   "behaviorChanged": "三方對帳期次規劃 invariant（Order 應收=Σ未取消期次 scheduled_amount）違反顯示「OA 已執行未對應期次規劃」警示 banner + 建立期次 action；補收 OA 超大額閾值寫紅標事件+Slack 通知主管事後審查；路 C 完成前調降致應收下降時顯示期次同步引導且警示不可忽略"
+  },
+  {
+   "usId": "US-ORD-032",
+   "file": "US-ORD-032-製作後印件規格異動通知印務.md",
+   "changes": [
+    "2026-05-28-relax-order-detail-edit-conditions"
+   ],
+   "behaviorChanged": "製作後業務於 Side Panel 改印件規格類欄位時系統自動推 in-app 通知（工單負責印務+印務主管+訂單管理人，訂單管理人為空 fallback 至業務）+寫 ActivityLog print_item_spec_modified_in_production，廢止「業務通知印務從工單異動處理」動線"
+  },
+  {
+   "usId": "US-ORD-033",
+   "file": "US-ORD-033-上傳訂單其他附件標註用途.md",
+   "changes": [
+    "2026-05-28-relax-order-detail-edit-conditions"
+   ],
+   "behaviorChanged": "新增訂單其他附件（OrderAttachment）上傳，與回簽檔並存、上傳填用途 free-text（200 字）不分桶、不觸發狀態推進、已取消禁上傳；售後客訴附件位置不約束來源並存"
+  },
+  {
+   "usId": "US-ORD-034",
+   "file": "US-ORD-034-業務查訂單下印件狀態.md",
+   "changes": [
+    "2026-05-28-relax-order-detail-edit-conditions"
+   ],
+   "behaviorChanged": "訂單詳情頁印件清單改 14 欄單層 row 結構（移除兩層展開）、縮圖首欄 120px、5 欄（預計產線/難易度/出貨方式/稿件檔案/工單數）移入印件詳情 Side Panel 漸進揭露，業務查看各印件印製/審稿/出貨狀態"
+  },
+  {
+   "usId": "US-ORD-035",
+   "file": "US-ORD-035-業務於訂單異動已核可後校正退款金額.md",
+   "changes": [
+    "2026-05-22-add-payment-status-and-decouple-oa-execution",
+    "2026-06-02-refactor-order-receivable-refund-model"
+   ],
+   "behaviorChanged": "OA 已核可狀態業務可校正金額（不需重送審、保留主管核可金額 vs 當前金額對照 + audit log）；路 C 後退款金額校正改由退款 Payment 核銷應退差額承載，OA 已執行=核可即生效不再綁 Payment 累計"
+  }
+ ],
+ "coverageNote": "12 個 archived 訂單 change 全部對映到至少一張 US-ORD 卡，無遺漏。對映分布：(1) 2026-05-22-add-payment-status-and-decouple-oa-execution → US-ORD-004/010/013/035（Payment 處理中/已完成雙狀態、退款補收 OA 與 Payment 切已完成累計推進、對帳僅計已完成）。(2) 2026-05-26-align-invoice-line-items-to-ezpay-spec → US-ORD-021/030（發票五欄 ezPay 硬約束、PlannedInvoice 品項鏈式預填）。(3) 2026-05-26-refine-consultation-cancellation-and-invoice-flow → US-ORD-011（諮詢訂單三收尾情境建立、半額退費 OA、不自動開發票改自動建 PlannedInvoice）。(4) 2026-05-28-relax-order-detail-edit-conditions → US-ORD-003/004/005/006/032/033/034（編輯時機放寬至訂單未取消、四 Section 統一、印件表 14 欄、製作後通知、其他附件）。(5) 2026-05-28-unify-billing-installment-and-reconciliation-csv → US-ORD-020/021/022/023/024/025/026/027/028/030/031（BillingInstallment 統一實體、1:1 開票、拆期、核銷分配、14 欄 CSV、雙維度狀態、補收/退款 OA 分流、預收桶、invariant 警示）。(6) 2026-05-29-refine-invoice-tab → US-ORD-021（發票 Tab 雙層展開+詳情 Side Panel+開立 Dialog 五欄版型）。(7) 2026-05-29-remove-superseded-paymentplan-requirements → US-ORD-020（移除重複的舊 PaymentPlan/Payment Requirement tombstone，純文件清理對映期次卡）。(8) 2026-05-30-add-sales-manager-reassign-owner → 對映卡缺口：此 change 新增「訂單負責業務改派」（業務主管改 owner）與「業務負責人 row 簡化」，order-management/13-user-stories 內無專屬改派卡，最接近語意為 US-ORD-008（列表分享與代理，分享≠改派），但改派為獨立機制未建專屬卡，屬覆蓋缺口（建議補一張業務主管改派負責業務 US 卡）。(9) 2026-05-30-converge-consultation-cancel-to-order-cancel-flow → US-ORD-011/029（諮詢取消終態收斂已取消、對帳差錯偵測涵蓋已取消有發票訂單）。(10) 2026-06-01-align-business-consultation-coverage-gaps → US-ORD-001/002/007/011/012（草稿初始狀態+審核通過階段、已送報價單推進、訂單複製、諮詢訂單建立校正、客戶資料關聯帶出）。(11) 2026-06-02-enhance-order-list-filter → US-ORD-008/009（多維度篩選+完整狀態集）。(12) 2026-06-02-refactor-order-receivable-refund-model（路 C 重點 change）→ US-ORD-004/010/011/013/026/027/030/031/035（明細時點分界=終態集合、OA 已執行核可即生效移除回退與綁 Payment 累計、退款核銷應退差額、差額警示不可忽略）。唯一缺口為 change 8（reassign-owner）無專屬 US-ORD 卡，其餘 11 個 change 均有明確卡對映。",
+ "cardDrift": [
+  {
+   "usId": "US-ORD-001",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "【業務情境 §我希望 L36】「能於訂單審核清單看到待審訂單並核可或退回」→ 改為「能於訂單審核清單看到待審訂單並核可（不核可時改走 Slack thread 與業務討論，不於 ERP 內退回）」。理由：本 change MODIFIED §業務主管核准訂單明定 MUST NOT 提供「退回討論」按鈕，不核准時訂單維持「待業務主管審核」、透過 Slack thread 溝通；卡片殘留「退回」屬已淘汰回退機制。",
+    "【前置條件 L42-44 與 frontmatter prerequisites L23-25】補一條前置條件並修正敘述：(a) 新增「業務於需求單成交『轉訂單』後訂單以草稿為初始狀態，業務於草稿態調整帶入內容後點『送主管審核』推進至『待業務主管審核』」；(b)「業務主管角色已分派」修正為「業務主管（approved_by_sales_manager_id）於草稿建立時即自動指派為該訂單指定審核人」。理由：本 change §訂單建立／§訂單業務主管審核欄位明定線下訂單以『草稿』為初始狀態、草稿建立時自動指派業務主管；卡片只寫『待主管審核』入口、漏草稿態與自動指派。",
+    "【業務流程 step 3 L50-52】移除『退回』分支整段：刪除「- 退回：填寫退回原因，訂單狀態回『草稿』狀態供業務修正後重送」，改為「- 不核可：業務主管不於 ERP 內按退回鈕，訂單維持『待業務主管審核』，業務主管透過 Slack thread 與業務討論、業務修正後等主管再次審視」。理由：退回回『草稿』機制已被本 change 廢止（不設退回鈕、Slack 討論、訂單維持待審）。",
+    "【業務流程 step 4 L53】「事件描述：訂單核可 / 退回 + 業務主管姓名 + 時間 + 退回時含原因」→ 改為「事件描述：核准訂單（成交條件審核）+ 業務主管姓名 + 時間」。理由：本 change ActivityLog 事件為核准，無『退回』事件。",
+    "【成功條件 3 L59】「退回時必須填寫退回原因；訂單狀態回『草稿』供業務修正」→ 改為「不核可時訂單維持『待業務主管審核』（無退回草稿動作）；業務主管透過 Slack thread 與業務討論，業務修正後等待主管再次審視」。理由：同上，退回機制已淘汰。",
+    "【成功條件 4 L60】「核可 / 退回動作皆寫入活動紀錄供事後稽核」→ 改為「核可動作寫入活動紀錄供事後稽核」。理由：無退回動作。",
+    "【成功條件新增一條】於成功條件補一條（守衛型）：「訂單進入『審核通過』後，收款條件備註（payment_terms_note）與審核業務主管（approved_by_sales_manager_id）鎖定為唯讀，不得被直接竄改」。理由：本 change §訂單業務主管審核欄位／§審核通過狀態下訂單修改明定進入『審核通過』起鎖定成交條件欄位；卡片完全未反映此守衛行為。",
+    "【成功條件 2 L58 / 業務流程 step 3 核可項 L51】內容已對齊（核可後推進『審核通過』、業務續推進送報價單），無需修改，僅確認保留。",
+    "【校對紀錄】新增第二輪條目，註明依 2026-06-01-align-business-consultation-coverage-gaps change 對齊：草稿初始態、核可推進審核通過、草稿建立自動指派業務主管、payment_terms_note 審核通過鎖定、移除退回機制改 Slack thread。並更新 frontmatter last-reviewed 為 2026-06-03。"
+   ],
+   "staleMechanisms": [
+    "回退機制：卡片多處保留『退回／訂單狀態回草稿／退回原因』，本 change 已廢止退回鈕、改不核可維持待審 + Slack thread 討論（§業務主管核准訂單 MODIFIED）",
+    "缺漏守衛：未反映 payment_terms_note 與 approved_by_sales_manager_id 進入『審核通過』即鎖定唯讀（§訂單業務主管審核欄位 / §審核通過狀態下訂單修改）",
+    "缺漏初始態與自動指派：未反映線下訂單以『草稿』為初始狀態、草稿建立時自動指派審核業務主管（§訂單建立 / §訂單業務主管審核欄位）"
+   ]
+  },
+  {
+   "usId": "US-ORD-002",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "【業務流程 第 4 步】（卡 L48）目前只寫「系統寫入活動紀錄（事件描述：送出報價單 + 業務姓名 + 時間）」，未反映 change 新增的報價單外發時間（quote_sent_at）寫入。改為兩條：『4. 系統將報價單外發時間（quote_sent_at）記為當下時間，作為「核准到外發」「外發到回簽」落差量測的起點』『5. 系統寫入活動紀錄（事件描述：業務送出報價單 + 業務姓名 + 時間）』。依據 change delta order-management spec.md L477「quote_sent_at：業務點『已送報價單』（審核通過 → 報價待回簽）時寫入；與 signed_at 對稱，供『核准到外發』『外發到回簽』落差量測」。",
+    "【成功條件 新增一條】（卡 L50-55 區塊）新增一條：『5. 業務點「已送報價單」當下系統記錄報價單外發時間（quote_sent_at），與回簽時間（signed_at）對稱，供量測核准到外發、外發到回簽的時間落差』。理由：此欄位寫入是本 transition 的核心系統行為，原卡完全未涵蓋。",
+    "【前置條件 + 業務情境「我希望」段】（卡 L34、L39-41）補上適用範圍限制：此故事僅適用線下訂單（order_type = 線下）；線上訂單由 EC 付款自動推進、諮詢訂單為短路徑收尾，皆不經此手動「已送報價單」推進。建議在前置條件區塊（L40 之後）加一條：『- 適用範圍：僅線下訂單（order_type = 線下）；線上 / 諮詢訂單不經此手動推進』。依據 change delta state-machines spec.md L19 與 order-management spec.md L5『僅適用 order_type = 線下』。",
+    "【frontmatter last-reviewed】（卡 L11）目前為 2026-05-22，本次依 2026-06-01 change 校對後應更新為 2026-06-03（或校對當日），並於「校對紀錄」追加第二輪條目記述：對齊 2026-06-01-align-business-consultation-coverage-gaps 補 quote_sent_at 寫入與線下適用範圍。"
+   ]
+  },
+  {
+   "usId": "US-ORD-003",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "【前置條件段（卡內「### 前置條件」與 frontmatter prerequisites）】現況只列「訂單狀態為『報價待回簽』」，與放寬後行為不符。改為涵蓋兩種情境：(1) 首次上傳觸發狀態推進的前置＝訂單狀態為「報價待回簽」且尚無回簽檔案；(2) 追加上傳的前置＝訂單未取消（status ≠ 已取消）且已有回簽檔案。措辭範例：「訂單未取消（首次推進情境另需狀態為『報價待回簽』且無既有回簽檔案）；客戶已透過外部管道送回回簽紙本／電子檔」。",
+    "【業務流程段（步驟 1-4）】現況把『上傳→自動推進至已回簽』寫成單一無條件流程，未區分首次與追加。改寫步驟 3 為條件式：『3. 若為首次上傳且訂單處於「報價待回簽」，系統自動推進訂單狀態（依正常／免審稿快速路徑）並寫入回簽時間（signed_at）；4. 若為追加上傳（已有回簽檔案），系統以 append 方式新增檔案紀錄，不重複推進狀態、不覆寫回簽時間。』原步驟 4（活動紀錄）順延，所有情境皆寫活動紀錄。",
+    "【成功條件 1】現況「業務可於『報價待回簽』狀態上傳回簽檔案」太窄。改為「訂單未取消（status ≠ 已取消）時業務皆可上傳回簽檔案；已取消訂單上傳入口停用」。",
+    "【成功條件 2】現況「上傳成功後訂單狀態自動推進至『已回簽』」誤把每次上傳都當作推進。改為「僅首次於『報價待回簽』狀態上傳時自動推進訂單狀態並寫入回簽時間（signed_at）；後續追加上傳不重複推進、不覆寫回簽時間」。",
+    "【成功條件段補一條守衛型】新增「訂單已取消時禁止上傳回簽檔案（上傳入口停用）」，對齊 Gherkin 守衛條件涵蓋率（卡目前缺禁止／守衛型成功條件）。",
+    "【「我希望」「以便」段】現況綁定『推進至已回簽』單一目的，未涵蓋追加保存用途。微調「我希望」為「能上傳客戶回簽檔案（首次觸發訂單推進，後續可追加保存供追溯）」，避免敘述與放寬後語意脫節。",
+    "【source frontmatter / 校對紀錄】補列本次依據的 archived change：openspec/changes/archive/2026-05-28-relax-order-detail-edit-conditions（§ Requirement: OrderSignedFile 訂單回簽附件，上傳時機放寬 v1.13），並於校對紀錄新增一輪註記放寬要點，更新 last-reviewed。"
+   ]
+  },
+  {
+   "usId": "US-ORD-004",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "frontmatter prerequisites（L23-25）：把「訂單已成立且尚未進入製作完成階段」改為「訂單未進入終態（status ∉ {訂單完成, 已取消}）」。理由：路 C（2026-06-02 receivable-refund delta）已把印件規格 / 金額可編輯界線從『製作前 / 製作後』收斂為以『訂單完成 / 已取消』終態為界——製作中 / 製作完成等非終態狀態業務仍可直接編輯，原『製作完成階段』門檻已淘汰。",
+    "「### 前置條件」段（L41-43）：同步把「訂單已成立且尚未進入製作完成階段」改為「訂單未進入終態（status ∉ {訂單完成, 已取消}）」，與 frontmatter 一致。",
+    "「### 我希望」+「### 以便」段（L36-39）：擴充涵蓋金額可編輯。建議我希望改為「能於訂單詳情新增 / 編輯多筆印件並設定規格 / 數量 / 單價（含調降）/ 免審稿標記」；以便補一句「訂單未進入終態前規格與金額皆可直接調整、印件費與應收即時重算」。理由：路 C 後 price_per_unit（含調降）與 pi_ordered_qty 於未進終態時可直接於 Side Panel 改，本卡只談規格不談金額已不反映最新行為。",
+    "「### 業務流程」step 2（L48）：把「業務於訂單階段（指定時機，依 spec § 訂單階段印件規格編輯時機）可新增 / 編輯印件」改為明確終態界線，例如「訂單未進入終態（非訂單完成 / 已取消）時，業務可直接新增 / 編輯印件規格（spec_note / 數量 / 單位 / 難易度）與單價 price_per_unit（含調降），系統即時重算印件費與訂單應收」。理由：原措辭迴避了界線，且『指定時機』指向已被路 C 取代的舊門控。",
+    "「### 業務流程」新增一步（接在規格 / 金額編輯之後、ActivityLog 之前）：補金額調降弱把關留痕——「業務調降單價或數量致印件費減少時，系統寫 OrderActivityLog 事件 pre_completion_amount_decrease（弱把關、不阻擋、不送業務主管核可，主管事後可於活動紀錄查見）」。理由：路 C 新增 pre_completion_amount_decrease 留痕機制，本卡完全未涵蓋。",
+    "「### 業務流程」補終態唯讀分支：新增「訂單進入終態（訂單完成 / 已取消）後，所有印件欄位（含金額）唯讀；金額異動改走『訂單異動』Tab 建立 OrderAdjustment（補收 / 退款）」。理由：reflect 路 C 階段二唯讀規則。",
+    "「### 成功條件」第 3 條（L57）：現「訂單階段印件規格編輯時機依 spec 限制（金額異動由訂單異動流程處理；本卡涵蓋規格編輯）」為已淘汰的『金額 / 規格分離、金額一律走 OA』模型，路 C 已廢止此分離（完成前金額可直接改、不走 OA）。改為兩條 Gherkin 成功條件：(a)『訂單未進入終態時，業務直接調整印件規格與單價，系統即時重算印件費與訂單應收；金額調降寫 pre_completion_amount_decrease 留痕（不阻擋）』；(b)『訂單進入終態（訂單完成 / 已取消）後印件欄位唯讀，金額異動走訂單異動單（補收 / 退款 OrderAdjustment）』。",
+    "操作欄 / 表格行為：本卡未描述表格欄位與操作鈕，故不需在成功條件硬塞 14 欄結構；惟若補述操作欄，須對齊 relax delta——操作欄含『補件 / 編輯印件 / 檢視』、MUST NOT 含『申請異動』鈕。建議在業務流程 step 1 後附註『印件清單以單層 row 呈現，操作欄提供編輯印件 / 檢視（無申請異動鈕）』以避免讀者誤以為仍有 row-level 申請異動入口。"
+   ],
+   "staleMechanisms": [
+    "成功條件第 3 條『金額異動由訂單異動流程處理；本卡涵蓋規格編輯』沿用已廢止的『金額 / 規格分離、金額一律走 OA』門控（議題 5 舊拍板）；路 C（2026-06-02）已廢止——完成前金額可直接改、不走 OA，金額走 OA 僅限訂單完成 / 已取消終態後。",
+    "prerequisites 與前置條件以『製作完成階段』為界，屬已淘汰的『製作前 / 製作後 + 售價門控』分界；最新界線為『訂單完成 / 已取消』終態集合。",
+    "全卡缺金額調降弱把關留痕（pre_completion_amount_decrease）機制——非殘留舊機制，而是漏反映 路 C 新增行為，併入 editInstructions 處理。"
+   ]
+  },
+  {
+   "usId": "US-ORD-005",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "【業務情境 § 我希望／以便】此卡涵蓋『開票資訊（發票設定）』與『出貨資訊』兩個 Section，正屬 2026-05-28-relax-order-detail-edit-conditions 新增 Requirement『訂單詳情頁編輯型 Section 統一編輯時機與角色』的 4 個編輯型 Section 之二，但本卡完全未反映該 change 的核心行為變更（統一編輯時機 + 角色守衛），需補入。",
+    "【前置條件】（目前第 24-26 行 frontmatter prerequisites 與第 42-44 行內文）新增編輯時機守衛條件。改成：『- 訂單已成立 / - 訂單未取消（order.status ≠ 已取消）即可編輯，訂單完成後仍可編輯 / - 業務為訂單擁有者或職務代理人（角色權限對齊 user-roles 粗粒度模組權限：業務 / 諮詢 / 訂單管理人 可編輯；Supervisor / 會計 唯讀；業務主管無權）』。移除原本隱含的『製作前 + completed_at』雙閘門控語意（本卡雖未明寫舊機制，但前置條件僅『訂單已成立』不足以表達新行為）。",
+    "【成功條件】（第 54-59 行）目前 4 條皆為正向達成型，缺『禁止／守衛型』成功條件，未反映 change 的守衛行為。新增 2 條：『5. 訂單未取消時 4 個編輯型 Section（含本卡的發票設定 / 出貨資訊）編輯按鈕啟用，訂單完成後仍可編輯（取代既有製作前 + completed_at 雙閘門控）』；『6. 訂單已取消時編輯按鈕 disabled 並提示「訂單已取消，無法編輯」，內容仍以唯讀顯示』。",
+    "【成功條件】補一條角色守衛：『7. Supervisor 與會計進入訂單詳情頁時，發票設定 / 出貨資訊 Section 編輯按鈕 disabled（唯讀），對齊 user-roles 粗粒度權限』。",
+    "【業務流程】（第 46-52 行）第 1 點補上『訂單未取消即可編輯』前提；移除任何『製作後需走訂單異動』暗示（本卡目前無此 toast 措辭，僅需確認流程描述不引入舊雙閘門控語意）。發票 / 出貨資訊本身不涉及金額異動，無需走訂單異動 Tab，可於 Section 內直接編輯。",
+    "【frontmatter source / related-spec】（第 14-17 行）補引本次 change 落地的 Requirement：新增 source 一條指向『訂單詳情頁編輯型 Section 統一編輯時機與角色』Requirement（合併後位於 openspec/specs/order-management/spec.md）。",
+    "【校對紀錄】（第 66 行起）追加一輪：『### 第二輪（2026-05-28，relax-order-detail-edit-conditions 對齊）— 統一編輯時機改為「訂單未取消即可編輯」（取代製作前 + completed_at 雙閘門控）；補已取消唯讀守衛成功條件；角色權限對齊 user-roles 粗粒度（Supervisor / 會計唯讀、業務主管無權）；移除製作後「需走訂單異動」引導』。"
+   ],
+   "staleMechanisms": []
+  },
+  {
+   "usId": "US-ORD-006",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "前置條件（第 40-42 行 + frontmatter prerequisites 第 22-24 行）：移除「業務為訂單擁有者或職務代理人」這個過時框架。change 已把編輯時機改為「訂單未取消（status ≠ 已取消）即可編輯」、角色改以分享編輯權限而非職務代理人界定。改為：『- 訂單未取消（訂單狀態 ≠ 已取消）\\n- 使用者為訂單負責業務 / 諮詢 / 訂單管理人，或被分享該訂單編輯權限者』；不要再引用「職務代理人」與 [[US-QR-011]] 模式。",
+    "業務流程第 2 點（第 47 行）：補上編輯時機放寬語意，避免讀者沿用舊「製作前/擁有者」直覺。改為：『業務可獨立編輯每一類備註內容（每類最多 500 字）；只要訂單未取消即可編輯，訂單完成後仍可編輯，訂單一旦取消則三類備註鎖定為唯讀』。",
+    "成功條件第 5 條（第 58 行）：移除「限訂單擁有者 / 代理人」這個已淘汰描述，並補入已取消鎖定的守衛型成功條件。改為兩條：『5. 編輯權限依 spec § 訂單階段訂單備註編輯權限與時機決定：業務（限自己負責或被分享編輯權限的訂單）/ 諮詢 / 訂單管理人可編輯；會計與 Supervisor 唯讀；業務主管無權編輯（不可代編）\\n6. 訂單未取消即可編輯（含訂單完成後）；訂單已取消時三類備註與插入常用備註按鈕一律鎖定為唯讀，避免取消後改備註影響歷史對帳』。",
+    "校對紀錄（第 65 行起）：追加一輪紀錄『### 第二輪（2026-05-28，對齊 relax-order-detail-edit-conditions change）— 編輯時機放寬為訂單未取消皆可編輯（不再限 completed_at IS NULL，含訂單完成後）；移除業務主管代編破例（對齊訂單模組 X 邊界，會計 / Supervisor 唯讀）；已取消訂單鎖定；前置條件改以分享編輯權限取代職務代理人框架』，並更新 frontmatter last-reviewed 為 2026-05-28、source 補列 openspec/specs/order-management/spec.md § Requirement「訂單階段訂單備註編輯權限與時機」。"
+   ],
+   "staleMechanisms": [
+    "前置條件與成功條件第 5 條沿用「訂單擁有者 / 職務代理人（引用 US-QR-011 模式）」框架，已被 change 取代為「訂單未取消即可編輯 + 角色表（業務 / 諮詢 / 訂單管理人可編輯、會計 / Supervisor 唯讀、業務主管無權代編）+ 被分享編輯權限」",
+    "全卡未反映「移除業務主管代編訂單備註破例」（對齊訂單模組 X 邊界）",
+    "全卡未反映已取消訂單鎖定備註為唯讀的守衛規則",
+    "業務流程第 2 點未表達訂單完成後仍可編輯（舊隱含製作前 / completed_at IS NULL 限制已放寬）"
+   ]
+  },
+  {
+   "usId": "US-ORD-007",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "【業務流程 第3點「系統建立新訂單並自動帶入」清單】補齊複製範圍至與 delta「MUST 複製」一致。改為列出：客戶資料（接單公司／帳務公司／統編／聯絡人）、印件規格（含預計產線、難易度、免審稿標記）、價格欄位（成本／報價／毛利率）、付款條件、開票公司／抬頭／統編、配送地址／方式、訂單三種備註。（目前僅列客戶／印件規格／價格三項，漏付款條件、開票資訊、配送、備註——這些是 delta L79 明定的 MUST 複製項，亦為本次 change 重點『帶入付款條件』）",
+    "【業務流程 第4點 帳務公司處理 與 delta 衝突，需修正方向】卡片現寫『系統依新訂單接單公司重新推導帳務公司（不直接複製原值；對齊 US-QR-009）』，但本次 archived delta（order-management spec L79）明定『開票公司／抬頭／統編』屬 MUST 複製（直接帶入原訂單值），語意為直接複製而非重新推導。兩者衝突。處置：將第4點改為與 delta 對齊『系統直接帶入原訂單的開票公司／抬頭／統編（不重新推導）；業務於草稿態可自行調整』；若 PM 認為需求單複製紀律應延伸至訂單複製，則屬正本未決事項，標 openIssue 觸發 oq-manage mode B，不在本卡逕自保留與 delta 相反的描述。",
+    "【業務流程 新增一點 + 成功條件 新增一條：雙向 ActivityLog】卡片僅寫『建立關聯欄位作為複製來源追溯』，未反映 delta L70/L90-91 明定的雙向活動紀錄。於業務流程補一點：『系統於新訂單寫入活動紀錄「訂單複製：來源訂單 #XXX」，並於來源訂單寫入活動紀錄「衍生訂單 #YYY」（雙向可追溯）』；對應成功條件補一條：『新訂單與來源訂單雙向各寫入一筆複製活動紀錄，互可追溯』。",
+    "【業務流程／前置條件 補 MUST NOT 複製邊界】卡片校對紀錄雖提『複製後流程同既有訂單』，但未明寫不複製範圍。依 delta L80 補一點（業務流程或成功條件擇一）：『新訂單不帶入原訂單的工單／生產任務（待審核通過後由印務主管重新拆分）、不帶入稿件檔案（業務需重新確認客戶最新版稿件）、不複製原訂單活動紀錄（新訂單自複製事件起重新記錄）』。",
+    "【frontmatter source 補本次 change 溯源】source 目前僅指 order-management spec『訂單建立』Requirement，但訂單複製已由本 change 獨立為『訂單複製功能』Requirement。將 source 與 related-spec 錨點更新為指向 order-management spec『Requirement: 訂單複製功能』，並於 last-reviewed 更新日期、provenance 段補記『2026-06-01 align-business-consultation-coverage-gaps change 明定訂單複製功能』。"
+   ],
+   "staleMechanisms": []
+  },
+  {
+   "usId": "US-ORD-008",
+   "verdict": "aligned",
+   "editInstructions": [],
+   "staleMechanisms": []
+  },
+  {
+   "usId": "US-ORD-009",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "業務流程 第 2 步（L47）：原文「訂單管理人依需要套用多維度篩選（業務 / 狀態 / 交期 / 客戶）」與最新 delta 篩選欄位集不符且漏掉「作用於當前角色可見集、不擴大範圍」的守衛。改為：『訂單管理人依需要套用多維度篩選（業務負責人 / 訂單狀態 / 訂單類型 / 付款狀態 / 售後狀態 / 交期起訖區間 / 關鍵字），篩選僅作用於當前角色可見訂單集、不擴大可見範圍，並可一鍵清空篩選』。",
+    "成功條件 第 3 條（L57）：原文「篩選功能可依業務 / 狀態 / 交期 / 客戶任意組合」過時，未涵蓋 delta 明列欄位集與守衛規則。改為：『篩選功能可依業務負責人 / 訂單狀態 / 訂單類型 / 付款狀態 / 售後狀態 / 交期起訖區間 / 關鍵字任意組合，且僅作用於當前角色可見訂單集（不擴大可見範圍）』。",
+    "成功條件 區塊（L53-58）：新增一條成功條件，明列付款狀態與交期的比較基準（delta 新增行為）：『付款狀態篩選以訂單層付款狀態（未付款 / 部分付款 / 已付款 / 已退款）為比較基準；交期篩選以訂單交期為比較基準，不跨印件聚合』。",
+    "成功條件 區塊（L53-58）：新增一條成功條件涵蓋清空篩選（delta Scenario「清空訂單列表篩選」）：『點擊清空篩選時，所有篩選條件（含關鍵字與交期起訖）重置為預設並回到列表第一頁』。",
+    "frontmatter source / related-spec（L12-14）所指 spec 已由本 change MODIFIED（US-ORD-005 → US-ORD-009 編碼對齊、篩選欄位集細化）；last-reviewed 由 2026-05-22 更新為本次校對日期，並於『校對紀錄』新增一輪，記錄對齊 2026-06-02-enhance-order-list-filter 之篩選欄位集擴充與當前角色可見集守衛。"
+   ],
+   "staleMechanisms": []
+  },
+  {
+   "usId": "US-ORD-010",
+   "verdict": "aligned",
+   "staleMechanisms": [],
+   "editInstructions": []
+  },
+  {
+   "usId": "US-ORD-011",
+   "verdict": "needs-edit",
+   "staleMechanisms": [
+    "業務流程步驟 4「業務於訂單發起退款申請（狀態：退款申請）」— 引用已淘汰的「退款申請 → 退款處理中 → 已退款」狀態序列模型。06-02 refactor-order-receivable-refund-model 已將退款收斂為：業務建退款 OrderAdjustment（負額）送業務主管核可 → OA 核可即生效（已執行 = 核可後應收調整生效，不再有獨立「退款申請」工作流狀態）→ 業務建退款 Payment（負額）上傳匯款證明切「已完成」核銷應退差額。卡片仍停留在舊狀態序列。",
+    "業務流程步驟 5「退款申請後進入會計處理流程（詳見 US-ORD-013）」+ 成功條件 4 隱含的「業務發起申請 → 會計執行」角色 handoff — 此 handoff 建立在已淘汰的「退款申請」狀態佇列上。最新模型中退款金流動作（建退款 OA + 建退款 Payment + 上傳匯款證明切已完成）由業務本人執行（06-01 § 退款流程三組件亦將建負值收款紀錄歸業務），不再透過「退款申請」狀態交給會計佇列承接。",
+    "成功條件 4「業務可對已收款訂單發起退款申請」措辭綁定舊「退款申請」狀態語意；應改為以退款 OA + 退款 Payment 核銷應退差額的最新模型描述。",
+    "退款完成錨點未反映：卡片無「退款 Payment 切已完成 = 退款完成、對帳應退差額歸零為結果呈現」此 06-02 核心錨點，仍以舊「已退款終態」隱含模型敘述。"
+   ],
+   "editInstructions": [
+    "業務流程步驟 3-5（L54-56）改寫為最新退款模型，移除「退款申請」狀態與「進入會計處理流程」handoff：『3. 業務判斷該訂單是否需退款（依收款淨額是否大於應收決定，對帳面板顯示「應退差額」警示）。 4. 若需退款，業務於訂單異動 Tab 建立退款訂單異動（負額）送業務主管核可；核可後該訂單異動即生效（已執行 = 核可後應收調整生效，不需等退款款項）。 5. 業務建立退款付款紀錄（負額）、上傳匯款證明並切「已完成」以核銷應退差額；退款付款紀錄切「已完成」即為退款完成錨點，對帳面板應退差額歸零為結果呈現。』。註：跨月稅務折讓（銷貨折讓單關聯退款付款紀錄）仍可保留為會計後續動作並指向 [[US-ORD-013-會計執行退款處理]]，但不得以「退款申請」狀態作為 handoff 觸發。",
+    "成功條件 4（L63）改寫，移除「發起退款申請」舊狀態語意：『業務可對收款淨額大於應收的訂單建立退款訂單異動（負額，經業務主管核可後生效），並以退款付款紀錄（負額、上傳匯款證明後切已完成）核銷對帳面板的應退差額；退款訂單異動建立與退款付款紀錄寫入活動紀錄供事後追蹤。』",
+    "新增一條成功條件（接於現有條目後）反映 06-02 退款完成錨點與差額不可忽略：『退款付款紀錄切「已完成」即視為退款完成、對帳面板應退差額歸零；應退差額警示不提供「忽略此差額」選項，缺口只能靠實際退款消除。』",
+    "frontmatter source（L14-15）與來源段（L68）目前指向 main spec § 訂單取消流程（該節 L215-228 仍殘留「退款申請 → 退款處理中 → 已退款」舊序列、尚未被 06-02 對齊）。建議將退款部分的 source 改指 openspec/specs/order-management/spec.md § Requirement「退款 OA（負項）沿用業務主管核可 + 不進期次」與 § Requirement「對帳檢視面板」（06-02 archived delta 合併後的正本），避免承接 main spec 殘留的舊退款狀態序列。若 main spec § 訂單取消流程尚未對齊（L224/L228 仍寫退款申請→退款處理中→已退款），標 openIssue 提示該節需另案對齊，本卡先依 06-02 退款 OA/對帳正本敘述。",
+    "校對紀錄新增一輪（接於第二輪後）：『### 第三輪（2026-06-03，對齊 refactor-order-receivable-refund-model）｜ 退款部分自舊「退款申請 → 退款處理中 → 已退款」狀態序列收斂為「退款 OA（核可即生效）+ 退款 Payment 切已完成核銷應退差額」模型；移除業務經「退款申請」狀態交付會計的 handoff 語意。』"
+   ]
+  },
+  {
+   "usId": "US-ORD-013",
+   "verdict": "needs-edit",
+   "staleMechanisms": [
+    "業務流程 step 6 + 成功條件 #4：「系統自動建立折讓單關聯退款付款紀錄（先記退款再開折讓）」——已被 2026-06-02 路 C 推翻。最新模型折讓由業務手動於原發票建 SalesAllowance、手動關聯 refund_payment_id，且僅「已跨月」才開折讓（未跨月直接作廢原 Invoice 重開）。卡片把它寫成「系統自動建立」且無跨月分歧，屬殘留舊機制。",
+    "業務流程 step 4-5 + 成功條件 #2/#3：以「標記退款處理中 → 標記已退款終態」作為退款完成機制。路 C 已將退款完成的物理錨點改為「退款 Payment 自身切『已完成』（上傳匯款證明）」+ 對帳應退差額歸零為結果呈現；卡片把退款完成綁在訂單層「已退款」狀態標記上，未反映 Payment 雙狀態（處理中/已完成）為完成載體。",
+    "前置條件與 prerequisites 引用 US-ORD-011 的「退款申請」訂單退款狀態：該「退款申請→退款處理中→已退款」序列是 EC 取消退款流程（current main spec L224/228），與路 C 受款—退款模型的「退款核銷應退差額」並非同一機制；卡片混用兩者，殘留以訂單退款狀態驅動退款執行的舊框架。",
+    "全卡未出現「退款核銷應退差額」「退款 Payment 不進期次（MUST NOT 建 PaymentAllocation）」「每筆退款各挂匯款證明」「取消退款 Payment 後差額重現、OA 維持已執行不回退」等路 C 新機制；亦未反映 2026-05-22「已完成不可改回處理中、只能取消重建」「處理中 Payment 不計入收款淨額」「切已完成需附對帳附件＋paidAt」三條 Payment 雙狀態規則。卡片停留在 2026-05-22 之前甚至更舊的版本。"
+   ],
+   "editInstructions": [
+    "改 frontmatter source（L14-16）與『來源（provenance）』段（L70）：移除指向舊版 spec 行號（L1159+「退款 Payment 與折讓分離（先記退款再開折讓）」、L1130+「折讓單建立」、v1.7）的引用，改指 2026-06-02 路 C 受款—退款模型——order-management § Requirement「退款 OA（負項）沿用業務主管核可 + 不進期次」與「三方對帳檢視面板（差額分解 / 退款核銷應退差額）」、prototype-data-store §「路 C 退款核銷應退差額 store 規格」、state-machines § 訂單異動狀態機（已執行=核可即生效）。",
+    "改『我希望』與『以便』（L38-42）：把核心動作從『標記已退款終態 + 系統自動開折讓』改為『建立退款付款紀錄、上傳匯款證明後切「已完成」以核銷對帳應退差額；已跨月時於原發票手動開立折讓單沖減發票淨額』。『以便』改為『退款依匯款證明逐筆留痕、對帳三軸（應收/發票淨額/收款淨額）回平』。",
+    "改『業務情境—作為』與角色（L9、L36）：最新 delta 將退款付款紀錄建立 / OA 執行的執行者明確指為業務、把關者為業務主管，未賦予會計專屬執行權；若仍維持會計為主角，須改寫為『會計依匯款證明於系統核銷退款付款紀錄』並開 OQ 確認退款執行角色歸屬（業務 vs 會計），不可逕自臆造會計執行退款。標 openIssue。",
+    "改寫『業務流程』（L48-58）整段。新流程：(1) 退款情境來源二分——訂單完成後售後退款（業務於售後服務單內建退款訂單異動，金額負，送業務主管核可，核可即應收生效）／訂單完成前明細減量致應退（無關聯訂單異動，linkedOrderAdjustmentId 留空）；(2) 操作者於訂單異動介面或對帳面板建立退款付款紀錄（金額負、付款方式=退款），預設狀態『處理中』；(3) 執行銀行匯款（系統外）；(4) 上傳匯款證明附件 + 填款項實際完成日，切『已完成』——此為退款完成的物理錨點；(5) 系統核銷對帳應退差額、收款淨額減少；退款付款紀錄 MUST NOT 建立入帳明細（不進正向期次）；(6) 多筆退款各自挂匯款證明、各自切已完成，帳平看應退差額歸零、不逐筆勾稽訂單異動；(7) 已開發票之沖減：未跨月作廢原發票重開、已跨月於原發票手動建折讓單並關聯該退款付款紀錄。移除『系統依發票狀態自動建立折讓單』『先記退款再開折讓』措辭。",
+    "改寫『成功條件』（L62-66）整段為 Gherkin 可驗證業務 outcome：(1) 操作者可建立退款付款紀錄（金額負、付款方式=退款），預設『處理中』、不計入收款淨額；(2) 退款付款紀錄切『已完成』前 MUST 已附匯款證明附件且填款項實際完成日，否則被擋；(3) 退款付款紀錄切『已完成』後對帳收款淨額減少、應退差額歸零（退款完成判定）；(4) 已完成退款付款紀錄不可改回『處理中』，誤建只能取消後重建；(5) 取消已完成退款付款紀錄後對帳應退差額重現、關聯退款訂單異動維持『已執行』不回退；(6) 已跨月之退款須於原發票手動開立折讓單並關聯該退款付款紀錄，使發票淨額同步減少、三軸回平；(7) 退款執行寫入活動紀錄供稽核（含時間/操作者/退款金額）。",
+    "改『前置條件』（L44-46）與 frontmatter prerequisites（L23-24）：US-ORD-011 引用的『退款申請』訂單退款狀態屬 EC 取消退款序列，與本卡路 C 退款核銷機制非同一驅動；改為以『訂單存在對帳應退差額（收款淨額 > 應收，可能來自完成後退款訂單異動核可生效，或完成前明細減量）』為前置，移除以『退款申請』訂單退款狀態為觸發的描述，或開 OQ 釐清兩條退款路徑（EC 取消退款 vs 路 C 應退差額核銷）在本卡的關係。標 openIssue。",
+    "『新增紀錄（2026-05-22）』blockquote（L31）與『校對紀錄』（L73-82）屬只追加歷史層，保留；但於『校對紀錄』補一輪條目記錄本次依 2026-06-02 路 C 模型對齊（退款完成錨點改為退款付款紀錄切已完成、折讓改手動且分跨月、移除『系統自動開折讓』與『標記已退款終態』舊機制）。"
+   ]
+  },
+  {
+   "usId": "US-ORD-020",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "業務流程 第 4 步（L46）：現文「系統檢核訂單應收（含已執行訂單異動）與所有未取消期次金額合計，差額時顯示提示（不阻擋儲存）」未反映新模型的補收/退款不對稱規則（補收 OA 進期次、退款 OA 不進期次）。改為：「系統檢核『訂單原始應收 + 已執行補收訂單異動金額』與所有未取消期次金額合計（退款負項訂單異動不計入期次合計），差額時顯示提示（不阻擋儲存）」。對齊 0528 delta 請款期次統一實體 Requirement L5（Order.total_with_tax + Σ 已執行 OrderAdjustment.amount，補收進期次、退款不進期次的不對稱規則）與三方對帳警示 banner Requirement。",
+    "成功條件 第 3 條（L53）：現文「訂單應收與期次合計差額時系統顯示警示但允許儲存（沿用 v1.13 spec L915 既有規則）」的『訂單應收』語意含糊，未排除退款項。改為：「訂單應收（原始應收 + 已執行補收訂單異動、不含退款負項）與期次合計差額時系統顯示警示但允許儲存」，使期次合計基準與新模型的補收/退款不對稱 invariant 一致。"
+   ],
+   "staleMechanisms": []
+  },
+  {
+   "usId": "US-ORD-021",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "成功條件 #4（卡片第 54 行）邏輯顛倒，與 unify change『期次↔發票 1:1 嚴格約束 + 一鍵開票繼承』Requirement 的 Scenario『期次↔發票 1:1 約束阻擋重複開票』牴觸。該 Scenario 明定一鍵開立按鈕『只在 invoicing_status = 未開立 / 已作廢回未開立 顯示』——亦即『已作廢回未開立』是允許重新開票（按鈕顯示）的狀態，而非阻擋。卡片現文把『已作廢回未開立』與『已開立』並列為『不顯示重複開立入口』的狀態，把可重開狀態誤列為禁開狀態。請把第 54 行：『4. 若期次已有對應發票（已開立 / 已作廢回未開立），一鍵開票按鈕不顯示重複開立入口』改為：『4. 期次開票維度為「已開立」（已有對應發票）時，系統隱藏一鍵開立按鈕、不提供重複開立入口；僅「未開立」或「已作廢回未開立」（原發票作廢後）兩種狀態顯示一鍵開立按鈕（後者支援重新開票）』。"
+   ]
+  },
+  {
+   "usId": "US-ORD-022",
+   "verdict": "needs-edit",
+   "staleMechanisms": [],
+   "editInstructions": [
+    "業務流程 step 2（第 44 行）：把「兩筆新期次描述自動加「拆 1/2」「拆 2/2」前綴」改為與正本一致的 note 自動前綴。改成：『系統預設帶入原期次金額平分，兩筆新期次 note 自動帶「原一期拆兩期，源期次描述：「{原 description}」」前綴』。理由：正本 spec（order-management delta L42/L48）定義的 note 前綴為「原一期拆兩期，源期次描述…」，卡片現述的「拆 1/2」「拆 2/2」前綴在正本未定義，屬臆造文字。"
+   ]
+  },
+  {
+   "usId": "US-ORD-023",
+   "verdict": "aligned",
+   "editInstructions": [],
+   "staleMechanisms": []
+  },
+  {
+   "usId": "US-ORD-024",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "改成功條件第 3 點（卡第 52 行）：現文「收款狀態 derived（依累計核銷金額 vs 發票面額三態：未收 / 部分收款 / 已收訖）」描述的判定基準錯誤。正本 delta（order-management spec § 期次雙維度狀態 L76-79 + § 對帳 CSV 第 11 欄 L247）將收款狀態 derive 自「來源期次 BillingInstallment.payment_status」，而 payment_status 的三態判定基準是『未取消已完成 PaymentAllocation 累計 vs 該期次 scheduled_amount（期次面額）』，不是『vs 發票面額』。請改為：「收款狀態 derived，繼承來源期次的收款維度狀態（BillingInstallment.payment_status）；該狀態依未取消已完成核銷分配累計金額 vs 期次面額（scheduled_amount）三態判定：未收（累計=0）/ 部分收款（0<累計<期次面額）/ 已收訖（累計≥期次面額）」。"
+   ],
+   "staleMechanisms": [
+    "成功條件第 3 點把收款狀態三態的判定基準寫成『vs 發票面額』，與正本不符：正本以期次面額（BillingInstallment.scheduled_amount）為基準，且狀態來源是 BillingInstallment.payment_status，CSV 第 11 欄只是繼承該期次狀態。1:1 多數情境下兩者相等故易被誤寫，但結清判定的正本基準是期次面額。"
+   ]
+  },
+  {
+   "usId": "US-ORD-025",
+   "verdict": "aligned",
+   "editInstructions": [],
+   "staleMechanisms": []
+  },
+  {
+   "usId": "US-ORD-026",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "【前置條件，第 55 行】此條時點框架與 2026-06-02 refactor delta（order-management/spec.md L16、L59、L191）相反，是本卡最關鍵的飄移。現行模型：訂單『完成前』客戶加買（加印 / 加運費 / 急件費 / 規格變更正項）走『印件明細直接編輯或訂單額外費用（OrderExtraCharge）』直接改、不建訂單異動單；補收『訂單異動單』的免審路徑主要適用於『訂單已進入完成終態後對客戶加收』（spec L191『完成前增項走明細直接改、不建 OA』、L16『補收 OA 為訂單完成後對客戶加收』）。原句『訂單仍在製作中（訂單完成後要多收錢改走售後服務單）』把本卡所描述的 OA 路徑錯置到製作中、又把真正適用的完成後情境排除掉。建議改為：『訂單已進入完成終態（訂單完成 / 已取消）——完成前要跟客戶多收錢直接改印件明細或新增訂單額外費用即可、不建訂單異動單；完成後印件欄位凍結、要多收錢才走這張建補收訂單異動單的路徑（退款方向的訂單異動單需經售後服務單容器，補收方向則直接由業務建單即生效）』」",
+    "【frontmatter related-scenarios，第 22 行】錨點『[[訂單異動流程#旅程 A：訂單期間加印補收（情境 8）]]』以『訂單期間 / 製作中加印』為觸發框架，與現行『完成前不建 OA、補收 OA 用於完成後』不一致。請改指向訂單異動流程卡中『訂單完成後對客戶加收 / 完成後金額異動路徑分流』對應錨點（若該錨點名稱未定，先標 openIssue 待確認正確 heading，勿臆造錨名）。",
+    "【我希望（業務情境），第 47 行】與【業務流程第 1 步，第 58 行】把觸發情境隱含為『客戶在製作中加買』（如『以便』段第 50 行『客戶加買是送上門的生意』承接製作中加買語境）。免審 / 直達生效 / 立即認列的『行為描述』正確、無須改；但需把『觸發時點』從製作中加買改為『訂單完成後對客戶加收』。建議於第 47 行『建一張要跟客戶多收錢的訂單異動單』前補一句限定語『在訂單已完成、要對客戶加收時』，使行為與時點一致。第 58 行同步將『業務在訂單的訂單異動處新建』維持不變即可（已是完成後 Tab 路徑），不需改動行為描述本身。"
+   ]
+  },
+  {
+   "usId": "US-ORD-027",
+   "verdict": "needs-edit",
+   "staleMechanisms": [
+    "業務流程第 5 步：「系統確認實際退出去的錢剛好等於這張退款異動單該退的金額後，就把這張退款異動單標示為『已執行』」——殘留已淘汰的「綁退款 Payment 累計達標才推進已執行」機制；路 C 已改為主管核可即推進已執行、不等實際退錢",
+    "業務流程第 4 步把「建立退款款項並標已完成」放在核可之後、已執行之前，把退款款項視為已執行的前置——殘留舊推進綁定；新模型下退款款項已完成是事後對帳核銷應退差額的物理錨點、與已執行推進脫鉤",
+    "成功條件第 2 條：「退款訂單異動單推進到『已執行』前，一定要有已完成的退款款項，且實際退出去的錢跟這張單子要退的錢一致（這條規則沿用既有設計、本次不改）」——整條即已淘汰的累計達標機制，且括號『沿用既有設計、本次不改』已與路 C 拍板矛盾",
+    "Step 5 引用錨點 [[訂單異動規則#退款已執行認列與回退]] 指向不存在的舊節名（源卡節名已改為『退款已執行認列』，無『與回退』）",
+    "frontmatter implemented-by 第二條指向『廢止付款計畫變更觸發訂單回業務主管審核』，與本卡路 C 退款認列脫鉤主題無關；應改指源卡同步指向的路 C 退款 OA 認列／狀態機 Requirement"
+   ],
+   "editInstructions": [
+    "【業務流程 第 4-5 步】改寫為路 C 兩層脫鉤模型。原文：『4. 核可後，業務在這張訂單異動單裡建立退款款項，補上實際退款日期與對帳附件，並把這筆退款款項標示為「已完成」\\n5. 系統確認實際退出去的錢剛好等於這張退款異動單該退的金額後，就把這張退款異動單標示為「已執行」（依 [[訂單異動規則#退款已執行認列與回退]]）』；改為：『4. 業務主管一核可，系統當下就把這張退款異動單標示為「已執行」、執行時間記為核可時點、訂單應收當下減去這筆退款金額——不必等實際退錢（依 [[訂單異動規則#退款已執行認列]]）\\n5. 之後業務真的把錢匯出去，在款項紀錄建一筆退款款項（記負數）、補上實際退款日期與匯款證明、標示為「已完成」，在對帳階段把「應退差額」核銷歸零；這一步不會回頭改異動單狀態（異動單維持已執行）』。原 step 6 發票處理保留、序號順延為 6。",
+    "【成功條件 第 2 條】整條替換掉已淘汰的累計達標機制。原文：『2. 退款訂單異動單推進到「已執行」前，一定要有已完成的退款款項，且實際退出去的錢跟這張單子要退的錢一致（這條規則沿用既有設計、本次不改）』；改為：『2. 業務主管一核可，退款訂單異動單當下就推進到「已執行」、應收當下減去這筆退款金額，不需先把錢退出去（認列跟著主管核可走，與實際退錢脫鉤）；實際退好沒由對帳的「應退差額」盯住——退款款項標成「已完成」且帳能對平，應退差額才歸零』。",
+    "【§ 這張卡要回答的問題 第 2 項】答案指標微調以對齊改寫後步驟。原文：『業務主管核可後，退款異動單何時才算真的執行完？ → 結論見「業務流程第 4-5 步」與「成功條件第 2 條」』；改為：『業務主管核可後，退款異動單何時才算「已執行」？實際退錢又算哪一步？ → 結論見「業務流程第 4-5 步」與「成功條件第 2 條」（核可即已執行，實際退錢另在對帳核銷）』。",
+    "【frontmatter implemented-by 第 2 條】原文：『\"openspec/specs/state-machines/spec.md#Requirement: 廢止「付款計畫變更觸發訂單回業務主管審核」\"』；改為對齊源卡 [[訂單異動規則]] 同步指向的路 C Requirement：『\"openspec/specs/state-machines/spec.md#Requirement: 訂單異動（OrderAdjustment）狀態機（路 C 核可即生效、不綁 Payment 累計、移除已執行回退）\"』，並補一條『\"openspec/specs/order-management/spec.md#Requirement: 退款 OA（負項）沿用業務主管核可 + 不進期次\"』。"
+   ]
+  },
+  {
+   "usId": "US-ORD-028",
+   "verdict": "aligned",
+   "staleMechanisms": [],
+   "editInstructions": []
+  },
+  {
+   "usId": "US-ORD-029",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "frontmatter source（第 14-15 行）：補列第二個來源 change。在現有 openspec/changes/unify-billing.../order-management/spec.md 之下，新增一行 `- openspec/changes/converge-consultation-cancel-to-order-cancel-flow/specs/order-management/spec.md § Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單`，並更新 last-reviewed 為 2026-05-30。",
+    "「我希望」段（第 31 行）：把『月底跑批次自動產出「三方對帳差錯訂單清單」（已完成訂單中應收 ≠ 發票淨額 OR 應收 ≠ 收款淨額）讓會計檢視』改為『月底跑批次自動產出「三方對帳差錯訂單清單」（涵蓋 status ∈ {訂單完成, 已取消} 且有開立發票的訂單，篩出應收 ≠ 發票淨額 OR 應收 ≠ 收款淨額者）讓會計檢視』，把偵測集合由「限已完成」擴為「訂單完成或已取消且有開立發票」。",
+    "「前置條件」段（第 37 行）：把『訂單狀態為「訂單完成」（限定已完成訂單避免誤計入「待開票」中間態）』改為『訂單 status ∈ {訂單完成, 已取消} 且該訂單有 status=開立 的發票（涵蓋已取消但有認列收入的訂單，根治諮詢取消留存 1000／一般訂單取消保留部分收入的漏帳；待開票中間態仍排除）』。",
+    "「業務流程」step 2（第 42 行）：把開頭『批次計算每張已完成訂單的三方對帳』改為『批次計算偵測集合內每張訂單（status ∈ {訂單完成, 已取消} 且有開立發票）的三方對帳』，其餘（應收 vs 發票淨額 vs 收款淨額）維持不變。",
+    "「業務流程」新增 step（在現 step 3 與 step 4 之間或 step 5 後）：補一條兜底情境『若訂單已取消但尚未開立任何發票，由「應收 > 發票淨額」差額警示提醒未開票（取代已廢除的諮詢專屬自動建待開發票機制）』，對齊 converge change Scenario「已取消但無發票訂單由差額警示涵蓋」。",
+    "「成功條件」第 1 條（第 49 行）：把『批次限定 Order.status = 訂單完成（避免誤計入待開票中間態，顧問 C-CEO-2 採納）』改為『批次偵測集合 = status ∈ {訂單完成, 已取消} 且有 status=開立 發票的訂單（推翻 unify-billing 限訂單完成拍板，根治已取消但有認列收入訂單漏帳；待開票中間態仍排除）』。",
+    "「成功條件」新增一條（緊接擴範圍那條）：『已取消但尚無發票的訂單由「應收 > 發票淨額」差額警示兜底（不依賴諮詢專屬自動建待開發票）』。",
+    "「成功條件」第 3 條（第 51 行）：差錯訂單率分母『總已完成訂單數』需與擴大後的偵測集合一致，改為『差錯訂單率 = 差錯訂單數 / 偵測集合訂單數（status ∈ {訂單完成, 已取消} 且有開立發票），目標 ≤ 1%（CEO 指標 2）』。",
+    "「來源（provenance）」段（第 54-58 行）：補列 converge change 來源行 `- openspec/changes/converge-consultation-cancel-to-order-cancel-flow/specs/order-management/spec.md § Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單`。"
+   ],
+   "staleMechanisms": [
+    "「限訂單完成」偵測集合（我希望／前置條件／業務流程 step 2／成功條件 1 與 3）：已被 2026-05-30 converge-consultation-cancel change 明文推翻，現行偵測集合為 status ∈ {訂單完成, 已取消} 且有開立發票，卡全篇仍停留舊版",
+    "缺漏未開票兜底機制：現行設計對「已取消但尚無發票」訂單以『應收 > 發票淨額』差額警示兜底（取代已廢除的諮詢專屬自動建待開發票），卡內完全未反映"
+   ]
+  },
+  {
+   "usId": "US-ORD-030",
+   "verdict": "needs-edit",
+   "staleMechanisms": [
+    "OA 綁退款 Payment 累計推進：步驟 5「建退款 Payment（−5.9K）切已完成 → 異動推進已執行」採已淘汰的「退款 OA 已執行需累計退款 Payment 達 OA.amount」機制。路 C（2026-06-02 refactor）已改為：退款 OA 業務主管核可即推進『已執行』（核可後應收調整生效、系統自動推進、不等退款 Payment），退款 Payment 切『已完成』是核銷應退差額的物理錨點，與 OA 推進解耦。",
+    "舊『付款計畫（PaymentPlan）』用語：步驟 1「無對應期次的臨時收款」、步驟 2「建 2 筆請款期次」、成功條件 1「無 PaymentPlan 關聯的 Payment」沿用 PaymentPlan 概念。unify-billing（2026-05-28）已將 PaymentPlan + PlannedInvoice 合併為單一實體『請款期次（BillingInstallment）』，PaymentPlan / PlannedInvoice 雙實體已棄用；成功條件 1 的『無 PaymentPlan 關聯』應為『無 BillingInstallment 關聯』或對應『預收（未分配）桶』。",
+    "退款 Payment 入帳語意未對齊路 C：成功條件 3「退款 Payment 不入正向期次的核銷分配（PaymentAllocation），透過 SalesAllowance.refundPaymentId 連結」只描述了『不進期次』，未反映路 C 的核心——退款 Payment 核銷『收款淨額 − 應收 > 0』的應退差額、linkedOrderAdjustmentId 改為選填、退款完成判定 = 退款 Payment 自身切『已完成』。",
+    "對帳警示語意過時：成功條件 5「對帳警示 banner 因執行時點跨期觸發」措辭模糊且未反映路 C 的三方對帳差額分解（應退差額）與『差額警示不可忽略、不得提供忽略選項』設計。"
+   ],
+   "editInstructions": [
+    "【業務流程 步驟 1】將『1. 訂單成立、業務記錄預收款（金額 15K，無對應期次的臨時收款）』改為：『1. 訂單成立、業務記錄預收款 Payment（金額 15K）；此預收款無對應請款期次（BillingInstallment）關聯，溢收部分標記為「預收（未分配）」桶』（移除「臨時收款」舊用語，對齊 unify-billing 的「預收（未分配）」桶語意）。",
+    "【業務流程 步驟 2】將『建 2 筆請款期次（各 7.5K）+ 兩筆各自開預開發票』改為：『建 2 筆請款期次 BillingInstallment（各 7.5K）+ 兩筆各自一鍵開立預開發票（Invoice 透過 source_billing_installment_id 繼承來源期次品項 / 應收日 / 備註）』（明確 BillingInstallment 為單一規劃實體、開票繼承鏈）。",
+    "【業務流程 步驟 5】將『業務建退款訂單異動（−5.9K）→ 業務主管核可 → 建退款 Payment（−5.9K）切已完成 → 異動推進已執行』改為：『業務建退款訂單異動 OA（−5.9K）→ 業務主管核可，OA 核可即推進「已執行」、應收即時下調至 9.1K（不等退款 Payment）→ 業務另建退款 Payment（−5.9K, linkedOrderAdjustmentId 選填）、上傳匯款證明、切「已完成」核銷應退差額』（移除「異動推進已執行」綁 Payment 累計的舊機制，改路 C「核可即生效 + 退款 Payment 解耦核銷差額」）。",
+    "【業務流程 步驟 7】將『折讓單 refundPaymentId 手動關聯該退款 Payment』改為：『折讓單 SalesAllowance.refund_payment_id 手動關聯該退款 Payment（已跨月走折讓、未跨月則作廢原 Invoice 重開）』（補跨月分支、欄位名對齊 spec 的 refund_payment_id）。",
+    "【成功條件 1】將『預收款可記錄為「無 PaymentPlan 關聯」的 Payment（無前置請款期次也能登錄）』改為：『預收款可記錄為無 BillingInstallment 關聯的 Payment（無前置請款期次也能登錄，溢收歸「預收（未分配）」桶）』（PaymentPlan → BillingInstallment）。",
+    "【成功條件 3】將『退款 Payment 不入正向期次的核銷分配（PaymentAllocation），透過 SalesAllowance.refundPaymentId 連結』改為：『退款 Payment 核銷「收款淨額 − 應收」的應退差額、不建 PaymentAllocation（不進正向期次）、linkedOrderAdjustmentId 選填；退款完成判定 = 退款 Payment 切「已完成」（物理錨點），跨月時透過 SalesAllowance.refund_payment_id 連結折讓單』（補路 C 核銷應退差額語意 + 完成判定）。",
+    "【成功條件 5】將『三方對帳差額 = 0（含負項對齊），對帳警示 banner 因執行時點跨期觸發』改為：『三方對帳三軸平（應收 9.1K = 發票淨額 9.1K = 收款淨額 9.1K）、差額 = 0；退款執行前對帳面板顯示「應退差額」警示且不可忽略（不提供「忽略此差額」選項）』（移除模糊的「執行時點跨期觸發」，改路 C 三軸定義 + 不可忽略警示）。",
+    "【frontmatter source】補一條 source：`openspec/changes/archive/2026-06-02-refactor-order-receivable-refund-model/proposal.md`（本卡退款 / OA 行為已受路 C 重構，現有 source 僅含 unify-billing design，未涵蓋路 C）；並將 status 的 last-reviewed 更新為本次核對日期。"
+   ]
+  },
+  {
+   "usId": "US-ORD-032",
+   "verdict": "needs-edit",
+   "editInstructions": [
+    "業務流程第 5 步（line 51）：fallback 措辭精準化。現文「系統推送異動通知給工單負責印務、印務主管、訂單管理人；訂單管理人未指派時退化為通知該訂單負責業務」易讀成「未指派時只通知業務、不通知印務」。依 change delta § Requirement「製作後印件規格異動系統自動通知」之 Fallback 規則（訂單管理人為空時通知對象為「業務 + 工單負責印務 + 印務主管」，僅以業務替補訂單管理人一席，印務與印務主管仍通知），改為：「系統推送異動通知給工單負責印務、印務主管、訂單管理人；訂單管理人未指派時，以該訂單負責業務替補訂單管理人一席（工單負責印務、印務主管仍照常通知）。」",
+    "成功條件第 3 條（line 58）：同步精準化。現文「訂單管理人未指派時，通知對象自動退化為訂單負責業務（不靜默失敗）」易讀成全量替換。改為：「訂單管理人未指派時，由訂單負責業務替補該席接收通知（工單負責印務、印務主管仍照常通知），不靜默失敗。」",
+    "（可選補強）成功條件可加一條對齊 delta Scenario「工單負責印務未指派時通知對象退化」：工單 printing_owner 未指派時，通知對象略過工單負責印務，仍通知印務主管與訂單管理人（或其 fallback），並於活動紀錄留 fallback 註記。此情境 change delta 有定義（line 502-509），卡未涵蓋。"
+   ],
+   "staleMechanisms": []
+  },
+  {
+   "usId": "US-ORD-035",
+   "verdict": "needs-edit",
+   "staleMechanisms": [
+    "殘留『退款 OA 已執行=綁退款 Payment 累計達標推進』（路 C 已移除，改主管核可即生效）"
+   ],
+   "editInstructions": [
+    "【前置條件 第2點 ~L53】『這筆退款實際還沒退給客戶（退款款項狀態還沒變成已完成，這筆異動也還沒算已執行）』→ 改為『這筆退款異動仍停在「已核可」、尚未推進（路 C：退款 OA 由業務主管核可即自動推進「已執行」，與退款款項是否退出去解耦）。本卡校正窗口限定在「已核可且尚未推進已執行」之前』",
+    "【業務流程 第5點 ~L62】『業務之後建立實際退款付款紀錄並把款項狀態改成已完成，累計退出去的金額達到改正後的金額時，系統就把這筆退款異動標示為已執行、從應收扣掉』→ 改為『業務主管核可後系統即把退款異動推進「已執行」、依改正後金額從訂單應收扣掉（不等退款款項退出去）；業務之後另建退款付款紀錄、上傳匯款證明、切「已完成」核銷對帳應退差額（兩軌解耦）』",
+    "【成功條件 第4點 ~L69】『改正後實際退款付款紀錄款項狀態變成已完成、累計退出去金額達改正後金額時，系統把退款異動標示已執行並從應收扣掉』→ 改為『校正後金額即業務主管核可基準；退款異動經核可推進「已執行」時依改正後金額扣減應收（核可即生效、不等退款款項）。改正後實際退款款項另以匯款證明切「已完成」核銷對帳應退差額（依改正後金額）。諮詢取消系統自動產生的退款異動亦適用此校正，規則相同』",
+    "【不需改】成功條件1（已核可校正後維持已核可不重審）、成功條件2（改金額留痕+核可vs當前對照）、成功條件3（僅限已核可且尚未執行、已執行後鎖定）已對齊；用語已用「款項/付款紀錄」非舊「收款」",
+    "【frontmatter / 校對紀錄】last-reviewed 更新 2026-06-03；校對紀錄追加一輪：對齊 2026-06-02 路 C —— 退款 OA 已執行改核可即生效、移除綁退款 Payment 累計達標推進，退款款項切已完成另核銷應退差額"
+   ]
+  }
+ ]
+}

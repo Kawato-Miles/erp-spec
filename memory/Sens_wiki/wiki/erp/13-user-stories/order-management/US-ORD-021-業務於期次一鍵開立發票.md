@@ -11,7 +11,7 @@ role:
 priority: high
 status: draft
 created-at: 2026-05-28
-last-reviewed: 2026-05-28
+last-reviewed: 2026-06-03
 source:
   - openspec/changes/unify-billing-installment-and-reconciliation-csv/specs/order-management/spec.md
 related-spec: openspec/specs/order-management/spec.md
@@ -51,7 +51,7 @@ related-test-cases: []
 1. 系統強制每張發票對應唯一一筆請款期次（NOT NULL UNIQUE FK）
 2. 發票自動繼承來源期次的品項與業務備註（後續期次品項異動不連動既有發票，沿用 v1.13 鏈式預填無連動規則）
 3. 期次開票後「開票維度」狀態 = 已開立、「收款維度」狀態保留不動（雙維度獨立）
-4. 若期次已有對應發票（已開立 / 已作廢回未開立），一鍵開票按鈕不顯示重複開立入口
+4. 期次開票維度為「已開立」（已有對應發票）時，系統隱藏一鍵開立按鈕、不提供重複開立入口；僅「未開立」或「已作廢回未開立」（原發票作廢後）兩種狀態顯示一鍵開立按鈕（後者支援重新開票）
 
 ## 來源（provenance）
 

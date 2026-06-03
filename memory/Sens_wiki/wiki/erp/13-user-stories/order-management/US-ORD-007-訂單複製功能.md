@@ -8,15 +8,16 @@ role:
 priority: medium
 status: active
 created-at: 2026-05-22
-last-reviewed: 2026-05-22
+last-reviewed: 2026-06-03
 source:
-  - "openspec/specs/order-management/spec.md#Requirement: 訂單建立"
+  - "openspec/specs/order-management/spec.md#Requirement: 訂單複製功能"
 related-spec: openspec/specs/order-management/spec.md
 related-scenarios: []
 related-business-logic: []
 related-entities:
   - "[[訂單]]"
-related-oq: []
+related-oq:
+  - ORD-032
 related-test-cases: []
 prerequisites:
   - 業務遇到老客戶重複下單需求
@@ -48,20 +49,30 @@ prerequisites:
    - 客戶資料（接單公司 / 帳務公司 / 統編 / 聯絡人）
    - 印件規格（含預計產線、難易度、免審稿標記）
    - 價格欄位（成本 / 報價 / 毛利率）
-4. 系統依新訂單的接單公司**重新推導**帳務公司（不直接複製原值；對齊 [[US-QR-009-複製需求單]] 同樣紀律）
-5. 新訂單狀態為「草稿」，業務可調整差異欄位（如：客戶要求新規格 / 數量調整）
-6. 新訂單與原訂單建立關聯欄位作為複製來源追溯
+   - 付款條件
+   - 開票公司 / 抬頭 / 統編
+   - 配送地址 / 方式
+   - 訂單三種備註
+4. 系統直接帶入原訂單的開票公司 / 抬頭 / 統編（不重新推導）；業務於草稿態可自行調整。
+
+   > 補述：原訂單複製是否應比照需求單複製紀律改以新訂單接單公司重新推導帳務公司，屬正本未決事項，見 [[OQ-ORD-帳務公司複製紀律]]（待開）。
+5. 系統於新訂單寫入活動紀錄「訂單複製：來源訂單 #XXX」，並於來源訂單寫入活動紀錄「衍生訂單 #YYY」（雙向可追溯）
+6. 新訂單狀態為「草稿」，業務可調整差異欄位（如：客戶要求新規格 / 數量調整）
+7. 新訂單與原訂單建立關聯欄位作為複製來源追溯
+8. 新訂單不帶入原訂單的工單 / 生產任務（待審核通過後由印務主管重新拆分）、不帶入稿件檔案（業務需重新確認客戶最新版稿件）、不複製原訂單活動紀錄（新訂單自複製事件起重新記錄）
 
 ### 成功條件
 
-1. 業務可於訂單列表執行「複製訂單」建立新訂單，自動帶入客戶 / 印件規格 / 報價結構
-2. 系統依新訂單接單公司重新推導帳務公司（不沿用原值）
+1. 業務可於訂單列表執行「複製訂單」建立新訂單，自動帶入客戶 / 印件規格 / 報價結構 / 付款條件 / 開票資訊 / 配送 / 三種備註
+2. 系統直接帶入原訂單的開票公司 / 抬頭 / 統編，業務於草稿態可自行調整
 3. 新訂單狀態為「草稿」，業務可進一步編輯
 4. 新訂單與原訂單建立關聯，可追溯複製來源
+5. 新訂單與來源訂單雙向各寫入一筆複製活動紀錄，互可追溯
 
 ## 來源（provenance）
 
-- [`openspec/specs/order-management/spec.md`](../../../../openspec/specs/order-management/spec.md) v1.7 § Requirement「訂單建立」L21+
+- [`openspec/specs/order-management/spec.md`](../../../../openspec/specs/order-management/spec.md) § Requirement「訂單複製功能」
+- 2026-06-01 align-business-consultation-coverage-gaps change 明定訂單複製功能（複製範圍 MUST / MUST NOT、開票資訊直接帶入、雙向活動紀錄）
 - 原 Notion User Story DB `US-ORD-007`（2026-05-22 遷入並依 spec 深度校對）
 
 ## 校對紀錄
@@ -71,3 +82,11 @@ prerequisites:
 - 沿用 [[US-QR-009-複製需求單]] 帳務公司推導紀律（不直接複製）
 - 補關聯追溯
 - 邊界：訂單複製建立後一切流程同既有訂單（不在本卡擴充）
+
+### 第二輪（2026-06-03，對齊 2026-06-01-align-business-consultation-coverage-gaps change）
+
+- 複製範圍補齊至 delta MUST 複製項：付款條件、開票公司 / 抬頭 / 統編、配送地址 / 方式、訂單三種備註
+- 開票資訊改為「直接帶入原訂單值（不重新推導）」，與 delta 對齊（原卡沿用需求單複製的重新推導紀律，與 delta 相反，未逕自保留，改標 OQ）
+- 補雙向活動紀錄（新訂單記來源訂單、來源訂單記衍生訂單）至業務流程與成功條件
+- 補 MUST NOT 複製邊界：工單 / 生產任務、稿件檔案、原訂單活動紀錄
+- source / 錨點更新為 § Requirement「訂單複製功能」

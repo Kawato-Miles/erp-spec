@@ -10,10 +10,11 @@ role:
 priority: medium
 status: draft
 created-at: 2026-05-28
-last-reviewed: 2026-05-28
+last-reviewed: 2026-06-03
 source:
   - memory/Sens_wiki/wiki/erp/04-business-logic/payment-invoice-scenarios.md
   - openspec/changes/unify-billing-installment-and-reconciliation-csv/design.md
+  - openspec/changes/archive/2026-06-02-refactor-order-receivable-refund-model/proposal.md
 related-spec: openspec/specs/order-management/spec.md
 related-scenarios: []
 related-business-logic: []
@@ -40,24 +41,33 @@ related-test-cases: []
 - 訂單實作金額有可能低於預估
 
 ### 業務流程
-1. 訂單成立、業務記錄預收款（金額 15K，無對應期次的臨時收款）
-2. 業務於規劃階段建 2 筆請款期次（各 7.5K）+ 兩筆各自開預開發票
+1. 訂單成立、業務記錄預收款 Payment（金額 15K）；此預收款無對應請款期次（BillingInstallment）關聯，溢收部分標記為「預收（未分配）」桶
+2. 業務於規劃階段建 2 筆請款期次 BillingInstallment（各 7.5K）+ 兩筆各自一鍵開立預開發票（Invoice 透過 source_billing_installment_id 繼承來源期次品項 / 應收日 / 備註）
 3. 預開發票後客戶完成內部核銷流程
 4. 訂單實作完成、實際金額（9.1K）低於預估（15K）
-5. 業務建退款訂單異動（−5.9K）→ 業務主管核可 → 建退款 Payment（−5.9K）切已完成 → 異動推進已執行
+5. 業務建退款訂單異動 OA（−5.9K）→ 業務主管核可，OA 核可即推進「已執行」、應收即時下調至 9.1K（不等退款 Payment）→ 業務另建退款 Payment（−5.9K，linkedOrderAdjustmentId 選填）、上傳匯款證明、切「已完成」核銷應退差額
 6. 業務於發票端跨月處理：開折讓單 SalesAllowance 關聯兩張預開發票（合計折讓 −5.9K，業務分配到兩張發票上）
-7. 折讓單 refundPaymentId 手動關聯該退款 Payment
+7. 折讓單 SalesAllowance.refund_payment_id 手動關聯該退款 Payment（已跨月走折讓、未跨月則作廢原 Invoice 重開）
 8. 三方對帳通過：應收 9.1K = 發票淨額 9.1K（15K - 5.9K 折讓）= 收款淨額 9.1K（15K - 5.9K 退款）
 
 ### 成功條件（acceptance criteria）
 
-1. 預收款可記錄為「無 PaymentPlan 關聯」的 Payment（無前置請款期次也能登錄）
+1. 預收款可記錄為無 BillingInstallment 關聯的 Payment（無前置請款期次也能登錄，溢收歸「預收（未分配）」桶）
 2. 拆 2 張發票各自獨立金額（合計 = 預收 15K），透過 PaymentAllocation 對應一筆 Payment 拆兩期分攤
-3. 退款 Payment 不入正向期次的核銷分配（PaymentAllocation），透過 SalesAllowance.refundPaymentId 連結
+3. 退款 Payment 核銷「收款淨額 − 應收」的應退差額、不建 PaymentAllocation（不進正向期次）、linkedOrderAdjustmentId 選填；退款完成判定 = 退款 Payment 切「已完成」（物理錨點），跨月時透過 SalesAllowance.refund_payment_id 連結折讓單
 4. 折讓金額大於單張發票金額時，業務可拆成多筆 SalesAllowance 各自關聯不同發票
-5. 三方對帳差額 = 0（含負項對齊），對帳警示 banner 因執行時點跨期觸發
+5. 三方對帳三軸平（應收 9.1K = 發票淨額 9.1K = 收款淨額 9.1K）、差額 = 0；退款執行前對帳面板顯示「應退差額」警示且不可忽略（不提供「忽略此差額」選項）
 
 ## 來源（provenance）
 
 - memory/Sens_wiki/wiki/erp/04-business-logic/payment-invoice-scenarios.md § 1 預開發票 + 拆 2 筆發票開立 + 實際製作金額調整（情境 F1）
 - openspec/changes/unify-billing-installment-and-reconciliation-csv/design.md § Open Questions OQ-US-1 + 顧問 C-PM-4 採納
+
+## 校對紀錄
+
+### 第二輪（2026-06-03，對齊 unify-billing 與路 C refactor-order-receivable-refund-model）
+
+- PaymentPlan / PlannedInvoice 雙實體用語收斂為單一請款期次（BillingInstallment）：預收款改記「無 BillingInstallment 關聯 + 預收（未分配）桶」、開票繼承鏈改 source_billing_installment_id。
+- 退款執行語意對齊路 C：退款 OA 業務主管核可即推進「已執行」、應收即時下調（不等退款 Payment 累計達標）；退款 Payment 切「已完成」為核銷應退差額的物理錨點，與 OA 推進解耦、linkedOrderAdjustmentId 選填。
+- 三方對帳成功條件改三軸定義（應收 = 發票淨額 = 收款淨額）；退款前「應退差額」警示不可忽略、不提供忽略選項。
+- 折讓單欄位名對齊 spec 為 refund_payment_id，補跨月走折讓 / 未跨月作廢重開分支。
