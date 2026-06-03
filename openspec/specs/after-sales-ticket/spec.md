@@ -856,7 +856,7 @@ v0.6 既有「AfterSalesTicket → OA → Payment + 折讓/作廢」連動鏈主
 - **WHEN** 業務主管核可 + 業務建退款 Payment + 切已完成
 - **THEN** 系統推進 OA-201 = 已執行、應收 -5000
 - **AND** 退款 Payment MUST NOT 建 PaymentAllocation（不進正向期次）
-- **AND** 業務於 INV 詳情頁建 SalesAllowance（refund_payment_id 關聯退款 Payment）
+- **AND** 業務於 INV 詳情頁建 SalesAllowance（折讓不關聯退款 Payment）
 - **AND** 業務確認客戶滿意 → 點 ticket「結案」
 
 #### Scenario: 補印免費場景沿用既有設計（不建 OA + 不影響 BillingInstallment）

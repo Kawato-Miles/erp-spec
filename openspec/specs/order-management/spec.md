@@ -1066,15 +1066,14 @@ remaining = invoice.total_amount - folded
 
 ### Requirement: 退款 Payment 與折讓分離（先記退款，再開折讓）
 
-退款 Payment 與 SalesAllowance 為**分離設計**，符合業界會計分離原則（Credit Memo 與 Refund 分軸）。實務流程：(1) 業務 / 諮詢先在訂單詳情頁建立退款 Payment（payment_method = 「退款」、amount 為負數）；(2) 視情境決定後續：(a) 已開立發票且需保留發票 → 開立 SalesAllowance 並手動關聯 refund_payment_id；(b) 發票錯誤可作廢 → 作廢原發票重開（refund_payment_id 不需關聯到 SalesAllowance）。系統 SHALL NOT 在折讓建立時自動建立 Payment。
+退款 Payment 與 SalesAllowance 為**分離設計**，符合業界會計分離原則（Credit Memo 與 Refund 分軸）。實務流程：(1) 業務 / 諮詢先在訂單詳情頁建立退款 Payment（payment_method = 「退款」、amount 為負數）；(2) 視情境決定後續：(a) 已開立發票且需保留發票 → 開立 SalesAllowance；(b) 發票錯誤可作廢 → 作廢原發票重開。系統 SHALL NOT 在折讓建立時自動建立 Payment。退款 Payment 與 SalesAllowance 完全解耦，系統不記錄兩者對應（帳平以三軸總額比對），後續反查以訂單活動紀錄為準。
 
 #### Scenario: 業務先建退款 Payment 再開折讓
 
 - **GIVEN** Invoice #1 = 100,000 已開立、客戶已付款
 - **WHEN** 客戶投訴 10,000 元品質瑕疵，業務先於訂單詳情頁建立 Payment（amount = -10,000、payment_method = 退款）
 - **AND** 業務於 Invoice #1 開立 SalesAllowance（allowance_amount = -10,000、reason = 品質瑕疵）
-- **THEN** SalesAllowance.refund_payment_id SHALL 由業務手動關聯該退款 Payment
-- **AND** Activity log MUST 分別記載 Payment 建立與 SalesAllowance 開立
+- **THEN** Activity log MUST 分別記載 Payment 建立與 SalesAllowance 開立（退款與折讓不建立 FK 關聯，後續反查以活動紀錄為準）
 - **AND** 系統 SHALL NOT 自動建立任何 Payment
 
 #### Scenario: 業務先建退款後決定走作廢重開
@@ -1329,7 +1328,7 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 - 收款淨額 > 應收 → **應退差額**（已收 > 應收，本 change 一律當「退款待執行」；溢收 / 預收細分另議，見 BI-3）
 - 發票淨額 > 應收 → **待折讓**（已開票過多，需折讓沖減）
 
-差額 = 應收總額 - 發票淨額 - 收款淨額；差額 = 0 視為對帳通過。
+對帳平衡採 pairwise 判準（三軸兩兩相等，以應收總額為基準）：開票差額 = 應收總額 − 發票淨額；收款差額 = 應收總額 − 收款淨額。兩者皆為 0（即 應收 = 發票淨額 且 應收 = 收款淨額）視為對帳通過。
 
 **[路 C] 退款核銷應退差額**：退款 Payment（amount < 0）核銷「應退差額」、不綁單一 OA 累計（`linkedOrderAdjustmentId` 選填）、不進期次。退款完成的物理錨點 = 退款 Payment 自身切「已完成」（業務上傳匯款證明），對帳差額歸零是**結果呈現**、非完成判定本身。多筆退款帳平不分筆判定，但每筆退款 Payment MUST 各自挂匯款證明附件。
 
@@ -3214,7 +3213,7 @@ OrderAdjustment `requires_supervisor_approval` derived field：
 - **退款現金動作**：業務於 OA 介面或對帳面板建退款 Payment（amount < 0, paymentMethod=退款, `linkedOrderAdjustmentId` 選填）、上傳匯款證明、切「已完成」核銷應退差額；**退款 Payment MUST NOT 建 PaymentAllocation**（不進正向期次）。
 - **退款完成判定** = 退款 Payment 切「已完成」（物理錨點）；對帳應退差額歸零為結果呈現。
 - 誤建退款 Payment 修正：取消退款 Payment → 應退差額重新出現 → 對帳差額警示引導重退（OA 已執行 / 應收已調整維持不動）。
-- 發票端（免審核，退款 OA 已核可即批准）：未跨月作廢原 Invoice 重開；已跨月開立 SalesAllowance 折讓關聯原 Invoice、refund_payment_id 手動關聯退款 Payment。
+- 發票端（免審核，退款 OA 已核可即批准）：未跨月作廢原 Invoice 重開；已跨月開立 SalesAllowance 折讓關聯原 Invoice（折讓不關聯退款 Payment）。
 - BillingInstallment 不受退款影響（保留正向期次稽核歷史）。
 
 #### Scenario: 訂單完成後售後退款（核可即生效 + 退款核銷差額）
@@ -3228,7 +3227,7 @@ OrderAdjustment `requires_supervisor_approval` derived field：
 - **WHEN** 業務建退款 Payment P-070(amount=-10000, linkedOrderAdjustmentId=OA-070.id)、上傳匯款證明、切已完成
 - **THEN** 收款淨額 = 70000、應退差額歸零（退款完成）
 - **AND** P-070 MUST NOT 建 PaymentAllocation
-- **WHEN** 已跨月：業務於原發票建 SalesAllowance(-10000, refund_payment_id=P-070.id)
+- **WHEN** 已跨月：業務於原發票建 SalesAllowance(-10000)
 - **THEN** 發票淨額 = 70000、三軸平
 
 #### Scenario: 取消退款 Payment 後差額重現（無回退機制）
@@ -4034,7 +4033,6 @@ erDiagram
     Invoice ||--o{ InvoiceItem : "品項(items[])"
     Invoice ||--o{ SalesAllowance : "折讓"
     SalesAllowance ||--o{ SalesAllowanceFile : "回簽附件"
-    SalesAllowance }o--o| Payment : "refund_payment_id"
 
     Order ||--o{ BillingInstallment : "請款期次"
     BillingInstallment |o--o| Invoice : "1:1 linked_invoice_id"
@@ -4476,7 +4474,7 @@ BillingInstallment 完整實體欄位表見本 § Data Model 下方 § BillingIn
 
 ### SalesAllowance（折讓單 / 銷貨折讓證明單）
 
-> 依台灣統一發票使用辦法第 20 條；發票已開立後不能整張作廢時，附加在原發票上的部分減額憑證（業界：Credit Memo / Credit Note）。狀態機精簡兩態：已確認 → 已作廢。D12 折讓 / 退款分離：折讓本身不自動建立 Payment，業務先建退款 Payment 再開折讓並手動關聯。
+> 依台灣統一發票使用辦法第 20 條；發票已開立後不能整張作廢時，附加在原發票上的部分減額憑證（業界：Credit Memo / Credit Note）。狀態機精簡兩態：已確認 → 已作廢。D12 折讓 / 退款分離：折讓本身不自動建立 Payment，業務先建退款 Payment 再開折讓；兩者不建立 FK 關聯（帳平以三軸總額比對），後續反查以訂單活動紀錄為準。
 
 | 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
 |------|---------|------|------|------|------|
@@ -4488,7 +4486,6 @@ BillingInstallment 完整實體欄位表見本 § Data Model 下方 § BillingIn
 | 折讓後剩餘發票金額 | remain_amount | 小數 | | Y | = invoice.total_amount − 該發票所有已確認折讓累計絕對值（藍新回傳）|
 | 折讓原因 | reason | 文字 | Y | | |
 | 狀態 | status | 單選 | Y | | 已確認 / 已作廢 |
-| 退款收款 | refund_payment_id | FK | | | FK → Payment（業務手動關聯；D12 折讓不自動建 Payment）|
 | 開立時間 | issued_at | 日期時間 | Y | | |
 | 確認時間 | confirmed_at | 日期時間 | | | |
 | 作廢時間 | invalid_at | 日期時間 | | | status = 已作廢 時填 |
