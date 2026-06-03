@@ -28,6 +28,8 @@ related-oq:
   - ORD-036
 related-test-cases: []
 source-gap: false
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3743886511fa819e8e9dda7700501ef6
 ---
 
 # US-ORD-026 業務新增補收的訂單異動單免主管核可、直接生效

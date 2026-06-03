@@ -20,6 +20,8 @@ related-scenarios: []
 related-business-logic: []
 related-entities: []
 related-test-cases: []
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3743886511fa81bba54af6ad41860264
 ---
 
 # US-ORD-031 期次規劃 invariant 警示與大額補收紅標

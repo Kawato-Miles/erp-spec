@@ -18,6 +18,8 @@ related-scenarios: []
 related-business-logic: []
 related-entities: []
 related-test-cases: []
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3743886511fa81f58dfae38e89c90179
 ---
 
 # US-ORD-022 業務拆期保留稽核軌跡

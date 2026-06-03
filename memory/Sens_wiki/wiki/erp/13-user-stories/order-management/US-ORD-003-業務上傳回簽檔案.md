@@ -23,6 +23,8 @@ related-test-cases: []
 prerequisites:
   - 訂單未取消（status ≠ 已取消）；首次推進情境另需訂單狀態為「報價待回簽」且無既有回簽檔案
   - 客戶已透過外部管道送回回簽紙本 / 電子檔
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/32e3886511fa8173ab0cf12e1ea167ab
 ---
 
 # US-ORD-003 業務上傳回簽檔案

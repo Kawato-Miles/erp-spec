@@ -20,6 +20,8 @@ related-scenarios: []
 related-business-logic: []
 related-entities: []
 related-test-cases: []
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3743886511fa81b18233cd850d362e81
 ---
 
 # US-ORD-020 業務建立請款期次

@@ -19,6 +19,8 @@ related-scenarios: []
 related-business-logic: []
 related-entities: []
 related-test-cases: []
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3743886511fa81bb84cbee7cc6d95f1b
 ---
 
 # US-ORD-021 業務於請款期次一鍵開立發票

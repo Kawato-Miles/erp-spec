@@ -25,6 +25,8 @@ related-business-logic:
 related-entities:
   - "[[訂單]]"
 related-test-cases: []
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3743886511fa81fbae33c12186303a90
 ---
 
 # US-ORD-035 業務於訂單異動已核可後校正退款金額

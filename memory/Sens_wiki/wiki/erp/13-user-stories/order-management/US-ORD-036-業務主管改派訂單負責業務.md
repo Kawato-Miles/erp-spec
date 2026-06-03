@@ -24,6 +24,8 @@ related-test-cases: []
 prerequisites:
   - 訂單存在且未取消（status ≠ 已取消，含已完成）
   - 操作者具業務主管角色
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3743886511fa81f78e23f8f88ef5cddc
 ---
 
 # US-ORD-036 業務主管改派訂單負責業務

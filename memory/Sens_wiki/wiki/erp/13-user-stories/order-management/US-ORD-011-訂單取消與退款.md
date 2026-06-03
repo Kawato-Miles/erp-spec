@@ -25,6 +25,8 @@ prerequisites:
   - 訂單存在（任意狀態，依 spec § 訂單取消流程允許任意狀態取消）
 related-oq: []
 related-test-cases: []
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/32e3886511fa81c29207dbc672686edf
 ---
 
 # US-ORD-011 業務取消訂單與退款申請

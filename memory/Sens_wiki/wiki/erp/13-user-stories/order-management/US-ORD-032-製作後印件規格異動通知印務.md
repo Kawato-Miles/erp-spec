@@ -21,6 +21,8 @@ related-entities:
   - "[[印件]]"
   - "[[工單]]"
 related-test-cases: []
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3743886511fa81cfa926d73ab8148ab3
 ---
 
 # US-ORD-032 製作後印件規格異動觸發系統自動通知印務

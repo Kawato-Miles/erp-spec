@@ -23,6 +23,8 @@ related-test-cases: []
 prerequisites:
   - 客戶資料已建立於廠客模組
   - 訂單類型為線下單（非 B2C 自助下單）
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3673886511fa815dba16e32395c82d3e
 ---
 
 # US-ORD-012 線下單客戶資料關聯帶出

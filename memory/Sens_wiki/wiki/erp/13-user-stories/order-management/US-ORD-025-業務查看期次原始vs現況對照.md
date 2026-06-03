@@ -19,6 +19,8 @@ related-scenarios: []
 related-business-logic: []
 related-entities: []
 related-test-cases: []
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3743886511fa811196d3c6daca444e02
 ---
 
 # US-ORD-025 業務查看期次原始 vs 現況對照

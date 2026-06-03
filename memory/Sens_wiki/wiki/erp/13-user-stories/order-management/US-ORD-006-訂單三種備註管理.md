@@ -23,6 +23,8 @@ related-test-cases: []
 prerequisites:
   - 訂單未取消（訂單狀態 ≠ 已取消）
   - 使用者為訂單負責業務 / 諮詢 / 訂單管理人，或被分享該訂單編輯權限者
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3673886511fa8166b69ae4fd152006e5
 ---
 
 # US-ORD-006 訂單三種備註管理

@@ -21,6 +21,8 @@ related-oq:
 related-test-cases: []
 prerequisites:
   - 使用者角色為訂單管理人
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/32e3886511fa8173b479fd92ef1c89cf
 ---
 
 # US-ORD-009 訂單管理人查看全公司訂單

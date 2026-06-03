@@ -20,6 +20,8 @@ related-scenarios: []
 related-business-logic: []
 related-entities: []
 related-test-cases: []
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3743886511fa81b2ac41d3c0011f44f5
 ---
 
 # US-ORD-030 F1 情境：預開發票 + 拆 2 張 + 實作金額調整退款

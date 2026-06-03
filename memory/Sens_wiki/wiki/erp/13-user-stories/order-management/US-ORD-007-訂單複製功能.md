@@ -22,6 +22,8 @@ related-test-cases: []
 prerequisites:
   - 業務遇到老客戶重複下單需求
   - 原訂單仍保留於系統（任意狀態）
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3673886511fa815b85ddef2d0a942e36
 ---
 
 # US-ORD-007 訂單複製功能

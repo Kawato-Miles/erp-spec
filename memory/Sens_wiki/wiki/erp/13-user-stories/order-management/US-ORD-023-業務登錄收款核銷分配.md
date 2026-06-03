@@ -18,6 +18,8 @@ related-scenarios: []
 related-business-logic: []
 related-entities: []
 related-test-cases: []
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3743886511fa81c7b38cec24b2b011a7
 ---
 
 # US-ORD-023 業務登錄收款並由系統依序填滿核銷分配

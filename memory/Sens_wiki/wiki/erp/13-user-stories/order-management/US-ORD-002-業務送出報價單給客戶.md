@@ -21,6 +21,8 @@ related-test-cases: []
 prerequisites:
   - "[[US-ORD-001-業務主管訂單審核]]：訂單已通過業務主管核可（狀態「審核通過」）"
   - 業務已透過外部管道將報價單送給客戶
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3673886511fa81a78265fbe86b6dd12a
 ---
 
 # US-ORD-002 業務送出報價單給客戶

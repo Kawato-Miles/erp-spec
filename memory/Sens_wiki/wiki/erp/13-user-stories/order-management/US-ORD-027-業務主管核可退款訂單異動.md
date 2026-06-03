@@ -28,6 +28,8 @@ related-entities:
   - "[[訂單]]"
 related-test-cases: []
 source-gap: false
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/3743886511fa810ebc4aeb297143fde5
 ---
 
 # US-ORD-027 業務主管核可退款訂單異動

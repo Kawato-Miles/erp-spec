@@ -23,6 +23,8 @@ related-test-cases: []
 prerequisites:
   - 主訂單已建立
   - 業務為主訂單擁有者或職務代理人
+notion-published-at: 2026-06-03
+notion-page-url: https://www.notion.so/32e3886511fa81d59023fbc75271b7bb
 ---
 
 # US-ORD-010 補收款訂單建立

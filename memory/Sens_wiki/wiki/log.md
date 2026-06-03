@@ -11,6 +11,10 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-03] 同步 | 訂單發布迭代 Phase 2：推送 Notion User Story DB（訂單 27 筆 + 回填追蹤）
+- 變更：依 [[iteration-delta-publish]] 流程推送訂單 user story 至 Notion User Story DB——新增 17 筆（US-ORD-020~036）、更新 9 筆（001-007/011/012）、retag 1 筆（US-ORD-009：原 Notion 誤掛 US-ORD-005 的「全公司訂單查看」殼 retag 為 009，解重複編碼）；US-ORD-013 緩推（待 [[ORD-034-退款執行改業務後US-ORD-013卡結構|ORD-034]] retitle）。29 張卡（含 008/010 aligned）回填 notion-published-at/notion-page-url。推送前經 senior-pm notion-publish-rubric 兩輪評審（擋下並修正：007 inline 待開 OQ、036 UI 措辭、030/031/028 中英夾雜、013 緩推、005/009 重複殼處理）。
+- 衝突：無（005/009 重複編碼經 retag 解決，驗證後 Notion 端 001~012 各一筆）。
+
 ## [2026-06-03] 同步 | 訂單發布迭代 Phase 1/5：補 US-ORD-036 + 建迭代發布 SOP/Rubric + 固化發布 skill
 - 變更：補建 [[US-ORD-036-業務主管改派訂單負責業務]]（覆蓋缺口 add-sales-manager-reassign-owner）；新增 [[iteration-delta-publish]] SOP（只反映 archived change / 算 delta 只更新受影響項 / 強制回填追蹤）+ Notion 發布 Rubric（`.claude/skills/erp-user-story/references/notion-publish-rubric.md`，移植 linear-delivery /goal+Rubric）；固化 skill：erp-user-story mode B 加 change-driven delta（B1）+ senior-pm 評審閘門（B2.5）+ 強制回填（B5）、sync-workflow 新增流程 1-C、linear-delivery Step 1 加 archived-only 邊界 + 中台/業務平台 project 分流、CLAUDE.md 路由表加「對外發布/迭代同步」row。
 - 衝突：無。
