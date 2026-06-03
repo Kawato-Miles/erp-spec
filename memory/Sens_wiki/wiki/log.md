@@ -11,6 +11,10 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-03] 同步 | 訂單發布迭代 Phase 1/5：補 US-ORD-036 + 建迭代發布 SOP/Rubric + 固化發布 skill
+- 變更：補建 [[US-ORD-036-業務主管改派訂單負責業務]]（覆蓋缺口 add-sales-manager-reassign-owner）；新增 [[iteration-delta-publish]] SOP（只反映 archived change / 算 delta 只更新受影響項 / 強制回填追蹤）+ Notion 發布 Rubric（`.claude/skills/erp-user-story/references/notion-publish-rubric.md`，移植 linear-delivery /goal+Rubric）；固化 skill：erp-user-story mode B 加 change-driven delta（B1）+ senior-pm 評審閘門（B2.5）+ 強制回填（B5）、sync-workflow 新增流程 1-C、linear-delivery Step 1 加 archived-only 邊界 + 中台/業務平台 project 分流、CLAUDE.md 路由表加「對外發布/迭代同步」row。
+- 衝突：無。
+
 ## [2026-06-03] 同步 | 訂單發布迭代 Phase 0：訂單 user story 卡對齊 5/22-6/02 archived spec + 開 5 OQ
 - 變更：對齊 22 張訂單 user story 卡（US-ORD-001~007/009/011~013/020~022/024/026~027/029~032/035）至最新 archived change（route-C 收退款 / unify-billing 期次 / relax 編輯時機 / 諮詢取消收斂 / 列表篩選），block-level 改寫 + 更新 last-reviewed + 校對紀錄；7 張確認 aligned（008/010/023/025/028/033/034）；US-ORD-013 退款執行角色依拍板改業務（會計→業務）；新增 [[ORD-032-訂單複製帳務公司直接複製或重新推導]]、[[ORD-033-兩條退款路徑關係與main-spec舊序列收斂]]、[[ORD-034-退款執行改業務後US-ORD-013卡結構]]、[[ORD-035-Payment缺完整DataModel實體表]]、[[ORD-036-訂單異動流程卡完成後加收路徑錨點待確認]]；US-ORD-007/013/026 回填 related-oq。
 - 衝突：US-ORD-013 改 role 後檔名仍「會計執行退款處理」、與 US-ORD-011 職責重疊 → 開 ORD-034 待 retitle/合併；main spec § 訂單取消流程舊退款序列未對齊路 C → 開 ORD-033。

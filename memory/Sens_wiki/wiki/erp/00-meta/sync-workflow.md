@@ -87,6 +87,32 @@ last-reviewed: 2026-05-19
 - UI 操作層（stage=ui-bound 的 H2 § UI 操作）**不推送**到 Notion；Notion 只承載業務情境層
 - 推送前必跑 lint（vault-audit 維度 13 — 第三階段實作前先人工檢查）
 
+## 二之三、流程 1-C：迭代差異推送（只更新受影響項）
+
+> 解決流程 1 / 1-B「整段覆蓋往外」的問題。重大 change archive 後，只把「受 archived change 影響的對外條目」更新出去，而非整段覆蓋當前完整狀態。完整方法見 [[iteration-delta-publish]]。
+
+### 觸發時點
+
+- 重大 OpenSpec change（或一批 change）archive 後，要把迭代差異同步至對外面
+- Miles 說「依這次更新同步 Notion / Linear」「推迭代差異」
+
+### 步驟
+
+1. **算 delta**：依 [[iteration-delta-publish]] § 二（定上次發布時點 → 撈該時點後 archived change → 抽 delta spec → 對映對外條目 + 覆蓋檢查），每個對外面產一張 delta 清單（條目 / 動作 / 來源 change / 正本位置）
+2. **內部正本先到位**：對齊 Vault user-story 卡（往外送前必先到位）；欄位以 OpenSpec Data Model 為正本
+3. **路由 + 品質閘門**（依 [[iteration-delta-publish]] § 三）：
+   - User Story DB → [[erp-user-story]] mode B（含 [notion-publish-rubric](../../../../.claude/skills/erp-user-story/references/notion-publish-rubric.md) senior-pm 評審）
+   - 資料欄位 DB → 本流程 1-C（以「資料表＋英文名稱」為唯一鍵 update / create / 標廢止；LOV 新增 / 刪除過時實體；同走 notion-publish-rubric 閘門）
+   - Linear → [[linear-delivery]]（注意中台 vs 業務平台 project 分流：核心 + 狀態機正本在中台 project）
+4. **每面寫入前列清單給 Miles 確認**（外部不可逆寫入）
+5. **回填追蹤**（依 [[iteration-delta-publish]] § 四，強制）
+6. **正本缺定義**：推已查證部分 + 標另案 + oq-manage mode B（禁臆造）
+
+### 與流程 1 / 1-B 的關係
+
+- 流程 1 / 1-B = 首次 / 全量彙整推送
+- 流程 1-C = 後續「只更新受影響項」的精準版（重大 change archive 後的常態）
+
 ## 三、流程 2：Notion → Vault + OpenSpec（反饋回流）
 
 ### 觸發時點

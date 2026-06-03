@@ -242,17 +242,22 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 
 ## 模式 B：推送 Notion
 
-### Step B1：列出待推送清單
+### Step B1：列出待推送清單（change-driven delta + frontmatter 兩路取聯集）
 
 掃 `13-user-stories/<module>/` 內 user-story 卡，列出：
 - status=active
-- `notion-published-at` 為空 / 距今 > 60 天 / 自上次推送後 `last-reviewed` 有更新
+- **change-driven delta**：依 [[iteration-delta-publish]] 算出受 archived change 影響的卡（只反映 `openspec/changes/archive/`，active change 不納入）；對映後做覆蓋檢查（每個 change 至少對映一張卡，無對映者揭露為覆蓋缺口 → 補卡或記 OQ）
+- **frontmatter 判定**：`notion-published-at` 為空 / 距今 > 60 天 / 自上次推送後 `last-reviewed` 有更新
 
-並報告給 Miles 確認推送範圍。
+待推送清單 = 上述兩路**取聯集**。並報告給 Miles 確認推送範圍。
 
 ### Step B2：跑 lint（推送前必跑）
 
 對待推送清單每張卡跑 Step A7 的檢查。**任一張 lint 失敗 → 中止推送**，要求修正後重來。
+
+### Step B2.5：senior-pm 評審（推送前品質閘門，結構性推送 MUST）
+
+引用 [`references/notion-publish-rubric.md`](references/notion-publish-rubric.md)，調用 senior-pm 當評審（執行者 / 評審分離），逐維度給通過 / 部分 / 未通過 + evidence-anchored。**4 維度全「通過」才進 B3**；維度 4（真實性）一票否決。未通過 → 修正 → 重新評審（餵完整草稿、不暗示改動），硬上限 3 輪、卡住問 Miles。單張微調 MAY 由主 agent 自審；批次 / 結構性推送 SHALL 調用 senior-pm。
 
 ### Step B3：Property Mapping（Vault → Notion）
 
@@ -280,7 +285,7 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
    - 不存在 → `notion-create-pages`（create）
 3. **禁建重複條目**
 
-### Step B5：回填 Vault frontmatter
+### Step B5：回填 Vault frontmatter（MUST，不可略）
 
 對每張推送成功的卡：
 
@@ -288,6 +293,8 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 notion-published-at: <當天>
 notion-page-url: <Notion 頁面 URL>
 ```
+
+**強制回填，禁略**：未回填會導致下次 Step B1 的 change-driven delta 與 frontmatter 判定雙雙失準。教訓：訂單模組曾整批推送 Notion 卻全未回填，35 張卡 `notion-published-at` 全空，delta 偵測只能靠查 Notion 缺項兜底（見 [[iteration-delta-publish]] § 四）。
 
 ### Step B6：報告與 commit
 
