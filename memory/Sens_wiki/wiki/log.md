@@ -84,3 +84,7 @@ last-reviewed: 2026-06-02
 ## [2026-05-31] 同步 | 建立 Sens_wiki 操作框架與雙主題結構
 - 變更：新增根目錄操作模式 CLAUDE.md（已於同日上移為 `.claude/rules/sens-wiki.md`，見同日「操作模式上移」entry）；初始化本操作史與 [[index|總目錄]]；確立雙主題（ERP / 圖編 canvas）並列、共用 `raw/` 與 `assets/`；ERP 既有 16 層內容卡沿用、未動。
 - 衝突：無。
+
+## [2026-06-03] 同步 | doc-audit 對齊 route-C（archive sync 殘留清理）
+- 變更：更新 [[發票法規硬約束-ezPay-MIG]] 連帶矩陣兩行（OA 已執行 / Payment 退款 → 路 C 核可即生效、不綁累計推進）；新增 OQ [[ORD-037-諮詢取消退費OA累計推進是否被路C核可即生效取代]]
+- 衝突：諮詢取消退費 OA 累計推進（converge 5/30 / CR-5 拍板）與路 C 核可即生效（6/02）跨 change 語意衝突，已開 ORD-037（related ORD-033 / CR-5 / ORD-003）待 Miles 拍板

@@ -2481,7 +2481,7 @@ Order 實體 SHALL 新增以下三個 free-text 欄位：
 
 業務發現「已完成」標錯時，SHALL NOT 直接從 paymentStatus = '已完成' 切回 '處理中'。修正路徑為「取消整筆 Payment → 重建新 Payment」。
 
-此規則維持 OA「已執行」的終態語意（避免狀態反覆翻動），與 [state-machines spec § 訂單異動狀態機](../state-machines/spec.md) 內「已執行回退機制」搭配運作。
+此規則維持 OA「已執行」的終態語意（避免狀態反覆翻動）。路 C 後 OA「已執行」於主管核可時即生效、不綁 Payment 累計，取消已完成退款 Payment SHALL NOT 回退 OA（見 [state-machines spec § 訂單異動狀態機](../state-machines/spec.md)「[路 C 移除]『已執行』回退機制」），改由對帳應退差額重現 + 差額警示引導重退。
 
 #### Scenario: 業務嘗試將已完成 Payment 切回處理中被擋
 
@@ -2494,9 +2494,9 @@ Order 實體 SHALL 新增以下三個 free-text 欄位：
 
 - **GIVEN** Payment P-099（已完成、amount = -5000、關聯 OA-099 已執行）
 - **WHEN** 業務於 OA-099 編輯介面 P-099 row 點「取消」
-- **THEN** 系統 SHALL 刪除 P-099
-- **AND** OA-099 對應已完成 Payment 累計 = 0 ≠ OA-099.amount → OA-099 回退至「已核可」（沿用 state-machines spec 回退機制）
-- **AND** 業務 SHALL 可於 OA-099 編輯介面重新建立新 Payment
+- **THEN** 系統 SHALL 邏輯刪除 P-099（已完成 Payment 保留稽核軌跡）
+- **AND** OA-099 SHALL 維持「已執行」（路 C：OA 已執行於核可時已生效、不回退已核可）；對帳應退差額 SHALL 重現並觸發不可忽略警示
+- **AND** 業務 SHALL 可於 OA-099 編輯介面重新建立新退款 Payment 沖銷應退差額
 
 ---
 
@@ -2668,7 +2668,7 @@ Payment Data Model SHALL 新增以下三個欄位：
 `cancelPayment(paymentId, options)` action 行為依 paymentStatus 分支：
 
 - **paymentStatus = '處理中'**：直接從 `Order.payments` 陣列刪除（物理刪除、無稽核需求）
-- **paymentStatus = '已完成'**：邏輯刪除（設 `cancelled = true`、`cancelReason`、`cancelledAt = now`），SHALL NOT 從陣列移除；同時觸發 OA 回退邏輯（若關聯 OA 已執行且累計重算不再達 OA.amount，OA 回退至 '已核可'、executedAt = null）
+- **paymentStatus = '已完成'**：邏輯刪除（設 `cancelled = true`、`cancelReason`、`cancelledAt = now`），SHALL NOT 從陣列移除；路 C 後 SHALL NOT 觸發 OA 回退（OA 已執行於核可時已生效、不綁 Payment 累計），改觸發對帳應退差額重現（收款淨額 − 應收 > 0）+ 差額警示引導重退
 
 `calcOACompletedPaymentsTotal` 與對帳面板收款淨額計算 SHALL 排除 `cancelled = true` 的 Payment。
 
@@ -2687,7 +2687,7 @@ Payment Data Model SHALL 新增以下三個欄位：
 - **THEN** 系統 SHALL 從 Order.payments 陣列移除 P-016（物理刪除）
 - **AND** Order.payments SHALL NOT 含 P-016
 
-#### Scenario: 取消已完成 Payment 邏輯刪除保留稽核軌跡 + OA 回退
+#### Scenario: 取消已完成 Payment 邏輯刪除保留稽核軌跡 + OA 維持已執行
 
 - **GIVEN** Payment P-017 paymentStatus = '已完成'、amount = -5000、linkedOrderAdjustmentId = OA-001
 - **AND** OA-001.status = '已執行'、amount = -5000
@@ -2695,8 +2695,8 @@ Payment Data Model SHALL 新增以下三個欄位：
 - **WHEN** 業務於 OA 編輯介面內點 P-017「取消」、填入 cancelReason = '對帳資料填錯'、確認
 - **THEN** 系統 SHALL 設 P-017.cancelled = true、cancelReason = '對帳資料填錯'、cancelledAt = now
 - **AND** Order.payments SHALL 仍含 P-017（邏輯刪除、不從陣列移除）
-- **AND** 系統 SHALL 重算 OA-001 對應未取消已完成 Payment 累計 = 0（P-017 排除）≠ OA-001.amount
-- **AND** OA-001.status SHALL 回退至 '已核可'、executedAt = null
+- **AND** OA-001.status SHALL 維持 '已執行'（路 C：OA 已執行於核可時已生效、取消 Payment 不回退）
+- **AND** 對帳應退差額 SHALL 重現（收款淨額 − 應收 > 0）並觸發不可忽略警示引導重退
 
 #### Scenario: 已取消 Payment 預設隱藏 + toggle 顯示
 
@@ -2713,14 +2713,14 @@ Payment Data Model SHALL 新增以下三個欄位：
 - **THEN** 收款淨額 SHALL = 3000（僅計入未取消 + 已完成）
 - **AND** 已完成一般收款 breakdown SHALL = 3000
 
-#### Scenario: 取消已完成 Payment 但累計仍達 OA.amount 維持已執行
+#### Scenario: 多筆退款 Payment 取消其一 OA 仍維持已執行
 
-- **GIVEN** OA-002 amount = -10000、status = '已執行'
-- **AND** 關聯已完成 Payment P-019（amount = -5000）+ P-020（amount = -5000）
+- **GIVEN** OA-002 amount = -10000、status = '已執行'（核可時已生效）
+- **AND** 關聯已完成退款 Payment P-019（amount = -5000）+ P-020（amount = -5000）
 - **WHEN** 業務取消 P-019、填入 cancelReason、確認
-- **THEN** P-019.cancelled SHALL = true
-- **AND** 重算 OA-002 累計（排除 cancelled）= -5000 ≠ OA-002.amount
-- **AND** OA-002.status SHALL 回退至 '已核可'、executedAt = null
+- **THEN** P-019.cancelled SHALL = true（邏輯刪除）
+- **AND** OA-002.status SHALL 維持 '已執行'（路 C：不綁 Payment 累計、取消 Payment 不回退）
+- **AND** 對帳應退差額 SHALL 重現 5000（收款淨額 − 應收 > 0）並觸發不可忽略警示引導重退
 
 #### Scenario: cancelReason 必填驗證
 

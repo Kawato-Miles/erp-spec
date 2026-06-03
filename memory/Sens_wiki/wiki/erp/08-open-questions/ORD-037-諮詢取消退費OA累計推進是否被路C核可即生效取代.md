@@ -1,0 +1,55 @@
+---
+type: open-question
+module:
+  - order-management
+  - consultation-request
+  - state-machines
+oq-id: ORD-037
+status: open
+priority: high
+audience: internal
+raised-at: 2026-06-03
+raised-by: Claude（Phase 4 Linear 交付 + doc-audit 對齊 route-C 發現跨 change 衝突）
+source-link: openspec/specs/state-machines/spec.md L1221/L1297 + order-management L102/L1315 + consultation-request L407 + business-processes L895（諮詢取消退費 OA 累計推進殘留）
+related-vault:
+  - "[[訂單異動規則]]"
+  - "[[對帳一致性]]"
+related-oq:
+  - ORD-003
+  - ORD-033
+  - CR-5
+---
+
+# ORD-037：諮詢取消退費 OA 的累計推進機制是否被路 C「核可即生效」取代
+
+## 問題描述
+
+兩個已 archive 的 change 對「退款 OA 如何推進到已執行」描述不一致：
+
+1. **converge-consultation-cancel-to-order-cancel-flow（5/30 archived，CR-5 拍板）**：諮詢取消退費 OA（系統內生 amount=-1000、status=已核可、approved_by=system、executed_at=NULL）SHALL「退款 Payment 切已完成累計達 -1000 才推進已執行」，以維持 invariant「OA 已執行 → 必有已完成 Payment 累計達 amount」。
+2. **refactor-order-receivable-refund-model（路 C，6/02 archived）**：一般退款負項 OA「已執行」改為「核可後應收調整即生效、不綁退款 Payment 累計達標推進」，並移除回退機制（取代 ORD-003、移除 invariant「OA 已執行 → Payment 累計達標」）。
+
+衝突：諮詢取消退費 OA 屬退款負項（amount<0），路 C 的「核可即生效、不綁累計」按理應一體適用；但諮詢取消的描述（5/30，早於路 C）仍停留「累計推進」舊機制。main spec 目前兩套並存。
+
+## 涉及範圍
+
+- 模組：order-management（OA 狀態機）、consultation-request（諮詢取消自動建單）、state-machines
+- 殘留位置：state-machines L213/L229/L1221/L1297、order-management L102/L1315、consultation-request L407、business-processes L895
+- 相關卡：[[訂單異動規則]]、[[對帳一致性]]
+- 影響：諮詢取消半額退費的 OA 推進時點、invariant 是否仍成立、對帳應退差額兜底是否一致涵蓋諮詢取消情境
+
+## 待解答
+
+- [ ] 諮詢取消退費 OA 是否比照路 C「核可即生效、不綁退款 Payment 累計」（即系統建立即已執行，不等退款 Payment 累計達 -1000）？
+- [ ] 若是，CR-5 拍板的「建已核可 + 累計推進」是否整段改寫為「核可即生效」？invariant「OA 已執行 → 必有已完成 Payment」於諮詢取消情境是否放棄（改由對帳應退差額兜底）？
+- [ ] 若否（諮詢取消刻意保留累計推進為特例），main spec 須明示「諮詢取消退費 OA 為路 C 核可即生效的例外」並說明理由。
+
+## 候選方案
+
+### 方案 A：諮詢取消退費 OA 一體適用路 C（核可即生效、不綁累計）
+- 優點：退款 OA 推進語意全模組統一、消除 main spec 並存矛盾；對帳應退差額兜底機制一致涵蓋諮詢取消
+- 缺點：放棄諮詢取消情境的「OA 已執行 → 必有已完成 Payment」invariant（converge 當時刻意維持），需確認半額退費留痕足夠
+
+### 方案 B：諮詢取消退費 OA 保留累計推進為路 C 例外
+- 優點：維持 converge 當時 invariant 設計（半額退費留痕）
+- 缺點：同類退款 OA 兩套推進語意、main spec 須額外標例外、增認知負擔
