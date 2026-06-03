@@ -7,7 +7,7 @@ business-domain:
   - billing-cash
 related-spec: openspec/specs/order-management/spec.md
 status: active
-last-reviewed: 2026-06-01
+last-reviewed: 2026-06-03
 ---
 
 # 訂單款項與發票業務情境（Notion 13 情境）
@@ -46,7 +46,7 @@ last-reviewed: 2026-06-01
 3. 訂單完成後實際金額若低於預估：
    - 建立售後服務單（OrderAdjustment phase = after_completion，金額為差額負數）
    - 業務於發票區建立退款 Payment（負數）
-   - 開立折讓單（SalesAllowance）關聯預開發票，refund_payment_id 連結退款 Payment
+   - 開立折讓單（SalesAllowance）關聯預開發票（折讓不關聯退款 Payment，反查走訂單活動紀錄）
 4. 對帳：應收 = 發票淨額 = 收款淨額（差額對齊）+ 對帳警示 banner
 
 **驗證重點**：
@@ -54,7 +54,7 @@ last-reviewed: 2026-06-01
 - 拆發票時各張獨立金額，加總等於預收
 - 售後服務單 phase 自動為 after_completion，type 範圍縮限（不可加印 / 加運費 / 急件費）
 - 折讓單關聯預開發票，發票剩餘可折讓金額正確扣減
-- 退款 Payment 不入 PaymentInvoice junction，透過 SalesAllowance.refundPaymentId 連結
+- 退款 Payment 不入 PaymentInvoice junction，且不與 SalesAllowance 建立 FK 關聯（折讓退款解耦，帳平以三軸總額比對、反查走訂單活動紀錄）
 - 三方對帳差額 = 0
 - 對帳警示 banner 顯示「訂單已於 [日期] 完成，異動於 [日期] 執行」
 
@@ -216,8 +216,7 @@ last-reviewed: 2026-06-01
 **實作解決方式**：
 1. 業務發現需退款時先建退款 Payment（金額為負數，paymentMethod = 退款）
 2. 業務於對應 Invoice 點「開立折讓」，填入金額（負數）+ 原因
-3. SalesAllowance 直接寫入「已確認」狀態（藍新 Mockup 兩段式 API）
-4. SalesAllowance.refundPaymentId 手動關聯該退款 Payment
+3. SalesAllowance 直接寫入「已確認」狀態（藍新 Mockup 兩段式 API）；折讓只關聯發票，與退款 Payment 不建關聯（反查走訂單活動紀錄）
 
 **驗證重點**：
 - 折讓金額為負數，且絕對值 ≤ 發票剩餘可折讓金額
@@ -429,7 +428,7 @@ last-reviewed: 2026-06-01
 5. 業務於發票區建立退款 Payment（負數）
 6. 視發票是否跨期：
    - 未跨期：作廢原 Invoice 重開正確金額
-   - 已跨期：開立 SalesAllowance（折讓）關聯原 Invoice + refundPaymentId 連結退款 Payment
+   - 已跨期：開立 SalesAllowance（折讓）關聯原 Invoice（折讓不關聯退款 Payment，反查走訂單活動紀錄）
 7. 業務確認客戶滿意後手動點 ticket 上「結案」推進 ticket.status → 已結案
 
 訂單**期間**（未完成）的退款仍走原 OrderAdjustment 路徑（linkedAfterSalesTicketId = null）。

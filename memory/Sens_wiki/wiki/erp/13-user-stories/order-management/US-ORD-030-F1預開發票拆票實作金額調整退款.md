@@ -67,6 +67,10 @@ notion-page-url: https://www.notion.so/3743886511fa81b2ac41d3c0011f44f5
 
 ## 校對紀錄
 
+### 第三輪（2026-06-03，折讓退款解耦）
+
+- 折讓單移除 refund_payment_id 欄位：折讓只關聯發票、與退款 Payment 完全解耦，反查走訂單活動紀錄、帳平以三軸總額比對。取代第二輪「折讓單欄位名對齊 spec 為 refund_payment_id」。
+
 ### 第二輪（2026-06-03，對齊 unify-billing 與路 C refactor-order-receivable-refund-model）
 
 - PaymentPlan / PlannedInvoice 雙實體用語收斂為單一請款期次（BillingInstallment）：預收款改記「無 BillingInstallment 關聯 + 預收（未分配）桶」、開票繼承鏈改 source_billing_installment_id。

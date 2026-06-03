@@ -9,7 +9,7 @@ business-domain:
   - billing-cash
 related-spec: openspec/specs/order-management/spec.md
 status: active
-last-reviewed: 2026-05-28
+last-reviewed: 2026-06-03
 ---
 
 # 發票法規硬約束（ezPay + 財政部 MIG）
@@ -117,8 +117,8 @@ last-reviewed: 2026-05-28
 |---------|---------|---------|
 | **Invoice 開立** | `InvoiceItem`（五欄）/ `PaymentAllocation`（核銷分配）/ `BillingInstallment`（鏈式預填、取代 PlannedInvoice）| 五欄硬約束 + 鏈式預填規則 |
 | **Invoice 作廢** | `SalesAllowance`（超過時限改折讓）/ `Payment`（退款 Payment 反向）| 作廢期限 14 天 + 超期走折讓 |
-| **SalesAllowance 確認** | `Invoice`（折讓金額）/ `Payment.refundPaymentId`（退款 Payment 反向關聯）| 折讓單跨 Invoice / Payment 紀錄 |
-| **Payment 退款（負值）** | `OrderAdjustment.adjustment_type=退款`（核可即生效）/ `SalesAllowance`（金額對齊）/ `Invoice`（作廢或折讓）| 退款款項核銷對帳應退差額（路 C：不推進 OA）+ SalesAllowance 反向 |
+| **SalesAllowance 確認** | `Invoice`（折讓金額）| 折讓只掛 Invoice（不關聯退款 Payment，反查走訂單活動紀錄）|
+| **Payment 退款（負值）** | `OrderAdjustment.adjustment_type=退款`（核可即生效）/ `SalesAllowance`（金額總額對齊，不建 FK）/ `Invoice`（作廢或折讓）| 退款款項核銷對帳應退差額（路 C：不推進 OA）+ 折讓與退款金額在對帳總額層對齊 |
 | **OrderAdjustment 已執行** | `Payment`（退款款項核銷對帳應退差額）/ `Invoice`（作廢或折讓）/ `SalesAllowance`（建立）| 核可即生效（路 C：OA 已執行不綁 Payment 累計推進、不回退）|
 | **BillingInstallment 自動建**（取代 PlannedInvoice）| `Order`（諮詢訂單收尾）/ `Invoice`（一鍵開票繼承 items[]）| 鏈式預填 + 不自動開立發票 |
 | **AfterSalesTicket 退款** | OA (responsibility=公司認賠 / 補退) / Payment / SalesAllowance | 跨售後 ticket 容器 |
