@@ -14,7 +14,7 @@ last-reviewed: 2026-06-03
 source:
   - "openspec/specs/order-management/spec.md#Requirement: 退款 OA（負項）沿用業務主管核可 + 不進期次"
   - "openspec/specs/order-management/spec.md#Requirement: 三方對帳檢視面板（差額分解 / 退款核銷應退差額）"
-  - "openspec/specs/prototype-data-store/spec.md#路 C 退款核銷應退差額 store 規格"
+  - "openspec/specs/prototype-data-store/spec.md#訂單收退款模型重構 退款核銷應退差額 store 規格"
   - "openspec/specs/state-machines/spec.md#訂單異動狀態機（已執行=核可即生效）"
 related-spec: openspec/specs/order-management/spec.md
 related-scenarios:
@@ -74,7 +74,7 @@ related-test-cases: []
 
 ## 來源（provenance）
 
-- [`openspec/specs/order-management/spec.md`](../../../../openspec/specs/order-management/spec.md) § Requirement「退款 OA（負項）沿用業務主管核可 + 不進期次」、§ Requirement「三方對帳檢視面板（差額分解 / 退款核銷應退差額）」（2026-06-02 路 C 受款—退款模型）
+- [`openspec/specs/order-management/spec.md`](../../../../openspec/specs/order-management/spec.md) § Requirement「退款 OA（負項）沿用業務主管核可 + 不進期次」、§ Requirement「三方對帳檢視面板（差額分解 / 退款核銷應退差額）」（2026-06-02 訂單收退款模型重構 受款—退款模型）
 - [`openspec/specs/state-machines/spec.md`](../../../../openspec/specs/state-machines/spec.md) § 訂單異動狀態機（已執行 = 核可即生效）
 - 從 [[US-ORD-011-訂單取消與退款]] 拆出（2026-05-22 紀律演化）
 
@@ -88,13 +88,13 @@ related-test-cases: []
 - 兩張卡透過 prerequisites 標相依性
 - 端到端串接由 07-scenarios 補情境 16
 
-### 第二輪（2026-06-03，對齊 2026-06-02-refactor-order-receivable-refund-model 路 C 模型）
+### 第二輪（2026-06-03，對齊 2026-06-02-refactor-order-receivable-refund-model 訂單收退款模型重構 模型）
 
 - 退款完成的物理錨點改為「退款付款紀錄切『已完成』（上傳匯款證明 + 款項實際完成日）」+ 對帳應退差額歸零，取代舊「訂單層標記已退款終態」機制
 - 折讓改為手動：未跨月作廢原發票重開、已跨月才於原發票手動建立折讓單並關聯退款付款紀錄；移除「系統依發票狀態自動建立折讓單」與「先記退款再開折讓」舊措辭
-- 補入路 C 機制：退款付款紀錄不進正向期次（不建入帳明細）、每筆退款各挂匯款證明、已完成不可改回處理中只能取消重建、取消後應退差額重現且 OA 維持已執行不回退
+- 補入訂單收退款模型重構 機制：退款付款紀錄不進正向期次（不建入帳明細）、每筆退款各挂匯款證明、已完成不可改回處理中只能取消重建、取消後應退差額重現且 OA 維持已執行不回退
 - 前置條件改以「對帳應退差額存在」為觸發，取代以 US-ORD-011「退款申請」訂單退款狀態為驅動（兩條退款路徑關係見 [[ORD-033-兩條退款路徑關係與main-spec舊序列收斂|ORD-033]]）
-- source / provenance 改指 2026-06-02 路 C delta，移除舊版 spec 行號與 v1.7 引用
+- source / provenance 改指 2026-06-02 訂單收退款模型重構 delta，移除舊版 spec 行號與 v1.7 引用
 
 ### 第三輪（2026-06-03，退款執行角色拍板對齊）
 

@@ -16,7 +16,7 @@ source:
   - Miles 拍板：公司現金流出方向須由業務主管把關；台灣印刷業實務分權（主管把關退款 / 退費，不把關客戶下單追加）
 implemented-by:
   - "openspec/specs/order-management/spec.md#Requirement: 訂單異動（OrderAdjustment）建立與審核"
-  - "openspec/specs/state-machines/spec.md#Requirement: 訂單異動（OrderAdjustment）狀態機（路 C 核可即生效、不綁 Payment 累計、移除已執行回退）"
+  - "openspec/specs/state-machines/spec.md#Requirement: 訂單異動（OrderAdjustment）狀態機（訂單收退款模型重構 核可即生效、不綁 Payment 累計、移除已執行回退）"
   - "openspec/specs/order-management/spec.md#Requirement: 退款 OA（負項）沿用業務主管核可 + 不進期次"
   - sens-erp-prototype/src/components/order/OrderAdjustmentEditDialog.tsx
 related-spec: openspec/specs/order-management/spec.md

@@ -71,9 +71,9 @@ notion-page-url: https://www.notion.so/3743886511fa81b2ac41d3c0011f44f5
 
 - 折讓單移除 refund_payment_id 欄位：折讓只關聯發票、與退款 Payment 完全解耦，反查走訂單活動紀錄、帳平以三軸總額比對。取代第二輪「折讓單欄位名對齊 spec 為 refund_payment_id」。
 
-### 第二輪（2026-06-03，對齊 unify-billing 與路 C refactor-order-receivable-refund-model）
+### 第二輪（2026-06-03，對齊 unify-billing 與訂單收退款模型重構 refactor-order-receivable-refund-model）
 
 - PaymentPlan / PlannedInvoice 雙實體用語收斂為單一請款期次（BillingInstallment）：預收款改記「無 BillingInstallment 關聯 + 預收（未分配）桶」、開票繼承鏈改 source_billing_installment_id。
-- 退款執行語意對齊路 C：退款 OA 業務主管核可即推進「已執行」、應收即時下調（不等退款 Payment 累計達標）；退款 Payment 切「已完成」為核銷應退差額的物理錨點，與 OA 推進解耦、linkedOrderAdjustmentId 選填。
+- 退款執行語意對齊訂單收退款模型重構：退款 OA 業務主管核可即推進「已執行」、應收即時下調（不等退款 Payment 累計達標）；退款 Payment 切「已完成」為核銷應退差額的物理錨點，與 OA 推進解耦、linkedOrderAdjustmentId 選填。
 - 三方對帳成功條件改三軸定義（應收 = 發票淨額 = 收款淨額）；退款前「應退差額」警示不可忽略、不提供忽略選項。
 - 折讓單欄位名對齊 spec 為 refund_payment_id，補跨月走折讓 / 未跨月作廢重開分支。
