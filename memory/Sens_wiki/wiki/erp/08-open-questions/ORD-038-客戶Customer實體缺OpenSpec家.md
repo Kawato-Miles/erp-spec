@@ -28,6 +28,8 @@ expected-resolution-at: CRM 模組規劃時
 
 此實體是訂單發票邏輯的上游：Order 的 `billing_company_id`（帳務主體）、`invoice_unified_number`（統編）、Invoice 的 `buyer_name` / `buyer_ubn` / `category`（B2B/B2C）等都與客戶稅務 / 發票設定相關。客戶實體無權威定義 → 後端設計訂單 / 發票資料模型時，上游客戶欄位無依據。
 
+**同類孤兒：聯絡人（Contact，廠客模組窗口聯絡人主檔）**。Order 以 `contact_id` FK 指向，但 Contact 實體同樣無 OpenSpec 家。關聯邊界已確認（2026-06-03）：Contact 僅與 Order 關聯，Invoice MUST NOT 關聯 Contact（買受人為發票開立當下去正規化快照，不回指 Contact / Customer）。Contact 完整實體定義（多窗口、公司抬頭兩層結構）應與 Customer 一併於 CRM 模組規劃時建立。
+
 ## 涉及範圍
 
 - 模組：CRM（廠客管理）/ order-management（Invoice 上游）
