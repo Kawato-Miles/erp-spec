@@ -4069,7 +4069,7 @@ erDiagram
 | 訂單類型 | order_type | 單選 | Y | | 線下 / 線上(EC) / 諮詢 |
 | 狀態 | status | 單選 | Y | | 依狀態機 |
 | 客戶 | customer_id | FK | Y | | FK -> 客戶 |
-| 負責業務 | sales_id | FK | Y | | FK -> 使用者 |
+| 負責業務 | sales_id | FK | | | FK -> 使用者；非必填（線下 / 諮詢訂單由建立業務帶入，實務上必有；線上(EC) 訂單可為空——客戶自助、無負責業務，EC 負責人機制後階段才開發，見 § 訂單負責業務改派 電商防呆）|
 | 來源需求單 | quote_request_id | FK | | | FK -> 需求單；線上訂單 / 諮詢訂單可無 |
 | 來源諮詢單 | linked_consultation_request_id | FK | | | FK -> ConsultationRequest；非空表示來自諮詢流程；諮詢訂單建立時寫入，需求單轉訂單時若需求單來源為諮詢單也寫入 |
 | 帳務公司 | billing_company_id | FK | Y | | FK -> BillingCompany；對應發票主體（藍新 MerchantID_）；從來源需求單帶入，訂單建立後不可變更 |
