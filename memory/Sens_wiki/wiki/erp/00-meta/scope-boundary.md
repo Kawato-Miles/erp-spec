@@ -21,8 +21,8 @@ last-reviewed: 2026-05-21
 | 角色 R&R | `03-roles/` | 16 角色 + [[_alignment-report]] |
 | 商業邏輯：共用規則卡（這個領域所有規則都一定要遵守的底線，可驗算）| `04-business-logic/` | 對帳一致性「應收 ＝ 發票淨額 ＝ 收款淨額」等共用規則卡（帶實例階段建）|
 | 商業邏輯：業務規則卡（具體 if-then 規則 / 計算邏輯）| `04-business-logic/` | [[齊套邏輯]]、[[數量換算規則]]、[[付款發票邏輯]] 等 |
-| 資料模型實體與欄位 | `05-entities/` | 10 個實體卡 |
-| 狀態機 | `06-state-machines/` | 9 個狀態機卡 |
+| 資料模型實體與欄位（**含業務欄位表正本**） | `05-entities/` | 10 個實體卡；業務可見欄位表為正本（2026-06-09 從 OpenSpec Data Model 遷入） |
+| 狀態機（**含狀態列舉正本**） | `06-state-machines/` | 9 個狀態機卡；狀態列舉為正本 |
 | 跨模組情境 | `07-scenarios/` | 13 個情境 |
 | OQ | `08-open-questions/` | oq-manage skill 改寫後寫入 |
 | User Story（操作步驟）| `13-user-stories/` | 各模組業務故事（兩階段：業務情境 / UI 操作）|
@@ -91,6 +91,7 @@ last-reviewed: 2026-05-21
 | 模組功能 Requirement | OpenSpec 各模組 `spec.md § Requirements` |
 | change workflow（proposal / design / tasks） | OpenSpec changes/ |
 | delta spec / archive | OpenSpec |
+| **Data Model 技術欄位備忘**（id / FK / 時間戳記） | OpenSpec 各模組 spec § Data Model（**業務欄位正本已遷至 wiki 實體卡，此處僅保留技術參照**） |
 
 → 與「收 UAT Test Case」不衝突：step-by-step Requirement 是**實作步驟視角**（功能該怎麼被做出來、含實作分解），屬 OpenSpec；UAT Test Case 是**業務驗收視角**（給定業務輸入是否得到正確的可觀察業務結果），屬 Vault `15-test-cases/`。兩者描述對象不同層——前者答「怎麼實作」、後者答「業務驗收過了沒」。UAT Test Case 的測試步驟寫**業務動作**（非 UI 點擊、非實作分解），故不落入此「step-by-step Requirement」禁區；驗收項目卡正文存 Notion，並以 `implemented-by` 往下指對應 OpenSpec Requirement 標題層（只是導航、不作為這條規則正不正確的依據）。
 
