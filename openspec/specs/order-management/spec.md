@@ -2179,75 +2179,11 @@ Migration SHALL 為冪等：重複執行不會改變已 backfill 的資料。
 
 ### Requirement: 一般收款列表編輯入口
 
-業務 / 諮詢 SHALL 可於訂單詳情頁 `OrderPaymentSection` 收款紀錄列表的每一 row 操作欄上找到單一「編輯」按鈕；點擊後系統 SHALL 開啟 `PaymentEditDialog`（重用與 OA 編輯介面內 Payment Edit 一致的 `PaymentEditPanel` 共用元件），業務於 dialog 內 SHALL 可補對帳附件、實際完成日（paidAt）、切換 paymentStatus（處理中 ↔ 已完成）並通過 UI / store 雙重驗證。
-
-阻擋規則沿用 store 既有設計（已完成 → 處理中 反向 SHALL NOT 通過、需走「取消 → 重建」）、UI 層 SHALL 在 dialog 內即時提示「請改用『取消』功能後重建新 Payment」。
-
-**設計理由**：原 change `add-payment-status-and-decouple-oa-execution` 於 store action 層完成 paymentStatus 雙態邏輯，但 OrderPaymentSection 列表 row 操作欄完全無編輯按鈕，業務若先建處理中 Payment 後無 UI 入口可補齊資料切已完成，核心 user story「客戶說已匯但對帳未到、先填一半再補齊」UI 走不通。
-
-#### Scenario: 業務先填一半再補齊資料切已完成（UI 走通）
-
-- **GIVEN** 業務於訂單詳情頁建一筆處理中 Payment P-009（amount = +30000, paymentStatus = '處理中', paidAt = null, attachments = []）
-- **WHEN** 業務於收款紀錄列表 P-009 row 操作欄點「編輯」按鈕
-- **THEN** 系統 SHALL 開啟 PaymentEditDialog 載入 P-009 當前資料
-- **WHEN** 業務補入 paidAt = 2026-05-25、上傳對帳單.pdf、切 paymentStatus → '已完成'、點擊「儲存」
-- **THEN** 系統 SHALL 通過驗證並寫入 P-009.paymentStatus = '已完成'、completedAt = now
-- **AND** 對帳收款淨額 SHALL 增加 +30000
-
-#### Scenario: 編輯 dialog 阻擋已完成 → 處理中反向切換
-
-- **GIVEN** Payment P-010 paymentStatus = '已完成'
-- **WHEN** 業務於收款列表 P-010 row 點「編輯」、嘗試切 paymentStatus → '處理中'、點擊「儲存」
-- **THEN** 系統 SHALL 在 dialog 內即時顯示驗證錯誤「已完成 Payment 不可改回處理中，請改用『取消』功能後重建新 Payment」
-- **AND** 系統 SHALL NOT 寫入變更
-- **AND** P-010.paymentStatus SHALL 維持 '已完成'
-
-#### Scenario: OrderPaymentSection 與 OA 編輯介面共用 PaymentEditPanel
-
-- **GIVEN** PaymentEditPanel 共用元件已從 OrderAdjustmentEditDialog 抽出至獨立檔
-- **WHEN** 業務分別於（a）OrderPaymentSection 列表 row 點「編輯」、（b）OA 編輯 dialog 內 Payment row 點「編輯」
-- **THEN** 兩處 dialog 載入內容 SHALL 一致（同一 PaymentEditPanel 元件）
-- **AND** 驗證邏輯、UI 行為、阻擋規則皆完全相同
+OrderPaymentSection 收款紀錄列表每筆 row 操作欄 SHALL 有「編輯」按鈕，開啟 PaymentEditDialog（共用 PaymentEditPanel）。阻擋規則：已完成 → 處理中反向不通過，需走取消重建。UI 呈現見 DESIGN.md §10.1.8。
 
 ### Requirement: 退款 Payment 切已完成顯示銷貨折讓弱提示（二者並存）
 
-退款型 Payment（paymentMethod = '退款'）切「已完成」事件後，系統 SHALL 顯示非阻擋式弱提示「此筆退款已完成，若訂單有對應發票請考慮開立 SalesAllowance（銷貨折讓）」，提示位置採二者並存：
-
-1. **PaymentEditDialog inline banner**：切已完成成功後在 dialog 內顯示 banner，提供「我知道了（關閉提示）」與「前往 Invoice 詳情頁建 SalesAllowance」兩個 action button
-2. **訂單詳情頁對帳面板下方 sticky 提示**：訂單詳情頁載入時若該訂單存在「至少一筆未取消已完成退款 Payment 且訂單對應 Invoice 累計 - 已確認 SalesAllowance 累計 > 退款 Payment 累計絕對值」（即有發票尚未折讓對應）→ SHALL 顯示 sticky 提示，提供「前往建 SalesAllowance」action button
-
-弱提示 SHALL NOT 阻擋業務任何操作、僅提供建議行動。對應 SalesAllowance 建立後 sticky 提示 SHALL 自動消失。
-
-**設計理由**：兩處提示時序互補：dialog inline 處理即時情境（業務注意力在 dialog 內、看到 banner 立即決定下一步）、sticky 處理「業務當下沒空、離開 dialog 後忘了」情境（刷新訂單詳情頁仍能看到）。對應 SalesAllowance 建立後 sticky 消失避免重複嘮叨。
-
-#### Scenario: 業務切退款 Payment 已完成 PaymentEditDialog inline banner
-
-- **GIVEN** 退款 Payment P-011（amount = -5000, paymentStatus = '處理中'）
-- **WHEN** 業務於 OA 編輯介面內點 P-011「編輯」、補資料、切 paymentStatus → '已完成'、點擊「儲存」並成功通過驗證
-- **THEN** PaymentEditDialog SHALL 顯示 inline banner「此筆退款已完成，若訂單有對應發票請考慮開立 SalesAllowance」
-- **AND** banner SHALL 提供「我知道了」「前往 Invoice 詳情頁」兩個按鈕
-- **AND** banner SHALL NOT 阻擋業務關閉 dialog 或其他操作
-
-#### Scenario: 訂單詳情頁對帳面板 sticky 提示出現
-
-- **GIVEN** 訂單已開立 Invoice 累計 = 1000、SalesAllowance 累計 = 0
-- **AND** 該訂單已有未取消已完成退款 Payment 累計 = -500
-- **WHEN** 業務刷新訂單詳情頁
-- **THEN** 對帳面板下方 SHALL 顯示 sticky 提示「此訂單有已完成退款 -500 元、但 Invoice 累計尚未折讓對應」
-- **AND** sticky 提示 SHALL 提供「前往建 SalesAllowance」action button
-
-#### Scenario: 對應 SalesAllowance 建立後 sticky 提示消失
-
-- **GIVEN** 訂單已完成退款 -500、後續建 SalesAllowance -500 已確認
-- **WHEN** 業務刷新訂單詳情頁
-- **THEN** sticky 提示 SHALL NOT 再顯示（已折讓對應）
-- **AND** 對帳面板維持顯示對帳數字 + 處理中 / 已完成 breakdown
-
-#### Scenario: 補收 Payment 切已完成不顯示弱提示
-
-- **GIVEN** 補收 Payment P-012（amount = +20000, paymentMethod = '銀行轉帳', paymentStatus = '處理中'）
-- **WHEN** 業務於 OA 編輯介面內切 P-012 paymentStatus → '已完成'
-- **THEN** PaymentEditDialog SHALL NOT 顯示銷貨折讓弱提示（補收非退款情境不需折讓）
+退款 Payment 切已完成後，系統 SHALL 顯示非阻擋式弱提示引導開立 SalesAllowance。提示位置：PaymentEditDialog inline banner + 訂單詳情頁 sticky 提示。UI 呈現見 DESIGN.md §10.1.9。
 
 ### Requirement: 處理中 Payment 老化追蹤
 
@@ -3043,43 +2979,7 @@ v1.13 既有 Payment Requirement 主體沿用，但 `paymentPlanId` 欄位 **REM
 
 ### Requirement: 訂單列表印件子層展開
 
-訂單列表（OrderList）SHALL 支援以可展開列（inline expandable row）在父層訂單下方展開該訂單的印件子層，讓業務順著「訂單入口」直接查看印件的審稿與印製狀態，無需進入訂單詳情頁。父層訂單既有欄位與行為 SHALL 維持不變，子層為新增能力。
-
-子層 SHALL 顯示該訂單下全部印件（「已棄用」狀態除外），欄位包含：印件名稱（含印件類型標籤與協力標籤）、審稿狀態、印件狀態、交期、操作（共 5 欄）。為符合列表頁子表規範（DESIGN.md：子表 ≥6 欄或含圖片 SHALL 改 Side Panel，避免 row 高度爆增），子層維持 5 欄且不含縮圖——縮圖於「檢視」開啟的印件詳情 Side Panel 內呈現。子層 SHALL NOT 顯示生產相關欄位（生產數量／預計產線／難易度／工單數／排程時間／負責印務），亦 SHALL NOT 重複顯示父層訂單已有的案名／客戶／訂單編號。
-
-本 Requirement SHALL NOT 改變訂單列表既有的訂單可見範圍（業務角色範圍過濾議題見 OQ ORD-024）；訂單列表與印件總覽兩個印件入口的分工邊界見 OQ ORD-023。
-
-#### Scenario: 展開訂單列查看印件子層
-- **WHEN** 業務在訂單列表點擊某訂單列的展開箭頭
-- **THEN** 該訂單列下方 inline 展開印件子層，逐列顯示該訂單的印件，欄位依序為印件名稱（含印件類型標籤與協力標籤）、審稿狀態、印件狀態、交期、操作（共 5 欄、不含縮圖）
-
-#### Scenario: 子層同時呈現審稿與印件兩維度狀態
-- **WHEN** 印件子層渲染某一印件
-- **THEN** 審稿狀態欄顯示該印件的審稿維度狀態、印件狀態欄顯示印製維度狀態，兩欄分開呈現，使業務能一次回答客戶「稿子審到哪」與「印件做到哪」
-
-#### Scenario: 子層顯示訂單下全部印件含已完成
-- **WHEN** 訂單含已送達或製作完成的印件
-- **THEN** 子層仍顯示這些印件（不沿用印件總覽「製作完成隱藏」的過濾），僅「已棄用」印件除外，確保客戶查詢已完成印件（如簽收狀況）時業務查得到
-
-#### Scenario: 搜尋印件名稱命中時過濾並自動展開
-- **WHEN** 業務在訂單列表搜尋框輸入印件名稱或編號
-- **THEN** 列表過濾為僅含命中印件的訂單、重置至第一頁、命中的訂單自動展開、命中的印件列以高亮標示
-
-#### Scenario: 搜尋同時涵蓋訂單層與印件層欄位
-- **WHEN** 業務輸入的關鍵字符合訂單編號／客戶／案名，或符合任一印件的名稱／編號
-- **THEN** 該訂單保留於過濾結果中；若因印件層命中而保留，則自動展開該訂單並高亮命中印件
-
-#### Scenario: 清空搜尋後收合並還原全集
-- **WHEN** 業務清空搜尋框
-- **THEN** 所有展開的子層收合、列表還原為未過濾的全部訂單
-
-#### Scenario: 子層檢視開啟印件詳情且內容完整
-- **WHEN** 業務點擊子層某印件的「檢視」
-- **THEN** 開啟印件詳情 Side Panel，且「相關工單」與「審稿紀錄」區塊正確顯示對應資料（非空白）
-
-#### Scenario: 訂單尚無印件時的展開行為
-- **WHEN** 訂單尚未建立任何印件
-- **THEN** 該訂單列的展開箭頭呈現不可展開狀態，或展開後顯示「此訂單尚無印件」空狀態提示
+訂單列表 SHALL 支援 inline expandable row 展開印件子層（5 欄：印件名稱 / 審稿狀態 / 印件狀態 / 交期 / 操作），支援搜尋命中自動展開。UI 呈現見 DESIGN.md §10.1.10。
 
 ### Requirement: 訂單列表角色可見範圍
 
@@ -3105,80 +3005,15 @@ v1.13 既有 Payment Requirement 主體沿用，但 `paymentPlanId` 欄位 **REM
 
 ### Requirement: 發票 Tab 雙層展開（發票列表 + 折讓單子層）
 
-訂單詳情頁發票 Tab 的發票列表 SHALL 採雙層展開呈現（沿用訂單列表印件子層的 `ErpExpandableRow` 範式）。父層 SHALL 精簡為 8 欄：toggle / 發票號碼 / 類別 / 金額（含稅）/ 買受人 / 狀態 / 折讓衍生標籤 / 操作；「對帳編號（藍新自訂）」與「開立人 / 時間」SHALL 移入發票詳情 Side Panel，不在父層顯示。
-
-子層展開內容 SHALL 為該發票的折讓單（SalesAllowance）清單，精簡為 5 欄：折讓號 / 金額 / 原因 / 狀態 / 操作（作廢折讓 + 上傳回簽檔）。折讓的退款 Payment 關聯 SHALL 以「已關聯退款 / 未關聯退款」小標記呈現（不另立欄位）；該發票剩餘可折讓金額 SHALL 顯示於子層區塊標題。
-
-發票級操作（檢視 / 開立折讓 / 作廢發票 / 下載）SHALL 集中於父層操作欄；子層 MUST NOT 放置發票級操作按鈕。操作欄的點擊 MUST NOT 觸發父列展開 / 收合。
-
-#### Scenario: 父層精簡欄位與操作欄
-
-- **WHEN** 業務於訂單詳情頁切換至發票 Tab
-- **THEN** 發票列表父層 SHALL 顯示 8 欄（toggle / 發票號碼 / 類別 / 金額（含稅）/ 買受人 / 狀態 / 折讓衍生 / 操作）
-- **AND** 父層 SHALL NOT 顯示「對帳編號」與「開立人 / 時間」欄
-- **AND** 父層操作欄 SHALL 含「檢視」按鈕；發票狀態為「開立」時另含下載 / 開立折讓 / 作廢發票
-
-#### Scenario: 展開有折讓的發票顯示折讓單子層
-
-- **GIVEN** 一張已開立發票有至少一筆已確認折讓
-- **WHEN** 業務點擊該發票父列展開
-- **THEN** 子層 SHALL 顯示折讓單清單 5 欄（折讓號 / 金額 / 原因 / 狀態 / 操作）
-- **AND** 已關聯退款 Payment 的折讓 SHALL 顯示「已關聯退款」標記、未關聯者顯示「未關聯退款」標記
-- **AND** 子層區塊標題 SHALL 顯示該發票剩餘可折讓金額
-
-#### Scenario: 展開無折讓的發票顯示空狀態
-
-- **WHEN** 業務展開一張尚無折讓的發票
-- **THEN** 子層 SHALL 顯示空狀態文字「尚無折讓紀錄」（已作廢且無折讓者顯示「此發票已作廢，無折讓紀錄」）
-- **AND** 子層 MUST NOT 出現「開立折讓」按鈕（發票級操作僅於父層操作欄）
+發票 Tab 的發票列表 SHALL 採雙層展開：父層 8 欄（發票）、子層 5 欄（折讓單）。發票級操作集中於父層操作欄。UI 呈現見 DESIGN.md §10.1.11。
 
 ### Requirement: 發票詳情 Side Panel（InvoiceDetailSidePanel）
 
-發票列表父層操作欄的「檢視」按鈕 SHALL 開啟發票詳情 Side Panel（唯讀，size=2xl / 800px，對齊 Figma node `8977:269607` 規格）。Side Panel SHALL 依 DESIGN.md §1.5 透過 SidePanel 共用元件組（SidePanelBody / SidePanelSection / SidePanelInfoTable / SidePanelTable）組裝，MUST NOT 使用詳情頁專用卡（ErpDetailCard 等）。
-
-Side Panel SHALL 分四區塊：(1) 發票資訊（含對帳編號、藍新開立序號、防偽隨機碼、課稅別、開立人 / 時間、備註；作廢發票補作廢原因 / 作廢人 / 時間）、(2) 買受人資訊（類別 / 名稱 / 統編 / 地址 / 信箱；B2C 補載具 / 捐贈）、(3) 品項明細（五欄唯讀：商品名稱 / 數量 / 單位 / 單價 / 小計 + 銷售額 / 稅額 / 含稅總額）、(4) 對應收款（derived 自 PaymentAllocation，純展示）。
-
-Side Panel 與發票列表子層的職責邊界：Side Panel SHALL 承載發票本身詳情，MUST NOT 含折讓單清單（折讓單清單僅於父層子層展開），兩者不重複。
-
-#### Scenario: 點檢視開啟發票詳情 Side Panel 四區塊
-
-- **WHEN** 業務點擊發票列表父層操作欄「檢視」
-- **THEN** 系統 SHALL 開啟發票詳情 Side Panel
-- **AND** Side Panel SHALL 顯示「發票資訊」「買受人資訊」「品項明細」「對應收款」四區塊標題
-- **AND** Side Panel 標題列 SHALL 顯示發票號碼 + 類別 Badge + 狀態 Badge；發票狀態為「開立」時提供「下載發票」動作
-
-#### Scenario: 品項明細五欄唯讀呈現
-
-- **WHEN** 業務於 Side Panel 檢視品項明細區
-- **THEN** 品項 SHALL 以五欄唯讀表格呈現（商品名稱 / 數量 / 單位 / 單價 / 小計）
-- **AND** 單價欄標題 SHALL 依發票類別標示稅基（B2B 未稅 / B2C 含稅）
-- **AND** 區塊底部 SHALL 顯示銷售額（未稅）/ 稅額 / 含稅總額
-
-#### Scenario: 對應收款 derived 與先開後付提示
-
-- **WHEN** 一張發票尚無核銷收款（先開後付情境）
-- **THEN** Side Panel 對應收款區 SHALL 顯示提示「尚未核銷收款」（不顯示空表格）
-- **AND** 已有核銷分配時 SHALL 列出收款 ID / 收款方式 / 收款時間 / 分配金額並顯示合計
+發票「檢視」按鈕 SHALL 開啟發票詳情 Side Panel（唯讀 / 800px），含發票資訊 / 買受人 / 品項明細 / 對應收款四區塊。UI 呈現見 DESIGN.md §10.1.12。
 
 ### Requirement: 發票開立 Dialog 版型（Figma 9041:297881 對齊）
 
-訂單詳情頁開立電子發票 Dialog SHALL 對齊 Figma node `9041:297881` 版型：Dialog 寬度 720px、最大高度 800px；標題列（header）與動作列（footer 取消 / 確認）SHALL 固定，中間表單內容區 SHALL 可獨立滾動；表單區塊之間（基本資訊 / 商品明細 / 備註）SHALL 以分隔線區分。
-
-開立 Dialog 的商品明細 SHALL 透過五欄輸入元件（`InvoiceItemTable`：商品名稱 / 數量 / 單位 / 單價 / 小計）填寫，落實「發票品項符合 ezPay 與電子發票法規硬約束」Requirement；小計 SHALL 由系統計算（數量 × 單價）且唯讀。MUST NOT 以僅有「商品名稱 + 金額」兩欄、數量 / 單位寫死的簡化形式呈現。
-
-#### Scenario: 開立 Dialog 版型（固定 header/footer + 滾動 body + 分隔線）
-
-- **WHEN** 業務於發票 Tab 點擊「手動開立」開啟開立 Dialog
-- **THEN** Dialog 寬度 SHALL 為 720px、標題列與取消 / 確認動作列 SHALL 固定
-- **AND** 中間表單內容超出時 SHALL 可獨立滾動（header / footer 不隨之捲動）
-- **AND** 基本資訊 / 商品明細 / 備註區塊之間 SHALL 以分隔線區分
-
-#### Scenario: 商品明細五欄輸入
-
-- **WHEN** 業務於開立 Dialog 編輯商品明細
-- **THEN** 商品明細 SHALL 提供五欄（商品名稱 / 數量 / 單位 / 單價 / 小計）
-- **AND** 業務 SHALL 可自由輸入數量與選擇單位（不再被寫死為數量 1 / 單位「式」）
-- **AND** 小計欄 SHALL 由系統計算（數量 × 單價）並唯讀顯示
+發票開立 Dialog SHALL 720px 寬、固定 header/footer、表單可滾動。商品明細 SHALL 透過五欄輸入元件填寫。UI 呈現見 DESIGN.md §10.1.13。
 
 ### Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單
 
