@@ -9,9 +9,9 @@ description: >
     4. 每 20+ commit 後建議
     5. raw 累積 ≥ 10 張 status=raw 時自動建議（維度 11 觸發）
     6. 本月 daily review 缺 ≥ 工作日 50% 時自動建議（維度 12 觸發）
-  範圍：**只稽核 ERP_Vault**。OpenSpec spec 層稽核由 `doc-audit` skill 處理。
+  範圍：**只稽核 ERP_Vault**。
   輸出：對話報告 + 寫入 `memory/Sens_wiki/wiki/erp/00-meta/audit-log.md`（追加式、禁覆寫）。
-  不適用：OpenSpec spec 稽核（用 doc-audit）、Prototype 程式碼稽核（用 e2e 測試）、純對話內容稽核。
+  不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）、純對話內容稽核。
 ---
 
 # vault-audit
@@ -31,7 +31,7 @@ ERP_Vault 自審工具。**禁止運行於 ERP_Vault 以外的目錄**。
 | 範圍 | 處理 |
 |------|------|
 | ERP_Vault 內所有 .md / .canvas | **本 skill 處理** |
-| OpenSpec spec / change / archive | 用 `doc-audit` skill |
+| OpenSpec spec / change / archive | 不在範圍 |
 | Prototype src/ | 不在範圍（e2e 測試處理）|
 | memory/ 其他目錄 | 不在範圍（保留為 Prototype / shared 範疇）|
 
@@ -521,7 +521,7 @@ done
 |-------|---------|
 | `oq-manage` | 維度 6 / 8 發現 inline OQ / 過期 OQ 時，建議觸發 oq-manage mode D / C |
 | `vault-insight` | 維度 8 / 9 / 10 發現系統性議題時，建議觸發 vault-insight |
-| `doc-audit` | doc-audit 處理 OpenSpec 層，本 skill 處理 Vault 層；可順序執行（先 doc-audit → 再 vault-audit）|
+| OpenSpec 層稽核 | 本 skill 只處理 Vault 層，OpenSpec 層不在範圍 |
 
 ---
 

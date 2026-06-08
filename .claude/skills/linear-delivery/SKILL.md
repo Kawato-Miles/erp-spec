@@ -12,7 +12,7 @@ description: >
     4. 狀態密集模組禁交付沒有狀態機 UML 的文件；禁畫 spec 未定義的狀態轉換（捏造）
     5. 來源未定義時禁自編規則填入交付文件 MUST 停下來記 oq-manage mode B + 標「另案處理」
     6. 交付前 MUST 跑 references/rubric.md 4 維度評分；任一維度未通過禁發布；維度 4（真實性）為一票否決
-  不適用：GitHub Issues 交付（用 notion-to-github）、OpenSpec / wiki 內部一致性稽核（用 doc-audit / vault-audit）、規劃前 know-how 稽核（用 erp-planning-pre-check）。
+  不適用：GitHub Issues 交付（用 notion-to-github）、Vault 整體健康稽核（用 vault-audit）、規劃前 know-how 稽核（用 erp-planning-pre-check）。
 ---
 
 # Linear 交付與評分稽核（linear-delivery）
@@ -30,7 +30,7 @@ description: >
 |------|-------|
 | 交付到 **Linear**（project + issue）+ 評分把關 | 本 skill |
 | 交付到 **GitHub** Issues | `notion-to-github` |
-| OpenSpec / wiki 內部一致性稽核 | `doc-audit` / `vault-audit` |
+| Vault 整體健康稽核 | `vault-audit` |
 | 規劃前 know-how 稽核 | `erp-planning-pre-check` |
 
 ---

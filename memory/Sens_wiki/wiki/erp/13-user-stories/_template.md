@@ -7,7 +7,7 @@ last-reviewed: 2026-05-31
 # User Story 卡範本（操作步驟層）
 
 > 給 [[erp-user-story]] skill 與 Miles 手動撰寫時複製套用。這類卡的定位：操作步驟（單一角色執行某條規則的步驟，照著做的流程），見 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]]。
-> 本範本同時是「寫的時候照著填」與「事後照著檢查」。底部「自審稽核清單」同一份既是提交前自檢、也是 [[wiki-schema#維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）|vault-audit 維度 13]] / [[doc-audit]] 的稽核維度。
+> 本範本同時是「寫的時候照著填」與「事後照著檢查」。底部「自審稽核清單」同一份既是提交前自檢、也是 [[wiki-schema#維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）|vault-audit 維度 13]] 的稽核維度。
 > 規範正本：[[wiki/erp/13-user-stories/README]]（命名 / 來源）+ [[wiki-schema#type=user-story]]（frontmatter 正式 schema + 維度 13 lint）+ [[business-logic-writing-guide#4.0 各類卡的單一職責（六層由大到細、只連不重抄）|writing-guide § 4.0]]（各類卡的職責邊界）。本範本是上述三者在 user-story 這層的展開，不衝突。
 >
 > **單階段（2026-06-01 自兩階段收斂）**：user story 只寫業務情境（含 Gherkin 成功條件），不含 UI 操作層。介面驗收下移 [[erp-test-case]]（業務級）+ Prototype 端對端測試（UI 點擊層）。已移除 `stage` / `ui-binding` 欄位與「UI 操作（易變層）」段。
@@ -60,7 +60,7 @@ source:                                         # 往上指依據＝正確性根
 implemented-by:                                 # 往下指被誰實作＝導航 / 覆蓋（不承載正確性），可選
   - "openspec/specs/<module>/spec.md"
   - "sens-erp-prototype/tests/e2e/<spec>.spec.ts"  # Prototype 端對端測試（UI 點擊層歸此）
-provenance-commit: <SHA>                         # 可選但建議：上次對齊的 commit，供 doc-audit stale 偵測
+provenance-commit: <SHA>                         # 可選但建議：上次對齊的 commit，供 stale 偵測
 related-spec: openspec/specs/<module>/spec.md   # 過渡期保留（語意＝implemented-by 弱版）；新卡優先填 source / implemented-by
 related-scenarios:                              # 上層情境：本故事被哪個端到端情境串起（可選）
   - "[[../../07-scenarios/<情境卡>#<段>]]"
@@ -215,7 +215,7 @@ source-gap: false
 迭代脈絡見 [[business-logic-changelog#US-XX-099 <標題>]]。
 ```
 
-## 自審稽核清單（撰寫完逐項打勾，同為 doc-audit / vault-audit 維度 13 稽核基準）
+## 自審稽核清單（撰寫完逐項打勾，同為 vault-audit 維度 13 稽核基準）
 
 > 一份兩用：寫的時候照著勾、審的時候照著驗。對齊 [[wiki-schema#維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）|維度 13]] + [[wiki-schema#維度 14：卡類型內容職責邊界（2026-05-28 新增）|維度 14]] + [[business-logic-writing-guide#六、營運驗證寫法 該做 / 不該做|writing-guide § 六]]。分四面向。
 

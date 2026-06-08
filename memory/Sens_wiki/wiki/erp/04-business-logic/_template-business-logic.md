@@ -8,7 +8,7 @@ last-reviewed: 2026-05-31
 
 > 給 Miles 手動撰寫、或 agent 在 `/opsx:propose` 背景對齊 / `erp-planning-pre-check` 修補階段，新建或重寫 `04-business-logic/` 卡時複製套用。
 >
-> **這份範本同時兩用**：寫的時候照著填、事後照著檢查。撰寫時依章節骨架填佔位符；事後 `doc-audit` / `vault-audit` 依底部「Lint 自審稽核清單」勾稽。完整撰寫範式（每節為什麼這樣寫）見 [[business-logic-writing-guide]]；卡類型邊界 lint 依據見 [[wiki-schema#十一、卡類型內容職責邊界]]；分層定位見 [[wiki-architecture#business-logic 內部分層：共用規則 vs 業務規則]]。本範本不重述範式內容，只提供可複製骨架——範式衝突時以 [[business-logic-writing-guide]] 為準。
+> **這份範本同時兩用**：寫的時候照著填、事後照著檢查。撰寫時依章節骨架填佔位符；事後 `vault-audit` 依底部「Lint 自審稽核清單」勾稽。完整撰寫範式（每節為什麼這樣寫）見 [[business-logic-writing-guide]]；卡類型邊界 lint 依據見 [[wiki-schema#十一、卡類型內容職責邊界]]；分層定位見 [[wiki-architecture#business-logic 內部分層：共用規則 vs 業務規則]]。本範本不重述範式內容，只提供可複製骨架——範式衝突時以 [[business-logic-writing-guide]] 為準。
 
 ## 一、這類卡的定位（撰寫前先判斷）
 
@@ -50,7 +50,7 @@ source:
 #                 不承載正確性，可多條。
 implemented-by:
   - "openspec/specs/<模組>/spec.md"
-# provenance-commit：可選但建議（防同一條規則散在多張卡、改一處漏其他處）。記上次對齊的 commit，供 doc-audit stale 偵測。
+# provenance-commit：可選但建議（防同一條規則散在多張卡、改一處漏其他處）。記上次對齊的 commit，供 stale 偵測。
 provenance-commit: <SHA 或留空>
 # related-spec：過渡期保留（語意等同 implemented-by 的弱版）。補不出 source 時暫標 source-gap。
 related-spec: openspec/specs/<模組>/spec.md
@@ -81,7 +81,7 @@ related-prototype: sens-erp-prototype/src/types/<...>.ts  # 若 Prototype 有，
 
 ## 規則與營運動機
 
-> 逐條規則，每條用「意圖 → 規則 → 為什麼」呈現（讓 doc-audit / 三視角審查可勾稽「推理有沒有跳過既有規則」）：
+> 逐條規則，每條用「意圖 → 規則 → 為什麼」呈現（讓三視角審查可勾稽「推理有沒有跳過既有規則」）：
 > 意圖（這條規則想達成的業務目的）→ 規則（精確陳述，可含條件 / 觸發 / 動作）→ 營運動機（連回痛點 / 角色 / KPI，並引用更上層卡作為既有一定要成立的規則）。
 > **每條規則的定位點用業務語意命名**（如 `#補收免審`），不用流水號（R1）、不重排、不重用——改規則只改內容、定位點不變，連結不斷。
 > 該寫：if-then 要件本體 + 動機。
@@ -411,7 +411,7 @@ related-spec: openspec/specs/<模組 X>/spec.md
 
 ## 六、Lint 自審稽核清單（撰寫完逐項打勾 ＝ 事後稽核基準）
 
-> 這份清單同時兩用：撰寫完作者逐項自審；`doc-audit` / `vault-audit`（維度 5 / 6 / 14）依同一份勾稽。任一項未過即不可 commit。
+> 這份清單同時兩用：撰寫完作者逐項自審；`vault-audit`（維度 5 / 6 / 14）依同一份勾稽。任一項未過即不可 commit。
 
 ### 共同骨架（所有層）
 - [ ] frontmatter 共同 5 欄全填（type / module / business-domain / status / last-reviewed）。

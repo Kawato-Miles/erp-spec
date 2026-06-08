@@ -122,4 +122,4 @@ ERP_Vault/
 - **Obsidian Desktop**：人工編輯介面 / Graph view / Canvas / Backlinks panel
 - **Obsidian CLI**（需 Obsidian app 開著）：Vault 稽核 / 查詢一律走此（見操作契約 [[CLAUDE]] § 五）——`search` / `backlinks` / `orphans` / `deadends` / `unresolved` / `eval` 等；**不以 grep 當 vault 稽核手段**
 - **kepano obsidian skills**：`obsidian-markdown`（wiki link / callout / frontmatter）、`obsidian-bases`（`.base`）、`json-canvas`（`.canvas`）、`obsidian-cli`（CLI 高階查詢包裝）
-- **Sens 自建 skills**（見 `.claude/skills/`）：`oq-manage`、`vault-audit`、`vault-insight`、`vault-ingest`、`daily-brief`、`weekly-review`、`erp-user-story`、`erp-planning-pre-check`、`doc-audit`、`misjudgement-record`、`wiki-amend` 等
+- **Sens 自建 skills**（見 `.claude/skills/`）：`oq-manage`、`vault-audit`、`vault-insight`、`vault-ingest`、`daily-brief`、`weekly-review`、`erp-user-story`、`erp-planning-pre-check`、`misjudgement-record`、`wiki-amend` 等

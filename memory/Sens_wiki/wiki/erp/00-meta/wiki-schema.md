@@ -315,7 +315,7 @@ implemented-by:                              # 往下層 = 導航 / 覆蓋，可
   - "openspec/specs/<module>/spec.md"
   - "sens-erp-prototype/tests/e2e/<spec>.spec.ts"   # 若已實作
 notion-page-url: <Notion ERP Test Case DB 該卡 URL>   # 必填（正文落點，Vault 不放正文；推送後填）
-provenance-commit: <SHA>                     # 可選但建議：上次對齊 commit，供 doc-audit stale 偵測
+provenance-commit: <SHA>                     # 可選但建議：上次對齊 commit，供 stale 偵測
 last-passed-at: YYYY-MM-DD                    # 可選：上次 UAT 驗收通過日期（執行後回填）
 ---
 ```
@@ -665,7 +665,7 @@ related-changes:                   # 本期涉及的 openspec change
 - 規則的連結指向位置用**業務語意命名**（如 `#補收免審`、`#諮詢取消半額退費`），**不用流水號**（如 `#R1`）
 - 理由：流水號重排 / 重用會讓連回來的連結斷掉；用業務語意命名時改規則只改內容、定位點不變，跨卡引用不斷鏈
 - 引用方式：`[[<業務邏輯卡>#<業務語意定位點>]]`（如 `[[付款發票邏輯#補收免審]]`）
-- 既有 `#R1` 等流水號定位點 MUST 一次性遷移為業務語意命名（遷移機制見 `wiki-amend` skill），遷移後由 vault-audit / doc-audit lint 偵測斷鏈兜底
+- 既有 `#R1` 等流水號定位點 MUST 一次性遷移為業務語意命名（遷移機制見 `wiki-amend` skill），遷移後由 vault-audit lint 偵測斷鏈兜底
 
 ### Insight 卡
 

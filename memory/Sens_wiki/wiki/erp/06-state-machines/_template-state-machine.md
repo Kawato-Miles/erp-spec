@@ -6,7 +6,7 @@ last-reviewed: 2026-05-31
 
 # 狀態卡撰寫範本（state-machine）
 
-> 給 Claude / Miles 撰寫 `06-state-machines/` 狀態機卡時複製套用，**同時**作為 [[doc-audit]] / [[vault-audit]] 事後稽核此類卡的勾稽尺（一份兩用：寫時照填、審時照勾）。
+> 給 Claude / Miles 撰寫 `06-state-machines/` 狀態機卡時複製套用，**同時**作為 [[vault-audit]] 事後稽核此類卡的勾稽尺（一份兩用：寫時照填、審時照勾）。
 >
 > 分層定位：依 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]]，state-machine 屬「狀態」這一層——把上層 [[business-logic-writing-guide#4.0 各類卡的單一職責|business-logic 規則]]展開為「資料層面的狀態變化」。本卡只描述狀態，**不寫規則本體、不寫計算公式、不寫跨情境例子、不寫營運動機長篇論述**（規則正本在 `04-business-logic`，本卡 wiki link 指過去）。
 >
@@ -36,7 +36,7 @@ last-reviewed: 2026-05-31
 | 三、定位點命名 | 狀態名 / 轉換用業務語意命名（如 `#已執行`、`#補收正項路徑`），不用流水號、不重排、不重用，見 § 三 § 狀態轉換指引 |
 | 四、轉換→為什麼→一個例子 | 本層以「轉換 → 營運動機 → 1 例子」三件套呈現轉換動機；完整 if-then 規則論證留 business-logic 正本卡，本卡只引用 |
 | 五、本層特有章節 | `## 狀態清單`（含「對應營運需求」欄）+ `## 狀態轉換`（ASCII 圖）+ `## 轉換條件與觸發事件` + `## 關鍵狀態 / 轉換的營運動機` + `## 與其他狀態機 / 實體的關係`，見 § 三 |
-| 六、自審稽核點 | § 五 自檢清單（撰寫檢查表 = doc-audit / vault-audit 稽核維度同一份）|
+| 六、自審稽核點 | § 五 自檢清單（撰寫檢查表 = vault-audit 稽核維度同一份）|
 | 七、硬規則 vs 彈性 | § 六 標注本層「不可違反」與「可因案調整」兩層 |
 
 ---
@@ -64,7 +64,7 @@ source:
 implemented-by:
   # 往「下」= 被誰實作 / 導航。指 OpenSpec Requirement 標題層 / prototype / test-case。不負責這張卡對不對。
   - "openspec/specs/state-machines/spec.md#<Requirement 標題或 § 段落>"
-# provenance-commit: <SHA>    # 可選但建議：記上次對齊的 commit，供 doc-audit stale 偵測
+# provenance-commit: <SHA>    # 可選但建議：記上次對齊的 commit，供 stale 偵測
 related-spec: openspec/specs/state-machines/spec.md   # 過渡期保留，語意等同 implemented-by 弱版
 ---
 
@@ -253,7 +253,7 @@ related-spec: openspec/specs/state-machines/spec.md
 
 ## 五、自審稽核清單（撰寫完逐項打勾，同時是事後稽核基準）
 
-> 一份兩用：作者撰寫完打勾；[[doc-audit]] / [[vault-audit]] 事後依此勾稽。共同項對齊共同骨架第六項，特有項對齊本層職責（[[wiki-schema#維度 14：卡類型內容職責邊界（2026-05-28 新增）]]）。
+> 一份兩用：作者撰寫完打勾；[[vault-audit]] 事後依此勾稽。共同項對齊共同骨架第六項，特有項對齊本層職責（[[wiki-schema#維度 14：卡類型內容職責邊界（2026-05-28 新增）]]）。
 
 ### 共同項（所有卡通用）
 

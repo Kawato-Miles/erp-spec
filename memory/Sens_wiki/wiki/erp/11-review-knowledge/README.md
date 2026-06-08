@@ -66,7 +66,7 @@ last-reviewed: 2026-05-28
 │                                  Phase 4 PM 集中收斂 + verify consistency
 │  └─ `/opsx:verify` 前 ──────→ [[multi-agent-discussion-protocol]]（過渡期保留，最終驗收前審查）
 │
-└─ 已 verify 完成 / 純歸檔 ───→ 不啟動，跑 doc-audit skill
+└─ 已 verify 完成 / 純歸檔 ───→ 不啟動，跑 vault-audit skill
 ```
 
 **dispatch prompt 組裝**：協調者呼叫任一 sub-agent 時，prompt MUST 依 [[dispatch-prompt-template]] 5 區塊組裝。

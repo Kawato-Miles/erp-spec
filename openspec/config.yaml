@@ -59,7 +59,6 @@ context: |
   - 建立 change 前：查詢 Notion OQ DB 列出相關未解 OQ（oq-manage skill）
   - 建立 proposal 前：觸發 senior-pm agent（前期介入模式），確認問題框架
   - specs/design 完成後：三視角審查（senior-pm + ceo-reviewer + erp-consultant 平行執行）
-  - 歸檔後：觸發 doc-audit 檢查跨檔案一致性
   - Notion 推送：累積數個 change 後手動決定推送時機
 
 rules:
@@ -112,5 +111,5 @@ rules:
     - "[2026-05-19] design.md / proposal.md 原處 OQ 條目改為「→ 對應 Vault OQ：[[<MODULE>-<NNN>-<簡述>]]」雙向引用，不刪除原 section"
     - "[2026-05-19] 已解 OQ 在 design.md 內保留「決議與理由」標注；若決議影響跨 change 商業邏輯，同步遷 Vault OQ 卡並標 status: answered"
     - "[2026-05-19] 上述步驟全部完成後才能 archive；oq-manage skill mode D 可協助批次處理"
-    - "[2026-05-30] archive 後 MUST 驗證 ADDED 殘留：對每個 delta ## ADDED Requirement，確認是否語意取代某既有 main spec Requirement / Scenario；若是，手動清理被取代的舊描述（避免新舊並存矛盾，converge 9 CRITICAL 教訓；doc-audit v1.5/v1.6 維度）"
-    - "[2026-05-30] archive 後 MUST 對齊 wiki 商業邏輯正本：依 pre-check 產出的「wiki 回補清單」，將 ERP_Vault 商業邏輯卡（04-business-logic / 05-entities / 06-state-machines / 07-scenarios / 13-user-stories）對齊本 change 已定案內容（wiki 為商業邏輯正本、openspec 為實作規格，定案後正本不可停留舊版）；由 doc-audit 擴展為 openspec + wiki 雙層稽核兜底"
+    - "[2026-05-30] archive 後 MUST 驗證 ADDED 殘留：對每個 delta ## ADDED Requirement，確認是否語意取代某既有 main spec Requirement / Scenario；若是，手動清理被取代的舊描述（避免新舊並存矛盾，converge 9 CRITICAL 教訓）"
+    - "[2026-05-30] archive 後 MUST 對齊 wiki 商業邏輯正本：依 pre-check 產出的「wiki 回補清單」，將 ERP_Vault 商業邏輯卡（04-business-logic / 05-entities / 06-state-machines / 07-scenarios / 13-user-stories）對齊本 change 已定案內容（wiki 為商業邏輯正本、openspec 為實作規格，定案後正本不可停留舊版）"

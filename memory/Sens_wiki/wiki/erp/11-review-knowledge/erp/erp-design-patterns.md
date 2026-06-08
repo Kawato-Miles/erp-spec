@@ -6,7 +6,7 @@ last-reviewed: 2026-05-19
 
 # ERP 資料模型設計模式（5 種）
 
-> 從 add-prepress-review change（2026-04-19）三視角審查與 doc-audit 萃取。適用於所有 ERP 模組設計。
+> 從 add-prepress-review change（2026-04-19）三視角審查萃取。適用於所有 ERP 模組設計。
 > **遷移歷史**：原存於 `memory/shared/principles.md` § 六（2026-04-19 ~ 2026-05-19）；2026-05-19 遷至本卡，原檔保留 stub 指針。
 
 ## 一、適用範圍
@@ -88,7 +88,7 @@ last-reviewed: 2026-05-19
 
 ## 七、新增設計模式的流程
 
-未來若從 change 審查 / doc-audit 萃取出新的設計模式：
+未來若從 change 審查萃取出新的設計模式：
 
 1. 確認模式跨多個模組普遍適用（不是單一模組特例）
 2. 在本卡新增第 6+ 條

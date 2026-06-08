@@ -111,16 +111,9 @@
 
 ### Step 1：執行自動稽核
 
-```bash
-# ERP 稽核腳本
-bash .claude/skills/doc-audit/scripts/audit-erp-docs.sh
-```
+觸發 `vault-audit` skill 執行 Vault 健康稽核。
 
-稽核涵蓋：
-- `memory/erp/*.md` 與 CLAUDE.md 快速索引的一致性
-- 關鍵 ERP 檔案與 .claude/skills/erp-spec/SKILL.md 的一致性
-
-**預期輸出**：✓ 通過或 ⚠️ 有警告（需補充索引）
+**預期輸出**：稽核報告 + audit-log 追加
 
 ### Step 2：檢查清單（對照迭代前定義的驗證標準）
 
@@ -164,7 +157,7 @@ feat: [ERP 模組] 迭代 Spec
 - Notion 資料欄位 DB ↔ Spec：✓ 一致
 
 ### ③ 自動稽核
-- 執行：bash .claude/skills/doc-audit/scripts/audit-erp-docs.sh
+- 執行：vault-audit skill
 - 結果：✓ 通過
 
 ## 解決與新增的 OQ
@@ -208,10 +201,9 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
 
 ### 稽核命令
 
-```bash
-# ERP 稽核腳本
-bash .claude/skills/doc-audit/scripts/audit-erp-docs.sh
+觸發 `vault-audit` skill 執行 Vault 健康稽核。
 
+```bash
 # 檢查 OQ 狀態
 cat open-questions.md | grep "^##"
 ```

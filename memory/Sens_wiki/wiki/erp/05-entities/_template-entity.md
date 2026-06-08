@@ -6,7 +6,7 @@ last-reviewed: 2026-05-31
 
 # 資料卡撰寫範本（entity 層）
 
-> 給 Miles 與 agent 撰寫 `05-entities/` 卡時複製套用，也是 doc-audit / vault-audit 稽核此類卡的勾稽基準（一份兩用：撰寫時照著填、事後照著勾）。
+> 給 Miles 與 agent 撰寫 `05-entities/` 卡時複製套用，也是 vault-audit 稽核此類卡的勾稽基準（一份兩用：撰寫時照著填、事後照著勾）。
 >
 > 分層定位：entity = 資料層的「資料實體」載體（見 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）|wiki-architecture § 分層體系]]）。職責極窄——只承載**欄位 / 關聯 / 狀態名**，行為規則指向 [[business-logic-writing-guide|business-logic]] 卡、狀態細節指向 state-machine 卡。
 > 共同骨架見 [[business-logic-writing-guide]] § 四（共通骨架）+ [[business-logic-writing-guide#4.0 各類卡的單一職責（六層由大到細、只連不重抄）|§ 4.0（各類卡的單一職責）]] + [[wiki-schema]] § 四（frontmatter）+ § 十一（內容職責邊界）。本範本是這套骨架在資料層的落地。
@@ -34,7 +34,7 @@ implemented-by:
   # 往下指被誰實作（導航用）。指 OpenSpec Requirement 標題層 / prototype 型別檔。不決定這張卡對不對。
   - "openspec/specs/<模組>/spec.md#Data Model: <實體名>"
   - "sens-erp-prototype/src/types/<...>.ts"
-provenance-commit: <SHA>   # 可選但建議：記上次對齊 commit，供 doc-audit stale 偵測
+provenance-commit: <SHA>   # 可選但建議：記上次對齊 commit，供 stale 偵測
 # --- 過渡期相容（既有卡尚未遷移 source/implemented-by 時保留，語意等同 implemented-by 弱版）---
 # related-spec: openspec/specs/<模組>/spec.md
 # related-prototype: sens-erp-prototype/src/types/<...>.ts
@@ -146,7 +146,7 @@ provenance-commit: <SHA>   # 可選但建議：記上次對齊 commit，供 doc-
 
 ## Lint 自檢清單（撰寫完逐項打勾，亦為稽核基準）
 
-> 同一份既是撰寫檢查表，也是 doc-audit / vault-audit 稽核維度（對齊 [[wiki-schema]] § 六維度 5 / 14、§ 十一 entity row）。
+> 同一份既是撰寫檢查表，也是 vault-audit 稽核維度（對齊 [[wiki-schema]] § 六維度 5 / 14、§ 十一 entity row）。
 
 - [ ] **frontmatter 共同欄全填**：type=entity / module / business-domain / status / last-reviewed。
 - [ ] **溯源欄**：`source` 不指同層 entity / 下層 user-story / OpenSpec；entity 通常指承載其行為規則的 business-logic 正本卡或外部原點。`implemented-by` 指 OpenSpec Data Model / prototype 型別檔（過渡期可用 related-spec / related-prototype 代）。

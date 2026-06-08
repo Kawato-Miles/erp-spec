@@ -23,7 +23,6 @@ last-reviewed: 2026-05-28
 
 **不適用**：
 - 純查詢術語 / 狀態機（不涉及規劃）
-- 既有 OpenSpec spec 直接 archived 後的 doc-audit（屬 doc-audit skill）
 - Vault 整體健康度稽核（屬 vault-audit skill）
 
 ## 二、雙軸稽核框架
@@ -204,11 +203,10 @@ last-reviewed: 2026-05-28
 |------|------|
 | [[business-domain-taxonomy]] | 6 領域定義 + 觸發詞清單（本框架軸 1 的依據）|
 | [[wiki-schema]] | frontmatter `business-domain` 欄位定義（本框架的執行載體）|
-| [[wiki/erp/00-meta/index]] | LLM 載入決策入口（本框架 Step 2 的對照表）|
+| [[erp_index]] | LLM 載入決策入口（本框架 Step 2 的對照表）|
 | `vault-audit` skill | Vault 整體健康稽核（12 維度）— 與本框架不同：vault-audit 是「日常 Vault 健康」、本框架是「規劃前準備」|
 | `vault-insight` skill | 跨主題模式提煉 — 與本框架互補 |
 | `oq-manage` skill | OQ 管理 — 本框架 Step 4 缺漏項標 OQ 走 oq-manage mode B |
-| `doc-audit` skill | OpenSpec spec 稽核 — 與本框架互補 |
 | `erp-user-story` skill | User Story 撰寫紀律 — 本框架軸 2 的「User Story」卡類型稽核依此 skill 紀律 |
 | `misjudgement-record` skill | 誤審記錄 — 本框架識別到誤審反模式時觸發 |
 | [[audit-failure-patterns]] | 稽核五大反模式追蹤卡（規劃中，本框架 § 9.1 紀錄正本）|

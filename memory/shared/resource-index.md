@@ -51,7 +51,6 @@
 | **ERP User Story Skill**（兩階段撰寫紀律：業務情境 / UI 操作，含 INVEST 自審、中英夾雜 lint、Notion 推送 mode C）| `.claude/skills/erp-user-story/SKILL.md` |
 | OQ 管理 Skill（含去重）| `.claude/skills/oq-manage/SKILL.md` |
 | **誤審記錄 Skill**（三視角審查 agent 誤審案例庫，含分類 / 去重 / 四要素提取）| `.claude/skills/misjudgement-record/SKILL.md` |
-| 文件稽核 Skill（含自我演化，聚焦 OpenSpec 層）| `.claude/skills/doc-audit/SKILL.md` |
 | **Vault 自審 Skill**（10 維度稽核，產 audit-log）| `.claude/skills/vault-audit/SKILL.md` |
 | **Vault Insight Skill**（跨主題模式 + 下一步建議，產 12-insights）| `.claude/skills/vault-insight/SKILL.md` |
 | **Vault Ingest Skill**（Raw 素材承接與精練，Mode A/B/C + Anti-Model-Collapse 四道防線）| `.claude/skills/vault-ingest/SKILL.md` |

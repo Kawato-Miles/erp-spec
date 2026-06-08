@@ -8,7 +8,7 @@ last-reviewed: 2026-05-31
 
 > 角色卡（`type=role`，`03-roles/`）撰寫範本。對齊 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）|wiki-architecture 分層體系]]（角色屬「流程／狀態／角色／資料」這一層：把上層的營運價值與業務規則，展開為「誰做什麼、誰把關什麼」的執行形式）。
 >
-> 這份範本同時是「寫的時候照著填」和「事後照著檢查」：撰寫時照著填，事後 `doc-audit` / `vault-audit` 照著勾。共同骨架保證六層範本一致——不同人／agent 寫同類卡落在同一結構。
+> 這份範本同時是「寫的時候照著填」和「事後照著檢查」：撰寫時照著填，事後 `vault-audit` 照著勾。共同骨架保證六層範本一致——不同人／agent 寫同類卡落在同一結構。
 >
 > 與其他規約的分工：[[wiki-schema#四、各 type 必填 Frontmatter 欄位|wiki-schema § 四]] 管 frontmatter 必填欄位；[[wiki-schema#十一、卡類型內容職責邊界（2026-05-28 新增）|wiki-schema § 十一]] 管卡類型內容邊界；[[business-logic-writing-guide#4.0 各類卡的單一職責（六層由大到細、只連不重抄）|business-logic-writing-guide § 4.0]]＋[[business-logic-writing-guide#4.5 role 卡（角色職責，前置營運痛點）|§ 4.5]] 管 role 卡正文撰寫範式。本範本是上述三者在角色卡這一層的交集落地。
 
@@ -44,7 +44,7 @@ source:                          # 往上指依據（這張卡為什麼對）。
   - "[[../01-products/operating-principles#<分權方向>]] 或 <外部素材：Notion 角色權責表 / OpenSpec user-roles spec / Miles 拍板>"
 implemented-by:                  # 往下指被誰實作 / 導航。指 OpenSpec spec 檔層，不綁標題錨點 / prototype / test-case，不承載正確性
   - "openspec/specs/user-roles/spec.md"
-provenance-commit: <SHA>         # 可選但建議：記上次對齊的 commit，供 doc-audit stale 偵測
+provenance-commit: <SHA>         # 可選但建議：記上次對齊的 commit，供 stale 偵測
 
 # ── 過渡期保留欄（既有 16 張 role 卡現用，遷移期不強制移除）──
 related-spec: openspec/specs/user-roles/spec.md   # 語意上等同 implemented-by 的弱版
@@ -255,7 +255,7 @@ last-reviewed: <YYYY-MM-DD>
 
 ## 六、自審稽核清單（寫的時候照著填、事後照著檢查：撰寫完逐項打勾 = 稽核基準）
 
-> 同一份既是撰寫檢查表，也是 `doc-audit` / `vault-audit` 維度 14（卡類型內容職責邊界）的稽核維度。撰寫完逐項勾選。
+> 同一份既是撰寫檢查表，也是 `vault-audit` 維度 14（卡類型內容職責邊界）的稽核維度。撰寫完逐項勾選。
 
 **frontmatter**
 - [ ] 共同欄全填（type=role / module / business-domain / status / last-reviewed）。
