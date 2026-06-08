@@ -12,7 +12,9 @@
 | 模組 | OpenSpec Spec | Notion BRD（發布版本） | 版本 | 狀態 |
 |------|--------------|----------------------|------|------|
 | 需求單 | `openspec/specs/quote-request/spec.md` | https://www.notion.so/3293886511fa80998ac0e8cdf555da68 | v3.5 | 草稿 |
-| 訂單管理 | `openspec/specs/order-management/spec.md` | https://www.notion.so/32c3886511fa806bad41d755349b0567 | v1.19 | 草稿 |
+| 訂單管理 | `openspec/specs/order-management/spec.md` | https://www.notion.so/32c3886511fa806bad41d755349b0567 | v1.20 | 草稿 |
+| 訂單帳務 | `openspec/specs/order-billing/spec.md` | — | v0.1 | 草稿 |
+| 訂單異動 | `openspec/specs/order-adjustment/spec.md` | — | v0.1 | 草稿 |
 | 諮詢單 | `openspec/specs/consultation-request/spec.md` | — | v0.6 | 草稿 |
 | 售後服務 | `openspec/specs/after-sales-ticket/spec.md` | — | v0.8 | 草稿 |
 | 工單管理 | `openspec/specs/work-order/spec.md` | https://www.notion.so/32c3886511fa80f98a43def401d1edce | v0.7 | 草稿 |
