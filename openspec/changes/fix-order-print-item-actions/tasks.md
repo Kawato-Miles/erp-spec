@@ -22,9 +22,9 @@
   - 2.4.8 出貨方式（Input text）
   - 2.4.9 預計交貨日期（Input type=date；條件 disabled 見 task 2.6）
   - 2.4.10 包裝說明（Input text）
-- [ ] 2.5 金額類欄位渲染（永遠 disabled）：
-  - 2.5.1 購買數量、單位、成本總額、報價總額以 disabled Input 呈現
-  - 2.5.2 金額類區塊下方顯示引導文字：「金額變更請走：建立訂單異動單（OrderAdjustment）；若需全然取消訂單請使用訂單頂部取消訂單按鈕」
+- [ ] 2.5 規格 / 金額欄位渲染（依 route-C § 訂單階段印件規格編輯時機，本 change 不另定金額規則）：
+  - 2.5.1 規格備註、難易度、購買數量、單位、報價單價：終態前（status ∉ {訂單完成, 已取消}）可編輯、應收即時重算；終態後 disabled。沿用 route-C 既有 `EditOrderPrintItemPanel` 對這些欄位的處理，本 change 僅確保非金額屬性欄位一同渲染
+  - 2.5.2 終態下金額欄位 disabled 時顯示引導文字：「訂單已完成，金額變更請走『訂單異動』Tab（補收 / 退款）」
 - [ ] 2.6 動態鎖定邏輯：
   - 2.6.1 `orderStatus === '已取消' || orderStatus === '訂單完成'` → Panel 所有可編輯欄位 disabled，頂部顯示提示「訂單已結束，無法編輯」
   - 2.6.2 印件印製狀態為「已送達」時，預計交貨日期欄位 disabled
@@ -57,10 +57,10 @@
 
 - [ ] 5.1 於 `ErpPageHeader` actions 區塊中，「取消訂單」按鈕左側新增 Lucide `Info` 圖示按鈕（14px）
 - [ ] 5.2 包裝為 shadcn `Tooltip` 或 `Popover`，hover 時顯示變更決策樹
-- [ ] 5.3 Tooltip 內容依 spec 「訂單變更路徑導引」Requirement 定義的 4 條路徑：
-  - 印件加項 → 建立訂單異動單（加印追加）
-  - 印件減項（部分退款）→ 建立訂單異動單（退印 / 補退）
-  - 規格改動 → 印件列編輯按鈕
+- [ ] 5.3 Tooltip 內容依 spec 「訂單變更路徑導引」Requirement 定義（對齊 route-C 兩階段）：
+  - 印件加項 / 減項（訂單未完成）→ 印件列編輯按鈕直接改數量 / 單價，應收即時重算
+  - 金額變更（訂單已完成 / 取消）→ 建立訂單異動單（補收 / 退款）
+  - 規格 / 非金額屬性 → 印件列編輯按鈕
   - 全然取消訂單 → 右側取消訂單按鈕
 - [ ] 5.4 視覺對齊訂單頁其他 info / 說明圖示的顏色與大小
 
@@ -77,7 +77,7 @@
 - [ ] 7.1 Push 至 `sens-erp-prototype` main 分支
 - [ ] 7.2 於 Lovable 部署環境驗證：點擊印件名稱 link 正確導向 `/print-items/:id`
 - [ ] 7.3 於 Lovable 環境驗證：操作欄不再出現 Trash 與 Eye 按鈕
-- [ ] 7.4 於 Lovable 環境驗證：點擊編輯按鈕開啟 Panel，非金額欄位可改、金額欄位 disabled
+- [ ] 7.4 於 Lovable 環境驗證：點擊編輯按鈕開啟 Panel，非金額屬性欄位可改；金額 / 規格欄位於終態前可改、終態後 disabled（依 route-C）
 - [ ] 7.5 於 Lovable 環境驗證：終態訂單下編輯按鈕 disabled
 - [ ] 7.6 於 Lovable 環境驗證：編輯儲存後 ActivityLog 顯示 `PRINT_ITEM_EDITED` 事件
 - [ ] 7.7 於 Lovable 環境驗證：訂單頂部 info icon hover 顯示 4 條變更路徑
@@ -91,7 +91,7 @@
   - 8.2.1 業務誤建是否也可走訂單異動單退印（而非強制取消訂單）
   - 8.2.2 數量微調 +/- 5% 的高頻場景是否應放寬白名單
   - 8.2.3 編輯併發保護（業務 A 編輯中、業務 B 改狀態）
-- [ ] 8.3 於 Notion Follow-up DB 更新 ORD-001 狀態：原決議「金額減少 → 取消訂單 + 重新走需求單」已被 refactor-order-adjustment-and-cleanup change 修訂為「金額減少 → 訂單異動單退印 / 補退」，應結案註記
+- [ ] 8.3 於 Notion Follow-up DB 更新 ORD-001 狀態：金額減少路徑現行依 route-C —— 訂單未完成直接於印件編輯 Panel 調降（應收即時重算）、訂單完成 / 取消後走訂單異動單退款 / 補收，應結案註記
 - [ ] 8.4 執行 `doc-audit` 檢查跨檔案一致性
 - [ ] 8.5 更新 `Sens` repo 的 `CLAUDE.md` 若有需要（例如訂單管理 spec 版本號）
 

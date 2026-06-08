@@ -1,52 +1,42 @@
 ## ADDED Requirements
 
-### Requirement: 訂單印件編輯
+### Requirement: 訂單印件非金額屬性編輯
 
-系統 SHALL 於訂單詳情頁提供「編輯印件」入口，允許業務修改印件的非金額類欄位；金額類欄位於訂單階段一律唯讀，如需變更金額須改走訂單異動單（OrderAdjustment，由 [refactor-order-adjustment-and-cleanup change](../refactor-order-adjustment-and-cleanup/proposal.md) 定義）或取消訂單流程。
+系統 SHALL 於訂單詳情頁印件清單提供「編輯印件」入口，允許業務編輯印件的**非金額屬性欄位**。印件的規格與金額欄位（`spec_note` / `pi_ordered_qty` / `unit` / `difficulty_level` / `price_per_unit`）之可編輯性與時機，依本 spec § Requirement: 訂單階段印件規格編輯時機（以「訂單完成 / 已取消」終態為界、終態前可直接改）定義，本 Requirement **不重述、不複寫**該規則，僅補充同一編輯入口（`EditOrderPrintItemPanel`）對非金額屬性欄位的編輯能力。
+
+> 註：原「金額類欄位於訂單階段一律唯讀、金額變更須走 OrderAdjustment」之設計前提，已由 route-C（refactor-order-receivable-refund-model，§ 訂單階段印件規格編輯時機「廢止」段）明文取代為「訂單完成前金額可直接改、不需走 OA；金額異動走 OA 僅適用訂單完成後」。本 change 對齊該現行規則。
 
 **編輯入口**：
-- 於印件列操作欄顯示「編輯（Pencil）」按鈕，點擊開啟編輯 Panel（Side Panel，右側抽屜）
-- 訂單狀態為「已取消」或「訂單完成」時，編輯按鈕 SHALL 以 disabled 呈現；其餘訂單狀態下皆可編輯
+- 於印件列操作欄顯示「編輯（Pencil）」按鈕，點擊開啟編輯 Panel（Side Panel，右側抽屜），與 route-C 定義之 `EditOrderPrintItemPanel` 為同一入口
+- 訂單狀態為「已取消」或「訂單完成」（終態）時，編輯按鈕 SHALL 以 disabled 呈現；其餘訂單狀態下皆可編輯
 
-**編輯欄位白名單**（依「非金額類可改、金額類不可改」規則）：
+**非金額屬性欄位白名單**（編輯時機同 route-C 兩階段：終態前可改、終態唯讀）：
 
 | 欄位類別 | 欄位 | 可編輯條件 |
 |---------|------|-----------|
 | 資訊類 | 印件名稱、員工備註 | 非終態訂單（排除「已取消 / 訂單完成」） |
-| 規格類 | 難易度、免審稿 flag、規格備註、印件檔案備註 | 非終態訂單 |
+| 規格類 | 免審稿 flag、印件檔案備註（clientNote） | 非終態訂單 |
 | 生產設定類 | 預計產線、出貨方式、包裝說明 | 非終態訂單 |
-| 客戶承諾類 | 預計交貨日期 | 非終態訂單且印件未送達（印製維度非「已送達」）|
-| 金額類 | 購買數量、單位、成本總額、報價總額 | **永遠唯讀** |
+| 客戶承諾類 | 預計交貨日期 | 非終態訂單且印件印製維度非「已送達」 |
 
-**金額類欄位的 UI 呈現**：Panel 中金額類欄位 SHALL 以 disabled 樣式呈現，並於該區塊下方顯示引導文字：「金額變更請走：建立訂單異動單（OrderAdjustment）；若需全然取消訂單請使用訂單頂部取消訂單按鈕」
+> 規格與金額欄位（規格備註、難易度、購買數量、單位、報價單價）的編輯一律走 route-C § 訂單階段印件規格編輯時機，不在本 Requirement 白名單重複列舉。
 
-**ActivityLog 記錄**：每次成功儲存編輯，系統 SHALL 於訂單 `ActivityLog` 寫入一筆事件，內容 MUST 包含：
-- 事件類型：`PRINT_ITEM_EDITED`
-- 編輯者（actor）
-- 編輯時間（timestamp）
-- 目標印件 id 與印件編號
-- 修改欄位清單 + 每個欄位的 before / after 值摘要（文字類超過 80 字以省略號截斷）
+**ActivityLog 記錄**：每次成功儲存非金額屬性編輯，系統 SHALL 於訂單 `ActivityLog` 寫入一筆事件，內容 MUST 包含：事件類型 `PRINT_ITEM_EDITED`、編輯者（actor）、編輯時間（timestamp）、目標印件 id 與印件編號、修改欄位清單 + 每個欄位的 before / after 值摘要（文字類超過 80 字以省略號截斷）。
 
-#### Scenario: 業務編輯印件的非金額欄位
+#### Scenario: 業務編輯印件的非金額屬性欄位
 
 - **WHEN** 業務於訂單詳情頁點擊印件列的編輯按鈕
-- **AND** 修改「規格備註」與「預計交貨日期」後按「確認」
+- **AND** 修改「預計產線」與「預計交貨日期」後按「確認」
 - **THEN** 系統 SHALL 更新該印件的對應欄位
 - **AND** 系統 SHALL 於訂單 ActivityLog 寫入一筆 `PRINT_ITEM_EDITED` 事件，包含修改欄位清單與 before / after 摘要
 - **AND** 印件列 SHALL 立即顯示新值
 - **AND** 所有引用該印件的下游單據（工單、生產任務、出貨單）SHALL 同步顯示新值
 
-#### Scenario: 金額類欄位在 Panel 中永遠唯讀
-
-- **WHEN** 業務開啟任何非終態訂單的印件編輯 Panel
-- **THEN** 購買數量、單位、成本總額、報價總額四個欄位 SHALL 以 disabled 樣式呈現
-- **AND** 這四個欄位下方區塊 SHALL 顯示引導文字，說明金額變動走訂單異動單（OrderAdjustment）
-
 #### Scenario: 預計交貨日期在印件已送達後鎖定
 
 - **WHEN** 印件印製狀態為「已送達」
 - **THEN** Panel 中預計交貨日期欄位 SHALL 以 disabled 呈現
-- **AND** 其餘可編輯欄位仍可編輯
+- **AND** 其餘可編輯非金額欄位仍可編輯
 
 #### Scenario: 終態訂單的編輯按鈕禁用
 
@@ -100,7 +90,7 @@
 
 **已移除的觸發點**（本 change 移除）：
 - 操作欄「檢視（Eye）」按鈕：與印件名稱 link 功能完全重疊，本 change 移除以簡化互動，所有檢視需求透過印件名稱 link 進入
-- 操作欄「刪除（Trash）」按鈕：訂單階段印件生命週期變更皆有專屬路徑（訂單異動單 / 取消訂單 / 編輯 / 未來的棄用新建），印件層直接刪除無合法業務情境，本 change 完全移除
+- 操作欄「刪除（Trash）」按鈕：訂單階段印件生命週期變更皆有專屬路徑（終態前直接編輯 / 終態後訂單異動單 / 取消訂單 / 未來的棄用新建），印件層直接刪除無合法業務情境，本 change 完全移除
 
 **事件冒泡規則**：所有操作欄按鈕的 onClick MUST 呼叫 `e.stopPropagation()`，避免冒泡至列層 `onToggle`（ErpExpandableRow 的展開 / 收合觸發）。
 
@@ -119,15 +109,15 @@
 
 ### Requirement: 訂單變更路徑導引
 
-系統 SHALL 於訂單詳情頁頂部「取消訂單」按鈕旁提供「變更路徑導引」的 info icon，hover 時顯示業務常見變更情境對應的路徑，協助業務在 Trash 按鈕移除後仍能快速識別正確路徑。
+系統 SHALL 於訂單詳情頁頂部「取消訂單」按鈕旁提供「變更路徑導引」的 info icon，hover 時顯示業務常見變更情境對應的路徑，協助業務在 Trash 按鈕移除後仍能快速識別正確路徑。導引內容 SHALL 對齊本 spec § 訂單階段印件規格編輯時機之兩階段規則（終態前金額可直接改、終態後走訂單異動單）。
 
 **導引內容**（info icon hover 時顯示）：
 
 | 變更情境 | 正確路徑 |
 |---------|---------|
-| 印件加項 | 點擊訂單頁「建立訂單異動單」（adjustment_type=加印追加） |
-| 印件減項（僅退部分金額，保留訂單）| 點擊訂單頁「建立訂單異動單」（adjustment_type=退印 / 補退） |
-| 規格改動（不影響金額） | 點擊印件列編輯按鈕 |
+| 印件加項 / 減項（訂單未完成）| 點印件列編輯按鈕，直接調整購買數量 / 報價單價，應收即時重算（route-C 終態前可直接改）|
+| 規格 / 非金額屬性改動 | 點印件列編輯按鈕 |
+| 金額變更（訂單已完成 / 已取消）| 建立訂單異動單（OrderAdjustment 補收 / 退款）|
 | 全然取消訂單 | 點擊此處「取消訂單」按鈕 |
 
 **呈現形式**：info icon 採用 Lucide `Info` 圖示，大小 14px，顏色對齊訂單頁現有說明圖示；hover 以 tooltip 或 popover 呈現上表內容。
@@ -135,8 +125,8 @@
 #### Scenario: 業務 hover info icon 顯示變更決策樹
 
 - **WHEN** 業務 hover 訂單詳情頁頂部「取消訂單」按鈕旁的 info icon
-- **THEN** 系統 SHALL 顯示包含四種變更情境與對應路徑的 tooltip / popover
-- **AND** tooltip 內文 SHALL 與本 Requirement 定義的內容一致
+- **THEN** 系統 SHALL 顯示包含上述變更情境與對應路徑的 tooltip / popover
+- **AND** tooltip 內文 SHALL 與本 Requirement 定義的內容一致，且與 § 訂單階段印件規格編輯時機 的兩階段規則一致（終態前直接改、終態後走 OA）
 
 ### Requirement: 訂單印件檢視入口驗證
 
