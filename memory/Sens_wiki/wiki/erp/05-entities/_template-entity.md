@@ -8,7 +8,7 @@ last-reviewed: 2026-05-31
 
 > 給 Miles 與 agent 撰寫 `05-entities/` 卡時複製套用，也是 vault-audit 稽核此類卡的勾稽基準（一份兩用：撰寫時照著填、事後照著勾）。
 >
-> 分層定位：entity = 資料層的「資料實體」載體（見 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）|wiki-architecture § 分層體系]]）。職責極窄——只承載**欄位 / 關聯 / 狀態名**，行為規則指向 [[business-logic-writing-guide|business-logic]] 卡、狀態細節指向 state-machine 卡。
+> 分層定位：entity = 資料層的「資料實體」載體（見 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）|wiki-architecture § 分層體系]]）。職責：**承載業務可見欄位（正本）/ 實體關聯 / 狀態名**，行為規則指向 [[business-logic-writing-guide|business-logic]] 卡、狀態細節指向 state-machine 卡。欄位表是商業需求正本——欄位的新增與修改是商業決策，直接在實體卡維護，不經 OpenSpec change 工作流。
 > 共同骨架見 [[business-logic-writing-guide]] § 四（共通骨架）+ [[business-logic-writing-guide#4.0 各類卡的單一職責（六層由大到細、只連不重抄）|§ 4.0（各類卡的單一職責）]] + [[wiki-schema]] § 四（frontmatter）+ § 十一（內容職責邊界）。本範本是這套骨架在資料層的落地。
 
 複製以下 `--- 模板開始 ---` 與 `--- 模板結束 ---` 之間的內容，存為 `05-entities/<實體中文名>.md`。
@@ -31,8 +31,8 @@ source:
   # 嚴禁指同層 entity / 下層 user-story / OpenSpec。entity 的 source 通常指承載其行為規則的 business-logic 正本卡。
   - "[[<更上層卡，如某 business-logic 規則卡>]] 或 <外部依據>"
 implemented-by:
-  # 往下指被誰實作（導航用）。指 OpenSpec Requirement 標題層 / prototype 型別檔。不決定這張卡對不對。
-  - "openspec/specs/<模組>/spec.md#Data Model: <實體名>"
+  # 往下指被誰實作（導航用）。指 prototype 型別檔。不決定這張卡對不對。
+  # 欄位正本在本卡「欄位（業務可見）」段，不再指向 OpenSpec Data Model。
   - "sens-erp-prototype/src/types/<...>.ts"
 provenance-commit: <SHA>   # 可選但建議：記上次對齊 commit，供 stale 偵測
 # --- 過渡期相容（既有卡尚未遷移 source/implemented-by 時保留，語意等同 implemented-by 弱版）---
@@ -61,17 +61,23 @@ provenance-commit: <SHA>   # 可選但建議：記上次對齊 commit，供 stal
 
 <2-3 句。例：「售後服務單是訂單已完成後客訴 / 不良 / 規格不符的受理容器，獨立於訂單異動，讓完成後的善後事件有專屬的受理 → 處理 → 結案軌跡。」>
 
-## 核心欄位
+## 欄位（業務可見）
 
-> 該寫：實體的關鍵欄位 + 一句話說明。非顯然營運理由的欄位，在「說明」欄補一句「為什麼要存這個欄位」（如 `payment_terms_note`「從需求單帶入並鎖定——避免成交後收款條件被竄改」）。欄位承載的業務規則用 wiki link 指向 business-logic 卡。
-> 不該寫：完整型別 / 長度 / 約束（屬 OpenSpec Data Model，本卡用 implemented-by 導航）、欄位背後的計算公式（→ business-logic）。
+> **本段是該實體的欄位正本**。記錄業務使用者在介面上看得到的所有欄位。欄位的新增與修改是商業決策，直接在本卡維護，不經 OpenSpec change 工作流。
+>
+> 該寫：介面上看得到的欄位 + 說明 + 欄位形態 + 來源 + 可否修改。非顯然的欄位在「說明」欄補「為什麼要存這個欄位」。欄位承載的業務規則用 wiki link 指向 business-logic 卡。
+> 不該寫：純技術欄位（系統識別碼 id / 外鍵 FK / 時間戳記 created_at / updated_at / 技術遺留欄位）、欄位背後的計算公式（→ business-logic）。
+>
+> **欄位形態參考值**：文字 / 文字（N 字）/ 單選 / 多選 / 日期 / 日期時間 / 金額 / 金額（含稅 / 未稅）/ 數字 / 整數 / 是 / 否 / 連結（指向某實體）/ 檔案上傳（多檔）/ 單選（人員）/ 單選（唯讀）
+>
+> 欄位多的實體可依業務主題分子表（如「基本資料」「審核相關」「金額組成」「備註」），每個子表用 `###` 子標題。
 
-| 欄位 | 說明 |
-|------|------|
-| `id` / `<業務編號>` | 系統 ID / 使用者看見的編號 |
-| `status` | 狀態（見 [[<state-machine 卡>]]）|
-| `<欄位 A>` | <說明；承載的規則見 [[<business-logic 卡>]]> |
-| `<欄位 B（非顯然）>` | <說明 + 一句「為什麼要存這個欄位」> |
+| 介面欄位 | 說明 | 欄位形態 | 來源 | 可否修改 |
+|---------|------|---------|------|---------|
+| <業務編號> | 系統自動產生的唯一編號 | 文字（唯讀）| 系統自動 | 不可 |
+| <狀態> | 目前的生命週期階段 | 單選（依 [[<state-machine 卡>]] 定義）| 系統 / 人工推進 | 依狀態機規則 |
+| <欄位 A> | <說明> | <欄位形態> | <從哪來> | <誰能改、什麼時候鎖定> |
+| <欄位 B（非顯然）> | <說明 + 為什麼要存這個欄位；規則見 [[<business-logic 卡>]]> | <欄位形態> | <從哪來> | <可否修改 + 鎖定條件> |
 
 ## 關鍵關聯
 
@@ -101,11 +107,12 @@ provenance-commit: <SHA>   # 可選但建議：記上次對齊 commit，供 stal
 
 ## 來源
 
-> 連回可獨立驗證的外部出處（OpenSpec Data Model / 業務情境 / 訪談 / 法規 / 拍板 OQ）。禁指向其他同層 entity 卡當正確性來源。
+> 連回可獨立驗證的外部出處（業務情境 / 訪談 / 法規 / 拍板 OQ）。禁指向其他同層 entity 卡當正確性來源。
 > 末行固定加「迭代脈絡見 …」——正文零迭代史（迭代史進 changelog）。
 
-- OpenSpec [<模組>/spec.md](../../../../openspec/specs/<模組>/spec.md) § Data Model
-- Prototype `src/types/<...>.ts`
+- 欄位正本：本卡「欄位（業務可見）」段落
+- 行為規格：[<模組>/spec.md](../../../../openspec/specs/<模組>/spec.md)
+- Prototype 實作：`src/types/<...>.ts`
 - 迭代脈絡見 [[business-logic-changelog#<實體中文名>]]
 ```
 
@@ -149,10 +156,10 @@ provenance-commit: <SHA>   # 可選但建議：記上次對齊 commit，供 stal
 > 同一份既是撰寫檢查表，也是 vault-audit 稽核維度（對齊 [[wiki-schema]] § 六維度 5 / 14、§ 十一 entity row）。
 
 - [ ] **frontmatter 共同欄全填**：type=entity / module / business-domain / status / last-reviewed。
-- [ ] **溯源欄**：`source` 不指同層 entity / 下層 user-story / OpenSpec；entity 通常指承載其行為規則的 business-logic 正本卡或外部原點。`implemented-by` 指 OpenSpec Data Model / prototype 型別檔（過渡期可用 related-spec / related-prototype 代）。
+- [ ] **溯源欄**：`source` 不指同層 entity / 下層 user-story / OpenSpec；entity 通常指承載其行為規則的 business-logic 正本卡或外部原點。`implemented-by` 指 prototype 型別檔（欄位正本在本卡，不再指向 OpenSpec Data Model）。
 - [ ] **這張卡要回答的問題**：每個問題正文有對應結論（含「為什麼獨立存在」）。
 - [ ] **營運背景**：2-3 句、無實作術語當主詞、無中英夾雜、無業務流程敘述。
-- [ ] **核心欄位**：非顯然欄位在說明欄補「為什麼要存」；欄位承載的規則用 wiki link 指 business-logic（未把規則本體寫進說明欄）。
+- [ ] **欄位（業務可見）**：採五欄表格（介面欄位 / 說明 / 欄位形態 / 來源 / 可否修改）；非顯然欄位在說明欄補「為什麼要存」；欄位承載的規則用 wiki link 指 business-logic（未把規則本體寫進說明欄）；純技術欄位（id / FK / 時間戳記 / 遺留欄位）未列入。
 - [ ] **關鍵關聯**：標明基數（1:1 / 1:N / N:M）+ wiki link；未寫關聯背後的業務流程 / 規則本體。
 - [ ] **相關狀態機**：有狀態的實體已 wiki link 指 state-machine 卡；未在本卡重述狀態清單 / 轉換條件 / 轉換圖。
 - [ ] **越界檢查**（[[wiki-schema]] § 十一 entity row）：未寫入業務流程敘述（→ business-logic / scenario）/ user-story 格式模板（作為 / 我希望 / 以便）/ test-case 範本 / 完整狀態轉換邏輯。
@@ -192,13 +199,16 @@ implemented-by:
 ## 營運背景
 <2-3 句佔位：公司營運上 <某情況> 需要一個獨立容器追蹤 <某事>，故設 <實體-Z>。不併入 [[<鄰近實體>]] 是因 <一句駁回理由>。>
 
-## 核心欄位
-| 欄位 | 說明 |
-|------|------|
-| `id` / `<業務編號>` | 系統 ID / 使用者看見的編號 |
-| `status` | 狀態（見 [[<Z 狀態>]]）|
-| `<欄位-A>` | <說明；規則見 [[<X 規則卡>]]> |
-| `<欄位-B>` | <說明 + 為什麼要存這個欄位> |
+## 欄位（業務可見）
+
+> 本段是該實體的欄位正本。欄位新增與修改是商業決策，直接在本卡維護。
+
+| 介面欄位 | 說明 | 欄位形態 | 來源 | 可否修改 |
+|---------|------|---------|------|---------|
+| <業務編號> | 系統自動產生的唯一編號 | 文字（唯讀）| 系統自動 | 不可 |
+| <狀態> | 目前的生命週期階段 | 單選（依 [[<Z 狀態>]] 定義）| 系統 / 人工推進 | 依狀態機規則 |
+| <欄位-A> | <說明；規則見 [[<X 規則卡>]]> | <欄位形態> | <來源> | <可否修改> |
+| <欄位-B> | <說明 + 為什麼要存> | <欄位形態> | <來源> | <可否修改> |
 
 ## 關鍵關聯
 - 關聯 [[<鄰近實體>]]（N:1，`<fk>`）：<一句說明>
@@ -214,8 +224,9 @@ implemented-by:
 - 相關實體：[[<鄰近實體>]]
 
 ## 來源
-- OpenSpec [<模組-X>/spec.md](../../../../openspec/specs/<模組-X>/spec.md) § Data Model
-- Prototype `src/types/<檔名>.ts`
+- 欄位正本：本卡「欄位（業務可見）」段落
+- 行為規格（Requirement / Scenario）：[<模組-X>/spec.md](../../../../openspec/specs/<模組-X>/spec.md)
+- Prototype 實作：`src/types/<檔名>.ts`
 - 迭代脈絡見 [[business-logic-changelog#<實體-Z>]]
 ```
 
