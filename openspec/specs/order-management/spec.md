@@ -1253,36 +1253,27 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 ---
 
-### Requirement: 諮詢訂單發票時間點處理
+### Requirement: 諮詢訂單帳務處理（發票 / 期次 / 對帳）
 
-諮詢訂單（`order_type = 諮詢`）的 Invoice **MUST NOT 由系統自動開立**。發票開立依情境分流：不做大貨 / 需求單流失情境由系統自動建待開發票（BillingInstallment）提醒、諮詢人員手動一鍵開立 Invoice（見 § 諮詢訂單收尾自動建 BillingInstallment 規則）；**諮詢取消情境系統 MUST NOT 自動建待開發票**，留存 1000 收入由業務手動開立 Invoice、未開票由對帳差額警示兜底（見 § Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單）。
+#### 發票時間點規則
 
-本 change 廢止既有「依 `consultation_invoice_option` 自動開立 Invoice」邏輯：
+諮詢訂單（`order_type = 諮詢`）的 Invoice **MUST NOT 由系統自動開立**。發票開立依情境分流：不做大貨 / 需求單流失情境由系統自動建待開發票（BillingInstallment）提醒、諮詢人員手動一鍵開立 Invoice（見下方 § 收尾自動建請款期次）；諮詢取消情境系統 MUST NOT 自動建待開發票，留存 1000 收入由業務手動開立 Invoice、未開票由對帳差額警示兜底（見 § Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單）。
+
+廢止既有「依 `consultation_invoice_option` 自動開立 Invoice」邏輯：
 - `issue_now` 與 `defer_to_main_order` 兩值在任何諮詢訂單收尾情境（不做大貨 / 需求單流失 / 諮詢取消）下，系統 MUST NOT 自動觸發 Invoice 開立
 - `consultation_invoice_option` 欄位保留於 ConsultationRequest 實體作為「客戶意向參考」純展示（不再驅動系統行為）
-- 於諮詢結束做大貨 → 需求單成交轉一般訂單情境，諮詢費 BillingInstallment **不自動建**，業務於主訂單既有發票時程規劃流程自行加入諮詢費 BillingInstallment 並可參考客戶意向決定獨立 / 併入主訂單其他 Invoice
 
-#### Scenario: 諮詢訂單建立時不自動開立 Invoice（任一 invoice_option）
+##### Scenario: 諮詢訂單建立時不自動開立 Invoice（任一 invoice_option）
 
 - **GIVEN** ConsultationRequest `consultation_invoice_option` ∈ {`issue_now`, `defer_to_main_order`}（任一值）
 - **AND** 諮詢訂單因不做大貨 / 需求單流失情境建立
 - **WHEN** 系統建立諮詢訂單
 - **THEN** 系統 MUST NOT 自動開立任何 Invoice 或 SalesAllowance
-- **AND** 系統 SHALL 依情境自動建立對應金額的待開發票（BillingInstallment）（見 § 諮詢訂單收尾自動建 BillingInstallment 規則）
+- **AND** 系統 SHALL 依情境自動建立對應金額的待開發票（BillingInstallment）（見下方 § 收尾自動建請款期次）
 - **AND** 諮詢人員 SHALL 後續手動將待開發票轉為實際 Invoice（金額由諮詢人員依客戶需求決定）
 - **AND** 諮詢取消情境系統 MUST NOT 自動開立 Invoice 亦 MUST NOT 自動建待開發票（見 § Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單）
 
-#### Scenario: 諮詢結束做大貨主訂單不自動建諮詢費 BillingInstallment
-
-- **GIVEN** ConsultationRequest 諮詢結束選做大貨、需求單成交業務轉訂單
-- **WHEN** 系統建立主訂單與 OEC、轉移 Payment
-- **THEN** 系統 MUST NOT 自動於主訂單建立諮詢費的 BillingInstallment
-- **AND** 業務 SHALL 於主訂單既有發票時程規劃流程自行加入諮詢費 BillingInstallment
-- **AND** 業務 SHALL 可參考 `consultation_invoice_option` 客戶意向決定獨立 BillingInstallment 或併入其他主訂單 BillingInstallment
-
----
-
-### Requirement: 諮詢訂單收尾自動建 BillingInstallment 規則
+#### 收尾自動建請款期次
 
 當諮詢訂單於不做大貨 / 需求單流失兩收尾情境任一建立時，系統 SHALL 自動建立 BillingInstallment 1 筆作為「待開發票提醒」，讓諮詢人員於待開票期次列表看到待辦並手動一鍵開立為實際 Invoice。諮詢取消情境系統 MUST NOT 自動建待開發票（見下方「諮詢取消情境例外」）。各情境機制單一正本見 [consultation-request spec](../consultation-request/spec.md) § 諮詢結束不做大貨情境自動建請款期次 / § 需求單流失情境自動建請款期次 / § 諮詢取消半額退費自動建請款期次。
 
@@ -1301,26 +1292,26 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 **共同欄位**：所有自動建立的 BillingInstallment SHALL 設定 `invoicing_status = 未開立`、`created_by = system`、`linked_invoice_id = NULL`。
 
-#### Scenario: 諮詢結束不做大貨自動建 BillingInstallment
+##### Scenario: 諮詢結束不做大貨自動建 BillingInstallment
 
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢、`consultant_id` 非空
 - **WHEN** 諮詢人員點擊「完成諮詢（不做大貨）」、系統建立諮詢訂單
 - **THEN** 系統 SHALL 自動建立 BillingInstallment（order_id = 諮詢訂單 ID、scheduled_amount = 2000、description = 「諮詢費」、due_date / scheduled_issue_date = 完成諮詢時點當天、source_type = consultation_end_no_production、invoicing_status = 未開立、created_by = system、linked_invoice_id = NULL）
 
-#### Scenario: 諮詢來源需求單流失自動建 BillingInstallment
+##### Scenario: 諮詢來源需求單流失自動建 BillingInstallment
 
 - **GIVEN** ConsultationRequest 狀態 = 已轉需求單、對應需求單流失
 - **WHEN** 系統處理需求單流失事件、建立諮詢訂單
 - **THEN** 系統 SHALL 自動建立 BillingInstallment（order_id = 諮詢訂單 ID、scheduled_amount = 2000、description = 「諮詢費」、due_date / scheduled_issue_date = 流失時點當天、source_type = quote_lost、invoicing_status = 未開立、created_by = system、linked_invoice_id = NULL）
 
-#### Scenario: 諮詢取消不自動建待開發票
+##### Scenario: 諮詢取消不自動建待開發票
 
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢
 - **WHEN** 諮詢人員 / 業務主管於取消 dialog 確認取消、系統建立諮詢訂單 + OA + 退款 Payment
 - **THEN** 系統 MUST NOT 自動建立待開發票（BillingInstallment）（留存 1000 收入由業務手動開立 Invoice）
 - **AND** 未開票由對帳差額警示兜底（應收 1000 > 發票淨額 0，見 § Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單）
 
-#### Scenario: 自動建立的 BillingInstallment 出現在待開票期次待辦列表
+##### Scenario: 自動建立的 BillingInstallment 出現在待開票期次待辦列表
 
 - **GIVEN** 諮詢訂單收尾自動建立 BillingInstallment、invoicing_status = 未開立
 - **WHEN** 諮詢人員開啟待開票期次列表頁
@@ -1328,7 +1319,7 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 - **AND** 列表 SHALL 顯示「今天到期」狀態（依 scheduled_issue_date 推導）以提示諮詢人員優先處理
 - **AND** 諮詢人員 SHALL 可點擊進入諮詢訂單詳情頁一鍵開立 Invoice
 
-#### Scenario: 諮詢人員手動一鍵開立 BillingInstallment 為 Invoice
+##### Scenario: 諮詢人員手動一鍵開立 BillingInstallment 為 Invoice
 
 - **GIVEN** BillingInstallment(scheduled_amount = 2000、description = 「諮詢費」、invoicing_status = 未開立)（不做大貨 / 需求單流失情境自動建）
 - **WHEN** 諮詢人員於諮詢訂單詳情頁發票區點「一鍵開立」並確認金額
@@ -1336,16 +1327,14 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 - **AND** 系統 SHALL 將 BillingInstallment.invoicing_status 改為「已開立」、linked_invoice_id 寫入新建 Invoice ID
 - **AND** BillingInstallment 從待開票期次待辦列表移除
 
-#### Scenario: 諮詢結束做大貨需求單成交主訂單不自動建諮詢費 BillingInstallment
+##### Scenario: 諮詢結束做大貨需求單成交主訂單不自動建諮詢費 BillingInstallment
 
 - **GIVEN** ConsultationRequest 諮詢結束選做大貨、需求單成交業務轉訂單
 - **WHEN** 系統建立主訂單與 OEC、轉移 Payment
 - **THEN** 系統 MUST NOT 自動於主訂單建立 BillingInstallment
 - **AND** 業務 SHALL 於主訂單既有發票時程規劃流程自行加入諮詢費 BillingInstallment
 
----
-
-### Requirement: 諮詢取消對帳邏輯
+#### 諮詢取消對帳
 
 諮詢取消（待諮詢狀態半額退費）情境下，諮詢訂單三方對帳檢視面板 MUST 識別此特殊情境並依新公式計算與標示。
 
@@ -1360,14 +1349,14 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 - 退款 Payment 已完成（OA 已推進已執行）且發票淨額 = 1000：標示「對帳通過 - 退費完成」
 - 退款 Payment 已完成（OA 已推進已執行）且發票淨額 ≠ 1000：標示「待對帳 - 發票金額需確認」、差額由既有對帳警示 banner 提示業務 / 諮詢人員處理
 
-#### Scenario: 諮詢取消退費完成對帳通過
+##### Scenario: 諮詢取消退費完成對帳通過
 
 - **GIVEN** 諮詢訂單 OEC(consultation_fee, 2000) + OA(諮詢取消退費, -1000, 已執行) + Payment(+2000, 已完成) + Payment(-1000, 已完成) + Invoice(1000, 已開立)
 - **WHEN** 業務 / 會計開啟對帳檢視面板
 - **THEN** 應收總額 SHALL = 1000、收款淨額 SHALL = 1000、發票淨額 SHALL = 1000、差額 SHALL = 0
 - **AND** 面板 SHALL 標示「對帳通過 - 退費完成」
 
-#### Scenario: 諮詢取消退費處理中
+##### Scenario: 諮詢取消退費處理中
 
 - **GIVEN** 諮詢訂單 OEC(consultation_fee, 2000) + OA(諮詢取消退費, -1000, 已核可) + Payment(+2000, 已完成) + Payment(-1000, 處理中)
 - **WHEN** 業務 / 會計開啟對帳檢視面板
@@ -1375,7 +1364,7 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 - **AND** 應收總額 SHALL = 1000（已核可 OA 即時計入應收）
 - **AND** 對帳面板 SHALL 標示「退費處理中」並顯示「另含處理中退款 1000 元」
 
-#### Scenario: 諮詢取消後發票金額不符提示
+##### Scenario: 諮詢取消後發票金額不符提示
 
 - **GIVEN** 諮詢訂單 OEC(consultation_fee, 2000) + OA(-1000, 已執行) + Payment(+2000) + Payment(-1000, 已完成) + Invoice(2000, 已開立，諮詢人員誤開全額)
 - **WHEN** 業務 / 會計開啟對帳檢視面板
