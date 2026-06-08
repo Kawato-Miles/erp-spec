@@ -2758,21 +2758,23 @@ OrderAdjustment `requires_supervisor_approval` derived field：
 - **THEN** INV-091 對應 row 第 10 欄收款日 = 空（未收款）
 - **AND** 第 11 欄收款狀態 = 未收
 
-### Requirement: 收款 / 開票領域營運管理 KPI（管理組員績效用，非產品成功指標）
+### Requirement: 營運管理 KPI 定義（收款 / 開票）
 
 系統 SHALL 提供以下「營運管理 KPI」供業務主管管理組員收款績效、業務 / 會計檢視自身達成度。這些是**營運管理指標（管理組員 KPI）**，非產品成功指標（NSM / 衡量功能成不成功），亦非產品機制指標（如已移除的「業務手動覆寫率」——衡量自動分配演算法預設準不準，業務手動入帳後失去意義）。判斷錨點：每個指標皆能回答「誰、在什麼情境看、用來管理誰」。
 
 閾值為起始建議值，SHALL 標「上線前 / 累積實務數據後校準」，prototype 階段不當硬規則。
+
+#### KPI 總表
 
 | KPI | 定義 | 公式（as-built 實體）| 看的人 / 管理場景 | 健康 / 警示（暫定）| 詳細定義位置 |
 |-----|------|---------------------|------------------|-------------------|---------|
 | 收款達成率 | 該收的錢實收比例 | Σ 已完成入帳金額（PaymentAllocation where Payment 已完成、扣已完成退款）÷ Σ 應收期次金額（BillingInstallment.scheduled_amount where !cancelled 且 due_date ≤ 區間末）| 業務看自己、主管月會排名 | ≥ 95% / < 85% | 本 Requirement |
 | 訂單異動率 | 成立後又改金額 / 退補比例（反映前期報價品質）| count(有非系統內生 OrderAdjustment 的訂單) ÷ count(該業務該期間成立訂單)；可拆補收 / 退款子率 | 業務看自己、主管看誰常事後補退 | < 15% / > 30%（退款子率 > 10% 須檢討報價）| 本 Requirement |
 | 對帳差錯率 | 三方（應收 / 發票 / 收款）對不起來的訂單比例 | count(應收 ≠ 發票淨額 OR 應收 ≠ 收款淨額 的訂單) ÷ count(該期間有應收 / 已開票訂單)| 會計月結追、主管看自己組 | = 0% / > 0% 即列管 | § 三方對帳警示 banner（期次規劃 invariant）|
-| 逾期收款率 | 過應收日未收金額占比（含 30 / 60 / 90 帳齡）| Σ scheduled_amount（BillingInstallment where 收款維度 ≠ 已收訖 且 overdue_days > 0）÷ Σ scheduled_amount（!cancelled 期次）| 業務看自己、主管催收盯人 | < 5% / > 15%（90 天以上單獨列管）| § 收款逾期天數指標 |
+| 逾期收款率 | 過應收日未收金額占比（含 30 / 60 / 90 帳齡）| Σ scheduled_amount（BillingInstallment where 收款維度 ≠ 已收訖 且 overdue_days > 0）÷ Σ scheduled_amount（!cancelled 期次）| 業務看自己、主管催收盯人 | < 5% / > 15%（90 天以上單獨列管）| § 收款逾期天數（overdue_days）|
 | 預收未沖比例 | 溢收預收桶掛著沒沖 / 沒退金額 | Σ allocated_amount（PaymentAllocation where billing_installment_id = NULL）÷ Σ 已完成入帳金額（或看絕對金額 + 筆數）| 業務 / 會計收尾 | 趨近 0 / 單筆 > 30 天未處理 | 本 Requirement |
 | 開票及時率 | 該開的票有沒有在預計開票日前開出 | count(已開立且 Invoice.issued_at ≤ expected_invoice_date 的期次) ÷ count(已過 expected_invoice_date 的期次)| 業務 / 會計月結看漏開 | ≥ 95% / < 80% | 本 Requirement |
-| 收款變更率 | 業務對款項操作的穩定性 | 見 § 訂單收款變更率指標 | 主管看誰老改期次 / 入帳明細 | 待校準 | § 訂單收款變更率指標 |
+| 收款變更率 | 業務對款項操作的穩定性 | 見 § 收款變更率詳細定義 | 主管看誰老改期次 / 入帳明細 | 待校準 | § 收款變更率詳細定義 |
 
 平均收款天數（DSO）列為次要——偏經營趨勢指標、受客戶帳期影響非業務全可控，**定義保留、視覺化後驗 dashboard epic、不在本批實作**（依 MEMORY「核心流程完成前不規劃 dashboard 類功能」）。實作優先序：收款達成率 / 訂單異動率 / 對帳差錯率 / 逾期收款率為第一批，其餘第二批（非「效益低砍掉」，是分批落地）。
 
@@ -2788,7 +2790,7 @@ OrderAdjustment `requires_supervisor_approval` derived field：
 - **WHEN** 入帳機制改為業務手動（無系統自動預設值可供覆寫）
 - **THEN** 「業務手動覆寫率」SHALL 移除（無可覆寫的自動值、且非營運管理 KPI）
 
-### Requirement: 訂單收款變更率指標（Miles 補充指標 ⑩）
+#### 收款變更率詳細定義
 
 系統 SHALL 統計每張訂單的「收款變更率」derived 指標（營運管理 KPI——業務主管管理組員操作穩定性用），用於業務主管月會檢視業務對訂單款項操作的整體穩定性。
 - **公式**：每張訂單 = sum(該訂單期次與入帳相關修改事件次數)；業務層級彙總 = 該業務訂單的平均每訂單修改次數（不再除以 Payment 數——Payment 數無營運管理意義）
@@ -2802,11 +2804,21 @@ OrderAdjustment `requires_supervisor_approval` derived field：
 - **THEN** 該訂單修改次數 = 5；業務層級彙總 = 該業務所有訂單修改次數平均
 - **AND** 健康範圍待累積實務數據後校準（暫不設警示閾值）
 
-### Requirement: 收款逾期天數指標（Miles 補充指標 ⑪，沿用 v1.13 spec L1609）
+#### 諮詢退款 OA 排除規則
 
-`BillingInstallment.overdue_days` derived field SHALL 沿用 v1.13 spec L1609 既有設計：
-- payment_status ≠ 已收訖 且 due_date 不為空時：overdue_days = TODAY − due_date
-- payment_status = 已收訖 或 due_date 為空時：overdue_days = NULL
+收款變更率指標分子（修改事件：DUE_DATE_CHANGED / EXPECTED_DATE_CHANGED / SPLIT / CANCELLED / PAYMENT_ALLOCATION_SET）SHALL NOT 含任何 OrderAdjustment 事件。故諮詢取消退費 OA（系統內生）及其金額調整天然不計入收款變更率分子，**無需新增排除規則**（公式本就不含 OA 事件，CEO「排除諮詢退款 OA」需求為 no-op）。
+
+**設計理由**：收款變更率量測「業務對自己規劃的收款計畫（BillingInstallment / PaymentAllocation）改了幾次」的操作穩定性；OrderAdjustment 是獨立金額異動實體、非收款計畫操作，本就不在分子。諮詢退款 OA 由系統內生、更非業務主動操作，計入會污染指標語意。
+
+#### Scenario: 諮詢退款 OA 建立與調整不影響收款變更率
+
+- **GIVEN** 諮詢取消自動建退款 OA(-1000, 已核可) + 業務後續調整其金額
+- **WHEN** 系統計算該訂單收款變更率
+- **THEN** 諮詢退款 OA 的建立與金額調整 MUST NOT 計入收款變更率分子（分子僅含 6 種 BillingInstallment / PaymentAllocation 修改事件）
+
+#### 收款逾期天數（overdue_days）
+
+overdue_days 欄位定義見 § 應收帳款帳齡底層欄位與訂單列表帳齡篩選。
 
 訂單列表頁 / 對帳檢視頁 SHALL 提供「最長逾期天數」篩選欄位（取訂單下所有未收 BillingInstallment 的 max(overdue_days)）。完整應收帳款帳齡分析表（30/60/90 天分級）+ 逾期自動通知 + 應收帳款 Dashboard 不在本 change 範疇。
 
@@ -2916,18 +2928,6 @@ v1.13 既有 Payment Requirement 主體沿用，但 `paymentPlanId` 欄位 **REM
 - **WHEN** 系統執行對帳
 - **THEN** 系統 SHALL 透過「應收 > 發票淨額」差額警示提醒未開票（應收 1000 > 發票淨額 0）
 - **AND** 此差額警示為廢除「諮詢專屬自動建待開發票」後的未開票兜底提醒機制
-
-### Requirement: 諮詢退款 OA 不計入收款變更率（認知對齊）
-
-收款變更率指標分子（修改事件：DUE_DATE_CHANGED / EXPECTED_DATE_CHANGED / SPLIT / CANCELLED / PAYMENT_ALLOCATION_SET）SHALL NOT 含任何 OrderAdjustment 事件。故諮詢取消退費 OA（系統內生）及其金額調整天然不計入收款變更率分子，**無需新增排除規則**（公式本就不含 OA 事件，CEO「排除諮詢退款 OA」需求為 no-op）。
-
-**設計理由**：收款變更率量測「業務對自己規劃的收款計畫（BillingInstallment / PaymentAllocation）改了幾次」的操作穩定性；OrderAdjustment 是獨立金額異動實體、非收款計畫操作，本就不在分子。諮詢退款 OA 由系統內生、更非業務主動操作，計入會污染指標語意。
-
-#### Scenario: 諮詢退款 OA 建立與調整不影響收款變更率
-
-- **GIVEN** 諮詢取消自動建退款 OA(-1000, 已核可) + 業務後續調整其金額
-- **WHEN** 系統計算該訂單收款變更率
-- **THEN** 諮詢退款 OA 的建立與金額調整 MUST NOT 計入收款變更率分子（分子僅含 6 種 BillingInstallment / PaymentAllocation 修改事件）
 
 ### Requirement: 訂單負責業務改派
 
