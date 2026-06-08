@@ -647,7 +647,7 @@ Supervisor SHALL 擁有「解鎖並重新指定訂單 `approved_by_sales_manager
 
 ### Requirement: 發票開立（藍新 Mockup）
 
-業務 / 諮詢 SHALL 可於訂單詳情頁開立電子發票。系統送藍新（Mockup）時帶入 BillingCompany.ezpay_merchant_id 對應的 MerchantID_，自訂編號（MerchantOrderNo）格式為 `{order_no}-INV-{流水}`，限英數 + 底線、20 字元內。藍新 Mockup 回傳 InvoiceTransNo（17 碼時間戳）、InvoiceNumber（兩碼大寫英文 + 8 碼數字遞增）、RandomNum（4 碼隨機）、CreateTime。發票時序與收款解耦：可先開後收、後收先開（開票維度與收款維度獨立）。發票與收款的對應透過「請款期次」中介——一張發票對應唯一一個請款期次（期次↔發票業務 1:1，見 § 期次↔發票 1:1 嚴格約束）、一個期次可被多筆收款入帳、一筆收款可入帳多個期次（PaymentAllocation N:M，見 § 收款核銷分配）；不再是發票↔收款直接多對多（舊 PaymentInvoice junction 已廢止）。
+業務 / 諮詢 SHALL 可於訂單詳情頁開立電子發票。系統送藍新（Mockup）時帶入 BillingCompany.ezpay_merchant_id 對應的 MerchantID_，自訂編號（MerchantOrderNo）格式為 `{order_no}-INV-{流水}`，限英數 + 底線、20 字元內。藍新 Mockup 回傳 InvoiceTransNo（17 碼時間戳）、InvoiceNumber（兩碼大寫英文 + 8 碼數字遞增）、RandomNum（4 碼隨機）、CreateTime。發票時序與收款解耦：可先開後收、後收先開（開票維度與收款維度獨立）。發票與收款的對應透過「請款期次」中介——一張發票對應唯一一個請款期次（期次↔發票業務 1:1，見 § 請款期次行為規則 › 期次↔發票 1:1 嚴格約束）、一個期次可被多筆收款入帳、一筆收款可入帳多個期次（PaymentAllocation N:M，見 § 收款核銷分配）；不再是發票↔收款直接多對多（舊 PaymentInvoice junction 已廢止）。
 
 **品項欄位送藍新對應**（本次新增）：每張 Invoice.items 陣列轉換為藍新 PostData 五欄序列（`ItemName` / `ItemCount` / `ItemUnit` / `ItemPrice` / `ItemAmt`），多項以 `|` 分隔。送出前 SHALL 通過「發票品項符合 ezPay 與電子發票法規硬約束」Requirement 全部 Scenario 驗證。
 
@@ -663,7 +663,7 @@ Supervisor SHALL 擁有「解鎖並重新指定訂單 `approved_by_sales_manager
 #### Scenario: 客戶要兩張發票（拆期 = 拆票）
 
 - **GIVEN** 訂單某期次 BI-X（scheduled_amount=100,000）客戶要求拆成兩張發票
-- **WHEN** 業務先將 BI-X 拆為兩個獨立平輩期次 BI-X1（50,000）+ BI-X2（50,000）（見 § 拆票 = 拆期），再各自一鍵開立發票
+- **WHEN** 業務先將 BI-X 拆為兩個獨立平輩期次 BI-X1（50,000）+ BI-X2（50,000）（見 § 請款期次行為規則 › 拆票 = 拆期），再各自一鍵開立發票
 - **THEN** 系統 SHALL 為 BI-X1 / BI-X2 各建一張 Invoice（各 source_billing_installment_id 指向對應期次，期次↔發票 1:1）
 - **AND** 兩張 Invoice 各自 items 從對應期次繼承 / 業務微調；一筆收款可同時入帳兩期（PaymentAllocation，見 § 收款核銷分配）
 
@@ -677,7 +677,7 @@ Supervisor SHALL 擁有「解鎖並重新指定訂單 `approved_by_sales_manager
 #### Scenario: 業務先開發票後收款（雙維度獨立）
 
 - **WHEN** 業務於某期次尚未收款時先一鍵開立發票
-- **THEN** 系統 SHALL 允許，該期次開票維度 = 已開立、收款維度 = 未收（雙維度獨立，見 § 期次雙維度狀態）
+- **THEN** 系統 SHALL 允許，該期次開票維度 = 已開立、收款維度 = 未收（雙維度獨立，見 § 請款期次行為規則 › 期次雙維度狀態）
 - **AND** 後續收款時業務於入帳明細勾選該期次入帳（PaymentAllocation），收款維度依累計推進
 
 #### Scenario: 業務開立 B2C 發票時單價為含稅金額
@@ -1277,7 +1277,7 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 當諮詢訂單於不做大貨 / 需求單流失兩收尾情境任一建立時，系統 SHALL 自動建立 BillingInstallment 1 筆作為「待開發票提醒」，讓諮詢人員於待開票期次列表看到待辦並手動一鍵開立為實際 Invoice。諮詢取消情境系統 MUST NOT 自動建待開發票（見下方「諮詢取消情境例外」）。各情境機制單一正本見 [consultation-request spec](../consultation-request/spec.md) § 諮詢結束不做大貨情境自動建請款期次 / § 需求單流失情境自動建請款期次 / § 諮詢取消半額退費自動建請款期次。
 
-**BillingInstallment 實體與狀態機**：完整欄位定義與雙維度狀態機（開票維度 invoicing_status + 收款維度 payment_status）見 [state-machines spec](../state-machines/spec.md) § BillingInstallment 雙維度狀態機 / § BillingInstallment 取代 PlannedInvoice 狀態機。品項鏈式預填語意見本 spec § Requirement: 期次↔發票 1:1 嚴格約束 + 一鍵開票繼承 / § Requirement: BillingInstallment 品項鏈式預填。
+**BillingInstallment 實體與狀態機**：完整欄位定義與雙維度狀態機（開票維度 invoicing_status + 收款維度 payment_status）見 [state-machines spec](../state-machines/spec.md) § BillingInstallment 雙維度狀態機 / § BillingInstallment 取代 PlannedInvoice 狀態機。品項鏈式預填語意見本 spec § Requirement: 請款期次行為規則 › 期次↔發票 1:1 嚴格約束 + 一鍵開票繼承 / § Requirement: BillingInstallment 品項鏈式預填。
 
 **自動建立規則**（依諮詢訂單收尾情境）：
 
@@ -2299,7 +2299,7 @@ Invoice.items 陣列 SHALL 對齊 ezPay 電子發票 API（[EZP_INVI_1.2.2](../.
 
 ### Requirement: BillingInstallment 品項鏈式預填
 
-業務 / 諮詢建立 BillingInstallment 時 SHALL 可從訂單印件清單預填 `items[]`，使用者可編輯預填內容；後續訂單印件異動 SHALL NOT 即時連動至已建立的 BillingInstallment。實際開立 Invoice 時，由 BillingInstallment 「一鍵開立」觸發 SHALL 將 BillingInstallment.items 深拷貝預填至 Invoice.items，使用者可編輯（與本 spec § Requirement: 期次↔發票 1:1 嚴格約束 + 一鍵開票繼承 的繼承品項規則一致）。
+業務 / 諮詢建立 BillingInstallment 時 SHALL 可從訂單印件清單預填 `items[]`，使用者可編輯預填內容；後續訂單印件異動 SHALL NOT 即時連動至已建立的 BillingInstallment。實際開立 Invoice 時，由 BillingInstallment 「一鍵開立」觸發 SHALL 將 BillingInstallment.items 深拷貝預填至 Invoice.items，使用者可編輯（與本 spec § Requirement: 請款期次行為規則 › 期次↔發票 1:1 嚴格約束 + 一鍵開票繼承 的繼承品項規則一致）。
 
 #### Scenario: 建立 BillingInstallment 時從訂單印件預填 items
 
@@ -2502,11 +2502,13 @@ UI 呈現（Dialog 對應、helper function、條件顯示）見 DESIGN.md §10.
 - **THEN** 系統 SHALL 顯示警示「應收 105000、期次合計 100000、差額 5000」
 - **AND** 系統 SHALL 允許儲存（業務後續可補建 BillingInstallment 或調整既有期次金額）
 
-### Requirement: 期次↔發票 1:1 嚴格約束 + 一鍵開票繼承
+### Requirement: 請款期次（BillingInstallment）行為規則
+
+#### 期次↔發票 1:1 嚴格約束 + 一鍵開票繼承
 
 每張 Invoice MUST 透過 `source_billing_installment_id` NOT NULL UNIQUE FK 指向唯一一筆 BillingInstallment。業務在 BillingInstallment「一鍵開票」時，系統 SHALL 建立 Invoice 並從來源期次自動繼承品項、應收日、備註；Invoice.source_billing_installment_id 寫入該期次 id、BillingInstallment.linked_invoice_id 寫入新 Invoice id、BillingInstallment.invoicing_status 推進為「已開立」。原 v1.13「業務從 PlannedInvoice 一鍵開立」入口廢止，取代為「從 BillingInstallment 一鍵開立」。
 
-#### Scenario: 業務從期次一鍵開立發票繼承品項
+##### Scenario: 業務從期次一鍵開立發票繼承品項
 
 - **GIVEN** BillingInstallment BI-001（scheduled_amount=30000, expected_invoice_date=2026-05-15, items=[訂金品項], invoicing_status=未開立）
 - **WHEN** 業務點 BI-001「一鍵開立發票」
@@ -2514,17 +2516,17 @@ UI 呈現（Dialog 對應、helper function、條件顯示）見 DESIGN.md §10.
 - **AND** 系統 SHALL 寫入 BI-001.linked_invoice_id = INV-001.id、BI-001.invoicing_status = 已開立
 - **AND** 業務 MAY 在開立 dialog 內微調品項（不影響 BI-001.items，深拷貝原則沿用 v1.13）
 
-#### Scenario: 期次↔發票 1:1 約束阻擋重複開票
+##### Scenario: 期次↔發票 1:1 約束阻擋重複開票
 
 - **GIVEN** BillingInstallment BI-002.invoicing_status = 已開立、linked_invoice_id = INV-002
 - **WHEN** 業務再次點 BI-002「一鍵開立發票」
 - **THEN** 系統 SHALL 隱藏「一鍵開立」按鈕（按鈕只在 invoicing_status = 未開立 / 已作廢 顯示）
 
-### Requirement: 拆票 = 拆期（產生獨立平輩期次 + 純追溯欄位）
+#### 拆票 = 拆期（產生獨立平輩期次 + 純追溯欄位）
 
 業務於 BillingInstallment 列表編輯動作或開立發票 Dialog 內按「拆此期」捷徑時，系統 SHALL 將原期次拆為兩個獨立平輩期次。原期次設 cancelled = true 保留稽核軌跡（不物理刪除）；兩筆新期次各自獨立 query / aggregation（無父子 hierarchical FK），但**保留** `split_from_installment_id` 純追溯欄位指向原期次 id 用於 CSV 諮詢取消半額退費 lineage 稽核與 source_type 繼承。新期次 source_type 繼承原期次（manual / consultation_cancellation 等），note 自動帶「原一期拆兩期，源期次描述：「{原 description}」」前綴。
 
-#### Scenario: 業務在規劃階段拆票（一期 78000 拆兩張票各 2500 + 75500）
+##### Scenario: 業務在規劃階段拆票（一期 78000 拆兩張票各 2500 + 75500）
 
 - **GIVEN** BillingInstallment BI-010（installment_no=1, scheduled_amount=78000, source_type=manual, invoicing_status=未開立）
 - **WHEN** 業務於期次列表點 BI-010「拆此期」，輸入拆分規格（期A 2500 / 期B 75500，各自 due_date 業務填）
@@ -2532,18 +2534,18 @@ UI 呈現（Dialog 對應、helper function、條件顯示）見 DESIGN.md §10.
 - **AND** 系統 SHALL 設定 BI-010.cancelled = true、cancel_reason = 「拆兩期」（保留稽核，UI 預設隱藏可切換顯示）
 - **AND** 兩筆新期次 change_count 從 0 起算（拆期事件本身寫入 OrderActivityLog SPLIT 事件作為稽核依據，不計入 change_count）
 
-#### Scenario: 業務在開票 Dialog 內動態拆票
+##### Scenario: 業務在開票 Dialog 內動態拆票
 
 - **GIVEN** 業務在 BI-011「一鍵開立發票」Dialog 內、客戶臨時要求拆兩張票
 - **WHEN** 業務於 Dialog 內按「拆此期」捷徑、輸入兩期金額與日期
 - **THEN** 系統 SHALL 執行同「規劃階段拆票」邏輯（產生 BI-011-A + BI-011-B、原期次 cancelled = true）
 - **AND** Dialog SHALL 切換至「選擇對哪筆新期次開票」step、業務選定後完成開票（單一 Dialog 流程內完成拆 + 開）
 
-### Requirement: 期次變更稽核軌跡（原始日期凍結基準 + 變更歷史 + 變更次數）
+#### 期次變更稽核軌跡（原始日期凍結基準 + 變更歷史 + 變更次數）
 
 每筆 BillingInstallment SHALL 凍結 `original_due_date` 與 `original_expected_invoice_date` 兩個基準欄位（於期次首次儲存當下凍結，之後變更不影響）。每次 due_date / expected_invoice_date 變更 SHALL 寫入 OrderActivityLog 對應事件型別（DUE_DATE_CHANGED / EXPECTED_DATE_CHANGED）含 old_value / new_value / operator / timestamp。`change_count` derived field 統計該期次 due_date + expected_invoice_date 兩欄位變更累計次數（拆期事件不計入）。UI 顯示「原始 vs 現況」對照 + 變更次數，作為業務操作穩定性的事後稽核依據（沿用顧問 §1 + CEO 指標 4）。
 
-#### Scenario: 業務修改期次預計開票日寫入變更歷史
+##### Scenario: 業務修改期次預計開票日寫入變更歷史
 
 - **GIVEN** BillingInstallment BI-020（original_due_date=2026-06-01, due_date=2026-06-01, original_expected_invoice_date=2026-05-15, expected_invoice_date=2026-05-15, change_count=0）
 - **WHEN** 業務修改 BI-020.expected_invoice_date 從 2026-05-15 改為 2026-05-20
@@ -2552,7 +2554,7 @@ UI 呈現（Dialog 對應、helper function、條件顯示）見 DESIGN.md §10.
 - **AND** BI-020.original_expected_invoice_date SHALL 維持 2026-05-15（凍結基準不變）
 - **AND** UI 顯示「原始預計開立日：2026-05-15 ｜ 現況：2026-05-20（業務於 [日期] 調整）｜ 本期變更次數 1」
 
-### Requirement: 期次雙維度狀態（開票維度 + 收款維度獨立）
+#### 期次雙維度狀態（開票維度 + 收款維度獨立）
 
 BillingInstallment SHALL 維護兩個獨立狀態維度：
 - **開票維度（invoicing_status）**：`未開立` → `已開立`（業務一鍵開票觸發）；`已開立` → `已作廢`（Invoice 作廢觸發，linked_invoice_id 設 NULL，可重新開票）
@@ -2563,7 +2565,7 @@ BillingInstallment SHALL 維護兩個獨立狀態維度：
 
 兩維度完全獨立，支援「先收後開」（收款維度先到已收訖、開票維度仍未開立）與「先開後收」（開票維度先到已開立、收款維度仍未收）情境。
 
-#### Scenario: 先收後開情境 — 業務先收訂金 30000 後再開票
+##### Scenario: 先收後開情境 — 業務先收訂金 30000 後再開票
 
 - **GIVEN** BillingInstallment BI-030（scheduled_amount=30000, invoicing_status=未開立, payment_status=未收）
 - **WHEN** 業務登錄 Payment 30000、於入帳明細手動勾選 BI-030 填 30000（PaymentAllocation.allocated_amount=30000、auto_allocated=false）、業務切 Payment 為已完成
@@ -2572,7 +2574,7 @@ BillingInstallment SHALL 維護兩個獨立狀態維度：
 - **WHEN** 業務於 BI-030 點「一鍵開立發票」
 - **THEN** BI-030.invoicing_status SHALL = 已開立（兩維度均推進完成）
 
-#### Scenario: 發票作廢後期次回未開立可重新開票
+##### Scenario: 發票作廢後期次回未開立可重新開票
 
 - **GIVEN** BI-031.invoicing_status = 已開立、linked_invoice_id = INV-031
 - **WHEN** 業務於 Invoice 詳情頁作廢 INV-031（填入作廢原因）
@@ -3284,7 +3286,7 @@ v1.13 既有 Payment Requirement 主體沿用，但 `paymentPlanId` 欄位 **REM
 
 ### Requirement: 付款計畫變更分階段稽核 — 已廢止
 
-> 付款計畫（PaymentPlan）已由 BillingInstallment 取代。分階段稽核邏輯見 § Requirement: 期次變更稽核軌跡。
+> 付款計畫（PaymentPlan）已由 BillingInstallment 取代。分階段稽核邏輯見 § Requirement: 請款期次行為規則 › 期次變更稽核軌跡。
 
 ### Requirement: 業務送出訂單審核（草稿 → 待業務主管審核）
 
