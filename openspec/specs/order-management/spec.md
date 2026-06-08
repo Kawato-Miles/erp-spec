@@ -471,307 +471,19 @@ B2C 會員於 EC 前台上傳印件時 SHALL 可選擇性填寫 `client_note`，
 
 ### Requirement: 訂單詳情頁 Tabs 化版型
 
-訂單詳情頁 SHALL 採用 Tabs 化版型（依 DESIGN.md §6.3.1），結構：`ErpPageHeader → Tabs container（首位「資訊」Tab，defaultValue）`。
-
-`ErpPageHeader` SHALL 包含：
-- 返回按鈕
-- 訂單編號（標題）
-- 訂單狀態 Badge（沿用既有 `OrderStatusBadge`）
-- 主動作群（依訂單狀態條件顯示：B2C 前台 Demo / 確認回簽 / 變更路徑導引 Tooltip / 取消訂單）
-
-訂單詳情頁 SHALL 包含 6 個 Tab，順序：`資訊（首位，defaultValue）→ 印件清單 → 付款記錄 → 補收款 → 出貨單 → 活動紀錄`。
-
-「資訊」Tab 為 [refactor-detail-pages-to-subheader-tab-layout](../../changes/archive/) 新增 Tab，SHALL 承載原 Tabs 之上資訊區的 5 張資訊卡：訂單資訊 / 金額及付款狀態 / 發票設定（條件顯示）/ 物流設定（條件顯示）/ 客戶資訊。5 張卡 SHALL 在「資訊」Tab 內依此順序單欄垂直排列（移除既有 `grid grid-cols-[1fr_380px]` 兩欄佈局），各自保留 rounded card 邊框（`rounded-xl border border-[#e3e4e5] bg-white`）。
-
-「發票設定」卡 SHALL 在 `order.invoiceEnabled === true` 時顯示，否則隱藏。「物流設定」卡 SHALL 在 `order.shippingMethod` 不為空時顯示，否則隱藏。
-
-#### Scenario: 業務進入訂單詳情頁預設停留資訊 Tab
-
-- **WHEN** 業務從訂單列表點擊訂單編號進入訂單詳情頁
-- **THEN** 頁面載入完成時 SHALL 預設停留於「資訊」Tab（首位）
-- **AND** 「資訊」Tab 內 SHALL 依序顯示訂單資訊 → 金額及付款狀態 → 發票設定（條件）→ 物流設定（條件）→ 客戶資訊 5 張卡
-- **AND** 5 張卡 SHALL 為單欄垂直排列（不採兩欄 grid 佈局）
-
-#### Scenario: 訂單詳情頁 Tab 順序符合業務流先後
-
-- **WHEN** 使用者瀏覽訂單詳情頁的 Tab 列
-- **THEN** Tab 順序 SHALL 為：資訊 → 印件清單 → 付款記錄 → 補收款 → 出貨單 → 活動紀錄
-- **AND** 「活動紀錄」SHALL 為末位（依 DESIGN.md §0.1 業務流先後 + 活動紀錄末位原則）
-
-#### Scenario: 訂單詳情頁資訊區重組
-
-- **WHEN** 業務進入訂單詳情頁
-- **THEN** Tabs 之上 SHALL NOT 出現「訂單資訊」「金額及付款狀態」「發票設定」「物流設定」「客戶資訊」5 張卡
-- **AND** 5 張卡 SHALL 在「資訊」Tab 內呈現
-
-#### Scenario: 訂單發票 / 物流卡條件顯示
-
-- **WHEN** 訂單 `order.invoiceEnabled === false`
-- **THEN** 「資訊」Tab 內 SHALL NOT 顯示「發票設定」卡
-
-- **WHEN** 訂單 `order.shippingMethod` 為空
-- **THEN** 「資訊」Tab 內 SHALL NOT 顯示「物流設定」卡
-
-#### Scenario: 訂單 ErpPageHeader 主動作維持
-
-- **WHEN** 業務查看訂單詳情頁
-- **THEN** `ErpPageHeader` 右側 SHALL 顯示「B2C 前台 Demo」按鈕（恆顯示）
-- **AND** 訂單狀態為「報價待回簽」時 SHALL 顯示「確認回簽」按鈕
-- **AND** 訂單狀態非「已取消」、非「訂單完成」時 SHALL 顯示「變更路徑導引」Tooltip + 「取消訂單」按鈕
-- **AND** 主動作 SHALL NOT 移至 Tab 內或下放至其他位置
-
----
+訂單詳情頁 SHALL 採用 Tabs 化版型，包含 6 個 Tab：資訊 → 印件清單 → 付款記錄 → 補收款 → 出貨單 → 活動紀錄。Tab 順序、資訊卡排列、條件顯示規則見 DESIGN.md §10.1.1。
 
 ### Requirement: 訂單詳情頁業務負責人 row 簡化
 
-訂單詳情頁「資訊」Tab 內的「訂單資訊」卡中，業務負責人 row 的呈現 SHALL 依視角分流：
-
-- 對**業務 / 諮詢視角**，value 區 SHALL 僅顯示業務負責人姓名純文字，MUST NOT 包含「分享 / 轉單」按鈕或任何 inline 動作按鈕。業務的臨時協助 / 代理授權 SHALL 完全由「分享」Tab 內的 PermissionManagement 元件承接（沿用 US-ORD-004 機制）。
-- 對**業務主管視角**，業務負責人 row SHALL 顯示「改派負責人」入口（改 owner，限業務主管）。改派與分享為兩種獨立機制：分享不改 owner（業務本人可做）、改派改 owner（限業務主管）。詳見 § Requirement: 訂單負責業務改派 與 [user-roles § 業務主管改派負責業務職責](../user-roles/spec.md)。
-
-既有「Supervisor 重新指定訂單業務主管」流程（重新指定該訂單的審核業務主管 `approved_by_sales_manager_id`）屬不同語意，與本次「改派負責業務（`sales_id`）」為兩件事，不互相取代。
-
-#### Scenario: 業務查看訂單資訊卡業務負責人 row
-
-- **WHEN** 業務於訂單詳情頁「資訊」Tab 查看「訂單資訊」卡的業務負責人 row
-- **THEN** value 區 SHALL 僅顯示業務負責人姓名（或當無業務負責人時顯示 `-`）
-- **AND** value 區 MUST NOT 顯示「分享 / 轉單」按鈕或任何 inline 動作按鈕
-
-#### Scenario: 業務需要分享訂單檢視 / 編輯權限
-
-- **GIVEN** 業務想授予同事檢視 / 編輯訂單的權限
-- **WHEN** 業務切到「分享」Tab
-- **THEN** PermissionManagement 元件 SHALL 提供搜尋同事 + 授予檢視 / 編輯權限的完整流程
-- **AND** 業務 SHALL NOT 需要回到「資訊」Tab 觸發任何業務負責人 row 內的按鈕
-
-#### Scenario: 業務主管於業務負責人 row 改派
-
-- **WHEN** 業務主管於訂單詳情頁「資訊」Tab 查看業務負責人 row
-- **THEN** value 區 SHALL 顯示「改派負責人」入口（業務 / 諮詢視角不顯示此入口）
-- **AND** 點擊 SHALL 開啟改派 Dialog（見 § Requirement: 訂單負責業務改派）
+業務負責人 row 依視角分流：業務視角僅顯示姓名純文字，業務主管視角顯示「改派負責人」入口（見 § 訂單負責業務改派）。UI 呈現細節見 DESIGN.md §10.1.2。
 
 ### Requirement: 訂單詳情頁印件清單表格結構
 
-訂單詳情頁「印件清單」Tab 的表格 SHALL 採單層 row 結構（移除 ErpExpandableRow 兩層展開），共 14 欄，順序如下：
-
-| 順位 | 欄位 | 來源 / 說明 |
-|------|------|-------------|
-| 1 | 縮圖 | PrintItem.thumbnail（120px 方形；無圖時顯示佔位 icon） |
-| 2 | 印件名稱 | PrintItem.item_name |
-| 3 | 規格備註 | PrintItem.spec_note |
-| 4 | 類型 | PrintItem.type（打樣印件 / 大貨印件 / 補印印件，沿用 PrintItemTypeLabel） |
-| 5 | 印件狀態 | PrintItem 印製維度狀態 |
-| 6 | 審稿狀態 | PrintItem 審稿維度狀態 |
-| 7 | 打樣結果 | 打樣印件適用（sampleResult） |
-| 8 | 購買數量 | PrintItem.ordered_qty + unit |
-| 9 | 售價 | PrintItem.price_per_unit（未稅；訂單未取消即可顯示；製作前可 inline 編輯；製作後 disabled） |
-| 10 | 生產數量 | PrintItem.produced_qty |
-| 11 | 入庫數量 | PrintItem.warehouse_qty |
-| 12 | 出貨數量 | PrintItem.shipped_qty |
-| 13 | 交期 | PrintItem.delivery_date |
-| 14 | 操作 | 補件 / 編輯印件 / 檢視 按鈕群（依狀態條件顯示） |
-
-縮圖欄 SHALL 為首欄、尺寸 120 × 120 pixel 方形，渲染對齊 DESIGN.md § 0.1「縮圖 / 圖像欄置於資料列首欄」原則。
-
-操作欄 SHALL 依條件顯示三種按鈕：
-- **補件**：審稿維度狀態 = 不合格 時顯示（沿用既有 add-prepress-review 補件入口）
-- **編輯印件**：訂單狀態 ≠ 已取消 時顯示，點擊開啟 EditOrderPrintItemPanel（v1.13 放寬：不再限製作前；製作後仍顯示但 Panel 內售價欄位 disabled）
-- **檢視**：**永遠顯示**，點擊開啟 PrintItemDetailSidePanel（見下方 Requirement）
-
-操作欄 MUST NOT 包含「申請異動」按鈕（移除原 row-level 入口）。製作後印件規格變更的動線統一由「編輯印件」按鈕承擔（v1.7「業務通知印務從工單異動處理」動線廢止；改由業務於 Side Panel 直接編輯 + 系統推通知，見 § 訂單階段印件規格編輯時機）。
-
-以下 5 個欄位從表格主表移除，內容統一在 PrintItemDetailSidePanel 內呈現（漸進揭露 progressive disclosure）：
-- 預計產線
-- 難易度
-- 出貨方式
-- 稿件檔案
-- 工單數
-
-#### Scenario: 業務查看訂單詳情頁印件清單
-
-- **WHEN** 業務於訂單詳情頁切到「印件清單」Tab
-- **THEN** 表格 SHALL 顯示 14 欄、單層 row 結構
-- **AND** 縮圖 SHALL 為首欄、120px 方形
-- **AND** 表格 SHALL NOT 含「展開圖示」欄與兩層展開的工單嵌套表格
-
-#### Scenario: 製作前印件操作欄按鈕顯示
-
-- **GIVEN** 訂單處於製作前階段（status ∈ {報價待回簽、已回簽、審稿段}）
-- **WHEN** 業務查看印件清單操作欄
-- **THEN** 操作欄 SHALL 顯示「編輯印件」按鈕（點擊開 EditOrderPrintItemPanel）+「檢視」按鈕（點擊開 PrintItemDetailSidePanel）
-
-#### Scenario: 製作後印件操作欄按鈕顯示（v1.13 放寬）
-
-- **GIVEN** 訂單已進入製作階段（status ∈ {製作等待中、工單已交付、製作中、製作完成、出貨中、訂單完成}）
-- **WHEN** 業務查看印件清單操作欄
-- **THEN** 操作欄 SHALL 顯示「編輯印件」按鈕（v1.13 放寬：開啟 Side Panel 可編輯規格類欄位；Panel 內 `price_per_unit` disabled）+「檢視」按鈕
-- **AND** 操作欄 MUST NOT 顯示「申請異動」按鈕
-
-#### Scenario: 已取消訂單印件操作欄
-
-- **GIVEN** 訂單狀態 = 已取消
-- **WHEN** 業務查看印件清單操作欄
-- **THEN** 操作欄 SHALL 僅顯示「檢視」按鈕
-- **AND** 操作欄 MUST NOT 顯示「編輯印件」按鈕
-
-#### Scenario: 不合格印件含補件入口
-
-- **GIVEN** 印件審稿維度狀態 = 不合格
-- **WHEN** 業務查看印件清單操作欄
-- **THEN** 操作欄 SHALL 顯示「補件」按鈕（沿用 add-prepress-review change 既有補件入口）
-- **AND** 同時顯示「檢視」按鈕（以及訂單未取消時的「編輯印件」按鈕）
-
-#### Scenario: 縮圖無圖時顯示佔位
-
-- **GIVEN** 印件無縮圖（thumbnail URL 為空）
-- **WHEN** 業務查看印件清單縮圖欄
-- **THEN** 縮圖欄 SHALL 顯示 120 × 120 pixel 佔位框（dashed border + Image icon）
-- **AND** 佔位框 SHALL NOT 含下載 link icon
-
----
+訂單詳情頁「印件清單」Tab 的表格 SHALL 採單層 row 結構共 14 欄。欄位定義、操作欄按鈕條件顯示規則見 DESIGN.md §10.1.3。
 
 ### Requirement: 印件詳情 Side Panel（PrintItemDetailSidePanel）
 
-訂單詳情頁印件清單表格的「檢視」按鈕點擊 SHALL 開啟右側 Side Panel（PrintItemDetailSidePanel），承載印件單筆深入檢視內容。
-
-**容器規格**：
-- 採用 ErpSidePanel 元件
-- size = `2xl`（800px，對齊 Figma node-id 8977:269607 詳情預覽型 SidePanel 規格；add-side-panel-shared-components 2026-05-25 歸檔調整）
-- direction = `right`
-
-**Header**：
-- 印件名稱
-- PrintItemTypeLabel（沿用 add-after-sales-ticket / refine-after-sales-refund 既有共用元件）
-- 印件狀態 Badge
-- 「開啟完整詳情頁」link（點擊 navigate 至 `/print-items/<id>` 印件完整詳情頁）
-
-**Body**（四區塊垂直排列、用 SidePanel 共用元件組裝；add-side-panel-shared-components 2026-05-25 歸檔對齊 Figma node-id `8977:269607`）：
-
-整體採 `<SidePanelBody>` 包裝（自動處理 padding px-6 py-5 + section 間距 16+1+16 + `#e3e4e5` 水平分隔線、最後 section 無底部 hr）。
-
-1. **印件資訊區塊**：`<SidePanelSection title="印件資訊">` 包 2 個 `<SidePanelInfoTable>`：
-   - 上半 cols=1：訂單編號（link 至 /orders/<id>）/ 案名 / 客戶
-   - 下半 cols=2：印件編號（link 至 /print-items/<id>）/ 印件類型 / 審稿狀態 / 難易度 / 印製狀態 / 免審稿快速路徑 / 訂單來源 / 出貨方式 / 預計產線 + 規格備註 / 檔案備註 / 包裝備註 span=2 跨欄
-
-2. **印件檔案區塊**：`<SidePanelSection title="印件檔案">` 包 1 個 `<SidePanelInfoTable>` 3 行：
-   - 原始檔案 → `<SidePanelFileList files={sourceFiles} />`（垂直疊放）
-   - 審稿後檔案 → `<SidePanelFileList files={processedFiles} />`（垂直疊放，對齊 Figma 多檔案疊放）
-   - 稿件縮圖 → `<SidePanelThumbnailList thumbs={thumbFiles} />`（48x48 / gap 4px / horizontal）
-   - 每行 label 含 Info hint icon（透過 `SidePanelInfoItem.hint` prop）
-
-3. **相關工單清單**：`<SidePanelSection title="相關工單">` 內放 6 欄 `<table className="erp-table">`（工單編號 / 工單類型 / 狀態 / 印務 / 建立日期 / 預計完成日），承接本次從主表移除的「工單數」摘要 + 原 ErpExpandableRow 子表內容。工單編號 SHALL 為可點擊連結，點擊 navigate 至 `/work-orders/<id>`。
-
-4. **審稿紀錄區塊**：`<SidePanelSection title="審稿紀錄">` 內放 7 欄 `<table className="erp-table">`（輪次 / 送審時間 / 審稿人員 / 送審方式 / 結果 / 退件分類 / 備註），承載該印件全部 ReviewRound 歷史摘要。資料來源為 `OrderPrintItem.reviewRounds: ReviewRound[]`（內嵌結構、無需新增 store selector）。
-   - **排序**：依 `roundNo` 由新到舊（最新一輪在最上）
-   - **送審方式欄**：直接顯示 ReviewRound.source 值（`審稿` / `免審稿` / `售後補印`）
-   - **審稿人員欄文案規則**：
-     - `source = 審稿` + `reviewerId` 有值 → 顯示審稿人員姓名（透過 reviewerNames lookup）
-     - `source = 審稿` + `reviewerId` 為 null → 顯示「待分派」
-     - `source = 免審稿` → 顯示「系統免審」
-     - `source = 售後補印` → 顯示「系統沿用」
-   - **結果欄樣式**：採文字加色，**不**使用 Badge 元件
-     - `合格` → 預設色
-     - `不合格` → destructive 紅 `#dc2626`
-     - `待審`（`result = null`，補件後新建 Round 尚未審完）→ 橘色 `#C97A00`
-   - **退件分類欄**：合格 / 待審輪次 SHALL 顯示「—」；不合格輪次 SHALL 顯示 `rejectReasonCategory` enum 值
-   - **備註欄**（`reviewNote`）：採 `line-clamp-2` 截斷顯示 + 原生 `title` attribute hover tooltip 顯示完整內容（最長 1000 字）
-   - **空狀態**：`reviewRounds.length === 0` SHALL 顯示「此印件尚未送審」（與第 3 區塊「尚無工單」視覺一致）
-
-**Footer**：關閉按鈕
-
-#### Scenario: 業務點檢視按鈕開啟 Side Panel
-
-- **WHEN** 業務於印件清單操作欄點擊「檢視」按鈕
-- **THEN** 右側 SHALL 開啟 PrintItemDetailSidePanel
-- **AND** Header SHALL 顯示印件名稱 + 類型 Label + 狀態 Badge + 開啟完整詳情頁 link
-- **AND** dialog 寬度 SHALL 為 800px（ErpSidePanel size="2xl"）
-- **AND** Header SHALL 顯示印件名稱 + 類型 Label + 狀態 Badge + 開啟完整詳情頁 link
-- **AND** Body SHALL 依序顯示印件資訊 / 印件檔案 / 相關工單 / 審稿紀錄四區塊
-
-#### Scenario: SidePanel 內 section 間有水平分隔線
-
-- **GIVEN** PrintItemDetailSidePanel 開啟
-- **WHEN** 業務查看 SidePanel body
-- **THEN** 4 section 中前 3 個 section 後 SHALL 各有 1px `#e3e4e5` 水平分隔線
-- **AND** 最後一個 section（審稿紀錄）SHALL NOT 有底部分隔線
-- **AND** section 與 hr 之間 SHALL 各有 16px 垂直間距
-
-#### Scenario: SidePanel 印件檔案多檔垂直疊放
-
-- **GIVEN** 印件審稿後檔案有 2 個 file（`reviewFiles.fileRole='審稿後檔案'`）
-- **WHEN** 業務查看 SidePanel 印件檔案區塊「審稿後檔案」row
-- **THEN** 2 個 file chips SHALL 垂直疊放（wrapper class 含 `flex-col`）
-- **AND** chips 間距 SHALL 為 4px
-
-#### Scenario: SidePanel 稿件縮圖水平排列 48x48
-
-- **GIVEN** 印件稿件縮圖有 3 個 thumb（`reviewFiles.fileRole='縮圖'`）
-- **WHEN** 業務查看 SidePanel 印件檔案區塊「稿件縮圖」row
-- **THEN** 3 個縮圖 SHALL 水平排列（wrapper class 含 `flex-row`）
-- **AND** 每個縮圖尺寸 SHALL 為 48x48 (`w-12 h-12`)
-- **AND** 縮圖間距 SHALL 為 4px
-
-#### Scenario: Side Panel 內預計產線 / 難易度 / 出貨方式呈現
-
-- **GIVEN** 印件設有預計產線、難易度、出貨方式
-- **WHEN** 業務查看 Side Panel 印件資訊區塊
-- **THEN** PrintItemSpecCard SHALL 涵蓋預計產線 / 難易度 / 出貨方式三個欄位（由共用元件統一渲染）
-
-#### Scenario: Side Panel 相關工單清單
-
-- **GIVEN** 印件下有 1 個（或多個）相關工單
-- **WHEN** 業務查看 Side Panel 相關工單清單區塊
-- **THEN** 表格 SHALL 顯示 6 欄（工單編號 / 工單類型 / 狀態 / 印務 / 建立日期 / 預計完成日）
-- **AND** 工單編號 SHALL 為可點擊連結（點擊 navigate 至 `/work-orders/<id>`）
-- **AND** 印件無相關工單時 SHALL 顯示「尚無工單」空狀態提示
-
-#### Scenario: Side Panel 審稿紀錄顯示多輪混合結果
-
-- **GIVEN** 印件已有 2 輪審稿（第 1 輪不合格、第 2 輪合格）
-- **WHEN** 業務查看 Side Panel 審稿紀錄區塊
-- **THEN** 表格 SHALL 顯示 2 列、第 2 輪在最上（最新一輪在最上）
-- **AND** 第 2 輪結果欄 SHALL 顯示「合格」（預設色）、退件分類欄 SHALL 顯示「—」
-- **AND** 第 1 輪結果欄 SHALL 顯示「不合格」（destructive 紅）、退件分類欄 SHALL 顯示對應 rejectReasonCategory enum 值
-
-#### Scenario: Side Panel 審稿紀錄顯示免審稿輪次
-
-- **GIVEN** 印件於業務階段勾選免審稿、系統自動產生 source=`免審稿` 的 ReviewRound（reviewerId 為 null、result = 合格）
-- **WHEN** 業務查看 Side Panel 審稿紀錄區塊
-- **THEN** 表格 SHALL 顯示 1 列
-- **AND** 審稿人員欄 SHALL 顯示「系統免審」
-- **AND** 送審方式欄 SHALL 顯示「免審稿」
-- **AND** 結果欄 SHALL 顯示「合格」（預設色）
-- **AND** 退件分類欄 SHALL 顯示「—」
-
-#### Scenario: Side Panel 審稿紀錄顯示售後補印自動通過輪次
-
-- **GIVEN** 印件為補印印件（type = `補印印件`），系統建立 ticket 內補印 PrintItem 時自動產生 source=`售後補印` 的 ReviewRound（reviewerId 為 null、result = 合格、sourcePrintItemId 指向來源印件）
-- **WHEN** 業務查看 Side Panel 審稿紀錄區塊
-- **THEN** 表格 SHALL 顯示 1 列
-- **AND** 審稿人員欄 SHALL 顯示「系統沿用」
-- **AND** 送審方式欄 SHALL 顯示「售後補印」
-- **AND** 結果欄 SHALL 顯示「合格」（預設色）
-
-#### Scenario: Side Panel 審稿紀錄空狀態
-
-- **GIVEN** 印件尚未送審（reviewRounds 為空陣列）
-- **WHEN** 業務查看 Side Panel 審稿紀錄區塊
-- **THEN** 表格區域 SHALL 顯示「此印件尚未送審」空狀態提示
-- **AND** 視覺樣式 SHALL 與第 3 區塊「尚無工單」空狀態一致（灰字置中）
-
-#### Scenario: Side Panel 審稿紀錄備註截斷與完整顯示
-
-- **GIVEN** 某輪審稿備註（reviewNote）內容長度 > 50 字
-- **WHEN** 業務查看 Side Panel 審稿紀錄區塊的備註欄
-- **THEN** 備註欄 SHALL 以 `line-clamp-2` 截斷顯示
-- **AND** 滑鼠 hover 該儲存格 SHALL 顯示完整 reviewNote 內容（透過原生 title attribute tooltip，無需引入 shadcn Tooltip 元件）
-
-#### Scenario: 從 Side Panel 跳轉至印件完整詳情頁
-
-- **WHEN** 業務點擊 Side Panel Header 內「開啟完整詳情頁」link
-- **THEN** 系統 SHALL navigate 至 `/print-items/<id>` 印件完整詳情頁
-
----
+印件清單「檢視」按鈕 SHALL 開啟右側 Side Panel，承載印件資訊 / 印件檔案 / 相關工單 / 審稿紀錄四區塊。Panel 結構與呈現規則見 DESIGN.md §10.1.4。
 
 ### Requirement: 訂單業務主管審核欄位
 
@@ -2308,55 +2020,11 @@ Payment.amount 不拆雙欄（實際收款金額為含稅實收）。
 
 ### Requirement: 訂單詳情頁印件區「印件類型」欄位
 
-訂單詳情頁印件區的印件表格 SHALL 新增「印件類型」欄位，呈現規範依 [prototype-shared-ui spec § 列表頁印件類型欄位通用設計](../prototype-shared-ui/spec.md)。補印與大貨印件混合排列、**不獨立分組**，靠欄位內 `PrintItemTypeLabel` 標籤識別。
-
-訂單詳情頁印件區屬同訂單下印件總表，數量有限，**不需要 filter**（避免干擾），但欄位 MUST 顯示。
-
-#### Scenario: 訂單詳情頁印件區三值同表呈現
-
-- **GIVEN** 訂單 SO-001 有 4 筆印件：2 筆大貨（PI-001 / PI-002）、2 筆補印（PI-003 / PI-004，來自 AS-001）
-- **WHEN** 業務 / 印務 / 主管打開 SO-001 訂單詳情頁的印件區
-- **THEN** 4 筆印件 SHALL 在同一張表格內呈現（按印件編號排序）
-- **AND** 每筆印件 SHALL 在「印件類型」欄位顯示對應的 `PrintItemTypeLabel`
-- **AND** 補印印件 SHALL NOT 被獨立分組 / 加分隔線 / 加區塊標題
-- **AND** 補印印件的標籤 SHALL 可點擊跳轉 ticket AS-001
+訂單詳情頁印件區 SHALL 顯示「印件類型」欄位（打樣 / 大貨 / 補印），補印與大貨混合排列不獨立分組。UI 呈現見 DESIGN.md §10.1.5。
 
 ### Requirement: 訂單詳情頁訂單備註 section
 
-訂單詳情頁的「資訊 Tab」SHALL 新增「訂單備註」section，容納三個 free-text 欄位：`order_note`（訂單備註）、`delivery_note`（交貨備註）、`payment_note`（付款備註），由業務 / 諮詢在訂單階段填寫對客戶說明的標準化條款。
-
-此 section 與既有「訂單備註三類分欄」Requirement（`customer_note` / `internal_note` / `production_note`）並存：
-- **既有三類**：按「來源／可見性」分（員工內部紀錄、客戶不可見）
-- **新三類**：按「業務主題」分（訂單條件 / 交貨條件 / 付款條件，供後續匯出至客戶文件）
-
-每個新欄位的 textarea label 列右側 SHALL 顯示「插入常用備註」按鈕，觸發 [NoteTemplatePopover](../prototype-shared-ui/spec.md) 共用元件，業務可多選 seed 模板組合插入備註尾端。
-
-#### Scenario: 訂單詳情頁顯示訂單備註 section
-
-- **GIVEN** 訂單 status >= 訂單建立
-- **WHEN** 業務開啟訂單詳情頁切到「資訊 Tab」
-- **THEN** 資訊 Tab SHALL 顯示「訂單備註」section
-- **AND** section 內 SHALL 包含三個 textarea，UI label 為「訂單須知 / 交貨備註 / 付款備註」（對應 `order_note` / `delivery_note` / `payment_note`）
-- **AND** 每個 textarea label 列右側 SHALL 顯示「插入常用備註」按鈕
-- **AND** section 標題下方 SHALL 顯示副標題「訂單階段對客戶說明的標準化條款（訂單／交貨／付款）」
-
-#### Scenario: 既有訂單備註 section 與新 section 視覺分組
-
-- **GIVEN** 訂單詳情頁同時顯示既有「訂單備註三類分欄」與新「訂單備註」section
-- **THEN** 兩個 section SHALL 在視覺上明確分組（不同 section title、不同位置）
-- **AND** 新「訂單備註」section MUST 位於既有「訂單資訊卡」下方
-- **AND** 既有 customer_note / internal_note / production_note 區塊保持原有條件顯示邏輯（依 order_source 決定可見性）
-
-#### Scenario: 點 section 「編輯」按鈕開啟 OrderNotesEditDialog
-
-- **GIVEN** 訂單未完成（completed_at IS NULL）且使用者具編輯權限
-- **WHEN** 業務點訂單備註 section header 右上的「編輯」按鈕
-- **THEN** 系統 SHALL 開啟獨立的 `OrderNotesEditDialog`（不沿用既有 `OrderInfoEditDialog`，原因見 [ORD-014](../../../memory/Sens_wiki/wiki/erp/08-open-questions/ORD-014-訂單備註與訂單資訊編輯dialog分開.md)）
-- **AND** Dialog 內 SHALL 包含三個 textarea（訂單備註 / 交貨備註 / 付款備註）並預填當前 Order 對應欄位值
-- **AND** 每個 textarea label 列右側 SHALL 顯示「插入常用備註」按鈕（NoteTemplatePopover）+ 字數計數
-- **AND** 業務 SHALL 可同時編輯多個欄位後一次儲存
-- **AND** 點儲存後 SHALL 寫入 store（updateOrder）+ 顯示 Toast「訂單備註已更新」+ 加入 ActivityLog
-- **AND** Section body SHALL 為 read-only 顯示（label + 多行文字塊，空值顯示「尚未填寫」）；編輯動作一律走 dialog
+訂單詳情頁「資訊 Tab」SHALL 含「訂單備註」section，容納 order_note / delivery_note / payment_note 三欄位。編輯走獨立 Dialog（非沿用 OrderInfoEditDialog）。UI 呈現見 DESIGN.md §10.1.6。
 
 ### Requirement: 訂單階段訂單備註編輯權限與時機
 
@@ -2430,21 +2098,7 @@ Payment.amount 不拆雙欄（實際收款金額為含稅實收）。
 
 ### Requirement: 訂單備註與 payment_terms_note 共存策略
 
-新欄位 `payment_note`（訂單階段補充付款條件）與既有 `payment_terms_note`（從需求單帶入並鎖定的報價合約條款）SHALL 同時顯示於訂單詳情頁，並透過以下策略明確區分：
-
-- **位置區分**：`payment_terms_note` 放在「訂單資訊卡」內既有位置；`payment_note` 放在新「訂單備註」section 內
-- **Label 加註**：
-  - `payment_terms_note` 顯示為「收款條件（來自需求單）」
-  - `payment_note` 顯示為「付款備註（訂單階段補充）」
-- **可編輯性對比**：`payment_terms_note` 唯讀；`payment_note` 依「訂單階段訂單備註編輯權限與時機」Requirement 開放編輯
-
-#### Scenario: 兩個 payment 相關欄位同時顯示
-
-- **GIVEN** Order 含 payment_terms_note 與 payment_note 兩個欄位
-- **WHEN** 業務開啟訂單詳情頁資訊 Tab
-- **THEN** 訂單資訊卡 SHALL 顯示 payment_terms_note label 為「收款條件（來自需求單）」、唯讀
-- **AND** 訂單備註 section SHALL 顯示 payment_note label 為「付款備註（訂單階段補充）」、可編輯（依角色與時機）
-- **AND** 兩個欄位之間 MUST NOT 互相覆蓋或合併
+payment_note 與 payment_terms_note 同時顯示、位置與 Label 區分。payment_terms_note 唯讀，payment_note 依角色與時機開放編輯。UI 呈現見 DESIGN.md §10.1.7。
 
 ### Requirement: 訂單訂單備註 Data Model
 
