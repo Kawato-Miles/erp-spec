@@ -8,7 +8,7 @@ last-reviewed: 2026-05-31
 
 > 給 Claude / Miles 撰寫 `06-state-machines/` 狀態機卡時複製套用，**同時**作為 [[vault-audit]] 事後稽核此類卡的勾稽尺（一份兩用：寫時照填、審時照勾）。
 >
-> 分層定位：依 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]]，state-machine 屬「狀態」這一層——把上層 [[business-logic-writing-guide#4.0 各類卡的單一職責|business-logic 規則]]展開為「資料層面的狀態變化」。本卡只描述狀態，**不寫規則本體、不寫計算公式、不寫跨情境例子、不寫營運動機長篇論述**（規則正本在 `04-business-logic`，本卡 wiki link 指過去）。
+> 分層定位：依 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]]，state-machine 屬「狀態」這一層——把上層 [[business-logic-writing-guide#4.0 各類卡的單一職責|business-logic 規則]]展開為「資料層面的狀態變化」。**本卡承載狀態列舉（正本）與營運動機**，轉換規則（Given/When/Then + guard 條件）留在 OpenSpec 各模組 spec 的 Requirement。規則本體、計算公式、跨情境例子、營運動機長篇論述留 `04-business-logic`，本卡 wiki link 指過去。
 >
 > 上層約束（MUST 先讀）：[[business-logic-writing-guide#4.0 各類卡的單一職責]] 對應 type 職責 + [[business-logic-writing-guide#4.2 state-machine 卡（保留狀態 / 轉換，前置營運說明）]] 結構範式 + [[wiki-architecture]] 對應分層。本範本是上述兩份的合併展開，不與其衝突。
 >
@@ -62,10 +62,11 @@ source:
   # 或外部已驗證的依據（Miles 拍板 / 印刷業實務 / 法規）。嚴禁指同層狀態機卡 / 下層 / OpenSpec。
   - "[[<business-logic 規則正本卡，如 訂單異動規則>]]"
 implemented-by:
-  # 往「下」= 被誰實作 / 導航。指 OpenSpec Requirement 標題層 / prototype / test-case。不負責這張卡對不對。
-  - "openspec/specs/state-machines/spec.md#<Requirement 標題或 § 段落>"
+  # 往「下」= 被誰實作 / 導航。指各模組 OpenSpec spec 的轉換規則 Requirement / prototype / test-case。不負責這張卡對不對。
+  # 注意：轉換規則已從 state-machines/spec.md 遷移至各模組 spec（如 order-management / work-order），指向對應模組。
+  - "openspec/specs/<模組>/spec.md#Requirement: <轉換規則 Requirement 標題>"
+  - "sens-erp-prototype/src/types/<...>.ts"
 # provenance-commit: <SHA>    # 可選但建議：記上次對齊的 commit，供 stale 偵測
-related-spec: openspec/specs/state-machines/spec.md   # 過渡期保留，語意等同 implemented-by 弱版
 ---
 
 # <狀態機中文名>（<英文 Status 識別名，如 OrderAdjustmentStatus>）
@@ -87,9 +88,11 @@ related-spec: openspec/specs/state-machines/spec.md   # 過渡期保留，語意
 
 <2-4 句營運背景。技術名詞須括號附註、不得當主詞；禁中英夾雜。>
 
-## 狀態清單
+## 狀態列舉（正本）
 
-> 該寫：每個狀態的「狀態 / 說明 / 對應營運需求」三欄；對應營運需求講清楚「這個狀態存在是為了應付什麼營運情況」。
+> **本段是該實體狀態的正本定義**。狀態的新增與修改是商業決策，直接在本卡維護，不經 OpenSpec change 工作流。轉換條件（Given/When/Then）留在 OpenSpec 各模組 spec 的 Requirement。
+>
+> 該寫：每個狀態的「狀態 / 說明 / 對應營運需求」三欄（或依路徑分子表）；對應營運需求講清楚「這個狀態存在是為了應付什麼營運情況」。
 > 不該寫：認列公式、判斷準則細則、一定要成立的規則——只在表後加一行 wiki link 指 business-logic 正本卡。
 
 | 狀態 | 說明 | 對應營運需求 |
@@ -165,10 +168,11 @@ related-spec: openspec/specs/state-machines/spec.md   # 過渡期保留，語意
 
 ## 來源
 
-> 連回可獨立驗證的外部出處（OpenSpec spec § 段落 / 法規 / 拍板 OQ）。末行指向 changelog（正文零迭代史）。
+> 連回可獨立驗證的外部出處（OpenSpec 各模組 spec § 轉換規則 / 法規 / 拍板 OQ）。末行指向 changelog（正文零迭代史）。
 > 禁：source 段在正文重述規則；指向其他同層狀態機卡當作這張卡為什麼對的依據。
 
-- OpenSpec [state-machines/spec.md § <對應 Requirement / 段落>](../../../../openspec/specs/state-machines/spec.md)（<這段 spec 涵蓋什麼>）
+- 狀態列舉正本：本卡「狀態列舉（正本）」段落
+- 轉換規則：OpenSpec [<模組>/spec.md § <轉換規則 Requirement>](../../../../openspec/specs/<模組>/spec.md)
 - 迭代脈絡見 [[business-logic-changelog#<本卡名>]]
 ```
 
@@ -192,8 +196,8 @@ last-reviewed: 2026-MM-DD
 source:
   - "[[<規則正本卡 X>]]"
 implemented-by:
-  - "openspec/specs/state-machines/spec.md#<Requirement X>"
-related-spec: openspec/specs/state-machines/spec.md
+  - "openspec/specs/<模組X>/spec.md#Requirement: <轉換規則 Requirement>"
+  - "sens-erp-prototype/src/types/<檔名>.ts"
 ---
 
 # <實體X>狀態（<EntityXStatus>）
@@ -208,7 +212,10 @@ related-spec: openspec/specs/state-machines/spec.md
 ## 營運背景
 <2-4 句佔位營運背景，業務語言。>
 
-## 狀態清單
+## 狀態列舉（正本）
+
+> 本段是狀態正本。狀態新增與修改直接在本卡維護。
+
 | 狀態 | 說明 | 對應營運需求 |
 |------|------|------------|
 | <狀態A> | <說明> | <營運需求> |
@@ -245,7 +252,8 @@ related-spec: openspec/specs/state-machines/spec.md
 - 相關角色：[[<角色卡>]]
 
 ## 來源
-- OpenSpec [state-machines/spec.md § <段落X>](../../../../openspec/specs/state-machines/spec.md)
+- 狀態列舉正本：本卡「狀態列舉（正本）」段落
+- 轉換規則：OpenSpec [<模組X>/spec.md § <轉換規則 Requirement>](../../../../openspec/specs/<模組X>/spec.md)
 - 迭代脈絡見 [[business-logic-changelog#<實體X>狀態]]
 ```
 
@@ -266,7 +274,7 @@ related-spec: openspec/specs/state-machines/spec.md
 
 ### 本層特有項（state-machine 職責邊界）
 
-- [ ] `## 狀態清單` 表格含「對應營運需求」第三欄，每個關鍵狀態都有對應營運需求（不空泛）。
+- [ ] `## 狀態列舉（正本）` 表格含「對應營運需求」第三欄，每個關鍵狀態都有對應營運需求（不空泛）。狀態列舉為正本，新增 / 修改直接在本卡維護。
 - [ ] `## 狀態轉換` 有 ASCII 流程圖；多條路徑分塊並標清楚發起方 / 條件。
 - [ ] 狀態名 / 路徑名用業務語意命名（穩定可讀），**未用流水號（如 S1 / R1）當定位點、未重排、未重用**。
 - [ ] 每個關鍵轉換的營運動機以「轉換 → 動機 → 1 例子」呈現；例子用真實格式（編號 / 金額 / 角色），停在業務語言、**無 UI 措辭**（按鈕 / 下拉 / 彈窗 / 點擊 / Tab / Side Panel 等）。
