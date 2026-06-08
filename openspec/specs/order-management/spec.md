@@ -1305,7 +1305,7 @@ Order 實體 SHALL 新增以下三個 free-text 欄位：
 
 每筆訂單 SHALL 支援多檔回簽檔案上傳，透過子表 `OrderSignedFile` 儲存。檔案用途為客戶印 / 簽名後回傳的報價 / 訂單確認文件。
 
-`OrderSignedFile` 欄位結構同 § SalesAllowanceFile（父實體 FK 改為 `order_id`）。
+`OrderSignedFile` 欄位結構同 [order-billing § SalesAllowanceFile](../order-billing/spec.md#salesallowancefile折讓單回簽附件)（父實體 FK 改為 `order_id`）。
 
 **上傳時機**（v1.13 放寬）：訂單未取消（`order.status !== '已取消'`）皆可上傳。首次上傳於「報價待回簽」狀態時 SHALL 觸發訂單狀態自動推進（詳見 § 訂單確認觸發），並寫入 `Order.signed_at` = 第一份上傳完成時間。後續追加上傳走「append」模式，MUST NOT 覆寫既有檔案，MUST NOT 重複觸發狀態推進，MUST NOT 覆寫 `signed_at`。
 
