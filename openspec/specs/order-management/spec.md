@@ -1,20 +1,20 @@
 ## Purpose
 
-訂單管理模組 -- 統一線上/線下訂單管理，支援多印件多工單結構，涵蓋訂單建立、印件管理、付款記錄、電子發票、出貨單管理全流程。
-取代現有 EC + Ragic 雙平台組合。
+訂單管理模組 — 統一線上 / 線下訂單管理，支援多印件多工單結構，涵蓋訂單建立、印件管理、訂單審核、出貨單管理全流程。取代現有 EC + Ragic 雙平台組合。
 
 **問題**：
-- EC + Ragic 雙平台管理訂單，線上/線下資料結構不同無法互通
-- EC 一訂單僅對應一張工單，無法支援「一訂單→多印件→各自多工單」
+- EC + Ragic 雙平台管理訂單，線上 / 線下資料結構不同無法互通
+- EC 一訂單僅對應一張工單，無法支援「一訂單 → 多印件 → 各自多工單」
 - 分批出貨無系統化統計與防呆，審稿兼任工單開立導致職責錯位
 
 **目標**：
-- 主要：建立統一訂單管理平台，支援線上/線下訂單，完成 EC + Ragic 系統轉換，支援多印件多工單結構
-- 次要：建立 Dashboard / Forecast 的資料基礎
+- 建立統一訂單管理平台，支援線上 / 線下訂單，完成 EC + Ragic 系統轉換，支援多印件多工單結構
 
 - 來源 BRD：[訂單 BRD](https://www.notion.so/32c3886511fa806bad41d755349b0567)（v0.5）
 - Prototype：`sens-erp-prototype/src/components/order/`
-- 相依模組：需求單（線下單轉入）、EC 平台（線上單）、工單管理、統一金流、第三方物流
+- 相依模組：[order-billing](../order-billing/spec.md)（帳務）、[order-adjustment](../order-adjustment/spec.md)（金額異動）、需求單（線下單轉入）、EC 平台（線上單）、工單管理
+- 欄位正本：[wiki 訂單實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/訂單.md)
+- 狀態列舉正本：[wiki 訂單狀態機卡](../../../memory/Sens_wiki/wiki/erp/06-state-machines/訂單狀態.md)
 
 ---
 ## Requirements

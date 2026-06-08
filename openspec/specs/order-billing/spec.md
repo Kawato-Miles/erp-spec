@@ -1,10 +1,19 @@
-# 訂單帳務（Order Billing）
+## Purpose
 
-> 版本：v0.1
-> 
-> 訂單帳務模組，涵蓋發票開立與作廢、折讓、收款（Payment）、請款期次（BillingInstallment）、對帳、帳齡、KPI 等帳務功能。
-> 
-> 拆分自 [order-management/spec.md](../order-management/spec.md)（2026-06-09）。訂單核心（建立 / 狀態 / 印件管理）見 [order-management](../order-management/spec.md)；訂單異動（OA）見 [order-adjustment](../order-adjustment/spec.md)。
+訂單帳務模組 — 管理訂單的應收、發票、收款三條線的全生命週期，並以三方對帳機制確保一致性。
+
+**問題**：
+- 印刷廠一筆訂單的錢分三條線各自記：業務先算出「這筆訂單客戶應該付多少」（應收）、開了幾張發票合計多少（發票）、實際收到客戶匯來多少（收款）。這三條線是不同人、不同時間、用不同單據各自填進系統的，很容易某一條漏記或填錯
+- 公司的做法不是事先用一堆硬性規定把三條線綁死（那樣會把正常生意卡死），而是讓業務照客戶實際狀況自由處理，最後靠對帳把這三個數字湊在一起比對
+- 退款牽動已開發票（折讓或作廢），受中華民國齊報稅期 14 天時限法規約束
+- 七個帳務實體（收款紀錄、訂單異動、請款期次、發票、折讓單、收款核銷分配、售後服務單）互相連帶，改一個要檢查其他
+
+**目標**：
+- 給業務處理款項的彈性（不綁死收款順序與發票時機），靠對帳兜底確保一致
+- 發票開立、折讓、作廢符合 ezPay 與中華民國電子發票法規硬約束
+- 三方對帳（應收 = 發票淨額 = 收款淨額）作為所有帳務操作的最終檢查點
+
+- 相依模組：[order-management](../order-management/spec.md)（共用 Order 實體）、[order-adjustment](../order-adjustment/spec.md)（金額異動影響應收）、[consultation-request](../consultation-request/spec.md)（諮詢費帳務）、[after-sales-ticket](../after-sales-ticket/spec.md)（售後退款）
 
 ---
 ## Requirements
