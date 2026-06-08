@@ -184,7 +184,6 @@ last-reviewed: YYYY-MM-DD
 source:
   - "[[<X 規則卡>]]"
 implemented-by:
-  - "openspec/specs/<模組-X>/spec.md#Data Model: <實體-Z>"
   - "sens-erp-prototype/src/types/<檔名>.ts"
 ---
 
