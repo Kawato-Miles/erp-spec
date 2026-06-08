@@ -3293,55 +3293,9 @@ v1.13 既有 Payment Requirement 主體沿用，但 `paymentPlanId` 欄位 **REM
 - **THEN** 退款進度區 MUST 隱藏或顯示「已完成」摺疊狀態
 - **AND** 退款紀錄 MUST 仍可於收款紀錄列表 / 發票列表 / 訂單異動列表查閱
 
-### Requirement: 付款計畫變更分階段稽核
+### Requirement: 付款計畫變更分階段稽核 — 已廢止
 
-業務 / 諮詢變更已建立的付款計畫（新增 / 刪除 / 修改期別金額或日期） SHALL 依業務主管審核狀態採分階段稽核邏輯：
-
-**業務主管審核通過前（訂單為內部初版，`approved_at` 為空）**：
-- 變更不觸發稽核欄位
-- 不需回業務主管重新審核
-- 業務 / 諮詢可自由調整不留紀錄
-
-**業務主管審核通過後（訂單為正式版，`approved_at` 非空）**：
-- 變更時系統 MUST 自動填入 `original_expected_date`（僅首次變更時填入，後續變更保留首次值）
-- 變更時系統 MUST 將 `change_count` 加 1
-- 變更 MUST 於 ActivityLog 記載（含變更前後日期、操作者、變更時間）
-- 變更不再回業務主管審核（取代原既有「付款計畫變更觸發訂單回業務主管審核」機制）
-
-斷點判斷依據為 `Order.approved_at` 欄位（業務主管核可時填入，初始為 NULL）。
-
-**Data Model**：
-
-| 欄位 | 型別 | 預設值 | 必填 | 說明 |
-|------|------|--------|------|------|
-| `original_expected_date` | date | NULL | N | 業務主管審核通過後首次變更時，系統寫入該期次「變更前」的 `scheduled_date`；首次寫入後 immutable |
-| `change_count` | integer | 0 | Y | NOT NULL；業務主管審核通過後每次變更 +1；審核通過前變更不累加 |
-
-#### Scenario: 業務主管審核通過前變更不留稽核紀錄
-
-- **GIVEN** 訂單狀態為「待業務主管審核」（`approved_at` 為空）
-- **WHEN** 業務修改 PaymentPlan 期次的金額或日期
-- **THEN** 系統 MUST NOT 填入 `original_expected_date`
-- **AND** `change_count` MUST 保持 0
-- **AND** 訂單狀態 MUST 維持「待業務主管審核」（不觸發回審）
-
-#### Scenario: 業務主管審核通過後首次變更觸發稽核
-
-- **GIVEN** 訂單 `approved_at` 非空（業務主管已核可）
-- **AND** PaymentPlan 期次 X 的 `original_expected_date` 為空、`change_count = 0`
-- **WHEN** 業務修改期次 X 的預計收款日（從 2026-06-01 改為 2026-06-15）
-- **THEN** 系統 MUST 填入 `original_expected_date = 2026-06-01`
-- **AND** `change_count` MUST 變為 1
-- **AND** ActivityLog MUST 記載「PaymentPlan 期次 X 變更：2026-06-01 → 2026-06-15」
-- **AND** 訂單狀態 MUST 不變（不回業務主管審核）
-
-#### Scenario: 後續變更累計變更次數但保留首次原始日期
-
-- **GIVEN** PaymentPlan 期次 X 的 `original_expected_date = 2026-06-01`、`change_count = 1`、當前 `scheduled_date = 2026-06-15`
-- **WHEN** 業務再次修改 `scheduled_date` 為 2026-07-01
-- **THEN** `original_expected_date` MUST 保留為 2026-06-01（首次變更前的值，不被覆寫）
-- **AND** `change_count` MUST 變為 2
-- **AND** ActivityLog MUST 記載「PaymentPlan 期次 X 變更：2026-06-15 → 2026-07-01」
+> 付款計畫（PaymentPlan）已由 BillingInstallment 取代。分階段稽核邏輯見 § Requirement: 期次變更稽核軌跡。
 
 ### Requirement: 業務送出訂單審核（草稿 → 待業務主管審核）
 
@@ -3644,15 +3598,9 @@ Invoice MUST NOT 包含 `print_flag`（索取紙本）欄位。
 
 **送藍新對應**：Invoice.items 陣列 N 筆品項轉成藍新 PostData 五欄字串時，以 `|` 為分隔符（例：`ItemName="商品一|商品二"` / `ItemCount="1|2"`）。
 
-### PlannedInvoice（預計發票）— 已廢止，由 BillingInstallment 取代
+### PlannedInvoice（預計發票）— 已廢止
 
-> **BREAKING（unify-billing-installment-and-reconciliation-csv 2026-05-28 歸檔）**：PlannedInvoice 實體已廢止，由 BillingInstallment（請款期次）統一實體取代（合併原 PaymentPlan + PlannedInvoice 雙頭維護）。
-> 欄位對應：`status`（預計開立 / 已開立 / 已取消）→ `invoicing_status`（未開立 / 已開立 / 已作廢）+ `cancelled` boolean（對應見 [state-machines spec](../state-machines/spec.md) § BillingInstallment 取代 PlannedInvoice 狀態機）；`expected_date` → `due_date` / `scheduled_issue_date`；`scheduled_amount` / `description` / `items: InvoiceItem[]` / `linked_invoice_id` / `created_by` / `created_at` / `updated_at` 沿用語意。
-> `items: InvoiceItem[]` 品項鏈式預填語意（建立時從訂單印件預填、印件異動不連動、一鍵開票深拷貝至 Invoice）已移轉至 § Requirement: BillingInstallment 品項鏈式預填 + § Requirement: 期次↔發票 1:1 嚴格約束 + 一鍵開票繼承。
-> 自動建立規則（諮詢訂單收尾不做大貨 / 需求單流失自動建、諮詢取消 MUST NOT 自動建）見 § Requirement: 諮詢訂單收尾自動建 BillingInstallment 規則。
-> Prototype 階段三型別檔（`src/types/plannedInvoice.ts` 等）暫留作 `buildBillingInstallmentsFromLegacy` seed data（R2 deferred），業務 UI 三層 dead code 已於 remove-legacy-payment-plan-planned-invoice-junction（2026-05-29）移除。
-
-BillingInstallment 完整實體欄位表見本 § Data Model 下方 § BillingInstallment（請款期次）完整實體；雙維度狀態機定義見 [state-machines spec](../state-machines/spec.md) § BillingInstallment 雙維度狀態機。
+> 已由 BillingInstallment 取代。完整欄位對應見 [state-machines spec](../state-machines/spec.md) § BillingInstallment。
 
 ### SalesAllowanceFile（折讓單回簽附件）
 
@@ -3727,9 +3675,9 @@ BillingInstallment 完整實體欄位表見本 § Data Model 下方 § BillingIn
 
 > 處理中 Payment 老化追蹤：createdAt < now − 7 天（自然日）且未取消時，訂單詳情頁顯示「老化 N 天」Badge（resolve [[ORD-021]]）。處理中 Payment 不入 GL 應收應付帳本（resolve [[ORD-019]]）。
 
-### PaymentPlan（付款計畫期次）— 已廢止，由 BillingInstallment 取代
+### PaymentPlan（付款計畫期次）— 已廢止
 
-> unify-billing-installment-and-reconciliation-csv（2026-05-28 歸檔）後，付款計畫期次併入 BillingInstallment（請款期次）統一實體，PaymentPlan 與其 helper（calcPlanCollectedAmount / derivePlanStatus）於 Prototype 過渡期保留兼容舊 mock，待 task 完成後正式移除。完整欄位見 § BillingInstallment（請款期次）完整實體。
+> 已由 BillingInstallment 取代。
 
 ### PaymentAllocation（收款核銷分配）
 
