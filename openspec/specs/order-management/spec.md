@@ -1886,7 +1886,7 @@ UI 呈現（Dialog 對應、helper function、條件顯示）見 DESIGN.md §10.
 > **欄位正本已遷移至 wiki 實體卡**（業務可見欄位表）。本段僅保留實體關聯總覽與開發者技術參考。
 >
 > - 訂單欄位正本：[wiki 訂單實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/訂單.md) § 訂單欄位（業務可見）
-> - 印件欄位正本：[wiki 印件實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md)（待遷移）
+> - 印件欄位正本：[wiki 印件實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) § 欄位（業務可見）
 > - 帳務實體欄位：[order-billing spec](../order-billing/spec.md) § Data Model
 > - 異動實體欄位：[order-adjustment spec](../order-adjustment/spec.md) § Data Model
 > - Prototype 型別定義：`sens-erp-prototype/src/types/order.ts`
