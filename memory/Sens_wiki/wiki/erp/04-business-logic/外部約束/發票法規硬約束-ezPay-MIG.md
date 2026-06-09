@@ -1,5 +1,6 @@
 ---
-type: business-logic
+type: business-rule
+mutability: external
 module:
   - order-management
   - after-sales-ticket
