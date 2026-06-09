@@ -21,9 +21,9 @@
 | 生產任務 | `openspec/specs/production-task/spec.md` | https://www.notion.so/32c3886511fa806ab1d5c2b815bf9c94 | v0.4 | 草稿 |
 | 稿件審查 | `openspec/specs/prepress-review/spec.md` | https://www.notion.so/32c3886511fa80eab36aded242f6deb9 | v1.6 | 草稿 |
 | 狀態機（跨模組）| `openspec/specs/state-machines/spec.md` | https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 | — | 草稿 |
-| 商業流程（跨模組）| `openspec/specs/business-processes/spec.md` | https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a | — | 草稿 |
+| ~~商業流程（跨模組）~~| ~~已廢除~~（商業規則遷 wiki `04-business-logic/`，系統行為遷各模組 spec）| — | — | 廢除（2026-06-09） |
 | 業務情境（跨模組）| `openspec/specs/business-scenarios/spec.md` | https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05 | — | 草稿 |
-| 使用者角色（跨模組）| `openspec/specs/user-roles/spec.md` | https://www.notion.so/32c3886511fa8144b38adc9266395d15 | — | 草稿 |
+| ~~使用者角色（跨模組）~~| ~~已廢除~~（角色職責遷 wiki `03-roles/`，系統行為遷各模組 spec）| — | — | 廢除（2026-06-09） |
 | 業務平台（容器 spec）| `openspec/specs/sales-platform/spec.md` | — | v0.3 | 草稿 |
 | 材料主檔（BOM 底層）| `openspec/specs/material-master/spec.md` | — | v0.1 | 草稿（ERP 中台已實作）|
 | 工序主檔（BOM 底層）| `openspec/specs/process-master/spec.md` | — | v0.1 | 草稿（ERP 中台已實作）|
