@@ -2,72 +2,54 @@
 type: state-machine
 module:
   - qc
+  - production-task
 related-spec: openspec/specs/state-machines/spec.md
 status: active
-last-reviewed: 2026-05-19
+last-reviewed: 2026-06-09
 ---
 
-# QC 狀態（QCStatus）
+# QC 狀態
 
-> [[wiki/erp/03-roles/QC]] 的狀態機。**QC 完成後自動觸發工單完成度重算（齊套性邏輯）**。
+> QC 已併入 [[生產任務狀態|生產任務]] 框架（`type = qc`，2026-05-20 reclassify-qc-and-add-inspection change 歸檔）。獨立 QCRecord 實體已廢止，QC 統一以 ProductionTask（`type = qc`、`scope = print_item`）表達。**QC 達標後自動觸發印件入庫數量重算（齊套性邏輯）**。
 
-## 狀態清單
+## 狀態列舉
 
-```
-待執行 → 執行中 → 已完成
-                ↓
-            已作廢
-```
+QC 任務的狀態列舉與 [[生產任務狀態]] 共用，不另設獨立狀態機：
+
+| 狀態 | 說明 |
+|------|------|
+| 待處理 | QC 任務已建立，等待[[品檢人員]]開始檢驗 |
+| 製作中 | 品檢人員開始執行驗收（首筆報工紀錄觸發） |
+| 已完成 | 已達標（通過數量達目標） |
+| 已取消 | 作廢（印務主動或生產任務連鎖） |
 
 ## 主要轉移觸發
 
 | From → To | 觸發 | 推進方式 |
 |-----------|------|---------|
-| - → 待執行 | 印務建立 QC 單 | 手動 |
-| 待執行 → 執行中 | QC 人員開始檢驗 | 手動 |
-| 執行中 → 已完成 | QC 人員填寫結果 | **自動觸發工單完成度重算** |
-| 待執行 / 執行中 → 已作廢（印務）| 印務主動作廢（理由文字必填）| 手動 |
-| 任何狀態 → 已作廢（連鎖）| 對應[[生產任務]]作廢 | **自動連鎖** |
+| - → 待處理 | 印務建立 QC 生產任務（`type = qc`） | 手動 |
+| 待處理 → 製作中 | 品檢人員首筆報工紀錄 | 自動 |
+| 製作中 → 已完成 | 通過數量達目標（達標） | 自動 |
+| 待處理 / 製作中 → 已取消 | 印務主動作廢（理由必填）或對應 production PT 作廢連鎖 | 手動 / 自動 |
 
-## 自動觸發
+## 與生產任務的關聯
 
-| 觸發點 | 自動行為 |
-|--------|---------|
-| QC 完成時 | 觸發工單完成度重算（齊套性邏輯，見 [[齊套邏輯]]）|
-| 生產任務作廢 | QC 單自動作廢 |
-
-## 作廢規則
-
-- **印務作廢**：理由文字必填，限中文 6 字 / 英文 20 字內（藍新限制）
-- **連鎖作廢**：生產任務作廢時系統自動帶動 QC 單作廢，無需印務操作
-
-## 影響工單完成度
-
-```
-pt_qc_passed = 所有已完成 QC 紀錄的 passed_quantity 加總
-工單完成度 = floor(min over 影響成品生產任務 of (pt_qc_passed / quantity_per_work_order))
-```
-
-詳見 [[齊套邏輯]] § 二、四層計算精確流程 § 層級 1。
-
-## QC 數量限制
-
-```
-可 QC 數量 ≤ 報工數量 - 其他 QC 單已申請數量
-```
+- QC PT（`type = qc`、`scope = print_item`）的狀態變更**不走**「PT → 任務 → 工單」向上傳遞鏈
+- QC PT 狀態變更直接影響其所屬印件的入庫數量計算（見 [[齊套邏輯]]）
+- inspection PT（`type = inspection`、`scope = work_order_task`）的結果影響對應 production PT 的有效數量
 
 ## 相關業務邏輯
 
-- [[齊套邏輯]]
+- [[齊套邏輯]]（QC 通過驅動工單完成度與印件入庫數量）
 - [[數量換算規則]]
-- [[印件生產流程]] § 七、QC 數量限制
+- [[印件生產流程]]
 
 ## 關聯狀態機
 
-- [[生產任務狀態]]（向下：作廢連鎖）
-- [[工單狀態]]（向上：QC 通過驅動工單完成度）
+- [[生產任務狀態]]（QC 共用此狀態機，以 `type` 區分）
+- [[工單狀態]]（QC 達標影響工單完成度）
 
 ## 來源
 
-- OpenSpec [state-machines/spec.md § QC 狀態](../../../../openspec/specs/state-machines/spec.md)
-- OpenSpec [qc/spec.md](../../../../openspec/specs/qc/spec.md)
+- OpenSpec [state-machines/spec.md § 生產任務狀態機](../../../../openspec/specs/state-machines/spec.md)（QC PT 與 inspection PT 的狀態變更傳遞規則）
+- OpenSpec [qc/spec.md](../../../../openspec/specs/qc/spec.md)（QC 模組行為規格）

@@ -1065,7 +1065,7 @@ v1.13 OrderAdjustment 狀態機保留主結構：草稿 → 待主管審核 → 
 | OA 類型 | requires_supervisor_approval | 狀態流轉 |
 |---------|----------------------------|---------|
 | 補收正項（amount > 0 且 adjustment_type ∈ {加印追加, 加運費, 急件費, 補退正項, 規格變更正項}）| false | **草稿 → 已執行（跳過待主管審核 + 已核可）**；approved_by = 業務 user_id、executed_at = now；應收 +N 立即認列，**不綁 Payment** |
-| 退款負項（amount < 0）| true | 草稿 → 待主管審核 → 已核可 / 已退回 → 已執行（沿用 v1.13）；綁定退款 Payment 切已完成累計達 OA.amount 才推進已執行 |
+| 退款負項（amount < 0）| true | 草稿 → 待主管審核 → 已核可 / 已退回 → 已執行；**主管核可當下即推進已執行**（approved_by = 主管 user_id、executed_at = 核可時點），應收即時減 N、不等退款 Payment 切已完成（對齊主 OA 狀態機 Requirement § 退款負項） |
 | 諮詢取消退費（系統內生，amount = -1000 固定）| false | **草稿 → 已核可**（系統建立直接已核可，approved_by = system、executed_at = NULL）；退款 Payment 切已完成累計達 -1000 推進已執行（見 § Requirement: 諮詢取消退費 OA 系統建已核可，取代既有「系統建直接已執行」）|
 | 規格變更（amount = 0）| - | 不建 OA（沿用既有規則）|
 
