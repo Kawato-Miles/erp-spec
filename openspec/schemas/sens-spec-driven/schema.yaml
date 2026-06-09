@@ -81,6 +81,16 @@ artifacts:
       缺少任一項視為不完整，不得省略。
 
 
+      **欄位名用業務中文（Sens 自訂規則）**：
+
+      描述段與 Scenario 中的欄位名 MUST 使用 wiki 實體卡定義的「介面欄位」
+      中文名稱，不使用 snake_case 技術欄位名。範例：用「訂單類型」不用
+      `order_type`、用「難易度」不用 `difficulty_level`、用「收款紀錄」
+      不用 `Payment`。實體名同理：用「訂單額外費用」不用
+      `OrderExtraCharge`。如需標示技術名供開發對照，用括號附註（如
+      「難易度（技術欄位 difficulty_level）」），但一般不需要。
+
+
       範例：
 
       ```
