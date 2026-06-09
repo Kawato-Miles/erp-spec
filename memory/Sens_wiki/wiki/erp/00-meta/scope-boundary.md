@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-21
+last-reviewed: 2026-06-09
 ---
 
 # Vault Scope Boundary（收 / 不收）
@@ -19,8 +19,8 @@ last-reviewed: 2026-05-21
 | 痛點 / 利害關係人 / Impact Score | 同上 | [[pain-points]]、[[stakeholders]]、[[impact-score-framework]] |
 | 印刷業 domain | `02-domain/` | [[printing-industry]]、glossary 三份 |
 | 角色 R&R | `03-roles/` | 16 角色 + [[_alignment-report]] |
-| 商業邏輯：共用規則卡（這個領域所有規則都一定要遵守的底線，可驗算）| `04-business-logic/` | 對帳一致性「應收 ＝ 發票淨額 ＝ 收款淨額」等共用規則卡（帶實例階段建）|
-| 商業邏輯：業務規則卡（具體 if-then 規則 / 計算邏輯）| `04-business-logic/` | [[齊套邏輯]]、[[數量換算規則]]、[[付款發票邏輯]] 等 |
+| 商業邏輯：服務藍圖（A 類，端到端業務鏈）| `04-business-logic/` | 線下訂單流程、諮詢服務流程等（`type: service-blueprint`）|
+| 商業邏輯：商業規則（B 類，獨立決策邏輯 / 領域知識）| `04-business-logic/` | [[訂單異動規則]]、[[齊套邏輯]]、[[對帳一致性]] 等（`type: business-rule`）|
 | 資料模型實體與欄位（**含業務欄位表正本**） | `05-entities/` | 10 個實體卡；業務可見欄位表為正本（2026-06-09 從 OpenSpec Data Model 遷入） |
 | 狀態機（**含狀態列舉正本**） | `06-state-machines/` | 9 個狀態機卡；狀態列舉為正本 |
 | 跨模組情境 | `07-scenarios/` | 13 個情境 |
@@ -43,6 +43,25 @@ last-reviewed: 2026-05-21
 - **怎麼連**（實體 / 規則 / 角色之間的關聯）
 - **未精練的已驗證素材**（觀察 / 反饋 / 研究筆記）：進 `raw/`，由 vault-ingest skill 寫入
 - **時序回顧**（每日進度 / 每週學到）：進 `14-reviews/`，由 daily-brief / weekly-review skill 寫入
+
+### ERP / MES 邊界（工廠現場）
+
+ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」。以下屬工廠內部作業，不在 ERP 範圍：
+
+| 不收（工廠現場） | 說明 |
+|----------------|------|
+| 機台操作（上機、換模、調色） | 工廠內部製程執行 |
+| 工廠內部排程（機台排隊、插單調序） | 工廠自行安排 |
+
+以下屬 ERP 範圍：
+
+| 收（ERP 管轄） | 說明 |
+|---------------|------|
+| 派工指令 | ERP 發出工單派工 |
+| 領料（材料出庫） | 系統記錄 |
+| 師傅報工（回報完工） | 系統記錄 |
+| 轉交（製作完成項目移動到品檢區） | 系統記錄 |
+| 品檢（半成品 QC + 成品品檢） | 系統記錄 |
 
 ## 二、不收（屬其他層）
 
