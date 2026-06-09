@@ -1,0 +1,196 @@
+name: sens-spec-driven
+version: 1
+description: Sens ERP 專用 OpenSpec schema — fork 自 spec-driven，強化 Requirement 品質（Priority + Rationale 必填）、對齊 wiki 正本分工
+
+artifacts:
+  - id: proposal
+    generates: proposal.md
+    description: 變更提案（Why + What Changes + Capabilities）
+    template: proposal.md
+    instruction: >
+      建立變更提案，說明為什麼需要此變更。使用繁體中文撰寫。
+
+
+      必要段落：
+
+      - **Why**：1-2 句描述問題或機會。背景段 MUST 以相對路徑引用 wiki
+      對應卡（04-business-logic / 05-entities / 06-state-machines /
+      03-roles）。
+
+      - **What Changes**：變更項目條列。標記 **BREAKING** 的破壞性變更。
+
+      - **Capabilities**：列出會建立或修改的 spec：
+        - **New Capabilities**：新 spec，用 kebab-case 命名。
+        - **Modified Capabilities**：既有 spec 的行為變更。查 `openspec/specs/` 確認名稱。
+
+      - **Impact**：影響的程式碼、API、相依模組。
+
+
+      Capabilities 段是 proposal 與 specs 階段的契約，務必先查既有 spec 再填。
+
+      保持精簡（1-2 頁），聚焦 why 不寫 how。
+    requires: []
+
+  - id: specs
+    generates: specs/**/*.md
+    description: 功能規格（Requirement + Scenario），定義系統外部可觀察行為
+    template: spec.md
+    instruction: >
+      建立 spec 檔案，定義系統應該做什麼。使用繁體中文撰寫。
+
+
+      每個 proposal Capabilities 段列出的 capability 建一個 spec 檔。
+
+      - 新 capability：用 proposal 的 kebab-case 名稱（specs/<name>/spec.md）。
+
+      - 修改 capability：用 openspec/specs/<name>/ 的既有名稱。
+
+
+      Delta 操作（用 ## 標題）：
+
+      - **ADDED Requirements**：新增能力
+
+      - **MODIFIED Requirements**：行為變更 — MUST 包含完整更新內容
+
+      - **REMOVED Requirements**：廢止 — MUST 含 **Reason** 與 **Migration**
+
+      - **RENAMED Requirements**：僅改名 — 用 FROM: / TO: 格式
+
+
+      格式要求：
+
+      - 每個需求：`### Requirement: <名稱>` 後接描述
+
+      - 使用 SHALL / MUST 規範用語
+
+      - 每個情境：`#### Scenario: <名稱>` 使用 GIVEN/WHEN/THEN 格式
+
+      - **Scenario MUST 使用 ####（四個 #）**，不可用三個或五個
+
+      - 每個 Requirement MUST 至少一個 Scenario
+
+
+      **Priority + Rationale（MUST，Sens 自訂規則）**：
+
+      每個 Requirement 的描述段落之後、第一個 Scenario 之前，MUST 包含：
+
+      - `**Priority**: P0 / P1 / P2`（P0 = 核心業務不可缺、P1 = 重要可分期、P2 = 效率優化）
+
+      - `**Rationale**: <一句話說明為什麼需要此需求，連回業務痛點或營運目標>`
+
+      缺少任一項視為不完整，不得省略。
+
+
+      範例：
+
+      ```
+
+      ### Requirement: 訂單建立
+
+      系統 SHALL 支援三種訂單建立路徑（線下 / 線上 / 諮詢）。
+
+      **Priority**: P0
+
+      **Rationale**: 統一三種管道的訂單入口，取代現有 EC + Ragic 雙平台。
+
+      #### Scenario: 線下單由需求單轉入
+
+      - **WHEN** 業務在「成交」需求單點擊「轉訂單」
+
+      - **THEN** 系統建立訂單草稿，自動帶入印件規格與客戶資料
+
+      ```
+
+
+      **欄位與狀態列舉不寫在 spec**：
+
+      欄位正本在 wiki 實體卡（05-entities/），狀態列舉正本在 wiki 狀態機卡
+      （06-state-machines/）。spec 只寫行為規格（Requirement + Scenario +
+      轉換規則），MUST NOT 包含 Data Model 欄位表或狀態列舉表。
+
+
+      MODIFIED requirements 工作流：
+
+      1. 到 openspec/specs/<capability>/spec.md 找到既有 Requirement
+
+      2. 完整複製（從 ### Requirement: 到所有 Scenario）
+
+      3. 貼到 ## MODIFIED Requirements 下修改
+
+      4. 標題必須完全匹配
+    requires:
+      - proposal
+
+  - id: design
+    generates: design.md
+    description: 技術設計文件（How to implement）
+    template: design.md
+    instruction: >
+      建立技術設計文件，說明如何實作。使用繁體中文撰寫。
+
+
+      建立條件（符合任一才建）：
+
+      - 跨模組變更或新架構模式
+
+      - 新外部相依或重大資料模型變更
+
+      - 安全、效能、遷移複雜度
+
+      - 需要在寫碼前先做技術決策
+
+
+      段落：
+
+      - **Context**：背景、現狀、約束
+
+      - **Goals / Non-Goals**：做什麼、明確排除什麼
+
+      - **Decisions**：技術選擇與理由（why X over Y）
+
+      - **Risks / Trade-offs**：已知限制、風險與緩解
+
+      - **Migration Plan**：部署步驟、回滾策略
+
+      - **Open Questions**：待解決的決策或未知
+
+
+      聚焦架構與方法，不寫逐行實作。
+    requires:
+      - proposal
+
+  - id: tasks
+    generates: tasks.md
+    description: 實作任務清單（可追蹤進度）
+    template: tasks.md
+    instruction: >
+      建立任務清單，拆解實作工作。使用繁體中文撰寫。
+
+
+      **MUST 使用 checkbox 格式**（apply 階段靠此追蹤進度）。
+
+
+      原則：
+
+      - 用 ## 編號標題分組
+
+      - 每個任務：`- [ ] X.Y 任務描述`
+
+      - 任務顆粒度：一個 session 可完成
+
+      - 依相依順序排列
+
+
+      參考 specs 決定要做什麼、design 決定怎麼做。
+
+      每個任務必須可驗證——你知道什麼時候算完成。
+    requires:
+      - specs
+
+apply:
+  requires:
+    - tasks
+  tracks: tasks.md
+  instruction: |
+    讀取 context 檔案，逐一執行待辦任務，完成後勾選。
+    遇到阻塞或需要釐清時暫停。
