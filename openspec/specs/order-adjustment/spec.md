@@ -19,68 +19,11 @@
 
 ### Requirement: 訂單異動（OrderAdjustment）建立與審核
 
-業務 / 諮詢 SHALL 可於訂單詳情頁建立訂單異動，記錄訂單成立後因規格變更 / 加印追加 / 退印 / 折扣 / 加運費 / 急件費 / 其他原因導致的金額異動（可正可負）。OrderAdjustment 有獨立狀態機（草稿 → 待主管審核 → 已核可 / 已退回 → 已執行 / 已取消，詳見 [state-machines spec](../state-machines/spec.md)），不影響主訂單狀態。OrderAdjustment「已執行」時觸發應收總額更新，但 BillingInstallment（請款期次，見 [order-billing](../order-billing/spec.md)）SHALL NOT 自動變動，由業務手動調整。
+業務 / 諮詢於訂單詳情頁建立訂單異動，記錄訂單成立後的金額增減（規格變更 / 加印 / 退印 / 折扣 / 運費 / 急件費等）。OrderAdjustment 有獨立狀態機（草稿 → 待主管審核 → 已核可 / 已退回 → 已執行 / 已取消），不影響主訂單狀態推進。補收正項免審直達已執行，退款負項須業務主管核可。「已執行」由關聯 Payment 累計達 OA.amount 自動推進，補收與退款對稱處理。訂單進入終態後售後異動改走 AfterSalesTicket。
 
-**OrderAdjustment 回歸純金額異動載具**：本 change（add-after-sales-ticket）廢止原 v1.2 「雙重身份」設計（`adjustment_phase` 欄位 + UI 「售後服務單」雙重表述）。OrderAdjustment 不再依 Order.status 自動推算 phase，所有 `adjustment_type` 皆可於任何 Order 狀態下選用（規格變更 / 加印追加 / 退印 / 折扣 / 加運費 / 急件費 / 補退 / 其他）。
+**Priority**: P0
 
-OrderAdjustment 新增 `linked_after_sales_ticket_id`（FK -> AfterSalesTicket，nullable）欄位：
-
-- **NULL**：訂單期間業務直接建立的金額異動（原 during_order 路徑），無關聯售後 ticket
-- **非 NULL**：源自 AfterSalesTicket 內部建立的關聯異動（退款、補印收費）
-
-訂單已完成後（Order.status = 已完成）的售後事件改走 AfterSalesTicket（見 [after-sales-ticket spec](../after-sales-ticket/spec.md)）。業務不再於訂單詳情頁直接建「售後服務單」OrderAdjustment，而是於 AfterSalesTicket 內部建關聯 OrderAdjustment。
-
-**新增閘門（訂單詳情頁訂單異動區）**：訂單詳情頁「訂單異動」區的「新增訂單異動單」入口 SHALL 僅於 `Order.status ∉ {訂單完成、已取消}` 時可用。已完成訂單的售後金額異動改走 AfterSalesTicket；已取消訂單一律唯讀（對齊 [order-management § 訂單詳情頁編輯型 Section 統一編輯時機與角色](../order-management/spec.md) 之已取消規則）。既有 OrderAdjustment（完成前建立的存量）SHALL NOT 受此閘門影響，仍可檢視、審核、編輯金額、管理關聯 Payment（沿用獨立狀態機，不影響 task 5.9 已完成訂單存量待審 OA 走完流程）。
-
-OrderAdjustment SHALL 支援多筆明細項（OrderAdjustmentItem 子實體），每筆明細記錄 `item_type`（print_item / fee）、描述、金額。OrderAdjustment.amount 為所有明細金額加總（系統自動計算）。
-
-**[refine-after-sales-refund 既有] 編輯閘門規則**（不動）：
-
-OrderAdjustment 金額編輯閘門按 status 分階段：
-
-| status | 業務可改金額？ | 改後狀態流轉 | 主管動作 |
-|--------|--------------|-------------|---------|
-| 草稿 | 可（不限次數）| 維持「草稿」 | 無 |
-| 待主管審核 | 不可（已送出，待主管動作）| — | 主管核可 / 退回 |
-| 已退回 | 可（業務修正後重送）| 改後維持「已退回」直至業務重新送出 → 進入「待主管審核」 | 業務送出後主管重新審核 |
-| 已核可 | 可（業務退款前最後校正）| 維持「已核可」（不需重新送審）| 對照欄位即時顯示業務調整 |
-| 已執行 | 不可（金錢已實際發生，鎖定）| — | 無 |
-| 已取消 | 不可（終態）| — | 無 |
-
-**[refine-after-sales-refund 既有] 主管核可金額對照欄位 + audit log 必欄位**（不動）：
-
-OrderAdjustment 卡片於 `status = 已核可` 時 SHALL 顯示「主管核可金額 vs 當前金額」對照欄位（沿用 refine-after-sales-refund 設計）；金額異動 audit log 必欄位（adjusted_at / adjusted_by / previous_amount / new_amount / status_at_adjustment）沿用。
-
-**[本 change 變更] 「已執行」推進機制 — 從「建立 Payment 自動推進」改為「Payment 切已完成累計達 OA.amount 自動推進」**：
-
-OrderAdjustment 的 `status = 已執行` 推進條件 MODIFY 為：
-
-- 觸發事件：任一關聯 Payment（linkedOrderAdjustmentId = OA.id，見 [order-billing § Payment](../order-billing/spec.md)）從 paymentStatus = '處理中' 切為 '已完成'
-- 推進條件：對應 OA 的所有已完成 Payment 累計 amount（含符號比較）= OA.amount
-- 推進動作：同 transaction 將 OA.status → '已執行'、executedAt = 該 Payment 切「已完成」的時點
-
-對稱適用退款 OA（amount < 0，配對 paymentMethod = '退款' 的負值 Payment）與補收 OA（amount > 0，配對 paymentMethod ≠ '退款' 的正值 Payment）。詳見 [state-machines spec § 訂單異動狀態機](../state-machines/spec.md)。
-
-**[本 change BREAKING] 棄用「執行 OA 自動建補收 Payment」既有設計**：
-
-既有 spec 對補收 OA（如加印追加 / 加運費 / 急件費）的處理流程（L1719「OrderAdjustment 經核可並執行後系統 SHALL 同步更新 PrintItem.ordered_qty 並建立補收 Payment」、L1734「系統 SHALL 建立對應補收 / 退款 Payment（或提示業務手動建）」）SHALL 廢止。
-
-新設計：所有 OA（退款 + 補收）核可後，由業務於 OA 編輯介面手動建立關聯 Payment（處理中態），補齊資料切「已完成」後自動推進 OA「已執行」。兩條路徑完全對稱。
-
-**Migration 影響**：既有實作中若有「OA 已執行自動建 Payment」邏輯 MUST 移除，相關 UI（如加印追加流程的提示）改為「業務應至 OA 編輯介面建立補收 Payment」。
-
-**[本 change 新增] OA 編輯介面入口（取代既有「建立退款 Payment」按鈕）**：
-
-OrderAdjustment 卡片 / Table row 點「編輯」開啟 OA 編輯 dialog，dialog 內結構：
-
-- 上半：OA 欄位（adjustmentType / amount / reason）依 OA.status 決定可改否
-- 下半：關聯 Payment 列表（Table，列出 linkedOrderAdjustmentId = OA.id 的所有 Payment、含 paymentStatus 與金額顯示）
-- 下半底部：「新增 Payment」button（僅 OA.status = '已核可' 時可用）
-  - OA 為退款型（amount < 0）：自動預填 paymentMethod = '退款'、amount 必須 ≤ 0
-  - OA 為補收型（amount > 0）：自動預填 paymentMethod 為非「退款」項（如「銀行轉帳」）、amount 必須 ≥ 0
-- 每筆關聯 Payment row 操作欄：「編輯」單一按鈕（點開另一 dialog 編輯該 Payment、含切換 paymentStatus、補齊資料、取消）
-
-OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-refund 對 UI 入口的處置）。
+**Rationale**: 訂單成立後加印、退印、折扣等金額增減是印刷業常態，需要有獨立審核軌跡（不直接改訂單明細），且補收與退款因風險不對稱需不同審核門檻。
 
 #### Scenario: 業務建立加印追加異動（不變，沿用既有）
 
@@ -215,6 +158,10 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 當業務於 AfterSalesTicket 內建關聯 OrderAdjustment 時，UI 仍 SHALL 預填合理的 adjustment_type（例：resolution=退款 → 預填退印；resolution=補印 → 預填補退），但業務可改選（限「業務手動」類別內選項）。
 
+**Priority**: P0
+
+**Rationale**: 明確列舉所有異動類型（規格變更 / 加印 / 退印 / 折扣 / 運費 / 急件費 / 補退 / 諮詢取消退費 / 其他），業務選用時不會選到不適用的類型，系統自動建的「諮詢取消退費」不暴露給業務。
+
 #### Scenario: 業務於 AfterSalesTicket 內建關聯 OrderAdjustment 預填 adjustment_type
 
 - **GIVEN** AfterSalesTicket.resolution = 退款
@@ -243,6 +190,10 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 
 業務主管 SHALL 可於後台「待審核訂單異動」頁批次查看所有 status = 待主管審核 的 OrderAdjustment，依負責業務 / adjustment_type / 訂單編號篩選，逐筆核可 / 退回。
 
+**Priority**: P1
+
+**Rationale**: 業務主管需要在後台集中檢視所有待審核異動單，逐筆核可或退回，避免散落在各訂單詳情頁逐單處理。
+
 #### Scenario: 業務主管查看待審核異動清單
 
 - **WHEN** 業務主管登入後台進入「待審核訂單異動」頁
@@ -260,6 +211,10 @@ OA 編輯介面 SHALL NOT 提供「執行」按鈕（沿用 refine-after-sales-r
 OrderExtraCharge 調降（amount 減少 / 刪除致應收減少）時 MUST 寫 OrderActivityLog `pre_completion_amount_decrease`（弱把關、不阻擋）。
 
 UI SHALL 在訂單進入終態後隱藏「新增訂單額外費用」按鈕，引導走訂單異動。系統 SHALL 在 API 層拒絕終態後的訂單額外費用寫入請求。
+
+**Priority**: P0
+
+**Rationale**: 訂單額外費用（建立時即確定，不需審核）與訂單異動（成立後變動，需審核）語意不同但都影響應收，必須明確以訂單完成終態為分界，避免業務混淆「該走哪條路徑加費用」。
 
 #### Scenario: 業務於製作中加運費走訂單額外費用
 
