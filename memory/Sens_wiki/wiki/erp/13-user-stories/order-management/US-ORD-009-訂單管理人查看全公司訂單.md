@@ -2,7 +2,7 @@
 type: user-story
 us-id: US-ORD-009
 module:
-  - order-management
+  - 訂單管理
 role:
   - "[[訂單管理人]]"
 priority: medium

@@ -239,9 +239,9 @@ notion-page-url: <Notion ERP Test Case DB URL>
 type: test-case
 tc-id: TC-ORD-001
 module:
-  - order-management
+  - 訂單管理
 business-domain:
-  - billing-cash
+  - 款項與發票
 status: draft
 last-reviewed: 2026-MM-DD
 source:

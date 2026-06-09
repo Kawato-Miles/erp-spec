@@ -2,7 +2,7 @@
 type: insight
 module:
   - prototype-shared-ui
-  - order-management
+  - 訂單管理
 status: open
 priority: medium
 raised-at: 2026-05-25

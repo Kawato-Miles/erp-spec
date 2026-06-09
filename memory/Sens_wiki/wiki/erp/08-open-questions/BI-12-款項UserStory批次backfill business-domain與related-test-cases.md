@@ -1,9 +1,9 @@
 ---
 type: open-question
 module:
-  - order-management
+  - 訂單管理
 business-domain:
-  - billing-cash
+  - 款項與發票
 oq-id: BI-12
 status: open
 priority: medium

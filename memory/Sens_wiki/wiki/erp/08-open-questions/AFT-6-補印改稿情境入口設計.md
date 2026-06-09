@@ -2,7 +2,7 @@
 type: open-question
 module:
   - after-sales-ticket
-  - order-management
+  - 訂單管理
 oq-id: AFT-6
 status: answered
 priority: medium

@@ -2,7 +2,7 @@
 type: open-question
 module:
   - prototype-shared-ui
-  - order-management
+  - 訂單管理
   - after-sales-ticket
 oq-id: ORD-018
 status: open

@@ -1,7 +1,7 @@
 ---
 type: open-question
 module:
-  - order-management
+  - 訂單管理
   - crm
 oq-id: ORD-038
 status: open

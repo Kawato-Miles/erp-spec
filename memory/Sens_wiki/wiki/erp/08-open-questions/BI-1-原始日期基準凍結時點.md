@@ -1,7 +1,7 @@
 ---
 type: open-question
 module:
-  - order-management
+  - 訂單管理
 oq-id: BI-1
 status: resolved
 priority: medium

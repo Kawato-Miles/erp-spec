@@ -3,7 +3,7 @@ type: user-story
 us-id: US-AR-010
 module:
   - prepress-review
-  - order-management
+  - 訂單管理
 role:
   - B2C 會員（外部使用者）
 priority: medium

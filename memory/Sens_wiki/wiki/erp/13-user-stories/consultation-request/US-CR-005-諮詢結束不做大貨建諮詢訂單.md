@@ -3,7 +3,7 @@ type: user-story
 us-id: US-CR-005
 module:
   - consultation-request
-  - order-management
+  - 訂單管理
 role:
   - "[[諮詢]]"
 priority: high

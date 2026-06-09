@@ -2,7 +2,7 @@
 type: open-question
 module:
   - cross-module
-  - order-management
+  - 訂單管理
   - work-order
 oq-id: XM-003
 status: open

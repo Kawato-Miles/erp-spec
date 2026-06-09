@@ -2,7 +2,7 @@
 type: open-question
 module:
   - consultation-request
-  - order-management
+  - 訂單管理
 oq-id: CR-6
 status: answered
 priority: medium

@@ -1,7 +1,7 @@
 ---
 type: open-question
 module:
-  - order-management
+  - 訂單管理
   - consultation-request
   - state-machines
 oq-id: ORD-037

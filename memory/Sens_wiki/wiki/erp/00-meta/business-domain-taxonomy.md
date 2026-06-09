@@ -90,7 +90,7 @@ last-reviewed: 2026-05-28
 
 ## 三、跨領域共用層（任何稽核 MUST 自動載入）
 
-跨領域共用層的卡不屬任何單一領域，frontmatter 標 `business-domain: cross-domain`。
+跨領域共用層的卡不屬任何單一領域，frontmatter 標 `business-domain: 跨領域`。
 
 | 共用層分類 | Vault 對應 | 載入理由 |
 |----------|----------|---------|

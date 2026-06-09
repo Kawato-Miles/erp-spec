@@ -1084,7 +1084,7 @@ Archive 位置：
    - 5B.3 連帶檢查紀律（6 議題類型 × 必檢實體）
    - 5B.4 外部硬約束連帶（指向 ezPay-MIG 卡）
 2. **新建 04-business-logic/發票法規硬約束-ezPay-MIG.md**（法規維度 N=1）
-3. **Backfill 5 個關鍵 User Story 的 `business-domain: billing-cash` 標籤**（US-ORD-010/011/013/020/021）
+3. **Backfill 5 個關鍵 User Story 的 `business-domain: 款項與發票` 標籤**（US-ORD-010/011/013/020/021）
 4. **Backfill 5 個核心 Vault know-how 卡 `business-domain` 標籤**（付款發票邏輯 / 訂單 / 售後服務 / 會計 / 業務）
 
 ### 新建 OQ 清單
@@ -1108,7 +1108,7 @@ Archive 位置：
 
 ### 跨層影響檢查（商業需求 ↔ User Story ↔ spec ↔ Test Case）
 
-- **商業需求 ↔ User Story**：5 張 backfill 完成（business-domain: billing-cash）；剩 13 張標 BI-12
+- **商業需求 ↔ User Story**：5 張 backfill 完成（business-domain: 款項與發票）；剩 13 張標 BI-12
 - **User Story ↔ spec**：18 張 US 已對齊 order-management spec L900-3100 + business-processes spec L600-750
 - **spec ↔ Test Case**：**critical gap** — 0/18 Test Case 反向連結（解 0/56 缺漏關鍵）→ 標 BI-12 待後續配對
 - **法規層**：ezPay 五欄硬約束已在 spec L2969+ + 獨立 Vault 卡（本輪新建）+ 連帶矩陣（本輪補入付款發票邏輯.md）— 三層對齊完成

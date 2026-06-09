@@ -2,7 +2,7 @@
 type: insight
 module:
   - after-sales-ticket
-  - order-management
+  - 訂單管理
   - cross-module
 status: open
 priority: high

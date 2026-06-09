@@ -1,7 +1,7 @@
 ---
 type: open-question
 module:
-  - order-management
+  - 訂單管理
   - cross-module
 oq-id: SHP-006
 status: open

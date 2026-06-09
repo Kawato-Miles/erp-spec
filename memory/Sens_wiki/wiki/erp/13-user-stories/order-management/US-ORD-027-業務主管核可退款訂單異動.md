@@ -2,9 +2,9 @@
 type: user-story
 us-id: US-ORD-027
 module:
-  - order-management
+  - 訂單管理
 business-domain:
-  - billing-cash
+  - 款項與發票
 role:
   - "[[業務主管]]"
 priority: high

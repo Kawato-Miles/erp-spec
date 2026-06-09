@@ -1,9 +1,9 @@
 ---
 type: open-question
 module:
-  - order-management
+  - 訂單管理
 business-domain:
-  - fulfillment-after-sales
+  - 履約與售後
 oq-id: ORD-028
 status: open
 priority: medium

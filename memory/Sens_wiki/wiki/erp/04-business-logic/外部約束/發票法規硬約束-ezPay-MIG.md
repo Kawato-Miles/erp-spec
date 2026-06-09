@@ -2,12 +2,12 @@
 type: business-rule
 mutability: external
 module:
-  - order-management
+  - 訂單管理
   - after-sales-ticket
   - consultation-request
   - cross-module
 business-domain:
-  - billing-cash
+  - 款項與發票
 related-spec: openspec/specs/order-management/spec.md
 status: active
 last-reviewed: 2026-06-09

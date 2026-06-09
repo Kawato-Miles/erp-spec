@@ -165,7 +165,7 @@ type: role
 module:
   - <module-a>
 business-domain:
-  - cross-domain
+  - 跨領域
 source:
   - "<Notion 角色權責表 - 角色X> / Miles <YYYY-MM-DD> 拍板"
 implemented-by:

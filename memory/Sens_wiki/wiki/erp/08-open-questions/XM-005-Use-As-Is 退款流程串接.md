@@ -3,7 +3,7 @@ type: open-question
 module:
   - cross-module
   - production-task
-  - order-management
+  - 訂單管理
 oq-id: XM-005
 status: open
 priority: high

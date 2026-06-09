@@ -1,10 +1,10 @@
 ---
 type: business-logic
 module:
-  - order-management
+  - 訂單管理
   - after-sales-ticket
 business-domain:
-  - billing-cash
+  - 款項與發票
 related-spec: openspec/specs/order-management/spec.md
 status: active
 last-reviewed: 2026-06-03

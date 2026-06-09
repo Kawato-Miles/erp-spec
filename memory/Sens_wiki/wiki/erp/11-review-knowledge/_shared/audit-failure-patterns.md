@@ -3,7 +3,7 @@ type: review-knowledge
 module:
   - cross-module
 business-domain:
-  - cross-domain
+  - 跨領域
 status: active
 last-reviewed: 2026-05-28
 ---

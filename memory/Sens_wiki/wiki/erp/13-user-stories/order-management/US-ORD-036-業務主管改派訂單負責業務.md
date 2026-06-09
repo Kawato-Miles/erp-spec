@@ -2,7 +2,7 @@
 type: user-story
 us-id: US-ORD-036
 module:
-  - order-management
+  - 訂單管理
 business-domain:
   - order-fulfillment
 role:

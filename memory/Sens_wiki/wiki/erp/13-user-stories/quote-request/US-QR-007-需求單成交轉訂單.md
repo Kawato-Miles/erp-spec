@@ -3,7 +3,7 @@ type: user-story
 us-id: US-QR-007
 module:
   - quote-request
-  - order-management
+  - 訂單管理
 role:
   - "[[業務]]"
 priority: medium
