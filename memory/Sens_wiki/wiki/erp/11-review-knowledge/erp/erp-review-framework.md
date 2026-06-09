@@ -79,7 +79,7 @@ last-reviewed: 2026-05-28
 ### 6. 與現有設計的一致性
 
 - 這個設計與現有其他模組的設計邏輯是否一致？
-- 有沒有引入了新的術語或概念，但與商業流程（`openspec/specs/business-processes/spec.md` 與 Vault `04-business-logic/`）的定義不同？
+- 有沒有引入了新的術語或概念，但與商業流程（Vault `04-business-logic/`）的定義不同？
 - 是否有現有的 OQ（Vault `08-open-questions/`）已經討論過這個問題，但這個設計沒有參考到？
 
 → 詳見 [[cross-agent-checklist]] § 1 OQ 衝突 / 回答檢查。

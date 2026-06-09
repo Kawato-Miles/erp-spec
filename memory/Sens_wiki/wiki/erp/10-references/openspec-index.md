@@ -15,9 +15,9 @@ last-reviewed: 2026-05-19
 | Spec | Vault 對應 |
 |------|-----------|
 | [config.yaml](../../../openspec/config.yaml) § 產品背景與目標 | [[wiki/erp/01-products/product-vision]]、[[phases]] |
-| [business-processes/spec.md](../../../openspec/specs/business-processes/spec.md) | [[齊套邏輯]]、[[數量換算規則]]、[[印件生產流程]]、[[打樣流程]]、[[稿件管理規則]] |
+| ~~business-processes/spec.md~~（已廢除 2026-06-09，商業規則遷 wiki、系統行為遷各模組 spec） | [[齊套邏輯]]、[[數量換算規則]]、[[印件生產流程]]、[[打樣流程]]、[[稿件管理規則]] |
 | [state-machines/spec.md](../../../openspec/specs/state-machines/spec.md) | `06-state-machines/*.md`（9 個狀態機卡） |
-| [user-roles/spec.md](../../../openspec/specs/user-roles/spec.md) | `03-roles/`（OpenSpec 5 角色 + Vault 補 11 角色，見 [[_alignment-report]]）|
+| ~~user-roles/spec.md~~（已廢除 2026-06-09，角色職責遷 wiki、系統行為遷各模組 spec） | `03-roles/`（16 角色卡，見 [[_alignment-report]]）|
 | [business-scenarios/spec.md](../../../openspec/specs/business-scenarios/spec.md) | [[wiki/erp/07-scenarios/README]] |
 
 ## 二、各模組 Spec
@@ -49,4 +49,4 @@ last-reviewed: 2026-05-19
 
 - Vault 卡用相對路徑 markdown link 連到 OpenSpec spec
 - **不用 wiki link**（Obsidian 不解析 vault 外部）
-- 範例：`[business-processes/spec.md § 齊套性](../../../openspec/specs/business-processes/spec.md)`
+- 範例：`[work-order/spec.md § 齊套性](../../../openspec/specs/work-order/spec.md)`

@@ -5,7 +5,7 @@ TBD - created by archiving change qc-spec-consolidation. Update Purpose after ar
 ## Requirements
 ### Requirement: QC 角色權限邊界
 
-QC 角色（兼任品檢執行）SHALL 執行 ProductionTask 中 type = `qc`（印件入庫檢查）或 `inspection`（工序中間品檢）的任務。完整的 QC 角色權限定義（工單模組 R/W 範圍、可編輯欄位）詳見 [user-roles § QC 角色編輯限制](../../user-roles/spec.md)，本 spec 不重複定義。
+QC 角色（兼任品檢執行）SHALL 執行 ProductionTask 中 type = `qc`（印件入庫檢查）或 `inspection`（工序中間品檢）的任務。完整的 QC 角色權限定義（工單模組 R/W 範圍、可編輯欄位）詳見 wiki [品檢人員](../../../../memory/Sens_wiki/wiki/erp/03-roles/品檢人員.md)，本 spec 不重複定義。
 
 QC 角色於 QC PT 與 inspection PT 生命週期中的可執行動作：
 

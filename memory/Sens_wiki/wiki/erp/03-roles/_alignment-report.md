@@ -2,7 +2,6 @@
 type: meta
 module:
   - cross-module
-related-spec: openspec/specs/user-roles/spec.md
 related-notion: https://www.notion.so/32c3886511fa8144b38adc9266395d15
 status: active
 last-reviewed: 2026-05-19
@@ -10,8 +9,8 @@ last-reviewed: 2026-05-19
 
 # 角色清單對齊報告
 
-> [!warning] 重大缺漏發現
-> Vault 從 Notion「核心角色權責表」抓出 16 個完整角色，但 OpenSpec `user-roles/spec.md` 僅定義 5 個角色，缺漏 **11 個角色 + 拆分問題**。本報告供 Miles 後續評估是否開 OpenSpec change 補建。
+> [!info] 歷史背景
+> `user-roles/spec.md` 已廢除（2026-06-09），角色職責正本統一在 wiki `03-roles/` 各角色卡。本報告記錄原先 Notion 16 角色與舊 spec 5 角色的對齊差異，供歷史參考。
 
 ## 一、對齊總覽
 
@@ -119,4 +118,4 @@ OpenSpec 將「品管」定義為單一角色，但 Notion DB 拆分為兩個獨
 ## 來源
 
 - Notion 核心角色權責表（16 角色 ground truth）：[使用者權責](https://www.notion.so/32c3886511fa8144b38adc9266395d15)
-- OpenSpec user-roles spec：[user-roles/spec.md](../../../../openspec/specs/user-roles/spec.md)
+- OpenSpec user-roles spec：已廢除（2026-06-09），角色職責正本統一在 wiki `03-roles/`

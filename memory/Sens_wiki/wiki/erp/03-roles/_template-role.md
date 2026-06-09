@@ -41,13 +41,10 @@ last-reviewed: YYYY-MM-DD
 
 # ── source / implemented-by（前進標準，見 § 二補充說明）──
 source:                          # 往上指依據（這張卡為什麼對）。只准指更上層的卡 / 真實外部素材
-  - "[[../01-products/operating-principles#<分權方向>]] 或 <外部素材：Notion 角色權責表 / OpenSpec user-roles spec / Miles 拍板>"
+  - "[[../01-products/operating-principles#<分權方向>]] 或 <外部素材：Notion 角色權責表 / Miles 拍板>"
 implemented-by:                  # 往下指被誰實作 / 導航。指 OpenSpec spec 檔層，不綁標題錨點 / prototype / test-case，不承載正確性
-  - "openspec/specs/user-roles/spec.md"
+  - "openspec/specs/<對應模組>/spec.md"
 provenance-commit: <SHA>         # 可選但建議：記上次對齊的 commit，供 stale 偵測
-
-# ── 過渡期保留欄（既有 16 張 role 卡現用，遷移期不強制移除）──
-related-spec: openspec/specs/user-roles/spec.md   # 語意上等同 implemented-by 的弱版
 related-notion: <Notion 核心角色權責 DB 連結>      # 若有
 ---
 ```
@@ -56,8 +53,8 @@ related-notion: <Notion 核心角色權責 DB 連結>      # 若有
 
 - **前進標準**：新卡 / 被 change 異動的 role 卡優先補 `source` / `implemented-by`（對齊 [[wiki-architecture#依據往上、實作往下，連結不繞回自己|wiki-architecture § 依據往上、實作往下]]，兩欄一個往上指依據、一個往下指實作，方向不會接回自己）。
 - **role 卡 source 該指哪**：往上指「該角色分權方向的營運價值來源」——多為 [[operating-principles|operating-principles]]（營運原則，最高層，待落地）／ Notion 角色權責表（真實外部素材）／ Miles 拍板。**MUST NOT 指 OpenSpec**（把下游當上游、方向顛倒，[[wiki-architecture#營運需求（Obsidian）與實作規格（OpenSpec）的分工|wiki-architecture § 營運需求與實作規格的分工]] Error 條件）。
-- **遷移彈性（明示破口）**：現況 16 張 role 卡全部僅有 `related-spec`、0 張有 `source` / `implemented-by`，屬尚待逐批補齊的試點範圍。本範本 **不要求一次全改**——既有卡 `related-spec` 過渡期保留（語意等同 implemented-by 弱版）；補不出 `source` 的標 `source-gap` 待專輪補齊（change 後的內容增修依 `wiki-amend` skill 執行）。
-- **operating-principles 尚未落地時**：`source` 暫指 Notion 角色權責表 / OpenSpec user-roles spec § Requirement（以 `implemented-by` 並存）/ Miles 拍板，並在「來源」段標注「營運原則 operating-principles 待建」。
+- **遷移彈性（明示破口）**：現況 16 張 role 卡 `related-spec` 已隨 user-roles/spec.md 廢除（2026-06-09）而移除，0 張有 `source` / `implemented-by`，屬尚待逐批補齊的試點範圍。補不出 `source` 的標 `source-gap` 待專輪補齊（change 後的內容增修依 `wiki-amend` skill 執行）。
+- **operating-principles 尚未落地時**：`source` 暫指 Notion 角色權責表 / Miles 拍板，並在「來源」段標注「營運原則 operating-principles 待建」。
 
 ## 三、正文章節骨架
 
@@ -173,8 +170,7 @@ business-domain:
 source:
   - "<Notion 角色權責表 - 角色X> / Miles <YYYY-MM-DD> 拍板"
 implemented-by:
-  - "openspec/specs/user-roles/spec.md"
-related-spec: openspec/specs/user-roles/spec.md
+  - "openspec/specs/<對應模組>/spec.md"
 status: draft
 last-reviewed: <YYYY-MM-DD>
 ---

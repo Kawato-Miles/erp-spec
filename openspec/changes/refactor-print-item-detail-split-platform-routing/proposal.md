@@ -16,7 +16,7 @@
    - 「可報工 N 筆」標示從 TabsList 右側永久顯示改為僅工單 Tab active 時顯示（或收進工單 Tab 內）
    - 「資訊」Tab 內 ErpInfoTable + ErpSummaryGrid 並列視覺語言隨 strip 引入一併整理
 
-2. **拆 routing：中台 vs 業務平台 vs 印務平台**（三平台分流，對齊 [user-roles spec § 平台歸屬分類](../../specs/user-roles/spec.md)）
+2. **拆 routing：中台 vs 業務平台 vs 印務平台**（三平台分流，對齊 wiki [03-roles/](../../memory/Sens_wiki/wiki/erp/03-roles/) 各角色平台歸屬）
    - 中台：`/print-items/:id` 保留，給 Supervisor / 訂單管理人 / 審稿主管 / 印務主管 / 業務主管 / EC 商品管理，完整 7 Tab + sub-header 生產進度 strip + 訂單錨點 strip + 管理層動作（分配印件、審核工單）
    - 業務平台：新增 `/sales/print-items/:id`，給業務 / 諮詢 / 會計，3 Tab（資訊 / 審稿紀錄 / 活動紀錄）+ 訂單錨點 strip（無生產進度 strip）+ 純檢視（無報工 / 無管理動作）
    - 印務平台：新增 `/production/print-items/:id`，給印務（production_staff），完整 7 Tab + sub-header 生產進度 strip + 訂單錨點 strip + 印務聚焦動作（報工 / 勾選 PT）+ 隱藏管理層動作（分配印件 / 審核工單）

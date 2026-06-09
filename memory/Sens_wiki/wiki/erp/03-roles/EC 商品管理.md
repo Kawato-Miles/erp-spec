@@ -11,9 +11,6 @@ last-reviewed: 2026-05-19
 
 # EC 商品管理
 
-> [!info] OpenSpec spec 狀態：**缺漏**
-> `openspec/specs/user-roles/spec.md` 中無此角色，主要參與 Phase 1。詳見 [[_alignment-report]]。
-
 ## 基本資料
 
 - **平台**：中台

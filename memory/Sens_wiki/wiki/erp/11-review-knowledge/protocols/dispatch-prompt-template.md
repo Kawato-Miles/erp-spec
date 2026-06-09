@@ -219,7 +219,7 @@ Agent 仍需主動讀：
 - [[erp-naming-misjudgements]]（命名誤審記錄）
 - [[sequential-design-collaboration]]（本協議）
 - 狀態機 spec：openspec/specs/state-machines/spec.md
-- 商業流程 spec：openspec/specs/business-processes/spec.md
+- 商業流程正本：wiki `04-business-logic/`（business-processes/spec.md 已廢除 2026-06-09）
 - 議題對應 spec：[依議題列]
 
 前序輸出（全文）：

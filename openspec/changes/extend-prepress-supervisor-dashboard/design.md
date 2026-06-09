@@ -24,10 +24,10 @@
 本 design 聚焦於修訂後的五個核心決策：資料模型落地、訂單級判定凍結、客戶維度切片、審稿環節經營指標、Dashboard 版型。
 
 **相關資源**：
-- [business-processes spec](openspec/specs/business-processes/spec.md) § 審稿合格後自動建工單
+- wiki [印件生產流程](../../memory/Sens_wiki/wiki/erp/04-business-logic/印件生產流程.md) § 審稿合格後自動建工單
 - [state-machines spec](openspec/specs/state-machines/spec.md) § 訂單上層狀態機（不改，沿用「製作等待中」表達審稿全部完成）
 - [order-management spec](openspec/specs/order-management/spec.md) § Data Model
-- [user-roles spec](openspec/specs/user-roles/spec.md) § 審稿主管權責
+- wiki [審稿主管](../../memory/Sens_wiki/wiki/erp/03-roles/審稿主管.md) § 權責
 
 ## Goals / Non-Goals
 

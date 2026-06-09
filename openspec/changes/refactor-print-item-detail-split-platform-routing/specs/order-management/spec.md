@@ -2,7 +2,7 @@
 
 ### Requirement: 印件詳情頁中台版資訊架構
 
-中台印件詳情頁（路徑 `/print-items/:id`，供中台管理層角色使用：Supervisor、訂單管理人、審稿主管、印務主管、業務主管、EC 商品管理；對齊 [user-roles spec § 平台歸屬分類](../user-roles/spec.md) 中台角色清單）SHALL 採用「Sub-header 跨 Tab 永久區 + Tabs 內容區」雙層結構，確保使用者跨 Tab 切換時仍可見核心錨點與戰情數字。本 Requirement 對齊 [sens-erp-prototype/DESIGN.md §0.1 跨 Tab 上下文錨點原則](../../../../sens-erp-prototype/DESIGN.md)。
+中台印件詳情頁（路徑 `/print-items/:id`，供中台管理層角色使用：Supervisor、訂單管理人、審稿主管、印務主管、業務主管、EC 商品管理；對齊 wiki [03-roles/](../../../../memory/Sens_wiki/wiki/erp/03-roles/) 中台角色清單）SHALL 採用「Sub-header 跨 Tab 永久區 + Tabs 內容區」雙層結構，確保使用者跨 Tab 切換時仍可見核心錨點與戰情數字。本 Requirement 對齊 [sens-erp-prototype/DESIGN.md §0.1 跨 Tab 上下文錨點原則](../../../../sens-erp-prototype/DESIGN.md)。
 
 **Sub-header 持久區結構**：
 位於 `ErpPageHeader` 與 Tabs 之間，sticky 行為（捲動時保持可見），承載兩段資訊：

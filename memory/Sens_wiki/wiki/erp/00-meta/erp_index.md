@@ -22,7 +22,7 @@ last-reviewed: 2026-05-31
 | **L1.4 Production** | `03-roles/印務.md` / `Supervisor.md` / `生管.md` / `師傅.md` / `QC.md` / `外包廠商.md` / `中國廠商.md` + `04-business-logic/齊套邏輯.md` / `數量換算規則.md` / `印件生產流程.md` + `05-entities/工單.md` / `生產任務.md` / `QC.md` + `06-state-machines/工單狀態.md` / `生產任務狀態.md` / `任務狀態.md` / `QC 狀態.md` + 共用層 |
 | **L1.5 Fulfillment & After-sales** | `03-roles/出貨.md` + `05-entities/出貨單.md` / `售後服務.md` + `06-state-machines/出貨單狀態.md` + 共用層 |
 | **L1.6 Billing & Cash** | `03-roles/會計.md` / `業務.md`§款項 / `諮詢.md`§諮詢費 + `04-business-logic/付款發票邏輯.md` / `發票法規硬約束-ezPay-MIG.md` + `05-entities/訂單.md`§Payment-Invoice / `售後服務.md`§OA-Payment + `13-user-stories/order-management/`（款項類）+ `04-business-logic/payment-invoice-scenarios.md`（13 情境）+ 共用層 |
-| **跨領域共用層**（任何稽核必載入）| `03-roles/`（角色 R&R）+ `02-domain/`（術語）+ `07-scenarios/`（跨模組情境）+ `06-state-machines/`（含 cross-module 狀態）+ `01-products/`（KPI / 願景）+ `openspec/specs/business-processes/spec.md` + Master Data（material / process / binding / equipment spec）|
+| **跨領域共用層**（任何稽核必載入）| `03-roles/`（角色 R&R）+ `02-domain/`（術語）+ `07-scenarios/`（跨模組情境）+ `06-state-machines/`（含 cross-module 狀態）+ `01-products/`（KPI / 願景）+ `04-business-logic/`（跨模組商業規則）+ Master Data（material / process / binding / equipment spec）|
 
 ## 二、卡片清單（registry）
 

@@ -64,6 +64,6 @@ expected-resolution-at: 2026-Q3
 
 Spec / Scenario 對應：
 
-- [business-processes spec § Requirement: 處理中 Payment 期間 SalesAllowance 行為](../../../../openspec/specs/business-processes/spec.md)
+- 原 business-processes spec § 處理中 Payment 期間 SalesAllowance 行為（已廢除 2026-06-09，內容遷至 order-management spec）
 - [order-management spec § Requirement: 訂單異動執行流程 § 處理中 Payment 期間禁止觸發 SalesAllowance](../../../../openspec/specs/order-management/spec.md)
 

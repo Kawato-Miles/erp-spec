@@ -70,7 +70,7 @@
 - **Spec**：
   - [prepress-review/spec.md](openspec/specs/prepress-review/spec.md)：§ 審稿主管工作台、§ 審稿人員對比表、§ 審稿總覽時間區間篩選與 Summary Bar、新增審稿環節經營指標 / 客戶審稿成果表 / 補件後退件指標 Requirements
   - [order-management/spec.md](openspec/specs/order-management/spec.md) § Data Model：新增 `prepressApprovedAt`、`primaryContributorId`
-  - [business-processes/spec.md](openspec/specs/business-processes/spec.md) §「審稿合格後自動建工單」：補寫入邏輯
+  - wiki [印件生產流程](../../memory/Sens_wiki/wiki/erp/04-business-logic/印件生產流程.md) §「審稿合格後自動建工單」：補寫入邏輯
 - **狀態機**：無影響（現有「製作等待中」狀態節點足以表達「審稿全部完成」，僅需時間戳紀錄）
 - **資料遷移**：新增欄位於既有 Order 初始化為 NULL；歷史訂單不回填（Prototype 階段 mock 資料重跑即可）
 - **測試**：新增 utils 層單元測試（7 個核心情境：寫入時機、凍結、跨月、離職、補件後退件歸屬、skipReview、三人跨輪）

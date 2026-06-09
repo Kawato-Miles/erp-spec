@@ -830,7 +830,7 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 
 ### Requirement: 打樣結果業務判定
 
-業務（owner of 訂單）SHALL 於**打樣印件**（與大貨印件同時建立，見 [business-processes spec § 打樣流程規則](../business-processes/spec.md)）對應的**打樣 WorkOrder**（`WorkOrder.type = 打樣`，見 [work-order spec L825](../work-order/spec.md)）推進至「已完成」後，於該打樣 WorkOrder 詳情頁判定打樣結果。
+業務（owner of 訂單）SHALL 於**打樣印件**（與大貨印件同時建立，見 wiki [打樣流程](../../../../memory/Sens_wiki/wiki/erp/04-business-logic/打樣流程.md)）對應的**打樣 WorkOrder**（`WorkOrder.type = 打樣`，見 [work-order spec L825](../work-order/spec.md)）推進至「已完成」後，於該打樣 WorkOrder 詳情頁判定打樣結果。
 
 **欄位定義**（PrintItem 新增）：
 - `sampleResult` enum（`待確認` / `OK` / `NG-製程問題` / `NG-稿件問題`）— 預設 `待確認`（新建印件初始值）；業務判定後寫入對應結果

@@ -4,7 +4,7 @@
 
 ## Purpose
 
-`sales-platform` capability 作為「業務平台」這個平台容器內所有功能 spec 的集合。業務平台依 [user-roles spec § Requirement: 平台歸屬分類](../user-roles/spec.md) 定義，承載業務、諮詢、會計三個角色的工作介面（會計依其職責限定，可使用功能子集）。
+`sales-platform` capability 作為「業務平台」這個平台容器內所有功能 spec 的集合。業務平台承載業務、諮詢、會計三個角色的工作介面（會計依其職責限定，可使用功能子集；各角色職責見 wiki [03-roles/](../../../../memory/Sens_wiki/wiki/erp/03-roles/)）。
 
 本 capability 提供：
 - 業務平台版功能 spec 的歸屬規範（避免散落於 order-management / quote-request 等模組 spec）
@@ -15,7 +15,7 @@
 ## Requirements
 ### Requirement: 業務平台容器定位
 
-`sales-platform` capability SHALL 作為「業務平台」這個平台容器內所有功能 spec 的集合。業務平台依 [user-roles spec § Requirement: 平台歸屬分類](../user-roles/spec.md) 定義，承載業務、諮詢、會計三個角色的工作介面。
+`sales-platform` capability SHALL 作為「業務平台」這個平台容器內所有功能 spec 的集合。業務平台承載業務、諮詢、會計三個角色的工作介面（各角色職責見 wiki [03-roles/](../../../../memory/Sens_wiki/wiki/erp/03-roles/)）。
 
 本 capability 內的每條 Requirement SHALL 描述「該功能在業務平台的呈現方式、範圍規則、動作可見性」，並在內容初版完全沿用中台版時，引用中台版功能 spec 作為內容基準（避免重複描述）。
 
@@ -56,7 +56,7 @@
 2. **動作可見性**（業務 Role 純檢視）：
    - SHALL NOT 顯示「分配印件」按鈕（屬印務主管動作）
    - SHALL NOT 顯示「審核工單」相關操作（屬印務主管動作）
-   - 印件展開後的工單列表項目 SHALL NOT 可點擊（業務不導航至工單詳情頁，符合 [user-roles spec § 業務與諮詢角色的工單查閱限制](../user-roles/spec.md)）
+   - 印件展開後的工單列表項目 SHALL NOT 可點擊（業務不導航至工單詳情頁，業務與諮詢角色無工單詳情頁存取權限）
 3. **預設 Tab**：業務平台版預設 SHALL NOT 套用任何篩選 Tab（顯示全部印件），與中台版預設「等待中優先未建工單」不同
 4. **[本 change 新增] 印件類型 filter 預設值**：業務平台版 SHALL 預設「印件類型」filter 三選項全選（顯示全部三種印件類型），業務可自由收斂
 
@@ -138,7 +138,7 @@
 
 ### Requirement: 業務平台「我的售後服務」入口
 
-業務平台 SHALL 於 sidebar 提供「我的售後服務」入口（路由 `/my-after-sales`），業務 / 諮詢角色 SHALL 可見並進入。會計角色 MUST NOT 看到此入口（會計依 [user-roles spec § 會計角色職責](../user-roles/spec.md) 對 AfterSalesTicket 為「查閱不操作」，可從訂單詳情頁的售後 Tab 唯讀查閱）。
+業務平台 SHALL 於 sidebar 提供「我的售後服務」入口（路由 `/my-after-sales`），業務 / 諮詢角色 SHALL 可見並進入。會計角色 MUST NOT 看到此入口（會計對 AfterSalesTicket 為「查閱不操作」，可從訂單詳情頁的售後 Tab 唯讀查閱；會計角色職責見 wiki [會計](../../../../memory/Sens_wiki/wiki/erp/03-roles/會計.md)）。
 
 該入口對應的作業頁詳細行為定義於 [after-sales-ticket spec § Requirement: 我的售後服務作業頁](../after-sales-ticket/spec.md)。
 

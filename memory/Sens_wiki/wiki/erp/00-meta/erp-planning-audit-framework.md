@@ -49,7 +49,7 @@ last-reviewed: 2026-05-28
 |-------|---------------------|---------|
 | **1. 角色** | `03-roles/` | 該領域涉及的角色職責 / 權限 / 工作流是否完整？面對客戶決策場景是否寫清楚？|
 | **2. 實體** | `05-entities/` + OpenSpec spec § Data Model | 該領域核心實體欄位 / 狀態 / 關聯是否完整？資料模型是否與 spec 對齊？|
-| **3. 流程** | `07-scenarios/` + `business-processes/spec.md` | 端到端業務流程是否從頭到尾每一步都明示？角色傳遞 / 狀態轉換是否清楚？|
+| **3. 流程** | `07-scenarios/` + `04-business-logic/` + 各模組 spec | 端到端業務流程是否從頭到尾每一步都明示？角色傳遞 / 狀態轉換是否清楚？|
 | **4. 情境** | `07-scenarios/` + 領域專屬情境檔（如 `payment-invoice-scenarios.md`）| 真實業務情境是否覆蓋？情境變體 / 邊界 case 是否含？|
 | **5. User Story** | `13-user-stories/<module>/` | 業務動作是否完整覆蓋？acceptance criteria 是否 2-5 條？**`related-test-cases` 欄位是否齊備**（受 Miles 第六輪反饋強化）？業務情境段是否符合 erp-user-story skill 紀律（禁 UI 措辭 / 禁中英夾雜）？|
 | **6. 業務邏輯** | `04-business-logic/` | 跨模組規則 / 連帶矩陣 / 計算邏輯是否完整？|

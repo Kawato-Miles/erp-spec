@@ -26,7 +26,7 @@ related-changes:
 
 ## 問題描述
 
-OpenSpec `user-roles/spec.md` 將「品管」定義為**單一角色**，但 Notion 核心角色權責 DB **拆分為兩個獨立角色**：
+原 OpenSpec `user-roles/spec.md`（已廢除）將「品管」定義為**單一角色**，但 Notion 核心角色權責 DB **拆分為兩個獨立角色**：
 
 | 角色 | 階段 | 職責 |
 |------|------|------|
@@ -40,7 +40,7 @@ OpenSpec `user-roles/spec.md` 將「品管」定義為**單一角色**，但 Not
 - 模組：qc、prepress-review、cross-module、user-roles
 - 相關卡：[[品檢人員]]、[[審稿人員]]、[[稿件管理規則]]、[[審稿分配規則]]
 - 影響範圍：
-  - `openspec/specs/user-roles/spec.md` 拆分為兩角色
+  - wiki `03-roles/` 已分為 [[品檢人員]] 與 [[審稿人員]] 兩張卡
   - `openspec/specs/qc/spec.md` 角色描述
   - `openspec/specs/prepress-review/spec.md` 角色描述
   - 各模組 spec 中「品管」字樣的精確化

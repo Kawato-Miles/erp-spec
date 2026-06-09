@@ -72,7 +72,7 @@
 
 本 spec 中所有 Requirement / Scenario 提及「業務」執行的售後 ticket 動作（建立 ticket、送出決議、修改 `case_category` / `responsibility` / `resolution`、append `additional_complaint_log`、貼 Slack URL、結案等）SHALL 等價適用於「諮詢」角色。
 
-依 [user-roles spec § Requirement: 諮詢角色額外職責](../user-roles/spec.md) 既有原則，諮詢角色 SHALL 具備與業務角色相同的模組權限。本 Requirement 在 after-sales-ticket spec 內顯式化此原則，避免讀者誤以為諮詢角色不在範圍。
+依 wiki [諮詢](../../../../memory/Sens_wiki/wiki/erp/03-roles/諮詢.md) 角色定義，諮詢角色 SHALL 具備與業務角色相同的模組權限。本 Requirement 在 after-sales-ticket spec 內顯式化此原則，避免讀者誤以為諮詢角色不在範圍。
 
 #### Scenario: 諮詢於已完成訂單建立 AfterSalesTicket
 

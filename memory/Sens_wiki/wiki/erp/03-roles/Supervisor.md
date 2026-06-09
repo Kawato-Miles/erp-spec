@@ -9,9 +9,6 @@ last-reviewed: 2026-05-19
 
 # Supervisor
 
-> [!info] OpenSpec spec 狀態：**缺漏**
-> `openspec/specs/user-roles/spec.md` 中無此角色，需後續評估是否補建。詳見 [[_alignment-report]]。
-
 ## 基本資料
 
 - **平台**：中台

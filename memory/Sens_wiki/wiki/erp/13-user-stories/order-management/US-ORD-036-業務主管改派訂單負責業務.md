@@ -13,7 +13,7 @@ created-at: 2026-06-03
 last-reviewed: 2026-06-03
 source:
   - "openspec/specs/order-management/spec.md#Requirement: 訂單負責業務改派"
-  - "openspec/specs/user-roles/spec.md#業務主管改派負責業務職責"
+  - "[[業務主管]]"
 related-spec: openspec/specs/order-management/spec.md
 related-scenarios: []
 related-business-logic: []
@@ -74,7 +74,7 @@ notion-page-url: https://www.notion.so/3743886511fa81f78e23f8f88ef5cddc
 ## 來源（provenance）
 
 - [`openspec/specs/order-management/spec.md`](../../../../openspec/specs/order-management/spec.md) § Requirement「訂單負責業務改派」、§ Requirement「訂單詳情頁業務負責人 row 簡化」（2026-05-30-add-sales-manager-reassign-owner）
-- [`openspec/specs/user-roles/spec.md`](../../../../openspec/specs/user-roles/spec.md) § 業務主管改派負責業務職責（改派通用規則：理由五值必填、五要素留痕、候選人 Role 篩選、全公司範圍、改派不改狀態）
+- wiki [[業務主管]] § 改派負責業務（改派通用規則：理由五值必填、五要素留痕、候選人 Role 篩選、全公司範圍、改派不改狀態）
 
 ## 校對紀錄
 

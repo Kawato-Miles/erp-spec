@@ -2,7 +2,7 @@
 
 ### Requirement: 印務平台容器定位
 
-`production-platform` capability SHALL 作為「印務平台」這個平台容器內所有功能 spec 的集合。印務平台依 [user-roles spec § 平台歸屬分類](../user-roles/spec.md) 定義，承載印務（production_staff）角色的工作介面。
+`production-platform` capability SHALL 作為「印務平台」這個平台容器內所有功能 spec 的集合。印務平台承載印務（production_staff）角色的工作介面（角色定義見 wiki [印務](../../../../memory/Sens_wiki/wiki/erp/03-roles/印務.md)）。
 
 本 capability 提供：
 - 印務平台版功能 spec 的歸屬規範（避免散落於 order-management / work-order / production-task 等模組 spec）

@@ -4,11 +4,11 @@
 
 **1. 跨 spec 描述不對齊（根因）**
 
-[work-order spec § 印務主管印件總覽](../../specs/work-order/spec.md) L428 寫「一次完成工單草稿建立（可多份）與印務指派」，把 B2C（線上單）「草稿已自動建立、缺指派」與 B2B（線下單）「草稿尚未建立、需手動建」兩條本質不同的路徑混為一談；而 [business-processes spec § 審稿階段流程](../../specs/business-processes/spec.md) L538-578 已明確分流 B2C / B2B。兩份 spec 對同一動作描述未對齊，導致下游實作搖擺。
+[work-order spec § 印務主管印件總覽](../../specs/work-order/spec.md) L428 寫「一次完成工單草稿建立（可多份）與印務指派」，把 B2C（線上單）「草稿已自動建立、缺指派」與 B2B（線下單）「草稿尚未建立、需手動建」兩條本質不同的路徑混為一談；而 wiki [印件生產流程](../../memory/Sens_wiki/wiki/erp/04-business-logic/印件生產流程.md) § 審稿階段流程已明確分流 B2C / B2B。兩份 spec 對同一動作描述未對齊，導致下游實作搖擺。
 
 **2. 印務主管的 Job 沒被正確框架**
 
-印務主管真正的工作不是「分配印件」這個動作，而是「在等待中印件清單上，把每張印件推到『所有工單都已指派印務』的狀態」（對應 [user-roles spec § 印務主管職責](../../specs/user-roles/spec.md) L230-246「分配工單」）。Dialog 是這個 Job 的工具，spec 目前的描述讓 Dialog 看起來像「建立 + 指派的綜合表單」，而非「指派狀態收斂工具」。
+印務主管真正的工作不是「分配印件」這個動作，而是「在等待中印件清單上，把每張印件推到『所有工單都已指派印務』的狀態」（對應 wiki [印務主管](../../memory/Sens_wiki/wiki/erp/03-roles/印務主管.md) § 分配工單）。Dialog 是這個 Job 的工具，spec 目前的描述讓 Dialog 看起來像「建立 + 指派的綜合表單」，而非「指派狀態收斂工具」。
 
 **3. Prototype 實作落差，使用者已反饋**
 

@@ -538,7 +538,7 @@ QuoteRequest 資料模型 SHALL 新增 `requirement_note` 欄位（text，選填
 
 ### Requirement: 需求單負責業務改派
 
-業務主管 SHALL 可於需求單詳情頁改派負責業務（`sales_id`）。改派為改 owner 的管理動作，與「分享」（[§ Requirement: 檢視權限管理](../quote-request/spec.md)，不改 owner、業務可做）為兩種獨立機制。改派的通用規則（理由分類五值必填、五要素留痕、候選人以 Role 模組權限篩選、全公司範圍、改派不改狀態）沿用 [user-roles § 業務主管改派負責業務職責](../user-roles/spec.md)。
+業務主管 SHALL 可於需求單詳情頁改派負責業務（`sales_id`）。改派為改 owner 的管理動作，與「分享」（[§ Requirement: 檢視權限管理](../quote-request/spec.md)，不改 owner、業務可做）為兩種獨立機制。改派的通用規則（理由分類五值必填、五要素留痕、候選人以 Role 模組權限篩選、全公司範圍、改派不改狀態）沿用 wiki [業務主管](../../../../memory/Sens_wiki/wiki/erp/03-roles/業務主管.md) § 改派負責業務。
 
 **允許改派狀態**：需求單非終態（需求確認中 / 待評估成本 / 已評估成本 / 議價中）SHALL 可改派；成交（已轉訂單，負責業務應改訂單而非需求單）/ 流失（無後續）為終態，禁改派。
 

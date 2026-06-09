@@ -78,5 +78,4 @@ pt_qc_passed = 所有已完成 QC 紀錄的 passed_quantity 加總
 
 ## 來源
 
-- OpenSpec [qc/spec.md](../../../../openspec/specs/qc/spec.md)（草稿）
-- OpenSpec [business-processes/spec.md § QC 單數量限制](../../../../openspec/specs/business-processes/spec.md)
+- OpenSpec [qc/spec.md](../../../../openspec/specs/qc/spec.md)（草稿；原 business-processes/spec.md 已廢除，QC 數量限制遷至 qc spec）

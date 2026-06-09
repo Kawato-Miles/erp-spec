@@ -68,7 +68,7 @@ type: business-logic
 module:
   - work-order
   - production-task
-related-spec: openspec/specs/business-processes/spec.md
+related-spec: openspec/specs/<對應模組>/spec.md
 related-notion: https://www.notion.so/...
 status: active
 last-reviewed: 2026-05-19
@@ -129,7 +129,7 @@ Obsidian Callout 用 GitHub Markdown 引用語法 + `[!type]`：
 ```markdown
 ## 來源
 
-- OpenSpec：[business-processes/spec.md § 齊套性](../../openspec/specs/business-processes/spec.md#齊套性)
+- OpenSpec：[work-order/spec.md § 齊套性](../../../../openspec/specs/work-order/spec.md#齊套性)
 - Notion：[業務情境 DB](https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05)
 - Prototype：`sens-erp-prototype/src/types/workOrder.ts` L54-57
 ```

@@ -158,8 +158,7 @@ module:
 source:                          # 往上層 = 正確性根據（營運原則 / 商業流程共用規則 / Miles 拍板），禁指 OpenSpec / 同層 / 下層；見 § 4.0
   - "[[<上層卡或最上層依據>]]"
 implemented-by:                  # 往下層 = 導航（OpenSpec spec 檔層，不綁標題錨點），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/user-roles/spec.md"
-related-spec: openspec/specs/user-roles/spec.md  # 若 OpenSpec 有（補充參照，非正確性來源）
+  - "openspec/specs/<對應模組>/spec.md"
 related-notion: <Notion 核心角色權責 DB 連結>
 status: active
 last-reviewed: YYYY-MM-DD

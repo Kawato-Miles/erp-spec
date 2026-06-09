@@ -38,10 +38,10 @@ Notion 核心角色權責 DB 區分 [[印務]] 與 [[印務主管]] 兩個角色
 
 ## 討論記錄
 
-Phase A 角色清單對齊（_alignment-report.md）識別出 OpenSpec user-roles spec 僅有印務主管，無印務（執行層）角色。此邊界釐清關係到：
+Phase A 角色清單對齊（_alignment-report.md）識別出原 OpenSpec user-roles spec（已廢除）僅有印務主管，無印務（執行層）角色。此邊界釐清關係到：
 
-- 是否要在 OpenSpec user-roles spec 補建「印務」角色
-- 工單分派流程 spec（business-processes/spec.md § 工單分派流程）的描述精度
+- wiki `03-roles/` 是否已完整定義「印務」角色職責
+- 工單分派流程的描述精度（原 business-processes/spec.md 已廢除，內容遷至 work-order spec）
 - Prototype 權限驗證的設計
 
 ## 待解答

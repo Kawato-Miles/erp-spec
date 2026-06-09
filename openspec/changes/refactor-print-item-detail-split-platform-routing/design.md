@@ -6,7 +6,7 @@
 - `PrintItemDetail.tsx`（1226 行）為單一 page 元件，透過 `currentUser.role === 'sales' || 'consultant'` 控制 Tab 顯示（藏起 4 個 Tab）
 - 唯一 routing：`/print-items/:id`，所有角色共用
 - 既有 [print-item-detail-progress change](../archive/2026-05-18-print-item-detail-progress/) 已實作「工單與生產任務」區塊內容（含齊套性三欄、QC 徽章、報工入口），本 change 不重做這些內容，僅重構容器位置與 routing
-- [user-roles spec § 平台歸屬分類](../../specs/user-roles/spec.md) 既定三平台對應（中台 / 業務平台 / 印務平台），但只有 sales-platform capability 已建（[2026-05-14 archive](../archive/2026-05-14-add-print-item-overview-to-sales-platform/)），印務平台 capability 尚未建立
+- wiki [03-roles/](../../memory/Sens_wiki/wiki/erp/03-roles/) 各角色平台歸屬既定三平台對應（中台 / 業務平台 / 印務平台），但只有 sales-platform capability 已建（[2026-05-14 archive](../archive/2026-05-14-add-print-item-overview-to-sales-platform/)），印務平台 capability 尚未建立
 
 約束：
 - 跳過三視角審查（Miles 指示，本 change 路徑直接走 propose → specs → design → tasks）

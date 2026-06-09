@@ -149,7 +149,7 @@ Claude 協調者依 CLAUDE.md § ERP 討論主動路由 識別到本次討論為
 **輸入**：Phase 1 PM 輸出 + Phase 2 統合需求（含可能的第 2 輪）
 
 **ERP 顧問主任務**：依 [[erp-review-framework]] 6 維度 + [[erp-design-patterns]] 5 設計模式作為**思考維度**，**依統合需求做設計**
-- 對照狀態機 spec（`openspec/specs/state-machines/spec.md`） / 業務流程 spec（`openspec/specs/business-processes/spec.md`） / 既有實體 spec
+- 對照狀態機 spec（`openspec/specs/state-machines/spec.md`） / wiki `04-business-logic/`（商業流程正本）/ 既有實體 spec
 - 輸出實體變更 / 流程節點 / 狀態機 / 角色責任四層
 - **列出所有受影響的既有 Requirement / 規則（跨 wiki ERP_Vault + openspec specs 雙層）**：逐條標 ADDED / MODIFIED / REMOVED + 理由；supersession（取代既有 Requirement / Scenario）**MUST** 標 MODIFIED 不可 ADDED（archive sync 按 exact-title 只增不刪，ADDED 取代會導致主 spec 新舊並存矛盾）
 
