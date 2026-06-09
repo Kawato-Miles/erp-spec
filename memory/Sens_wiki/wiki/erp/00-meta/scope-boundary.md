@@ -14,7 +14,7 @@ last-reviewed: 2026-06-09
 
 | 類別 | 對應目錄 | 範例 |
 |------|---------|------|
-| 營運原則（最高層）（分權方向，不可驗算、Miles 拍板）| `01-products/` | [[operating-principles]]（type=product-vision，沿用既有 type 不新增；如「現金流出須把關、客戶加單不阻擋」「彈性優先、事後對帳兜底」）|
+| 產品策略（願景、痛點、Phase、KPI） | `01-products/` | [[wiki/erp/01-products/product-vision]]、[[phases]]、[[success-metrics]]、[[impact-score-framework]] |
 | 商業目標 / Phase / 北極星指標 | `01-products/` | [[wiki/erp/01-products/product-vision]]、[[phases]]、[[success-metrics]] |
 | 痛點 / 利害關係人 / Impact Score | 同上 | [[pain-points]]、[[stakeholders]]、[[impact-score-framework]] |
 | 印刷業 domain | `02-domain/` | [[printing-industry]]、glossary 三份 |

@@ -28,7 +28,8 @@ last-reviewed: 2026-05-31
 
 ### 產品與領域（01-products / 02-domain）
 - [[wiki/erp/01-products/product-vision|產品願景（ERP）]] — ERP 願景與範疇
-- [[operating-principles]] — 營運原則（最高層，分權方向）
+- [[現金流出把關]] — 退款須主管核可、補收免審
+- [[發票收款彈性]] — 業務自由決定開票收款，事後對帳
 - [[success-metrics]] — 成功指標 / KPI
 - [[impact-score-framework]] — Impact Score（G.U.N. 框架）
 - [[phases]] — 產品 Phase 範疇

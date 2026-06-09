@@ -41,7 +41,7 @@ last-reviewed: YYYY-MM-DD
 
 # ── source / implemented-by（前進標準，見 § 二補充說明）──
 source:                          # 往上指依據（這張卡為什麼對）。只准指更上層的卡 / 真實外部素材
-  - "[[../01-products/operating-principles#<分權方向>]] 或 <外部素材：Notion 角色權責表 / Miles 拍板>"
+  - "[[現金流出把關]] 或 [[發票收款彈性]] 或 <外部素材：Notion 角色權責表 / 使用者拍板>"
 implemented-by:                  # 往下指被誰實作 / 導航。指 OpenSpec spec 檔層，不綁標題錨點 / prototype / test-case，不承載正確性
   - "openspec/specs/<對應模組>/spec.md"
 provenance-commit: <SHA>         # 可選但建議：記上次對齊的 commit，供 stale 偵測
@@ -52,9 +52,8 @@ related-notion: <Notion 核心角色權責 DB 連結>      # 若有
 ### § 二補充：source / implemented-by 的前進標準與遷移彈性（誠實標注，不假裝）
 
 - **前進標準**：新卡 / 被 change 異動的 role 卡優先補 `source` / `implemented-by`（對齊 [[wiki-architecture#依據往上、實作往下，連結不繞回自己|wiki-architecture § 依據往上、實作往下]]，兩欄一個往上指依據、一個往下指實作，方向不會接回自己）。
-- **role 卡 source 該指哪**：往上指「該角色分權方向的營運價值來源」——多為 [[operating-principles|operating-principles]]（營運原則，最高層，待落地）／ Notion 角色權責表（真實外部素材）／ Miles 拍板。**MUST NOT 指 OpenSpec**（把下游當上游、方向顛倒，[[wiki-architecture#營運需求（Obsidian）與實作規格（OpenSpec）的分工|wiki-architecture § 營運需求與實作規格的分工]] Error 條件）。
-- **遷移彈性（明示破口）**：現況 16 張 role 卡 `related-spec` 已隨 user-roles/spec.md 廢除（2026-06-09）而移除，0 張有 `source` / `implemented-by`，屬尚待逐批補齊的試點範圍。補不出 `source` 的標 `source-gap` 待專輪補齊（change 後的內容增修依 `wiki-amend` skill 執行）。
-- **operating-principles 尚未落地時**：`source` 暫指 Notion 角色權責表 / Miles 拍板，並在「來源」段標注「營運原則 operating-principles 待建」。
+- **role 卡 source 該指哪**：往上指「該角色分權方向的商業規則來源」——如 [[現金流出把關]]、[[發票收款彈性]]、Notion 角色權責表、使用者拍板。**MUST NOT 指 OpenSpec**。
+- **遷移彈性**：補不出 `source` 的標 `source-gap` 待專輪補齊。
 
 ## 三、正文章節骨架
 

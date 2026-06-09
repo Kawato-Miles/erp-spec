@@ -58,7 +58,7 @@ status: draft
 last-reviewed: 2026-MM-DD
 # ── 兩個方向欄（前進標準；現況多數卡僅有 related-spec，新卡 / 被 change 異動的卡優先補）──
 source:
-  # 往「上」= 這張卡為什麼對的依據。只准指更高層卡（business-logic 規則正本 / 營運原則 operating-principles）
+  # 往「上」= 這張卡為什麼對的依據。只准指更高層卡（商業規則卡）
   # 或外部已驗證的依據（Miles 拍板 / 印刷業實務 / 法規）。嚴禁指同層狀態機卡 / 下層 / OpenSpec。
   - "[[<business-logic 規則正本卡，如 訂單異動規則>]]"
 implemented-by:
@@ -303,7 +303,7 @@ implemented-by:
 
 - **狀態極少且線性的簡單狀態機**（如僅 3 態無分支）：`## 狀態轉換` 可只一塊 ASCII；`## 關鍵狀態 / 轉換的營運動機` 若無「非顯然」轉換可精簡至 1-2 條或併入狀態清單「對應營運需求」欄。
 - **無爭議的事實性狀態**（如「草稿 = 尚未送出」）：「這張卡要回答的問題」可不為其單列問題，聚焦真正需釐清的分流 / 推進問題。
-- **`source` 暫補不出更高層卡**（如對應 business-logic 正本卡或營運原則 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）|operating-principles]] 尚未建立）：過渡期允許僅填 `related-spec` 並在 frontmatter 標 `source-gap`，待專輪回填（回填依 `wiki-amend` skill 的 change 後增修機制與 [[business-logic-writing-guide]] 遷移誠實標注）；**新卡 / 被 change 異動的卡優先補 source**。
+- **`source` 暫補不出更高層卡**：過渡期允許僅填 `related-spec` 並在 frontmatter 標 `source-gap`，待專輪回填；**新卡 / 被 change 異動的卡優先補 source**。
 - **純措辭 / 排版修正**（不改狀態定義、不改轉換、不改觸發條件）：可不重跑完整自審清單，但仍須通過「無 inline OQ / 無中英夾雜」兩硬項。
 
 > 彈性破口以外的偏離 MUST NOT 私自進行；有結構性疑問先走 [[oq-manage]] mode B 或回 [[business-logic-writing-guide]] 確認。
