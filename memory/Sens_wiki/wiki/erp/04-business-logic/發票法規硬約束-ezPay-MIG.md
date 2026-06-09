@@ -9,7 +9,7 @@ business-domain:
   - billing-cash
 related-spec: openspec/specs/order-management/spec.md
 status: active
-last-reviewed: 2026-06-03
+last-reviewed: 2026-06-09
 ---
 
 # 發票法規硬約束（ezPay + 財政部 MIG）
@@ -73,6 +73,7 @@ last-reviewed: 2026-06-03
 
 - **時限**：限「奇數月 14 日前」可作廢前兩月開立的發票（例：7/14 前可作廢 5/1-6/30 開立的）
 - **超過時限**：MUST 改走折讓單（SalesAllowance）流程，不可作廢
+- **業務不需自行判斷跨期規則**：業務面對發票異動時直接依直覺選「作廢」（最常見動作），第三方平台回應失敗（「跨齊報稅期不可作廢」）時，系統引導業務改開折讓單。規則判斷在後端，業務無需了解「跨齊報稅期」稅務細節
 - **作廢原因**：填寫長度限制（中文 6 字 / 英文 20 字內，**藍新限制**）
 
 ### 4.2 折讓單（SalesAllowance）

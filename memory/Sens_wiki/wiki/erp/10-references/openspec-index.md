@@ -31,7 +31,7 @@ last-reviewed: 2026-05-19
 | [work-order/spec.md](../../../openspec/specs/work-order/spec.md) | v0.5 | [[工單]]、[[工單狀態]] |
 | [production-task/spec.md](../../../openspec/specs/production-task/spec.md) | v0.3 | [[生產任務]]、[[任務]]、[[生產任務狀態]]、[[任務狀態]] |
 | [prepress-review/spec.md](../../../openspec/specs/prepress-review/spec.md) | v1.5 | [[稿件管理規則]]、[[審稿分配規則]]、[[免審決策樹]]、[[難易度機制]]、[[印件檔案備註上限]] |
-| [qc/spec.md](../../../openspec/specs/qc/spec.md) | 草稿 | [[wiki/erp/03-roles/QC]]、[[QC 狀態]] |
+| [qc/spec.md](../../../openspec/specs/qc/spec.md) | 草稿 | [[品檢人員]]、[[QC 狀態]] |
 | material-master / process-master / binding-master | v0.1 | BOM 底層（Phase B 未深入） |
 
 ## 三、Prototype 工程 spec

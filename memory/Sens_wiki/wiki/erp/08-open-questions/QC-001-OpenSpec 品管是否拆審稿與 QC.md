@@ -14,8 +14,8 @@ answered-at: 2026-05-20
 answered-by: Miles (依 erp-consultant Round 1 審查建議)
 source-link: memory/Sens_wiki/wiki/erp/03-roles/_alignment-report.md (Phase A 角色清單對齊識別)
 related-vault:
-  - "[[wiki/erp/03-roles/QC]]"
-  - "[[審稿]]"
+  - "[[品檢人員]]"
+  - "[[審稿人員]]"
   - "[[稿件管理規則]]"
 related-oq: []
 related-changes:
@@ -30,15 +30,15 @@ OpenSpec `user-roles/spec.md` 將「品管」定義為**單一角色**，但 Not
 
 | 角色 | 階段 | 職責 |
 |------|------|------|
-| [[審稿]] | 製前（審稿階段）| 確認稿件合規、製作稿件 |
-| [[wiki/erp/03-roles/QC]] | 製後（打樣印製階段）| 依訂單進行 QC，記錄檢驗結果 |
+| [[審稿人員]] | 製前（審稿階段）| 確認稿件合規、製作稿件 |
+| [[品檢人員]] | 製後（打樣印製階段）| 依訂單進行 QC，記錄檢驗結果 |
 
 需決定：**OpenSpec 是否該拆「品管」為兩個角色？**
 
 ## 涉及範圍
 
 - 模組：qc、prepress-review、cross-module、user-roles
-- 相關卡：[[wiki/erp/03-roles/QC]]、[[審稿]]、[[稿件管理規則]]、[[審稿分配規則]]
+- 相關卡：[[品檢人員]]、[[審稿人員]]、[[稿件管理規則]]、[[審稿分配規則]]
 - 影響範圍：
   - `openspec/specs/user-roles/spec.md` 拆分為兩角色
   - `openspec/specs/qc/spec.md` 角色描述

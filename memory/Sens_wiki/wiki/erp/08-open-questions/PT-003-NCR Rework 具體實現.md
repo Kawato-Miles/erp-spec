@@ -13,7 +13,7 @@ raised-at: 2026-05-20
 raised-by: Miles
 source-link: openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/design.md § Open Questions OQ-C1-3
 related-vault:
-  - "[[wiki/erp/03-roles/QC]]"
+  - "[[品檢人員]]"
   - "[[生產任務]]"
   - "[[補生產]]"
 related-changes:

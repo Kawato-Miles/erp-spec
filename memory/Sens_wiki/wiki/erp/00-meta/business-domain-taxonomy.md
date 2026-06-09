@@ -148,5 +148,5 @@ last-reviewed: 2026-05-28
 
 - [[erp-planning-audit-framework]] — 稽核框架（雙軸）
 - [[wiki-schema]] — frontmatter 規範
-- [[wiki/erp/00-meta/index]] — LLM 入口頁
+- [[erp_index]] — LLM 入口頁
 - [[scope-boundary]] — Vault 收 / 不收

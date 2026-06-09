@@ -15,7 +15,7 @@ raised-at: 2026-05-20
 raised-by: ceo-reviewer (Round 1 P0)
 source-link: openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/design.md § Open Questions OQ-C1-4
 related-vault:
-  - "[[wiki/erp/03-roles/QC]]"
+  - "[[品檢人員]]"
   - "[[訂單]]"
   - "[[業務]]"
 related-changes:
