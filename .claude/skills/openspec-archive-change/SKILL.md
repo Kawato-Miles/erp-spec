@@ -6,7 +6,7 @@ compatibility: Requires openspec CLI.
 metadata:
   author: openspec
   version: "1.0"
-  generatedBy: "1.2.0"
+  generatedBy: "1.4.1"
 ---
 
 Archive a completed change in the experimental workflow.
@@ -30,7 +30,10 @@ Archive a completed change in the experimental workflow.
 
    Parse the JSON to understand:
    - `schemaName`: The workflow being used
+   - `planningHome`, `changeRoot`, `artifactPaths`, and `actionContext`: path and scope context
    - `artifacts`: List of artifacts with their status (`done` or other)
+
+   If status reports `actionContext.mode: "workspace-planning"`, explain that workspace archive is not supported in this slice and STOP. Do not move workspace changes into repo-local archives or edit linked repos.
 
    **If any artifacts are not `done`:**
    - Display warning listing incomplete artifacts
@@ -52,7 +55,7 @@ Archive a completed change in the experimental workflow.
 
 4. **Assess delta spec sync state**
 
-   Check for delta specs at `openspec/changes/<name>/specs/`. If none exist, proceed without sync prompt.
+   Use `artifactPaths.specs.existingOutputPaths` from status JSON to check for delta specs. If none exist, proceed without sync prompt.
 
    **If delta specs exist:**
    - Compare each delta spec with its corresponding main spec at `openspec/specs/<capability>/spec.md`
@@ -65,83 +68,24 @@ Archive a completed change in the experimental workflow.
 
    If user chooses sync, use Task tool (subagent_type: "general-purpose", prompt: "Use Skill tool to invoke openspec-sync-specs for change '<name>'. Delta spec analysis: <include the analyzed delta spec summary>"). Proceed to archive regardless of choice.
 
-5. **OQ 收尾檢查（refine-supplementary-print-skip-review 後 vault-insight 2026-05-20 新增）**
+5. **Perform the archive**
 
-   change archive 前必執行 OQ 收尾流程，避免孤兒 OQ / 撞號 / source-link 過期等治理債累積。
-
-   **5.1 列出本 change 期間建立的 OQ**：
-
+   Create an `archive` directory under `planningHome.changesDir` if it doesn't exist:
    ```bash
-   # 方法 A：透過 source-link 反查
-   grep -rn "source-link:.*<change-name>" memory/Sens_wiki/wiki/erp/08-open-questions/ --include="*.md"
-
-   # 方法 B：透過 related-change 欄位反查
-   grep -rn "related-change: <change-name>" memory/Sens_wiki/wiki/erp/08-open-questions/ --include="*.md"
-   ```
-
-   若無 OQ → 跳過此步驟。
-
-   **5.2 對每筆 OQ 詢問 Miles 處理方式（AskUserQuestion）**：
-
-   - **close**（answered）：問題已在本 change 解決 → 補 answered-at + answered-by + 在 OQ 卡內 append `## 答覆` 段
-   - **改派下一 change**：問題延後到具體下一個 change 處理 → 更新 source-link 指向新 change 路徑 + related-change 改為新 change
-   - **維持 open**：問題仍懸而未決 → 補 expected-resolution-at（若缺）
-
-   **5.3 檢查 OQ 編號未撞號**：
-
-   ```bash
-   # 全域唯一性檢查
-   grep -rh "^oq-id:" memory/Sens_wiki/wiki/erp/08-open-questions/ --include="*.md" \
-     | sort | uniq -d
-   ```
-
-   若有重複 → 詢問 Miles 哪個重編號（建議：較晚建立者 +1）。
-
-   **5.4 更新 source-link 路徑**：
-
-   change archive 後 active 路徑會變成 archive 路徑，需更新 source-link：
-
-   ```bash
-   # 找指向 active change 的 source-link
-   grep -rn "openspec/changes/<change-name>/" memory/Sens_wiki/wiki/erp/08-open-questions/ --include="*.md"
-
-   # 改為 archive 路徑（archive 完成後跑）
-   # sed 替換 openspec/changes/<change-name>/ → openspec/changes/archive/<YYYY-MM-DD>-<change-name>/
-   ```
-
-   **5.5 補納入 OQ README 清單表格**：
-
-   檢查 `memory/Sens_wiki/wiki/erp/08-open-questions/README.md` 內 OQ 清單表格是否含本 change 新建的 OQ。若無 → 補上。
-
-   **5.6 在 audit-log 記錄 OQ 收尾結果**：
-
-   ```markdown
-   ## [YYYY-MM-DD HH:MM] OQ-collect | archive <change-name>
-
-   **本 change 建 OQ 數**：N
-   **處理結果**：close X / 改派 Y / 維持 open Z
-   **撞號修復**：（若有）
-   **source-link 更新**：（若有）
-   ```
-
-6. **Perform the archive**
-
-   Create the archive directory if it doesn't exist:
-   ```bash
-   mkdir -p openspec/changes/archive
+   mkdir -p "<planningHome.changesDir>/archive"
    ```
 
    Generate target name using current date: `YYYY-MM-DD-<change-name>`
 
    **Check if target already exists:**
    - If yes: Fail with error, suggest renaming existing archive or using different date
-   - If no: Move the change directory to archive
+   - If no: Move `changeRoot` to the archive directory
 
    ```bash
-   mv openspec/changes/<name> openspec/changes/archive/YYYY-MM-DD-<name>
+   mv "<changeRoot>" "<planningHome.changesDir>/archive/YYYY-MM-DD-<name>"
    ```
 
-7. **Display summary**
+6. **Display summary**
 
    Show archive completion summary including:
    - Change name
@@ -157,7 +101,7 @@ Archive a completed change in the experimental workflow.
 
 **Change:** <change-name>
 **Schema:** <schema-name>
-**Archived to:** openspec/changes/archive/YYYY-MM-DD-<name>/
+**Archived to:** the archive path derived from `planningHome.changesDir`/YYYY-MM-DD-<name>/
 **Specs:** ✓ Synced to main specs (or "No delta specs" or "Sync skipped")
 
 All artifacts complete. All tasks complete.
@@ -171,4 +115,3 @@ All artifacts complete. All tasks complete.
 - Show clear summary of what happened
 - If sync is requested, use openspec-sync-specs approach (agent-driven)
 - If delta specs exist, always run the sync assessment and show the combined summary before prompting
-- **OQ 收尾**：archive 前必走 Step 5 OQ 收尾流程；若 Vault 內無對應 change 的 OQ 則跳過。對應 [Vault Insight 2026-05-20 change-archive-OQ收尾流程缺口](../../../memory/Sens_wiki/wiki/erp/12-insights/2026-05-20-change-archive-OQ收尾流程缺口.md)

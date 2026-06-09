@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash -lc \"npx tsc --noEmit -p tsconfig.app.json 2>&1 | grep -vE 'mockDispatch.ts|DispatchProductionTask' | head -15 && echo '---count---' && npx tsc --noEmit -p tsconfig.app.json 2>&1 | wc -l\")",
+      "Bash(bash -lc \"cd /Users/b-f-03-029/sens-erp-prototype && npx tsc --noEmit -p tsconfig.app.json 2>&1 | grep -vE 'mockDispatch.ts|DispatchProductionTask' | head -15; echo '---count---'; cd /Users/b-f-03-029/sens-erp-prototype && npx tsc --noEmit -p tsconfig.app.json 2>&1 | wc -l\")",
+      "Bash(bash -lc \"cd /Users/b-f-03-029/sens-erp-prototype && npx vitest run 2>&1 | tail -5\")",
+      "Bash(bash -lc \"cd /Users/b-f-03-029/sens-erp-prototype && git status --short\")",
+      "Bash(bash -lc \"cd /Users/b-f-03-029/sens-erp-prototype && npx tsc --noEmit -p tsconfig.app.json 2>&1 | grep -vE 'mockDispatch.ts|DispatchProductionTask' | head -20; echo '---count---'; cd /Users/b-f-03-029/sens-erp-prototype && npx tsc --noEmit -p tsconfig.app.json 2>&1 | wc -l\")"
+    ]
+  }
+}
