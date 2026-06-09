@@ -1,6 +1,6 @@
 # state-machines/spec.md 完整抽離計劃
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 將 `openspec/specs/state-machines/spec.md` 的 24 條 Requirement 完整抽離至 wiki 卡與模組 spec，然後刪除 state-machines/spec.md。日後不再保留此跨模組 spec。
 
@@ -42,10 +42,10 @@
 | 發票狀態 | L799 | 開立 / 作廢（兩態 + 流水號不重用 + 作廢不參與三方對帳） |
 | 折讓單狀態 | L834 | 已確認 / 已作廢（兩態 + 台灣統一發票使用辦法第 20 條 + Mockup 階段不用草稿態） |
 
-- [ ] **Step 1: 讀 spec 中三條 Requirement 的描述段**
-- [ ] **Step 2: 建三張卡（frontmatter + § 狀態列舉正本 + § 營運動機 + § 相關連結），遵循訂單狀態卡格式**
-- [ ] **Step 3: 確認每張新卡至少被一張既有卡連到（禁孤島）**
-- [ ] **Step 4: Commit**
+- [x] **Step 1: 讀 spec 中三條 Requirement 的描述段**
+- [x] **Step 2: 建三張卡（frontmatter + § 狀態列舉正本 + § 營運動機 + § 相關連結），遵循訂單狀態卡格式**
+- [x] **Step 3: 確認每張新卡至少被一張既有卡連到（禁孤島）**
+- [x] **Step 4: Commit**
 
 ### Task A2：補齊現有卡的狀態列舉正本段
 
@@ -60,12 +60,12 @@
 | 出貨單狀態.md | 有完整路徑表格 | 表格已有但需加「正本」宣告語 + **補「出貨單掛訂單層」設計決策** |
 | 諮詢單狀態.md | 有營運動機 | 需新增 § 狀態列舉正本（待諮詢/已轉需求單/完成諮詢/已取消 四態） |
 
-- [ ] **Step 1: 逐卡讀現有內容**
-- [ ] **Step 2: 新增 § 狀態列舉（正本）段（對齊訂單狀態卡格式：宣告語 + 狀態表格）**
-- [ ] **Step 3: 補任務狀態.md 的「作廢」終態 + bottom-up 作廢規則**
-- [ ] **Step 4: 補出貨單狀態.md「出貨單掛訂單層」段**
-- [ ] **Step 5: 更新所有卡的 `last-reviewed`**
-- [ ] **Step 6: Commit**
+- [x] **Step 1: 逐卡讀現有內容**
+- [x] **Step 2: 新增 § 狀態列舉（正本）段（對齊訂單狀態卡格式：宣告語 + 狀態表格）**
+- [x] **Step 3: 補任務狀態.md 的「作廢」終態 + bottom-up 作廢規則**
+- [x] **Step 4: 補出貨單狀態.md「出貨單掛訂單層」段**
+- [x] **Step 5: 更新所有卡的 `last-reviewed`**
+- [x] **Step 6: Commit**
 
 ### Task A3：修正 wiki 矛盾 + 缺漏
 
@@ -74,11 +74,11 @@
 | 諮詢取消退費 OA 推進條件 | 訂單異動狀態.md | 「諮詢人員確認執行」→ 改為「諮詢人員將退款收款紀錄切已完成 → 系統自動重算累計達標 → 推進 OA 已執行」（對齊 order-management spec L283-288） |
 | 齊套邏輯 `requires_inspection` 分支 | 齊套邏輯.md | 層級 1 補 `requires_inspection` 分支：TRUE 取品檢通過量、FALSE 取報工累計量 + 補 C1/C4 入庫公式差異 |
 
-- [ ] **Step 1: 讀 order-management spec L283-288 確認推進條件**
-- [ ] **Step 2: 修正訂單異動狀態.md**
-- [ ] **Step 3: 讀 state-machines spec L66-112 確認齊套邏輯完整細節**
-- [ ] **Step 4: 修正齊套邏輯.md**
-- [ ] **Step 5: Commit**
+- [x] **Step 1: 讀 order-management spec L283-288 確認推進條件**
+- [x] **Step 2: 修正訂單異動狀態.md**
+- [x] **Step 3: 讀 state-machines spec L66-112 確認齊套邏輯完整細節**
+- [x] **Step 4: 修正齊套邏輯.md**
+- [x] **Step 5: Commit**
 
 ---
 
@@ -102,10 +102,10 @@
 | 8 | 任務異動狀態機 | L317 |
 | 11 | 任務狀態機 | L526 |
 
-- [ ] **Step 1: 讀 5 條完整 Requirement + 讀 work-order/spec.md 確認無同名衝突**
-- [ ] **Step 2: 精簡描述段（移除狀態列舉、角色職責，改引用 wiki）**
-- [ ] **Step 3: Append 到 work-order/spec.md**
-- [ ] **Step 4: Commit**
+- [x] **Step 1: 讀 5 條完整 Requirement + 讀 work-order/spec.md 確認無同名衝突**
+- [x] **Step 2: 精簡描述段（移除狀態列舉、角色職責，改引用 wiki）**
+- [x] **Step 3: Append 到 work-order/spec.md**
+- [x] **Step 4: Commit**
 
 ### Task B2：搬到 order-management/spec.md（3 條 + 向上傳遞鏈）
 
@@ -118,7 +118,7 @@
 
 印件印製維度的 Scenario（從印件狀態機 L344 拆出）也搬到 order-management。
 
-- [ ] **Step 1-4: 同 Task B1 模式**
+- [x] **Step 1-4: 同 Task B1 模式**
 
 ### Task B3：搬到 prepress-review/spec.md（2 條）
 
@@ -129,10 +129,10 @@
 
 注意：印件狀態機需拆搬——審稿維度 Scenario 搬 prepress-review、印製維度 Scenario 搬 order-management（Task B2）。
 
-- [ ] **Step 1: 讀印件狀態機完整 Requirement，區分審稿維度 vs 印製維度 Scenario**
-- [ ] **Step 2: 審稿維度 Scenario append prepress-review（確認無重複——review-return-and-confirm-production 已搬過部分）**
-- [ ] **Step 3: 印件打樣特殊流程 append prepress-review**
-- [ ] **Step 4: Commit**
+- [x] **Step 1: 讀印件狀態機完整 Requirement，區分審稿維度 vs 印製維度 Scenario**
+- [x] **Step 2: 審稿維度 Scenario append prepress-review（確認無重複——review-return-and-confirm-production 已搬過部分）**
+- [x] **Step 3: 印件打樣特殊流程 append prepress-review**
+- [x] **Step 4: Commit**
 
 ### Task B4：搬到 production-task/spec.md（1 條 + 完成度計算）
 
@@ -143,9 +143,9 @@
 
 修正：完成度計算搬 work-order（非 production-task），與 Task B1 合併處理。
 
-- [ ] **Step 1: 生產任務狀態機 append production-task/spec.md**
-- [ ] **Step 2: 完成度計算 append work-order/spec.md**
-- [ ] **Step 3: Commit**
+- [x] **Step 1: 生產任務狀態機 append production-task/spec.md**
+- [x] **Step 2: 完成度計算 append work-order/spec.md**
+- [x] **Step 3: Commit**
 
 ### Task B5：搬到 order-billing/spec.md（3 條）
 
@@ -155,7 +155,7 @@
 | 18 | 折讓單（SalesAllowance）狀態機 | L834 |
 | 20 | BillingInstallment 雙維度狀態機 | L971 |
 
-- [ ] **Step 1-4: 同 Task B1 模式**
+- [x] **Step 1-4: 同 Task B1 模式**
 
 ### Task B6：搬到其他模組 spec（4 條）
 
@@ -168,9 +168,9 @@
 
 OA 狀態機需先合併 L660 主 Requirement 與 L1059 修訂 Requirement（移除 L1059 重疊的舊 Scenario）。
 
-- [ ] **Step 1: 合併 L660 + L1059 為一個統一的 OA 狀態機 Requirement**
-- [ ] **Step 2: 逐條搬到目標 spec**
-- [ ] **Step 3: Commit**
+- [x] **Step 1: 合併 L660 + L1059 為一個統一的 OA 狀態機 Requirement**
+- [x] **Step 2: 逐條搬到目標 spec**
+- [x] **Step 3: Commit**
 
 ---
 
@@ -189,32 +189,32 @@ OA 狀態機需先合併 L660 主 Requirement 與 L1059 修訂 Requirement（移
 
 ### Task D1：刪除 state-machines/spec.md
 
-- [ ] **Step 1: 確認 24 條全部已搬遷（grep 計數）**
-- [ ] **Step 2: 刪除 `openspec/specs/state-machines/`**
-- [ ] **Step 3: Commit**
+- [x] **Step 1: 確認 24 條全部已搬遷（grep 計數）**
+- [x] **Step 2: 刪除 `openspec/specs/state-machines/`**
+- [x] **Step 3: Commit**
 
 ### Task D2：斷連結修復
 
-- [ ] **Step 1: grep 所有引用 state-machines/spec.md 的檔案**
+- [x] **Step 1: grep 所有引用 state-machines/spec.md 的檔案**
   ```bash
   grep -rn "state-machines/spec.md" openspec/ memory/ CLAUDE.md .claude/ | grep -v "archive/"
   ```
-- [ ] **Step 2: 逐一更新引用（改指新模組 spec 或 wiki 卡）**
-- [ ] **Step 3: 更新 config.yaml（若有引用）**
-- [ ] **Step 4: 更新 spec-registry.md（標記廢除）**
-- [ ] **Step 5: Commit**
+- [x] **Step 2: 逐一更新引用（改指新模組 spec 或 wiki 卡）**
+- [x] **Step 3: 更新 config.yaml（若有引用）**
+- [x] **Step 4: 更新 spec-registry.md（標記廢除）**
+- [x] **Step 5: Commit**
 
 ### Task D3：最終驗證
 
-- [ ] **Step 1: 確認無斷連結**
-- [ ] **Step 2: 確認所有 wiki 狀態機卡都有 § 狀態列舉（正本）**
-- [ ] **Step 3: Final Commit**
+- [x] **Step 1: 確認無斷連結**
+- [x] **Step 2: 確認所有 wiki 狀態機卡都有 § 狀態列舉（正本）**
+- [x] **Step 3: Final Commit**
 
 ---
 
-## 工單收回目標狀態（卡點備註）
+## 工單收回目標狀態（已解決）
 
-Phase B 搬 work-order 時需確認：工單收回後狀態是回「草稿」（描述段 L204）還是回「製程確認中」（Scenario L250）？Miles 需拍板。
+work-order/spec.md L90-115 已有完整版本，收回目標 = 回「草稿」。state-machines L250 Scenario「回製程確認中」為過時殘留。搬遷時跳過此條（work-order 已有）。
 
 ## 已識別但不在本次處理的 OQ
 
