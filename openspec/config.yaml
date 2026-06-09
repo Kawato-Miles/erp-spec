@@ -48,10 +48,10 @@ context: |
   - OQ Follow-up DB：https://www.notion.so/32c3886511fa808e9754ea1f18248d92
   - KPI DB：https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f
 
-  已遷入 OpenSpec 的資源（Notion 為發布版本，不再作為工作正本）：
-  - 資料欄位 → 各模組 spec § Data Model
-  - User Story → 各模組 spec § Scenarios
-  - 狀態機 → openspec/specs/state-machines/spec.md
+  正本分工（2026-06-09 定案）：
+  - 欄位正本 → wiki 實體卡（05-entities/ § 欄位）
+  - 狀態列舉正本 → wiki 狀態機卡（06-state-machines/ § 狀態列舉）
+  - 行為規格（Requirement / Scenario / 轉換規則）→ OpenSpec 各模組 spec
   - 商業流程 → openspec/specs/business-processes/spec.md
   - 使用者角色 → openspec/specs/user-roles/spec.md
 
@@ -73,13 +73,11 @@ rules:
     - "[2026-05-19] OQ 操作正本變更為 Vault：建立前先查詢 ERP_Vault/08-open-questions/（oq-manage skill 已改寫），列出相關未解 OQ"
     - 觸發 senior-pm agent（前期介入模式），確認問題框架後再撰寫
   specs:
-    - 使用繁體中文撰寫
     - 需求描述使用 SHALL/MUST 規範用語
     - 每個 Requirement 至少一個 Scenario（WHEN/THEN 格式）
     - Scenario 標題使用 #### （四個 #），不可用三個
     - 不使用 emoji
-    - 新增或修改 Requirement 前，須確認與 state-machines / business-processes / user-roles specs 的一致性
-    - "[2026-05-19] 涉及商業邏輯 / 角色 R&R / 實體關聯時，必須對照 ERP_Vault 對應卡（04-business-logic/ / 03-roles/ / 05-entities/）；發現不一致時優先更新 Vault 卡（內部正本）"
+    - "新增或修改 Requirement 前，須確認與 wiki 狀態機卡（06-state-machines/）/ business-processes spec / user-roles spec 的一致性；涉及欄位須對照 wiki 實體卡（05-entities/）、涉及商業邏輯須對照 wiki 規則卡（04-business-logic/）；發現不一致時優先更新 wiki 卡（商業需求正本）"
     - "[2026-05-30] 撰寫 delta 前 MUST 先枚舉所有相關既有規則：grep openspec/specs/** + ERP_Vault（04-business-logic / 05-entities / 06-state-machines / 07-scenarios / 13-user-stories）內提及本主題的既有 Requirement / 規則，逐條決定 ADDED / MODIFIED / REMOVED 再動筆（防漏看；converge change 漏看 order-management 三條 + wiki 6 卡的教訓）"
     - "[2026-05-30] ADDED vs MODIFIED 紀律：新 Requirement 若語意取代既有 Requirement / Scenario，MUST 用 ## MODIFIED Requirements（copy 完整既有再改）或 ## REMOVED，MUST NOT 用 ## ADDED——archive sync 按 exact-title 比對、ADDED 新標題只增不刪、會與被取代的舊 Requirement 物理並存致矛盾；僅對『巨大且多數不變』的 Requirement（如整個訂單狀態機）才可 ADDED 修訂局部 + archive 後手動清理舊描述"
     - "[2026-06-09] 每個 Requirement MUST 含 **Priority**（P0 核心不可缺 / P1 重要可分期 / P2 效率優化）與 **Rationale**（一句話連回業務痛點或營運目標）。缺少任一項視為不完整。"
@@ -89,9 +87,10 @@ rules:
   design:
     - 使用繁體中文撰寫
     - 著重 Prototype 設計決策，非實作程式碼
-    - 參照 state-machines spec 確認狀態轉換設計
+    - 參照 wiki 狀態機卡（狀態列舉）+ 各模組 spec（轉換規則）確認狀態設計
     - 參照 business-processes spec 確認計算邏輯
     - 參照 user-roles spec 確認角色權責
+    - 參照 wiki 實體卡（欄位）確認資料設計
     - "[2026-05-19] 商業層 ground truth 在 ERP_Vault（如齊套邏輯、付款發票邏輯、難易度機制等），design 撰寫時優先引用 Vault 卡"
   tasks:
     - 使用繁體中文撰寫
@@ -116,4 +115,4 @@ rules:
     - "[2026-05-19] 已解 OQ 在 design.md 內保留「決議與理由」標注；若決議影響跨 change 商業邏輯，同步遷 Vault OQ 卡並標 status: answered"
     - "[2026-05-19] 上述步驟全部完成後才能 archive；oq-manage skill mode D 可協助批次處理"
     - "[2026-05-30] archive 後 MUST 驗證 ADDED 殘留：對每個 delta ## ADDED Requirement，確認是否語意取代某既有 main spec Requirement / Scenario；若是，手動清理被取代的舊描述（避免新舊並存矛盾，converge 9 CRITICAL 教訓）"
-    - "[2026-05-30] archive 後 MUST 對齊 wiki 商業邏輯正本：依 pre-check 產出的「wiki 回補清單」，將 ERP_Vault 商業邏輯卡（04-business-logic / 05-entities / 06-state-machines / 07-scenarios / 13-user-stories）對齊本 change 已定案內容（wiki 為商業邏輯正本、openspec 為實作規格，定案後正本不可停留舊版）"
+    - "[2026-06-09] archive 後 MUST 驗證 wiki 已同步：propose 前已先更新 wiki（CLAUDE.md 收尾第 10 條），archive 時確認 wiki 實體卡（05-entities/ 欄位表）/ 狀態機卡（06-state-machines/ 狀態列舉）/ 商業邏輯卡（04-business-logic/）沒有遺漏項；若有遺漏當場補齊"
