@@ -7,7 +7,7 @@ last-reviewed: 2026-05-31
 # Wiki Schema（Formal）
 
 > Vault 治理規則的**正式版**。`vault-audit` skill 依此 schema 執行 lint。
-> 取代 `editing-conventions.md` 的分散規則（editing-conventions 仍保留為「人類友善版」摘要）。
+> Vault frontmatter 的正式規範。vault-audit skill 依此 lint。
 
 ## 一、type Enum（必填）
 
@@ -20,7 +20,8 @@ last-reviewed: 2026-05-31
 | `domain` | 印刷業 domain knowledge | `02-domain/` |
 | `glossary` | 術語表 | `02-domain/glossary-*.md` |
 | `role` | 角色 R&R | `03-roles/` |
-| `business-logic` | 商業邏輯卡（業務規則）| `04-business-logic/` |
+| `service-blueprint` | 服務藍圖（端到端業務鏈） | `04-business-logic/服務藍圖/` |
+| `business-rule` | 商業規則（決策邏輯、領域知識、外部約束） | `04-business-logic/` 各子目錄 |
 | `entity` | 資料模型實體 | `05-entities/` |
 | `state-machine` | 狀態機 | `06-state-machines/` |
 | `scenario` | 跨模組情境 | `07-scenarios/` |
@@ -33,18 +34,17 @@ last-reviewed: 2026-05-31
 | `review` | 每日 / 每週回顧（daily-brief 與 weekly-review skill 產出）| `14-reviews/daily/`、`14-reviews/weekly/` |
 | `test-case` | UAT 業務層驗收項目卡（正文存 Notion，Vault 卡只承載索引與往上指依據）| `15-test-cases/<module>/` |
 
-**六層與 type 的對應（2026-05-31 新增，對齊 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]]）**：本 Vault 的商業邏輯正本依「營運原則 → 共用規則 → 業務規則 → 流程／狀態／角色／資料 → 操作步驟 → 驗收項目」六層組織。各層對應的 type 如下表。**營運原則層沿用既有 `type=product-vision`，不新增獨立 type**（避免 enum 膨脹；營運原則卡以 `01-products/` 目錄 + 內容判別，不靠新 type 區隔）。
+**分層與 type 的對應**（對齊 [[erp_index]] § 一架構概述）：
 
-| 分層 | 定位 | 對應 type | 對應目錄 |
-|------|---------|----------|---------|
-| 營運原則（最高層）| 最高價值 / 分權方向（由 Miles 拍板、不可驗算）| `product-vision`（沿用，**不新增 type**）| `01-products/` |
-| 共用規則 | 這個領域所有規則都一定要遵守的底線（如對帳一致性，跨多條業務規則的恆定約束）| `business-logic`（共用規則卡，見 § 四 business-logic 內部分層）| `04-business-logic/` |
-| 業務規則 | 具體規則（可驗算的 if-then 業務規則）| `business-logic`（業務規則卡）| `04-business-logic/` |
-| 流程／狀態／角色／資料 | 個案執行指令（情境 / 狀態 / 角色 / 實體）| `scenario` / `state-machine` / `role` / `entity` | `07-scenarios/` / `06-state-machines/` / `03-roles/` / `05-entities/` |
-| 操作步驟 | 單一角色執行某規則的步驟 | `user-story` | `13-user-stories/<module>/` |
+| 分層 | 對應 type | 對應目錄 |
+|------|----------|---------|
+| 產品策略 | `product-vision` / `phase` / `metric` | `01-products/` |
+| 商業邏輯 | `service-blueprint`（服務藍圖）/ `business-rule`（商業規則） | `04-business-logic/` |
+| 流程 / 狀態 / 角色 / 資料 | `scenario` / `state-machine` / `role` / `entity` | `07` / `06` / `03` / `05` |
+| 操作步驟 | `user-story` | `13-user-stories/` |
 | 驗收項目 | 某具體輸入下的可勾稽驗收結論 | `test-case` | `15-test-cases/<module>/` |
 
-> **兩種最高層分開**：營運原則（`type=product-vision`，業務主管讀，定公司最高價值與分權方向）與文件管理規範（[[wiki-architecture]] + 專案 `CLAUDE.md`，定「Vault > OpenSpec」等知識管理規約）是兩條獨立的最高層，互不混用。本 schema 屬文件管理層（`type=meta`）。
+> 產品策略（`01-products/`）定商業方向，本 schema 屬文件管理層（`type=meta`）。架構概述見 [[erp_index]] § 一。
 
 ## 二、module Enum（多選）
 
@@ -100,7 +100,7 @@ business-domain:
 
 ### 4.0 往上指依據、往下指實作的通則（2026-05-31 新增）
 
-> 對齊 [[wiki-architecture#依據往上、實作往下，連結不繞回自己]]。所有承載商業邏輯的卡（`business-logic` / `entity` / `state-machine` / `scenario` / `role` / `user-story` / `test-case`）採「往上 `source` + 往下 `implemented-by`」兩欄連結，整張圖的連結不會繞回自己。
+> 對齊 [[erp_index]] § 一連結方向。所有承載商業邏輯的卡（`business-rule` / `service-blueprint` / `entity` / `state-machine` / `scenario` / `role` / `user-story` / `test-case`）採「往上 `source` + 往下 `implemented-by`」兩欄連結，整張圖的連結不會繞回自己。
 
 | 欄位 | 方向 | 用途 | 指向對象 | 硬規則 |
 |------|------|------|---------|--------|
@@ -165,36 +165,46 @@ last-reviewed: YYYY-MM-DD
 ---
 ```
 
-### type=business-logic
+### type=service-blueprint
 
 ```yaml
 ---
-type: business-logic
+type: service-blueprint
 module:
   - <模組>
-logic-tier: general | specific   # 內部分層（2026-05-31 新增）：general=共用規則（這個領域所有規則都一定要遵守的底線）/ specific=業務規則（具體規則）；見下方「business-logic 內部分層」
-source:                          # 往上層 = 正確性根據；共用規則卡指營運原則 / 最上層依據，業務規則卡可指所屬共用規則卡；禁指 OpenSpec / 同層平行業務規則 / 下層；見 § 4.0
-  - "[[<上層卡或最上層依據>]]"
-implemented-by:                  # 往下層 = 導航（OpenSpec spec 檔層不綁標題錨點 / Prototype 型別檔），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/<模組>/spec.md"
-related-spec: openspec/specs/<模組>/spec.md  # 若 OpenSpec 有（補充參照，非正確性來源）
-related-prototype: sens-erp-prototype/src/types/<...>.ts  # 若 Prototype 有
+business-domain:
+  - <領域或 cross-domain>
 status: active
 last-reviewed: YYYY-MM-DD
 ---
 ```
 
-**business-logic 內部分層（共用規則卡 vs 業務規則卡，2026-05-31 新增）**：
+### type=business-rule
 
-> business-logic 目錄同時承載六層中的「共用規則」與「業務規則」兩層，以 frontmatter `logic-tier` 區分。對齊 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]]與 [[business-logic-writing-guide#4.0 各類卡的單一職責]]。
+```yaml
+---
+type: business-rule
+mutability: external | domain | internal  # 可變性：external=外部約束 / domain=領域知識 / internal=營運規則
+module:
+  - <模組>
+business-domain:
+  - <領域或 cross-domain>
+source:
+  - "<依據來源：使用者拍板 / 產業慣例 / 法規 / 上層商業規則卡>"
+status: active
+last-reviewed: YYYY-MM-DD
+---
+```
 
-| 內部分層 | `logic-tier` 值 | 角色 | 該寫 | 範例 |
-|---------|----------------|------|------|------|
-| 共用規則 | `general` | **這個領域所有規則都一定要遵守的底線**：跨多條業務規則恆定成立的約束，業務規則不得違反 | 一定要成立的規則陳述（甚麼恆為真）+ 為何恆定 + 統攝哪些業務規則 | 對帳一致性（應收 = 發票淨額 = 收款淨額）；獨立成卡，帶實例階段再建 |
-| 業務規則 | `specific` | **具體規則**：可驗算的 if-then 業務規則 | 觸發條件 + 計算 / 判定邏輯 + 邊界情況 + 連帶影響 | 補收正項 OA 免主管審核直達已執行；諮詢取消半額退費 1000 |
+**商業規則的三種可變性（`mutability`）**：
 
-- 共用規則卡的 `source` 往上指營運原則 / 最上層依據（不指任何業務規則）；業務規則卡的 `source` 可往上指其所屬共用規則卡（受共用規則約束），但**禁指同層平行業務規則**（避免繞回自己）。
-- 業務規則 MUST NOT 違反其所屬共用規則；衝突時以共用規則為準（共用規則層高於業務規則）。
+| `mutability` | 意義 | 子目錄 | 誰能改 |
+|---|---|---|---|
+| `external` | 外部約束（法規 / 第三方規格） | `外部約束/` | 只有外部來源變更時 |
+| `domain` | 領域知識（產業事實） | `領域知識/` | 產業本身改變時（極少） |
+| `internal` | 營運規則（公司決策） | `營運規則/` | 訪談、管理層拍板可改 |
+
+撰寫流程與產出格式詳見 `04-business-logic/_template-business-logic.md`。
 
 ### type=entity
 
@@ -453,7 +463,7 @@ related-changes:                   # 本期涉及的 openspec change
 | `01-products/` | `product-vision` / `phase` / `metric` |
 | `02-domain/` | `domain` / `glossary` |
 | `03-roles/` | `role` / `meta`（`_alignment-report.md`）|
-| `04-business-logic/` | `business-logic` |
+| `04-business-logic/` | `service-blueprint` / `business-rule` |
 | `05-entities/` | `entity` |
 | `06-state-machines/` | `state-machine` |
 | `07-scenarios/` | `scenario` / `meta`（`README.md`）|
@@ -659,7 +669,7 @@ related-changes:                   # 本期涉及的 openspec change
 
 ### 規則的連結指向位置命名（業務規則 / 共用規則，2026-05-31 補述）
 
-> business-logic 卡內的「單條規則」以**業務語意命名的連結指向位置**標識，供 scenario / user-story / test-case 跨卡 wiki link 引用單條規則。正本規約已定於 [[wiki-architecture#各層怎麼寫]] + [[business-logic-writing-guide]]；此處併入命名規約集中索引。
+> 商業規則卡內的「單條規則」以**業務語意命名的連結指向位置**標識，供 scenario / user-story / test-case 跨卡 wiki link 引用單條規則。撰寫規範見 `04-business-logic/_template-business-logic.md`。
 
 - 規則的連結指向位置用**業務語意命名**（如 `#補收免審`、`#諮詢取消半額退費`），**不用流水號**（如 `#R1`）
 - 理由：流水號重排 / 重用會讓連回來的連結斷掉；用業務語意命名時改規則只改內容、定位點不變，跨卡引用不斷鏈
@@ -724,10 +734,9 @@ related-changes:                   # 本期涉及的 openspec change
 
 | 規範 | 範圍 | 關係 |
 |------|------|------|
-| `editing-conventions.md` | 人類友善版規約 | 本 schema 的精簡版，方便閱讀 |
-| `scope-boundary.md` | Vault 收 / 不收 | 與本 schema 配合：scope-boundary 決定什麼進 Vault，本 schema 決定怎麼寫 |
-| `vault-charter.md` | KM 章程 | 本 schema 是 charter § 編輯規約 的展開 |
-| `sync-workflow.md` | 三邊同步流程 | 本 schema 不涉及 sync，sync 由 sync-workflow 處理 |
+| [[erp_index]] | 入口 + 架構概述 | 分層結構、連結方向的定義 |
+| [[scope-boundary]] | Vault 收 / 不收 | scope-boundary 決定什麼進 Vault，本 schema 決定怎麼寫 |
+| `04-business-logic/_template-business-logic.md` | 商業邏輯撰寫準則 | 撰寫流程、分類判斷、產出格式 |
 
 ## 十一、卡類型內容職責邊界（2026-05-28 新增）
 
@@ -737,7 +746,8 @@ related-changes:                   # 本期涉及的 openspec change
 
 | 卡類型 | 正文該寫（職責內容）| 不該寫（越界內容）|
 |-------|------------------|------------------|
-| `business-logic` | 業務規則 / 計算邏輯 / 連帶矩陣 / 情境分類索引 | user-story 格式模板（作為/我希望/以便）/ test-case 步驟範本 / UI 措辭 / 完整實體 Data Model |
+| `service-blueprint` | 端到端業務鏈（流程階段 / 角色交接 / 決策分叉）| 規則細節（引用商業規則卡）/ user-story / test-case / 實作術語 |
+| `business-rule` | 商業規則 / 領域知識 / 外部約束 | user-story 格式模板 / test-case 步驟範本 / UI 措辭 / 完整實體 Data Model / 欄位定義 / 計算公式 |
 | `scenario` | 跨模組端到端情境（角色傳遞 / 狀態鏈）| user-story 格式模板 / test-case 範本 / 計價公式細節（屬 business-logic）|
 | `entity` | 實體欄位 / 關聯 / 狀態 | 業務流程敘述（屬 business-logic / scenario）/ user-story |
 | `role` | 角色職責 / 權限 / 工作流 / 痛點 | 跨角色流程細節（屬 scenario）/ 實體欄位定義 |
