@@ -77,7 +77,7 @@ Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/erp/erp-naming-misjudgements
 ## 步驟四：載入系統設計背景文件
 
 依 [[review-loading-checklist]] § 一 ERP 顧問載入範圍：
-- 狀態機（`openspec/specs/state-machines/spec.md` + Vault `06-state-machines/`）
+- 狀態機（各模組 spec 內嵌狀態機 Requirement + Vault `06-state-machines/`）
 - 商業流程完整（`openspec/specs/business-processes/spec.md` + Vault `04-business-logic/`）
 - 資料模型實體（嵌入各模組 spec § Data Model + Vault `05-entities/`）
 - 使用者情境（`openspec/specs/user-roles/spec.md`，確認角色操作權限）

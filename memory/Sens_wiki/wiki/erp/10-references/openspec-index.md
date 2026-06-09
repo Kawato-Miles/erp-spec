@@ -16,7 +16,7 @@ last-reviewed: 2026-05-19
 |------|-----------|
 | [config.yaml](../../../openspec/config.yaml) § 產品背景與目標 | [[wiki/erp/01-products/product-vision]]、[[phases]] |
 | ~~business-processes/spec.md~~（已廢除 2026-06-09，商業規則遷 wiki、系統行為遷各模組 spec） | [[齊套邏輯]]、[[數量換算規則]]、[[印件生產流程]]、[[打樣流程]]、[[稿件管理規則]] |
-| [state-machines/spec.md](../../../openspec/specs/state-machines/spec.md) | `06-state-machines/*.md`（9 個狀態機卡） |
+| ~~state-machines/spec.md~~（已廢除 2026-06-09，狀態機拆分至各模組 spec） | `06-state-machines/*.md`（9 個狀態機卡） |
 | ~~user-roles/spec.md~~（已廢除 2026-06-09，角色職責遷 wiki、系統行為遷各模組 spec） | `03-roles/`（16 角色卡，見 [[_alignment-report]]）|
 | [business-scenarios/spec.md](../../../openspec/specs/business-scenarios/spec.md) | [[wiki/erp/07-scenarios/README]] |
 

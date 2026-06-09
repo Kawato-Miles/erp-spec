@@ -38,7 +38,7 @@ v0.3 [add-production-task-transfer](../../changes/archive/2026-04-24-add-product
 
 - **OpenSpec Specs 異動**：
   - [production-task/spec.md](../../specs/production-task/spec.md)（Data Model 與 Scenarios 大幅變更）
-  - [state-machines/spec.md](../../specs/state-machines/spec.md)（`ProductionTask` 狀態機章節）
+  - [production-task/spec.md](../../specs/production-task/spec.md)（`ProductionTask` 狀態機章節）
   - [task-dispatch-board/spec.md](../../specs/task-dispatch-board/spec.md)（過濾與交互邏輯）
 - **Prototype 異動**（`sens-erp-prototype`）：
   - 印件詳情頁「轉交單 Tab」移除「新增 TransferTicket」建單 UI，改為唯讀顯示系統自動建立的清單

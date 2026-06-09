@@ -223,8 +223,8 @@ module:
 source:                          # 往上層 = 正確性根據（所屬 business-logic 規則 / 流程狀態角色資料層情境），禁指 OpenSpec / 同層 / 下層；見 § 4.0
   - "[[<上層卡>]]"
 implemented-by:                  # 往下層 = 導航（OpenSpec spec 檔層，不綁標題錨點），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/state-machines/spec.md"
-related-spec: openspec/specs/state-machines/spec.md  # 補充參照，非正確性來源
+  - "openspec/specs/<對應模組>/spec.md"
+related-spec: openspec/specs/<對應模組>/spec.md  # 補充參照，非正確性來源
 status: active
 last-reviewed: YYYY-MM-DD
 ---

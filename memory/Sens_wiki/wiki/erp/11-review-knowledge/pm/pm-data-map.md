@@ -25,8 +25,8 @@ last-reviewed: 2026-05-19
 | User Story DB | 已定義的業務故事（US-001 起）| 嵌入各模組 spec（已遷至 OpenSpec）|
 | 產品目標 / KPI | 商業目標與可量化指標 | [Notion 產品目標](https://www.notion.so/32c3886511fa81359354e33087d23f23) |
 | KPI DB | 各模組可量化成功指標（以 Feature 欄位篩選） | [Notion KPI DB](https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f) |
-| 狀態機（上層）| 需求單 / 訂單 / 工單 / 印件狀態轉換 | `openspec/specs/state-machines/spec.md` |
-| 狀態機（下層）| 任務 / 生產任務 / QC / 出貨單 | 同上檔案下半段 |
+| 狀態機（上層）| 需求單 / 訂單 / 工單 / 印件狀態轉換 | wiki `06-state-machines/` 各狀態機卡 + 各模組 spec（狀態機已拆分至對應模組） |
+| 狀態機（下層）| 任務 / 生產任務 / QC / 出貨單 | 同上（各模組 spec 內嵌狀態機 Requirement） |
 | 業務情境 DB | PM 視角情境驗證與邊界案例 | [Notion 業務情境](https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05) |
 | 資料欄位 DB | 現有資料模型與欄位定義 | 嵌入各模組 spec（已遷至 OpenSpec）|
 | Follow-up DB（OQ）| 對外確認版 | [Notion Follow-up](https://www.notion.so/32c3886511fa808e9754ea1f18248d92) |

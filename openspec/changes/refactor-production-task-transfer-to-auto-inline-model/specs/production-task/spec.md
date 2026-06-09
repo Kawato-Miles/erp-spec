@@ -250,7 +250,7 @@ Tab 內容 MUST 包含：
 
 ### Requirement: 生產任務狀態機
 
-系統 SHALL 依照 [狀態機 spec](../state-machines/spec.md) § 生產任務定義的規則進行狀態轉換。自有工廠路徑：待處理 → 製作中 → 已完成。生管指派師傅為欄位更新（assigned_operator），不觸發狀態變更。
+系統 SHALL 依照 [production-task spec](../production-task/spec.md) § 生產任務狀態機定義的規則進行狀態轉換。自有工廠路徑：待處理 → 製作中 → 已完成。生管指派師傅為欄位更新（assigned_operator），不觸發狀態變更。
 
 **依賴邊就緒前置條件**（取代先前的 prerequisiteMet 設計）：
 - 系統 SHALL 在派工 / 報工時即時計算「所有依賴邊的佇列量」

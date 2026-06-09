@@ -10,8 +10,7 @@
 
 | 檔案 | 用途 | 修改頻率 |
 |------|------|--------|
-| 狀態機 § 上層（`openspec/specs/state-machines/spec.md`）| 上層流程的狀態定義（需求單、訂單、工單、印件） | 低（架構穩定） |
-| 狀態機 § 下層（同上檔案）| 下層流程的狀態定義（任務、生產任務、QC、出貨） | 低（架構穩定） |
+| 狀態機（wiki `06-state-machines/` + 各模組 spec）| 各實體狀態定義（需求單、訂單、工單、印件、任務、生產任務、QC、出貨）| 低（架構穩定） |
 | Notion 業務情境 DB | PM 視角的情境驗證（業務邏輯驗證） | 中（常補充，正本在 Notion） |
 | 使用者情境（`openspec/specs/user-roles/spec.md`）| 各角色的使用者故事（需求確認） | 中（常補充，正本在 OpenSpec） |
 | 商業流程（`openspec/specs/business-processes/spec.md`）| 核心業務規則（計算邏輯、計價方式等） | 中（迭代修改） |
@@ -192,7 +191,7 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
 
 ### 涉及檔案速查
 
-- **狀態、流程相關** → 狀態機（`openspec/specs/state-machines/spec.md`）
+- **狀態、流程相關** → 狀態機（wiki `06-state-machines/` + 各模組 spec 內嵌狀態機 Requirement）
 - **邏輯、計算相關** → 商業流程（`openspec/specs/business-processes/spec.md`）
 - **情境、邊界相關** → Notion 業務情境 DB / test-cases.md
 - **數據結構相關** → 各模組 spec 內嵌資料欄位定義（已遷至 OpenSpec）

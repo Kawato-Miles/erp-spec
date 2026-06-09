@@ -97,7 +97,7 @@ last-reviewed: 2026-05-28
 | **角色（Roles）** | `03-roles/`（16 角色） | 任何模組討論都涉及角色 R&R |
 | **術語（Domain）** | `02-domain/glossary-erp.md` / `glossary-shared.md` / `glossary-graphic-editor.md` / `printing-industry.md` | 跨領域共用語言 |
 | **跨模組情境（Scenarios）** | `07-scenarios/`（16 跨模組情境）| 端到端跨領域業務情境 |
-| **狀態機（State Machines）** | `06-state-machines/`（9 張）+ `openspec/specs/state-machines/spec.md` | 跨實體狀態鏈 |
+| **狀態機（State Machines）** | `06-state-machines/`（9 張）+ 各模組 spec 內嵌狀態機 Requirement | 跨實體狀態鏈 |
 | **產品 KPI / 願景** | `01-products/`（vision / phases / kpi / impact-score）| 任何規劃需對齊產品目標 |
 | **Master Data**（**本 plan 第六輪反饋拍板進入共用層**）| `material-master` / `process-master` / `binding-master` / `equipment` spec + 對應 Vault 實體卡 | 跨領域基礎參考資料：Pre-sales 報價 / Prepress 規格 / Production 排程都用 |
 | **跨模組商業流程** | wiki `04-business-logic/`（原 business-processes/spec.md 已廢除 2026-06-09，內容遷至 wiki + 各模組 spec）| 跨模組規則彙整 |

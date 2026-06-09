@@ -51,7 +51,7 @@ last-reviewed: 2026-05-28
 - 這個設計的所有狀態轉換都有觸發條件嗎？
 - 有沒有死路（進得去出不來）或缺少回滾路徑的狀態？
 - 狀態向上傳遞的邏輯（基於 BOM 結構的齊套性邏輯）在這個設計中是否正確實作？
-- 與現有狀態機（`openspec/specs/state-machines/spec.md` 與 Vault `06-state-machines/`）有無矛盾？
+- 與現有狀態機（wiki `06-state-machines/` 各狀態機卡 + 各模組 spec 內嵌狀態機 Requirement）有無矛盾？
 
 ### 3. 資料一致性
 

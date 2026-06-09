@@ -10,7 +10,7 @@ priority: high
 audience: internal
 raised-at: 2026-06-03
 raised-by: Claude（Phase 4 Linear 交付 + doc-audit 對齊訂單收退款模型重構 發現跨 change 衝突）
-source-link: openspec/specs/state-machines/spec.md L1221/L1297 + order-management L102/L1315 + consultation-request L407 + business-processes L895（諮詢取消退費 OA 累計推進殘留）
+source-link: openspec/specs/order-adjustment/spec.md + order-management/spec.md + consultation-request/spec.md（諮詢取消退費 OA 累計推進殘留；原 state-machines/spec.md 已廢除 2026-06-09 拆分至各模組）
 related-vault:
   - "[[訂單異動規則]]"
   - "[[對帳一致性]]"

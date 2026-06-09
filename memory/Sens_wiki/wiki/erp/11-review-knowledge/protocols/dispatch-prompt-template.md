@@ -218,7 +218,7 @@ Agent 仍需主動讀：
 - [[erp-naming-rules]]（改名 / 新術語 5 秒測試）
 - [[erp-naming-misjudgements]]（命名誤審記錄）
 - [[sequential-design-collaboration]]（本協議）
-- 狀態機 spec：openspec/specs/state-machines/spec.md
+- 狀態機：wiki `06-state-machines/` 各狀態機卡 + 各模組 spec 內嵌狀態機 Requirement（state-machines/spec.md 已廢除 2026-06-09，拆分至各模組）
 - 商業流程正本：wiki `04-business-logic/`（business-processes/spec.md 已廢除 2026-06-09）
 - 議題對應 spec：[依議題列]
 

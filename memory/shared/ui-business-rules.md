@@ -226,7 +226,7 @@ Footer（可選）：關閉 + 編輯
 
 規範重點：
 - 狀態顏色對應使用專案 token（詳見 `sens-erp-prototype/src/index.css` 的 `--status-*`）
-- 狀態文字需與狀態機定義一致（詳見 `openspec/specs/state-machines/spec.md`）
+- 狀態文字需與狀態機定義一致（詳見 wiki `06-state-machines/` 各狀態機卡 + 各模組 spec 內嵌狀態機 Requirement）
 - 同一狀態在所有頁面的顏色必須一致
 - 停用/作廢狀態使用 muted / neutral 色
 

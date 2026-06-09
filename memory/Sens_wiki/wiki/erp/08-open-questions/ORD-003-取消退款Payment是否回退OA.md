@@ -33,7 +33,7 @@ expected-resolution-at: 2026-Q3
 Spec / Scenario 對應：
 
 - [order-management spec § Requirement: Payment 修正路徑](../../../../openspec/specs/order-management/spec.md)
-- [state-machines spec § 訂單異動狀態機 § Scenario: 取消已完成 Payment 致累計不足回退 OA](../../../../openspec/specs/state-machines/spec.md)
+- [order-adjustment spec § 訂單異動狀態機 § Scenario: 取消已完成 Payment 致累計不足回退 OA](../../../../openspec/specs/order-adjustment/spec.md)
 
 ## 2026-06-02 訂單收退款模型重構 取代（回退機制移除）
 

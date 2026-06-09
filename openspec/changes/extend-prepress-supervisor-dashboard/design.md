@@ -25,7 +25,7 @@
 
 **相關資源**：
 - wiki [印件生產流程](../../memory/Sens_wiki/wiki/erp/04-business-logic/印件生產流程.md) § 審稿合格後自動建工單
-- [state-machines spec](openspec/specs/state-machines/spec.md) § 訂單上層狀態機（不改，沿用「製作等待中」表達審稿全部完成）
+- [order-management spec](openspec/specs/order-management/spec.md) § 訂單上層狀態機（不改，沿用「製作等待中」表達審稿全部完成）
 - [order-management spec](openspec/specs/order-management/spec.md) § Data Model
 - wiki [審稿主管](../../memory/Sens_wiki/wiki/erp/03-roles/審稿主管.md) § 權責
 

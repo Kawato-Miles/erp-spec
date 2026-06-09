@@ -15,7 +15,7 @@ source:
   - "openspec/specs/order-management/spec.md#Requirement: 退款 OA（負項）沿用業務主管核可 + 不進期次"
   - "openspec/specs/order-management/spec.md#Requirement: 三方對帳檢視面板（差額分解 / 退款核銷應退差額）"
   - "openspec/specs/prototype-data-store/spec.md#訂單收退款模型重構 退款核銷應退差額 store 規格"
-  - "openspec/specs/state-machines/spec.md#訂單異動狀態機（已執行=核可即生效）"
+  - "openspec/specs/order-adjustment/spec.md#Requirement: 訂單異動（OrderAdjustment）狀態機（已執行=核可即生效）"
 related-spec: openspec/specs/order-management/spec.md
 related-scenarios:
   - "[[wiki/erp/07-scenarios/README#情境 16：訂單取消與退款端到端（跨角色多模組連鎖）]]"
@@ -75,7 +75,7 @@ related-test-cases: []
 ## 來源（provenance）
 
 - [`openspec/specs/order-management/spec.md`](../../../../openspec/specs/order-management/spec.md) § Requirement「退款 OA（負項）沿用業務主管核可 + 不進期次」、§ Requirement「三方對帳檢視面板（差額分解 / 退款核銷應退差額）」（2026-06-02 訂單收退款模型重構 受款—退款模型）
-- [`openspec/specs/state-machines/spec.md`](../../../../openspec/specs/state-machines/spec.md) § 訂單異動狀態機（已執行 = 核可即生效）
+- [`openspec/specs/order-adjustment/spec.md`](../../../../openspec/specs/order-adjustment/spec.md) § 訂單異動狀態機（已執行 = 核可即生效）
 - 從 [[US-ORD-011-訂單取消與退款]] 拆出（2026-05-22 紀律演化）
 
 ## 校對紀錄
