@@ -82,6 +82,10 @@ rules:
     - "[2026-05-19] 涉及商業邏輯 / 角色 R&R / 實體關聯時，必須對照 ERP_Vault 對應卡（04-business-logic/ / 03-roles/ / 05-entities/）；發現不一致時優先更新 Vault 卡（內部正本）"
     - "[2026-05-30] 撰寫 delta 前 MUST 先枚舉所有相關既有規則：grep openspec/specs/** + ERP_Vault（04-business-logic / 05-entities / 06-state-machines / 07-scenarios / 13-user-stories）內提及本主題的既有 Requirement / 規則，逐條決定 ADDED / MODIFIED / REMOVED 再動筆（防漏看；converge change 漏看 order-management 三條 + wiki 6 卡的教訓）"
     - "[2026-05-30] ADDED vs MODIFIED 紀律：新 Requirement 若語意取代既有 Requirement / Scenario，MUST 用 ## MODIFIED Requirements（copy 完整既有再改）或 ## REMOVED，MUST NOT 用 ## ADDED——archive sync 按 exact-title 比對、ADDED 新標題只增不刪、會與被取代的舊 Requirement 物理並存致矛盾；僅對『巨大且多數不變』的 Requirement（如整個訂單狀態機）才可 ADDED 修訂局部 + archive 後手動清理舊描述"
+    - "[2026-06-09] 每個 Requirement MUST 含 **Priority**（P0 核心不可缺 / P1 重要可分期 / P2 效率優化）與 **Rationale**（一句話連回業務痛點或營運目標）。缺少任一項視為不完整。"
+    - "[2026-06-09] 描述段與 Scenario 中的欄位名 MUST 使用 wiki 實體卡（05-entities/）定義的「介面欄位」業務中文名稱，MUST NOT 使用 snake_case 技術欄位名或 PascalCase 實體名。範例：用「訂單類型」不用 order_type、用「收款紀錄」不用 Payment。"
+    - "[2026-06-09] spec MUST NOT 包含 Data Model 欄位表或狀態列舉表。欄位正本在 wiki 實體卡（05-entities/）、狀態列舉正本在 wiki 狀態機卡（06-state-machines/）。spec 只寫行為規格（Requirement + Scenario + 轉換規則）。"
+    - "[2026-06-09] 涉及欄位新增 / 修改時，MUST 先更新 wiki 實體卡的欄位表，再於 spec 撰寫對應 Requirement。涉及狀態新增 / 修改時，MUST 先更新 wiki 狀態機卡的狀態列舉，再於 spec 撰寫轉換規則 Requirement。"
   design:
     - 使用繁體中文撰寫
     - 著重 Prototype 設計決策，非實作程式碼
