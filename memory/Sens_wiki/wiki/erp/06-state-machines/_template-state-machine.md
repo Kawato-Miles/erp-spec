@@ -8,9 +8,9 @@ last-reviewed: 2026-05-31
 
 > 給 Claude / Miles 撰寫 `06-state-machines/` 狀態機卡時複製套用，**同時**作為 [[vault-audit]] 事後稽核此類卡的勾稽尺（一份兩用：寫時照填、審時照勾）。
 >
-> 分層定位：依 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]]，state-machine 屬「狀態」這一層——把上層 [[business-logic-writing-guide#4.0 各類卡的單一職責|business-logic 規則]]展開為「資料層面的狀態變化」。**本卡承載狀態列舉（正本）與營運動機**，轉換規則（Given/When/Then + guard 條件）留在 OpenSpec 各模組 spec 的 Requirement。規則本體、計算公式、跨情境例子、營運動機長篇論述留 `04-business-logic`，本卡 wiki link 指過去。
+> 分層定位：依 [[erp_index]]，state-machine 屬「狀態」這一層——把上層 `04-business-logic/_template-business-logic.md`展開為「資料層面的狀態變化」。**本卡承載狀態列舉（正本）與營運動機**，轉換規則（Given/When/Then + guard 條件）留在 OpenSpec 各模組 spec 的 Requirement。規則本體、計算公式、跨情境例子、營運動機長篇論述留 `04-business-logic`，本卡 wiki link 指過去。
 >
-> 上層約束（MUST 先讀）：[[business-logic-writing-guide#4.0 各類卡的單一職責]] 對應 type 職責 + [[business-logic-writing-guide#4.2 state-machine 卡（保留狀態 / 轉換，前置營運說明）]] 結構範式 + [[wiki-architecture]] 對應分層。本範本是上述兩份的合併展開，不與其衝突。
+> 上層約束（MUST 先讀）：`04-business-logic/_template-business-logic.md` 對應 type 職責 + `04-business-logic/_template-business-logic.md` 結構範式 + [[erp_index]] 對應分層。本範本是上述兩份的合併展開，不與其衝突。
 >
 > 已落地的範例卡（可對照）：[[訂單異動狀態]]、[[分期請款狀態]]（皆已依 § 4.2 重寫，為正面範本）。
 
@@ -173,7 +173,7 @@ implemented-by:
 
 - 狀態列舉正本：本卡「狀態列舉（正本）」段落
 - 轉換規則：OpenSpec [<模組>/spec.md § <轉換規則 Requirement>](../../../../openspec/specs/<模組>/spec.md)
-- 迭代脈絡見 [[business-logic-changelog#<本卡名>]]
+- 迭代脈絡見 [[changelog]]
 ```
 
 --- 模板結束 ---
@@ -254,7 +254,7 @@ implemented-by:
 ## 來源
 - 狀態列舉正本：本卡「狀態列舉（正本）」段落
 - 轉換規則：OpenSpec [<模組X>/spec.md § <轉換規則 Requirement>](../../../../openspec/specs/<模組X>/spec.md)
-- 迭代脈絡見 [[business-logic-changelog#<實體X>狀態]]
+- 迭代脈絡見 [[changelog]]
 ```
 
 ---
@@ -268,7 +268,7 @@ implemented-by:
 - [ ] frontmatter 共同 5 欄全填（type / module / business-domain / status / last-reviewed）；`source` 不指同層狀態機卡 / 下層 / OpenSpec。
 - [ ] 「這張卡要回答的問題」段每個問題正文有對應結論（無懸而未答）。
 - [ ] 「營運背景」段無實作術語當主詞、無中英夾雜（技術詞括號附註）。
-- [ ] 正文零迭代史（迭代史在 [[business-logic-changelog]]）；正文零「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」inline OQ 措辭（識別到不確定項 → [[oq-manage]] mode B 開獨立卡，禁 `[!question]` callout）。
+- [ ] 正文零迭代史（迭代史在 [[changelog]]）；正文零「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」inline OQ 措辭（識別到不確定項 → [[oq-manage]] mode B 開獨立卡，禁 `[!question]` callout）。
 - [ ] 相關連結雙向可達、語意分類；沒有連到不存在的卡，也不是沒有任何卡連到它的孤島卡。
 - [ ] 最後驗收：從「營運背景」抽一句，問「主管 / Miles 不看程式碼能否懂」——能，才算過。
 
@@ -278,10 +278,10 @@ implemented-by:
 - [ ] `## 狀態轉換` 有 ASCII 流程圖；多條路徑分塊並標清楚發起方 / 條件。
 - [ ] 狀態名 / 路徑名用業務語意命名（穩定可讀），**未用流水號（如 S1 / R1）當定位點、未重排、未重用**。
 - [ ] 每個關鍵轉換的營運動機以「轉換 → 動機 → 1 例子」呈現；例子用真實格式（編號 / 金額 / 角色），停在業務語言、**無 UI 措辭**（按鈕 / 下拉 / 彈窗 / 點擊 / Tab / Side Panel 等）。
-- [ ] 轉換背後的規則動機以 wiki link 指 [[business-logic-writing-guide#4.0 各類卡的單一職責|business-logic 正本卡]]，**未在本卡重述規則本體**。
+- [ ] 轉換背後的規則動機以 wiki link 指 `04-business-logic/_template-business-logic.md`，**未在本卡重述規則本體**。
 - [ ] **未退化成 business-logic 卡**：本卡正文無「規則本體 / 計算公式 / 跨情境窮舉例子 / 營運動機長篇論述」（這些屬 business-logic）。
 - [ ] **未越界寫 scenario / UI**：本卡正文無「跨模組端到端業務情境敘述」（→ scenario）、無「UI 措辭」（→ Prototype 端 e2e）。
-- [ ] `## 來源` 末行有「迭代脈絡見 [[business-logic-changelog#<本卡名>]]」；本卡有任何規則 / 狀態異動時，對應 changelog section 同步補一筆（日期 + change-id + 一句話 + 動機）。
+- [ ] `## 來源` 末行有「迭代脈絡見 [[changelog]]」；本卡有任何規則 / 狀態異動時，對應 changelog section 同步補一筆（日期 + change-id + 一句話 + 動機）。
 
 ---
 
@@ -295,7 +295,7 @@ implemented-by:
 - 營運背景段禁工程術語 / 程式碼物件名當主詞。
 - 識別到不確定項 MUST 開獨立 OQ（[[oq-manage]] mode B），禁 inline 標註 / 禁 `[!question]` callout。
 - `source` 禁指下游（OpenSpec / prototype / test-case）或同層狀態機卡；只往上游指。
-- 正文零迭代史（迭代史進 [[business-logic-changelog]]）。
+- 正文零迭代史（迭代史進 [[changelog]]）。
 - 規則單一正本不複寫：本卡禁複製 business-logic 規則本體 / 計算公式（只 wiki link 引用）。
 - 本層禁退化成 business-logic（丟掉狀態 / 轉換、改寫成規則卡）。
 
@@ -306,14 +306,14 @@ implemented-by:
 - **`source` 暫補不出更高層卡**：過渡期允許僅填 `related-spec` 並在 frontmatter 標 `source-gap`，待專輪回填；**新卡 / 被 change 異動的卡優先補 source**。
 - **純措辭 / 排版修正**（不改狀態定義、不改轉換、不改觸發條件）：可不重跑完整自審清單，但仍須通過「無 inline OQ / 無中英夾雜」兩硬項。
 
-> 彈性破口以外的偏離 MUST NOT 私自進行；有結構性疑問先走 [[oq-manage]] mode B 或回 [[business-logic-writing-guide]] 確認。
+> 彈性破口以外的偏離 MUST NOT 私自進行；有結構性疑問先走 [[oq-manage]] mode B 或回 `04-business-logic/_template-business-logic.md` 確認。
 
 ## 參考
 
-- [[business-logic-writing-guide#4.0 各類卡的單一職責]] — type 職責（上層約束）
-- [[business-logic-writing-guide#4.2 state-machine 卡（保留狀態 / 轉換，前置營運說明）]] — 本層結構範式
-- [[wiki-architecture]] — 分層體系（狀態這一層的定位）+ 兩個方向欄（source 往上指依據 / implemented-by 往下指被誰實作）
+- `04-business-logic/_template-business-logic.md` — type 職責（上層約束）
+- `04-business-logic/_template-business-logic.md` — 本層結構範式
+- [[erp_index]] — 分層體系（狀態這一層的定位）+ 兩個方向欄（source 往上指依據 / implemented-by 往下指被誰實作）
 - [[wiki-schema#type=state-machine]] — frontmatter 正式規格
 - [[wiki-schema#維度 14：卡類型內容職責邊界（2026-05-28 新增）]] — 越界 lint 規則
-- [[business-logic-changelog]] — 迭代史載體（正文零迭代史）
+- [[changelog]] — 迭代史載體（正文零迭代史）
 - [[訂單異動狀態]]、[[分期請款狀態]] — 已落地正面範本

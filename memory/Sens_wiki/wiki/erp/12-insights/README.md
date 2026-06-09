@@ -78,7 +78,7 @@ open → cancelled（議題不再適用）
 
 ## 七、相關
 
-- [[audit-log|Audit Log]] — 追加式日誌（含每次 audit / insight 紀錄）
+- [[changelog|Audit Log]] — 追加式日誌（含每次 audit / insight 紀錄）
 - [[wiki-schema|Wiki Schema]] — Vault 治理規則
 - [[wiki/erp/08-open-questions/README|OQ 總覽]] — 個別問題清單
 - `.claude/skills/vault-insight/SKILL.md` — Skill 詳細工作流

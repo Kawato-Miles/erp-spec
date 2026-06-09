@@ -116,6 +116,6 @@ Read: memory/Sens_wiki/wiki/erp/11-review-knowledge/erp/erp-review-framework.md
 
 ## 六、相關卡
 
-- [[vault-charter]] — Vault 三邊分工
+- [[erp_index]] — Vault 三邊分工
 - [[scope-boundary]] — Vault 收 / 不收邊界
-- [[editing-conventions]] — Frontmatter / wiki link / 檔名規約
+- [[wiki-schema]] — Frontmatter / wiki link / 檔名規約

@@ -11,7 +11,7 @@ ERP 系統 UAT 業務層驗收項目（type=test-case）的 **Vault 索引正本
 
 ## 一、定位與依據鏈
 
-驗收項目是分層體系最細的一層（見 [[wiki-architecture]]）。依據鏈：
+驗收項目是分層體系最細的一層（見 [[erp_index]]）。依據鏈：
 
 ```
 test-case（驗收項目，source↑）→ user-story（操作步驟）→ business-logic（規則正本）
@@ -37,6 +37,6 @@ test-case（驗收項目，source↑）→ user-story（操作步驟）→ busin
 - [[_template-test-case]] — 撰寫 / 稽核範本
 - [[wiki/erp/13-user-stories/README]] — 上層操作步驟（驗收種子來源）
 - [[wiki-schema#type=test-case]] — frontmatter 正式 schema
-- [[wiki-architecture]] — 分層體系與依據鏈
+- [[erp_index]] — 分層體系與依據鏈
 - [[_migration-ui-from-userstory]] — 單階段化遷移自 user-story 抽出的 UI 內容（待 seed）
 - [[erp-test-case]] — 管理 skill

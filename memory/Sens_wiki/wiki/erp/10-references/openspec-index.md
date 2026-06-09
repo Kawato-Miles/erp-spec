@@ -45,7 +45,7 @@ last-reviewed: 2026-05-19
 
 ## 四、引用規則
 
-依 [[editing-conventions]] § 六：
+依 [[wiki-schema]] § 六：
 
 - Vault 卡用相對路徑 markdown link 連到 OpenSpec spec
 - **不用 wiki link**（Obsidian 不解析 vault 外部）

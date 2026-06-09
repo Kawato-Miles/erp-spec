@@ -47,7 +47,7 @@ last-reviewed: 2026-05-19
 
 ## 四、同步方向
 
-依 [[vault-charter#三、Source of Truth 規則|Vault Charter]]：
+依 [[erp_index]]：
 
 - **Vault → Notion**：重要里程碑後 Miles 觸發彙整推送
 - **Notion → Vault**：公司同仁反饋 → Miles 給連結 → Claude 更新

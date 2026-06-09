@@ -7,7 +7,7 @@ last-reviewed: 2026-05-28
 # 業務領域分類框架（business-domain Taxonomy）
 
 > Vault 卡的「業務領域」分類正本。每張卡 frontmatter `business-domain` 欄位的 enum 值來源。
-> 對應稽核時的「載入哪些卡」決策入口（與 [[erp-planning-audit-framework]] 雙軸結構之軸 1 對應）。
+> 對應稽核時的「載入哪些卡」決策入口（與 （見 erp-planning-pre-check skill 附件） 雙軸結構之軸 1 對應）。
 > 採業界 7 領域標準（Tharstern / PrintVis / Printavo / DDD Bounded Context 共識）經調整為 6 領域 + 跨領域共用層（Master Data 進共用層 / QC 併進 Production）。
 
 ## 一、設計原則
@@ -146,7 +146,7 @@ last-reviewed: 2026-05-28
 
 ## 相關卡
 
-- [[erp-planning-audit-framework]] — 稽核框架（雙軸）
+- （見 erp-planning-pre-check skill 附件） — 稽核框架（雙軸）
 - [[wiki-schema]] — frontmatter 規範
 - [[erp_index]] — LLM 入口頁
 - [[scope-boundary]] — Vault 收 / 不收

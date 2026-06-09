@@ -6,20 +6,20 @@ last-reviewed: 2026-05-31
 
 # 角色卡撰寫範本
 
-> 角色卡（`type=role`，`03-roles/`）撰寫範本。對齊 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）|wiki-architecture 分層體系]]（角色屬「流程／狀態／角色／資料」這一層：把上層的營運價值與業務規則，展開為「誰做什麼、誰把關什麼」的執行形式）。
+> 角色卡（`type=role`，`03-roles/`）撰寫範本。對齊 [[erp_index]]（角色屬「流程／狀態／角色／資料」這一層：把上層的營運價值與業務規則，展開為「誰做什麼、誰把關什麼」的執行形式）。
 >
 > 這份範本同時是「寫的時候照著填」和「事後照著檢查」：撰寫時照著填，事後 `vault-audit` 照著勾。共同骨架保證六層範本一致——不同人／agent 寫同類卡落在同一結構。
 >
-> 與其他規約的分工：[[wiki-schema#四、各 type 必填 Frontmatter 欄位|wiki-schema § 四]] 管 frontmatter 必填欄位；[[wiki-schema#十一、卡類型內容職責邊界（2026-05-28 新增）|wiki-schema § 十一]] 管卡類型內容邊界；[[business-logic-writing-guide#4.0 各類卡的單一職責（六層由大到細、只連不重抄）|business-logic-writing-guide § 4.0]]＋[[business-logic-writing-guide#4.5 role 卡（角色職責，前置營運痛點）|§ 4.5]] 管 role 卡正文撰寫範式。本範本是上述三者在角色卡這一層的交集落地。
+> 與其他規約的分工：[[wiki-schema#四、各 type 必填 Frontmatter 欄位|wiki-schema § 四]] 管 frontmatter 必填欄位；[[wiki-schema#十一、卡類型內容職責邊界（2026-05-28 新增）|wiki-schema § 十一]] 管卡類型內容邊界；`04-business-logic/_template-business-logic.md`＋`04-business-logic/_template-business-logic.md` 管 role 卡正文撰寫範式。本範本是上述三者在角色卡這一層的交集落地。
 
 ## 一、這類卡的職責（先讀，再填）
 
 `type=role` 單一職責：**這個角色做什麼、把關什麼**（職責動作 + 權限 + 職責邊界 + 痛點）。撰寫前 MUST 讀：
 
-- [[business-logic-writing-guide#4.0 各類卡的單一職責（六層由大到細、只連不重抄）|business-logic-writing-guide § 4.0]]（role 的「該寫 / MUST NOT 寫」越界表）
-- [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）|wiki-architecture § 分層體系]]（role 在分層體系中的位置：流程／狀態／角色／資料這一層，下不牴觸上）
+- `04-business-logic/_template-business-logic.md`（role 的「該寫 / MUST NOT 寫」越界表）
+- [[erp_index]]（role 在分層體系中的位置：流程／狀態／角色／資料這一層，下不牴觸上）
 
-**role 卡的該寫 / MUST NOT 寫**（[[business-logic-writing-guide#4.0 各類卡的單一職責（六層由大到細、只連不重抄）|§ 4.0]] 越界表）：
+**role 卡的該寫 / MUST NOT 寫**（`04-business-logic/_template-business-logic.md` 越界表）：
 
 | 該寫（職責內容）| MUST NOT 寫（越界 → 移到哪張卡）|
 |----------------|------------------------------|
@@ -51,13 +51,13 @@ related-notion: <Notion 核心角色權責 DB 連結>      # 若有
 
 ### § 二補充：source / implemented-by 的前進標準與遷移彈性（誠實標注，不假裝）
 
-- **前進標準**：新卡 / 被 change 異動的 role 卡優先補 `source` / `implemented-by`（對齊 [[wiki-architecture#依據往上、實作往下，連結不繞回自己|wiki-architecture § 依據往上、實作往下]]，兩欄一個往上指依據、一個往下指實作，方向不會接回自己）。
+- **前進標準**：新卡 / 被 change 異動的 role 卡優先補 `source` / `implemented-by`（對齊 [[erp_index]]，兩欄一個往上指依據、一個往下指實作，方向不會接回自己）。
 - **role 卡 source 該指哪**：往上指「該角色分權方向的商業規則來源」——如 [[現金流出把關]]、[[發票收款彈性]]、Notion 角色權責表、使用者拍板。**MUST NOT 指 OpenSpec**。
 - **遷移彈性**：補不出 `source` 的標 `source-gap` 待專輪補齊。
 
 ## 三、正文章節骨架
 
-> 共同 4 段（一句話定位 / 這張卡要回答的問題 / 營運背景 / 相關連結 + 來源，對齊共同骨架）＋ role 卡特有 5 章節（基本資料 / 主要工作職責 / 職責邊界 / 關切點 / 預期阻力，對齊 [[business-logic-writing-guide#4.5 role 卡（角色職責，前置營運痛點）|§ 4.5]] 與既有 16 張 role 卡骨幹）。每節附「該寫 / 不該寫」一句指引。
+> 共同 4 段（一句話定位 / 這張卡要回答的問題 / 營運背景 / 相關連結 + 來源，對齊共同骨架）＋ role 卡特有 5 章節（基本資料 / 主要工作職責 / 職責邊界 / 關切點 / 預期阻力，對齊 `04-business-logic/_template-business-logic.md` 與既有 16 張 role 卡骨幹）。每節附「該寫 / 不該寫」一句指引。
 
 ```markdown
 > <一句話定位>：這個角色是誰、在哪個平台（中台 / 業務平台 / 外部）、屬哪業務領域、與哪些近似角色易混淆須區隔（如「業務主管 ≠ Supervisor」）。
@@ -106,7 +106,7 @@ related-notion: <Notion 核心角色權責 DB 連結>      # 若有
 ## 職責邊界
 
 > 該寫：每條邊界（核可範圍 / 檢視範圍 / 不介入什麼），且每條 MUST 附「為什麼這樣切」（營運動機）。
-> 不該寫：只列邊界不附理由（[[business-logic-writing-guide#六、營運驗證寫法 該做 / 不該做|該做 / 不該做]] 明列為不該做）。
+> 不該寫：只列邊界不附理由（`04-business-logic/_template-business-logic.md` 明列為不該做）。
 
 - **<某動作>範圍 = 部門內 / 全公司**：<邊界陳述>。<為什麼這樣切，如「核可範圍限部門內，因跨部門核可會破壞責任歸屬」>
 - **不介入 <某流程>**：<陳述>。<為什麼>
@@ -128,7 +128,7 @@ related-notion: <Notion 核心角色權責 DB 連結>      # 若有
 
 ## 相關連結
 
-> 語意分類（對齊共同骨架第 4 點 + [[business-logic-writing-guide#原則 7：完整關聯——卡內提到的每個概念都設 wiki link，雙向可達，且語意分類|writing-guide 原則 7]] 五類），雙向可達、不連到不存在的卡、也不是沒有任何卡連到它的孤島卡。
+> 語意分類（對齊共同骨架第 4 點 + `04-business-logic/_template-business-logic.md` 五類），雙向可達、不連到不存在的卡、也不是沒有任何卡連到它的孤島卡。
 > 該寫：本角色提到的每個被 Vault 收錄的概念都設 wiki link，且標關聯方向。
 > 不該寫：丟一串連結不分類；連到 vault 外（用相對路徑 markdown link，見 wiki-schema § 八）。
 
@@ -152,7 +152,7 @@ related-notion: <Notion 核心角色權責 DB 連結>      # 若有
 
 - <[Notion 核心角色權責表 - X](URL) / OpenSpec user-roles spec § Requirement: X / Miles YYYY-MM-DD 拍板>
 - 對應 OpenSpec change：<change-id>（若有）
-- 迭代脈絡見 [[business-logic-changelog#<本角色卡名>]]
+- 迭代脈絡見 [[changelog]]
 ```
 
 ## 四、極簡填寫示意（佔位符，非真實內容）
@@ -226,7 +226,7 @@ last-reviewed: <YYYY-MM-DD>
 ## 來源
 
 - <Notion 角色權責表 - 角色X>（URL）
-- 迭代脈絡見 [[business-logic-changelog#<角色X>]]
+- 迭代脈絡見 [[changelog]]
 ```
 
 ## 五、不可違反的硬規則 vs 可視情況調整的彈性（role 卡標注）
@@ -237,9 +237,9 @@ last-reviewed: <YYYY-MM-DD>
 
 - 業務段（營運背景 / 基本資料 / 主要工作職責 / 職責邊界）**禁工程術語當主詞**、**禁中英夾雜**（技術詞括號附註）。
 - 識別到不確定項 **MUST 走 [[oq-manage]] mode B 開獨立 OQ 卡**（禁 inline「待確認 / 待釐清」、禁 `> [!question]` callout）。
-- `source` **禁指下游 / 同層 / OpenSpec**（指 OpenSpec 屬 [[wiki-architecture#營運需求（Obsidian）與實作規格（OpenSpec）的分工|§ 營運需求與實作規格的分工]] Error）。
-- **正文零迭代史**（迭代史進 [[business-logic-changelog]]）。
-- **規則單一正本不複寫**：分權判斷準則細則只在 `04-business-logic` 正本卡，role 卡只寫動作歸屬 + wiki link 引用（[[business-logic-writing-guide#原則 6：規則正本歸屬——每條業務規則的完整定義只在一張卡，其餘卡引用不複製|writing-guide 原則 6]]）。
+- `source` **禁指下游 / 同層 / OpenSpec**（指 OpenSpec 屬 [[erp_index]] Error）。
+- **正文零迭代史**（迭代史進 [[changelog]]）。
+- **規則單一正本不複寫**：分權判斷準則細則只在 `04-business-logic` 正本卡，role 卡只寫動作歸屬 + wiki link 引用（`04-business-logic/_template-business-logic.md`）。
 
 ### 5.2 可因案調整（明示彈性破口）
 
@@ -268,22 +268,22 @@ last-reviewed: <YYYY-MM-DD>
 - [ ] 營運背景 + 基本資料 + 主要工作職責 + 職責邊界皆無工程術語當主詞、無中英夾雜。
 - [ ] 主要工作職責每項非顯然動作補了營運動機。
 - [ ] 職責邊界每條附了「為什麼這樣切」。
-- [ ] 正文零迭代史（迭代史在 [[business-logic-changelog]]）；正文零 inline OQ 措辭（→ [[oq-manage]] mode B）；無 `> [!question]` callout。
+- [ ] 正文零迭代史（迭代史在 [[changelog]]）；正文零 inline OQ 措辭（→ [[oq-manage]] mode B）；無 `> [!question]` callout。
 
 **相關連結 + 來源**
 - [ ] 相關連結語意分類（相關業務邏輯 / 狀態 / 情境 / OQ），雙向可達、不連到不存在的卡、也不是沒有任何卡連到它的孤島卡。
-- [ ] 來源指可獨立驗證外部出處，不指其他 role 卡；末行有 `迭代脈絡見 [[business-logic-changelog#<卡名>]]`。
+- [ ] 來源指可獨立驗證外部出處，不指其他 role 卡；末行有 `迭代脈絡見 [[changelog]]`。
 
 **最後驗收（抽一句問主管看不看得懂）**
 - [ ] 營運背景 / 職責邊界抽一句，問「Miles / 主管不看程式碼能否懂這角色做什麼、把關什麼」。
 
 ## 七、相關規約
 
-- [[business-logic-writing-guide#4.0 各類卡的單一職責（六層由大到細、只連不重抄）|business-logic-writing-guide § 4.0]] — role 越界表（該寫 / MUST NOT 寫）
-- [[business-logic-writing-guide#4.5 role 卡（角色職責，前置營運痛點）|business-logic-writing-guide § 4.5]] — role 卡正文撰寫範式
+- `04-business-logic/_template-business-logic.md` — role 越界表（該寫 / MUST NOT 寫）
+- `04-business-logic/_template-business-logic.md` — role 卡正文撰寫範式
 - [[wiki-schema#type=role|wiki-schema § 四 type=role]] — frontmatter 必填正式規格
 - [[wiki-schema#十一、卡類型內容職責邊界（2026-05-28 新增）|wiki-schema § 十一]] — 卡類型內容職責邊界（維度 14 lint 依據）
-- [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）|wiki-architecture § 分層體系]] — role 在分層體系中的位置（流程／狀態／角色／資料這一層）
-- [[wiki-architecture#依據往上、實作往下，連結不繞回自己|wiki-architecture § 依據往上、實作往下]] — source / implemented-by 兩欄語意
+- [[erp_index]] — role 在分層體系中的位置（流程／狀態／角色／資料這一層）
+- [[erp_index]] — source / implemented-by 兩欄語意
 - [[oq-manage]] — 識別不確定項時開獨立 OQ 卡
-- [[business-logic-changelog]] — 迭代史獨立檔（正文零迭代史）
+- [[changelog]] — 迭代史獨立檔（正文零迭代史）

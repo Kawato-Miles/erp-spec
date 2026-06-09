@@ -31,7 +31,7 @@ expected-action-at: 2026-06-30
 
 ## 觀察
 
-1. **PrintItemDetailSidePanel apply 階段迭代 ≥ 3 次仍不齊**：第一次 apply 用既有 PrintItemSpecCard / PrintItemArtworkCard、發現外框過多 → 第二次 apply 改 inline ErpInfoTable、仍有寬度 / 分隔線 / 縮圖大小 7 處差異 → 第三次 apply（add-side-panel-shared-components）才完整對齊（[[audit-log#2026-05-25 19:00 audit]]）
+1. **PrintItemDetailSidePanel apply 階段迭代 ≥ 3 次仍不齊**：第一次 apply 用既有 PrintItemSpecCard / PrintItemArtworkCard、發現外框過多 → 第二次 apply 改 inline ErpInfoTable、仍有寬度 / 分隔線 / 縮圖大小 7 處差異 → 第三次 apply（add-side-panel-shared-components）才完整對齊（[[changelog#2026-05-25 19:00 audit]]）
 
 2. **三視角 ceo-reviewer 提 Rule of Three challenge**：實際 consumer = 1（PrintItemDetailSidePanel）、其餘 7 個 SidePanel 全為編輯型豁免（[add-side-panel-shared-components/design.md § D6](../../../openspec/changes/archive/2026-05-25-add-side-panel-shared-components/design.md)）— 從元件抽象 ROI 角度屬於 premature abstraction。Miles 拍板維持元件化路線、承諾若第 2-3 個真實 consumer 出現時 API 不符實際需求將重構（不視為 breaking change）
 

@@ -8,8 +8,8 @@ last-reviewed: 2026-05-31
 
 > 給 Miles 與 agent 撰寫 `05-entities/` 卡時複製套用，也是 vault-audit 稽核此類卡的勾稽基準（一份兩用：撰寫時照著填、事後照著勾）。
 >
-> 分層定位：entity = 資料層的「資料實體」載體（見 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）|wiki-architecture § 分層體系]]）。職責：**承載業務可見欄位（正本）/ 實體關聯 / 狀態名**，行為規則指向 [[business-logic-writing-guide|business-logic]] 卡、狀態細節指向 state-machine 卡。欄位表是商業需求正本——欄位的新增與修改是商業決策，直接在實體卡維護，不經 OpenSpec change 工作流。
-> 共同骨架見 [[business-logic-writing-guide]] § 四（共通骨架）+ [[business-logic-writing-guide#4.0 各類卡的單一職責（六層由大到細、只連不重抄）|§ 4.0（各類卡的單一職責）]] + [[wiki-schema]] § 四（frontmatter）+ § 十一（內容職責邊界）。本範本是這套骨架在資料層的落地。
+> 分層定位：entity = 資料層的「資料實體」載體（見 [[erp_index]]）。職責：**承載業務可見欄位（正本）/ 實體關聯 / 狀態名**，行為規則指向 `04-business-logic/_template-business-logic.md` 卡、狀態細節指向 state-machine 卡。欄位表是商業需求正本——欄位的新增與修改是商業決策，直接在實體卡維護，不經 OpenSpec change 工作流。
+> 共同骨架見 `04-business-logic/_template-business-logic.md` § 四（共通骨架）+ `04-business-logic/_template-business-logic.md` + [[wiki-schema]] § 四（frontmatter）+ § 十一（內容職責邊界）。本範本是這套骨架在資料層的落地。
 
 複製以下 `--- 模板開始 ---` 與 `--- 模板結束 ---` 之間的內容，存為 `05-entities/<實體中文名>.md`。
 
@@ -113,14 +113,14 @@ provenance-commit: <SHA>   # 可選但建議：記上次對齊 commit，供 stal
 - 欄位正本：本卡「欄位（業務可見）」段落
 - 行為規格：[<模組>/spec.md](../../../../openspec/specs/<模組>/spec.md)
 - Prototype 實作：`src/types/<...>.ts`
-- 迭代脈絡見 [[business-logic-changelog#<實體中文名>]]
+- 迭代脈絡見 [[changelog]]
 ```
 
 --- 模板結束 ---
 
 ## 連結指向位置的命名規約（entity 層適用範圍）
 
-> 對齊 [[wiki-architecture#各層怎麼寫|wiki-architecture § 各層怎麼寫]]：用名稱當連結指向的位置，改名只改內容、位置不變，連結不會斷。
+> 對齊 [[erp_index]]：用名稱當連結指向的位置，改名只改內容、位置不變，連結不會斷。
 
 - entity 卡**通常不承載條文 / 規則編號**（條文在 business-logic 卡），故一般無 `#R1` 類定位點需求。
 - 若需從他卡精準引用本卡某欄位 / 某關聯（如 changelog 指「本實體某欄位的演進」），用**業務語意命名**（`#<欄位中文名>` 或 `#關鍵關聯`），**不用流水號、不重排、不重用**。
@@ -128,21 +128,21 @@ provenance-commit: <SHA>   # 可選但建議：記上次對齊 commit，供 stal
 
 ## 需要說明設計理由時的寫法（entity 層適用範圍）
 
-> 對齊 [[business-logic-writing-guide]] § 四（共通骨架）+ [[wiki-architecture#各層怎麼寫|wiki-architecture § 各層怎麼寫]]。
+> 對齊 `04-business-logic/_template-business-logic.md` § 四（共通骨架）+ [[erp_index]]。
 
 - entity 卡**多為事實陳述**（這個實體有哪些欄位 / 關聯），通常**不需寫規則論證**（規則論證在 business-logic 卡）。
 - 唯一需要簡短理由的場景：**「為什麼這個實體要獨立存在 / 不併入鄰近實體」**的設計決策。此時先寫被駁回的方案（如「為何不把售後事件併回訂單異動」）＋ 駁回理由，再給最後採用的做法。寫在「營運背景」段或「這張卡要回答的問題」對應結論，**不另開長篇論述段**（避免越界成 business-logic）。
 
 ## 不可違反的硬規則 vs 可視情況調整的彈性（entity 層）
 
-> 對齊 [[business-logic-writing-guide]] § 四（共通骨架）。範本明示「不可違反」與「可因案調整」兩層，禁作者私自偏離。
+> 對齊 `04-business-logic/_template-business-logic.md` § 四（共通骨架）。範本明示「不可違反」與「可因案調整」兩層，禁作者私自偏離。
 
 **不可違反（硬規則）**：
 - 禁中英文夾雜（技術名詞括號附註，不得當主詞）。
 - 營運背景段禁實作術語當主詞（資料表 / FK / JSON）。
 - entity 卡 MUST NOT 寫業務流程敘述 / user-story / 完整狀態轉換邏輯（→ 對應卡）。
 - `source` 禁指同層 entity / 下層 user-story / OpenSpec。
-- 正文零迭代史（迭代史在 [[business-logic-changelog]]）。
+- 正文零迭代史（迭代史在 [[changelog]]）。
 - 同一概念只有一張正本卡——欄位承載的規則只在 business-logic 卡寫完整版，entity 卡只引用。
 
 **可因案調整（可視情況調整的彈性）**：
@@ -163,9 +163,9 @@ provenance-commit: <SHA>   # 可選但建議：記上次對齊 commit，供 stal
 - [ ] **關鍵關聯**：標明基數（1:1 / 1:N / N:M）+ wiki link；未寫關聯背後的業務流程 / 規則本體。
 - [ ] **相關狀態機**：有狀態的實體已 wiki link 指 state-machine 卡；未在本卡重述狀態清單 / 轉換條件 / 轉換圖。
 - [ ] **越界檢查**（[[wiki-schema]] § 十一 entity row）：未寫入業務流程敘述（→ business-logic / scenario）/ user-story 格式模板（作為 / 我希望 / 以便）/ test-case 範本 / 完整狀態轉換邏輯。
-- [ ] **正文零迭代史**：無「vN 推翻 / 廢止舊…」inline change 標註（→ [[business-logic-changelog]]）；無「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」inline OQ 措辭（→ [[oq-manage]] mode B 開獨立 OQ 卡）。
+- [ ] **正文零迭代史**：無「vN 推翻 / 廢止舊…」inline change 標註（→ [[changelog]]）；無「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」inline OQ 措辭（→ [[oq-manage]] mode B 開獨立 OQ 卡）。
 - [ ] **相關連結**：依語意分類（上層情境 / 下層步驟 / 相關角色 / 相關規則 / 相關實體）、雙向可達、沒有連到不存在的卡（dangling）、不是沒有任何卡連到它的孤島卡（orphan）。
-- [ ] **來源**：連回外部可驗證出處；末行有「迭代脈絡見 [[business-logic-changelog#<實體中文名>]]」。
+- [ ] **來源**：連回外部可驗證出處；末行有「迭代脈絡見 [[changelog]]」。
 - [ ] **最後驗收**：營運背景抽一句，問「Miles / 主管不看程式碼能否懂這個實體是什麼、為什麼存在」。
 
 ## 極簡填寫示意（佔位符，非真實內容）
@@ -226,13 +226,13 @@ implemented-by:
 - 欄位正本：本卡「欄位（業務可見）」段落
 - 行為規格（Requirement / Scenario）：[<模組-X>/spec.md](../../../../openspec/specs/<模組-X>/spec.md)
 - Prototype 實作：`src/types/<檔名>.ts`
-- 迭代脈絡見 [[business-logic-changelog#<實體-Z>]]
+- 迭代脈絡見 [[changelog]]
 ```
 
 ## 參考
 
-- [[business-logic-writing-guide]] — 共同骨架 + § 4.0（各類卡的單一職責，含 entity）+ § 4.3 entity 章節範式
-- [[wiki-architecture]] — 分層體系（entity = 資料層）+ 依據往上實作往下 + 連結指向位置的命名
+- `04-business-logic/_template-business-logic.md` — 共同骨架 + § 4.0（各類卡的單一職責，含 entity）+ § 4.3 entity 章節範式
+- [[erp_index]] — 分層體系（entity = 資料層）+ 依據往上實作往下 + 連結指向位置的命名
 - [[wiki-schema#type=entity]] — frontmatter 正式規格
 - [[wiki-schema#十一、卡類型內容職責邊界]] — entity row 越界判讀（維度 14 lint 依據）
 - [[需求單]] — 既有 entity 卡實例（核心欄位 / 關鍵關聯 / 相關狀態機 / 相關角色寫法參考）

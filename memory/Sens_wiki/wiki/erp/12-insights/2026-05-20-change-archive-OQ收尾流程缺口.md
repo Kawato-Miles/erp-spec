@@ -8,7 +8,7 @@ raised-at: 2026-05-20
 raised-by: vault-insight skill
 triggered-by: audit-接續（vault-audit 維度 4 / 8 發現多重 OQ 收尾相關問題）
 related-vault:
-  - "[[audit-log]]"
+  - "[[changelog]]"
   - "[[wiki/erp/08-open-questions/README]]"
 related-oq:
   - PT-002
@@ -122,9 +122,9 @@ ORD-001、PI-001、PI-002、PT-001、PT-002、SHP-005、XM-002、XM-003、XM-006
 ## 涉及
 
 ### Vault 卡
-- [[audit-log]]
+- [[changelog]]
 - [[wiki/erp/08-open-questions/README]]
-- [[sync-workflow]]
+- （已移除，見各 skill）
 
 ### OQ
 - [[PT-002-QC 分批驗收派工數量機制]]

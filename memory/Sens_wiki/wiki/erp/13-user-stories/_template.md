@@ -6,9 +6,9 @@ last-reviewed: 2026-05-31
 
 # User Story 卡範本（操作步驟層）
 
-> 給 [[erp-user-story]] skill 與 Miles 手動撰寫時複製套用。這類卡的定位：操作步驟（單一角色執行某條規則的步驟，照著做的流程），見 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]]。
+> 給 [[erp-user-story]] skill 與 Miles 手動撰寫時複製套用。這類卡的定位：操作步驟（單一角色執行某條規則的步驟，照著做的流程），見 [[erp_index]]。
 > 本範本同時是「寫的時候照著填」與「事後照著檢查」。底部「自審稽核清單」同一份既是提交前自檢、也是 [[wiki-schema#維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）|vault-audit 維度 13]] 的稽核維度。
-> 規範正本：[[wiki/erp/13-user-stories/README]]（命名 / 來源）+ [[wiki-schema#type=user-story]]（frontmatter 正式 schema + 維度 13 lint）+ [[business-logic-writing-guide#4.0 各類卡的單一職責（六層由大到細、只連不重抄）|writing-guide § 4.0]]（各類卡的職責邊界）。本範本是上述三者在 user-story 這層的展開，不衝突。
+> 規範正本：[[wiki/erp/13-user-stories/README]]（命名 / 來源）+ [[wiki-schema#type=user-story]]（frontmatter 正式 schema + 維度 13 lint）+ `04-business-logic/_template-business-logic.md`（各類卡的職責邊界）。本範本是上述三者在 user-story 這層的展開，不衝突。
 >
 > **單階段（2026-06-01 自兩階段收斂）**：user story 只寫業務情境（含 Gherkin 成功條件），不含 UI 操作層。介面驗收下移 [[erp-test-case]]（業務級）+ Prototype 端對端測試（UI 點擊層）。已移除 `stage` / `ui-binding` 欄位與「UI 操作（易變層）」段。
 
@@ -21,14 +21,14 @@ last-reviewed: 2026-05-31
 
 ## 不可違反的硬規則 vs 可視情況調整的彈性
 
-> 對齊 [[business-logic-writing-guide]] 骨架七「不可違反的硬規則搭配可視情況調整的彈性」。下列兩層界線明示在範本，禁作者私自偏離。
+> 對齊 `04-business-logic/_template-business-logic.md` 骨架七「不可違反的硬規則搭配可視情況調整的彈性」。下列兩層界線明示在範本，禁作者私自偏離。
 
 ### 不可違反（硬規則，極少且硬）
 - 全卡**禁含 UI 措辭**（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器）；UI 點擊操作不寫進 user story（歸 Prototype e2e），介面層級驗收歸 [[erp-test-case]]。
 - 全卡**禁中英夾雜**：英文欄位名 / 實體名一律轉介面中文（付款紀錄 / 印件 / 訂單異動 / 需求單 / 工單 / 生產任務 / 審稿輪次 / 付款計畫 / 售後服務單 等），技術代號須以括號附註、不得當主詞。
 - **規則本體不寫進 user-story 卡**：本卡只描述「角色怎麼執行某條規則的步驟」，規則的觸發條件 / 判斷 / 計算公式以 `source` 指向 [[../04-business-logic|business-logic]] 規則正本卡，不在本卡重述。
-- `source` ≥ 1 條，且**禁指向其他 user-story 卡**（防止 AI 拿自己寫的東西當依據再生出新東西）；`source` 往上指依據（規則正本 / 最上層的依據），**不指同層 / 下層 / OpenSpec 當正確性根據**（見 [[wiki-architecture#依據往上、實作往下，連結不繞回自己]]）。
-- **正文只寫現在的規則**（哪版改的 / 廢止什麼進 [[business-logic-changelog]]）；**正文不出現待釐清的問題措辭**（「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」識別到即觸發 [[oq-manage]] mode B 開獨立卡，原處改 wiki link）。
+- `source` ≥ 1 條，且**禁指向其他 user-story 卡**（防止 AI 拿自己寫的東西當依據再生出新東西）；`source` 往上指依據（規則正本 / 最上層的依據），**不指同層 / 下層 / OpenSpec 當正確性根據**（見 [[erp_index]]）。
+- **正文只寫現在的規則**（哪版改的 / 廢止什麼進 [[changelog]]）；**正文不出現待釐清的問題措辭**（「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」識別到即觸發 [[oq-manage]] mode B 開獨立卡，原處改 wiki link）。
 - **單一角色單一情境**：禁統合多角色 / 多動作的串接故事（跨多角色端到端流程 → [[wiki/erp/07-scenarios/README|07-scenarios]]）。
 
 ### 可視情況調整（彈性破口）
@@ -141,7 +141,7 @@ notion-page-url: <URL>                          # 推送後填
 - 最上層的依據 / 拍板：<Miles 拍板 / 印刷業實務 / [[../../08-open-questions/<OQ>]] / raw 卡>
 - <若補不出上層依據：frontmatter 標 `source-gap: true`，於此註明缺口待專輪回填>
 
-迭代脈絡見 [[business-logic-changelog#US-<MODULE>-<NNN> <標題>]]（正文只寫現在的規則）。
+迭代脈絡見 [[changelog]]（正文只寫現在的規則）。
 ```
 
 --- 範本結束 ---
@@ -212,12 +212,12 @@ source-gap: false
 - 規則正本：[[../../04-business-logic/<規則卡>#<slug>]]
 - 最上層的依據：<Miles 拍板 / raw / OQ>
 
-迭代脈絡見 [[business-logic-changelog#US-XX-099 <標題>]]。
+迭代脈絡見 [[changelog]]。
 ```
 
 ## 自審稽核清單（撰寫完逐項打勾，同為 vault-audit 維度 13 稽核基準）
 
-> 一份兩用：寫的時候照著勾、審的時候照著驗。對齊 [[wiki-schema#維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）|維度 13]] + [[wiki-schema#維度 14：卡類型內容職責邊界（2026-05-28 新增）|維度 14]] + [[business-logic-writing-guide#六、營運驗證寫法 該做 / 不該做|writing-guide § 六]]。分四面向。
+> 一份兩用：寫的時候照著勾、審的時候照著驗。對齊 [[wiki-schema#維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）|維度 13]] + [[wiki-schema#維度 14：卡類型內容職責邊界（2026-05-28 新增）|維度 14]] + `04-business-logic/_template-business-logic.md`。分四面向。
 
 ### A. Frontmatter（schema 對齊）
 - [ ] 共同必填全填：`type=user-story` / `us-id` / `module` / `business-domain` / `role` / `priority` / `status` / `created-at` / `last-reviewed`。
@@ -235,7 +235,7 @@ source-gap: false
 ### C. 硬規則（不可違反）
 - [ ] 全卡 grep 無 UI 措辭（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器）；UI 點擊歸 Prototype e2e。
 - [ ] 全卡 grep 無未轉中文的英文欄位名（payment / printItem / orderAdjustment / quoteRequest / workOrder / productionTask / reviewRound / paymentPlan / afterSalesTicket 等）；技術代號皆括號附註不當主詞。
-- [ ] 正文只寫現在的規則（改版歷史在 [[business-logic-changelog]]）；正文不出現待釐清的問題措辭（「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」→ 已觸發 [[oq-manage]] mode B 開卡、原處改 wiki link 引用）。
+- [ ] 正文只寫現在的規則（改版歷史在 [[changelog]]）；正文不出現待釐清的問題措辭（「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」→ 已觸發 [[oq-manage]] mode B 開卡、原處改 wiki link 引用）。
 - [ ] 全卡無 emoji / 視覺符號。
 
 ### D. 可驗證性與可達性（前提→動作→驗收結果 + 完整關聯）
@@ -261,11 +261,11 @@ source-gap: false
 ## 參考
 
 - [[wiki/erp/13-user-stories/README]] — 13-user-stories 入口（命名 / 來源 / 禁串接故事）
-- [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]] — 操作步驟層定位 + 往上指依據、連結不繞回自己
+- [[erp_index]] — 操作步驟層定位 + 往上指依據、連結不繞回自己
 - [[wiki-schema#type=user-story]] — frontmatter 正式 schema
 - [[wiki-schema#維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）]] — 維度 13 lint 規則
 - [[wiki-schema#維度 14：卡類型內容職責邊界（2026-05-28 新增）]] — 維度 14 內容職責邊界
-- [[business-logic-writing-guide#4.0 各類卡的單一職責（六層由大到細、只連不重抄）]] — 各類卡的職責邊界（user-story = role 執行 business-logic 的步驟）
-- [[business-logic-changelog]] — 改版歷史獨立檔（正文只寫現在的規則）
+- `04-business-logic/_template-business-logic.md` — 各類卡的職責邊界（user-story = role 執行 business-logic 的步驟）
+- [[changelog]] — 改版歷史獨立檔（正文只寫現在的規則）
 - [[erp-user-story]] — 自動化 skill（mode A 新增 / mode B 補 UI / mode C 推 Notion）
 - [[oq-manage]] — 識別到不確定項時觸發 mode B 開 OQ 卡

@@ -13,7 +13,7 @@ raised-by: erp-planning-pre-check skill 第一輪實證
 source-link: /Users/b-f-03-029/.claude/plans/prototype-effervescent-sutton.md
 related-vault:
   - "[[business-domain-taxonomy]]"
-  - "[[erp-planning-audit-framework]]"
+  - "（見 erp-planning-pre-check skill 附件）"
 related-oq: []
 expected-resolution-at: 2026-06-15
 ---

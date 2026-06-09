@@ -34,7 +34,7 @@ last-reviewed: 2026-05-28
 - 修補後 frontmatter 已改但內容章節未補
 - User Story `related-test-cases` 標了 URL 但 Test Case 實際不存在
 **對策**：**Step 5 閉環驗證強制**（受 YouTube /goal 影片啟發）；修補後回頭看矩陣格子真轉「已涵蓋」否則回 Step 4
-**對應紀律**：[[erp-planning-audit-framework]] § 三 Step 5
+**對應紀律**：（見 erp-planning-pre-check skill 附件） § 三 Step 5
 
 ### 3. Dead loops（死循環）
 
@@ -57,7 +57,7 @@ last-reviewed: 2026-05-28
 - 業務邏輯卡缺「計算公式」「邊界規則」
 - 稽核報告寫「Billing & Cash 大致涵蓋完整」（無 N/M/K 數字）
 **對策**：**量化矩陣強制 N/M/K 三數字**（受 YouTube /goal 影片啟發）；非量化結論禁止
-**對應紀律**：[[erp-planning-audit-framework]] § 五 稽核產出格式 / § 五 量化矩陣
+**對應紀律**：（見 erp-planning-pre-check skill 附件） § 五 稽核產出格式 / § 五 量化矩陣
 
 ### 5. Token exhaustion（成本過高）
 
@@ -70,7 +70,7 @@ last-reviewed: 2026-05-28
 - 單次稽核 ≤ 2-3 個領域（超過拆多次）
 - 跨領域議題 sub-agent 並行
 - 共用層精準載入（不全載 `03-roles` 16 角色，依領域 filter）
-**對應紀律**：[[erp-planning-audit-framework]] § 八 稽核回合 / 時間預算
+**對應紀律**：（見 erp-planning-pre-check skill 附件） § 八 稽核回合 / 時間預算
 
 ## 二、案例累積
 
@@ -105,7 +105,7 @@ last-reviewed: 2026-05-28
 **卡類型**：5. User Story
 **修正方式**：批次 backfill `related-test-cases`（從 Notion ERP Test Case DB 配對）；已開 [[BI-12-款項UserStory批次backfill business-domain與related-test-cases|BI-12]]
 **根因**：User Story 與 Test Case 兩邊各自累積，缺「上層改了下層需重審」正式機制（受 Miles 第六輪反饋拍板：「User Story 從 acceptance criteria 到 Test Case 一層一層稽核」）
-**衍生紀律**：[[erp-planning-audit-framework]] § 六 跨層影響稽核（商業需求 ↔ User Story ↔ spec ↔ Test Case 四層雙向追溯）
+**衍生紀律**：（見 erp-planning-pre-check skill 附件） § 六 跨層影響稽核（商業需求 ↔ User Story ↔ spec ↔ Test Case 四層雙向追溯）
 
 ### 2026-05-28 反模式：Immeasurable targets（7 實體連帶關係散佈無統一索引）—— 本輪修補
 
@@ -166,7 +166,7 @@ last-reviewed: 2026-05-28
 
 ## 四、相關卡
 
-- [[erp-planning-audit-framework]] — 稽核框架正本
+- （見 erp-planning-pre-check skill 附件） — 稽核框架正本
 - [[business-domain-taxonomy]] — 6 領域分類
 - [[misjudgement-record]] — 三視角審查 agent 誤審記錄
 - [[user-story-spec]] — User Story 撰寫紀律（INVEST）

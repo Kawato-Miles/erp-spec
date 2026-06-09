@@ -61,7 +61,7 @@ module:
 
 > 業務領域分類，對應 [[business-domain-taxonomy]] 6 領域 + 跨領域共用層。
 > **新卡必填、舊卡視需要 backfill**（第一輪只 backfill Billing & Cash 領域卡作為實證）。
-> 對應 [[erp-planning-audit-framework]] 雙軸結構之軸 1，`erp-planning-pre-check` skill 用此欄位 grep 載入對應領域卡。
+> 對應 （見 erp-planning-pre-check skill 附件） 雙軸結構之軸 1，`erp-planning-pre-check` skill 用此欄位 grep 載入對應領域卡。
 
 ```yaml
 business-domain:
@@ -306,7 +306,7 @@ notion-page-url: <URL>                      # 推送後填
 
 ### type=test-case
 
-> 驗收項目卡（UAT 業務層）。**正文（前置條件 / 測試步驟 / 預期結果）存 Notion ERP Test Case DB，Vault 卡只承載 frontmatter（含往上指依據）+ 相關連結**。撰寫 / 稽核基準正本：[[_template-test-case]]（這份範本同時是寫的時候照著填、事後照著檢查）。對齊 [[wiki-architecture#分層體系（營運原則 → 驗收項目，由大到細）]]（驗收項目 = 最具體層）。
+> 驗收項目卡（UAT 業務層）。**正文（前置條件 / 測試步驟 / 預期結果）存 Notion ERP Test Case DB，Vault 卡只承載 frontmatter（含往上指依據）+ 相關連結**。撰寫 / 稽核基準正本：[[_template-test-case]]（這份範本同時是寫的時候照著填、事後照著檢查）。對齊 [[erp_index]]（驗收項目 = 最具體層）。
 
 ```yaml
 ---

@@ -53,7 +53,7 @@ expected-action-at: 2026-06-15
    - 引用：「archive 時的『tasks.md 全部勾選』應為 hard gate；本次跳過導致 1 個 BREAKING change 翻轉後 stale 測試與漏實作項目」
    - 引用：「e2e 失敗應為 archive 阻擋條件；本次 archive 時 tasks.md § 10 全部未勾選、e2e 14 條未跑、archive 仍完成」
    - 引用：「OQ 撞號（ORD-018）反映 OQ 命名前綴自動化不足」
-   - source: [[audit-log#2026-05-26-18-00-event-complete-payment-status-ui-and-followups-治理收尾]]
+   - source: [[changelog#2026-05-26-18-00-event-complete-payment-status-ui-and-followups-治理收尾]]
 
 4. **既有 insight [[2026-05-20-change-archive-OQ收尾流程缺口]] 已指出類似議題**
    - 該 insight 觀察：archive 流程沒檢查「OQ 是否已 resolve / archive」
@@ -123,7 +123,7 @@ doc-audit v1.4 已於本次 archive 修補 commit `a5bfee5` 採納「Data Model 
 ## 涉及
 
 - [[2026-05-20-change-archive-OQ收尾流程缺口]]（同根因 insight）
-- [[audit-log]]（2026-05-25 audit 與 2026-05-26 事件紀錄）
+- [[changelog]]（2026-05-25 audit 與 2026-05-26 事件紀錄）
 - [[2026-05-26-miles-upload-ezpay-invoice-api-spec]]（本次觸發 raw 卡）
 - `.claude/skills/doc-audit/SKILL.md` v1.4（已修補 reactive 防線）
 - `.claude/skills/openspec-archive-change/SKILL.md`（Action 1 修改目標）

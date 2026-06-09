@@ -1058,7 +1058,7 @@ Archive 位置：
 ## 2026-05-28 Billing & Cash 第一輪稽核（erp-planning-pre-check skill 實證）
 
 **觸發**：本 plan「ERP Vault 業務領域雙軸分類 + 稽核框架」Phase 2 第一輪實證
-**框架**：[[erp-planning-audit-framework]] 雙軸（業務領域 × 7 卡類型）+ 5 步驟 SOP 含閉環
+**框架**：（見 erp-planning-pre-check skill 附件） 雙軸（業務領域 × 7 卡類型）+ 5 步驟 SOP 含閉環
 **領域**：Billing & Cash（L1.6）+ 跨領域共用層
 **執行者**：Explore sub-agent（與主對話 agent 分離，受 YouTube /goal 影片啟發）
 

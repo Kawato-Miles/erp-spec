@@ -357,6 +357,6 @@ source: [規則來源]
 ## 相關卡
 
 - [[wiki-schema]] — frontmatter 規範
-- [[wiki-architecture]] — 分層定位
-- [[business-logic-changelog]] — 迭代史
+- [[erp_index]] — 分層定位
+- [[changelog]] — 迭代史
 - [[scope-boundary]] — Vault 收 / 不收邊界

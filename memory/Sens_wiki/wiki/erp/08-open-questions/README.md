@@ -9,7 +9,7 @@ last-reviewed: 2026-05-19
 
 # Open Questions（OQ）總覽
 
-> [[vault-charter#三、Source of Truth 規則|Vault Charter]] 規定：**OQ 操作正本為 Vault `08-open-questions/`**。
+> [[erp_index]] 規定：**OQ 操作正本為 Vault `08-open-questions/`**。
 >
 > `oq-manage` skill v2.1（2026-05-19）已強制獨立檔規則 — 禁止 inline `[!question]` callout / 「待釐清」措辭 / 口頭「列為 OQ」。所有 OQ 操作（查詢 / 新增 / 更新 / 遷出）統一觸發 `oq-manage` skill 執行。
 
@@ -123,7 +123,7 @@ notion-page-url: <URL>               # 若已推送則記錄頁面
 
 ## 四、同步策略
 
-依 [[vault-charter#三、Source of Truth 規則|Vault Charter]] + [[sync-workflow|Sync Workflow]]：
+依 [[erp_index]] + （已移除，見各 skill）：
 
 - **Notion OQ DB 為對外確認版**（彙整推送時更新）
 - 推送依 Miles 觸發，oq-manage skill 不主動推 Notion
@@ -131,8 +131,8 @@ notion-page-url: <URL>               # 若已推送則記錄頁面
 
 ## 五、相關文件
 
-- [[vault-charter|Vault Charter]] — 三邊分工原則
-- [[sync-workflow|Sync Workflow]] — 同步流程
+- [[erp_index]] — 三邊分工原則
+- （已移除，見各 skill） — 同步流程
 - `.claude/skills/oq-manage/SKILL.md` — OQ 操作 skill（含 mode A 查詢 / B 新增 / C 更新 / D 遷出）
 
 ## 六、來源
