@@ -124,7 +124,7 @@ description: >
 - 讀對應模組 OpenSpec spec（Purpose / Requirements / Data Model）與 `state-machines/spec.md`（狀態節點 / 轉換 / 觸發）
 - 取得**對外正本連結**：Notion BRD URL（spec Purpose 段「來源 BRD」）、Notion 資料欄位 DB URL（篩選該模組）
 - 確認目標 Linear project / issue（list_projects / list_issues）與其既有欄位（避免覆蓋）
-- **迭代交付（非首次）只反映 archived change**：若為「依這次更新同步」的迭代交付，依 [iteration-delta-publish](../../../memory/Sens_wiki/wiki/erp/00-meta/iteration-delta-publish.md) 算 delta，只取 `openspec/changes/archive/` 內的 change，**active（未 archive）change 不交付**（尚未進 main spec）
+- **迭代交付（非首次）只反映 archived change**：若為「依這次更新同步」的迭代交付，依 iteration-delta-publish（已移除，delta 計算邏輯自包含於本 skill） 算 delta，只取 `openspec/changes/archive/` 內的 change，**active（未 archive）change 不交付**（尚未進 main spec）
 - **中台 vs 業務平台 project 分流**：核心邏輯 + 狀態機變動的正本在**中台** project，業務平台為視圖層僅沿用、不另繪狀態機。交付前確認 delta 目標 project 正確（核心 change 投中台，勿誤投視圖層）
 
 ### Step 2：依自包含標準模板產出（核心校正）

@@ -226,7 +226,7 @@ grep -E "payment|printItem|orderAdjustment|quoteRequest|workOrder|productionTask
 
 ### Step A8：commit
 
-依 [[../../memory/Sens_wiki/wiki/erp/00-meta/vault-charter#五、Commit 規範|vault-charter § 五]]：
+依專案 CLAUDE.md § 版本控管規範：
 
 ```
 feat: 新增 [模組] User Story US-XX-NNN <標題>
@@ -246,7 +246,7 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 
 掃 `13-user-stories/<module>/` 內 user-story 卡，列出：
 - status=active
-- **change-driven delta**：依 [[iteration-delta-publish]] 算出受 archived change 影響的卡（只反映 `openspec/changes/archive/`，active change 不納入）；對映後做覆蓋檢查（每個 change 至少對映一張卡，無對映者揭露為覆蓋缺口 → 補卡或記 OQ）
+- **change-driven delta**：依 iteration-delta-publish（已移除） 算出受 archived change 影響的卡（只反映 `openspec/changes/archive/`，active change 不納入）；對映後做覆蓋檢查（每個 change 至少對映一張卡，無對映者揭露為覆蓋缺口 → 補卡或記 OQ）
 - **frontmatter 判定**：`notion-published-at` 為空 / 距今 > 60 天 / 自上次推送後 `last-reviewed` 有更新
 
 待推送清單 = 上述兩路**取聯集**。並報告給 Miles 確認推送範圍。
@@ -294,7 +294,7 @@ notion-published-at: <當天>
 notion-page-url: <Notion 頁面 URL>
 ```
 
-**強制回填，禁略**：未回填會導致下次 Step B1 的 change-driven delta 與 frontmatter 判定雙雙失準。教訓：訂單模組曾整批推送 Notion 卻全未回填，35 張卡 `notion-published-at` 全空，delta 偵測只能靠查 Notion 缺項兜底（見 [[iteration-delta-publish]] § 四）。
+**強制回填，禁略**：未回填會導致下次 Step B1 的 change-driven delta 與 frontmatter 判定雙雙失準。教訓：訂單模組曾整批推送 Notion 卻全未回填，35 張卡 `notion-published-at` 全空，delta 偵測只能靠查 Notion 缺項兜底（見 iteration-delta-publish（已移除） § 四）。
 
 ### Step B6：報告與 commit
 
@@ -367,7 +367,7 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 - [[../../memory/Sens_wiki/wiki/erp/13-user-stories/_template]] — 模板與 lint 自檢清單
 - [[../../memory/Sens_wiki/wiki/erp/00-meta/wiki-schema#type=user-story]] — frontmatter 正式規格
 - [[../../memory/Sens_wiki/wiki/erp/00-meta/wiki-schema#維度 13：User Story 撰寫紀律]] — lint 規則
-- [[../../memory/Sens_wiki/wiki/erp/00-meta/sync-workflow#二之二、流程 1-B：Vault → Notion User Story DB（單向推送）]] — 同步流程
+<!-- sync-workflow 已移除（2026-06-10） -->
 - [[oq-manage]] — 不確定項處理
 - [[erp-test-case]] — Test Case 撰寫（驗收種子來自本 skill 的 Gherkin 成功條件）
 - [[vault-audit]] — Vault 健康稽核

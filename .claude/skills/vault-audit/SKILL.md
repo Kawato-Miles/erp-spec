@@ -1,7 +1,7 @@
 ---
 name: vault-audit
 description: >
-  ERP_Vault 自審稽核 skill。對 `memory/Sens_wiki/wiki/` 執行 12 維度健康檢查（Karpathy LLM Wiki 模式 6 維度 + Sens 特化 6 維度），產出對話報告 + 追加 `00-meta/audit-log.md`。
+  ERP_Vault 自審稽核 skill。對 `memory/Sens_wiki/wiki/` 執行 12 維度健康檢查（Karpathy LLM Wiki 模式 6 維度 + Sens 特化 6 維度），產出對話報告 + 追加 `00-meta/changelog.md`。
   觸發時機：
     1. Miles 說「跑 vault audit」「Vault 健康檢查」「audit vault」
     2. 主動收尾發現 ≥ 5 個 Vault 卡異動時建議
@@ -10,7 +10,7 @@ description: >
     5. raw 累積 ≥ 10 張 status=raw 時自動建議（維度 11 觸發）
     6. 本月 daily review 缺 ≥ 工作日 50% 時自動建議（維度 12 觸發）
   範圍：**只稽核 ERP_Vault**。
-  輸出：對話報告 + 寫入 `memory/Sens_wiki/wiki/erp/00-meta/audit-log.md`（追加式、禁覆寫）。
+  輸出：對話報告 + 寫入 `memory/Sens_wiki/wiki/erp/00-meta/changelog.md`（追加式、禁覆寫）。
   不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）、純對話內容稽核。
 ---
 
@@ -477,7 +477,7 @@ done
 - [需跑 vault-insight 的]：建議跑 insight skill
 ```
 
-### Step 4：寫入 audit-log.md
+### Step 4：寫入 changelog.md
 
 追加格式：
 
@@ -511,7 +511,7 @@ done
 1. 先全量稽核
 2. 對「可自動修復」項列出清單 + 取得 Miles 確認
 3. Miles 確認後執行修復
-4. 補一筆 audit-log（標 fix）
+4. 補一筆 changelog（標 fix）
 
 ---
 
@@ -528,7 +528,7 @@ done
 ## 七、Anti-Pattern（禁止行為）
 
 - ❌ **跑於 ERP_Vault 以外的目錄**（範圍嚴格限制）
-- ❌ **未產出對話報告，只追加 audit-log**（Miles 看不到）
+- ❌ **未產出對話報告，只追加 changelog**（Miles 看不到）
 - ❌ **修復模式未經 Miles 確認直接動檔**
 - ❌ **誇大判定**（OK 報成 Warning，導致信號疲勞）
 - ❌ **跳過維度卻不標註原因**（透明性）

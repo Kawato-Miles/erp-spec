@@ -12,7 +12,7 @@ description: >
     4. OpenSpec change 工作流（`/opsx:propose` / `/opsx:new`）背景對齊階段
 
   範圍：**只處理 ERP_Vault know-how 稽核**。
-  輸出：對話報告（量化矩陣）+ 追加 audit-log.md + 修補既有卡 + 缺漏項標 OQ。
+  輸出：對話報告（量化矩陣）+ 追加 changelog.md + 修補既有卡 + 缺漏項標 OQ。
   不適用：純查詢術語 / 狀態機（不涉及規劃）、Vault 整體健康稽核（用 vault-audit）。
 
   **執行者與稽核者分離**（受 YouTube /goal 影片啟發）：稽核 sub-agent 跑稽核，主對話 agent 跑修補；MUST NOT 同 agent 自審。
@@ -164,9 +164,9 @@ wiki 商業邏輯卡清單（涉及本主題、propose 前須先更新）：<列
 下一步：依稽核結果修補既有卡 + 標 OQ + Step 5 閉環驗證；wiki 商業邏輯卡待設計確認後、進入 propose 前更新（不在 pre-check 修、不等 archive 後才補）
 ```
 
-### audit-log.md 追加
+### changelog.md 追加
 
-每次稽核完成 MUST 追加到 `memory/Sens_wiki/wiki/erp/00-meta/audit-log.md`：
+每次稽核完成 MUST 追加到 `memory/Sens_wiki/wiki/erp/00-meta/changelog.md`：
 
 ```markdown
 ## YYYY-MM-DD <領域> 第一輪稽核（議題：<議題名稱>）
@@ -266,4 +266,4 @@ wiki 商業邏輯卡清單（涉及本主題、propose 前須先更新）：<列
 | 版本 | 日期 | 變動 |
 |------|------|------|
 | v1.0 | 2026-05-28 | 初版建立（6 領域 × 7 卡類型雙軸 + 5 SOP 含閉環 + 執行者稽核者分離 + 五大反模式追蹤）|
-| v1.1 | 2026-05-30 | Step 4 + ack 模板 + audit-log 模板新增「wiki 商業邏輯卡清單 + 定案後回補清單」產出（pre-check 不修卡、交棒 archive 階段回補）。原因：converge change 漏對齊 wiki 6 卡 — 規劃時沒列受影響 wiki 卡，archive 後也就漏回補；補「pre-check 不修卡 → 定案後回補」配對步驟 |
+| v1.1 | 2026-05-30 | Step 4 + ack 模板 + changelog 模板新增「wiki 商業邏輯卡清單 + 定案後回補清單」產出（pre-check 不修卡、交棒 archive 階段回補）。原因：converge change 漏對齊 wiki 6 卡 — 規劃時沒列受影響 wiki 卡，archive 後也就漏回補；補「pre-check 不修卡 → 定案後回補」配對步驟 |

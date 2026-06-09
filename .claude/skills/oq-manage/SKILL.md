@@ -385,7 +385,7 @@ OQ 清單：
 
 ## 推送 Notion 對外確認版
 
-依 [[../../memory/Sens_wiki/wiki/erp/00-meta/sync-workflow|Sync Workflow]] § 流程 1：
+<!-- sync-workflow 已移除（2026-06-10），推送邏輯自包含於本 skill -->
 
 - 本 skill **不主動推送 Notion**
 - 由 Miles 觸發「Vault → Notion 彙整推送」時，OQ 與其他 Vault 內容一起被組合成 BRD 推送
