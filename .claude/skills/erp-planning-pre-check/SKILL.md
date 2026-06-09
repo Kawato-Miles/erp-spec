@@ -2,7 +2,7 @@
 name: erp-planning-pre-check
 description: >
   ERP 規劃前 know-how 稽核 skill。Claude 規劃 ERP 功能前 MUST 跑稽核識別缺漏 / 錯誤，修補既有卡（不新建抽象卡），避免重複問已答過的真實狀況、設計跑偏。
-  正本框架：`memory/Sens_wiki/wiki/erp/00-meta/erp-planning-audit-framework.md`
+  正本框架：`.claude/skills/erp-planning-pre-check/references/audit-framework.md`
   領域分類：`memory/Sens_wiki/wiki/erp/00-meta/business-domain-taxonomy.md`（6 領域 + 跨領域共用層）
 
   觸發時機：
