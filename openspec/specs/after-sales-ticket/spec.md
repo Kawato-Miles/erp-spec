@@ -916,6 +916,68 @@ v0.6 既有「AfterSalesTicket → OA → Payment + 折讓/作廢」連動鏈主
 - **THEN** 系統 MUST NOT 允許結案
 - **AND** UI MUST 顯示「需先完成訂單異動單執行 / 退款收款紀錄 / 發票異動才可結案」
 
+### Requirement: 售後服務階段流程（AfterSalesTicket 端到端）
+
+訂單已完成後（Order.status = 已完成）的客訴 / 不良 / 規格不符等售後事件 SHALL 走 AfterSalesTicket 流程。AfterSalesTicket 是訂單五大業務階段（需求 → 訂單 → 生產 → 出貨 → 售後）的最後階段，作為訂單已完成後事件的可追蹤容器。
+
+**流程概觀**：
+
+1. **受理**：業務於訂單詳情頁建立 AfterSalesTicket，填入 customer_complaint、case_category、responsibility。ticket.status = 受理中
+2. **討論**（系統外）：業務於 Slack @ 業務主管討論處理方式，討論完成後業務將 Slack thread URL 貼入 ticket.slack_thread_url
+3. **決議**：業務於 ticket 填入 resolution（不處理 / 退款 / 補印 / 退款+補印）並點「送出決議」，ticket.status → 處理中
+4. **執行下游動作**（依 resolution）：
+   - 不處理：不建任何下游動作
+   - 退款：業務於 ticket 內建關聯 OrderAdjustment(退印, -金額) → 走 OA 狀態機 → 業務於發票區建退款 Payment + 視需要開 SalesAllowance
+   - 補印免費：業務於 ticket 內建補印 PrintItem → 走原審稿 / 工單流程
+   - 補印收費：業務於 ticket 內建關聯 OrderAdjustment(補退, +金額) + 建補印 PrintItem
+   - 退款+補印：同時走退款與補印路徑
+5. **結案**（純手動）：業務確認客戶滿意 / 所有下游動作完成後，點 ticket 上的「結案」按鈕。ticket.status → 已結案
+
+**特殊規則**：
+
+- AfterSalesTicket 本身**無核可關卡**（業務與主管 Slack 線下討論，ERP 僅記錄結果）
+- 一個 Order 最多 1 張未結案 ticket；結案後可建新 ticket
+- Order.status 永遠保持「已完成」不回退（售後處理中為 UI 徽章，非主狀態）
+- 補印場景中，補印 PrintItem 出貨完成 SHALL NOT 自動結案 ticket（需業務確認客戶滿意）
+- ticket 內 OrderAdjustment 仍走業務主管審核（OrderAdjustment 既有狀態機不變）
+
+**Priority**: P0
+
+**Rationale**: 售後服務階段流程為訂單完成後事件的統一入口，確保客訴追蹤與帳務處理不遺漏。規則正本見 [[售後服務階段流程]]。
+
+#### Scenario: 售後事件完整流程（退款場景）
+
+- **GIVEN** Order.status = 已完成、客戶於 2026-05-06 反映瑕疵要求退款 5,000
+- **WHEN** 業務於訂單詳情頁建立 AfterSalesTicket（case_category=印件瑕疵、responsibility=公司認賠、customer_complaint=「客戶反映 5,000 元印刷瑕疵」）
+- **THEN** ticket.status SHALL = 受理中
+- **AND** 業務於 Slack 與業務主管討論後將 thread URL 貼入 slack_thread_url
+- **AND** 業務於 ticket 填 resolution = 退款 並點「送出決議」，ticket.status → 處理中
+- **AND** 業務於 ticket 內建 OrderAdjustment(退印, -5000, linked_after_sales_ticket_id=此 ticket) → 走 OA 狀態機 → 已執行
+- **AND** 業務於訂單發票區建退款 Payment(-5000) + 開 SalesAllowance(-5000, 關聯 Invoice #1)
+- **AND** 業務確認客戶滿意後點 ticket 上「結案」，ticket.status → 已結案
+
+#### Scenario: 售後事件完整流程（補印免費場景）
+
+- **GIVEN** Order.status = 已完成、客戶反映規格不符要求補印 100 份、公司認賠
+- **WHEN** 業務建立 AfterSalesTicket（case_category=規格不符、responsibility=公司認賠、resolution=補印）
+- **THEN** ticket.status → 處理中
+- **AND** 業務於 ticket 內點「建立補印印件」建 PrintItem(related_after_sales_ticket_id=此 ticket)
+- **AND** PrintItem 走原審稿 → 工單 → 出貨流程
+- **AND** 系統 MUST NOT 建立 OrderAdjustment（免費補印）
+- **AND** 補印 PrintItem 出貨完成 SHALL NOT 自動結案 ticket
+- **AND** 業務確認客戶滿意後點「結案」推進 ticket.status → 已結案
+
+#### Scenario: 售後事件完整流程（不處理場景）
+
+- **GIVEN** Order.status = 已完成、客戶反映輕微瑕疵但接受不處理
+- **WHEN** 業務建立 AfterSalesTicket（case_category=印件瑕疵、responsibility=公司認賠、resolution=不處理）
+- **THEN** ticket.status → 處理中
+- **AND** 系統 MUST NOT 建立 OrderAdjustment、PrintItem、Payment
+- **AND** 業務點「結案」推進 ticket.status → 已結案
+- **AND** 訂單應收 / 發票 / 收款均不變動，三方對帳不受影響
+
+---
+
 ### Requirement: 售後服務單三組件進度展示
 
 售後服務單詳情頁於「處理中」狀態 SHALL 顯示三組件完成狀態提示區，含每組件的：

@@ -2008,6 +2008,295 @@ UI 呈現（Dialog 對應、helper function、條件顯示）見 DESIGN.md §10.
 - **WHEN** 業務檢視訂單列表
 - **THEN** 該訂單列 SHALL 不顯示警示標記
 
+### Requirement: 需求單轉訂單欄位帶入規則
+
+需求單轉為訂單時，系統 SHALL 依以下規則處理欄位帶入：
+
+- **自動帶入（唯讀）**：客戶基本資料、印件規格
+- **自動帶入（可編輯）**：交期與備註、付款資訊、訂金設定、案名（需求單 title → 訂單 case_name）
+- **自動帶入（原值）**：各印件項目的預計產線（QuoteRequestItem.expected_production_lines → PrintItem.expected_production_lines）
+- **不帶入**：報價紀錄、活動紀錄
+
+**前置條件**：需求單 SHALL 為「成交」狀態才能執行轉訂單。業務主管 gate 由獨立 change `relocate-sales-manager-approval-from-quote-to-order` 在訂單階段處理（不影響本 Requirement 的轉訂單前提）。
+
+**諮詢來源需求單的諮詢費處理**：當需求單 `linked_consultation_request_id` 非空時，系統 SHALL 於主訂單建立時自動執行：
+
+1. 將 Payment 從 ConsultationRequest 轉移至主訂單（修改 Payment.linked_entity_type 與 linked_entity_id）
+2. 在主訂單上建立一筆 `OrderExtraCharge(charge_type = consultation_fee, amount = 諮詢費, description = 諮詢單編號)`
+3. 若 ConsultationRequest 的 `consultation_invoice_option = issue_now`，主訂單上立即開立諮詢費 Invoice
+4. 系統 MUST NOT 建立諮詢訂單（諮詢結束做大貨需求單成交情境下諮詢訂單從未建立）
+
+主訂單應收 = ∑ 印件費 + ∑ OrderExtraCharge（含諮詢費）；主訂單已收 = 轉移過來的諮詢費 Payment + 後續客人補繳；客人實際補繳 = 主訂單應收 - 諮詢費。三方對帳通過。
+
+**Priority**: P0
+
+**Rationale**: 需求單轉訂單為核心業務流程，帶入規則確保資料一致性與業務效率。
+
+#### Scenario: 需求單轉訂單時客戶資料帶入
+
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
+- **THEN** 系統 SHALL 自動帶入客戶基本資料與印件規格，且這些欄位為唯讀狀態
+
+#### Scenario: 需求單轉訂單時交期可編輯
+
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
+- **THEN** 系統 SHALL 自動帶入交期與備註、付款資訊、訂金設定，且這些欄位允許使用者編輯
+
+#### Scenario: 需求單轉訂單時案名帶入
+
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
+- **THEN** 系統 SHALL 將需求單的 title 帶入訂單的 case_name 欄位
+- **AND** case_name SHALL 允許業務編輯
+
+#### Scenario: 需求單轉訂單時預計產線帶入
+
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
+- **THEN** 系統 SHALL 將各印件項目的預計產線帶入對應 PrintItem 的 expected_production_lines
+- **AND** 帶入後印件的預計產線 SHALL 可繼續編輯
+
+#### Scenario: 需求單轉訂單時報價紀錄不帶入
+
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
+- **THEN** 系統 SHALL 不帶入報價紀錄與活動紀錄至訂單
+
+#### Scenario: 諮詢來源需求單轉訂單同步處理 Payment 轉移與 OrderExtraCharge
+
+- **GIVEN** 需求單 `linked_consultation_request_id` 非空，諮詢費 = 2000、印件費 = 4000、Payment 綁 ConsultationRequest
+- **WHEN** 業務於「成交」需求單執行「轉訂單」
+- **THEN** 系統 SHALL 建立主訂單
+- **AND** 系統 SHALL 將 Payment 從 ConsultationRequest 轉移至主訂單
+- **AND** 系統 SHALL 在主訂單上建立 OrderExtraCharge（charge_type = consultation_fee、amount = 1000）
+- **AND** 系統 MUST NOT 建立諮詢訂單
+- **AND** 主訂單應收總額 SHALL = 5000（印件費 4000 + 諮詢費 OrderExtraCharge 1000）
+- **AND** 主訂單已收 SHALL = 1000（轉移過來的諮詢費 Payment）
+- **AND** 主訂單待繳 SHALL = 4000
+
+---
+
+### Requirement: 出貨單作廢回算（SHP-003）
+
+出貨單作廢時，系統 MUST 重新計算可出貨額度。
+
+新可出貨額度 = 入庫數量 - (已出貨數量 - 作廢數量)
+
+**Priority**: P0
+
+**Rationale**: 出貨單作廢後若不回算額度，將導致可出貨餘額永久短少，影響後續出貨作業。
+
+#### Scenario: 出貨單作廢後額度回算
+
+WHEN 某印件入庫 1000，已出貨 800，其中一筆出貨單（數量 200）被作廢
+THEN 新可出貨額度 SHALL 為 1000 - (800 - 200) = 400
+
+---
+
+### Requirement: 出貨建立時機與防呆條件
+
+系統 MUST 依工單類型區分出貨前置條件：
+
+- 打樣出貨：打樣工單 QC 須達標後方可建立出貨。
+- 大貨出貨：印件狀態為「製作進行中」或「製作完成」皆可建立出貨。
+
+出貨明細防呆規則：
+
+- 本次出貨數量 MUST <= 該印件累計 QC 入庫數量 - 已出貨數量。
+- 若該印件 QC 入庫數量 = 0，系統 SHALL 阻擋建立出貨明細。
+
+**Priority**: P0
+
+**Rationale**: 出貨防呆避免超發（出貨數大於入庫數）與空發（無入庫即出貨）。規則正本見 [[入庫與出貨數量規則]]。
+
+#### Scenario: 打樣出貨防呆
+
+WHEN 打樣工單尚未完成 QC 或 QC 未達標，使用者嘗試建立打樣出貨
+THEN 系統 SHALL 阻擋操作並提示「打樣工單 QC 須達標後方可建立出貨」
+
+#### Scenario: 大貨分批出貨防呆
+
+WHEN 某印件累計 QC 入庫 800、已出貨 500，使用者嘗試建立出貨明細數量 400
+THEN 系統 SHALL 阻擋操作並提示「本次出貨數量（400）超過可出貨餘額（300）」
+
+#### Scenario: QC 入庫為 0 阻擋出貨
+
+WHEN 某印件 QC 入庫數量為 0，使用者嘗試建立該印件的出貨明細
+THEN 系統 SHALL 阻擋操作並提示「該印件尚無 QC 入庫，無法建立出貨明細」
+
+---
+
+### Requirement: 出貨單與印件雙層狀態映射
+
+系統 MUST 依出貨單狀態與累計送達情況，自動映射印件出貨狀態：
+
+- 出貨單狀態為「出貨中」（自行配送）或「已出貨」（第三方物流）時，對應印件狀態 SHALL 為「出貨中」。
+- 累計已送達數量 >= 目標生產數量時，印件狀態 SHALL 推進為「已送達」。
+- 出貨單出現異常狀態時，印件 SHALL 維持「出貨中」，不自動變更。
+
+**Priority**: P0
+
+**Rationale**: 印件出貨狀態須依出貨單狀態自動推導，避免業務手動維護導致不一致。
+
+#### Scenario: 狀態映射規則驗證
+
+WHEN 某印件有兩筆出貨單，出貨單 A 狀態為「已送達」（送達 600），出貨單 B 狀態為「出貨中」（尚未送達），目標為 1000
+THEN 印件狀態 SHALL 為「出貨中」，因累計送達 600 < 目標 1000
+
+---
+
+### Requirement: 多印件合併出貨
+
+系統 MUST 支援一筆出貨單包含多個印件的合併出貨。出貨單結構 SHALL 採用明細結構：出貨單 { type, 出貨明細: [{ 印件 ID, 本次出貨數量 }] }。
+
+每筆出貨明細 SHALL 獨立適用出貨防呆規則（本次出貨數量 <= 該印件可出貨餘額）。
+
+**Priority**: P0
+
+**Rationale**: 印刷業常有同訂單多印件需同批出貨，合併出貨減少建單次數並對齊物流實務。
+
+#### Scenario: 合併出貨建立
+
+WHEN 使用者建立一筆出貨單，包含印件 A（出貨 500）與印件 B（出貨 300），兩印件可出貨餘額分別為 600 與 400
+THEN 系統 SHALL 允許建立此出貨單，出貨明細包含兩筆紀錄，各印件出貨數量皆未超過可出貨餘額
+
+---
+
+### Requirement: 訂單異動執行流程
+
+訂單成立後，業務 / 諮詢 SHALL 可建立 OrderAdjustment 處理應收金額異動。OrderAdjustment MUST 走獨立狀態機，**不影響主訂單狀態**。已執行時系統 SHALL 自動重算訂單應收總額，但 BillingInstallment（請款期次）SHALL NOT 自動變動。
+
+**OrderAdjustment 回歸純金額異動載具**：OrderAdjustment 不依 Order.status 推算 phase，所有 adjustment_type（規格變更 / 加印追加 / 退印 / 折扣 / 加運費 / 急件費 / 補退 / 其他）皆可於任何 Order 狀態下選用。
+
+**售後事件改走 AfterSalesTicket**：Order.status = 已完成後的客訴 / 不良 / 規格不符等售後事件改建 AfterSalesTicket（見 [after-sales-ticket spec](../after-sales-ticket/spec.md)）。AfterSalesTicket 內部依 resolution（不處理 / 退款 / 補印 / 退款+補印）決定是否建關聯 OrderAdjustment：
+
+- **不處理**：不建 OrderAdjustment（ticket 直接結案）
+- **退款**：ticket 內建 OrderAdjustment(adjustment_type=退印, amount=-退款額, linked_after_sales_ticket_id=此 ticket)
+- **補印免費**：不建 OrderAdjustment，僅建補印 PrintItem 走原審稿 / 工單流程
+- **補印收費**：ticket 內建 OrderAdjustment(adjustment_type=補退, amount=+補印費, linked_after_sales_ticket_id=此 ticket) + 建補印 PrintItem
+
+**建立與審核流程**：
+
+1. 業務於訂單詳情頁點擊「建立訂單異動單」（或於 AfterSalesTicket 內部建關聯異動），填入 adjustment_type、reason；新增多筆明細項（item_type = print_item / fee，描述、金額）
+2. 系統自動加總 OrderAdjustment.amount = ∑明細金額
+3. OrderAdjustment.status = 草稿；業務點擊「提交審核」後 → 待主管審核
+4. 業務主管核可（→ 已核可）或退回（→ 已退回，業務修改後重交）
+5. **業務於 OA 編輯介面建立關聯 Payment（處理中態）**：依 OA 正負自動預填 paymentMethod
+   - OA 為退款型（amount < 0）：預填 paymentMethod = '退款'、amount ≤ 0
+   - OA 為補收型（amount > 0）：預填 paymentMethod 為非「退款」項（如「銀行轉帳」）、amount ≥ 0
+6. **業務後續補齊資料切「已完成」**：補 paidAt、上傳對帳附件 ≥ 1 個、切 paymentStatus → '已完成'
+7. **系統自動推進 OA 至已執行**：對應 OA 的所有已完成 Payment 累計 amount = OA.amount（含符號比較）時，同 transaction 推進 OA.status → '已執行'、executedAt = 該 Payment 切「已完成」的時點
+8. 系統重算訂單應收總額；BillingInstallment（請款期次）不自動變動
+
+**對稱化**：補收 OA 與退款 OA 共用上述 5-7 步驟（業務手動建處理中 Payment + 切已完成）。
+
+**執行後提示**：
+
+- 含 item_type = print_item 的明細：顯示「此異動涉及生產內容，請至訂單詳情頁編輯印件以接續審稿 / 工單流程」
+- 執行時點晚於 Order.completed_at：對帳檢視面板顯示警示 banner「歷史對帳需重新核對」
+- AfterSalesTicket 關聯 OrderAdjustment 執行後：ticket 內「關聯 OrderAdjustment 卡片」更新狀態為「已執行」
+
+**處理中 Payment 期間禁止觸發 SalesAllowance（resolve ORD-004）**：業務在 OA 編輯介面建立處理中退款 Payment 時，系統 SHALL NOT 自動建立 SalesAllowance 或顯示弱提示。SalesAllowance 相關提示僅在退款 Payment 切「已完成」後觸發。
+
+**Priority**: P0
+
+**Rationale**: 訂單異動為訂單金額變動的核心機制，須走獨立狀態機確保主訂單流程不中斷。
+
+#### Scenario: 加印追加完整流程
+
+- **GIVEN** 訂單狀態 = 生產中
+- **WHEN** 客戶要求加印 200 份，業務建立 OrderAdjustment（adjustment_type = 加印追加，明細：item_type = print_item，描述 = 加印 200 份，金額 = +20,000）→ 提交審核 → 主管核可
+- **THEN** OrderAdjustment.status SHALL → 已核可（NOT 自動建補收 Payment）
+- **AND** OrderAdjustment.linked_after_sales_ticket_id SHALL = NULL
+- **AND** 系統 SHALL 顯示提示「此異動涉及生產內容，請至訂單詳情頁編輯印件 + 至 OA 編輯介面建立補收 Payment」
+- **AND** 業務後續手動：
+  - (a) 至訂單詳情頁新增 PrintItem「加印 200 份」走審稿 / 工單流程
+  - (b) **於 OA 編輯介面內點「新增 Payment」建補收 Payment P-002（amount = +20000, paymentMethod = '銀行轉帳', paymentStatus = '處理中'）**
+  - (c) 客戶實際匯款後業務補 P-002 的 paidAt + 對帳附件、切 paymentStatus → '已完成'
+  - (d) 系統自動推進 OA → '已執行'、訂單應收總額增加 +20000
+  - (e) 業務開立 Invoice #2（20,000）
+
+#### Scenario: 退印完整流程（訂單期間、已開發票）
+
+- **GIVEN** Invoice #1 = 100,000 已開立、訂單未完成
+- **WHEN** 客戶投訴 10,000 元品質瑕疵，業務建立 OrderAdjustment（adjustment_type = 退印，明細：item_type = fee，描述 = 品質投訴退款，金額 = -10,000）→ 提交審核 → 主管核可
+- **THEN** OrderAdjustment.status SHALL → 已核可
+- **AND** 業務於 OA 編輯介面建退款 Payment P-010（amount = -10,000, paymentMethod = '退款', paymentStatus = '處理中'）
+- **AND** 系統 SHALL NOT 自動建立 SalesAllowance（處理中期間禁止觸發，resolve ORD-004）
+- **WHEN** 業務實際匯款給客戶後，補 P-010 的 paidAt + 對帳附件、切 paymentStatus → '已完成'
+- **THEN** 系統自動推進 OA → '已執行'、訂單應收總額 = 90,000
+- **AND** 業務後續手動：開立 SalesAllowance #1（-10,000，關聯 Invoice #1）
+
+#### Scenario: 售後退款完整流程（透過 AfterSalesTicket）
+
+- **GIVEN** 訂單 SO-002 狀態 = 已完成、completion_date = 2026-03-15、Invoice #1 = 100,000 已開立並跨期申報
+- **WHEN** 客戶於 2026-05-21 反映 5,000 元瑕疵，業務於訂單詳情頁建立 AfterSalesTicket（case_category = 印件瑕疵、responsibility = 公司認賠、resolution = 退款）
+- **THEN** AfterSalesTicket.status SHALL → 受理中 → 處理中
+- **AND** 業務於 ticket 內建 OrderAdjustment OA-020(adjustment_type = 退印, amount = -5,000, linked_after_sales_ticket_id = 此 ticket) → 提交審核 → 主管核可
+- **AND** 業務於 OA-020 編輯介面建退款 Payment P-020（amount = -5,000, paymentMethod = '退款', paymentStatus = '處理中'）
+- **AND** OA-020 維持「已核可」狀態（處理中 Payment 不推進 OA）
+- **WHEN** 業務實際匯款給客戶後，補 P-020 的 paidAt + 對帳附件、切 paymentStatus → '已完成'
+- **THEN** 系統自動推進 OA-020.status → '已執行'、executedAt = P-020 切已完成的時點
+- **AND** 因 OA-020.executed_at > Order.completed_at，對帳檢視面板 SHALL 顯示警示 banner
+- **AND** 業務後續手動：開 SalesAllowance（-5,000，關聯 Invoice #1）
+- **AND** 業務確認客戶滿意後點「結案」推進 ticket.status → 已結案
+
+#### Scenario: 售後不處理流程（透過 AfterSalesTicket）
+
+- **GIVEN** 訂單 SO-003 狀態 = 已完成
+- **WHEN** 客戶反映輕微瑕疵但不嚴重，業務於 ticket 上跟主管討論後決議「公司認賠不處理」
+- **THEN** 業務建立 AfterSalesTicket（case_category = 印件瑕疵、responsibility = 公司認賠、resolution = 不處理）
+- **AND** ticket.status SHALL → 處理中
+- **AND** 系統 MUST NOT 建立 OrderAdjustment、PrintItem、Payment 任何下游動作
+- **AND** 業務點「結案」推進 ticket.status → 已結案
+- **AND** 訂單應收 / 發票 / 收款均不變動，三方對帳不受影響
+
+#### Scenario: 訂單異動不阻擋主流程
+
+- **GIVEN** 訂單狀態 = 生產中，OrderAdjustment.status = 待主管審核
+- **WHEN** 工單交付完成觸發狀態向上傳遞
+- **THEN** 訂單狀態 SHALL 推進至「出貨中」
+- **AND** OrderAdjustment 維持「待主管審核」獨立狀態
+
+---
+
+### Requirement: 報價單印件填寫原則 — 帳務公司延伸
+
+需求單 / 報價單建立時 SHALL 同時指定接單公司（account_company）與帳務公司（billing_company_id）。兩者為**獨立欄位**，業務分別填寫；UI 軟性提示「該接單公司近期常用帳務公司」（不強制）。需求單成交轉訂單時，billing_company_id 隨之帶入訂單。
+
+**Priority**: P1
+
+**Rationale**: 帳務公司與接單公司分離，支援代開發票等業務場景。
+
+#### Scenario: 業務於需求單填寫接單公司與帳務公司
+
+- **WHEN** 業務於需求單編輯頁分別選 account_company（如 SSP 感官）與 billing_company（如 帳務公司 A）
+- **THEN** 系統 SHALL 寫入兩個獨立欄位
+- **AND** UI SHALL 在 billing_company 選項顯示「該接單公司近 30 天最常用：[X]」軟性提示
+
+---
+
+### Requirement: Migration 期 OA invariant 過渡規則
+
+本 change 上線後執行既有 Payment backfill 為「已完成」（見 [order-billing spec § 既有資料 Migration](../order-billing/spec.md)）。Migration 期間 SHALL 滿足下列規則：
+
+- Migration 前：既有「OA 已執行 → 必有關聯退款 Payment」invariant 隱含 Payment「已建立 = 已完成」語意
+- Migration 中：所有 Payment backfill `paymentStatus = '已完成'`、`completedAt = createdAt`
+- Migration 後：新 invariant「OA 已執行 → 必有關聯已完成 Payment 累計達 OA.amount」自動滿足（既有資料已 backfill）
+
+Migration 不涉及 OA 狀態變動（既有已執行 OA 維持已執行）。
+
+**Priority**: P0
+
+**Rationale**: 確保上線期間既有資料滿足新 invariant，避免對帳邏輯斷層。
+
+#### Scenario: Migration 後既有已執行 OA 仍滿足新 invariant
+
+- **GIVEN** Migration 前資料庫有 OA-100（status = 已執行, amount = -5000）+ 對應退款 Payment P-100（amount = -5000, paymentStatus = null）
+- **WHEN** 系統執行 Migration
+- **THEN** P-100.paymentStatus SHALL 被 backfill 為 '已完成'、completedAt = P-100.createdAt
+- **AND** OA-100 對應已完成 Payment 累計 = -5000 = OA-100.amount，滿足新 invariant
+- **AND** OA-100.status 維持「已執行」（不變動）
+
+---
+
 ## Data Model
 
 > **欄位正本已遷移至 wiki 實體卡**（業務可見欄位表）。本段僅保留實體關聯總覽與開發者技術參考。

@@ -1566,6 +1566,178 @@ overdue_days 欄位定義見 § 應收帳款帳齡底層欄位與訂單列表帳
 - **AND** 退款紀錄 MUST 仍可於收款紀錄列表 / 發票列表 / 訂單異動列表查閱
 
 ---
+
+### Requirement: 發票異動流程（作廢、折讓、改買受人）
+
+業務 / 諮詢 SHALL 處理發票異動的三種情境，依情境選擇對應流程：
+
+**情境 A：發票錯誤可作廢**（同期未交付未申報，藍新 Mockup 階段不檢查申報期）
+- 業務於 Invoice 詳情頁點擊「作廢」，填入 invalid_reason
+- Invoice.status → 作廢
+- 字軌號碼不重用，新發票流水 +1
+
+**情境 B：客戶要求改買受人（如統編打錯）**
+- 業務作廢原 Invoice（情境 A 流程）
+- 業務開立新 Invoice（帶入正確買受人）
+- 不額外設計「換開」捷徑
+
+**情境 C：已開發票後客戶要求金額調整（先退款，再決定折讓 / 作廢）**
+
+實務步驟（業務 / 諮詢 SHALL 依此順序）：
+1. 業務於訂單詳情頁建立退款 Payment（amount 為負數、payment_method = 「退款」、可選關聯 BillingInstallment 請款期次）
+2. 視情境決定後續：
+   - **路徑 a（保留發票走折讓）**：業務於 Invoice 詳情頁點擊「開立折讓」，填入 allowance_amount（負數）、reason。SalesAllowance.status = 已確認。折讓與步驟 1 的退款 Payment 不建立關聯。
+   - **路徑 b（作廢重開）**：業務作廢原 Invoice、開立新 Invoice。退款 Payment 不需關聯 SalesAllowance。
+3. 已確認折讓可作廢（→ 已作廢，發票回到折讓前狀態）
+
+**約束**：
+- 折讓金額 |allowance_amount| MUST ≤ 該發票尚未折讓的剩餘金額
+- 折讓 + 退款不需主管核可（業務 / 諮詢可單獨執行）
+- 作廢不需主管核可（業務 / 諮詢可單獨執行）
+- 系統 SHALL NOT 在折讓建立時自動建立 Payment（折讓 / 退款分離原則）
+
+**Priority**: P0
+
+**Rationale**: 發票異動為帳務核心操作，三種情境覆蓋統編錯誤、改買受人、金額調整等常見需求。
+
+#### Scenario: 客戶要求改公司名（情境 B）
+
+- **GIVEN** Invoice #1 buyer_name = "錯誤公司名"，已開立
+- **WHEN** 業務作廢 Invoice #1（reason = 公司名錯誤）
+- **AND** 業務開立 Invoice #2（buyer_name = "正確公司名"）
+- **THEN** Invoice #1.status SHALL = 作廢
+- **AND** Invoice #2 SHALL 為新紀錄，ezpay_merchant_order_no 流水 +1
+
+#### Scenario: 折讓 + 退款流程（情境 C 路徑 a）
+
+- **GIVEN** Invoice #1 = 100,000 已開立、客戶已付款
+- **WHEN** 客戶投訴 10,000 元品質瑕疵，業務先建立退款 Payment（amount = -10,000、payment_method = 退款）
+- **AND** 業務於 Invoice #1 開立 SalesAllowance #1（allowance_amount = -10,000、reason = 品質投訴）
+- **THEN** SalesAllowance.status SHALL → 已確認
+- **AND** Invoice #1 剩餘可折讓金額 SHALL = 90,000
+- **AND** 系統 SHALL NOT 自動建立任何 Payment（折讓 / 退款分離原則）
+
+#### Scenario: 折讓金額超過剩餘可折讓金額被擋
+
+- **GIVEN** Invoice = 100,000 已有 SalesAllowance #1 = -50,000（已確認）
+- **WHEN** 業務嘗試開立 SalesAllowance #2 = -60,000
+- **THEN** 系統 SHALL 拒絕並提示「折讓金額不可超過發票剩餘 50,000」
+
+---
+
+### Requirement: 業務先填一半再補齊資料流程（一般收款）
+
+業務 SHALL 可於訂單詳情頁建立一般收款 Payment 時先填部分資料（amount + paymentMethod），暫存為 paymentStatus = '處理中'；後續陸續補齊 paidAt + 對帳附件後切「已完成」，避免「等資料齊才敢建檔」造成的延誤與對帳真實性問題。
+
+**處理中 Payment 對對帳與期次狀態的影響**：
+
+- 處理中 Payment SHALL NOT 計入收款淨額（對帳公式只算已完成 Payment）
+- 處理中 Payment SHALL NOT 影響 BillingInstallment 收款維度狀態推導
+- 處理中 Payment SHALL NOT 觸發 SalesAllowance 自動建立或弱提示
+
+**Priority**: P0
+
+**Rationale**: 業務實務中常先知道客戶已匯款但對帳單未到，先建處理中 Payment 可即時留存紀錄避免遺漏。
+
+#### Scenario: 業務在「客戶說已匯但對帳未到」情境先建處理中 Payment
+
+- **GIVEN** 客戶 2026-05-21 告知「已匯款 30000」，業務需要先在系統留存紀錄但對帳單還未到
+- **WHEN** 業務於訂單詳情頁 OrderPaymentSection 點「新增收款」，dialog 內填 amount = +30000、paymentMethod = '銀行轉帳'、於入帳明細勾選對應收款項目（PaymentAllocation）；paidAt 與 attachments 暫不填、點「儲存」
+- **THEN** 系統 SHALL 通過驗證（處理中態必填項已齊）並建立 Payment P-030（paymentStatus = '處理中'）
+- **AND** P-030 出現在收款列表標「處理中」狀態 badge
+- **AND** 對帳收款淨額不變（處理中不計入）
+- **AND** 對應 BillingInstallment 收款維度狀態不變（處理中不累計）
+
+#### Scenario: 業務後續補齊資料切已完成
+
+- **GIVEN** 處理中 Payment P-030（amount = +30000, paidAt = null, attachments = []）
+- **WHEN** 2026-05-25 業務收到銀行對帳單，於收款列表點 P-030「編輯」、補 paidAt = 2026-05-23、上傳對帳單.pdf、切 paymentStatus → '已完成'、點「儲存」
+- **THEN** 系統 SHALL 通過驗證並寫入 P-030.paymentStatus = '已完成'、completedAt = now
+- **AND** 對帳收款淨額 SHALL 增加 +30000
+- **AND** 對應 BillingInstallment 累計 = +30000，若達 scheduledAmount 則收款維度變「已收訖」
+
+---
+
+### Requirement: 請款與核銷流程（合併規劃層雙實體 + 自動分配）
+
+系統 SHALL 提供以下統一請款 + 核銷流程：
+
+```
+規劃 BillingInstallment（一次建立含應收日 / 預計開票日 / 金額 / 品項 / 備註）
+   ↓
+一鍵開票（從 BillingInstallment 繼承應收日 / 備註 / 品項 → Invoice，期次↔發票 1:1）
+   ↓
+登錄 Payment（業務於入帳明細手動勾選收款項目 + 填金額，防呆入帳合計 ≤ 收款金額）
+   ↓
+Payment 切已完成 → BillingInstallment.payment_status derived 更新
+```
+
+業務在規劃階段一次建期次即同時定義「何時收 + 何時開票 + 開什麼品項」三個面向，不再雙頭維護。事實層 PaymentAllocation 取代 PaymentInvoice junction（發票↔期次 1:1、期次↔收款 N:M）。收款入帳由業務手動勾選收款項目 + 逐筆填金額、UI 即時校驗入帳合計 ≤ 收款金額、溢收進預收桶。
+
+**Priority**: P0
+
+**Rationale**: 統一請款核銷流程將分散的五步驟收斂為四步驟，降低業務操作成本。
+
+#### Scenario: 完整請款 + 核銷流程（一期一票一款情境 A）
+
+- **GIVEN** 訂單成立後總額 30000
+- **WHEN** 業務建立 BillingInstallment BI-001（scheduled_amount=30000, due_date=2026-06-01, expected_invoice_date=2026-05-15, items=[訂金品項], note=「訂金 30%」）
+- **AND** 業務於 BI-001 點「一鍵開立發票」→ 系統建立 Invoice INV-001（total_amount=30000, items=深拷貝, source_billing_installment_id=BI-001.id）
+- **AND** 業務登錄 Payment P-001（amount=30000）→ 於入帳明細手動勾選 BI-001 填 30000 建 PaymentAllocation PA-001（payment_id=P-001, billing_installment_id=BI-001, allocated=30000, auto_allocated=false）
+- **AND** 業務切 P-001 為已完成
+- **THEN** BI-001.invoicing_status = 已開立、payment_status = 已收訖（兩維度均推進完成）
+
+---
+
+### Requirement: 跨齊報稅期作廢 vs 折讓流程節點
+
+依中華民國稅務規則，發票一旦跨齊報稅期 MUST NOT 作廢，只能透過折讓單抵銷。系統 SHALL 於發票異動流程節點實作此規則判斷：
+
+**流程節點規則**：
+1. 業務 / 諮詢於發票異動場景開啟發票異動 UI
+2. UI MUST 顯示「作廢」「折讓」兩個獨立按鈕
+3. 業務依情境選擇：
+   - **新發現的錯誤、未跨期、客戶要求重開**：點「作廢」
+   - **跨期、客戶不需作廢、只需減額**：點「折讓」
+4. 若點「作廢」：系統呼叫第三方發票平台執行作廢
+   - 成功：發票狀態變「作廢」，新發票流水號自動 +1
+   - 失敗（平台回應「跨齊報稅期不可作廢」）：UI MUST 顯示明確錯誤訊息「此發票已跨齊報稅期無法作廢，請改開折讓單」並引導改點「折讓」
+5. 若點「折讓」：系統開立折讓單（金額為負）關聯既有發票
+
+**業務不需自行判斷規則**：業務面對發票異動時直接依直覺點「作廢」（最常見動作），系統依第三方平台實際回應引導正確流程。
+
+此流程節點適用所有發票異動場景：訂單異動退款、售後服務單退款、客訴處理、訂單取消等。
+
+**Priority**: P0
+
+**Rationale**: 跨齊報稅期判斷交由第三方平台回應驅動，降低業務認知負擔。
+
+#### Scenario: 業務不熟稅務規則仍能正確處理
+
+- **GIVEN** 業務不熟悉跨齊報稅期判斷規則
+- **WHEN** 業務於跨期發票上點「作廢」
+- **THEN** 系統 SHALL 呼叫第三方平台失敗
+- **AND** UI MUST 顯示錯誤訊息引導「請改開折讓單」
+- **AND** 業務 SHALL 改點「折讓」完成發票異動
+- **AND** 業務無需了解「跨齊報稅期」術語細節
+
+#### Scenario: 未跨期發票作廢直接成功
+
+- **GIVEN** 發票開立日期在當期報稅期內、尚未報稅
+- **WHEN** 業務點「作廢」並填寫作廢原因
+- **THEN** 系統 SHALL 呼叫第三方平台成功
+- **AND** 發票狀態 SHALL 變「作廢」
+- **AND** 業務 SHALL 於需要時重新開立新發票（流水號自動 +1）
+
+#### Scenario: 跨期折讓與作廢同時呈現於 UI
+
+- **GIVEN** 訂單詳情頁發票異動 UI
+- **WHEN** 業務開啟發票詳情
+- **THEN** UI MUST 同時顯示「作廢」「折讓」兩按鈕
+- **AND** UI MUST NOT 預先過濾或隱藏任一按鈕（業務依情境自主選擇）
+- **AND** 規則判斷在後端（系統呼叫第三方平台後決定成功 / 失敗）
+
+---
 ## Data Model
 
 > **欄位正本已遷移至 wiki 實體卡**。本段僅保留實體關聯總覽。
