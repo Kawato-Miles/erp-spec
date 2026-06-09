@@ -121,7 +121,7 @@
   │       │
   │       └─ PT-S01 五色打樣印刷
   │           affects_product: TRUE
-  │           quantity_per_work_order: 5
+  │           quantity_per_work_order: 1
   │           assigned_operator: 張師傅
   │           planned_equipment: 海德堡 XL106 (#1)
   │           scheduled_date: 2026-03-29
@@ -149,7 +149,7 @@
           │
           └─ PT-S02 五色打樣印刷（調色後）
               affects_product: TRUE
-              quantity_per_work_order: 5
+              quantity_per_work_order: 1
               assigned_operator: 張師傅
               planned_equipment: 海德堡 XL106 (#1)
               scheduled_date: 2026-04-01
@@ -202,7 +202,7 @@
           │
           └─ PT-S03 雙色打樣印刷
               affects_product: TRUE
-              quantity_per_work_order: 5
+              quantity_per_work_order: 1
               assigned_operator: 王師傅
               planned_equipment: 小森 GL40 (#2)
               scheduled_date: 2026-03-29
@@ -238,7 +238,7 @@
           │
           └─ PT-S04 雙色打樣印刷
               affects_product: TRUE
-              quantity_per_work_order: 5
+              quantity_per_work_order: 1
               assigned_operator: 王師傅
               planned_equipment: 小森 GL40 (#2)
               scheduled_date: 2026-04-01
@@ -297,7 +297,7 @@
   │
   ├─ PT-01 正面五色印刷
   │   affects_product: TRUE
-  │   quantity_per_work_order: 2100
+  │   quantity_per_work_order: 1
   │   assigned_operator: 張師傅
   │   planned_equipment: 海德堡 XL106 (#1)
   │   actual_equipment: 海德堡 XL106 (#1)
@@ -311,7 +311,7 @@
   │
   ├─ PT-02 背面單色印刷
   │   affects_product: TRUE
-  │   quantity_per_work_order: 2100
+  │   quantity_per_work_order: 1
   │   assigned_operator: 張師傅
   │   planned_equipment: 海德堡 XL106 (#1)
   │   actual_equipment: 海德堡 XL106 (#1)
@@ -325,7 +325,7 @@
   │
   └─ PT-03 UV 上光
       affects_product: TRUE
-      quantity_per_work_order: 2100
+      quantity_per_work_order: 1
       assigned_operator: 李師傅
       planned_equipment: UV 上光機 (#3)
       scheduled_date: 2026-04-05
@@ -354,7 +354,7 @@
   │
   └─ PT-04 盒身模切
       affects_product: TRUE
-      quantity_per_work_order: 2050
+      quantity_per_work_order: 1
       assigned_factory: 精裁模切有限公司
       scheduled_date: 2026-04-07
       estimated_duration_days: 3
@@ -382,7 +382,7 @@
   │
   └─ PT-05 Logo 燙金
       affects_product: TRUE
-      quantity_per_work_order: 2050
+      quantity_per_work_order: 1
       assigned_factory: 金輝燙金加工廠
       scheduled_date: 2026-04-10
       estimated_duration_days: 2
@@ -395,23 +395,23 @@
 ### 完成度計算（04/03 時間切面）
 
 ```
-工單 W-01（印刷+上光）：
-  PT-01: floor(2100 / 2100) = 1
-  PT-02: floor(0 / 2100)    = 0  ← 尚未 QC
-  PT-03: floor(0 / 2100)    = 0  ← 尚未開工
-  任務 T1 = min(1, 0, 0)    = 0  ← 齊套性：三道工序都要完成
-  工單完成數 = 0
+工單 W-01（印刷+上光，targetQty=2100）：
+  PT-01: floor(2100 / 1) = 2100  ← 倍率=1，已完成 2100 工單單位
+  PT-02: floor(0 / 1)    = 0     ← 尚未 QC
+  PT-03: floor(0 / 1)    = 0     ← 尚未開工
+  任務 T1 = min(2100, 0, 0) = 0  ← 齊套性：三道工序都要完成
+  工單完成數 = 0 / 2100（0%）
 
-工單 W-02（模切）：
-  PT-04: floor(0 / 2050)    = 0
-  工單完成數 = 0
+工單 W-02（模切，targetQty=2050）：
+  PT-04: floor(0 / 1)    = 0
+  工單完成數 = 0 / 2050（0%）
 
-工單 W-03（燙金）：
-  PT-05: floor(0 / 2050)    = 0
-  工單完成數 = 0
+工單 W-03（燙金，targetQty=2050）：
+  PT-05: floor(0 / 1)    = 0
+  工單完成數 = 0 / 2050（0%）
 
 印件 B 完成數：
-  min(W-01=0/1, W-02=0/1, W-03=0/1) = 0
+  min(W-01=0/2100, W-02=0/2050, W-03=0/2050) = 0
   → 0 / 2000（0%）
 ```
 
@@ -444,7 +444,7 @@
   │
   ├─ PT-06 四色印刷
   │   affects_product: TRUE
-  │   quantity_per_work_order: 2100
+  │   quantity_per_work_order: 1
   │   assigned_operator: 王師傅
   │   planned_equipment: 小森 GL40 (#2)
   │   actual_equipment: 小森 GL40 (#2)
@@ -458,7 +458,7 @@
   │
   └─ PT-07 壓紋加工
       affects_product: TRUE
-      quantity_per_work_order: 2100
+      quantity_per_work_order: 1
       assigned_operator: 李師傅
       planned_equipment: 壓紋機 (#5)
       actual_equipment: 壓紋機 (#5)
@@ -508,7 +508,7 @@ PT-07: floor(0 / 2100)    = 0
   │
   ├─ PT-08 雙色印刷
   │   affects_product: TRUE
-  │   quantity_per_work_order: 2100
+  │   quantity_per_work_order: 1
   │   assigned_operator: （待指派）
   │   planned_equipment: （待排程）
   │   status: 待處理
@@ -516,7 +516,7 @@ PT-07: floor(0 / 2100)    = 0
   │
   └─ PT-09 裁切
       affects_product: TRUE
-      quantity_per_work_order: 2050
+      quantity_per_work_order: 1
       assigned_operator: （待指派）
       planned_equipment: （待排程）
       status: 待處理
@@ -552,7 +552,7 @@ PT-07: floor(0 / 2100)    = 0
   │
   └─ PT-10 彩色數位印刷
       affects_product: TRUE
-      quantity_per_work_order: 2100
+      quantity_per_work_order: 1
       assigned_operator: （待指派）
       planned_equipment: （待排程）
       status: 待處理
@@ -585,7 +585,7 @@ PT-02 維持「製作中」，師傅繼續報工，QC 建新紀錄累計。
 | qc_passed_qty | 2100 | QC 通過累計（1800 + 300） |
 | qc_failed_qty | 300 | QC 不良累計 |
 | 良率 | 87.5% | = 2100 / 2400 |
-| 齊套性 ratio | 1 | = floor(2100 / 2100) |
+| 齊套性（工單單位數） | 2100 | = floor(2100 / 1)，倍率=1 |
 
 ### QC 紀錄
 
