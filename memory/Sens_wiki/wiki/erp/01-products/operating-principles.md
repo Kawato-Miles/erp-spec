@@ -4,8 +4,9 @@ module:
   - cross-module
 business-domain:
   - cross-domain
-status: active
-last-reviewed: 2026-05-31
+status: deprecated
+last-reviewed: 2026-06-09
+deprecation-note: 2 條原則已轉為 B 類規則卡（04-business-logic/現金流出把關.md、04-business-logic/發票收款彈性.md）
 source:
   - 2026-05-30 確定第一條、2026-05-31 加入第二條
   - 台灣印刷業實務慣例
