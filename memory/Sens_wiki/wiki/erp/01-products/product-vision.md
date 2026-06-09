@@ -5,7 +5,7 @@ module:
 related-spec: openspec/config.yaml
 related-notion: https://www.notion.so/32c3886511fa81359354e33087d23f23
 status: active
-last-reviewed: 2026-05-19
+last-reviewed: 2026-06-09
 ---
 
 # ERP 產品願景
@@ -30,16 +30,17 @@ last-reviewed: 2026-05-19
 
 ## 階段範疇
 
-詳見 [[phases]]，三大 Phase：
-- **Phase 1**：EC 規格品 BOM 建立（商品資料基礎）
-- **Phase 2**：訂單流程完整移轉（取代 Ragic + Slack + 紙本）
-- **Phase 3**：生產效率優化分析
+詳見 [[phases]]：
+- **Phase 1**：商品 BOM 表建立，讓後續 MES 工單可基於 BOM 建立（進行中）
+- **Phase 2**：線下單全流程走通，取代 Ragic + Slack + 紙本（進行中）
+- **Phase 3**：EC 訂單整合進 ERP（未開始）
+- **未來 Phase**：Dashboard、管理指標等（先跑流程再規劃）
 
 ## 成功指標
 
 詳見 [[success-metrics]]，北極星指標：
 - **Phase 1**：EC 規格品 BOM 覆蓋率 ≥ 80%
-- **Phase 2/3**：訂單流程完整完成率（Phase 2 第 1 個月 ≥ 60%，第 3 個月 ≥ 80%）
+- **Phase 2/3**：訂單流程完整完成率（上線後第 1 個月 ≥ 60%，第 3 個月 ≥ 80%）
 
 ## 利害關係人
 
