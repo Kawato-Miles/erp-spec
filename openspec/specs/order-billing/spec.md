@@ -92,20 +92,20 @@
 
 **規則判斷在後端**：業務不需自行判斷跨齊報稅期，系統依第三方發票平台實際回應引導正確流程。
 
-##### Scenario: 業務作廢統編打錯的發票
+#### Scenario: 業務作廢統編打錯的發票
 
 - **GIVEN** 業務開立 Invoice 時誤填客戶統編
 - **WHEN** 業務於發票清單點擊「作廢」並填入原因「統編錯誤」
 - **THEN** 系統 SHALL 更新 Invoice.status = 作廢、invalid_reason、invalid_at、invalid_by
 - **AND** 系統 MUST 在訂單活動紀錄記載作廢
 
-##### Scenario: 業務作廢後重新開立新發票
+#### Scenario: 業務作廢後重新開立新發票
 
 - **GIVEN** Invoice #1 已作廢（ezpay_merchant_order_no = O-25050601-INV-01）
 - **WHEN** 業務開立新 Invoice
 - **THEN** 系統 SHALL 產生新 ezpay_merchant_order_no = O-25050601-INV-02（流水 +1，不重用）
 
-##### Scenario: 作廢未跨齊報稅期成功
+#### Scenario: 作廢未跨齊報稅期成功
 
 - **GIVEN** 訂單已開立發票，發票未跨齊報稅期
 - **WHEN** 業務於發票詳情點擊「作廢」並填寫作廢原因
@@ -114,7 +114,7 @@
 - **AND** 發票狀態 SHALL 變「作廢」
 - **AND** 系統 MUST 記錄作廢時間 / 原因 / 操作者
 
-##### Scenario: 作廢跨齊報稅期失敗引導折讓
+#### Scenario: 作廢跨齊報稅期失敗引導折讓
 
 - **GIVEN** 訂單已開立發票，發票已跨齊報稅期
 - **WHEN** 業務於發票詳情點擊「作廢」並填寫作廢原因
@@ -123,7 +123,7 @@
 - **AND** UI MUST 顯示錯誤訊息「此發票已跨齊報稅期無法作廢，請改開折讓單」
 - **AND** 業務 SHALL 改點「折讓」按鈕走折讓流程
 
-##### Scenario: 開立折讓單關聯既有發票
+#### Scenario: 開立折讓單關聯既有發票
 
 - **GIVEN** 訂單已開立發票（金額 1000）
 - **WHEN** 業務點擊「折讓」並填寫折讓金額 -300
@@ -388,7 +388,7 @@ remaining = invoice.total_amount - folded
 
 ### Requirement: 諮詢訂單帳務處理（發票 / 期次 / 對帳）
 
-#### 發票時間點規則
+**發票時間點規則**
 
 諮詢訂單（`order_type = 諮詢`）的 Invoice **MUST NOT 由系統自動開立**。發票開立依情境分流：不做大貨 / 需求單流失情境由系統自動建待開發票（BillingInstallment）提醒、諮詢人員手動一鍵開立 Invoice（見下方 § 收尾自動建請款期次）；諮詢取消情境系統 MUST NOT 自動建待開發票，留存 1000 收入由業務手動開立 Invoice、未開票由對帳差額警示兜底（見 § Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單）。
 
@@ -396,7 +396,7 @@ remaining = invoice.total_amount - folded
 - `issue_now` 與 `defer_to_main_order` 兩值在任何諮詢訂單收尾情境（不做大貨 / 需求單流失 / 諮詢取消）下，系統 MUST NOT 自動觸發 Invoice 開立
 - `consultation_invoice_option` 欄位保留於 ConsultationRequest 實體作為「客戶意向參考」純展示（不再驅動系統行為）
 
-##### Scenario: 諮詢訂單建立時不自動開立 Invoice（任一 invoice_option）
+#### Scenario: 諮詢訂單建立時不自動開立 Invoice（任一 invoice_option）
 
 - **GIVEN** ConsultationRequest `consultation_invoice_option` ∈ {`issue_now`, `defer_to_main_order`}（任一值）
 - **AND** 諮詢訂單因不做大貨 / 需求單流失情境建立
@@ -406,7 +406,7 @@ remaining = invoice.total_amount - folded
 - **AND** 諮詢人員 SHALL 後續手動將待開發票轉為實際 Invoice（金額由諮詢人員依客戶需求決定）
 - **AND** 諮詢取消情境系統 MUST NOT 自動開立 Invoice 亦 MUST NOT 自動建待開發票（見 § Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單）
 
-#### 收尾自動建請款期次
+**收尾自動建請款期次**
 
 當諮詢訂單於不做大貨 / 需求單流失兩收尾情境任一建立時，系統 SHALL 自動建立 BillingInstallment 1 筆作為「待開發票提醒」，讓諮詢人員於待開票期次列表看到待辦並手動一鍵開立為實際 Invoice。諮詢取消情境系統 MUST NOT 自動建待開發票（見下方「諮詢取消情境例外」）。各情境機制單一正本見 [consultation-request spec](../consultation-request/spec.md) § 諮詢結束不做大貨情境自動建請款期次 / § 需求單流失情境自動建請款期次 / § 諮詢取消半額退費自動建請款期次。
 
@@ -425,26 +425,26 @@ remaining = invoice.total_amount - folded
 
 **共同欄位**：所有自動建立的 BillingInstallment SHALL 設定 `invoicing_status = 未開立`、`created_by = system`、`linked_invoice_id = NULL`。
 
-##### Scenario: 諮詢結束不做大貨自動建 BillingInstallment
+#### Scenario: 諮詢結束不做大貨自動建 BillingInstallment
 
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢、`consultant_id` 非空
 - **WHEN** 諮詢人員點擊「完成諮詢（不做大貨）」、系統建立諮詢訂單
 - **THEN** 系統 SHALL 自動建立 BillingInstallment（order_id = 諮詢訂單 ID、scheduled_amount = 2000、description = 「諮詢費」、due_date / scheduled_issue_date = 完成諮詢時點當天、source_type = consultation_end_no_production、invoicing_status = 未開立、created_by = system、linked_invoice_id = NULL）
 
-##### Scenario: 諮詢來源需求單流失自動建 BillingInstallment
+#### Scenario: 諮詢來源需求單流失自動建 BillingInstallment
 
 - **GIVEN** ConsultationRequest 狀態 = 已轉需求單、對應需求單流失
 - **WHEN** 系統處理需求單流失事件、建立諮詢訂單
 - **THEN** 系統 SHALL 自動建立 BillingInstallment（order_id = 諮詢訂單 ID、scheduled_amount = 2000、description = 「諮詢費」、due_date / scheduled_issue_date = 流失時點當天、source_type = quote_lost、invoicing_status = 未開立、created_by = system、linked_invoice_id = NULL）
 
-##### Scenario: 諮詢取消不自動建待開發票
+#### Scenario: 諮詢取消不自動建待開發票
 
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢
 - **WHEN** 諮詢人員 / 業務主管於取消 dialog 確認取消、系統建立諮詢訂單 + OA + 退款 Payment
 - **THEN** 系統 MUST NOT 自動建立待開發票（BillingInstallment）（留存 1000 收入由業務手動開立 Invoice）
 - **AND** 未開票由對帳差額警示兜底（應收 1000 > 發票淨額 0，見 § Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單）
 
-##### Scenario: 自動建立的 BillingInstallment 出現在待開票期次待辦列表
+#### Scenario: 自動建立的 BillingInstallment 出現在待開票期次待辦列表
 
 - **GIVEN** 諮詢訂單收尾自動建立 BillingInstallment、invoicing_status = 未開立
 - **WHEN** 諮詢人員開啟待開票期次列表頁
@@ -452,7 +452,7 @@ remaining = invoice.total_amount - folded
 - **AND** 列表 SHALL 顯示「今天到期」狀態（依 scheduled_issue_date 推導）以提示諮詢人員優先處理
 - **AND** 諮詢人員 SHALL 可點擊進入諮詢訂單詳情頁一鍵開立 Invoice
 
-##### Scenario: 諮詢人員手動一鍵開立 BillingInstallment 為 Invoice
+#### Scenario: 諮詢人員手動一鍵開立 BillingInstallment 為 Invoice
 
 - **GIVEN** BillingInstallment(scheduled_amount = 2000、description = 「諮詢費」、invoicing_status = 未開立)（不做大貨 / 需求單流失情境自動建）
 - **WHEN** 諮詢人員於諮詢訂單詳情頁發票區點「一鍵開立」並確認金額
@@ -460,14 +460,14 @@ remaining = invoice.total_amount - folded
 - **AND** 系統 SHALL 將 BillingInstallment.invoicing_status 改為「已開立」、linked_invoice_id 寫入新建 Invoice ID
 - **AND** BillingInstallment 從待開票期次待辦列表移除
 
-##### Scenario: 諮詢結束做大貨需求單成交主訂單不自動建諮詢費 BillingInstallment
+#### Scenario: 諮詢結束做大貨需求單成交主訂單不自動建諮詢費 BillingInstallment
 
 - **GIVEN** ConsultationRequest 諮詢結束選做大貨、需求單成交業務轉訂單
 - **WHEN** 系統建立主訂單與 OEC、轉移 Payment
 - **THEN** 系統 MUST NOT 自動於主訂單建立 BillingInstallment
 - **AND** 業務 SHALL 於主訂單既有發票時程規劃流程自行加入諮詢費 BillingInstallment
 
-#### 諮詢取消對帳
+**諮詢取消對帳**
 
 諮詢取消（待諮詢狀態半額退費）情境下，諮詢訂單三方對帳檢視面板 MUST 識別此特殊情境並依新公式計算與標示。
 
@@ -482,14 +482,14 @@ remaining = invoice.total_amount - folded
 - 退款 Payment 已完成（OA 已推進已執行）且發票淨額 = 1000：標示「對帳通過 - 退費完成」
 - 退款 Payment 已完成（OA 已推進已執行）且發票淨額 ≠ 1000：標示「待對帳 - 發票金額需確認」、差額由既有對帳警示 banner 提示業務 / 諮詢人員處理
 
-##### Scenario: 諮詢取消退費完成對帳通過
+#### Scenario: 諮詢取消退費完成對帳通過
 
 - **GIVEN** 諮詢訂單 OEC(consultation_fee, 2000) + OA(諮詢取消退費, -1000, 已執行) + Payment(+2000, 已完成) + Payment(-1000, 已完成) + Invoice(1000, 已開立)
 - **WHEN** 業務 / 會計開啟對帳檢視面板
 - **THEN** 應收總額 SHALL = 1000、收款淨額 SHALL = 1000、發票淨額 SHALL = 1000、差額 SHALL = 0
 - **AND** 面板 SHALL 標示「對帳通過 - 退費完成」
 
-##### Scenario: 諮詢取消退費處理中
+#### Scenario: 諮詢取消退費處理中
 
 - **GIVEN** 諮詢訂單 OEC(consultation_fee, 2000) + OA(諮詢取消退費, -1000, 已核可) + Payment(+2000, 已完成) + Payment(-1000, 處理中)
 - **WHEN** 業務 / 會計開啟對帳檢視面板
@@ -497,7 +497,7 @@ remaining = invoice.total_amount - folded
 - **AND** 應收總額 SHALL = 1000（已核可 OA 即時計入應收）
 - **AND** 對帳面板 SHALL 標示「退費處理中」並顯示「另含處理中退款 1000 元」
 
-##### Scenario: 諮詢取消後發票金額不符提示
+#### Scenario: 諮詢取消後發票金額不符提示
 
 - **GIVEN** 諮詢訂單 OEC(consultation_fee, 2000) + OA(-1000, 已執行) + Payment(+2000) + Payment(-1000, 已完成) + Invoice(2000, 已開立，諮詢人員誤開全額)
 - **WHEN** 業務 / 會計開啟對帳檢視面板
@@ -768,14 +768,6 @@ Migration SHALL 為冪等：重複執行不會改變已 backfill 的資料。
 - **THEN** P-old2.paymentStatus SHALL 被 backfill 為 '已完成'
 - **AND** 對帳收款淨額計算結果 SHALL 與本 change 上線前一致（向後相容）
 
-### Requirement: 一般收款列表編輯入口
-
-OrderPaymentSection 收款紀錄列表每筆 row 操作欄 SHALL 有「編輯」按鈕，開啟 PaymentEditDialog（共用 PaymentEditPanel）。阻擋規則：已完成 → 處理中反向不通過，需走取消重建。UI 呈現見 DESIGN.md §10.1.8。
-
-### Requirement: 退款 Payment 切已完成顯示銷貨折讓弱提示（二者並存）
-
-退款 Payment 切已完成後，系統 SHALL 顯示非阻擋式弱提示引導開立 SalesAllowance。提示位置：PaymentEditDialog inline banner + 訂單詳情頁 sticky 提示。UI 呈現見 DESIGN.md §10.1.9。
-
 ### Requirement: 處理中 Payment 老化追蹤
 
 Payment 滿足以下條件時系統 SHALL 視為「老化處理中 Payment」：
@@ -1031,11 +1023,11 @@ Invoice.items 陣列 SHALL 對齊 ezPay 電子發票 API（[EZP_INVI_1.2.2](../.
 
 ### Requirement: 請款期次（BillingInstallment）行為規則
 
-#### 期次↔發票 1:1 嚴格約束 + 一鍵開票繼承
+**期次↔發票 1:1 嚴格約束 + 一鍵開票繼承**
 
 每張 Invoice MUST 透過 `source_billing_installment_id` NOT NULL UNIQUE FK 指向唯一一筆 BillingInstallment。業務在 BillingInstallment「一鍵開票」時，系統 SHALL 建立 Invoice 並從來源期次自動繼承品項、應收日、備註；Invoice.source_billing_installment_id 寫入該期次 id、BillingInstallment.linked_invoice_id 寫入新 Invoice id、BillingInstallment.invoicing_status 推進為「已開立」。原 v1.13「業務從 PlannedInvoice 一鍵開立」入口廢止，取代為「從 BillingInstallment 一鍵開立」。
 
-##### Scenario: 業務從期次一鍵開立發票繼承品項
+#### Scenario: 業務從期次一鍵開立發票繼承品項
 
 - **GIVEN** BillingInstallment BI-001（scheduled_amount=30000, expected_invoice_date=2026-05-15, items=[訂金品項], invoicing_status=未開立）
 - **WHEN** 業務點 BI-001「一鍵開立發票」
@@ -1043,17 +1035,17 @@ Invoice.items 陣列 SHALL 對齊 ezPay 電子發票 API（[EZP_INVI_1.2.2](../.
 - **AND** 系統 SHALL 寫入 BI-001.linked_invoice_id = INV-001.id、BI-001.invoicing_status = 已開立
 - **AND** 業務 MAY 在開立 dialog 內微調品項（不影響 BI-001.items，深拷貝原則沿用 v1.13）
 
-##### Scenario: 期次↔發票 1:1 約束阻擋重複開票
+#### Scenario: 期次↔發票 1:1 約束阻擋重複開票
 
 - **GIVEN** BillingInstallment BI-002.invoicing_status = 已開立、linked_invoice_id = INV-002
 - **WHEN** 業務再次點 BI-002「一鍵開立發票」
 - **THEN** 系統 SHALL 隱藏「一鍵開立」按鈕（按鈕只在 invoicing_status = 未開立 / 已作廢 顯示）
 
-#### 拆票 = 拆期（產生獨立平輩期次 + 純追溯欄位）
+**拆票 = 拆期（產生獨立平輩期次 + 純追溯欄位）**
 
 業務於 BillingInstallment 列表編輯動作或開立發票 Dialog 內按「拆此期」捷徑時，系統 SHALL 將原期次拆為兩個獨立平輩期次。原期次設 cancelled = true 保留稽核軌跡（不物理刪除）；兩筆新期次各自獨立 query / aggregation（無父子 hierarchical FK），但**保留** `split_from_installment_id` 純追溯欄位指向原期次 id 用於 CSV 諮詢取消半額退費 lineage 稽核與 source_type 繼承。新期次 source_type 繼承原期次（manual / consultation_cancellation 等），note 自動帶「原一期拆兩期，源期次描述：「{原 description}」」前綴。
 
-##### Scenario: 業務在規劃階段拆票（一期 78000 拆兩張票各 2500 + 75500）
+#### Scenario: 業務在規劃階段拆票（一期 78000 拆兩張票各 2500 + 75500）
 
 - **GIVEN** BillingInstallment BI-010（installment_no=1, scheduled_amount=78000, source_type=manual, invoicing_status=未開立）
 - **WHEN** 業務於期次列表點 BI-010「拆此期」，輸入拆分規格（期A 2500 / 期B 75500，各自 due_date 業務填）
@@ -1061,18 +1053,18 @@ Invoice.items 陣列 SHALL 對齊 ezPay 電子發票 API（[EZP_INVI_1.2.2](../.
 - **AND** 系統 SHALL 設定 BI-010.cancelled = true、cancel_reason = 「拆兩期」（保留稽核，UI 預設隱藏可切換顯示）
 - **AND** 兩筆新期次 change_count 從 0 起算（拆期事件本身寫入 OrderActivityLog SPLIT 事件作為稽核依據，不計入 change_count）
 
-##### Scenario: 業務在開票 Dialog 內動態拆票
+#### Scenario: 業務在開票 Dialog 內動態拆票
 
 - **GIVEN** 業務在 BI-011「一鍵開立發票」Dialog 內、客戶臨時要求拆兩張票
 - **WHEN** 業務於 Dialog 內按「拆此期」捷徑、輸入兩期金額與日期
 - **THEN** 系統 SHALL 執行同「規劃階段拆票」邏輯（產生 BI-011-A + BI-011-B、原期次 cancelled = true）
 - **AND** Dialog SHALL 切換至「選擇對哪筆新期次開票」step、業務選定後完成開票（單一 Dialog 流程內完成拆 + 開）
 
-#### 期次變更稽核軌跡（原始日期凍結基準 + 變更歷史 + 變更次數）
+**期次變更稽核軌跡（原始日期凍結基準 + 變更歷史 + 變更次數）**
 
 每筆 BillingInstallment SHALL 凍結 `original_due_date` 與 `original_expected_invoice_date` 兩個基準欄位（於期次首次儲存當下凍結，之後變更不影響）。每次 due_date / expected_invoice_date 變更 SHALL 寫入 OrderActivityLog 對應事件型別（DUE_DATE_CHANGED / EXPECTED_DATE_CHANGED）含 old_value / new_value / operator / timestamp。`change_count` derived field 統計該期次 due_date + expected_invoice_date 兩欄位變更累計次數（拆期事件不計入）。UI 顯示「原始 vs 現況」對照 + 變更次數，作為業務操作穩定性的事後稽核依據（沿用顧問 §1 + CEO 指標 4）。
 
-##### Scenario: 業務修改期次預計開票日寫入變更歷史
+#### Scenario: 業務修改期次預計開票日寫入變更歷史
 
 - **GIVEN** BillingInstallment BI-020（original_due_date=2026-06-01, due_date=2026-06-01, original_expected_invoice_date=2026-05-15, expected_invoice_date=2026-05-15, change_count=0）
 - **WHEN** 業務修改 BI-020.expected_invoice_date 從 2026-05-15 改為 2026-05-20
@@ -1081,7 +1073,7 @@ Invoice.items 陣列 SHALL 對齊 ezPay 電子發票 API（[EZP_INVI_1.2.2](../.
 - **AND** BI-020.original_expected_invoice_date SHALL 維持 2026-05-15（凍結基準不變）
 - **AND** UI 顯示「原始預計開立日：2026-05-15 ｜ 現況：2026-05-20（業務於 [日期] 調整）｜ 本期變更次數 1」
 
-#### 期次雙維度狀態（開票維度 + 收款維度獨立）
+**期次雙維度狀態（開票維度 + 收款維度獨立）**
 
 BillingInstallment SHALL 維護兩個獨立狀態維度：
 - **開票維度（invoicing_status）**：`未開立` → `已開立`（業務一鍵開票觸發）；`已開立` → `已作廢`（Invoice 作廢觸發，linked_invoice_id 設 NULL，可重新開票）
@@ -1092,7 +1084,7 @@ BillingInstallment SHALL 維護兩個獨立狀態維度：
 
 兩維度完全獨立，支援「先收後開」（收款維度先到已收訖、開票維度仍未開立）與「先開後收」（開票維度先到已開立、收款維度仍未收）情境。
 
-##### Scenario: 先收後開情境 — 業務先收訂金 30000 後再開票
+#### Scenario: 先收後開情境 — 業務先收訂金 30000 後再開票
 
 - **GIVEN** BillingInstallment BI-030（scheduled_amount=30000, invoicing_status=未開立, payment_status=未收）
 - **WHEN** 業務登錄 Payment 30000、於入帳明細手動勾選 BI-030 填 30000（PaymentAllocation.allocated_amount=30000、auto_allocated=false）、業務切 Payment 為已完成
@@ -1101,7 +1093,7 @@ BillingInstallment SHALL 維護兩個獨立狀態維度：
 - **WHEN** 業務於 BI-030 點「一鍵開立發票」
 - **THEN** BI-030.invoicing_status SHALL = 已開立（兩維度均推進完成）
 
-##### Scenario: 發票作廢後期次回未開立可重新開票
+#### Scenario: 發票作廢後期次回未開立可重新開票
 
 - **GIVEN** BI-031.invoicing_status = 已開立、linked_invoice_id = INV-031
 - **WHEN** 業務於 Invoice 詳情頁作廢 INV-031（填入作廢原因）
@@ -1147,7 +1139,7 @@ PaymentAllocation 的 auto_allocated / manually_overridden 欄位於業務手動
 
 ### Requirement: 補收 OA 規則（免審 + 大額監督）
 
-#### 免審直達已執行
+**免審直達已執行**
 
 系統 SHALL 依 amount 正負與 adjustment_type 自動判定 OA 是否需業務主管審核：補收正項 OA（amount > 0 且 adjustment_type ∈ 五項補收 type）SHALL 跳過「待主管審核」與「已核可」中間態直達「已執行」狀態（approved_by = 業務 user_id、executed_at = now、應收 +N 立即認列）。
 
@@ -1160,7 +1152,7 @@ OrderAdjustment `requires_supervisor_approval` derived field：
 
 補收 OA 主要適用訂單完成後對客戶加收（完成前增項走明細直接改、不建 OA）。
 
-##### Scenario: 業務建立加印追加補收 OA 立即執行（訂單完成後）
+#### Scenario: 業務建立加印追加補收 OA 立即執行（訂單完成後）
 
 - **GIVEN** 訂單已完成、客戶要求補印 +8000（客戶承擔）
 - **WHEN** 業務於 AfterSalesTicket 內建立 OA-060（amount=+8000, adjustment_type=加印追加）並點「儲存並執行」
@@ -1168,14 +1160,14 @@ OrderAdjustment `requires_supervisor_approval` derived field：
 - **AND** 應收 SHALL 立即 +8000
 - **AND** 對帳面板 SHALL 顯示「應收 > 期次規劃」差額、引導業務建 / 併期次
 
-#### 大額閾值監督
+**大額閾值監督**
 
 當補收 OA 建立時，若 amount > 大額閾值（建議起始 50000，實際值待 OQ-BI-4 Miles 拍板）SHALL 觸發以下事後監督：
 - OrderActivityLog 寫入紅色標記事件（high_amount_supplementary_charge）
 - Slack 自動通知該訂單業務主管「業務 [name] 建立大額補收 OA +N 元於訂單 [order_no]」
 - 業務主管 MAY 事後審查、發現異常時與業務溝通修正（不阻擋業務操作）
 
-##### Scenario: 業務建立超閾值補收 OA 觸發 Slack 通知
+#### Scenario: 業務建立超閾值補收 OA 觸發 Slack 通知
 
 - **GIVEN** 大額閾值設為 50000（系統設定值）
 - **WHEN** 業務建立 OA-061（amount=+60000, adjustment_type=規格變更）並執行
@@ -1291,7 +1283,7 @@ OrderAdjustment `requires_supervisor_approval` derived field：
 
 閾值為起始建議值，SHALL 標「上線前 / 累積實務數據後校準」，prototype 階段不當硬規則。
 
-#### KPI 總表
+**KPI 總表**
 
 | KPI | 定義 | 公式（as-built 實體）| 看的人 / 管理場景 | 健康 / 警示（暫定）| 詳細定義位置 |
 |-----|------|---------------------|------------------|-------------------|---------|
@@ -1317,7 +1309,7 @@ OrderAdjustment `requires_supervisor_approval` derived field：
 - **WHEN** 入帳機制改為業務手動（無系統自動預設值可供覆寫）
 - **THEN** 「業務手動覆寫率」SHALL 移除（無可覆寫的自動值、且非營運管理 KPI）
 
-#### 收款變更率詳細定義
+**收款變更率詳細定義**
 
 系統 SHALL 統計每張訂單的「收款變更率」derived 指標（營運管理 KPI——業務主管管理組員操作穩定性用），用於業務主管月會檢視業務對訂單款項操作的整體穩定性。
 - **公式**：每張訂單 = sum(該訂單期次與入帳相關修改事件次數)；業務層級彙總 = 該業務訂單的平均每訂單修改次數（不再除以 Payment 數——Payment 數無營運管理意義）
@@ -1331,7 +1323,7 @@ OrderAdjustment `requires_supervisor_approval` derived field：
 - **THEN** 該訂單修改次數 = 5；業務層級彙總 = 該業務所有訂單修改次數平均
 - **AND** 健康範圍待累積實務數據後校準（暫不設警示閾值）
 
-#### 諮詢退款 OA 排除規則
+**諮詢退款 OA 排除規則**
 
 收款變更率指標分子（修改事件：DUE_DATE_CHANGED / EXPECTED_DATE_CHANGED / SPLIT / CANCELLED / PAYMENT_ALLOCATION_SET）SHALL NOT 含任何 OrderAdjustment 事件。故諮詢取消退費 OA（系統內生）及其金額調整天然不計入收款變更率分子，**無需新增排除規則**（公式本就不含 OA 事件，CEO「排除諮詢退款 OA」需求為 no-op）。
 
@@ -1343,7 +1335,7 @@ OrderAdjustment `requires_supervisor_approval` derived field：
 - **WHEN** 系統計算該訂單收款變更率
 - **THEN** 諮詢退款 OA 的建立與金額調整 MUST NOT 計入收款變更率分子（分子僅含 6 種 BillingInstallment / PaymentAllocation 修改事件）
 
-#### 收款逾期天數（overdue_days）
+**收款逾期天數（overdue_days）**
 
 overdue_days 欄位定義見 § 應收帳款帳齡底層欄位與訂單列表帳齡篩選。
 
@@ -1391,18 +1383,6 @@ v1.13 既有 Payment Requirement 主體沿用，但 `paymentPlanId` 欄位 **REM
 - **WHEN** 業務建立 Payment
 - **THEN** Payment 紀錄 MUST NOT 包含 paymentPlanId 欄位
 - **AND** 對應期次清單 SHALL 透過 PaymentAllocation 表查詢推導
-
-### Requirement: 發票 Tab 雙層展開（發票列表 + 折讓單子層）
-
-發票 Tab 的發票列表 SHALL 採雙層展開：父層 8 欄（發票）、子層 5 欄（折讓單）。發票級操作集中於父層操作欄。UI 呈現見 DESIGN.md §10.1.11。
-
-### Requirement: 發票詳情 Side Panel（InvoiceDetailSidePanel）
-
-發票「檢視」按鈕 SHALL 開啟發票詳情 Side Panel（唯讀 / 800px），含發票資訊 / 買受人 / 品項明細 / 對應收款四區塊。UI 呈現見 DESIGN.md §10.1.12。
-
-### Requirement: 發票開立 Dialog 版型（Figma 9041:297881 對齊）
-
-發票開立 Dialog SHALL 720px 寬、固定 header/footer、表單可滾動。商品明細 SHALL 透過五欄輸入元件填寫。UI 呈現見 DESIGN.md §10.1.13。
 
 ### Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單
 
@@ -1464,7 +1444,7 @@ v1.13 既有 Payment Requirement 主體沿用，但 `paymentPlanId` 欄位 **REM
 
 ### Requirement: 退款流程三組件
 
-#### 三組件組合規則
+**三組件組合規則**
 
 實務退款場景 SHALL 由三組件組合構成完整流程，每組件對應獨立 Requirement 與 UI 動作：
 
@@ -1476,7 +1456,7 @@ v1.13 既有 Payment Requirement 主體沿用，但 `paymentPlanId` 欄位 **REM
 
 **禁止簡化**：MUST NOT 用單一動作完成三組件邏輯（例如「點退款」直接同時建立負值收款 + 折讓單）。此禁止規則確保每組件可獨立稽核且符合中華民國稅務規則。
 
-##### Scenario: 完整退款流程三組件組合
+#### Scenario: 完整退款流程三組件組合
 
 - **GIVEN** 訂單已收款 1000、開立發票 1000，客戶提出退款需求
 - **WHEN** 業務執行退款流程
@@ -1486,7 +1466,7 @@ v1.13 既有 Payment Requirement 主體沿用，但 `paymentPlanId` 欄位 **REM
 - **AND** 步驟 4：依發票是否跨齊報稅期選擇開立折讓單或作廢發票
 - **AND** 三組件完成後對帳：應收 = 0、收款淨額 = 0、發票淨額 = 0
 
-##### Scenario: 跨齊報稅期退款走折讓單
+#### Scenario: 跨齊報稅期退款走折讓單
 
 - **GIVEN** 退款場景發票已跨齊報稅期
 - **WHEN** 業務完成訂單異動單核可 + 負值收款紀錄
@@ -1494,7 +1474,7 @@ v1.13 既有 Payment Requirement 主體沿用，但 `paymentPlanId` 欄位 **REM
 - **AND** 折讓金額 SHALL 為 -1000 等於退款金額
 - **AND** 折讓單 SHALL 關聯負值收款紀錄
 
-##### Scenario: 未跨齊報稅期退款走作廢
+#### Scenario: 未跨齊報稅期退款走作廢
 
 - **GIVEN** 退款場景發票未跨齊報稅期
 - **WHEN** 業務完成訂單異動單核可 + 負值收款紀錄
@@ -1502,7 +1482,7 @@ v1.13 既有 Payment Requirement 主體沿用，但 `paymentPlanId` 欄位 **REM
 - **AND** 業務 SHALL 重新開立金額為 0 或調整後金額的新發票
 - **AND** 原發票流水號 MUST NOT 重用，新發票流水號自動 +1
 
-#### 進度展示
+**進度展示**
 
 訂單詳情頁付款管理 Tab SHALL 顯示「主訂單退款進度區」，當訂單存在處於「進行中」狀態的退款動作時（即有訂單異動單 type = 退款且狀態為「待主管審核」/「已核可未執行」/「已執行未完成發票異動」）顯示三組件完成狀態提示區，含每組件的：
 - 完成狀態（已完成 / 進行中 / 未開始）
@@ -1511,7 +1491,7 @@ v1.13 既有 Payment Requirement 主體沿用，但 `paymentPlanId` 欄位 **REM
 
 此展示協助業務 / 諮詢於主訂單退款場景追蹤進度，避免漏做任一組件（與 after-sales-ticket spec § 售後服務單三組件進度展示 為相同設計範式，但展示位置在訂單詳情頁付款管理 Tab）。
 
-##### Scenario: 主訂單退款進行中顯示三組件進度
+#### Scenario: 主訂單退款進行中顯示三組件進度
 
 - **GIVEN** 訂單已建立退款訂單異動單（type = 退款）且狀態為「已核可未執行」
 - **AND** 尚未建立負值收款紀錄、尚未處理發票異動
@@ -1521,248 +1501,32 @@ v1.13 既有 Payment Requirement 主體沿用，但 `paymentPlanId` 欄位 **REM
   - 退款收款紀錄：未開始
   - 發票異動：未開始
 
-##### Scenario: 三組件全完成隱藏進度區
+#### Scenario: 三組件全完成隱藏進度區
 
 - **GIVEN** 訂單退款三組件全部完成（訂單異動單已執行、負值收款紀錄已建立、發票異動已完成）
 - **WHEN** 業務開啟訂單詳情頁付款管理 Tab
 - **THEN** 退款進度區 MUST 隱藏或顯示「已完成」摺疊狀態
 - **AND** 退款紀錄 MUST 仍可於收款紀錄列表 / 發票列表 / 訂單異動列表查閱
 
-### Requirement: 付款計畫變更分階段稽核 — 已廢止
-
-> 付款計畫（PaymentPlan）已由 BillingInstallment 取代。分階段稽核邏輯見 § Requirement: 請款期次行為規則 › 期次變更稽核軌跡。
-
 ---
 ## Data Model
 
-> 帳務實體。訂單核心實體（Order / OrderItem / PrintItem / OrderExtraCharge 等）見 [order-management/spec.md § Data Model](../order-management/spec.md#data-model)。
+> **欄位正本已遷移至 wiki 實體卡**。本段僅保留實體關聯總覽。
+>
+> - 帳務欄位正本：[wiki 帳務實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/帳務.md) § 欄位（業務可見）
+> - 訂單核心欄位：[wiki 訂單實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/訂單.md)
+> - Prototype 型別定義：`sens-erp-prototype/src/types/order.ts`
 
-### 實體關聯圖（ERD）
+### 實體關聯總覽
 
-> 帳務子圖：Invoice / SalesAllowance / Payment / BillingInstallment / PaymentAllocation 及子表。與訂單核心的邊界 FK 見 [order-management ERD](../order-management/spec.md#實體關聯圖erd)。
+帳務領域的實體關係（業務語言）：
 
-```mermaid
-erDiagram
-    Order ||--o{ Invoice : "開立發票"
-    Invoice ||--o{ InvoiceItem : "品項(items[])"
-    Invoice ||--o{ SalesAllowance : "折讓"
-    SalesAllowance ||--o{ SalesAllowanceFile : "回簽附件"
-
-    Order ||--o{ BillingInstallment : "請款期次"
-    BillingInstallment |o--o| Invoice : "1:1 linked_invoice_id"
-    BillingInstallment }o--o| BillingInstallment : "split_from(拆期)"
-
-    Order ||--o{ Payment : "收款紀錄"
-    Payment ||--o{ PaymentAllocation : "核銷分配"
-    BillingInstallment ||--o{ PaymentAllocation : "被核銷(可null=預收)"
-    Payment ||--o{ PaymentFile : "對帳附件"
-    Payment }o--o| OrderAdjustment : "linked_order_adjustment_id"
-
-    Order ||--o{ BillingActivityEvent : "結構化稽核事件"
-
-    BillingCompany ||--o{ Order : "帳務主體"
-    BillingCompany ||--o{ Invoice : "ezpay主體"
-```
-
-### Invoice（統一發票，藍新平台開立）
-
-> extend-order-fields-from-vendor-feedback change 首次完整定義 Data Model。
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | 主鍵 |
-| 所屬訂單 | order_id | FK | Y | Y | FK → 訂單 |
-| 帳務公司 | billing_company_id | FK | Y | Y | 自訂單繼承；對應藍新 ezpayMerchantId |
-| 發票種類 | category | 單選 | Y | | B2B / B2C |
-| 買受人名稱 | buyer_name | 字串 | Y | | |
-| 買受人統編 | buyer_ubn | 字串 | Y（B2B）| | B2B 必填、B2C 留空 |
-| 買受人地址 | buyer_address | 字串 | | | 可選填 |
-| 買受人信箱 | buyer_email | 字串 | | | 可選填 |
-| 載具類別 | carrier_type | 單選 | | | 手機條碼 / 自然人憑證 / ezPay 載具（B2C 適用）|
-| 載具編號 | carrier_num | 字串 | | | |
-| 課稅別 | tax_type | 單選 | Y | | 應稅 / 零稅率 / 免稅 |
-| 稅率 | tax_rate | 小數 | Y | Y | 依 tax_type 自動帶入 |
-| 銷售額（未稅）| sales_amount | 小數 | Y | Y | 系統自動計算 |
-| 稅額 | tax_amount | 小數 | Y | Y | 系統自動計算 |
-| 發票金額（含稅）| total_amount | 小數 | Y | | 業務可微調 |
-| 商品明細 | items | InvoiceItem[] | Y | | 結構同 § InvoiceItem；可從 BillingInstallment.items（一鍵開票繼承）或訂單印件預填，業務可編輯 |
-| 備註 | comment | 文字 | | | |
-| 狀態 | status | 單選 | Y | | 開立 / 作廢 |
-| 發票號碼 | invoice_number | 字串 | Y | Y | 藍新回傳 |
-| 作廢原因 | invalid_reason | 字串 | Y（作廢時）| | 限中文 6 字或英文 20 字 |
-| ezpay 連結 | ezpay_invoice_url | 字串 | Y（derived）| Y | 呼叫藍新 API 取得，業務從訂單詳情頁直接開啟下載 PDF |
-| 折讓累計 | folded | 小數 | Y（derived）| Y | ∑ 已確認折讓單金額絕對值，排除已作廢 |
-| 剩餘可折讓 | remaining | 小數 | Y（derived）| Y | = total_amount − folded |
-| 折讓衍生標示 | allowance_label | 單選 | Y（derived）| Y | 無折讓 / 已部分折讓 / 已完全折讓 / —|
-| 建立時間 | created_at | 日期時間 | Y | Y | |
-| 更新時間 | updated_at | 日期時間 | Y | Y | |
-
-Invoice MUST NOT 包含 `print_flag`（索取紙本）欄位。
-
-### InvoiceItem（發票品項子結構，對應 Invoice.items[]）
-
-> align-invoice-line-items-to-ezpay-spec change 新增。
-> Invoice 實體 `items` 欄位陣列元素的明文展開結構。對應藍新 EZP_INVI 1.2.2 § 4-(一)-3 PostData ItemName / ItemCount / ItemUnit / ItemPrice / ItemAmt 五欄。
-> 外部硬約束來源：[2026-05-26-miles-upload-ezpay-invoice-api-spec raw 卡](../../../memory/Sens_wiki/raw/2026-05-26-miles-upload-ezpay-invoice-api-spec.md)。
-
-| 欄位 | 英文名稱 | 對應藍新 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|---------|------|------|------|------|
-| 商品名稱 | name | ItemName | 字串 (≤ 30) | Y | | 例：彩色名片 |
-| 商品數量 | count | ItemCount | 整數 | Y | | 純整數，0 < count ≤ 99999 |
-| 商品單位 | unit | ItemUnit | 列舉 | Y | | 來自 [prototype-shared-ui § 共用單位 LOV](../prototype-shared-ui/spec.md)（11 項：張 / 本 / 冊 / 份 / 個 / 卷 / 盒 / 套 / 批 / 式 / 組）|
-| 商品單價 | unit_price | ItemPrice | 整數 | Y | | B2B 為未稅 / B2C 為含稅；純整數 |
-| 商品小計 | item_amount | ItemAmt | 整數 | Y | Y | 系統計算 = count × unit_price |
-
-**送藍新對應**：Invoice.items 陣列 N 筆品項轉成藍新 PostData 五欄字串時，以 `|` 為分隔符（例：`ItemName="商品一|商品二"` / `ItemCount="1|2"`）。
-
-### PlannedInvoice（預計發票）— 已廢止
-
-> 已由 BillingInstallment 取代。完整欄位對應見 [state-machines spec](../state-machines/spec.md) § BillingInstallment。
-
-### SalesAllowanceFile（折讓單回簽附件）
-
-> extend-order-fields-from-vendor-feedback change 新增。
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | 主鍵 |
-| 所屬折讓單 | sales_allowance_id | FK | Y | Y | FK → SalesAllowance |
-| 檔案名稱 | filename | 字串 | Y | | |
-| 檔案網址 | file_url | 字串 | Y | Y | |
-| 檔案大小 | file_size_kb | 整數 | Y | Y | |
-| 檔案類型 | file_type | 字串 | Y | | MIME type |
-| 上傳者 | uploaded_by | FK | Y | Y | |
-| 上傳時間 | uploaded_at | 日期時間 | Y | Y | |
-
-### PaymentFile（收款對帳附件）
-
-> extend-order-fields-from-vendor-feedback change 新增。結構同 SalesAllowanceFile，FK 改為 `payment_id`。
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | 主鍵 |
-| 所屬收款 | payment_id | FK | Y | Y | FK → Payment |
-| 檔案名稱 | filename | 字串 | Y | | |
-| 檔案網址 | file_url | 字串 | Y | Y | |
-| 檔案大小 | file_size_kb | 整數 | Y | Y | |
-| 檔案類型 | file_type | 字串 | Y | | MIME type |
-| 上傳者 | uploaded_by | FK | Y | Y | |
-| 上傳時間 | uploaded_at | 日期時間 | Y | Y | |
-
-### Payment（收款紀錄）
-
-> 訂單收退款模型重構（refactor-order-receivable-refund-model）後付款金流統一存於 store.payments；取代 Order 平面 PaymentRecord（已廢止）。payment_method = 退款 時 amount 為負，與一般收款分軸（D12 折讓 / 退款分離）。
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | 主鍵 |
-| 所屬訂單 | order_id | FK | Y | Y | FK → 訂單 |
-| 關聯付款計畫期次 | payment_plan_id | FK | | | 已廢止欄位（過渡期保留兼容舊資料）；新模型期次關係改透過 PaymentAllocation N:M 推導 |
-| 金額 | amount | 小數 | Y | | 收款金額；payment_method = 退款 時為負 |
-| 收款方式 | payment_method | 單選 | Y | | 現金 / 信用卡 / 銀行轉帳 / 支票 / 退款 / 其他 |
-| 付款序號 | payment_ref | 字串 | | | 第三方付款序號（銀行入帳序號 / 信用卡授權碼 / 支票號碼）|
-| 收款時間 | paid_at | 日期時間 | Y | | 退款情境對應「退款日期」 |
-| 紀錄人 | recorded_by | 字串 | Y | | 紀錄人姓名 |
-| 備註 | notes | 文字 | | | 退款原因 / 對帳備註 |
-| 關聯訂單異動 | linked_order_adjustment_id | FK | | | FK → OrderAdjustment；非 null 表示由 OA 編輯介面建立；切「已完成」累計達 OA.amount 時推進 OA「已執行」；一般收款為 null |
-| 收款狀態 | payment_status | 單選 | Y | | 處理中 / 已完成；新建預設「處理中」（store 強制）；處理中不計收款淨額、不影響期次、不推進 OA；「已完成 → 處理中」禁止反向 |
-| 完成時間 | completed_at | 日期時間 | | Y | 業務切「已完成」時寫入；處理中為 null |
-| 是否取消 | cancelled | 布林值 | Y | | 邏輯刪除旗標；取消已完成 Payment 邏輯刪除保留稽核、取消處理中 Payment 物理刪除 |
-| 取消原因 | cancel_reason | 字串 | | | cancelled = true 時必填 |
-| 取消時間 | cancelled_at | 日期時間 | | | cancelled = true 時必填 ISO 8601 |
-| 對帳附件 | attachments | 字串[] | | | 對帳憑證檔名；退款 Payment 切「已完成」MUST ≥ 1（物理錨點，訂單收退款模型重構 D4）；一般收款不強制 |
-| 實際完成日 | actual_receive_date | 日期 | | | 退款 / 補收 Payment 切「已完成」時填；與 paid_at 同步（訂單收退款模型重構橋接欄位）|
-| 建立時間 | created_at | 日期時間 | Y | Y | |
-| 更新時間 | updated_at | 日期時間 | Y | Y | |
-
-> 處理中 Payment 老化追蹤：createdAt < now − 7 天（自然日）且未取消時，訂單詳情頁顯示「老化 N 天」Badge（resolve [[ORD-021]]）。處理中 Payment 不入 GL 應收應付帳本（resolve [[ORD-019]]）。
-
-### PaymentPlan（付款計畫期次）— 已廢止
-
-> 已由 BillingInstallment 取代。
-
-### PaymentAllocation（收款核銷分配）
-
-> unify-billing-installment-and-reconciliation-csv change 新增。Payment 與 BillingInstallment 的 N:M 核銷分配；「依序填滿」自動分配後業務可手動覆寫。
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | 主鍵 |
-| 所屬收款 | payment_id | FK | Y | Y | FK → Payment |
-| 對應期次 | billing_installment_id | FK | | | FK → BillingInstallment；null = 預收（未分配）桶（溢收場景）|
-| 分配金額 | allocated_amount | 小數 | Y | | 該 Payment 分配至該期次的金額 |
-| 自動分配 | auto_allocated | 布林值 | Y | | 系統依序填滿建立時 true（CEO 指標 5 業務手動覆寫率量測）|
-| 手動覆寫 | manually_overridden | 布林值 | Y | | diff-based 判定：最終金額 ≠ 依序填滿初次值 → true |
-| 月結閉檔鎖 | locked_by_period_close | 布林值 | Y | | Phase 1 預設 false；鎖定後 MUST NOT 調整；月結閉檔機制列 [[OQ-BI-2]] 後續 change |
-| 建立時間 | created_at | 日期時間 | Y | Y | |
-| 更新時間 | updated_at | 日期時間 | Y | Y | |
-
-### BillingInstallment（請款期次）完整實體
-
-> unify-billing-installment-and-reconciliation-csv change 統一實體（取代 PaymentPlan + PlannedInvoice 雙頭維護）。開票維度（invoicing_status）與收款維度（payment_status）完全獨立，支援先收後開 / 先開後收。各期合計 SHALL = Order.totalAmount + ∑ 已執行 OrderAdjustment.amount（補收進期次、退款不進期次的不對稱規則）。
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | 主鍵 |
-| 所屬訂單 | order_id | FK | Y | Y | FK → 訂單 |
-| 期別 | installment_no | 整數 | Y | | 1 / 2 / 3 ...；拆期後兩筆獨立平輩期次各佔一個 no |
-| 描述 | description | 字串 | Y | | 訂金 30% / 尾款 70% / 加印款 / 諮詢費 等 |
-| 預計金額 | scheduled_amount | 小數 | Y | Y | 含稅；= ∑ items 金額（derived 唯讀；items 為空時保留歷史填入值）|
-| 預計付款方式 | payment_method | 單選 | Y | | 匯款 / 現金 / 信用卡 / 支票 / 其他（規劃，非事實；事實見 Payment.payment_method）|
-| 預計收款日 | due_date | 日期 | Y | | 應收日；核銷「依序填滿」依此由早到晚排序；derived overdue_days = TODAY − due_date |
-| 預計開票日 | expected_invoice_date | 日期 | | | 可空；支援「先收後開」尚未決定開票時點情境 |
-| 開票狀態 | invoicing_status | 單選 | Y | | 未開立 / 已開立 / 已作廢 |
-| 收款狀態 | payment_status | 單選 | Y | Y | 未收 / 部分收款 / 已收訖（derived，依未取消已完成 PaymentAllocation 累計推導）|
-| 對應發票 | linked_invoice_id | FK | | | FK → Invoice；已開立時必填；期次↔發票 1:1 嚴格約束 |
-| 品項明細 | items | InvoiceItem[] | | | 鏈式預填（訂單印件 → 期次 items → Invoice items）；印件異動不連動 |
-| 備註 | note | 文字 | | | CSV 對帳第 9 欄資料來源；拆期時自動帶前綴 |
-| 來源類型 | source_type | 單選 | Y | | manual / consultation_cancellation / consultation_end_no_production / quote_lost / installment_split |
-| 拆期來源期次 | split_from_installment_id | FK | | | 純追溯欄位（非 aggregation FK）；拆期時兩筆新期次各帶指向原期次 id（CSV lineage 稽核）|
-| 原始預計收款日 | original_due_date | 日期 | Y | | 業務主管審核訂單通過時凍結為基準、change_count 歸零；UI 顯示「原始 vs 現況」對照 |
-| 原始預計開票日 | original_expected_invoice_date | 日期 | | | 同上凍結基準 |
-| 變更次數 | change_count | 整數 | Y | Y | derived（OrderActivityLog DUE_DATE_CHANGED + EXPECTED_DATE_CHANGED 累計）；SPLIT 不計入；CEO 指標 4 量測 |
-| 是否取消 | cancelled | 布林值 | Y | | 拆期 / 業務取消設 true 保留稽核（非物理刪除）；不入狀態推導與應收 invariant |
-| 取消原因 | cancel_reason | 字串 | | | cancelled = true 時填（如「拆兩期」「業務取消」）|
-| 建立人 | created_by | 字串 | Y | | 業務 user_id 或 'system'（諮詢取消半額退費 / 諮詢結束三情境自動建立）|
-| 建立時間 | created_at | 日期時間 | Y | Y | |
-| 更新時間 | updated_at | 日期時間 | Y | Y | |
-
-### BillingActivityEvent（訂單結構化活動事件，OrderActivityLog 擴充）
-
-> unify-billing-installment-and-reconciliation-csv change 新增。在既有 Order.activityLogs（ActivityLog[] 四欄自由文字）之外提供「結構化 + 可 query」事件記錄；store action 寫入時雙寫（既有 ActivityLog 人類可讀文字 + 本結構化事件供 KPI / audit query）。對齊 GoBD audit trail（operator / timestamp / action type / affected record / old value / new value）。
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | 主鍵 |
-| 所屬訂單 | order_id | FK | Y | Y | FK → 訂單 |
-| 事件型別 | event_type | 單選 | Y | | BILLING_INSTALLMENT_CREATED / DUE_DATE_CHANGED / EXPECTED_DATE_CHANGED / SPLIT / CANCELLED / PAYMENT_ALLOCATION_OVERRIDDEN / PAYMENT_ALLOCATION_ADJUSTED_AFTER_COMPLETE / PRE_COMPLETION_AMOUNT_DECREASE |
-| 事件內容 | payload | 物件 | Y | | 結構化 payload（依 event_type 對應子型別，含 old_value / new_value 等）|
-| 操作者 | operator | 字串 | Y | | 業務 / 業務主管 user_id 或 'system' |
-| 事件時點 | timestamp | 日期時間 | Y | Y | ISO 8601 |
-
-> KPI 量測來源：CEO 指標 4「期次變更次數」= DUE_DATE_CHANGED + EXPECTED_DATE_CHANGED by installment；KPI ⑩「訂單收款變更率」= 7 事件型別（排除 BILLING_INSTALLMENT_CREATED）by order / 訂單下 Payment 總數。
-
-### SalesAllowance（折讓單 / 銷貨折讓證明單）
-
-> 依台灣統一發票使用辦法第 20 條；發票已開立後不能整張作廢時，附加在原發票上的部分減額憑證（業界：Credit Memo / Credit Note）。狀態機精簡兩態：已確認 → 已作廢。D12 折讓 / 退款分離：折讓本身不自動建立 Payment，業務先建退款 Payment 再開折讓；兩者不建立 FK 關聯（帳平以三軸總額比對），後續反查以訂單活動紀錄為準。
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | 主鍵 |
-| 原發票 | invoice_id | FK | Y | | FK → Invoice |
-| 藍新折讓號 | ezpay_allowance_no | 字串 | | | A + 14-16 碼數字（藍新回傳）|
-| 折讓金額 | allowance_amount | 小數 | Y | | 含稅；限負數（業務輸入正數系統內存負值；對帳取絕對值扣減）|
-| 折讓金額（未稅）| allowance_amount_without_tax | 小數 | | | 雙欄計價未稅；限負數 |
-| 折讓後剩餘發票金額 | remain_amount | 小數 | | Y | = invoice.total_amount − 該發票所有已確認折讓累計絕對值（藍新回傳）|
-| 折讓原因 | reason | 文字 | Y | | |
-| 狀態 | status | 單選 | Y | | 已確認 / 已作廢 |
-| 開立時間 | issued_at | 日期時間 | Y | | |
-| 確認時間 | confirmed_at | 日期時間 | | | |
-| 作廢時間 | invalid_at | 日期時間 | | | status = 已作廢 時填 |
-| 作廢原因 | invalid_reason | 字串 | | | |
-| 開立者 | issued_by | 字串 | Y | | |
-| 建立時間 | created_at | 日期時間 | Y | Y | |
-| 更新時間 | updated_at | 日期時間 | Y | Y | |
-
----
+- 一張**訂單**可開多張**發票**（每張發票對應一個請款期次，1:1）
+- 一張**發票**可有多筆**折讓單**（部分減額憑證）
+- 一張**訂單**可有多個**請款期次**（分期請款規劃）
+- 一個**請款期次**可被多筆**收款紀錄**核銷（透過收款核銷分配）
+- 一筆**收款紀錄**可同時核銷多個請款期次
+- 折讓回簽附件與收款對帳附件各自掛在父單據上
+- 一個**帳務公司**對應一個藍新商店帳號，訂單建立時選定
+- 已廢止：預計發票（PlannedInvoice）/ 付款計畫（PaymentPlan）已由請款期次取代
 
