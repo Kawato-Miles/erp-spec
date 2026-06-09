@@ -1,9 +1,9 @@
 ## 1. 資料聚合層（read model，零新增欄位）
 
-- [ ] 1.1 在 `utils/prepressReview.ts` 新增母集合計算函式：輸入 orders，輸出「底下至少一件印件審稿維度 ∈ {等待審稿, 已補件, 不合格}」的訂單；排除狀態=已取消的訂單、排除印製維度=已棄用的印件
-- [ ] 1.2 新增「訂單審稿停留天數」計算（牆鐘時長口徑）：最早一件印件首輪 `submittedAt` → 全部印件最終 `reviewedAt`（未全部審畢計至今日）的日曆工作天；附單元測試驗算多印件 / 補件循環情境
-- [ ] 1.3 新增「距交期天數」與「審稿關卡逾期」判定：距 `Order.客戶交期` < 安全緩衝（暫定 ≤ 2 工作天）且仍在母集合；附單元測試
-- [ ] 1.4 新增「訂單退件率」計算供與停留天數配對顯示（不合格輪次 / 總輪次）
+- [x] 1.1 在 `utils/prepressReview.ts` 新增母集合計算函式 `selectOrdersWithPendingReview`：輸出「底下至少一件印件審稿維度 ∈ {等待審稿, 已補件, 不合格}」的訂單；排除已取消訂單、已棄用印件；含 reviewer 範圍過濾（含明確區分 `isPrintItemPendingOrderReview` 與 inbox 語意）
+- [x] 1.2 新增「訂單審稿停留天數」`computeOrderReviewDwellDays`（牆鐘時長口徑）：最早首輪 `submittedAt` → 全部審畢最晚 `reviewedAt`（未全審畢計至今日）；單元測試驗算多印件情境
+- [x] 1.3 新增「距交期 / 逾期」`computeOrderDeadline` / `computeOrderDaysToDeadline` / `isOrderOverdueInReview`（訂單交期=最早印件 deliveryDate，距交期 < 緩衝暫定 2 天）；附單元測試
+- [x] 1.4 新增「訂單退件率」`computeOrderRejectionRate`（不合格輪次 / 已判定輪次）供與停留天數配對顯示
 
 ## 2. 審稿訂單脈絡查詢視圖頁面
 
