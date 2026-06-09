@@ -1,6 +1,6 @@
 # business-processes/spec.md 搬遷計劃
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 將 `openspec/specs/business-processes/spec.md` 的 42 條 Requirement 搬遷至對應 wiki 卡與模組 spec，然後廢除 business-processes spec + user-roles spec + 清理 config.yaml。
 
@@ -41,7 +41,7 @@
 
 以下 Requirement 的商業規則內容已在 wiki 對應卡中，確認一致即可：
 
-- [ ] **Step 1: 逐條比對確認一致**
+- [x] **Step 1: 逐條比對確認一致**
 
 | # | Requirement | 對應 wiki 卡 | 確認內容 |
 |---|------------|-------------|---------|
@@ -56,7 +56,7 @@
 
 若任一條不一致 → 以 spec（較新）為準更新 wiki 卡，記錄差異。
 
-- [ ] **Step 2: Commit 確認紀錄（若有 wiki 更新）**
+- [x] **Step 2: Commit 確認紀錄（若有 wiki 更新）**
 
 ### Task A2：wiki 已有但需補充的商業規則
 
@@ -81,10 +81,10 @@
 | 40 | 期次規劃 invariant（混合）| [[對帳一致性]] | 補 invariant 公式（∑期次 = 應收） |
 | 42 | 跨齊報稅期作廢 vs 折讓（混合）| [[付款發票邏輯]] | 補「跨齊報稅期 MUST NOT 作廢」法規約束 |
 
-- [ ] **Step 1: 讀每條 Requirement 的描述段 + 讀目標 wiki 卡，判斷需補充什麼**
-- [ ] **Step 2: 逐卡補充（block-level edit，只改變動的段落）**
-- [ ] **Step 3: 更新所有修改過的卡的 `last-reviewed` 為執行日期**
-- [ ] **Step 4: Commit**
+- [x] **Step 1: 讀每條 Requirement 的描述段 + 讀目標 wiki 卡，判斷需補充什麼**
+- [x] **Step 2: 逐卡補充（block-level edit，只改變動的段落）**
+- [x] **Step 3: 更新所有修改過的卡的 `last-reviewed` 為執行日期**
+- [x] **Step 4: Commit**
 
 ### Task A3：需新建或併入的商業規則 wiki 卡
 
@@ -104,11 +104,11 @@
 | 31 | 訂單應收計算規則 | 併入 [[對帳一致性]] | 「印件費 + OEC + OA」三層構成 |
 | 33 | 售後服務階段流程（混合）| 新建 `04-business-logic/售後服務規則.md` | 五步流程 / 無核可關卡 / 一訂單一未結案 ticket |
 
-- [ ] **Step 1: 讀 spec 中每條 Requirement 的描述段，摘出商業規則部分**
-- [ ] **Step 2: 判斷新建 vs 併入**
-- [ ] **Step 3: 建卡或補入（遵循 wiki-schema frontmatter 規範 + business-logic-writing-guide 骨架）**
-- [ ] **Step 4: 確認每張新卡至少被一張卡連到（禁孤島）**
-- [ ] **Step 5: Commit**
+- [x] **Step 1: 讀 spec 中每條 Requirement 的描述段，摘出商業規則部分**
+- [x] **Step 2: 判斷新建 vs 併入**
+- [x] **Step 3: 建卡或補入（遵循 wiki-schema frontmatter 規範 + business-logic-writing-guide 骨架）**
+- [x] **Step 4: 確認每張新卡至少被一張卡連到（禁孤島）**
+- [x] **Step 5: Commit**
 
 ---
 
@@ -131,10 +131,10 @@
 | 20 | 出貨單與印件雙層狀態映射 | |
 | 21 | 多印件合併出貨 | |
 
-- [ ] **Step 1: 讀每條完整 Requirement（含所有 Scenario）**
-- [ ] **Step 2: 精簡描述段（移除商業規則論述，改引用 wiki）**
-- [ ] **Step 3: Append 到 order-management/spec.md `## Requirements` 段末尾**
-- [ ] **Step 4: Commit**
+- [x] **Step 1: 讀每條完整 Requirement（含所有 Scenario）**
+- [x] **Step 2: 精簡描述段（移除商業規則論述，改引用 wiki）**
+- [x] **Step 3: Append 到 order-management/spec.md `## Requirements` 段末尾**
+- [x] **Step 4: Commit**
 
 ### Task B2：搬到 order-billing/spec.md
 
@@ -149,10 +149,10 @@
 
 注意：order-billing/spec.md 可能尚未建立（訂單 spec 重構第二階段 Task 1）。若不存在，先建骨架再搬入。
 
-- [ ] **Step 1: 確認 order-billing/spec.md 是否存在**
-- [ ] **Step 2: 讀每條完整 Requirement**
-- [ ] **Step 3: 精簡描述段，Append 到 order-billing/spec.md**
-- [ ] **Step 4: Commit**
+- [x] **Step 1: 確認 order-billing/spec.md 是否存在**
+- [x] **Step 2: 讀每條完整 Requirement**
+- [x] **Step 3: 精簡描述段，Append 到 order-billing/spec.md**
+- [x] **Step 4: Commit**
 
 ### Task B3：搬到 work-order/spec.md + production-task/spec.md
 
@@ -162,8 +162,8 @@
 | 16 | 數量計算邊界防呆 | work-order/spec.md |
 | 17 | 異動流程數量重算 | work-order/spec.md |
 
-- [ ] **Step 1-3: 同 Task B1 模式**
-- [ ] **Step 4: Commit**
+- [x] **Step 1-3: 同 Task B1 模式**
+- [x] **Step 4: Commit**
 
 ### Task B4：搬到其他模組 spec
 
@@ -180,10 +180,10 @@
 
 注意：order-adjustment/spec.md 可能尚未建立（同 order-billing）。
 
-- [ ] **Step 1: 確認目標 spec 是否存在**
-- [ ] **Step 2: 逐條搬遷（精簡描述段 + 完整 Scenario）**
-- [ ] **Step 3: 搬遷後確認目標 spec 中無標題衝突（同名 Requirement 合併而非重複新增）**
-- [ ] **Step 4: Commit**
+- [x] **Step 1: 確認目標 spec 是否存在**
+- [x] **Step 2: 逐條搬遷（精簡描述段 + 完整 Scenario）**
+- [x] **Step 3: 搬遷後確認目標 spec 中無標題衝突（同名 Requirement 合併而非重複新增）**
+- [x] **Step 4: Commit**
 
 ---
 
@@ -191,7 +191,7 @@
 
 ### Task C1：廢除 business-processes/spec.md
 
-- [ ] **Step 1: 最終掃描確認 42 條 Requirement 皆已搬遷**
+- [x] **Step 1: 最終掃描確認 42 條 Requirement 皆已搬遷**
 
   ```bash
   grep -c "^### Requirement:" openspec/specs/business-processes/spec.md
@@ -199,13 +199,13 @@
 
   Expected: 42。確認每一條在 Phase A/B 中都有對應處理紀錄。
 
-- [ ] **Step 2: 刪除 spec 檔**
+- [x] **Step 2: 刪除 spec 檔**
 
   ```bash
   rm -rf openspec/specs/business-processes/
   ```
 
-- [ ] **Step 3: 更新所有引用 business-processes/spec.md 的檔案**
+- [x] **Step 3: 更新所有引用 business-processes/spec.md 的檔案**
 
   ```bash
   grep -rl "business-processes/spec.md" openspec/ memory/ CLAUDE.md
@@ -213,12 +213,12 @@
 
   將所有引用改為對應的新位置（wiki 卡或模組 spec）。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ### Task C2：廢除 user-roles/spec.md
 
-- [ ] **Step 1: 確認 user-roles/spec.md 中所有角色職責已在 wiki `03-roles/` 對應卡**
-- [ ] **Step 2: 確認 user-roles/spec.md 中的 Scenario 已在對應模組 spec**
+- [x] **Step 1: 確認 user-roles/spec.md 中所有角色職責已在 wiki `03-roles/` 對應卡**
+- [x] **Step 2: 確認 user-roles/spec.md 中的 Scenario 已在對應模組 spec**
 
   user-roles/spec.md 的 Scenario（系統行為）需搬到對應模組 spec：
   - 審稿主管 / 審稿 → prepress-review/spec.md（多數已有）
@@ -227,14 +227,14 @@
   - 印務主管 → work-order/spec.md
   - 會計 → order-billing/spec.md
 
-- [ ] **Step 3: 刪除 spec 檔**
+- [x] **Step 3: 刪除 spec 檔**
 
   ```bash
   rm -rf openspec/specs/user-roles/
   ```
 
-- [ ] **Step 4: 更新所有引用**
-- [ ] **Step 5: Commit**
+- [x] **Step 4: 更新所有引用**
+- [x] **Step 5: Commit**
 
 ### Task C3：config.yaml 清理
 
@@ -242,7 +242,7 @@
 - Modify: `openspec/config.yaml`
 - Modify: `memory/erp/spec-registry.md`
 
-- [ ] **Step 1: config.yaml context 段修正**
+- [x] **Step 1: config.yaml context 段修正**
 
   移除第 51-56 行「已遷入 OpenSpec 的資源」中的：
   ```
@@ -256,7 +256,7 @@
   - 使用者角色 → wiki 03-roles/（角色 R&R 正本）
   ```
 
-- [ ] **Step 2: config.yaml rules 段清理 workaround 規則**
+- [x] **Step 2: config.yaml rules 段清理 workaround 規則**
 
   移除 specs rules 第 81 行：
   ```
@@ -280,15 +280,15 @@
   - 參照 wiki 03-roles/ 確認角色權責
   ```
 
-- [ ] **Step 3: spec-registry.md 移除兩個 spec**
+- [x] **Step 3: spec-registry.md 移除兩個 spec**
 
   移除 business-processes 和 user-roles 兩行。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ### Task C4：最終驗證
 
-- [ ] **Step 1: 確認無斷連結**
+- [x] **Step 1: 確認無斷連結**
 
   ```bash
   grep -rn "business-processes/spec.md\|user-roles/spec.md" openspec/ memory/ CLAUDE.md .claude/
@@ -296,11 +296,11 @@
 
   Expected: 0 個結果（或僅在 archive 中）。
 
-- [ ] **Step 2: 確認 wiki 卡反向連結完整**
+- [x] **Step 2: 確認 wiki 卡反向連結完整**
 
   用 `obsidian-cli` 檢查新建的 wiki 卡是否被至少一張卡連到。
 
-- [ ] **Step 3: Final Commit**
+- [x] **Step 3: Final Commit**
 
   ```bash
   git commit -m "refactor: 廢除 business-processes + user-roles spec，商業規則歸 wiki、系統行為歸模組 spec"
