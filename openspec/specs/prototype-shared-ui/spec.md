@@ -77,7 +77,7 @@
 `ErpPageHeader` SHALL 包含：
 - 返回按鈕
 - 印件名稱（標題）
-- 印件狀態 Badge（badges slot 內，使用 `PrintItemStatusBadge` + `derivePrintItemStatusFromWOs(relatedWOs.map(w => w.status))`，對齊 [openspec/specs/state-machines/spec.md](../state-machines/spec.md) 印件狀態機）
+- 印件狀態 Badge（badges slot 內，使用 `PrintItemStatusBadge` + `derivePrintItemStatusFromWOs(relatedWOs.map(w => w.status))`，對齊 [order-management spec § 印件印製維度狀態機](../order-management/spec.md) + [prepress-review spec § 審稿階段流程](../prepress-review/spec.md)）
 - 主動作群（依使用情境條件顯示：批次報工 / 清除選取 / 分配印件）
 
 印件詳情頁 SHALL 包含 7 個 Tab，順序：`資訊（首位，defaultValue）→ 審稿紀錄 → 工單與生產任務 → QC 紀錄 → 轉交單 → 出貨單 → 活動紀錄`。
@@ -96,7 +96,7 @@
 
 - **WHEN** 使用者進入印件詳情頁
 - **THEN** `ErpPageHeader` badges slot SHALL 顯示 `PrintItemStatusBadge`
-- **AND** Badge 顯示文字與顏色 SHALL 對齊 [openspec/specs/state-machines/spec.md](../state-machines/spec.md) 印件狀態機定義
+- **AND** Badge 顯示文字與顏色 SHALL 對齊 [order-management spec § 印件印製維度狀態機](../order-management/spec.md) 定義
 - **AND** Badge 狀態值 SHALL 由 `derivePrintItemStatusFromWOs(relatedWOs.map(w => w.status))` 推導
 
 #### Scenario: 印件詳情頁 Tab 順序符合業務流先後

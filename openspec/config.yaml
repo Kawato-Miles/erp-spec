@@ -34,8 +34,8 @@ context: |
   Prototype 技術棧：React + TypeScript + Tailwind + shadcn/ui
   Prototype 路徑：/Users/b-f-03-029/sens-erp-prototype/src/
 
-  OpenSpec Specs（23 個 main specs，完整清單見 memory/erp/spec-registry.md）：
-  - 涵蓋需求單 / 諮詢 / 訂單（含訂單帳務、訂單異動）/ 工單 / 生產任務 / 審稿 / QC / 售後等模組 specs，與狀態機 / 業務情境等跨模組 specs，及 prototype 工程 specs
+  OpenSpec Specs（23 個 main specs，目錄結構見 openspec/specs/）：
+  - 涵蓋需求單 / 諮詢 / 訂單（含訂單帳務、訂單異動）/ 工單 / 生產任務 / 審稿 / QC / 售後等模組 specs，與業務情境等跨模組 specs，及 prototype 工程 specs（狀態機 Requirement 已分散至各模組 spec，不再有獨立 state-machines spec）
 
   Notion 發布版本（確認後手動推送）：
   - 需求單 v1.9：https://www.notion.so/3293886511fa80998ac0e8cdf555da68

@@ -401,7 +401,7 @@ remaining = 發票金額 - folded
 
 當諮詢訂單於不做大貨 / 需求單流失兩收尾情境任一建立時，系統 SHALL 自動建立請款期次 1 筆作為「待開發票提醒」，讓諮詢人員於待開票期次列表看到待辦並手動一鍵開立為實際發票。諮詢取消情境系統 MUST NOT 自動建待開發票（見下方「諮詢取消情境例外」）。各情境機制單一正本見 [consultation-request spec](../consultation-request/spec.md) § 諮詢結束不做大貨情境自動建請款期次 / § 需求單流失情境自動建請款期次 / § 諮詢取消半額退費自動建請款期次。
 
-**請款期次實體與狀態機**：完整欄位定義與雙維度狀態機（開票維度開票狀態 + 收款維度收款狀態）見 [state-machines spec](../state-machines/spec.md) § BillingInstallment 雙維度狀態機 / § BillingInstallment 取代 PlannedInvoice 狀態機。品項鏈式預填語意見本 spec § Requirement: 請款期次行為規則 › 期次↔發票 1:1 嚴格約束 + 一鍵開票繼承 / § Requirement: BillingInstallment 品項鏈式預填。
+**請款期次實體與狀態機**：完整欄位定義與雙維度狀態機（開票維度開票狀態 + 收款維度收款狀態）見本 spec § BillingInstallment 雙維度狀態機。品項鏈式預填語意見本 spec § Requirement: 請款期次行為規則 › 期次↔發票 1:1 嚴格約束 + 一鍵開票繼承 / § Requirement: BillingInstallment 品項鏈式預填。
 
 **自動建立規則**（依諮詢訂單收尾情境）：
 
@@ -704,7 +704,7 @@ Order Data Model 金額相關欄位 SHALL 同時包含 `_with_tax` 與 `_without
 
 業務發現「已完成」標錯時，SHALL NOT 直接從收款狀態 = '已完成' 切回 '處理中'。修正路徑為「取消整筆收款紀錄 → 重建新收款紀錄」。
 
-此規則維持訂單異動「已執行」的終態語意（避免狀態反覆翻動）。訂單收退款模型重構後訂單異動「已執行」於主管核可時即生效、不綁收款紀錄累計，取消已完成退款收款紀錄 SHALL NOT 回退訂單異動（見 [state-machines spec § 訂單異動狀態機](../state-machines/spec.md)「[訂單收退款模型重構移除]『已執行』回退機制」），改由對帳應退差額重現 + 差額警示引導重退。
+此規則維持訂單異動「已執行」的終態語意（避免狀態反覆翻動）。訂單收退款模型重構後訂單異動「已執行」於主管核可時即生效、不綁收款紀錄累計，取消已完成退款收款紀錄 SHALL NOT 回退訂單異動（見 [order-adjustment spec § 訂單異動狀態機](../order-adjustment/spec.md)「核可即生效、不綁 Payment 累計」），改由對帳應退差額重現 + 差額警示引導重退。
 
 **Priority**: P0
 
@@ -1736,6 +1736,121 @@ Payment 切已完成 → BillingInstallment.payment_status derived 更新
 - **THEN** UI MUST 同時顯示「作廢」「折讓」兩按鈕
 - **AND** UI MUST NOT 預先過濾或隱藏任一按鈕（業務依情境自主選擇）
 - **AND** 規則判斷在後端（系統呼叫第三方平台後決定成功 / 失敗）
+
+### Requirement: 發票（Invoice）狀態機
+
+Invoice SHALL 有獨立狀態機：開立 → 作廢（終態）。
+
+作廢後 ezpay_merchant_order_no 流水號 SHALL NOT 重用；同訂單若需重新開立發票，新發票流水號 SHALL +1。
+
+**Priority**: P0
+
+**Rationale**: 發票狀態機為帳務核心，作廢不可逆且流水號不重用確保稅務合規。
+
+#### Scenario: 發票開立後可作廢
+
+- **GIVEN** Invoice.status = 開立
+- **WHEN** 業務 / 諮詢點擊「作廢」並填入原因
+- **THEN** status SHALL → 作廢
+- **AND** 系統 MUST 寫入 invalid_reason、invalid_at、invalid_by
+
+#### Scenario: 作廢後流水號不重用
+
+- **GIVEN** Invoice #1 status = 作廢，ezpay_merchant_order_no = `O-25050601-INV-01`
+- **WHEN** 業務於同訂單開立新 Invoice
+- **THEN** 新 Invoice 的 ezpay_merchant_order_no SHALL = `O-25050601-INV-02`
+
+#### Scenario: 作廢的發票不參與三方對帳
+
+- **WHEN** 系統計算發票淨額
+- **THEN** 系統 SHALL 排除 status = 作廢 的 Invoice，只加總 status = 開立 的 total_amount
+
+### Requirement: 折讓單（SalesAllowance）狀態機
+
+折讓單（依台灣統一發票使用辦法第 20 條）SHALL 有獨立狀態機，Mockup 階段精簡為兩態：
+
+| 狀態 | 說明 |
+|------|------|
+| 已確認 | 業務開立折讓並 Mockup 立即觸發確認；折讓正式生效，影響三方對帳；終態之一 |
+| 已作廢 | 業務作廢已確認的折讓單；終態之一 |
+
+已作廢的折讓單 SHALL NOT 再參與三方對帳。已作廢後該發票 SHALL 回到折讓前的剩餘可折讓金額狀態。
+
+**Priority**: P0
+
+**Rationale**: 折讓單狀態機精簡為兩態（已確認 / 已作廢）降低 Mockup 複雜度，未來真實藍新串接可補草稿態。
+
+#### Scenario: 折讓開立後立即為已確認
+
+- **WHEN** 業務開立 SalesAllowance
+- **THEN** 系統 SHALL Mockup 呼叫藍新「開立折讓」+「觸發確認折讓」兩段式 API
+- **AND** SalesAllowance.status SHALL 直接寫入「已確認」（不停留於草稿）
+- **AND** issued_at 與 confirmed_at MUST 同時寫入
+
+#### Scenario: 業務作廢已確認的折讓（undo 機制）
+
+- **GIVEN** SalesAllowance.status = 已確認
+- **WHEN** 業務於折讓詳情頁點擊「作廢折讓」並填入原因（如：金額打錯）
+- **THEN** status SHALL → 已作廢
+- **AND** 系統 MUST 寫入 invalid_reason、invalid_at
+- **AND** 該發票剩餘可折讓金額 SHALL 回到作廢前狀態（因為已作廢折讓不再扣減）
+
+#### Scenario: 已作廢的折讓不參與對帳
+
+- **WHEN** 系統計算發票淨額
+- **THEN** 系統 SHALL 排除 status = 已作廢 的 SalesAllowance
+- **AND** 系統 SHALL 只扣減 status = 已確認 的 |allowance_amount|
+
+### Requirement: BillingInstallment 雙維度狀態機
+
+BillingInstallment SHALL 維護兩個獨立狀態維度，互相不耦合：
+
+**開票維度（invoicing_status）**：
+```
+未開立 ──[業務一鍵開票]──▶ 已開立（linked_invoice_id 寫入、Invoice.source_billing_installment_id 寫入）
+已開立 ──[Invoice 作廢]──▶ 已作廢（linked_invoice_id 設 NULL，可重新開票）
+已作廢 ──[業務一鍵開票]──▶ 已開立（重啟）
+```
+
+**收款維度（payment_status，derived）**：
+```
+依未取消已完成 PaymentAllocation 累計推導：
+  累計 = 0：未收
+  0 < 累計 < scheduled_amount：部分收款
+  累計 ≥ scheduled_amount：已收訖
+```
+
+兩維度推導獨立，支援先收後開、先開後收、開票後作廢重開、拆期等情境。
+
+**Priority**: P0
+
+**Rationale**: 雙維度解耦讓開票與收款各自獨立推進，反映印刷業「先收後開 / 先開後收」的彈性實務。
+
+#### Scenario: 先收後開雙維度獨立推進
+
+- **GIVEN** BI-001（scheduled_amount=30000, invoicing_status=未開立, payment_status=未收, cancelled=false）
+- **WHEN** 業務登錄 Payment 30000 → 於入帳明細手動勾選該期次建 PaymentAllocation（allocated=30000）→ 業務切 Payment 為已完成
+- **THEN** BI-001.payment_status SHALL = 已收訖（已完成 PaymentAllocation 累計達 30000）
+- **AND** BI-001.invoicing_status SHALL 維持 = 未開立
+- **WHEN** 業務於 BI-001「一鍵開票」
+- **THEN** BI-001.invoicing_status SHALL → 已開立
+- **AND** BI-001.payment_status 維持 = 已收訖
+
+#### Scenario: 發票作廢開票維度回退、收款維度不動
+
+- **GIVEN** BI-002（invoicing_status=已開立, linked_invoice_id=INV-002, payment_status=已收訖）
+- **WHEN** 業務於 INV-002 詳情頁作廢（填入作廢原因「統編誤填」）
+- **THEN** INV-002.status SHALL = 作廢
+- **AND** BI-002.invoicing_status SHALL → 已作廢、linked_invoice_id 設 NULL
+- **AND** BI-002.payment_status SHALL 維持 = 已收訖（收款歷史保留）
+
+#### Scenario: 拆期原期次 cancelled 不入推導
+
+- **GIVEN** BI-003.scheduled_amount = 78000、業務點「拆此期」拆為 BI-003-A（2500）+ BI-003-B（75500）
+- **WHEN** 系統執行拆期
+- **THEN** BI-003.cancelled SHALL = true、cancel_reason = 「拆兩期」
+- **AND** BI-003 SHALL NOT 入兩維度狀態推導（cancelled = true 期次過濾掉）
+- **AND** BI-003-A / BI-003-B 各自獨立推導兩維度（初始 invoicing_status = 未開立、payment_status = 未收）
 
 ---
 ## Data Model
