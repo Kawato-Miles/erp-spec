@@ -472,13 +472,13 @@ ConsultationRequest 蒐集的印件相關欄位（`consultation_topic`、`estima
 - **AND** 系統 SHALL 建立諮詢訂單（order_type = 諮詢）+ OrderExtraCharge(consultation_fee, 諮詢費)
 - **AND** Payment 從 CR-XXX 轉移至諮詢訂單
 - **AND** 諮詢訂單 SHALL 推進至完成路徑
-- **AND** ConsultationRequest CR-XXX 狀態 SHALL 從「已轉需求單」更新為「完成諮詢」
+- **AND** ConsultationRequest CR-XXX 狀態 SHALL 維持「已轉需求單」不變（流失收尾不回寫諮詢單狀態）
 
 #### Scenario: 早期狀態流失（待評估成本前）觸發建諮詢訂單
 
 - **GIVEN** 需求單 `linked_consultation_request_id` 非空，狀態為「需求確認中」或「待評估成本」
 - **WHEN** 業務點擊「流失」
-- **THEN** 系統行為 SHALL 與「議價中流失」情境相同（建諮詢訂單 + Payment 轉移 + ConsultationRequest 結局更新）
+- **THEN** 系統行為 SHALL 與「議價中流失」情境相同（建諮詢訂單 + Payment 轉移 + ConsultationRequest 狀態維持不變）
 
 #### Scenario: 一般需求單（非諮詢來源）流失不影響諮詢流程
 
