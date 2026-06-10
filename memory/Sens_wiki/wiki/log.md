@@ -13,6 +13,10 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-10 22:50] 健檢 | 總目錄位階修正：操作史上移為知識庫基石檔
+- 變更：[[index|總目錄]] 新增「知識庫基石檔（跨主題）」段並把 [[log]] 自 ERP 主題段上移至此；ERP 段治理規則行恢復只列主題專屬三卡。
+- 衝突：無。Miles 指正：log 服務全知識庫而非單一主題，掛在 ERP 段下屬位階錯置。
+
 ## [2026-06-10 22:30] 納入(amend) | 收斂雙層 log 為單一操作史＋發布狀態撤出 wiki
 - 變更：[[log]] 升為全知識庫唯一只追加層（檔首格式擴充：HH:MM＋次級標籤＋動機行）；[[changelog]] 原地凍結封存（status: archived＋停更宣告，內容原樣保留）；[[wiki-schema]] § 四加「frontmatter 禁含外部系統狀態欄位」鐵則＋§ 九加對應 Anti-Pattern、刪三處 notion 欄位範例；[[erp_index]] changelog 列改標凍結；[[index|總目錄]] 治理規則行改指 [[log]]；27 張正本卡（05 實體 ×11、06 狀態機 ×12、07 情境 ×1、13 US ×3）刪「迭代脈絡見 [[changelog]]」尾行；6 張範本（_template-entity / _template-role / _template-scenario / _template-state-machine / _template-test-case / 13 US _template）迭代史措辭改「歷史見 wiki/log.md 與 git」並刪 notion 欄位；[[訂單異動狀態]] 關聯行改新反查寫法；[[TC-ORD-001-補收免審直達已執行驗收]] 刪 business-logic-changelog 死引用；30 張卡的 notion-published-at / notion-page-url 現值遷入 `memory/erp/notion-publish-manifest.md`（新建，發布管線唯一狀態正本）後自卡刪除。
 - 動機：Miles 拍板——雙層 log 同一異動記兩筆且卡片索引覆蓋率不到一成（承諾已破產）；發布狀態是管線家務不是商業知識，wiki 須獨立維護不與外部系統耦合；卡的迭代脈絡由「搜 [[卡名]] 命中本檔條目＋git 歷史」取代手工索引，決策脈絡歸 OQ 卡（BRD 層自足，OpenSpec 為下游不得作動機來源）。設計全文：`docs/superpowers/specs/2026-06-10-wiki-log-consolidation-design.md`。
