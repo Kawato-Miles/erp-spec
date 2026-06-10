@@ -1,25 +1,172 @@
 {
-	"nodes":[
-		{"id":"d4e5f6a7b8c9d001","type":"text","x":-300,"y":60,"width":260,"height":70,"text":"業務建立需求單／諮詢轉入自動建立","color":"6"},
-		{"id":"d4e5f6a7b8c9d002","type":"text","x":40,"y":60,"width":200,"height":60,"text":"需求確認中（初始）"},
-		{"id":"d4e5f6a7b8c9d003","type":"text","x":300,"y":60,"width":200,"height":60,"text":"待評估成本"},
-		{"id":"d4e5f6a7b8c9d004","type":"text","x":560,"y":60,"width":200,"height":60,"text":"已評估成本"},
-		{"id":"d4e5f6a7b8c9d005","type":"text","x":820,"y":60,"width":200,"height":60,"text":"議價中"},
-		{"id":"d4e5f6a7b8c9d006","type":"text","x":1080,"y":60,"width":200,"height":60,"text":"成交（終態）","color":"4"},
-		{"id":"d4e5f6a7b8c9d007","type":"text","x":560,"y":360,"width":200,"height":60,"text":"流失（終態）","color":"1"},
-		{"id":"d4e5f6a7b8c9d008","type":"text","x":260,"y":360,"width":220,"height":60,"text":"任一非終態狀態","color":"3"},
-		{"id":"d4e5f6a7b8c9d009","type":"text","x":1340,"y":60,"width":260,"height":70,"text":"業務一鍵轉建一般訂單（草稿起走）→ 訂單狀態","color":"6"},
-		{"id":"d4e5f6a7b8c9d010","type":"text","x":840,"y":360,"width":300,"height":70,"text":"諮詢來源流失：系統建諮詢訂單收尾 → 諮詢單狀態／訂單狀態","color":"6"}
+	"nodes": [
+		{
+			"id": "d4e5f6a7b8c9d001",
+			"type": "text",
+			"x": -300,
+			"y": 60,
+			"width": 260,
+			"height": 70,
+			"text": "業務建立需求單／諮詢轉入自動建立",
+			"color": "6"
+		},
+		{
+			"id": "d4e5f6a7b8c9d002",
+			"type": "text",
+			"x": 40,
+			"y": 60,
+			"width": 200,
+			"height": 60,
+			"text": "需求確認中（初始）"
+		},
+		{
+			"id": "d4e5f6a7b8c9d003",
+			"type": "text",
+			"x": 300,
+			"y": 60,
+			"width": 200,
+			"height": 60,
+			"text": "待評估成本"
+		},
+		{
+			"id": "d4e5f6a7b8c9d004",
+			"type": "text",
+			"x": 560,
+			"y": 60,
+			"width": 200,
+			"height": 60,
+			"text": "已評估成本"
+		},
+		{
+			"id": "d4e5f6a7b8c9d005",
+			"type": "text",
+			"x": 820,
+			"y": 60,
+			"width": 200,
+			"height": 60,
+			"text": "議價中"
+		},
+		{
+			"id": "d4e5f6a7b8c9d006",
+			"type": "text",
+			"x": 1080,
+			"y": 60,
+			"width": 200,
+			"height": 60,
+			"text": "成交（終態）",
+			"color": "4"
+		},
+		{
+			"id": "d4e5f6a7b8c9d007",
+			"type": "text",
+			"x": 560,
+			"y": 360,
+			"width": 200,
+			"height": 60,
+			"text": "流失（終態）",
+			"color": "1"
+		},
+		{
+			"id": "d4e5f6a7b8c9d008",
+			"type": "text",
+			"x": 260,
+			"y": 360,
+			"width": 220,
+			"height": 60,
+			"text": "任一非終態狀態",
+			"color": "3"
+		},
+		{
+			"id": "d4e5f6a7b8c9d009",
+			"type": "text",
+			"x": 1340,
+			"y": 60,
+			"width": 260,
+			"height": 70,
+			"text": "業務一鍵轉建一般訂單（從草稿開始）→ 訂單狀態",
+			"color": "6"
+		},
+		{
+			"id": "d4e5f6a7b8c9d010",
+			"type": "text",
+			"x": 840,
+			"y": 360,
+			"width": 300,
+			"height": 70,
+			"text": "諮詢來源流失：系統建諮詢訂單收尾 → 諮詢單狀態／訂單狀態",
+			"color": "6"
+		}
 	],
-	"edges":[
-		{"id":"e5f6a7b8c9d0e101","fromNode":"d4e5f6a7b8c9d001","fromSide":"right","toNode":"d4e5f6a7b8c9d002","toSide":"left"},
-		{"id":"e5f6a7b8c9d0e102","fromNode":"d4e5f6a7b8c9d002","fromSide":"right","toNode":"d4e5f6a7b8c9d003","toSide":"left","label":"送印務評估"},
-		{"id":"e5f6a7b8c9d0e103","fromNode":"d4e5f6a7b8c9d003","fromSide":"right","toNode":"d4e5f6a7b8c9d004","toSide":"left","label":"評估完成（全部印件成本填畢）"},
-		{"id":"e5f6a7b8c9d0e104","fromNode":"d4e5f6a7b8c9d004","fromSide":"right","toNode":"d4e5f6a7b8c9d005","toSide":"left","label":"進入議價"},
-		{"id":"e5f6a7b8c9d0e105","fromNode":"d4e5f6a7b8c9d005","fromSide":"right","toNode":"d4e5f6a7b8c9d006","toSide":"left","label":"客戶接受報價，標記成交"},
-		{"id":"e5f6a7b8c9d0e106","fromNode":"d4e5f6a7b8c9d005","fromSide":"top","toNode":"d4e5f6a7b8c9d003","toSide":"top","label":"重新評估報價（議價後價格不滿意）"},
-		{"id":"e5f6a7b8c9d0e107","fromNode":"d4e5f6a7b8c9d008","fromSide":"right","toNode":"d4e5f6a7b8c9d007","toSide":"left","label":"標記流失（選原因）"},
-		{"id":"e5f6a7b8c9d0e108","fromNode":"d4e5f6a7b8c9d006","fromSide":"right","toNode":"d4e5f6a7b8c9d009","toSide":"left"},
-		{"id":"e5f6a7b8c9d0e109","fromNode":"d4e5f6a7b8c9d007","fromSide":"right","toNode":"d4e5f6a7b8c9d010","toSide":"left","label":"限諮詢來源"}
+	"edges": [
+		{
+			"id": "e5f6a7b8c9d0e101",
+			"fromNode": "d4e5f6a7b8c9d001",
+			"fromSide": "right",
+			"toNode": "d4e5f6a7b8c9d002",
+			"toSide": "left"
+		},
+		{
+			"id": "e5f6a7b8c9d0e102",
+			"fromNode": "d4e5f6a7b8c9d002",
+			"fromSide": "right",
+			"toNode": "d4e5f6a7b8c9d003",
+			"toSide": "left",
+			"label": "送印務評估"
+		},
+		{
+			"id": "e5f6a7b8c9d0e103",
+			"fromNode": "d4e5f6a7b8c9d003",
+			"fromSide": "right",
+			"toNode": "d4e5f6a7b8c9d004",
+			"toSide": "left",
+			"label": "評估完成（全部印件成本填畢）"
+		},
+		{
+			"id": "e5f6a7b8c9d0e104",
+			"fromNode": "d4e5f6a7b8c9d004",
+			"fromSide": "right",
+			"toNode": "d4e5f6a7b8c9d005",
+			"toSide": "left",
+			"label": "進入議價"
+		},
+		{
+			"id": "e5f6a7b8c9d0e105",
+			"fromNode": "d4e5f6a7b8c9d005",
+			"fromSide": "right",
+			"toNode": "d4e5f6a7b8c9d006",
+			"toSide": "left",
+			"label": "客戶接受報價，標記成交"
+		},
+		{
+			"id": "e5f6a7b8c9d0e106",
+			"fromNode": "d4e5f6a7b8c9d005",
+			"fromSide": "top",
+			"toNode": "d4e5f6a7b8c9d003",
+			"toSide": "top",
+			"label": "重新評估報價（議價後價格不滿意）"
+		},
+		{
+			"id": "e5f6a7b8c9d0e107",
+			"fromNode": "d4e5f6a7b8c9d008",
+			"fromSide": "right",
+			"toNode": "d4e5f6a7b8c9d007",
+			"toSide": "left",
+			"label": "標記流失（選原因）"
+		},
+		{
+			"id": "e5f6a7b8c9d0e108",
+			"fromNode": "d4e5f6a7b8c9d006",
+			"fromSide": "right",
+			"toNode": "d4e5f6a7b8c9d009",
+			"toSide": "left"
+		},
+		{
+			"id": "e5f6a7b8c9d0e109",
+			"fromNode": "d4e5f6a7b8c9d007",
+			"fromSide": "right",
+			"toNode": "d4e5f6a7b8c9d010",
+			"toSide": "left",
+			"label": "限諮詢來源"
+		}
 	]
 }
