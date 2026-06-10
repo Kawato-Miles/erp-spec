@@ -48,14 +48,18 @@ last-reviewed: 2026-05-31
 
 ## 二、module Enum（多選）
 
+> 2026-06-10 起 module 值改用繁體中文（與 business-domain 一致，Miles 拍板）。舊卡的英文 token 隨各卡被異動時逐步統一，新卡一律用中文值。
+
 ```yaml
 module:
-  - quote-request | order-management | consultation-request | after-sales-ticket
-  - work-order | production-task | prepress-review | qc
-  - material-master | process-master | binding-master
-  - graphic-editor          # 圖編產品
-  - cross-module            # 跨模組（狀態機 / 商業流程 / 業務情境 / 使用者角色）
+  - 需求單 | 訂單管理 | 諮詢單 | 售後服務
+  - 工單 | 生產任務 | 印前審稿 | 品檢
+  - 材料主檔 | 製程主檔 | 裝訂主檔
+  - 圖編                    # 圖編產品
+  - 跨模組                  # 跨模組（狀態機 / 商業流程 / 業務情境 / 使用者角色）
 ```
+
+**新舊值對照**（轉換期查表用）：需求單 = quote-request、訂單管理 = order-management、諮詢單 = consultation-request、售後服務 = after-sales-ticket、工單 = work-order、生產任務 = production-task、印前審稿 = prepress-review、品檢 = qc、材料主檔 = material-master、製程主檔 = process-master、裝訂主檔 = binding-master、圖編 = graphic-editor、跨模組 = cross-module。
 
 ## 二B、business-domain Enum（必填，2026-05-28 新增）
 
