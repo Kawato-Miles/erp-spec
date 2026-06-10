@@ -21,8 +21,6 @@ related-test-cases: []
 prerequisites:
   - 業務已建立訂單
   - 業務為訂單擁有者
-notion-published-at: 2026-06-03
-notion-page-url: https://www.notion.so/32e3886511fa818c8459f5aab3c68adb
 ---
 
 # US-ORD-008 訂單列表分享與代理

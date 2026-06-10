@@ -18,8 +18,6 @@ related-scenarios: []
 related-business-logic: []
 related-entities: []
 related-test-cases: []
-notion-published-at: 2026-06-03
-notion-page-url: https://www.notion.so/3743886511fa81a2881ae59e88967477
 ---
 
 # US-ORD-028 業務查看溢收「預收（未分配）」桶

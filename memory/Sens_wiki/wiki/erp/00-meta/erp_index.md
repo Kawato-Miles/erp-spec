@@ -105,7 +105,7 @@ last-reviewed: 2026-06-10
 | [[wiki-schema]] | frontmatter 規範 + lint 依據 |
 | [[business-domain-taxonomy]] | 6 領域 + 跨領域共用層定義 |
 | [[scope-boundary]] | Vault 收 / 不收邊界 |
-| [[changelog]] | 操作與迭代紀錄（追加式） |
+| [[changelog]] | 已凍結封存（2026-06-10）；後續操作史見 [[log]] |
 
 ---
 

@@ -23,8 +23,6 @@ related-test-cases: []
 prerequisites:
   - 訂單未進入終態（status ∉ {訂單完成, 已取消}）
   - 業務為訂單擁有者或職務代理人
-notion-published-at: 2026-06-03
-notion-page-url: https://www.notion.so/3673886511fa8158b19ff02cdea4e70c
 ---
 
 # US-ORD-004 訂單印件管理

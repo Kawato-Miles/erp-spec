@@ -108,12 +108,11 @@ provenance-commit: <SHA>   # 可選但建議：記上次對齊 commit，供 stal
 ## 來源
 
 > 連回可獨立驗證的外部出處（業務情境 / 訪談 / 法規 / 拍板 OQ）。禁指向其他同層 entity 卡當正確性來源。
-> 末行固定加「迭代脈絡見 …」——正文零迭代史（迭代史進 changelog）。
+> 正文零迭代史（歷史見 wiki/log.md 與 git），不加迭代史尾行。
 
 - 欄位正本：本卡「欄位（業務可見）」段落
 - 行為規格：[<模組>/spec.md](../../../../openspec/specs/<模組>/spec.md)
 - Prototype 實作：`src/types/<...>.ts`
-- 迭代脈絡見 [[changelog]]
 ```
 
 --- 模板結束 ---
@@ -142,7 +141,7 @@ provenance-commit: <SHA>   # 可選但建議：記上次對齊 commit，供 stal
 - 營運背景段禁實作術語當主詞（資料表 / FK / JSON）。
 - entity 卡 MUST NOT 寫業務流程敘述 / user-story / 完整狀態轉換邏輯（→ 對應卡）。
 - `source` 禁指同層 entity / 下層 user-story / OpenSpec。
-- 正文零迭代史（迭代史在 [[changelog]]）。
+- 正文零迭代史（歷史見 wiki/log.md 與 git）。
 - 同一概念只有一張正本卡——欄位承載的規則只在 business-logic 卡寫完整版，entity 卡只引用。
 
 **可因案調整（可視情況調整的彈性）**：
@@ -163,9 +162,9 @@ provenance-commit: <SHA>   # 可選但建議：記上次對齊 commit，供 stal
 - [ ] **關鍵關聯**：標明基數（1:1 / 1:N / N:M）+ wiki link；未寫關聯背後的業務流程 / 規則本體。
 - [ ] **相關狀態機**：有狀態的實體已 wiki link 指 state-machine 卡；未在本卡重述狀態清單 / 轉換條件 / 轉換圖。
 - [ ] **越界檢查**（[[wiki-schema]] § 十一 entity row）：未寫入業務流程敘述（→ business-logic / scenario）/ user-story 格式模板（作為 / 我希望 / 以便）/ test-case 範本 / 完整狀態轉換邏輯。
-- [ ] **正文零迭代史**：無「vN 推翻 / 廢止舊…」inline change 標註（→ [[changelog]]）；無「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」inline OQ 措辭（→ [[oq-manage]] mode B 開獨立 OQ 卡）。
+- [ ] **正文零迭代史**：無「vN 推翻 / 廢止舊…」inline change 標註（歷史見 wiki/log.md 與 git）；無「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」inline OQ 措辭（→ [[oq-manage]] mode B 開獨立 OQ 卡）。
 - [ ] **相關連結**：依語意分類（上層情境 / 下層步驟 / 相關角色 / 相關規則 / 相關實體）、雙向可達、沒有連到不存在的卡（dangling）、不是沒有任何卡連到它的孤島卡（orphan）。
-- [ ] **來源**：連回外部可驗證出處；末行有「迭代脈絡見 [[changelog]]」。
+- [ ] **來源**：連回外部可驗證出處；無迭代史尾行（歷史見 wiki/log.md 與 git）。
 - [ ] **最後驗收**：營運背景抽一句，問「Miles / 主管不看程式碼能否懂這個實體是什麼、為什麼存在」。
 
 ## 極簡填寫示意（佔位符，非真實內容）
@@ -226,7 +225,6 @@ implemented-by:
 - 欄位正本：本卡「欄位（業務可見）」段落
 - 行為規格（Requirement / Scenario）：[<模組-X>/spec.md](../../../../openspec/specs/<模組-X>/spec.md)
 - Prototype 實作：`src/types/<檔名>.ts`
-- 迭代脈絡見 [[changelog]]
 ```
 
 ## 參考

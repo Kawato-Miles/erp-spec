@@ -28,8 +28,6 @@ related-oq:
   - ORD-036
 related-test-cases: []
 source-gap: false
-notion-published-at: 2026-06-03
-notion-page-url: https://www.notion.so/3743886511fa819e8e9dda7700501ef6
 ---
 
 # US-ORD-026 業務新增補收的訂單異動單免主管核可、直接生效
@@ -78,4 +76,3 @@ notion-page-url: https://www.notion.so/3743886511fa819e8e9dda7700501ef6
 - 規則正本：[[訂單異動規則#補收免審]]（補收免審、直達已執行、建立即認列應收的完整規則定義在此）
 - 最上層的依據：Miles 拍板補收／退款不對稱分權；台灣印刷業實務——主管把關現金流出方向（退款），不把關客戶加單方向（補收）
 
-迭代脈絡見 [[changelog]]（正文只寫現在的規則）。

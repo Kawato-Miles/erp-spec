@@ -158,7 +158,6 @@ notion-page-url: <Notion ERP Test Case DB URL>
 
 - 操作步驟：[[../13-user-stories/<module>/US-XX-NNN-<簡述>]]
 - 真實業務情境素材：<[[../04-business-logic/<情境卡>]] 或 Notion 業務情境 DB §>
-- 迭代脈絡見 [[../00-meta/business-logic-changelog#TC-XX-NNN]]
 ```
 
 --- 範本結束 ---
@@ -185,7 +184,7 @@ notion-page-url: <Notion ERP Test Case DB URL>
 - Vault 卡內**禁放 test-case 正文**（前置 / 步驟 / 預期正文在 Notion）。
 - 禁放 SIT / UT 等技術測試（這類卡只收 UAT 業務層驗收）。
 - happy path 與 edge case **分成兩張表**（不混在同一表）。
-- 正文零迭代史（迭代史進 [[changelog]]）。
+- 正文零迭代史（歷史見 wiki/log.md 與 git）。
 - 識別到不確定項 MUST 開獨立 OQ（[[oq-manage]] mode B），禁 inline 標注 / 禁 `[!question]` callout。
 
 **可視情況調整（明示彈性，禁作者私自偏離）**：
@@ -223,7 +222,7 @@ notion-page-url: <Notion ERP Test Case DB URL>
 
 **共同（所有層）**
 - [ ] 營運背景段無實作術語當主詞、無中英夾雜（技術詞括號附註）。
-- [ ] 正文零迭代史（迭代史在 [[changelog]]）；正文零「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」inline OQ 措辭（→ [[oq-manage]] mode B）。
+- [ ] 正文零迭代史（歷史見 wiki/log.md 與 git）；正文零「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」inline OQ 措辭（→ [[oq-manage]] mode B）。
 - [ ] 相關連結雙向可達、語意分類；至少回連 source 往上指依據的 user-story；沒有連到不存在的卡、也不是沒人連到的孤島卡。
 - [ ] 案例編號採語意前綴（H / E），不重排 / 不重用 / 退役不回收。
 - [ ] **最後驗收**：營運背景與「這張卡要回答的問題」抽一句，問「Miles / 主管不看程式碼能否懂這在驗什麼」。
@@ -290,7 +289,6 @@ notion-page-url: <Notion ERP Test Case DB URL>
 
 - 操作步驟：[[../13-user-stories/order-management/US-ORD-NNN-<補收免審>]]
 - 真實業務情境素材：[[../04-business-logic/payment-invoice-scenarios]] §<對應情境>
-- 迭代脈絡見 [[../00-meta/business-logic-changelog#TC-ORD-001]]
 ```
 
 ---
@@ -302,5 +300,5 @@ notion-page-url: <Notion ERP Test Case DB URL>
 - [[wiki-schema#十一、卡類型內容職責邊界]] — 維度 14 lint 依據
 - [[wiki-schema#七、命名規約]] — 模組前綴與檔名規約
 - [[wiki/erp/13-user-stories/_template]] — 操作步驟（user-story）範本（這類卡 source 往上指依據、以 related-test-cases 回連這類卡的 Notion URL）
-- [[changelog]] — 迭代史載體（正文零迭代史）
+- [[log]] — 全知識庫唯一操作史（卡的歷史 = 搜 `[[卡名]]` + git）
 - [[oq-manage]] — 識別不確定項時開獨立 OQ 卡

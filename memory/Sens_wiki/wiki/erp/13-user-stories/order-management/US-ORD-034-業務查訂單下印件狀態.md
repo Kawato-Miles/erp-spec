@@ -19,8 +19,6 @@ related-entities:
   - "[[訂單]]"
   - "[[印件]]"
 related-test-cases: []
-notion-published-at: 2026-06-03
-notion-page-url: https://www.notion.so/3743886511fa816fae99de1891bcf67a
 ---
 
 # US-ORD-034 業務查訂單下印件狀態

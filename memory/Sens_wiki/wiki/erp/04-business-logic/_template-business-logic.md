@@ -358,5 +358,5 @@ source: [規則來源]
 
 - [[wiki-schema]] — frontmatter 規範
 - [[erp_index]] — 分層定位
-- [[changelog]] — 迭代史
+- [[log]] — 全知識庫唯一操作史（卡的歷史 = 搜 `[[卡名]]` + git）
 - [[scope-boundary]] — Vault 收 / 不收邊界

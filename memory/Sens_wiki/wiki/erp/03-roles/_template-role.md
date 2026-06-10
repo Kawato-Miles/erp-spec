@@ -152,7 +152,6 @@ related-notion: <Notion 核心角色權責 DB 連結>      # 若有
 
 - <[Notion 核心角色權責表 - X](URL) / OpenSpec user-roles spec § Requirement: X / Miles YYYY-MM-DD 拍板>
 - 對應 OpenSpec change：<change-id>（若有）
-- 迭代脈絡見 [[changelog]]
 ```
 
 ## 四、極簡填寫示意（佔位符，非真實內容）
@@ -226,7 +225,6 @@ last-reviewed: <YYYY-MM-DD>
 ## 來源
 
 - <Notion 角色權責表 - 角色X>（URL）
-- 迭代脈絡見 [[changelog]]
 ```
 
 ## 五、不可違反的硬規則 vs 可視情況調整的彈性（role 卡標注）
@@ -238,7 +236,7 @@ last-reviewed: <YYYY-MM-DD>
 - 業務段（營運背景 / 基本資料 / 主要工作職責 / 職責邊界）**禁工程術語當主詞**、**禁中英夾雜**（技術詞括號附註）。
 - 識別到不確定項 **MUST 走 [[oq-manage]] mode B 開獨立 OQ 卡**（禁 inline「待確認 / 待釐清」、禁 `> [!question]` callout）。
 - `source` **禁指下游 / 同層 / OpenSpec**（指 OpenSpec 屬 [[erp_index]] Error）。
-- **正文零迭代史**（迭代史進 [[changelog]]）。
+- **正文零迭代史**（歷史見 wiki/log.md 與 git）。
 - **規則單一正本不複寫**：分權判斷準則細則只在 `04-business-logic` 正本卡，role 卡只寫動作歸屬 + wiki link 引用（`04-business-logic/_template-business-logic.md`）。
 
 ### 5.2 可因案調整（明示彈性破口）
@@ -268,11 +266,11 @@ last-reviewed: <YYYY-MM-DD>
 - [ ] 營運背景 + 基本資料 + 主要工作職責 + 職責邊界皆無工程術語當主詞、無中英夾雜。
 - [ ] 主要工作職責每項非顯然動作補了營運動機。
 - [ ] 職責邊界每條附了「為什麼這樣切」。
-- [ ] 正文零迭代史（迭代史在 [[changelog]]）；正文零 inline OQ 措辭（→ [[oq-manage]] mode B）；無 `> [!question]` callout。
+- [ ] 正文零迭代史（歷史見 wiki/log.md 與 git）；正文零 inline OQ 措辭（→ [[oq-manage]] mode B）；無 `> [!question]` callout。
 
 **相關連結 + 來源**
 - [ ] 相關連結語意分類（相關業務邏輯 / 狀態 / 情境 / OQ），雙向可達、不連到不存在的卡、也不是沒有任何卡連到它的孤島卡。
-- [ ] 來源指可獨立驗證外部出處，不指其他 role 卡；末行有 `迭代脈絡見 [[changelog]]`。
+- [ ] 來源指可獨立驗證外部出處，不指其他 role 卡；無迭代史尾行（歷史見 wiki/log.md 與 git）。
 
 **最後驗收（抽一句問主管看不看得懂）**
 - [ ] 營運背景 / 職責邊界抽一句，問「Miles / 主管不看程式碼能否懂這角色做什麼、把關什麼」。
@@ -286,4 +284,4 @@ last-reviewed: <YYYY-MM-DD>
 - [[erp_index]] — role 在分層體系中的位置（流程／狀態／角色／資料這一層）
 - [[erp_index]] — source / implemented-by 兩欄語意
 - [[oq-manage]] — 識別不確定項時開獨立 OQ 卡
-- [[changelog]] — 迭代史獨立檔（正文零迭代史）
+- [[log]] — 全知識庫唯一操作史（卡的歷史 = 搜 `[[卡名]]` + git）

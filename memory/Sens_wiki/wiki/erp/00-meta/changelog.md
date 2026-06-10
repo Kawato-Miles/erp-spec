@@ -1,17 +1,16 @@
 ---
 type: meta
-status: active
-last-reviewed: 2026-05-23
+status: archived
+last-reviewed: 2026-06-10
 ---
 
-# Changelog
+# Changelog（已凍結封存）
 
-> 追加式日誌（統一紀錄）。**禁止覆寫歷史**。
+> **本檔自 2026-06-10 起停止維護**。後續所有 wiki 操作史見 [[log]]（全知識庫唯一只追加層）；卡的迭代脈絡 = 在 [[log]] 搜 `[[卡名]]` + git 歷史；完整決策脈絡見 `08-open-questions/` 拍板紀錄。
+> 凍結理由：雙層 log 重複維護、卡片索引覆蓋率 < 10%、發布管線狀態與決策敘事混雜——詳見 `docs/superpowers/specs/2026-06-10-wiki-log-consolidation-design.md`。
+> 以下內容原樣保留（append-only 溯源），**禁止再追加或修改**。
 >
-> 記錄格式：`## [YYYY-MM-DD] 類型 | 一句話描述`
-> 類型：架構 / 商業規則 / 稽核 / 卡片異動 / 同步
->
-> 2026-06-10 合併自 audit-log + business-logic-changelog
+> （凍結前說明）追加式日誌（統一紀錄）。2026-06-10 合併自 audit-log + business-logic-changelog。
 
 ## 一、紀錄格式
 

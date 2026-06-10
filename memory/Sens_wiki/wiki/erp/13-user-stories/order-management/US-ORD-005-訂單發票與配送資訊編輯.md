@@ -26,8 +26,6 @@ prerequisites:
   - 訂單已成立
   - 訂單未取消（order.status ≠ 已取消）即可編輯，訂單完成後仍可編輯
   - 業務為訂單擁有者或職務代理人（角色權限對齊 user-roles 粗粒度模組權限：業務 / 諮詢 / 訂單管理人可編輯；Supervisor / 會計唯讀；業務主管無權）
-notion-published-at: 2026-06-03
-notion-page-url: https://www.notion.so/3673886511fa81ac9e37d7f8baf30cdd
 ---
 
 # US-ORD-005 訂單發票與配送資訊編輯

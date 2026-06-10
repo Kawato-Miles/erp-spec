@@ -28,8 +28,6 @@ related-entities:
   - "[[訂單]]"
 related-test-cases: []
 source-gap: false
-notion-published-at: 2026-06-03
-notion-page-url: https://www.notion.so/3743886511fa810ebc4aeb297143fde5
 ---
 
 # US-ORD-027 業務主管核可退款訂單異動
@@ -78,4 +76,3 @@ notion-page-url: https://www.notion.so/3743886511fa810ebc4aeb297143fde5
 - 規則正本：[[訂單異動規則#退款送審]]（退款送審的判斷、款項到位條件、認列規則完整定義在此）
 - 最上層的依據：Miles 拍板「公司現金流出方向（退款 / 退費）須由業務主管把關」；台灣印刷業實務分權（主管把關退款方向、不把關客戶下單追加方向）
 
-迭代脈絡見 [[changelog]]（正文只寫現在的規則）。

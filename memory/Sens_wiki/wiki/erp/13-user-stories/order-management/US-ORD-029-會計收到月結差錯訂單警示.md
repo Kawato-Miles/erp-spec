@@ -19,8 +19,6 @@ related-scenarios: []
 related-business-logic: []
 related-entities: []
 related-test-cases: []
-notion-published-at: 2026-06-03
-notion-page-url: https://www.notion.so/3743886511fa8171b304cbe7069e4d7d
 ---
 
 # US-ORD-029 會計收到月結差錯訂單警示清單

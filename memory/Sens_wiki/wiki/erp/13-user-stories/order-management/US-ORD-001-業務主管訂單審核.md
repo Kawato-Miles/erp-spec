@@ -23,8 +23,6 @@ prerequisites:
   - 業務於需求單成交「轉訂單」後訂單以草稿為初始狀態，業務於草稿態調整帶入內容後點「送主管審核」推進至「待業務主管審核」
   - 訂單狀態為「待業務主管審核」
   - 業務主管（approved_by_sales_manager_id）於草稿建立時即自動指派為該訂單指定審核人
-notion-published-at: 2026-06-03
-notion-page-url: https://www.notion.so/3673886511fa81459b61ee9636d68396
 ---
 
 # US-ORD-001 業務主管訂單審核

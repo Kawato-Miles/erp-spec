@@ -18,8 +18,6 @@ related-business-logic: []
 related-entities:
   - "[[訂單]]"
 related-test-cases: []
-notion-published-at: 2026-06-03
-notion-page-url: https://www.notion.so/3743886511fa81a99b9cda51d7bae62a
 ---
 
 # US-ORD-033 上傳訂單其他附件並標註用途

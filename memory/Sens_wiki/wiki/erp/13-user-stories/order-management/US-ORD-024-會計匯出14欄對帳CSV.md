@@ -18,8 +18,6 @@ related-scenarios: []
 related-business-logic: []
 related-entities: []
 related-test-cases: []
-notion-published-at: 2026-06-03
-notion-page-url: https://www.notion.so/3743886511fa81478643eda9a14756da
 ---
 
 # US-ORD-024 會計匯出 14 欄對帳 CSV
