@@ -6,7 +6,7 @@ status: draft
 last-reviewed: 2026-05-19
 ---
 
-# 圖編產品願景（Placeholder）
+# 線上印刷編輯器產品願景（Placeholder）
 
 > [!warning] Phase A 暫為 placeholder
 > 圖編產品（線上圖編輯器，B2B SaaS）的需求 KM 內容暫未遷入 Vault。Phase A MVP 階段僅維持骨架。
