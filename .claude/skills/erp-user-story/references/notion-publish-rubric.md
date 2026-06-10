@@ -19,7 +19,7 @@
 |---|------|--------|------|
 | 1 | 正本對齊 | User Story 條目逐欄對齊 Vault 卡；欄位條目逐欄對齊 OpenSpec Data Model | 一般 |
 | 2 | delta 完整性 | delta 清單內每條都已處理（新增 / 更新 / 標廢止），無遺漏、無越界改 delta 外條目 | 一般 |
-| 3 | 唯一鍵紀律 | 以 us-id /（資料表＋英文名稱）配對，既有 update 不重建；推送後回填追蹤欄位（notion-published-at / notion-page-url）| 一般 |
+| 3 | 唯一鍵紀律 | 以 us-id /（資料表＋英文名稱）配對，既有 update 不重建；推送後更新 manifest（`memory/erp/notion-publish-manifest.md` 的 Notion URL + 最後推送日，不回寫 wiki 卡）| 一般 |
 | 4 | 真實性（不捏造）| 正本未定義的欄位 / 行為不自編填入；過時註記（如「待 ORD-002」）清掉而非沿用 | 一票否決 |
 
 ## 具體禁令（評審逐條抓）

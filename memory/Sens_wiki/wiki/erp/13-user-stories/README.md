@@ -155,9 +155,9 @@ PM 從 prerequisites 鏈可看出動作順序與相依關係，不需依賴 anch
 
 > 原「補 UI 操作層（Mode B）」已隨 2026-06-01 單階段化移除；介面層級驗收改由 [[erp-test-case]] 承接、UI 點擊歸 Prototype e2e。
 
-1. 列出 status=active + notion-published-at 為空 / 過舊的卡
+1. 列出 status=active + 未列入 `memory/erp/notion-publish-manifest.md` 或推送日過舊的卡
 2. 批次推送（property mapping 詳見 skill）
-3. 回填 `notion-page-url` + `notion-published-at`
+3. 更新 `memory/erp/notion-publish-manifest.md` 對應列（Notion URL + 最後推送日；不回寫卡 frontmatter）
 
 ## 七、與其他 Vault 卡的關係
 

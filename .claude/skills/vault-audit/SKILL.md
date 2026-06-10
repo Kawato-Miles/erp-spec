@@ -1,7 +1,7 @@
 ---
 name: vault-audit
 description: >
-  ERP_Vault 自審稽核 skill。對 `memory/Sens_wiki/wiki/` 執行 12 維度健康檢查（Karpathy LLM Wiki 模式 6 維度 + Sens 特化 6 維度），產出對話報告 + 追加 `00-meta/changelog.md`。
+  ERP_Vault 自審稽核 skill。對 `memory/Sens_wiki/wiki/` 執行 13 維度健康檢查（Karpathy LLM Wiki 模式 6 維度 + Sens 特化 7 維度），產出對話報告 + 追加 wiki/log.md 一筆（動作=健檢、標籤=audit）。
   觸發時機：
     1. Miles 說「跑 vault audit」「Vault 健康檢查」「audit vault」
     2. 主動收尾發現 ≥ 5 個 Vault 卡異動時建議
@@ -10,7 +10,7 @@ description: >
     5. raw 累積 ≥ 10 張 status=raw 時自動建議（維度 11 觸發）
     6. 本月 daily review 缺 ≥ 工作日 50% 時自動建議（維度 12 觸發）
   範圍：**只稽核 ERP_Vault**。
-  輸出：對話報告 + 寫入 `memory/Sens_wiki/wiki/erp/00-meta/changelog.md`（追加式、禁覆寫）。
+  輸出：對話報告 + 追加 `memory/Sens_wiki/wiki/log.md` 一筆（動作=健檢、標籤=audit；追加式、最新在上、禁覆寫）。
   不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）、純對話內容稽核。
 ---
 
@@ -41,13 +41,13 @@ ERP_Vault 自審工具。**禁止運行於 ERP_Vault 以外的目錄**。
 
 | 模式 | 觸發句 | 用途 |
 |------|--------|------|
-| **A 全量** | 「跑 vault audit」「audit vault」「全量稽核」 | 10 維度全掃，~3-5 分鐘 |
+| **A 全量** | 「跑 vault audit」「audit vault」「全量稽核」 | 13 維度全掃，~3-5 分鐘 |
 | **B 單維度** | 「跑維度 N audit」「audit 維度 X」「只查孤立頁面」 | 針對性檢查，~30 秒 |
 | **C 修復** | 「跑 vault audit + fix」「audit 並修復」「audit 自動修」 | 全掃 + 對可自動修復項建議或執行修復 |
 
 ---
 
-## 三、12 個稽核維度
+## 三、13 個稽核維度
 
 ### 維度 1：頁面間矛盾（Karpathy）
 
@@ -430,12 +430,60 @@ done
 
 ---
 
+### 維度 16：log 條目完整性（Sens 特化，2026-06-10 實作）
+
+> wiki/log.md 為全知識庫唯一只追加操作史（`00-meta/changelog.md` 已凍結封存，不再讀寫）。本維度檢查本輪正本卡異動是否都在 log.md 留下可溯源條目。
+> **只對本輪 git 異動的 wiki 正本卡檢查**（03/04/05/06 目錄），不掃既有存量（與維度 15 的「git 範圍限定」做法一致），避免噪音。
+
+**檢查內容**：
+- (a) 本輪 git 異動的 wiki 正本卡（`03-roles/` / `04-business-logic/` / `05-entities/` / `06-state-machines/` 目錄）是否能在 `wiki/log.md` 找到含該卡 `[[卡名]]` 的條目
+- (b) 實質異動條目的「動機」行是否非空（健檢 / 納入類條目免「動機」，故只查實質異動正本卡對應的條目）
+
+```bash
+cd <vault repo root>
+base=$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null || echo HEAD~1)
+changed=$( { git diff --name-only "$base" HEAD -- \
+               'memory/Sens_wiki/wiki/erp/03-roles/' \
+               'memory/Sens_wiki/wiki/erp/04-business-logic/' \
+               'memory/Sens_wiki/wiki/erp/05-entities/' \
+               'memory/Sens_wiki/wiki/erp/06-state-machines/'; \
+             git diff --name-only -- \
+               'memory/Sens_wiki/wiki/erp/03-roles/' \
+               'memory/Sens_wiki/wiki/erp/04-business-logic/' \
+               'memory/Sens_wiki/wiki/erp/05-entities/' \
+               'memory/Sens_wiki/wiki/erp/06-state-machines/'; \
+             git diff --name-only --cached -- \
+               'memory/Sens_wiki/wiki/erp/03-roles/' \
+               'memory/Sens_wiki/wiki/erp/04-business-logic/' \
+               'memory/Sens_wiki/wiki/erp/05-entities/' \
+               'memory/Sens_wiki/wiki/erp/06-state-machines/'; } | sort -u )
+
+log=memory/Sens_wiki/wiki/log.md
+miss=0
+for f in $changed; do
+  [ -f "$f" ] || continue
+  card=$(basename "$f" .md)
+  if ! grep -q "\[\[$card\]\]" "$log"; then
+    echo "WARN: $f — wiki/log.md 找不到含 [[$card]] 的條目（缺 log 溯源）"
+    miss=1
+  fi
+done
+[ $miss -eq 0 ] && echo "OK：本輪異動正本卡皆有 log.md 條目"
+# (b) 動機行非空：對含該卡的條目人工判讀「動機：」行是否為空（健檢/納入類免）
+```
+
+**判定**：
+- OK：本輪異動正本卡皆有含 `[[卡名]]` 的 log.md 條目，且實質異動條目「動機」行非空
+- Warning：缺條目（找不到含該卡的 log 條目）/ 實質異動條目「動機」行為空
+
+---
+
 ## 四、執行流程
 
 ### Step 1：宣告稽核範圍
 
 依模式回報：
-- 全量：「執行 vault-audit 全量稽核，10 維度 ...」
+- 全量：「執行 vault-audit 全量稽核，13 維度 ...」
 - 單維度：「執行 vault-audit 維度 N（XXX）...」
 - 修復：「執行 vault-audit + fix ...」
 
@@ -454,7 +502,7 @@ done
 ## 摘要
 - 模式：全量 / 單維度（X） / 修復
 - 總體狀態：OK / Warning / Error
-- 維度通過：X / 10
+- 維度通過：X / 13
 
 ## 維度結果
 
@@ -477,24 +525,18 @@ done
 - [需跑 vault-insight 的]：建議跑 insight skill
 ```
 
-### Step 4：寫入 changelog.md
+### Step 4：追加 wiki/log.md 一筆
 
-追加格式：
+追加到 `memory/Sens_wiki/wiki/log.md`（動作=健檢、標籤=audit；最新在上、加在檔首說明分隔線下方）：
 
 ```markdown
-## [YYYY-MM-DD HH:MM] audit | <模式> | <維度數>
-
-**模式**：全量 / 單維度（N） / 修復
-
-**結果**：
-- 維度 1 矛盾：<status>（命中數）
-- 維度 2 過時：<status>（命中數）
-...
-
-**主要發現**：[3-5 句濃縮]
-
-**下一步建議**：[1-3 條]
+## [YYYY-MM-DD HH:MM] 健檢(audit) | 全量 / 單維度（N） / 修復，13 維度 X 通過
+- 變更：稽核 ERP_Vault，<總體狀態 OK / Warning / Error>；維度 1 矛盾 <status>、維度 8 OQ <status>、...（只列非 OK 維度）
+- 動機：免（健檢類）
+- 衝突：無
 ```
+
+長敘事（逐維度命中清單、主要發現、下一步建議）留在對話報告，不灌進 log。
 
 ---
 
@@ -511,7 +553,7 @@ done
 1. 先全量稽核
 2. 對「可自動修復」項列出清單 + 取得 Miles 確認
 3. Miles 確認後執行修復
-4. 補一筆 changelog（標 fix）
+4. 追加 wiki/log.md 一筆（動作=健檢、標籤=audit，於變更行註記修復項）
 
 ---
 
@@ -528,7 +570,8 @@ done
 ## 七、Anti-Pattern（禁止行為）
 
 - ❌ **跑於 ERP_Vault 以外的目錄**（範圍嚴格限制）
-- ❌ **未產出對話報告，只追加 changelog**（Miles 看不到）
+- ❌ **未產出對話報告，只追加 wiki/log.md**（Miles 看不到）
+- ❌ **讀寫 `00-meta/changelog.md`**（已凍結封存，操作史統一寫 wiki/log.md）
 - ❌ **修復模式未經 Miles 確認直接動檔**
 - ❌ **誇大判定**（OK 報成 Warning，導致信號疲勞）
 - ❌ **跳過維度卻不標註原因**（透明性）
@@ -545,7 +588,7 @@ done
 ## 摘要
 - 模式：全量
 - 總體狀態：Warning（2 個維度 Error，5 個 Warning，3 個 OK）
-- 維度通過：3 / 10
+- 維度通過：3 / 13
 
 ## 維度結果
 

@@ -11,7 +11,7 @@ description: >
     1. 禁空洞讚美（「Vault 結構良好」「資料完整」等無 actionable 內容）
     2. 禁無下一步（每個 insight MUST 帶具體 action，含負責人與時程）
     3. 禁無 source（每個 insight MUST 指向具體卡 / OQ / spec / commit）
-    4. 禁重複（跑前 MUST 讀 changelog，避免報相同議題）
+    4. 禁重複（跑前 MUST 讀 wiki/log.md 最近條目，避免報相同議題）
     5. **禁讀 status=raw 的 raw 卡**（只讀 status=ingested 或 reviewed）— 防 self-amplification（對應 vault-ingest 防線 4）
   範圍：**只處理 ERP_Vault 內容**，不涉及 Prototype / 程式碼 / 對外發布。
   不適用：日常對話回應、單一卡片內容問題、純技術稽核（用 vault-audit）。
@@ -34,17 +34,17 @@ ERP_Vault 跨主題模式識別與下一步提煉工具。
 | 角色 | 沒有 vault-insight 時 | 有 vault-insight 後 |
 |------|---------------------|----------------------|
 | Miles | 各 OQ 獨立看，難識別「12 個 OQ 中有 4 個是同一根本議題」 | insight 卡明確指出「角色 alignment 是系統性議題，建議一次性處理」 |
-| Claude | 每次跑 audit 都從零分析 | 讀 changelog 累積結論，避免重複勞動 |
+| Claude | 每次跑 audit 都從零分析 | 讀 wiki/log.md 累積結論，避免重複勞動 |
 | Phase 進度 | Phase 1 / 2 / 3 KPI 對照靠 Miles 手動回顧 | insight 主動識別「哪個 Phase 卡在哪」+「下一步」 |
 
 ---
 
 ## 二、工作流程（5 步）
 
-### Step 1：讀 changelog（避免重複）
+### Step 1：讀 wiki/log.md 最近條目（避免重複）
 
 ```bash
-cat /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/00-meta/changelog.md
+cat /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/log.md
 ```
 
 - 最近 3 筆 audit / insight 紀錄
@@ -55,7 +55,7 @@ cat /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/00-meta/changelog.md
 
 | 觸發情境 | 必讀素材 |
 |---------|---------|
-| **手動 / 通用** | `03-roles/_alignment-report.md` + `08-open-questions/` 全部 + `00-meta/changelog.md` 最近 3 筆 + **`raw/` status=ingested 或 reviewed 卡**（2026-05-21 新增）|
+| **手動 / 通用** | `03-roles/_alignment-report.md` + `08-open-questions/` 全部 + `wiki/log.md` 最近 3 筆 + **`raw/` status=ingested 或 reviewed 卡**（2026-05-21 新增）|
 | **OQ 累積** | `08-open-questions/` 全部 + `08-open-questions/README.md` |
 | **Phase 切換** | `01-products/phases.md` + `success-metrics.md` + `01-products/kpi/` |
 | **change archive 後** | 該 change 的 design.md / proposal.md + Vault 受影響的 `04-business-logic/` / `05-entities/` 卡 |
@@ -199,18 +199,15 @@ expected-action-at: YYYY-MM-DD  # 建議完成時程
 - YYYY-MM-DD：status → resolved（已完成）
 ```
 
-### Step 5：更新 changelog
+### Step 5：追加 wiki/log.md 一筆（動作=健檢、標籤=insight）
 
-追加至 `00-meta/changelog.md`：
+追加至 `memory/Sens_wiki/wiki/log.md`（最新在上，加在檔首說明分隔線下方）：
 
 ```markdown
-## [YYYY-MM-DD HH:MM] insight | <觸發來源>
-
-**輸出**：[[../12-insights/YYYY-MM-DD-主題slug]]
-
-**關鍵推論**：[1-2 句濃縮]
-
-**下一步 actions 數**：N
+## [YYYY-MM-DD HH:MM] 健檢(insight) | <觸發來源>
+- 變更：產出 [[../12-insights/YYYY-MM-DD-主題slug]]；關鍵推論 <1-2 句濃縮>；下一步 actions 數 N
+- 動機：跨主題模式識別，提煉系統性議題與下一步
+- 衝突：無
 ```
 
 ---
@@ -289,9 +286,9 @@ Vault 結構良好，資料完整。
 
 ### 反例 4：重複歷史 insight
 
-跑前未讀 changelog，又寫一次同主題 insight。
+跑前未讀 wiki/log.md，又寫一次同主題 insight。
 
-**正例**：跑前必讀 changelog，若已有 open / in-progress insight 同主題，**跳過或補強既有卡**而非新建。
+**正例**：跑前必讀 wiki/log.md 最近條目，若已有 open / in-progress insight 同主題，**跳過或補強既有卡**而非新建。
 
 ---
 
@@ -346,7 +343,7 @@ last-reviewed: YYYY-MM-DD
 | Phase 切換 | 本 skill 主動建議 Miles |
 | change archive 後 | 本 skill 主動建議 Miles |
 | OQ 透過 insight 識別為系統性議題 | 將既有 OQ 連結至 insight 卡，OQ frontmatter `related-insight` 標註 |
-| insight resolved 後 | 移至 `12-insights/_archives/<YYYY>/`；更新 changelog |
+| insight resolved 後 | 移至 `12-insights/_archives/<YYYY>/`；追加 wiki/log.md 一筆（健檢 / insight）|
 
 ---
 
@@ -354,7 +351,7 @@ last-reviewed: YYYY-MM-DD
 
 執行前 Claude 自我檢查：
 
-- [ ] 已讀 changelog 最近 3 筆？
+- [ ] 已讀 wiki/log.md 最近 3 筆？
 - [ ] 已讀目標素材（依觸發情境）？
 - [ ] 是否有現有 open / in-progress insight 涵蓋相同主題？
 - [ ] 觀察 ≥ 3 條具體事實？
@@ -375,7 +372,7 @@ last-reviewed: YYYY-MM-DD
 <手動 / OQ 累積 / phase 切換 / change archive / audit 接續>
 
 ## 讀取素材
-- changelog 最近 3 筆
+- wiki/log.md 最近 3 筆
 - <其他素材清單>
 
 ## 識別出的 insight
@@ -388,8 +385,8 @@ N 個 insight：
 
 ### Insight 2：...
 
-## 寫入 changelog
-追加 N 筆紀錄。
+## 寫入 wiki/log.md
+追加 N 筆紀錄（健檢 / insight）。
 
 ## 後續建議
 - Miles 優先處理 priority high 的 X 個 action
@@ -412,9 +409,9 @@ N 個 insight：
 
 | 操作 | 工具 |
 |------|------|
-| 讀 changelog / OQ / alignment-report | Read |
+| 讀 wiki/log.md / OQ / alignment-report | Read |
 | 跨卡 grep | Grep / Bash |
 | 看 commit 頻率 | Bash `git log` |
 | 寫 insight 卡 | Write |
-| 更新 changelog | Edit（追加） |
+| 追加 wiki/log.md | Edit（追加） |
 | 列出 insight 清單 | Bash `ls 12-insights/` |

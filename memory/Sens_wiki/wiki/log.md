@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-10 22:30] 納入(amend) | 收斂雙層 log 為單一操作史＋發布狀態撤出 wiki
+- 變更：[[log]] 升為全知識庫唯一只追加層（檔首格式擴充：HH:MM＋次級標籤＋動機行）；[[changelog]] 原地凍結封存（status: archived＋停更宣告，內容原樣保留）；[[wiki-schema]] § 四加「frontmatter 禁含外部系統狀態欄位」鐵則＋§ 九加對應 Anti-Pattern、刪三處 notion 欄位範例；[[erp_index]] changelog 列改標凍結；[[index|總目錄]] 治理規則行改指 [[log]]；27 張正本卡（05 實體 ×11、06 狀態機 ×12、07 情境 ×1、13 US ×3）刪「迭代脈絡見 [[changelog]]」尾行；6 張範本（_template-entity / _template-role / _template-scenario / _template-state-machine / _template-test-case / 13 US _template）迭代史措辭改「歷史見 wiki/log.md 與 git」並刪 notion 欄位；[[訂單異動狀態]] 關聯行改新反查寫法；[[TC-ORD-001-補收免審直達已執行驗收]] 刪 business-logic-changelog 死引用；30 張卡的 notion-published-at / notion-page-url 現值遷入 `memory/erp/notion-publish-manifest.md`（新建，發布管線唯一狀態正本）後自卡刪除。
+- 動機：Miles 拍板——雙層 log 同一異動記兩筆且卡片索引覆蓋率不到一成（承諾已破產）；發布狀態是管線家務不是商業知識，wiki 須獨立維護不與外部系統耦合；卡的迭代脈絡由「搜 [[卡名]] 命中本檔條目＋git 歷史」取代手工索引，決策脈絡歸 OQ 卡（BRD 層自足，OpenSpec 為下游不得作動機來源）。設計全文：`docs/superpowers/specs/2026-06-10-wiki-log-consolidation-design.md`。
+- 衝突：無。配套同步（vault 外）：7 個 vault 治理 skill＋3 個發布 skill＋CLAUDE.md 路由表＋sens-wiki.md § 四改寫；vault-audit 新增維度 16「log 條目完整性」。
+
 ## [2026-06-10 21:03] 納入(amend) | 狀態機範本 v3：定位宣言＋BRD 自足全局重寫
 - 變更：`_template-state-machine.md` 全局重寫——新增 § 〇定位宣言（wiki＝公司商業記憶、第一讀者＝不做 ERP 的 PM；狀態機卡＝狀態詞彙正本＋商業邏輯在單據處境維度的投影；內容判準＝紙本測試、表達判準＝商業語言；範圍外＝防實作腦補的防護欄，易腦補主題須點名「存在但不在本卡」）；產出格式收斂七段（刪文字流程圖表徵、刪正文來源段、正文零實作規格引用）；每節附目的句、每條 MUST 附理由；六步流程加每步產出欄；擴張準則改「過長→先歸位→仍長才評估拆卡」；稽核維度重編 14 項（新增 BRD 自足、範圍外防護）；UML 記法規約吸收 Miles 的複合狀態邊界取消轉換寫法。
 - 動機：Miles 指示以 wiki 本質全局重思後拍板四裁決——BRD 必須自足（第一讀者讀不到實作文件）、刪文字流程圖保精簡可維護、讀者定義取代優先序排解、動機歸屬以商業語言為界；範本「照抄無理由」問題以每規則附理由根治（默會知識顯性化，源自 Human SOP 轉 agentic workflow 方法論）。

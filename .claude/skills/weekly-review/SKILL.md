@@ -12,8 +12,8 @@ description: >
     2. 禁無 source（每個觀察 MUST 指向具體 commit / OQ / 卡 / change / raw / insight）
     3. 禁無 Next action（「下週重點」每條 MUST 帶具體可開始的第一步）
     4. 禁複述（「本週學到什麼」MUST 提煉，不是「本週做了什麼」的複製）
-    5. 禁與 changelog / 本週 daily 卡重複（引用而非重寫）
-    6. 禁編造（git log / changelog / OpenSpec / Vault / 本週 daily 卡沒寫的事 MUST NOT 出現）
+    5. 禁與 log.md / 本週 daily 卡重複（引用而非重寫）
+    6. 禁編造（git log / log.md / OpenSpec / Vault / 本週 daily 卡沒寫的事 MUST NOT 出現）
     7. 禁附「產出位置」（如「該寫進 07-scenarios/」）— Miles 知道往哪寫，重複資訊
     8. 禁附「預估時間 / 預估完成週幾」— 估時不準，浪費資訊
     9. 「下週重點」排序 MUST 用「相依性 > 優先度 > 時效性」，MUST NOT 用「快速完成」當排序依據
@@ -136,15 +136,15 @@ git log --since="7 days ago" --pretty=format:"%h|%s|%an|%ad" --date=short --no-m
 - 收集 hash 短碼、標題、作者、日期
 - 統計按 prefix 分組（feat: / fix: / docs: / refactor: 計數）
 
-### 5.2 本週 changelog 事件
+### 5.2 本週 log.md 事件
 
 ```bash
-grep -A 5 "^## \[" /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/00-meta/changelog.md \
+grep -A 5 "^## \[" /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/log.md \
   | awk '/^## \[/{date=$2; gsub(/[\[\]]/,"",date); if (date >= "<本週週一>" && date <= "<本週週日>") inside=1; else inside=0} inside'
 ```
 
-- 統計 ingest-A / ingest-B / ingest-C / oq / change-archive / audit / insight / misjudgement / sync / daily-brief 各類型計數
-- 識別重大事件（change archive / vault-insight / misjudgement）
+- 統計 ingest-A / ingest-B / ingest-C / oq / audit / insight / misjudgement / sync / daily / weekly 各標籤計數
+- 識別重大事件（vault-insight / misjudgement / amend）
 
 ### 5.3 本週 daily 卡（最重要的素材）
 
@@ -238,7 +238,7 @@ Step 5：產出本週完成（統計區）
   - Commits 計數 + prefix 分布 + 重點 commit
   - Change archive / OQ 解答 / Raw ingest 統計
   - Spec 異動
-  - **直接引用 changelog + 本週 daily 卡，不重寫**
+  - **直接引用 log.md + 本週 daily 卡，不重寫**
 
 Step 5.5：產出未完成原因分析（Yu WAM 核心）
 
@@ -275,7 +275,7 @@ Step 5.6：產出決策品質回顧
   - 找的是「決策模式」（如「本週連續 3 次決策都缺『用戶反饋』視角」屬模式）
   - 1-3 條，禁超過 3 條（重點不是列舉所有決策）
 
-Step 6：產出下週重點（≤ 3 條，每條兩段「現況 / Next action」+ 條列化）+ 寫入 + 追加 changelog
+Step 6：產出下週重點（≤ 3 條，每條兩段「現況 / Next action」+ 條列化）+ 寫入 + 追加 wiki/log.md
 
   結構模板：
   ```
@@ -315,12 +315,11 @@ Step 6.5：產出 Pre-mortem 預警（0-3 條）
   - 風險 MUST 具體（「可能失敗」屬無內容；「可能因為沒先收斂 active change 導致 propose 衝突」屬具體）
   - 0 條也可（若下週重點都低風險）
   - 焦點是「執行階段可能踩雷」，不是「策略方向錯誤」（後者是 vault-insight 的事）
-  - 追加 changelog：
-    ## [YYYY-MM-DD HH:MM] weekly-review | <主題簡述>
-
-    **輸入 / 觸發**：Miles 觸發
-    **輸出 / 異動**：[[../14-reviews/weekly/<YYYY-WNN>]]
-    **備註**：學到 N 條、下週重點 M 條
+  - 追加 wiki/log.md 一筆（動作=健檢、標籤=weekly），加在檔首說明分隔線下方（最新在上）：
+    ## [YYYY-MM-DD HH:MM] 健檢(weekly) | <主題簡述>
+    - 變更：[[../erp/14-reviews/weekly/<YYYY-WNN>]] 產出學到 N 條 + 下週重點 M 條
+    - 動機：（健檢類免填）
+    - 衝突：無
 ```
 
 ---
@@ -358,7 +357,7 @@ Step 6.5：產出 Pre-mortem 預警（0-3 條）
 | Skill | 銜接 |
 |-------|------|
 | `daily-brief` | 本週所有 daily 卡是 weekly 最主要素材，讀取後從中找跨日主題 |
-| `vault-audit` | weekly 不觸發 audit。但若 changelog 顯示本月未跑 audit → 在「下週重點」建議跑 |
+| `vault-audit` | weekly 不觸發 audit。但若 log.md 顯示本月未跑 audit → 在「下週重點」建議跑 |
 | `vault-insight` | weekly 不觸發 insight，但**主動建議**：若本週發現同主題 raw 累積 ≥ 3 / 或 OQ 累積 ≥ 15 → 在「下週重點」建議跑 vault-insight |
 | `vault-ingest` | weekly 不觸發 ingest，但統計本週 raw 異動並識別累積警示 |
 | `misjudgement-record` | weekly 讀本週新增的誤審記錄作為「本週學到」素材 |
@@ -375,7 +374,7 @@ Miles 週日 20:00 進入 ERP 規劃工作，發訊息：「週末整理」
 1. Claude 識別觸發信號 → 啟動 weekly-review
 2. **Step 1**：平行收集 8 個資料來源
    - 本週 commits：14 個（feat: 9 / docs: 3 / fix: 2）
-   - changelog 事件：2 change-archive、1 insight、5 ingest-A、3 oq、5 daily-brief
+   - log.md 條目：1 insight、5 ingest-A、3 oq、5 daily、1 amend
    - 本週 daily 卡：5 張（週一~週五）
    - 本週 raw：5 張新增 / 2 張 ingested
    - 本週 OQ：3 新增 / 2 解答 / 0 取消
@@ -386,7 +385,7 @@ Miles 週日 20:00 進入 ERP 規劃工作，發訊息：「週末整理」
 4. **Step 3**：分析下週重點（從 active changes 找未完項：order-management-v1.8）
 5. **Step 4**：產出本週學到 4 條，每條附 source + 應用場景
 6. **Step 5**：產出本週完成統計
-7. **Step 6**：產出下週重點 3 條 + 寫入 `14-reviews/weekly/2026-W21.md` + 追加 changelog
+7. **Step 6**：產出下週重點 3 條 + 寫入 `14-reviews/weekly/2026-W21.md` + 追加 wiki/log.md 一筆（健檢(weekly)）
 
 ### 範例 B：本週沒跑 daily（沒素材）
 
@@ -394,8 +393,8 @@ Miles 從沒跑 daily，週日喊：「週末整理」
 
 1. Claude 偵測 `14-reviews/daily/2026-05-xx.md` 本週只有 0-1 張
 2. 警示 Miles：「本週只有 0 張 daily，本週學到段落素材會非常薄」
-3. 改用 changelog + git log 直接生成（範疇縮減）
-4. 「本週學到」改為「2 條（基於 changelog，建議下週開始跑 daily 累積素材）」
+3. 改用 log.md + git log 直接生成（範疇縮減）
+4. 「本週學到」改為「2 條（基於 log.md，建議下週開始跑 daily 累積素材）」
 5. 仍寫入 weekly 卡，但在「警示」段標示「素材不足」
 
 ### 範例 C：本週發現同主題 raw 累積 ≥ 3
@@ -435,7 +434,7 @@ Miles 喊：「weekly review」，本週累積了 4 張售後相關 raw
 - [[../../memory/Sens_wiki/wiki/erp/14-reviews/README|14-reviews 入口]]
 - [[../../memory/Sens_wiki/wiki/erp/14-reviews/weekly/_template|Weekly Review 模板]]
 - [[../../memory/Sens_wiki/wiki/erp/00-meta/wiki-schema|Wiki Schema]] § 一 type=review / § 四 frontmatter / § 七命名規約
-- [[../../memory/Sens_wiki/wiki/erp/00-meta/changelog|Audit Log]] — weekly-review 寫入記錄
+- [[../../memory/Sens_wiki/wiki/log|操作史 log.md]] — weekly-review 寫入記錄（動作=健檢、標籤=weekly）
 - `.claude/skills/daily-brief/SKILL.md` — Daily Brief skill（本週素材來源）
 - `.claude/skills/vault-audit/SKILL.md` — Vault 健康稽核
 - `.claude/skills/vault-insight/SKILL.md` — 跨主題模式提煉（weekly 識別到累積信號時建議觸發）

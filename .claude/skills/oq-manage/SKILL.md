@@ -62,8 +62,6 @@ related-oq:
 expected-resolution-at: YYYY-MM-DD  # 可選
 answered-at: YYYY-MM-DD             # status=answered 時填
 answered-by: <角色或姓名>            # status=answered 時填
-notion-published-at: YYYY-MM-DD     # 若已推送 Notion 對外確認時填
-notion-page-url: <URL>              # 若已推送則記錄頁面
 ---
 ```
 
@@ -389,7 +387,7 @@ OQ 清單：
 
 - 本 skill **不主動推送 Notion**
 - 由 Miles 觸發「Vault → Notion 彙整推送」時，OQ 與其他 Vault 內容一起被組合成 BRD 推送
-- 推送後在 OQ 卡 frontmatter 補 `notion-published-at` 與 `notion-page-url`
+- 推送後更新 manifest（`memory/erp/notion-publish-manifest.md` 對應列的 Notion URL + 最後推送日），不回寫 wiki 卡 frontmatter
 
 ---
 

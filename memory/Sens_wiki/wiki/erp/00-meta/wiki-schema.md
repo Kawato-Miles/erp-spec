@@ -102,6 +102,8 @@ business-domain:
 
 ## 四、各 type 必填 Frontmatter 欄位
 
+> **鐵則：卡片 frontmatter 禁含外部系統狀態欄位**（2026-06-10 新增）。「這張卡何時被推到哪個外部系統」是發布管線的狀態，不是商業知識——對外發布追蹤（Notion URL / 最後推送日）唯一正本在 `memory/erp/notion-publish-manifest.md`，由發布類 skill 維護，全程不回寫 wiki 卡。性質同「source 禁指 OpenSpec」：wiki 獨立維護，不與外部系統耦合。
+
 ### 4.0 往上指依據、往下指實作的通則（2026-05-31 新增）
 
 > 對齊 [[erp_index]] § 一連結方向。所有承載商業邏輯的卡（`business-rule` / `service-blueprint` / `entity` / `state-machine` / `scenario` / `role` / `user-story` / `test-case`）採「往上 `source` + 往下 `implemented-by`」兩欄連結，整張圖的連結不會繞回自己。
@@ -292,8 +294,6 @@ related-test-cases:                         # 往下的驗收：Vault test-case 
 prerequisites:                              # 相依性（2026-05-22 新增）：本 US 執行前須完成的前置動作
   - "[[<US-XX-NNN>]]"                       # 其他 user story（具體 wiki link）
   - "<系統行為或角色準備動作的文字描述>"   # 如「系統自動分派完成」「審稿主管已維護能力等級」
-notion-published-at: YYYY-MM-DD             # 推送後填
-notion-page-url: <URL>                      # 推送後填
 ---
 ```
 
@@ -327,7 +327,6 @@ source:                                      # 往上層 = 正確性根據，必
 implemented-by:                              # 往下層 = 導航 / 覆蓋，可多值 / 可留空=待實作；指 OpenSpec spec 檔層不綁標題錨點 / Prototype e2e；見 § 4.0
   - "openspec/specs/<module>/spec.md"
   - "sens-erp-prototype/tests/e2e/<spec>.spec.ts"   # 若已實作
-notion-page-url: <Notion ERP Test Case DB 該卡 URL>   # 必填（正文落點，Vault 不放正文；推送後填）
 provenance-commit: <SHA>                     # 可選但建議：上次對齊 commit，供 stale 偵測
 last-passed-at: YYYY-MM-DD                    # 可選：上次 UAT 驗收通過日期（執行後回填）
 ---
@@ -360,8 +359,6 @@ related-oq:
 expected-resolution-at: YYYY-MM-DD  # 可選但建議填
 answered-at: YYYY-MM-DD  # status=answered 時填
 answered-by: <角色或姓名>
-notion-published-at: YYYY-MM-DD  # 若已推 Notion
-notion-page-url: <URL>
 ---
 ```
 
@@ -733,6 +730,7 @@ related-changes:                   # 本期涉及的 openspec change
 - ❌ `source` 鏈繞回自己（違反連結不繞回自己，見 § 六維度 15）
 - ❌ `source` 指向 OpenSpec spec 路徑（方向顛倒，應改 `implemented-by` 或改指上層 Vault 卡）
 - ❌ test-case `source` 未指 user-story 卡（驗收項目未依操作步驟）
+- ❌ 卡片 frontmatter 含外部系統狀態欄位（`notion-published-at` / `notion-page-url` 等——發布追蹤唯一正本在 `memory/erp/notion-publish-manifest.md`，見 § 四鐵則）
 
 ## 十、與其他規範的關係
 

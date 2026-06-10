@@ -92,8 +92,6 @@ related-test-cases:                         # 往下的驗收：Vault test-case 
 prerequisites:                              # 相依性（禁用串接故事代替）
   - "[[US-<MODULE>-<NNN>-<前置故事>]]"
 source-gap: false                           # 補不出上層依據時設 true
-notion-published-at: YYYY-MM-DD             # mode B 推送後填
-notion-page-url: <URL>                      # mode B 推送後填
 ---
 ```
 
@@ -242,12 +240,12 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 
 ## 模式 B：推送 Notion
 
-### Step B1：列出待推送清單（change-driven delta + frontmatter 兩路取聯集）
+### Step B1：列出待推送清單（change-driven delta + manifest 兩路取聯集）
 
 掃 `13-user-stories/<module>/` 內 user-story 卡，列出：
 - status=active
 - **change-driven delta**：依 iteration-delta-publish（已移除） 算出受 archived change 影響的卡（只反映 `openspec/changes/archive/`，active change 不納入）；對映後做覆蓋檢查（每個 change 至少對映一張卡，無對映者揭露為覆蓋缺口 → 補卡或記 OQ）
-- **frontmatter 判定**：`notion-published-at` 為空 / 距今 > 60 天 / 自上次推送後 `last-reviewed` 有更新
+- **manifest 判定**：卡不在 `memory/erp/notion-publish-manifest.md` = 從未推送；最後推送日距今 > 60 天；或卡 `last-reviewed` 晚於最後推送日
 
 待推送清單 = 上述兩路**取聯集**。並報告給 Miles 確認推送範圍。
 
@@ -285,16 +283,11 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
    - 不存在 → `notion-create-pages`（create）
 3. **禁建重複條目**
 
-### Step B5：回填 Vault frontmatter（MUST，不可略）
+### Step B5：更新 manifest（MUST，不可略）
 
-對每張推送成功的卡：
+對每張推送成功的卡，在 `memory/erp/notion-publish-manifest.md` 對應列更新（卡已存在）或新增（卡未列入）一列，填入 Notion URL 與最後推送日（當天）。**全程不修改 wiki 卡**（發布狀態不回寫 frontmatter）。
 
-```yaml
-notion-published-at: <當天>
-notion-page-url: <Notion 頁面 URL>
-```
-
-**強制回填，禁略**：未回填會導致下次 Step B1 的 change-driven delta 與 frontmatter 判定雙雙失準。教訓：訂單模組曾整批推送 Notion 卻全未回填，35 張卡 `notion-published-at` 全空，delta 偵測只能靠查 Notion 缺項兜底（見 iteration-delta-publish（已移除） § 四）。
+**強制更新，禁略**：狀態若不即時更新 manifest，下次 Step B1 的 change-driven delta 與 manifest 判定雙雙失準。教訓：訂單模組曾整批推送 Notion 卻全未更新追蹤狀態，35 張卡狀態全空，delta 偵測只能靠查 Notion 缺項兜底。
 
 ### Step B6：報告與 commit
 
@@ -310,7 +303,7 @@ docs: 推送 N 條 user story 至 Notion 發布版本
 
 - 新增：US-XX-NNN, US-XX-NNN+1 ...
 - 更新：US-XX-NNN-x, ...
-- 已回填 notion-published-at + notion-page-url
+- 已更新 notion-publish-manifest.md（Notion URL + 最後推送日）
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 ```

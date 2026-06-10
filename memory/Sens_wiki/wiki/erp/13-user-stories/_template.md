@@ -74,8 +74,6 @@ prerequisites:                                 # 相依性：本 US 執行前須
   - "[[US-<MODULE>-<NNN>-<前置故事>]]"          # 其他 user story（具體 wiki link）
   - "<系統行為或角色準備動作的文字描述>"        # 如「系統自動分派完成」「審稿主管已維護能力等級」
 source-gap: false                              # 補不出上層依據時設 true，待專輪回填
-notion-published-at: 2026-MM-DD                 # 推送後填
-notion-page-url: <URL>                          # 推送後填
 ---
 
 # US-<MODULE>-<NNN> <標題：動詞 + 名詞片語，繁體中文>

@@ -42,8 +42,6 @@ related-oq:
 expected-resolution-at: YYYY-MM-DD   # 可選
 answered-at: YYYY-MM-DD              # status=answered 時填
 answered-by: <角色或姓名>             # status=answered 時填
-notion-published-at: YYYY-MM-DD      # 若已推送 Notion 對外確認時填
-notion-page-url: <URL>               # 若已推送則記錄頁面
 ---
 ```
 
@@ -127,7 +125,7 @@ notion-page-url: <URL>               # 若已推送則記錄頁面
 
 - **Notion OQ DB 為對外確認版**（彙整推送時更新）
 - 推送依 Miles 觸發，oq-manage skill 不主動推 Notion
-- 推送後 OQ 卡 frontmatter 補 `notion-published-at` 與 `notion-page-url`
+- 推送後更新 `memory/erp/notion-publish-manifest.md` 對應列（不回寫 OQ 卡 frontmatter）
 
 ## 五、相關文件
 

@@ -79,7 +79,7 @@ description: >
 ### Step A3：建立 Vault 索引卡
 
 1. 複製 [[../../memory/Sens_wiki/wiki/erp/15-test-cases/_template-test-case|_template-test-case]] 範本內容。
-2. 填 frontmatter（type=test-case / tc-id / module / business-domain / status / last-reviewed / source↑user-story / implemented-by↓ / notion-page-url 先留待 Step A4 後回填）。
+2. 填 frontmatter（type=test-case / tc-id / module / business-domain / status / last-reviewed / source↑user-story / implemented-by↓）。Notion URL 不入 frontmatter，於 Step A4 後更新 manifest（`memory/erp/notion-publish-manifest.md`）。
 3. 寫「這張卡要回答的問題」（以驗收問題列出，對應 happy/edge）。
 4. 寫「營運背景」（2-3 句業務語言，連回 user-story 動機）。
 5. 填「測試案例索引」：happy / edge 兩張表，逐案列案例編號（`TC-XX-NNN-H1` / `-E1`，語意前綴 H/E 不重排不重用）+ 一行情境摘要（含具體輸入值）。**正文不寫在此**。
@@ -93,7 +93,7 @@ description: >
 - **測試步驟**：業務動作，**禁 UI 點擊措辭**（「業務對該訂單發起補收 6000」）。
 - **預期結果**：可勾稽驗收值（「訂單異動狀態=已執行、應收由 1000 變 7000、未產生待主管審核項」）。
 
-Notion DB 與屬性見 § Notion 對應。建立後取得各案例 Notion URL，回填 Vault 索引卡的 happy/edge 表「Notion 連結」欄與 frontmatter `notion-page-url`。
+Notion DB 與屬性見 § Notion 對應。建立後取得各案例 Notion URL，回填 Vault 索引卡的 happy/edge 表「Notion 連結」欄，並更新 manifest（`memory/erp/notion-publish-manifest.md` 對應列的 Notion URL + 最後推送日，不回寫 wiki 卡 frontmatter）。
 
 ### Step A5：回填 user-story 雙向連結
 
@@ -148,7 +148,7 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 
 ### Step C1：列待推送清單
 
-掃 `15-test-cases/<module>/`，列 status=active 且 `notion-page-url` 空 / 正文有更新者，報 Miles 確認範圍。
+掃 `15-test-cases/<module>/`，列 status=active 且未列入 `memory/erp/notion-publish-manifest.md`（從未推送）/ 正文有更新者，報 Miles 確認範圍。
 
 ### Step C2：Notion 對應
 
@@ -171,7 +171,7 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 
 ### Step C4：回填與 commit
 
-回填 Vault 索引卡 `notion-page-url`（與各案例 URL）；commit 推送清單。
+更新 manifest（`memory/erp/notion-publish-manifest.md` 對應列的 Notion URL + 最後推送日，不回寫 wiki 卡）；commit 推送清單。
 
 ---
 

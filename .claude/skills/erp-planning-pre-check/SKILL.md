@@ -12,7 +12,7 @@ description: >
     4. OpenSpec change 工作流（`/opsx:propose` / `/opsx:new`）背景對齊階段
 
   範圍：**只處理 ERP_Vault know-how 稽核**。
-  輸出：對話報告（量化矩陣）+ 追加 changelog.md + 修補既有卡 + 缺漏項標 OQ。
+  輸出：對話報告（量化矩陣）+ 追加 wiki/log.md 一筆（動作=健檢、標籤=pre-check，只記摘要）+ 修補既有卡 + 缺漏項標 OQ。
   不適用：純查詢術語 / 狀態機（不涉及規劃）、Vault 整體健康稽核（用 vault-audit）。
 
   **執行者與稽核者分離**（受 YouTube /goal 影片啟發）：稽核 sub-agent 跑稽核，主對話 agent 跑修補；MUST NOT 同 agent 自審。
@@ -164,32 +164,18 @@ wiki 商業邏輯卡清單（涉及本主題、propose 前須先更新）：<列
 下一步：依稽核結果修補既有卡 + 標 OQ + Step 5 閉環驗證；wiki 商業邏輯卡待設計確認後、進入 propose 前更新（不在 pre-check 修、不等 archive 後才補）
 ```
 
-### changelog.md 追加
+### wiki/log.md 追加
 
-每次稽核完成 MUST 追加到 `memory/Sens_wiki/wiki/erp/00-meta/changelog.md`：
+每次稽核完成 MUST 追加到 `/Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/log.md` 一筆（動作=健檢、標籤=pre-check；最新在上、加在檔首說明分隔線下方）。**只記摘要一筆**（量化矩陣結論 + 修補卡清單），長敘事與決策軌跡留在對話與 OQ 卡，不灌長文進 log：
 
 ```markdown
-## YYYY-MM-DD <領域> 第一輪稽核（議題：<議題名稱>）
-
-### 雙軸量化矩陣
-| | 角色 | 實體 | 流程 | 情境 | User Story | 業務邏輯 | 法規 |
-|--|...|...|...|...|...|...|...|
-
-### 修補項清單
-- <卡 X 補 ... >
-
-### 新建 OQ 清單
-- <OQ-ID>：<議題>
-
-### wiki 商業邏輯卡清單（propose 前須先更新）
-- <ERP_Vault 卡路徑>：<本次設計定案後將被改寫的內容摘要>
-
-### Step 5 閉環驗證結果
-- <格子變化紀錄>
-
-### 反模式識別（若有）
-- <反模式名稱>：<情況描述>（追加到 audit-failure-patterns.md）
+## [YYYY-MM-DD HH:MM] 健檢(pre-check) | <領域> 稽核（議題：<議題名稱>）
+- 變更：量化矩陣 <已涵蓋總 N / 待修補總 M / OQ 總 K>；修補 [[卡A]]、[[卡B]]；新建 OQ <BI-/ORD- ID 清單>
+- 動機：免（健檢類）
+- 衝突：無
 ```
+
+逐格量化矩陣、Step 5 閉環驗證、wiki 商業邏輯卡清單、反模式識別等明細留在對話報告；反模式另追加 audit-failure-patterns.md，不重複進 log。
 
 ---
 
@@ -267,3 +253,4 @@ wiki 商業邏輯卡清單（涉及本主題、propose 前須先更新）：<列
 |------|------|------|
 | v1.0 | 2026-05-28 | 初版建立（6 領域 × 7 卡類型雙軸 + 5 SOP 含閉環 + 執行者稽核者分離 + 五大反模式追蹤）|
 | v1.1 | 2026-05-30 | Step 4 + ack 模板 + changelog 模板新增「wiki 商業邏輯卡清單 + 定案後回補清單」產出（pre-check 不修卡、交棒 archive 階段回補）。原因：converge change 漏對齊 wiki 6 卡 — 規劃時沒列受影響 wiki 卡，archive 後也就漏回補；補「pre-check 不修卡 → 定案後回補」配對步驟 |
+| v1.2 | 2026-06-10 | 稽核操作史輸出由 `00-meta/changelog.md` 改為 wiki/log.md 一筆（動作=健檢、標籤=pre-check，只記摘要：量化矩陣結論 + 修補卡清單），長敘事與決策軌跡留對話與 OQ 卡。原因：`00-meta/changelog.md` 凍結封存，wiki/log.md 成全知識庫唯一只追加操作史 |
