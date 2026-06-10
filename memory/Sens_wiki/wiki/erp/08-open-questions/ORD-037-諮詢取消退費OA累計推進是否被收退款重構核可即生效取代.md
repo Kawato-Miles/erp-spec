@@ -5,7 +5,7 @@ module:
   - consultation-request
   - state-machines
 oq-id: ORD-037
-status: open
+status: answered
 priority: high
 audience: internal
 raised-at: 2026-06-03
@@ -14,6 +14,8 @@ source-link: openspec/specs/order-adjustment/spec.md + order-management/spec.md 
 related-vault:
   - "[[訂單異動規則]]"
   - "[[對帳一致性]]"
+answered-at: 2026-06-10
+answered-by: Miles
 related-oq:
   - ORD-003
   - ORD-033
@@ -53,3 +55,18 @@ related-oq:
 ### 方案 B：諮詢取消退費 OA 保留累計推進為訂單收退款模型重構 例外
 - 優點：維持 converge 當時 invariant 設計（半額退費留痕）
 - 缺點：同類退款 OA 兩套推進語意、main spec 須額外標例外、增認知負擔
+
+## 決議與理由
+
+**決議**：兩個 change 的機制皆被 2026-06-10 Miles 實務拍板的「確認可執行」模型取代，三路徑統一：
+
+1. 全狀態機「已執行」改名「**確認可執行**」（終態、不可逆），避免「聽起來像錢已退出去」的誤解。
+2. 「負向異動須審核」零例外——諮詢取消退費因金額固定改由**系統代審**（建單即自動推進「已核可」，主管退款審核佇列只留線下單），不是免審破例。
+3. 認列時點統一在進入「確認可執行」那一刻：補收＝建單生效時、一般退款＝主管核可時、諮詢取消＝**諮詢人員確認金額時**（確認前可調金額不重審、亦可取消不退）。
+4. 退款 Payment 完成**不回寫**單據狀態（converge change 的「累計達標推進」廢止；收退款重構的「核可即生效」對諮詢取消修正為「確認即生效」），金流完結由對帳應退差額核銷歸零盯住。
+
+**理由**：狀態承載「金額確認與認列」、金流完結由對帳層盯住——兩層分離，分次退款與建錯重退不再拉扯單據狀態；同時保留諮詢人員在認列前的金額把關窗口。
+
+**決策者**：Miles（2026-06-10，實務四點拍板＋四問確認）
+
+**落地**：[[訂單異動狀態]]、[[訂單異動規則]]、[[諮詢收尾規則]]、[[諮詢單狀態]]、order-adjustment / consultation-request / order-management 三份實作規格同步（2026-06-10）。

@@ -404,7 +404,7 @@ ConsultationRequest 狀態 MUST 維持「已轉需求單」終態不變（諮詢
 1. 系統 SHALL 建立諮詢訂單（type=諮詢、客戶資料來自 ConsultationRequest、總額 = 諮詢費 2000）
 2. 諮詢訂單上建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費 2000)
 3. Payment 從 ConsultationRequest 轉移至諮詢訂單（修改 linked_entity_type 與 linked_entity_id；Payment.amount 維持 +2000、status 維持 已完成）
-4. **系統 SHALL 自動建立 OrderAdjustment**（金額 = -1000、adjustment_type = `諮詢取消退費`、status = **已核可**、approved_by = system、approved_amount = -1000、executed_at = NULL、requires_supervisor_approval = false、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」）— **系統內生直接建為「已核可」**（approved_by=system 跳過人工待主管審核；executed_at 待退款 Payment 切已完成累計達 -1000 才寫入並推進「已執行」，對齊一般退款 OA 推進機制）
+4. **系統 SHALL 自動建立 OrderAdjustment**（金額 = -1000、adjustment_type = `諮詢取消退費`、status = **已核可**、approved_by = system、approved_amount = -1000、executed_at = NULL、requires_supervisor_approval = false、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」）— **系統內生直接建為「已核可」**（「負向異動須審核」不破例，因金額固定由系統代行審核；executed_at 待諮詢人員確認金額時寫入並推進「確認可執行」、應收於確認時認列；已核可階段可調整金額不需重審、亦可取消（決定不退））
 5. **系統 SHALL 自動建立退款 Payment**（amount = -1000、paymentMethod = 退款、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述 OA.id、linked_entity_type = Order、linked_entity_id = 諮詢訂單 ID）
 6. **系統 MUST NOT 自動開立任何 Invoice 或 SalesAllowance、MUST NOT 自動建立待開發票（BillingInstallment / PlannedInvoice）**（廢除諮詢專屬自動建待開發票；諮詢訂單留存 1000 收入由業務循一般訂單取消發票開立路徑於需要時手動開立，未開票風險由對帳「應收 > 發票淨額」差額警示兜底）
 7. **諮詢訂單 status 直接推進至「已取消」終態、paymentStatus = 已付款**（取代既有「訂單完成」；諮詢取消是「沒成交的生意」，語意應為已取消而非完成；不需製作中間態；退款 Payment 為已取消後的善後金流動作維持「處理中」）
@@ -414,13 +414,14 @@ ConsultationRequest 狀態 MUST 維持「已轉需求單」終態不變（諮詢
 
 **退款金流處理**：退款依原付款方式刷退，由第三方金流處理。ERP 只記錄取消事實與處理中退款 Payment，實際銀行撥款由第三方金流負責，撥款時程不承諾 SLA。
 
-**諮詢人員後續手動**（諮詢訂單已是「已取消」、以下為善後金流 / 稅務動作）：
-- 處理銀行退款金流（與第三方金流確認刷退完成）後，於 OA 編輯介面內將退款 Payment 切「已完成」；系統 SHALL 重算 OA 對應已完成 Payment 累計 = -1000 = OA.amount，同 transaction 推進 OrderAdjustment.status → 「已執行」、executed_at = now（金流完結 + OA 終態，不影響訂單「已取消」終態）
-- 需要開立諮詢費發票時，循一般訂單取消發票開立路徑手動開立（金額由諮詢人員依客戶需求決定，建議 1000 元）
+**諮詢人員後續手動**（諮詢訂單已是「已取消」、以下為善後動作）：
+- 與客戶確認退款金額後，執行「確認」：系統 SHALL 推進 OrderAdjustment.status → 「確認可執行」（終態、不可逆）、executed_at = now、**應收於此刻認列減去**；確認前可於 OA 編輯介面調整金額（不需重審）或取消 OA（決定不退）
+- 處理銀行退款金流（與第三方金流確認刷退完成）後，將退款 Payment 切「已完成」並上傳退款證明——退款 Payment 完成 MUST NOT 改變 OA 狀態（金流完結由對帳「應退差額」核銷歸零盯住）
+- 需要開立諮詢費發票或折讓時，循一般訂單取消開立路徑手動處理（金額由諮詢人員依客戶需求決定，建議 1000 元），使發票淨額、收款淨額與應收淨額對平
 - 主動通知客戶退款已處理（不入系統，由諮詢人員以電話 / Email 等管道執行）
 
-**對帳公式**：
-- 應收 = OEC(2000) + ∑已執行或已核可 OA(-1000) = 1000
+**對帳公式**（諮詢人員確認金額後；確認前 OA 不認列、應收 = 2000）：
+- 應收 = OEC(2000) + ∑確認可執行 OA(-1000) = 1000
 - 收款淨額 = Payment(+2000) + Payment(-1000) = 1000
 - 發票淨額 = 諮詢人員實際開立金額（人工負責，預設目標 1000 元）
 - 對帳邏輯：應收 = 收款淨額 = 1000 對帳通過；發票差異由訂單詳情頁既有對帳警示 banner 提示（「應收 > 發票淨額」= 待開票提醒）
@@ -441,14 +442,21 @@ ConsultationRequest 狀態 MUST 維持「已轉需求單」終態不變（諮詢
 - **AND** 退款 Payment 維持「處理中」（已取消後的善後金流動作）
 - **AND** ConsultationRequest 狀態 SHALL 推進至「已取消」、cancel_reason_category = dialog 選定值、linked_consultation_order_id = 新諮詢訂單 ID
 
-#### Scenario: 退款 Payment 切已完成推進 OA 已執行（善後金流、不影響已取消終態）
+#### Scenario: 諮詢人員確認金額推進 OA 確認可執行（認列點）
 
-- **GIVEN** 諮詢取消後諮詢訂單已是「已取消」、退款 Payment(P1: -1000、paymentStatus = 處理中、linkedOrderAdjustmentId = OA-c1) 存在、OA-c1 status = 已核可
+- **GIVEN** 諮詢取消後諮詢訂單已是「已取消」、OA-c1 status = 已核可（系統代審建立）、應收 = 2000（OA 未認列）
+- **WHEN** 諮詢人員與客戶確認退款金額後執行「確認」
+- **THEN** 系統 SHALL 推進 OA-c1.status → 「確認可執行」（終態、不可逆）、executed_at = now
+- **AND** 應收 SHALL 於此刻認列為 2000 − 1000 = 1000、對帳出現應退差額 1000
+- **AND** 諮詢訂單 status MUST 維持「已取消」
+
+#### Scenario: 退款 Payment 切已完成不改變 OA 狀態（金流完結由對帳盯住）
+
+- **GIVEN** OA-c1 status = 確認可執行、退款 Payment(P1: -1000、paymentStatus = 處理中) 存在
 - **WHEN** 諮詢人員處理銀行退款後將退款 Payment P1 切「已完成」並上傳退款證明附件
 - **THEN** 系統 SHALL 將 P1.paymentStatus 改為「已完成」
-- **AND** 系統 SHALL 重算 OA-c1 對應已完成 Payment 累計 = -1000 = OA.amount，同 transaction 推進 OA-c1.status → 「已執行」、executed_at = now
-- **AND** 諮詢訂單 status MUST 維持「已取消」（善後金流不再推進訂單狀態）
-- **AND** 對帳：應收 1000 = 收款淨額（+2000 - 1000）= 1000 對帳通過
+- **AND** OA-c1.status MUST 維持「確認可執行」（退款金流完結不回寫單據）
+- **AND** 對帳：應收 1000 = 收款淨額（+2000 − 1000）= 1000、應退差額歸零
 
 #### Scenario: 諮詢取消不自動開 Invoice / SalesAllowance / 待開發票
 
@@ -464,7 +472,7 @@ ConsultationRequest 狀態 MUST 維持「已轉需求單」終態不變（諮詢
 - **GIVEN** ConsultationRequest 狀態 ∈ {已轉需求單, 完成諮詢, 已取消}
 - **WHEN** 諮詢人員 / 業務主管嘗試點擊「取消諮詢」
 - **THEN** 系統 MUST 拒絕該動作
-- **AND** UI SHALL 顯示「諮詢結束分支已執行，無法退費」提示
+- **AND** UI SHALL 顯示「諮詢結束分支確認可執行，無法退費」提示
 
 #### Scenario: 取消 dialog 內容防呆
 
