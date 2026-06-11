@@ -121,7 +121,7 @@ last-reviewed: 2026-06-09
 | **Invoice 作廢** | `SalesAllowance`（超過時限改折讓）/ `Payment`（退款 Payment 反向）| 作廢期限 14 天 + 超期走折讓 |
 | **SalesAllowance 確認** | `Invoice`（折讓金額）| 折讓只掛 Invoice（不關聯退款 Payment，反查走訂單活動紀錄）|
 | **Payment 退款（負值）** | `OrderAdjustment.adjustment_type=退款`（核可即生效）/ `SalesAllowance`（金額總額對齊，不建 FK）/ `Invoice`（作廢或折讓）| 退款款項核銷對帳應退差額（不推進 OA）+ 折讓與退款金額在對帳總額層對齊 |
-| **OrderAdjustment 已執行** | `Payment`（退款款項核銷對帳應退差額）/ `Invoice`（作廢或折讓）/ `SalesAllowance`（建立）| 核可即生效（OA 已執行不綁 Payment 累計推進、不回退）|
+| **OrderAdjustment 確認可執行** | `Payment`（退款款項核銷對帳應退差額）/ `Invoice`（作廢或折讓）/ `SalesAllowance`（建立）| 核可即生效（OA 確認可執行不綁 Payment 累計推進、不回退）|
 | **BillingInstallment 自動建**（取代 PlannedInvoice）| `Order`（諮詢訂單收尾）/ `Invoice`（一鍵開票繼承 items[]）| 鏈式預填 + 不自動開立發票 |
 | **AfterSalesTicket 退款** | OA (responsibility=公司認賠 / 補退) / Payment / SalesAllowance | 跨售後 ticket 容器 |
 
