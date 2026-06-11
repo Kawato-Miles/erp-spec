@@ -701,7 +701,7 @@ interface OrderActivityLog {
 `useErpStore.cancelConsultation` action SHALL 將諮詢取消的諮詢訂單收斂為一般訂單取消形態：
 
 - 諮詢訂單 `status` 設為「**已取消**」（取代既有「訂單完成」）、`paymentStatus` 維持「已付款」
-- 自動建退款 `OrderAdjustment`：`status='已核可'`、`approvedBy='system'`、`approvedAmount=-1000`、`executedAt=null`、`requiresSupervisorApproval=false`（取代既有 `status='已執行'`）
+- 自動建退款 `OrderAdjustment`：`status='已核可'`、`approvedBy='system'`、`approvedAmount=-1000`、`executedAt=null`、`requiresSupervisorApproval=false`（取代既有 `status='已執行'`，Prototype 列舉值待 apply 階段改名）
 - **MUST NOT 自動建立 BillingInstallment**（移除既有 `newCancellationBI` + `cancellationBiEvent` 寫入）；`source_type='consultation_cancellation'` enum 值保留供業務手動建期次標示來源
 - 退款 Payment（-1000, 處理中）+ 收款 Payment（+2000, 已完成）+ OrderExtraCharge（+2000）維持既有
 - 寫 OrderActivityLog 留痕（OA 系統建立 + 後續業務調整金額事件）
@@ -751,23 +751,23 @@ interface OrderActivityLog {
 Prototype 資料層 SHALL 提供「退款核銷對帳應退差額」的 selector 與 store action，退款完成判定與 OrderAdjustment 累計**解耦**（訂單收退款模型重構）：
 
 **核心 selector**：
-- `getOrderReceivable(orderId)`：應收總額 = ∑印件費 + ∑OrderExtraCharge.amount + ∑(已執行 OrderAdjustment.amount)
+- `getOrderReceivable(orderId)`：應收總額 = ∑印件費 + ∑OrderExtraCharge.amount + ∑(確認可執行 OrderAdjustment.amount)
 - `getOrderPaymentNet(orderId)`：收款淨額 = ∑(已完成 Payment.amount，含退款負數，linked_entity = 當前訂單)
 - `getOrderRefundableGap(orderId)`：應退差額 = max(收款淨額 − 應收, 0)（> 0 即「退款待執行」；本 change 一律當該退，溢收 / 預收細分另議，見 BI-3）
 - `getOrderGapOwner(orderId)`：缺口第一責任人 = `order.sales_id`（訂單負責業務；監督人 = 該業務之主管，由角色關係推導，不新增欄位）
 
 **store action**：
-- 退款 Payment 建立（amount < 0, paymentMethod = 退款, `linkedOrderAdjustmentId` 選填）→ 上傳匯款證明 → 切 paymentStatus = '已完成'：核銷應退差額；**MUST NOT 建 PaymentAllocation**（不進正向期次）；**MUST NOT 觸發 OrderAdjustment 狀態推進 / 回退**（OA 已執行於核可時已生效）。
+- 退款 Payment 建立（amount < 0, paymentMethod = 退款, `linkedOrderAdjustmentId` 選填）→ 上傳匯款證明 → 切 paymentStatus = '已完成'：核銷應退差額；**MUST NOT 建 PaymentAllocation**（不進正向期次）；**MUST NOT 觸發 OrderAdjustment 狀態推進 / 回退**（OA 確認可執行於核可時已生效）。
 - 退款完成判定 = 退款 Payment 自身 paymentStatus = '已完成'（物理錨點，掛匯款證明）；對帳 `getOrderRefundableGap` 歸零是結果呈現。
 - 多筆退款 Payment 各自獨立切「已完成」、各自挂匯款證明附件；帳平判定看 `getOrderRefundableGap = 0`，不逐筆勾稽 OA。
 
 #### Scenario: 退款 Payment 核銷應退差額不綁 OA
 
-- **GIVEN** 訂單應退差額 = 10000（退款 OA-070 已執行致應收 −10000、尚未退款）
+- **GIVEN** 訂單應退差額 = 10000（退款 OA-070 確認可執行致應收 −10000、尚未退款）
 - **WHEN** 業務建退款 Payment P-070（amount = -10000, linkedOrderAdjustmentId = OA-070.id）、上傳匯款證明、切已完成
 - **THEN** `getOrderPaymentNet` SHALL 減 10000、`getOrderRefundableGap` SHALL = 0
 - **AND** P-070 MUST NOT 建 PaymentAllocation
-- **AND** 系統 MUST NOT 因 P-070 切已完成而推進 / 回退 OA-070（OA-070 已於主管核可時推進已執行）
+- **AND** 系統 MUST NOT 因 P-070 切已完成而推進 / 回退 OA-070（OA-070 已於主管核可時推進確認可執行）
 
 #### Scenario: 完成前減量退款不綁 OA（linkedOA 選填為 null）
 
