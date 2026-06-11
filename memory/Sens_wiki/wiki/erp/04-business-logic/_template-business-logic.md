@@ -265,7 +265,8 @@ source: [規則來源]
 | 不收 | 應去的位置 | 判斷方式 |
 |------|----------|---------|
 | 欄位名稱與定義 | `05-entities/` 實體卡 | 看到 `field_name`、底線命名、駝峰命名 |
-| 計算公式（程式碼層級） | `05-entities/` 或 OpenSpec | 看到 `floor()`、`min()`、`sum()`、程式碼片段 |
+| 欄位的具體組成式 | `05-entities/` 欄位表（貼著欄位寫；本層只留 high-level 決策政策） | 看到「總額＝A＋B－C」逐欄組成敘述 |
+| 計算公式（程式碼層級：取整、精度、邊界處理） | OpenSpec（不過紙本測試） | 看到 `floor()`、`min()`、`sum()`、程式碼片段 |
 | 狀態枚舉值 | `06-state-machines/` 狀態機卡 | 看到 `status = '已完成'`、狀態清單 |
 | API 規格（欄位長度、加密方式） | OpenSpec 或外部文件 | 看到 `Varchar(30)`、`AES-256` |
 | Prototype 檔案路徑或行號引用 | OpenSpec `implemented-by` | 看到 `src/types/`、`L58-61` |
