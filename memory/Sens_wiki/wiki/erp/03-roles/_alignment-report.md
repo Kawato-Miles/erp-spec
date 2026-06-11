@@ -18,7 +18,7 @@ last-reviewed: 2026-05-19
 |------|------|------|
 | **OpenSpec 已有** | 4 | [[業務]]、[[諮詢]]（spec 稱「諮詢人員」）、[[印務主管]]、[[出貨人員]] |
 | **OpenSpec 部分對應** | 1 | OpenSpec 的「品管」涵蓋 Notion 的 [[審稿人員]] + [[品檢人員]] 兩個角色 |
-| **OpenSpec 缺漏** | 11 | [[Supervisor]]、[[訂單管理人]]、[[會計]]、[[審稿主管]]、[[印務]]、[[生管]]、[[師傅]]、[[品檢人員]]（拆分後）、[[中國廠商]]、[[外包廠商]]、[[EC 商品管理]] |
+| **OpenSpec 缺漏** | 11 | [[Supervisor]]、訂單管理人（2026-06-11 已併入 [[印務主管]]）、[[會計]]、[[審稿主管]]、[[印務]]、[[生管]]、[[師傅]]、[[品檢人員]]（拆分後）、[[中國廠商]]、[[外包廠商]]、[[EC 商品管理]] |
 
 ## 二、各角色對齊細節
 
@@ -49,7 +49,7 @@ OpenSpec 將「品管」定義為單一角色，但 Notion DB 拆分為兩個獨
 | 角色 | 主要影響 |
 |------|---------|
 | [[Supervisor]] | 跨全模組（Dashboard / KPI 追蹤）|
-| [[訂單管理人]] | order-management、work-order |
+| 訂單管理人 | order-management、work-order |
 | [[審稿主管]] | prepress-review |
 | [[EC 商品管理]] | material-master、process-master、binding-master（Phase 1 BOM）|
 

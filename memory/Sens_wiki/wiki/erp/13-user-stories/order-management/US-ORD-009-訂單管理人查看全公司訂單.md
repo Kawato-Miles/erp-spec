@@ -4,7 +4,7 @@ us-id: US-ORD-009
 module:
   - 訂單管理
 role:
-  - "[[訂單管理人]]"
+  - "[[印務主管]]"
 priority: medium
 status: active
 created-at: 2026-05-22
@@ -30,7 +30,7 @@ prerequisites:
 ## 業務情境
 
 ### 作為
-[[訂單管理人]]
+[[印務主管]]
 
 ### 我希望
 能於訂單列表預設看到全公司所有訂單並可多維度篩選
