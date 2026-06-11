@@ -49,7 +49,7 @@ last-reviewed: 2026-06-10
 
 | 業務領域 | 應載入 |
 |---------|-------|
-| **L1.1 售前** | `03-roles/業務.md` / `諮詢.md` + `04-business-logic/營運規則/售前/` + `05-entities/需求單.md` / `諮詢單.md` + `06-state-machines/需求單狀態.md` / `諮詢單狀態.md` + `07-scenarios/`（業務情境；遷移期既有卡在 `13-user-stories/quote-request/` / `consultation-request/`）+ 共用層 |
+| **L1.1 售前** | `03-roles/業務.md` / `諮詢.md` + `04-business-logic/營運規則/售前/` + `05-entities/需求單.md` / `諮詢單.md` + `06-state-machines/需求單狀態.md` / `諮詢單狀態.md` + `07-scenarios/`（業務情境；遷移期既有卡在 `13-user-stories/consultation-request/`）+ 共用層 |
 | **L1.2 訂單管理** | `03-roles/業務.md` / `業務主管.md` / `印務主管.md` + `05-entities/訂單.md` + `06-state-machines/訂單狀態.md` + `07-scenarios/`（業務情境，訂單管理八卡已遷入）+ 共用層 |
 | **L1.3 印前審稿** | `03-roles/審稿.md` + `04-business-logic/營運規則/訂單到交付/` + `04-business-logic/領域知識/` + `05-entities/印件.md` + `06-state-machines/印件狀態.md` + `07-scenarios/`（業務情境；遷移期既有卡在 `13-user-stories/prepress-review/`）+ 共用層 |
 | **L1.4 生產執行** | `03-roles/印務.md` / `生管.md` / `師傅.md` + `04-business-logic/領域知識/` + `05-entities/工單.md` / `生產任務.md` + `06-state-machines/工單狀態.md` / `生產任務狀態.md` / `任務狀態.md` + 共用層 |
