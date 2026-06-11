@@ -32,7 +32,6 @@ last-reviewed: 2026-05-31
 | `insight` | vault-insight 產出 | `12-insights/` |
 | `raw` | Raw 素材（已驗證的觀察 / 反饋 / 研究筆記，未精練）| `raw/` |
 | `review` | 每日 / 每週回顧（daily-brief 與 weekly-review skill 產出）| `14-reviews/daily/`、`14-reviews/weekly/` |
-| `test-case` | UAT 業務層驗收項目卡（正文存 Notion，Vault 卡只承載索引與往上指依據）| `15-test-cases/<module>/` |
 
 **分層與 type 的對應**（對齊 [[erp_index]] § 一架構概述）：
 
@@ -42,7 +41,6 @@ last-reviewed: 2026-05-31
 | 商業邏輯 | `service-blueprint`（服務藍圖）/ `business-rule`（商業規則） | `04-business-logic/` |
 | 狀態 / 角色 / 資料 | `state-machine` / `role` / `entity` | `06` / `03` / `05` |
 | 業務情境（過程） | `scenario` | `07-scenarios/` |
-| 驗收項目 | 某具體輸入下的可勾稽驗收結論 | `test-case` | `15-test-cases/<module>/` |
 
 > 產品策略（`01-products/`）定商業方向，本 schema 屬文件管理層（`type=meta`）。架構概述見 [[erp_index]] § 一。
 
@@ -292,8 +290,6 @@ related-business-logic:                     # 連到業務邏輯卡（可選）
   - "[[<業務邏輯卡>]]"
 related-entities:                           # 連到實體卡（可選）
   - "[[<實體卡>]]"
-related-test-cases:                         # 往下的驗收：Vault test-case 卡 wiki link（2026-06-01 由 Notion URL 改；選填）
-  - "[[../15-test-cases/<module>/TC-<MODULE>-<NNN>-<簡述>]]"
 prerequisites:                              # 相依性（2026-05-22 新增）：本 US 執行前須完成的前置動作
   - "[[<US-XX-NNN>]]"                       # 其他 user story（具體 wiki link）
   - "<系統行為或角色準備動作的文字描述>"   # 如「系統自動分派完成」「審稿主管已維護能力等級」
@@ -343,25 +339,31 @@ last-passed-at: YYYY-MM-DD                    # 可選：上次 UAT 驗收通過
 
 ### type=open-question
 
+> 平層 `08-open-questions/`＝未結案佇列（只放 status=open）；`08-open-questions/_archives/<拍板年份>/`＝已結案封存（answered／cancelled 拍板即移入，封存卡只增不改、翻案開新 OQ 引舊卡）。序號取號平層與封存一起算、永不重用。操作一律走 `oq-manage` skill。
+
 ```yaml
 ---
 type: open-question
 module:
-  - <模組>
-oq-id: <MODULE>-<NNN>
-status: open | answered | cancelled
+  - <中文 module，見 § 二>
+oq-id: <前綴>-<NNN>
+status: open | answered | cancelled   # 嚴格三值，禁 resolved / closed / active 等自創值，禁行內註解
 priority: high | medium | low
-audience: internal | external  # 預設 internal
+audience: internal | external
+# audience 判斷問句：「誰能回答這個問題？」
+#   internal＝開發迭代待確認議題（Miles 或內部討論可拍板）
+#   external＝要與業務單位確認的未知內容（商業層面：現場實務／客戶慣例／計價緣由），彙整推送 Notion Follow-up DB
 raised-at: YYYY-MM-DD
-raised-by: <角色或姓名>
-source-link: <討論連結 / Notion 頁面 / Slack URL>
+raised-by: <誰提出>
+source-link: <識別到此問題的出處>
 related-vault:
   - <wiki link>
 related-oq:
-  - <其他 oq-id>
-expected-resolution-at: YYYY-MM-DD  # 可選但建議填
-answered-at: YYYY-MM-DD  # status=answered 時填
-answered-by: <角色或姓名>
+  - <相關 OQ 全檔名 wiki link（帶別名），禁短名>
+expected-resolution-at: YYYY-MM-DD  # external 必填；internal 建議填
+answered-at: YYYY-MM-DD  # 拍板時填
+answered-by: <拍板者>
+notion-url: <external 推送 Notion 後回填>
 ---
 ```
 

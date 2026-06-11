@@ -114,10 +114,15 @@ grep -rn "openspec/\|sens-erp-prototype/" memory/Sens_wiki/wiki/ --include="*.md
 
 ### 維度 8：OQ 健康度
 
-**目的**：OQ 是待裁決佇列，過期與缺欄位會讓裁決漏接。
+**目的**：OQ 是待裁決佇列，過期、缺欄位與佇列失真會讓裁決漏接。
 
-檢查：open 且 raised-at > 30 天無進度；缺 `expected-resolution-at`／`source-link`；priority high 長期擱置。
-判定：OK＝全健康；Warning＝1-3 需跟催；Error＝> 3（建議跑 `vault-insight` 找系統性議題）。
+檢查（平層 `08-open-questions/`，`_archives/` 不掃）：
+1. status 非嚴格三值（resolved／closed／active 等違規寫法）或行內註解污染
+2. 平層上 status=answered／cancelled 未封存（該移 `_archives/<年>/`）
+3. open 且 raised-at > 30 天無進度；priority high 長期擱置
+4. audience=external 缺 `expected-resolution-at`（external 必填）；缺 `source-link`
+
+判定：OK＝全健康；Warning＝1-3 需跟催；Error＝> 3 或任何狀態違規／未封存（建議跑 `oq-manage` mode E 整理、open 量大建議 `vault-insight`）。
 
 ### 維度 9：Raw 健康度（唯讀檢查，禁動 raw/ 任何檔）
 

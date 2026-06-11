@@ -3,7 +3,7 @@ type: open-question
 module:
   - 訂單管理
 oq-id: ORD-003
-status: resolved
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-20

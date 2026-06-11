@@ -3,7 +3,7 @@ type: open-question
 module:
   - 訂單管理
 oq-id: BI-1
-status: resolved
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-28

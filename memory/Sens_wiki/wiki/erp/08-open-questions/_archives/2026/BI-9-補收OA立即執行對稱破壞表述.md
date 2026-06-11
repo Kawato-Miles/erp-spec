@@ -4,7 +4,7 @@ module:
   - 訂單管理
   - state-machines
 oq-id: BI-9
-status: resolved
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-28

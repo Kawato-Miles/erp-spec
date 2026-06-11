@@ -3,7 +3,7 @@ type: open-question
 module:
   - consultation-request
 oq-id: CR-1
-status: closed
+status: answered
 priority: high
 audience: internal
 raised-at: 2026-05-22

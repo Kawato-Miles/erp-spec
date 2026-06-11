@@ -1,534 +1,122 @@
 ---
 name: oq-manage
 description: >
-  OQ（Open Question）管理 skill。
-  正本：Vault `memory/Sens_wiki/wiki/erp/08-open-questions/`（Vault Charter v2026-05-19 變更）。
-  觸發時機：發現設計不確定項、Miles 說「新增 OQ」「這個要記下來」「有個問題要確認」，
-  或任何 Spec / 規劃 / 討論中需要新增、查詢、更新 OQ 時（不限於 Spec 撰寫情境）。
-  此 skill 強制執行去重邏輯：新增前先搜尋相似 OQ，由 Claude 分析並建議，由 Miles 決定。
-  **強制規則（禁止以下 anti-pattern）**：
-    1. 禁止在 Vault 卡內使用 `> [!question]` callout 標注 OQ
-    2. 禁止以「待確認」「待釐清」「需確認」「尚未確認」「待補」「待釐清事項」等措辭 inline 標注卻不開檔
-    3. 禁止只在當前回應中口頭說「列為 OQ」「我會記下來」卻不觸發本 skill
-    4. 任何撰寫 Vault 卡 / Spec / 對話過程中識別到不確定項 MUST 立即觸發 mode B 開獨立檔（含去重流程），原處改 wiki link 引用
-    5. 既有 inline OQ pattern 出現時，MUST 觸發 mode D（遷出）改為獨立檔
-  不適用：已確認的決策記錄、術語定義更新、一般討論備忘。
+  OQ（Open Question）管理 skill。正本：Vault `memory/Sens_wiki/wiki/erp/08-open-questions/`（平層＝未結案佇列；`_archives/<YYYY>/`＝已結案封存）。
+  觸發時機：
+    1. 任何討論／撰寫中識別到設計不確定項（MUST 立即開檔，禁 inline 標注）
+    2. Miles 說「新增 OQ」「這個要記下來」「有個問題要確認」（mode B）
+    3. 討論開始前查特定模組未解 OQ（mode A）
+    4. OQ 已拍板（mode C 解答與封存）
+    5. Miles 說「遷出 [檔案] 的 OQ」或掃描發現 inline OQ 措辭（mode D）
+    6. Miles 說「整理 OQ」「掃 OQ」「OQ 健康」（mode E 批次整理）
+  不適用：已確認的決策記錄（直接寫正本卡）、術語定義更新、一般討論備忘、未消化的觀察素材（走 vault-ingest）。
 ---
 
-# OQ 管理
+# oq-manage
 
-統一管理 ERP 模組的 Open Questions。**操作正本在 Vault**，Notion OQ DB 留作對外確認版。
+OQ 是**待裁決佇列**：每張卡一個待確認的問題，拍板後決議寫回卡、封存出平層。平層只放未結案——平層數量＝真實的待辦壓力，一眼可信。
 
-## 四種操作模式
+## 〇、三條軸線（每個動作從這裡推導）
 
-| 模式 | 觸發時機 |
-|------|---------|
-| A：查詢 | 討論開始前 / 確認特定模組的未解 OQ |
-| B：新增（含去重）| 識別到不確定項 / Miles 說「新增 OQ」|
-| C：更新 | OQ 已解答 / 說明需補充 |
-| D：遷出（inline OQ → 獨立檔）| Miles 說「遷出 [檔案 / 目錄] 的 OQ」/ 主動收尾掃描發現 inline pattern |
+**1. 狀態（status，嚴格三值）**：
 
----
+| 值 | 語意 | 位置 |
+|----|------|------|
+| `open` | 待解（含部分拍板，進度記內文「部分拍板」段） | 平層 |
+| `answered` | 已拍板，「決議」段記結論與落地去處 | 封存（mode C 標 answered 即移檔） |
+| `cancelled` | 不再相關／被其他拍板實質取代（內文附原因） | 封存 |
 
-## Vault 位置與檔名規約
+`resolved`／`closed`／`active` 等其他寫法一律禁止（mode E 抓殘留）；status 行禁止行內註解。
 
-- **目錄**：`/Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/08-open-questions/`
-- **檔名格式**：`<MODULE>-<NNN>-<簡述 slug>.md`
-- **範例**：
-  - `ORD-008-訂單審核權限是否分層.md`
-  - `XM-003-合批派工合併邏輯.md`
-  - `SHP-005-分批出貨觸發節點.md`
+**2. 內外部（audience，開卡時必判）**——判斷問句：「**誰能回答這個問題？**」
 
----
+| 值 | 語意 | 解答來源 | 下游 |
+|----|------|---------|------|
+| `internal` | 開發迭代待確認的議題（設計選擇、欄位歸屬、機制取捨） | Miles 或內部討論可拍板 | 留 Vault，拍板即結案 |
+| `external` | 要與業務單位確認的未知內容（商業層面：現場實務怎麼跑、客戶慣例、計價規則的為什麼） | 業務單位／工廠現場／客戶（訪談、開會） | 彙整推送 Notion Follow-up DB（對外確認版，推送由 Miles 觸發）；frontmatter `notion-url` 推送後回填 |
 
-## Frontmatter Schema（OQ 卡）
+**3. 封存（archive）**：status 轉 answered／cancelled 時，檔案移 `08-open-questions/_archives/<拍板年份>/`。wiki link 按檔名解析，移目錄不斷鏈。封存卡只增不改（決議是歷史紀錄）；發現決議錯了不改舊卡，開新 OQ 引用舊卡。
+
+## 一、檔名與 frontmatter
+
+檔名：`<前綴>-<NNN>-<問題簡述>.md`（簡述繁中名詞、不含序號重複、不用問號）。
 
 ```yaml
 ---
 type: open-question
 module:
-  - <模組>  # quote-request / order-management / work-order / production-task / qc / shipping / consultation-request / after-sales-ticket / cross-module
-oq-id: <MODULE>-<NNN>  # 例：ORD-008
-status: open           # open / answered / cancelled
-priority: high         # high / medium / low
-audience: internal     # internal / external（取代舊「內外部」欄位）
-raised-at: YYYY-MM-DD
-raised-by: <角色或姓名>
-source-link: <討論連結 / Notion 頁面 / Slack URL>
-related-vault:
-  - <wiki link 至相關 vault 卡>
-related-oq:
-  - <其他相關 OQ 的 oq-id>
-expected-resolution-at: YYYY-MM-DD  # 可選
-answered-at: YYYY-MM-DD             # status=answered 時填
-answered-by: <角色或姓名>            # status=answered 時填
----
-```
-
----
-
-## audience 預設規則
-
-**所有討論 Spec / 規格設計延伸的 OQ，新增時預設 `audience: internal`。**
-
-- 目的：避免與外部廠商 / 客戶 / 跨部門討論時，混入僅限內部研發釐清的設計細節
-- 適用範圍：所有 erp-spec / opsx:explore / opsx:propose / 其他設計討論新增的 OQ
-- 例外：僅當 Miles 明確指示「這條要讓 X 外部回答」或 OQ 主體屬於外部決定（如：客戶需求確認、廠商技術回覆）時才設為 `external`
-- 實作：Step B3 frontmatter 預設 `audience: internal`（除非 Miles 明確改）
-
----
-
-## 模式 A：查詢
-
-### 查單一模組所有未解 OQ
-
-```bash
-cd /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/08-open-questions
-grep -l "status: open" *.md | xargs grep -l "module:.*<模組>"
-```
-
-或用 Obsidian CLI（若已啟用）：
-
-```bash
-obsidian base:query path=memory/Sens_wiki/wiki/erp filter='type == "open-question" AND status == "open" AND module contains "<模組>"' format=md
-```
-
-或 Grep 工具：
-
-```
-pattern: "status: open"
-path: memory/Sens_wiki/wiki/erp/08-open-questions/
-output_mode: files_with_matches
-```
-
-### 列出結果格式
-
-```
-<MODULE>-<NNN>：<任務名稱> (priority: high|medium|low, raised-at: YYYY-MM-DD)
-```
-
----
-
-## 模式 B：新增（強制去重流程）
-
-**禁止跳過任何步驟。**
-
-### Step B1：描述問題
-
-確認以下要素（若 Miles 未完整提供，補充詢問）：
-
-- 問題是什麼（不確定的設計事項）
-- 涉及模組（quote-request / order-management / work-order / production-task / qc / shipping / consultation-request / after-sales-ticket / cross-module）
-- 問題來源（討論連結、Notion 頁面、Slack 訊息）
-- 預期解答時點（可選）
-
-### Step B2：搜尋相似 OQ（去重）
-
-1. **查詢該模組（同時包含 cross-module）的所有未解 OQ**：
-
-   ```
-   Grep
-   pattern: "module:" 
-   path: memory/Sens_wiki/wiki/erp/08-open-questions/
-   output_mode: content
-   ```
-
-   或讀取 `08-open-questions/` 下所有 `<MODULE>-*.md` 檔案的標題。
-
-2. **分析語意相似度**，依以下標準分類：
-
-| 相似度 | 判斷標準 | 建議動作 |
-|--------|---------|---------|
-| 高（疑似重複）| 核心問題相同，只是描述角度不同 | 建議更新現有 OQ，不新增 |
-| 中（部分重疊）| 同一主題但問題面向不同 | 列出現有 OQ，讓 Miles 決定合併或新增 |
-| 低（無重疊）| 問題性質明顯不同 | 建議新增 |
-
-3. **回報格式**：
-
-```
-[去重分析]
-相似度：高 / 中 / 低
-現有相關 OQ：
-  - ORD-005：訂單審核權限是否分層（status: open）
-
-建議：合併至現有 OQ / 新增 / 由你決定
-原因：（一句話說明判斷依據）
-```
-
-4. **等待 Miles 確認後**才執行 Step B3（新增）或 Step C（更新現有 OQ）。
-
-### Step B3：建立新 OQ 卡
-
-確認新增後，執行：
-
-**查詢現有最大序號**：
-
-```bash
-ls /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/08-open-questions/ \
-  | grep "^<MODULE>-" \
-  | sort -t- -k2 -n -r \
-  | head -1
-```
-
-解析最大序號 → +1 → 補齊三位數 → 取 `<MODULE>-<NNN>` 格式。
-
-範例：`ls ... | grep "^ORD-"` 找到最大 `ORD-007` → 新增為 `ORD-008`。
-
-**建立檔案**：
-
-檔名格式：`<MODULE>-<NNN>-<簡述 slug>.md`，例：`ORD-008-訂單審核權限是否分層.md`
-
-內容範本：
-
-```markdown
----
-type: open-question
-module:
-  - <模組>
-oq-id: <MODULE>-<NNN>
+  - <中文 module，見 wiki-schema § 二>
+oq-id: <前綴>-<NNN>
 status: open
-priority: <high|medium|low>
-audience: internal  # 預設，除非 Miles 明確改
-raised-at: <今日日期>
-raised-by: Miles
-source-link: <來源連結>
+priority: high | medium | low
+audience: internal | external
+raised-at: YYYY-MM-DD
+raised-by: <誰提出>
+source-link: <識別到此問題的出處：對話／卡／spec 路徑>
 related-vault:
-  - <wiki link>
-related-oq: []
-expected-resolution-at: <可選>
----
-
-# <MODULE>-<NNN>：<問題標題>
-
-## 問題描述
-
-<具體問題內容>
-
-## 涉及範圍
-
-- 模組：<模組>
-- 相關卡：<wiki link 列表>
-- 影響範圍：<可能影響的功能 / 流程>
-
-## 討論記錄
-
-<從 Miles 提供的 source-link 整理重點>
-
-## 待解答
-
-- [ ] <要解答的子問題 1>
-- [ ] <要解答的子問題 2>
-
-## 候選方案（若有）
-
-### 方案 A：<簡述>
-- 優點：
-- 缺點：
-
-### 方案 B：<簡述>
-- 優點：
-- 缺點：
-```
-
-**用 Write 工具寫入。**
-
----
-
-## 模式 C：更新
-
-### C1：OQ 已解答
-
-讀檔 → 用 Edit 更新：
-
-```yaml
----
-status: answered
-answered-at: <今日日期>
-answered-by: <角色或姓名>
----
-```
-
-並在內文最後新增章節：
-
-```markdown
-## 決議與理由
-
-**決議**：採用方案 X / 確認做法
-
-**理由**：1-2 句說明判斷依據
-
-**決策者**：Miles（YYYY-MM-DD）
-
-**參考討論**：<連結>
-```
-
-> [!info] BRD 引用格式
-> 在 BRD / spec 中以 wiki link 標注 OQ，例如「採系統自動執行審稿狀態轉換（詳見 [[ORD-008-訂單審核權限是否分層|ORD-008]]）」。
->
-> 決策細節不重複寫入 BRD，以 OQ 卡為正本。
-
-### C2：OQ 說明補充
-
-讀檔 → 用 Edit 在「## 討論記錄」或「## 候選方案」段追加新內容。**保留原有內容**，不覆寫。
-
-### C3：OQ 有依賴關係
-
-Edit frontmatter `related-oq` 列表，加入所依賴的 OQ id。
-
-範例：
-
-```yaml
+  - "[[<相關卡>]]"
 related-oq:
-  - ORD-005
-  - XM-003
-```
-
+  - <相關 OQ 全檔名 wiki link（帶別名），禁短名>
+expected-resolution-at: YYYY-MM-DD   # external 必填（預期確認時點）；internal 建議填
+answered-at: YYYY-MM-DD              # 拍板時填
+answered-by: <拍板者>
+notion-url: <推送後回填>             # external 推送 Notion 後填
 ---
-
-## 模式 D：遷出（inline OQ → 獨立檔）
-
-**用途**：把 Vault 卡內既有的 inline OQ pattern（`> [!question]` callout / `## Open Questions` section / 內文「待確認」標注）轉成獨立的 OQ 卡，原處改為 wiki link。
-
-**觸發時機**：
-- Miles 說「遷出 [檔案 / 目錄] 的 OQ」「把這個 OQ 拉出來」「OQ 太多 inline，整理一下」
-- 主動收尾掃描發現 inline pattern（CLAUDE.md § 主動收尾原則要求）
-- `/opsx:archive` 前掃描 design.md 未解 OQ
-
-### Step D1：掃描識別
-
-```bash
-# 在目標檔 / 目錄 grep inline OQ pattern
-grep -rn "\[!question\]\|^## Open Questions\|^### Open Questions" <目標路徑>
 ```
 
-也檢查內文是否有：
-- 「待確認」「待釐清」「需確認」「尚未確認」「待補」「待釐清事項」加問題敘述
-- 表格欄位含 OQ 編號（如「OQ XM-003」）但無對應獨立檔
+正文骨架：問題描述／待解答（checkbox）／（候選方案）／（部分拍板）／（決議——拍板時補，含結論＋落地去處 `[[卡名]]`）。
 
-### Step D2：對每筆命中提取問題核心
+## 二、五個 mode（輸入 → 步驟 → 輸出）
 
-對每筆命中：
+### Mode A：查詢（討論前帶入）
 
-1. **讀上下文**（前後 5-10 行）萃取問題核心
-2. **識別 metadata**：
-   - 模組（依檔案位置或內容推斷）
-   - 優先順序（依問題影響範圍，預設 medium）
-   - source-link（目前所在卡的相對路徑 + 行號）
+輸入：模組或主題。步驟：grep 平層 `status: open`（依 module 過濾）。輸出：`<oq-id>：<簡述>（priority, audience, raised-at）` 清單，external 另列（提醒待外部確認項）。
 
-### Step D3：對每筆執行 mode B 開檔
+### Mode B：新增（強制去重，禁跳步）
 
-依 [[#模式 B：新增（強制去重流程）]] 完整流程：
+1. **描述問題**：問題是什麼、影響哪些卡／spec、誰能回答（→ audience 判定）。
+2. **去重搜尋**：grep 平層＋`_archives/` 全部 OQ 的標題與內文關鍵詞（封存卡也搜——已拍板過的問題不重開，引用舊決議）。
+3. **分析建議**：無相似 → 新增；有相似 open → 建議擴充既有卡；已拍板過 → 引舊決議給 Miles 確認是否真是新問題。
+4. **Miles 確認後開卡**：序號取該前綴現有最大值＋1（**平層與 `_archives/` 一起算**，序號永不重用）；原識別處改 wiki link 引用。
+5. **log 一筆**（同步(oq)）。
 
-- Step B2 去重檢查（避免與其他 inline 重複）
-- Step B3 建檔（檔名 `<MODULE>-<NNN>-<簡述>.md`）
+### Mode C：解答與封存
 
-**關鍵**：mode D 不跳過去重邏輯——多個檔案的 inline OQ 可能講同一件事，要合併為 1 個 OQ 卡。
+1. Miles 拍板 → 卡內補「決議」段：結論＋落地去處（決議改了哪些正本卡，逐卡 `[[卡名]]`；無需落地則寫明）。
+2. frontmatter：status=answered＋answered-at＋answered-by（cancelled 同理附原因）。
+3. **移檔封存**：`git mv` 至 `_archives/<拍板年份>/`。
+4. log 一筆（同步(oq)，含決議一句話摘要）。
 
-### Step D4：修原處為 wiki link
+### Mode D：遷出（inline OQ → 獨立卡）
 
-對每筆 inline OQ，**用 Edit 把原處 callout / 表格列**替換為 wiki link 引用：
+掃描指定檔案（或本輪變動卡）的 `[!question]` callout 與「待確認／待釐清／需確認／尚未確認／待補」inline 措辭（引用既有 OQ 卡的 wiki link 不算）→ 逐項走 mode B（含去重）→ 原處改 wiki link 引用。
 
-```markdown
-# 反例（替換前）
-## 五、難易度分數的業務含義（待補）
+### Mode E：批次整理（純報告＋Miles 確認後操作）
 
-> [!question] OQ
-> Notion / Spec 中目前未明確定義「1-10 分各代表什麼產品類型」...
-```
+掃平層全部卡，產三張清單：
+1. **狀態違規**：status 非三值、行內註解污染 → 列映射提案（resolved→answered 等），確認後修
+2. **可封存**：平層上 status=answered／cancelled 的卡 → 確認後批次移檔
+3. **external 待推送**：audience=external 且未填 notion-url → 提醒 Miles 是否觸發推送
+另列：open 超過 30 天無進度、priority high 長期擱置、缺 expected-resolution-at 的 external 卡。
 
-```markdown
-# 正例（替換後）
-## 五、難易度分數的業務含義
+## 三、紅旗清單（出現任一＝停下）
 
-詳見 [[PI-001-難易度分數業務含義]]。
-```
+| 紅旗 | 為什麼錯 |
+|------|---------|
+| 在 Vault 卡用 `[!question]` callout 或「待確認」inline 標注卻不開檔 | OQ 必須是獨立卡才進得了佇列管理 |
+| 口頭說「列為 OQ」卻沒觸發本 skill | 口頭承諾不會出現在平層 |
+| 跳過去重直接開卡 | 重複 OQ 讓佇列失真、決議分裂兩處 |
+| status 用 resolved／closed／active 等自創值 | 三值以外查詢全部漏抓 |
+| answered 卡長期留平層 | 平層數字失去「待辦壓力」意義 |
+| 改寫封存卡的決議 | 決議是歷史；要翻案開新 OQ 引舊卡 |
+| audience 不判就預設 internal | 商業層問題漏出「待業務確認」佇列，訪談時帶不到 |
 
-若原章節只剩「待補」框架沒實際內容，**整段刪除**僅保留 wiki link：
+## 四、與其他機制的協作
 
-```markdown
-詳見 [[PI-001-難易度分數業務含義]]（OQ）。
-```
-
-### Step D5：回報
-
-```
-[Mode D 遷出完成]
-掃描範圍：<檔案 / 目錄>
-找到 inline OQ：X 筆
-去重後建檔：Y 個獨立 OQ 卡
-原處替換為 wiki link：Z 處
-OQ 清單：
-  - <MODULE>-<NNN>-<簡述>（原 inline 位置：file:line）
-  - ...
-```
-
----
-
-## 模組前綴對照
-
-| 模組 | 前綴 |
+| 情境 | 協作 |
 |------|------|
-| 需求單 | QR |
-| 訂單管理 | ORD |
-| 工單管理 | WO |
-| 印件 | PI |
-| 生產任務 | PT |
-| QC | QC |
-| 出貨單 | SHP |
-| 諮詢單 | CR |
-| 售後服務 | AS |
-| 跨模組 | XM |
-
----
-
-## 推送 Notion 對外確認版
-
-<!-- sync-workflow 已移除（2026-06-10），推送邏輯自包含於本 skill -->
-
-- 本 skill **不主動推送 Notion**
-- 由 Miles 觸發「Vault → Notion 彙整推送」時，OQ 與其他 Vault 內容一起被組合成 BRD 推送
-- 推送後更新 manifest（`memory/erp/notion-publish-manifest.md` 對應列的 Notion URL + 最後推送日），不回寫 wiki 卡 frontmatter
-
----
-
-## 既有 Notion OQ 漸進式遷移
-
-依 [[../../memory/Sens_wiki/wiki/erp/08-open-questions/README]]：
-
-- **不需大量遷移**（既有 Notion OQ 量大）
-- 新 OQ 直接寫 Vault
-- 既有 Notion OQ 在被引用 / 解答時，由 Claude 個別鏡像進 Vault（**過渡期手動**）
-
----
-
-## OpenSpec change 內 OQ 處理
-
-依 `openspec/config.yaml` rules § archive：
-
-| 階段 | 處理 |
-|------|------|
-| change 探索期 | design.md / proposal.md 可使用 `## Open Questions` section（change-local OQ） |
-| change 內 OQ 解答 | design.md 內 OQ 末加「決議與理由」標注，不強制遷 Vault（屬 change-local 範疇）|
-| **`/opsx:archive` 前** | **MUST 掃描 design.md / proposal.md / specs/ 內未解 `## Open Questions`** |
-| archive 前未解 OQ 處理 | 觸發 mode B 為每筆未解 OQ 建 Vault OQ 卡 → design.md 原處改為「→ 對應 Vault OQ：[[<MODULE>-<NNN>-<簡述>]]」雙向引用 |
-| 已解 OQ | design.md 保留「決議與理由」即可，不必遷 Vault（除非該結論需於跨 change 引用）|
-
-**範例**：
-
-archive 前 design.md 含：
-
-```markdown
-## Open Questions
-
-- **OQ-3：審稿合格後印件狀態是否需 buffer 時間才允許工單建立？**
-  - 還在內部討論
-```
-
-archive 流程：
-1. 觸發 mode B 建 Vault OQ 卡 `PI-XXX-審稿合格後工單建立 buffer.md`
-2. Edit design.md 把該條改為：
-
-```markdown
-## Open Questions
-
-- **OQ-3：審稿合格後印件狀態是否需 buffer 時間才允許工單建立？**
-  - → 對應 Vault OQ：[[PI-XXX-審稿合格後工單建立 buffer]]
-```
-
-3. archive 完成
-
----
-
-## Anti-Pattern 範例
-
-### 反例 1：Vault 卡內用 callout
-
-```markdown
-## 五、難易度分數的業務含義（待補）
-
-> [!question] OQ
-> Notion / Spec 中目前未明確定義「1-10 分各代表什麼產品類型」...
-```
-
-**錯在哪**：用 `> [!question]` callout 把 OQ 嵌入 entity / business-logic 卡，違反 hard rule 第 1 條。
-
-**正例**：
-
-```markdown
-## 五、難易度分數的業務含義
-
-詳見 [[PI-001-難易度分數業務含義]]。
-```
-
-並在 `08-open-questions/PI-001-難易度分數業務含義.md` 建獨立卡。
-
----
-
-### 反例 2：表格列出「OQ-XXX」但無對應檔
-
-```markdown
-| 角色 | 主要影響 | OQ |
-|------|---------|------|
-| 出貨 | shipping | OQ SHP-005（分批出貨觸發節點）|
-```
-
-**錯在哪**：只有 OQ 編號文字，沒實際檔案，讀者無從追溯。
-
-**正例**：
-
-```markdown
-| 角色 | 主要影響 | OQ |
-|------|---------|------|
-| 出貨 | shipping | [[SHP-005-分批出貨觸發節點]] |
-```
-
----
-
-### 反例 3：對話中口頭說「列為 OQ」
-
-```
-Claude: 「這個分批出貨觸發節點還沒確認，我列為 OQ。」
-```
-
-**錯在哪**：沒實際觸發本 skill mode B 建檔，下次討論時失憶。
-
-**正例**：
-
-```
-Claude: 「這個分批出貨觸發節點還沒確認，我用 oq-manage mode B 建檔。」
-[實際觸發 mode B → 完成去重 → 建檔 → 回報 OQ ID]
-```
-
----
-
-### 反例 4：「待補」「待釐清」inline 措辭
-
-```markdown
-## 三、難易度分數的業務含義（**待補**）
-
-目前由業務「經驗判斷」，無共識量表。
-```
-
-**錯在哪**：用「待補」標記但沒建 OQ 卡，與 callout 同性質違規。
-
-**正例**：
-
-```markdown
-## 三、難易度分數的業務含義
-
-詳見 [[PI-001-難易度分數業務含義]]。
-```
-
----
-
-## 工具使用
-
-| 操作 | 工具 |
-|------|------|
-| 查詢 | Grep / Glob / `obsidian search` / `obsidian base:query` |
-| 新增 | Write |
-| 更新 | Edit |
-| 列出 OQ 清單 | Bash `ls` |
-| 找最大序號 | Bash `ls + sort` |
-
-**不再使用** `mcp__notion__notion-create-pages` / `notion-update-page` 寫入 Notion（除非 Miles 觸發推送流程）。
+| vault-ingest mode A 識別「明確未解問題」 | 轉入本 skill mode B（素材觀察留 raw、問題進 OQ） |
+| vault-insight 識別可批次結案的 OQ 群 | 走 mode C 逐張封存 |
+| vault-audit 維度 8（OQ 健康度） | 巡檢平層超期／缺欄位／狀態違規，建議跑 mode E |
+| Notion Follow-up DB | 對外確認版（external 專用），推送由 Miles 觸發；Vault 永遠是正本 |
+| wiki/log.md | 每次 B／C／D／E 操作記一筆（同步(oq)） |
