@@ -8,7 +8,6 @@ last-reviewed: 2026-06-11
 
 > 設計依據：[[index]] § Wiki 憲章（本質、第一讀者、兩判準、單元定位模式）＋ 與 `06-state-machines/_template-state-machine.md`、`03-roles/_template-role.md` 同構的治理機制；方法論依據：Cockburn《Writing Effective Use Cases》（主線＋延伸掛接、目標層級）、Domain Storytelling（誰－做什麼－交給誰的敘事句型）。
 > 本範本依「雙向開發」迭代：每張卡走查時發現的缺口回饋範本。
-> 本單元 2026-06-11 由原 07-scenarios（情境）與 13-user-stories（使用者故事）合併而成，設計定案見 `docs/superpowers/specs/2026-06-11-business-scenario-unit-design.md`。
 
 ---
 

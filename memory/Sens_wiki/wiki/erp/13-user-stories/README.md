@@ -144,7 +144,7 @@ PM 從 prerequisites 鏈可看出動作順序與相依關係，不需依賴 anch
 
 1. 確認模組 / 角色
 2. 讀對應 spec § Requirements + Vault 對應業務邏輯卡 / 實體卡
-3. 套 [[wiki/erp/13-user-stories/_template]]
+3. 套 `07-scenarios/_template-business-scenario.md`（原 user-story 範本已刪除、單元併入業務情境）
 4. 寫業務情境（INVEST 自審：Independent / Negotiable / Valuable / Estimable / Small / Testable）
 5. 識別不確定項 → 觸發 [[oq-manage]] mode B 開 OQ 卡（不可 inline 標注）
 6. 補 provenance（`source` frontmatter）

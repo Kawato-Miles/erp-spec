@@ -296,6 +296,6 @@ implemented-by:
 - `04-business-logic/_template-business-logic.md` — test-case 職責（正文存 Notion、source 指 user-story）
 - [[wiki-schema#十一、卡類型內容職責邊界]] — 維度 14 lint 依據
 - [[wiki-schema#七、命名規約]] — 模組前綴與檔名規約
-- [[wiki/erp/13-user-stories/_template]] — 操作步驟（user-story）範本（這類卡 source 往上指依據、以 related-test-cases 回連這類卡的 Notion URL）
+- `07-scenarios/_template-business-scenario.md` — 業務情境範本（驗收的上游單元；原 user-story 已併入業務情境，本範本的 source 對象與分工待對齊輪更新）
 - [[log]] — 全知識庫唯一操作史（卡的歷史 = 搜 `[[卡名]]` + git）
 - [[oq-manage]] — 識別不確定項時開獨立 OQ 卡
