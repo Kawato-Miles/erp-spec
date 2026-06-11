@@ -3,7 +3,7 @@ type: open-question
 module:
   - 訂單管理
 oq-id: BI-8
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-28
@@ -50,8 +50,19 @@ CEO Challenge 4 採納「PaymentAllocation 切已完成後仍可調整、留 Act
 - 業務跨月修改頻率（決定鎖檔嚴格度是否影響日常操作）
 - 與 BI-3「預收後續處理」結合（預收金額是否也要月結凍結）
 
+## 拍板紀錄（2026-06-11 Miles）
+
+採候選方案 A（會計手動觸發），否決 B（定時批次）與 C（混合）：
+
+- 對帳與逾期款項清單由 [[會計]] 隨時手動產出，非系統排程批次；會計持續向業務催帳要求補處理。
+- 退款等現金流出的實際匯款，慣例集中在月底由會計手動執行，非系統自動定時。
+- 不引入「每月 1 日 00:00 自動鎖檔」批次機制；鎖檔由人工流程界定，避免「該月還沒對完帳就被自動鎖」的異常處理負擔。
+
+落地於 [[帳務流程]] 階段 5「對帳與催收」與階段 6「月底現金流出與報表交接」、業務情境卡 [[對帳與催收]]。
+
 ## 來源
 
 - ceo-reviewer Phase 2 Challenge 4（unify-billing-installment-and-reconciliation-csv change）
 - erp-consultant Phase 3 D8 採延遲導入
 - design.md § Open Questions OQ-BI-2
+- Miles 拍板（2026-06-11）
