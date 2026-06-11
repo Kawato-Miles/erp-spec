@@ -672,7 +672,7 @@ related-changes:                   # 本期涉及的 openspec change
 
 ### Meta 卡（00-meta）
 
-- 簡短英文 kebab-case：`vault-charter` / `scope-boundary` / `wiki-schema` / `editing-conventions` / `sync-workflow` / `audit-log`
+- 簡短英文 kebab-case：`scope-boundary` / `wiki-schema` / `business-domain-taxonomy` / `changelog`
 - README 例外：`README.md`
 
 ## 八、Wiki Link 規約

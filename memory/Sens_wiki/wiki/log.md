@@ -12,6 +12,10 @@ last-reviewed: 2026-06-02
 完整規約見 `.claude/rules/sens-wiki.md` § 四。卡的歷史 = 搜 `[[卡名]]` 命中本檔條目 + git 歷史；決策脈絡見 OQ 卡。
 
 
+## [2026-06-11 21:46] 健檢(audit) | 00-meta 死鏈修補：wiki-schema 命名範例改用實際存在的 meta 卡名
+- 變更：[[wiki-schema]] § 七 Meta 卡命名範例移除不存在的 `vault-charter` / `editing-conventions` / `sync-workflow` / `audit-log`，改列實際存在的 `scope-boundary` / `wiki-schema` / `business-domain-taxonomy` / `changelog`（`[[vault-charter]]` 與 `[[wiki-architecture]]` 兩卡從未建立，其語意已由 [[index]] § Wiki 憲章與 [[erp_index]] 涵蓋；同批 `.claude/rules/sens-wiki.md` § 七入口引用同步改指既有正本卡，依規約不另記）
+- 衝突：raw/README.md § 八仍有 `[[vault-charter]]` 與 `[[audit-log]]` 死鏈，因 raw/ 唯讀規約未動，呈報 Miles 裁決
+
 ## [2026-06-11 21:45] 納入(amend) | Phase B 第三批收尾——兩筆殘留修補
 - 變更：[[ORD-032-訂單複製帳務公司直接複製或重新推導|ORD-032]] 兩處已刪卡裸引（US-ORD-007）改指遷移正本 [[訂單複製建單]]、[[erp_index]] 售前載入決策表移除已刪空的 quote-request 目錄指向（consultation-request 保留）
 - 動機：第三批清理輪呈報的範圍外殘留，與前批同型處理
