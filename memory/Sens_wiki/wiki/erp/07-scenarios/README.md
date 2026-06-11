@@ -4,11 +4,13 @@ module:
   - cross-module
 related-spec: openspec/specs/business-scenarios/spec.md
 related-notion: https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05
-status: active
+status: deprecated
 last-reviewed: 2026-05-19
 ---
 
 # 跨模組業務情境（總覽）
+
+> **已廢止（2026-06-11）**：情境單元重構為業務情境（範本 [[_template-business-scenario]]）。本卡 16 情境內容保留至分領域遷移完成；原「OpenSpec spec 為情境細節正本」之宣告廢除（wiki 為 BRD 正本），遷移時逐情境收回並逐筆核對。
 
 > 13 個端到端情境，驗證 ERP 全流程跨模組狀態一致性。**OpenSpec spec 為情境細節正本**（business-scenarios spec.md，706 行），本卡為 Vault 索引。
 

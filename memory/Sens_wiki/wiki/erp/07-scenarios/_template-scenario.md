@@ -1,10 +1,12 @@
 ---
 type: meta
-status: active
+status: deprecated
 last-reviewed: 2026-05-31
 ---
 
 # 情境卡（scenario）撰寫範本
+
+> **已廢止（2026-06-11）**：本範本由 [[_template-business-scenario]] 取代（07 與 13 合併為業務情境單元，設計見 docs/superpowers/specs/2026-06-11-business-scenario-unit-design.md）。
 
 > 給撰寫 `07-scenarios/` 情境卡（type=scenario）的人 / agent 複製套用。這份範本同時是「寫的時候照著填」和「事後照著檢查」（vault-audit 依底部自審清單勾稽）。
 > 上位約束：`04-business-logic/_template-business-logic.md`（scenario 職責）+ `04-business-logic/_template-business-logic.md`（scenario 骨架）+ [[erp_index]]（scenario = 流程層）+ [[wiki-schema#十一、卡類型內容職責邊界（2026-05-28 新增）|wiki-schema § 十一]]（職責邊界）。

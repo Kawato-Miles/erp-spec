@@ -1,10 +1,12 @@
 ---
 type: meta
-status: active
+status: deprecated
 last-reviewed: 2026-05-31
 ---
 
 # User Story 卡範本（操作步驟層）
+
+> **已廢止（2026-06-11）**：user-story 單元併入業務情境（能力型），新卡依 [[_template-business-scenario]]。既有 59 張卡保留至分領域遷移完成。
 
 > 給 [[erp-user-story]] skill 與 Miles 手動撰寫時複製套用。這類卡的定位：操作步驟（單一角色執行某條規則的步驟，照著做的流程），見 [[erp_index]]。
 > 本範本同時是「寫的時候照著填」與「事後照著檢查」。底部「自審稽核清單」同一份既是提交前自檢、也是 [[wiki-schema#維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）|vault-audit 維度 13]] 的稽核維度。

@@ -1,10 +1,12 @@
 ---
 type: meta
-status: active
+status: deprecated
 last-reviewed: 2026-05-21
 ---
 
 # 13-user-stories — User Story 中樞
+
+> **已廢止（2026-06-11）**：user-story 單元併入業務情境（[[_template-business-scenario]]）。本 README 的命名規約與推送流程隨之失效；Notion 對接由下游另行規劃。既有卡遷移期間保留原處。
 
 > ERP 商業 User Story 的**內部正本**。Notion User Story DB（[發布版本](https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d)）由本目錄推送，禁反向覆寫。
 > 由 [[erp-user-story]] skill 自動化新增 / 推送，由 [[wiki-schema#維度 13：User Story 撰寫紀律|vault-audit 維度 13]] 做 lint。
