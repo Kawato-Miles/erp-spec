@@ -57,7 +57,7 @@ description: >
 # /goal：交付「<模組名>」到 Linear（project <project-id>）
 
 ## Outcome（完工標準）
-<模組> 的 project 描述（模組層 What）+ 各角色 Task issue（角色層 How）齊備〔狀態密集模組另含每個狀態機 UML〕，且經 senior-pm 評審判 references/rubric.md 4 維度（D1 正本邊界 / D2 分層顆粒度 / D3 完整性 / D4 真實性）全「通過」。實作者不得自判完成。
+<模組> 的 project 描述（模組層 What）+ 各角色 Task issue（角色層 How）齊備〔狀態密集模組另含每個狀態機 UML、有業務結果的功能另含驗收條件〕，且經 senior-pm 評審判 references/rubric.md 4 維度（D1 正本邊界 / D2 分層顆粒度 / D3 完整性 / D4 真實性）全「通過」。實作者不得自判完成。
 
 ## Verification（驗證方式）
 由 senior-pm（PM agent）跑 references/rubric.md：逐維度給通過 / 部分 / 未通過 + evidence-anchored（引用草稿具體位置）+ 違反禁令 + 修正方向。D4 真實性一票否決。
@@ -133,13 +133,16 @@ description: >
 
 > **MUST NOT** 拿「另一個需求 / issue 的內容」當對照範本 —— 實例會被修改或刪除，對照即失效。標準模板是從多個既有交付物**精煉出的自包含結構**，更新走版本控管（見本檔 § Rubric 與模板演化）。
 
-- **project 描述 = 模組層 What**：概述（指 Notion BRD）/ 使用情境（Use Case + Key Feature 分 Phase）/ Spec（Design / 功能邏輯 / 資料欄位指 Notion DB / FE / BE）/ 狀態機 UML
+- **project 描述 = 模組層 What**：概述（指 Notion BRD）/ 使用情境（Use Case + Key Feature 分 Phase）/ Spec（Design / 功能邏輯 / **驗收條件** / 資料欄位指 Notion DB / FE / BE）/ 狀態機 UML
+  - **驗收條件**：自業務情境步驟判準與規格 Scenario 轉譯為 3-5 條可勾稽情境（流程用情境式、規則用條列），與功能邏輯說明分工（前者寫驗收情境、後者寫規則本體）；缺料記 OQ 標另案。成品禁出現內部路徑。
 - **Task issue = 角色層 How**：概述（指回 project 段落 + 負責範圍）+ 實作細節 checklist
 - 禁中英夾雜（英文識別碼用「中文（英文）」格式）
 
 ### Step 3：實作者自審
 
 主對話 agent（實作者）對照 `references/rubric.md` 4 維度的「絕對不要」禁令清單逐條自查，修掉明顯違規。
+
+自審 MUST 含：有業務可觀測結果的功能是否已附驗收條件、驗收條件是否 outcome 導向且二元可勾稽、是否誤把通用品質門檻（Definition of Done）混入驗收條件、驗收條件條目是否殘留內部路徑或檔名。
 
 ### Step 4：評審稽核（執行者 / 評審分離）
 
