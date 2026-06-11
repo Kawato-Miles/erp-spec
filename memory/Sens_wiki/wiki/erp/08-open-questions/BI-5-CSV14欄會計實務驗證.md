@@ -5,7 +5,7 @@ module:
 oq-id: BI-5
 status: open
 priority: high
-audience: internal
+audience: external
 raised-at: 2026-05-28
 raised-by: ceo-reviewer (Phase 2 Challenge 5)
 source-link: openspec/changes/unify-billing-installment-and-reconciliation-csv/design.md

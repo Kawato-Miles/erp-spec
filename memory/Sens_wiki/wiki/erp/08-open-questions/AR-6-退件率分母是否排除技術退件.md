@@ -5,7 +5,7 @@ module:
 oq-id: AR-6
 status: open
 priority: medium
-audience: internal
+audience: external
 raised-at: 2026-05-21
 raised-by: erp-consultant-agent
 source-link: US-AR-006 / US-AR-005 批 1 雙視角審查
