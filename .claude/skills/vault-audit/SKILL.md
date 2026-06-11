@@ -1,653 +1,216 @@
 ---
 name: vault-audit
 description: >
-  ERP_Vault 自審稽核 skill。對 `memory/Sens_wiki/wiki/` 執行 13 維度健康檢查（Karpathy LLM Wiki 模式 6 維度 + Sens 特化 7 維度），產出對話報告 + 追加 wiki/log.md 一筆（動作=健檢、標籤=audit）。
+  ERP_Vault 自審稽核 skill。對 `memory/Sens_wiki/wiki/` 執行 12 維度健康檢查（Karpathy LLM Wiki lint 模式 + Sens 特化），產出對話報告 + 追加 wiki/log.md 一筆（動作=健檢、標籤=audit）。
   觸發時機：
     1. Miles 說「跑 vault audit」「Vault 健康檢查」「audit vault」
     2. 主動收尾發現 ≥ 5 個 Vault 卡異動時建議
     3. change archive 後建議
     4. 每 20+ commit 後建議
-    5. raw 累積 ≥ 10 張 status=raw 時自動建議（維度 11 觸發）
-    6. 本月 daily review 缺 ≥ 工作日 50% 時自動建議（維度 12 觸發）
-  範圍：**只稽核 ERP_Vault**。
+    5. raw 累積 ≥ 10 張 status=raw 時自動建議（維度 9 觸發）
+    6. 本月 daily review 缺 ≥ 工作日 50% 時自動建議（維度 10 觸發）
+  範圍鐵則：**只讀 `memory/Sens_wiki/wiki/`＋`memory/Sens_wiki/raw/`（raw 唯讀）。MUST NOT 掃描或開啟 OpenSpec、Prototype、memory/ 其他目錄**——跨層對齊與進度追蹤不是 lint，分別歸 OpenSpec 工作流與 vault-insight。
   輸出：對話報告 + 追加 `memory/Sens_wiki/wiki/log.md` 一筆（動作=健檢、標籤=audit；追加式、最新在上、禁覆寫）。
-  不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）、純對話內容稽核。
+  不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）、KPI 進度追蹤（用 vault-insight / weekly-review）、純對話內容稽核。
 ---
 
 # vault-audit
 
-ERP_Vault 自審工具。**禁止運行於 ERP_Vault 以外的目錄**。
+ERP_Vault 的 lint：找出**矛盾／過時／孤島／死鏈／缺欄位／違規**。對標 Karpathy LLM Wiki 模式的 lint 操作。
 
----
+## 〇、定位（每條維度都從這裡推導）
 
-## 一、定位與範圍
+- **lint 只管 wiki 自身的健康**：卡與卡之間對不對得上、連結活不活、欄位齊不齊、規約守沒守。
+- **lint 不做的事**：跨層對齊（wiki↔OpenSpec 的內容一致性屬 spec 撰寫時的四方比對）、進度追蹤（KPI／Phase 對照屬 vault-insight 與 weekly-review）、解答問題（OQ 解答權在 Miles）。
+- **範圍鐵則**：檔案讀取限 `memory/Sens_wiki/wiki/` 與 `memory/Sens_wiki/raw/`（唯讀）。維度 7 驗 frontmatter 引用的外部路徑時只做「檔案存在與否」測試（`test -f`），不開啟、不解析其內容。
+- 發現的問題**只報告不擅修**（mode C 修復須 Miles 確認）；矛盾依鐵則並排比對呈報，不自行調和。
 
-**目標**：對 `memory/Sens_wiki/wiki/` 102+ 卡執行健康檢查，產出可 actionable 的稽核報告。
-
-**對標**：Karpathy LLM Wiki 模式的 `lint` 操作 — 「**找出矛盾 / 過時 / 孤立 / 缺連結 / 缺口 / 需調查方向**」。
-
-**範圍**：
-
-| 範圍 | 處理 |
-|------|------|
-| ERP_Vault 內所有 .md / .canvas | **本 skill 處理** |
-| OpenSpec spec / change / archive | 不在範圍 |
-| Prototype src/ | 不在範圍（e2e 測試處理）|
-| memory/ 其他目錄 | 不在範圍（保留為 Prototype / shared 範疇）|
-
----
-
-## 二、三種執行模式
+## 一、三種執行模式
 
 | 模式 | 觸發句 | 用途 |
 |------|--------|------|
-| **A 全量** | 「跑 vault audit」「audit vault」「全量稽核」 | 13 維度全掃，~3-5 分鐘 |
-| **B 單維度** | 「跑維度 N audit」「audit 維度 X」「只查孤立頁面」 | 針對性檢查，~30 秒 |
-| **C 修復** | 「跑 vault audit + fix」「audit 並修復」「audit 自動修」 | 全掃 + 對可自動修復項建議或執行修復 |
+| **A 全量** | 「跑 vault audit」「audit vault」「全量稽核」 | 12 維度全掃 |
+| **B 單維度** | 「跑維度 N audit」「只查孤島」 | 針對性檢查 |
+| **C 修復** | 「audit 並修復」「audit + fix」 | 全掃＋可自動修復項經 Miles 確認後執行 |
 
----
+## 二、12 個稽核維度
 
-## 三、13 個稽核維度
+> 維度 1-6 為通用 lint（Karpathy），7-12 為 Sens 特化。每維度產出：命中清單＋判定（OK / Warning / Error；維度 11 為 Info）。
 
-### 維度 1：頁面間矛盾（Karpathy）
+### 維度 1：頁面間矛盾
 
-**檢查方法**：
-1. 對核心概念清單（如「齊套邏輯」「印件」「工單」「審稿」「QC」）grep 在哪些卡被引用
-2. LLM 比對描述差異
-3. 標記矛盾敘述（同概念在 A 卡寫「X」，在 B 卡寫「非 X」）
+**目的**：同一商業概念在不同卡的描述不能互相打架（矛盾常代表實務未被正確捕捉）。
 
-**Bash**：
+方法：對核心概念（齊套邏輯／印件／工單／審稿／品檢／確認可執行／對帳）grep 出現的卡，比對描述差異。
+判定：Error＝明確矛盾（A 卡寫 X、B 卡寫非 X）；Warning＝補充性差異；發現矛盾依鐵則開 OQ 並呈報，不自行調和。
 
-```bash
-# 範例：抓「齊套邏輯」在哪些卡定義
-grep -rln "齊套\|kitting" /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/ --include="*.md"
-```
+### 維度 2：過時宣稱
 
-**判定**：
-- OK：同概念跨卡描述一致
-- Warning：補充性差異（不矛盾，但細節不同）
-- Error：明確矛盾
-
-### 維度 2：過時宣稱（Karpathy）
-
-**檢查方法**：
+**目的**：active 卡太久沒人看過，內容可信度下降。
 
 ```bash
-# 找 last-reviewed > 90 天且 status: active 的卡
-today=$(date +%Y-%m-%d)
 threshold=$(date -v-90d +%Y-%m-%d 2>/dev/null || date -d "90 days ago" +%Y-%m-%d)
-grep -rn "^last-reviewed:" /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/ --include="*.md" \
-  | awk -F: -v t="$threshold" '$NF < " "t {print}'
+# 列出 status: active 且 last-reviewed < threshold 的卡
 ```
 
-**判定**：
-- OK：所有 active 卡 last-reviewed < 90 天
-- Warning：1-5 卡過時
-- Error：> 5 卡過時
+判定：OK＝全部 < 90 天；Warning＝1-5 卡過時；Error＝> 5 卡。
 
-### 維度 3：孤立頁面（Karpathy）
+### 維度 3：孤島頁面
 
-**檢查方法**：
+**目的**：沒有任何卡連到的卡等於不存在（禁孤島是共用標準）。
 
 ```bash
-# 用 obsidian CLI（若已啟用）
-obsidian orphans
-
-# 或 fallback：grep 反向引用為 0 的卡
-# 對每個 .md 檔，檢查其檔名是否被其他卡 wiki link 引用
+# 優先用 obsidian-cli（解析 vault 索引，grep 看不懂 wiki link）
+obsidian deadends   # 或 obsidian eval 查 metadataCache 反向連結為 0 的卡
 ```
 
-**判定**：
-- OK：0 個 orphan（除 README / index 性質檔）
-- Warning：1-3 個 orphan
-- Error：> 3 個 orphan
+判定：OK＝0 孤島（README／index／範本性質檔除外）；Warning＝1-3；Error＝> 3。
 
-### 維度 4：缺失連結（Karpathy）
+### 維度 4：死鏈（未解析連結）
 
-**檢查方法**：
+**目的**：`[[連結]]` 指到不存在的卡，讀者點了撲空。
 
 ```bash
-# 用 obsidian CLI
-obsidian unresolved
-
-# 或 fallback：grep 所有 [[X]]，對 X 檔不存在的列出
+obsidian eval "Object.keys(app.metadataCache.unresolvedLinks).filter(k => Object.keys(app.metadataCache.unresolvedLinks[k]).length)"
 ```
 
-**判定**：
-- OK：0 個 dangling
-- Warning：1-5 個 dangling（多半是 placeholder）
-- Error：> 5 個 dangling
+判定：OK＝0；Warning＝1-5（占位連結用角括號形式不計）；Error＝> 5。
 
-### 維度 5：數據缺口（Karpathy）
+### 維度 5：frontmatter 完整性
 
-**檢查方法**：
+**目的**：缺必填欄位的卡進不了載入決策表與領域 grep。
 
-1. **必填 frontmatter 欄位**（依 `00-meta/wiki-schema.md`）：
+方法：依 [[wiki-schema]] 現行必填——`type`／`module`（中文 enum）／`business-domain`（適用 type）／`status`／`last-reviewed`；正本卡（03/04/05/06）另須 `source`。同時抓仍殘留的已廢欄位（`related-spec`、英文 module token——轉換期舊卡隨異動統一，殘留即列出供順手清理）。
+判定：OK＝0 缺；Warning＝1-5；Error＝> 5。
+
+### 維度 6：規約遵守
+
+**目的**：操作紀律（OQ 開檔、繁中語意化）靠巡檢守住。
+
+1. 無 inline `[!question]` callout、無「待確認／待釐清／需確認／尚未確認／待補」inline 措辭（OQ 須開獨立卡；引用既有 OQ 卡的 wiki link 不算違規）：
 
 ```bash
-# 例：所有 entity 卡必須有 type / module / related-spec
-for f in /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/05-entities/*.md; do
-  grep -L "^type:" "$f" && echo "$f 缺 type"
-done
+grep -rn "\[!question\]" memory/Sens_wiki/wiki/ --include="*.md" | grep -v "08-open-questions/"
+grep -rn "（待補\|（待釐清\|（待確認" memory/Sens_wiki/wiki/ --include="*.md" | grep -v "08-open-questions/" | grep -v "待 \[\["
 ```
 
-2. **README 列了但無實際卡**：
+2. 命名繁中語意化：卡名與段落禁直譯、禁中英夾雜（rules § 五）；OQ 卡命名 `<前綴>-<NNN>-<簡述>`。
+3. 正文禁迭代史堆疊（「A 已棄用 → 改 B」並陳）。
+
+判定：OK＝0 違規；Warning＝1-3；Error＝> 3（觸發建議 `oq-manage` mode D 遷出）。
+
+### 維度 7：出鏈有效性與方向
+
+**目的**：frontmatter 的 `source`／`implemented-by` 是依據鏈，斷了或指錯方向都會誤導下游。
+
+1. **路徑存在**：`implemented-by` 指的外部檔案路徑做 `test -f`（只測存在、不開啟內容——範圍鐵則）。
+2. **方向正確**：`source` 禁指 OpenSpec／Prototype（正確性根據只能往上：拍板／權責表／04 規則卡／法規）、禁指同層或下層卡。
 
 ```bash
-# 例：08-open-questions/README.md 列出 OQ 名單，逐一檢查是否有對應 .md
+grep -rn "openspec/\|sens-erp-prototype/" memory/Sens_wiki/wiki/ --include="*.md" | grep -A0 "source:"  # source 區塊內出現實作路徑即 Error
 ```
 
-**判定**：
-- OK：0 個缺口
-- Warning：1-5 個
-- Error：> 5 個
+判定：OK＝路徑全存在且方向正確；Warning＝1-3 斷路徑；Error＝source 指實作層（違反引用方向鐵則）。
 
-### 維度 6：規則遵守（Karpathy + Sens）
+### 維度 8：OQ 健康度
 
-**檢查項目**：
+**目的**：OQ 是待裁決佇列，過期與缺欄位會讓裁決漏接。
 
-1. **無 inline `[!question]` callout**（Phase D 強制規則）：
+檢查：open 且 raised-at > 30 天無進度；缺 `expected-resolution-at`／`source-link`；priority high 長期擱置。
+判定：OK＝全健康；Warning＝1-3 需跟催；Error＝> 3（建議跑 `vault-insight` 找系統性議題）。
+
+### 維度 9：Raw 健康度（唯讀檢查，禁動 raw/ 任何檔）
+
+**目的**：素材放到過期、防線欄位缺漏，會讓 ingest 失去可溯源性。
+
+檢查（讀 `memory/Sens_wiki/raw/` frontmatter）：
+- status=raw 超過 180 天＝Error、超過 90 天＝Warning
+- status=reviewed 超過 5 天未確認＝Warning
+- 同主題（topic-tag）累積 ≥ 3 張＝Warning（建議 vault-ingest mode B 或 vault-insight）
+- source=claude-research／miles-upload 缺 `raw-source-link`、miles-upload 缺 `attached-files`＝Error（Anti-Model-Collapse 防線）
+
+判定：OK＝無超期無違反；Warning／Error 如上。raw 累積 ≥ 10 張另建議跑 vault-ingest mode C。
+
+### 維度 10：Review 規律性
+
+**目的**：daily／weekly 回顧卡（`14-reviews/`）斷更代表回顧機制失靈。
+
+檢查：本月 daily 卡數 < 已過工作日 × 50%＝Error；本月無 weekly＝Error；本週 daily 缺 ≥ 2 工作日＝Warning；上週無 weekly＝Warning。剛上線無歷史資料的月份自動 OK。
+
+### 維度 11：標題錨點（只查本輪異動卡，Info 不計分）
+
+**目的**：`implemented-by`／`source` 綁 `#Requirement: <標題>` 錨點，Requirement 改名即斷鏈（ORD-027 教訓）。存量卡不回頭批量改，只提示本輪異動卡。
 
 ```bash
-grep -rn "\[!question\]" /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/ --include="*.md" | grep -v "08-open-questions/README.md"
-# 應為 0 筆（除 README 教示文字）
+base=$(git merge-base HEAD origin/main 2>/dev/null || echo HEAD~1)
+changed=$( { git diff --name-only "$base" HEAD -- 'memory/Sens_wiki/wiki/'; git diff --name-only -- 'memory/Sens_wiki/wiki/'; } | sort -u )
+for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && echo "INFO: $f 含標題錨點，建議改指 spec 檔層"; done
 ```
 
-2. **無 inline OQ 措辭**（待確認 / 待釐清 / 需確認 / 尚未確認 / 待補）：
+### 維度 12：log 條目完整性（只查本輪異動的正本卡）
 
-```bash
-grep -rn "（待補\|（待釐清\|（待確認）" /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/ --include="*.md" \
-  | grep -v "08-open-questions/" | grep -v "wiki-schema"
-```
+**目的**：wiki/log.md 是唯一只追加操作史，正本卡異動沒留條目＝溯源斷。
 
-3. **命名規約**：OQ 卡用 `<MODULE>-<NNN>-<簡述>.md` 格式
+檢查：本輪 git 異動的 03/04/05/06 目錄卡，逐卡在 `wiki/log.md` 找含 `[[卡名]]` 的條目；實質異動條目「動機」行須非空（健檢／納入類免）。
+判定：OK＝全有條目且動機非空；Warning＝缺條目或動機空白。
 
-**判定**：
-- OK：0 違規
-- Warning：1-3 違規
-- Error：> 3 違規（觸發建議跑 `oq-manage` mode D 遷出）
+## 三、執行流程
 
-### 維度 7：Vault ↔ OpenSpec 對齊（Sens 特化）
-
-**檢查方法**：
-
-1. **Vault 卡引用的 spec 是否存在**：
-
-```bash
-grep -rn "related-spec:" /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/ --include="*.md" \
-  | awk -F"related-spec: " '{print $2}' \
-  | while read spec_path; do
-      [ ! -f "/Users/b-f-03-029/Sens/$spec_path" ] && echo "缺 spec: $spec_path"
-    done
-```
-
-2. **反向：OpenSpec spec 提到的商業概念是否在 Vault 有對應卡**：
-   - 抽 OpenSpec 各模組 spec 的關鍵業務名詞（如 BOM / TransferTicket / OrderAdjustment）
-   - 檢查 Vault `04-business-logic/` 或 `05-entities/` 是否有對應卡
-
-**判定**：
-- OK：Vault → OpenSpec 雙向引用完整
-- Warning：少數缺漏（< 3 個）
-- Error：明顯不對齊（如某模組無對應 Vault 卡）
-
-### 維度 8：OQ 健康度（Sens 特化）
-
-**檢查項目**：
-
-1. **open 過久**（raised-at > 30 天 + status: open）：
-
-```bash
-# 對 08-open-questions/ 各 OQ 卡，看 raised-at 是否超期
-```
-
-2. **缺 `expected-resolution-at`**：
-
-```bash
-for f in /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/08-open-questions/*.md; do
-  [ "$(basename "$f")" = "README.md" ] && continue
-  grep -L "^expected-resolution-at:" "$f"
-done
-```
-
-3. **缺 `source-link`**：同上
-
-4. **priority high 但 raised-at 過久**：高優先但長期擱置
-
-**判定**：
-- OK：所有 OQ 健康
-- Warning：1-3 OQ 需 follow-up
-- Error：> 3 OQ 需 follow-up（建議跑 `vault-insight` 識別系統性議題）
-
-### 維度 9：角色 alignment 落後狀態（Sens 特化）
-
-**檢查方法**：
-
-讀 `03-roles/_alignment-report.md` § 三、OpenSpec 缺漏（11）：
-
-1. 每個「OpenSpec 缺漏」角色：是否仍在 Vault 但 OpenSpec spec 仍無？
-2. 對照 OpenSpec change archive 紀錄：是否有對應 change 已補 user-roles spec？
-3. 若已補 → 該議題可結案
-4. 若未補 → 標記為「持續落後」
-
-**判定**：
-- OK：alignment-report 已完全消化（所有缺漏已補或已結案）
-- Warning：1-5 角色持續落後
-- Error：> 5 角色持續落後 + 已過 60 天（觸發建議跑 `vault-insight` 提煉「角色補建」insight）
-
-### 維度 10：KPI / Phase 進度對照（Sens 特化）
-
-**檢查方法**：
-
-1. 讀 `01-products/phases.md` + `success-metrics.md`
-2. 對照 `01-products/kpi/` 各 KPI 卡：
-   - 是否有對應 Vault 內容佐證進度？
-   - 是否有對應 OpenSpec spec / change 落實？
-3. Phase 1（EC 規格品 BOM 覆蓋率）：對照 `material-master` / `process-master` / `binding-master` spec 與 Prototype 實作
-4. Phase 2（訂單流程完整完成率）：對照 quote-request / order-management / work-order / production-task / qc / shipping 等模組 spec
-5. Phase 3（生產效率優化）：依 plan 為「後驗 epic」，本維度暫跳過
-
-**判定**：
-- OK：KPI 對照清晰、有佐證
-- Warning：少數 KPI 缺對應 Vault / spec 內容
-- Error：多數 KPI 無法對照（觸發建議跑 `vault-insight`）
-
-### 維度 11：Raw 健康度（Sens 特化，2026-05-21 實作）
-
-**檢查項目**：
-
-1. **status=raw + created-at > 180 天**：Error
-2. **status=raw + created-at > 90 天 + ≤ 180 天**：Warning
-3. **status=reviewed + 超過 5 天未確認**：Warning（Mode B step 3 完成但 Miles 未拍板）
-4. **同主題 raw 累積 ≥ 3 張**：Warning + 建議跑 vault-ingest Mode B 或 vault-insight
-5. **claude-research / miles-upload 缺 raw-source-link**：Error（違反 Anti-Model-Collapse 防線 2 / 2b）
-6. **source=miles-upload 但 attached-files 為空**：Error（違反防線 2b）
-
-**Bash**（macOS / GNU date 兼容）：
-
-```bash
-cd /Users/b-f-03-029/Sens/memory/Sens_wiki/raw
-today=$(date +%Y-%m-%d)
-threshold_90=$(date -v-90d +%Y-%m-%d 2>/dev/null || date -d "90 days ago" +%Y-%m-%d)
-threshold_180=$(date -v-180d +%Y-%m-%d 2>/dev/null || date -d "180 days ago" +%Y-%m-%d)
-threshold_5=$(date -v-5d +%Y-%m-%d 2>/dev/null || date -d "5 days ago" +%Y-%m-%d)
-
-raw_count=0; reviewed_old=0; error_180=0; warn_90=0
-declare -A topic_tag_count
-
-for f in *.md; do
-  [[ "$f" == "README.md" || "$f" == "_template.md" ]] && continue
-  status=$(grep "^status:" "$f" 2>/dev/null | head -1 | awk '{print $2}')
-  created=$(grep "^created-at:" "$f" 2>/dev/null | head -1 | awk '{print $2}')
-
-  if [[ "$status" == "raw" ]]; then
-    raw_count=$((raw_count+1))
-    if [[ "$created" < "$threshold_180" ]]; then
-      echo "ERROR: $f (status=raw, created-at: $created > 180 天)"
-      error_180=$((error_180+1))
-    elif [[ "$created" < "$threshold_90" ]]; then
-      echo "WARN: $f (status=raw, created-at: $created > 90 天)"
-      warn_90=$((warn_90+1))
-    fi
-  fi
-
-  if [[ "$status" == "reviewed" && "$created" < "$threshold_5" ]]; then
-    echo "WARN: $f (status=reviewed > 5 天未確認)"
-    reviewed_old=$((reviewed_old+1))
-  fi
-
-  # 抽 topic-tag 跨卡累積
-  tags=$(grep -A 5 "^topic-tag:" "$f" 2>/dev/null | grep "^  -" | awk '{print $2}')
-  for tag in $tags; do
-    topic_tag_count[$tag]=$((${topic_tag_count[$tag]:-0}+1))
-  done
-
-  # claude-research / miles-upload 缺 raw-source-link
-  source=$(grep "^source:" "$f" 2>/dev/null | head -1 | awk '{print $2}')
-  if [[ "$source" == "claude-research" || "$source" == "miles-upload" ]]; then
-    link=$(grep "^raw-source-link:" "$f" 2>/dev/null | head -1)
-    [[ -z "$link" || "$link" == "raw-source-link:" || "$link" == *"<"* ]] && \
-      echo "ERROR: $f (source=$source 缺 raw-source-link，違反 Anti-Model-Collapse 防線 2/2b)"
-  fi
-
-  # miles-upload 缺 attached-files
-  if [[ "$source" == "miles-upload" ]]; then
-    grep -q "^attached-files:" "$f" || \
-      echo "ERROR: $f (source=miles-upload 缺 attached-files，違反防線 2b)"
-  fi
-done
-
-# 同主題累積 ≥ 3 警示
-for tag in "${!topic_tag_count[@]}"; do
-  count=${topic_tag_count[$tag]}
-  if [[ $count -ge 3 ]]; then
-    echo "WARN: 同主題 raw 累積 $count 張（topic-tag: $tag）— 建議跑 vault-ingest Mode B 或 vault-insight"
-  fi
-done
-```
-
-**判定**：
-- OK：status=raw 卡 0 條超過 90 天，無同主題累積 ≥ 3，無 source 違反
-- Warning：1-5 卡 status=raw > 90 天 / 1-3 同主題累積 / 1-3 reviewed 超期未確認
-- Error：> 5 卡 status=raw > 180 天 / 或任何 source 違反 Anti-Model-Collapse 防線
-
-### 維度 12：Review 規律性（Sens 特化，2026-05-21 實作）
-
-**檢查項目**：
-
-1. **本月 daily review 數 < 本月工作日 × 50%**：Error
-2. **本月無 weekly review**：Error
-3. **本週 daily review 缺 ≥ 2 工作日**：Warning
-4. **上週無 weekly review**：Warning
-
-**工作日計算**：扣除週六 / 週日（不扣國定假日，估計值即可）
-
-**Bash**（macOS / GNU date 兼容）：
-
-```bash
-cd /Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/14-reviews
-
-today=$(date +%Y-%m-%d)
-this_month=$(date +%Y-%m)
-this_year=$(date +%Y)
-this_week=$(date +%G-W%V 2>/dev/null || date +%Y-W%V)  # ISO 週
-
-# 本月 daily 卡數（過濾 _template / .gitkeep）
-daily_this_month=$(ls daily/${this_month}-*.md 2>/dev/null | wc -l | tr -d ' ')
-
-# 本月已過天數（每月第幾天）
-day_of_month=$(date +%-d)
-
-# 本月已過工作日數（粗估：日數 × 5/7）
-workdays_passed=$((day_of_month * 5 / 7))
-
-# 本月 weekly 卡數（涵蓋本月 4 週）
-weekly_this_month=$(ls weekly/${this_year}-W*.md 2>/dev/null | wc -l | tr -d ' ')
-# 過濾出本月對應週數的（每個月約 4-5 個 ISO 週）
-# 簡化：本月有 weekly 卡 ≥ 1 視為 OK
-
-# 本週 daily 數
-week_start_day=$(date -v-Monday +%Y-%m-%d 2>/dev/null || date -d "last Monday" +%Y-%m-%d)
-daily_this_week=$(find daily/ -name "*.md" -newer <(date -d "$week_start_day") 2>/dev/null | wc -l | tr -d ' ')
-
-# 判定
-if [[ $daily_this_month -lt $((workdays_passed / 2)) ]]; then
-  echo "ERROR: 本月 daily 卡 $daily_this_month 張 < 已過工作日 $workdays_passed × 50%"
-fi
-
-if [[ $weekly_this_month -eq 0 ]]; then
-  echo "ERROR: 本月無 weekly review"
-fi
-
-# 本週缺日數（估算：今日是週幾 → 應有幾張 daily）
-day_of_week=$(date +%u)  # 1=週一, 7=週日
-expected_daily_this_week=$((day_of_week <= 5 ? day_of_week : 5))
-missing_this_week=$((expected_daily_this_week - daily_this_week))
-if [[ $missing_this_week -ge 2 ]]; then
-  echo "WARN: 本週 daily 缺 $missing_this_week 個工作日"
-fi
-
-# 上週是否有 weekly
-last_week=$(date -v-1w +%G-W%V 2>/dev/null || date -d "1 week ago" +%Y-W%V)
-[ ! -f "weekly/${last_week}.md" ] && echo "WARN: 上週（${last_week}）無 weekly review"
-```
-
-**判定**：
-- OK：本月 daily ≥ 工作日 × 50% + 本月 weekly ≥ 1 + 本週 daily 缺 < 2 + 上週有 weekly
-- Warning：本週 daily 缺 ≥ 2 或上週無 weekly
-- Error：本月 daily < 工作日 × 50% 或本月無 weekly
-
-**注意**：第一次月份不適用（如剛上線時，無歷史資料，自動 OK）
-
----
-
-### 維度 15（部分）：依據鏈標題錨點檢查（Sens 特化，2026-06-01 實作）
-
-> 維度 15 完整定義見 [[wiki-schema]] § 六維度 15（含 source 繞回自己 / 指 OpenSpec 的 Error 條件，其餘待實作）。本段先實作其中的「**標題錨點**」Info 檢查：`implemented-by` / `source` 不應綁 `#Requirement: <標題>` 標題錨點（Requirement 改名即斷鏈、反過來卡住改名，ORD-027 教訓）。
-> **只對本輪新增 / 異動的卡提示**（既有存量卡 Miles 指示先留著、不回頭批量改，故不掃未異動卡，避免噪音）。
-
-```bash
-cd <vault repo root>
-# 本輪異動的 wiki 卡 = 相對 main fork 點的 diff + 工作區未提交變更
-base=$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null || echo HEAD~1)
-changed=$( { git diff --name-only "$base" HEAD -- 'memory/Sens_wiki/wiki/'; \
-             git diff --name-only -- 'memory/Sens_wiki/wiki/'; \
-             git diff --name-only --cached -- 'memory/Sens_wiki/wiki/'; } | sort -u )
-
-hit=0
-for f in $changed; do
-  [ -f "$f" ] || continue
-  if grep -qE 'spec\.md#Requirement:' "$f"; then
-    echo "INFO: $f — implemented-by/source 仍含 #Requirement: 標題錨點，建議改指 spec 檔層 + Requirement 名稱以文字描述（維度 15，ORD-027 教訓）"
-    hit=1
-  fi
-done
-[ $hit -eq 0 ] && echo "OK：本輪異動卡無標題錨點"
-```
-
-**判定**：
-- OK：本輪異動卡 `implemented-by` / `source` 皆無 `#Requirement:` 標題錨點
-- Info：本輪異動卡仍含標題錨點（提示改寫，**不計入 Error / Warning**，不阻擋）
-
----
-
-### 維度 16：log 條目完整性（Sens 特化，2026-06-10 實作）
-
-> wiki/log.md 為全知識庫唯一只追加操作史（`00-meta/changelog.md` 已凍結封存，不再讀寫）。本維度檢查本輪正本卡異動是否都在 log.md 留下可溯源條目。
-> **只對本輪 git 異動的 wiki 正本卡檢查**（03/04/05/06 目錄），不掃既有存量（與維度 15 的「git 範圍限定」做法一致），避免噪音。
-
-**檢查內容**：
-- (a) 本輪 git 異動的 wiki 正本卡（`03-roles/` / `04-business-logic/` / `05-entities/` / `06-state-machines/` 目錄）是否能在 `wiki/log.md` 找到含該卡 `[[卡名]]` 的條目
-- (b) 實質異動條目的「動機」行是否非空（健檢 / 納入類條目免「動機」，故只查實質異動正本卡對應的條目）
-
-```bash
-cd <vault repo root>
-base=$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null || echo HEAD~1)
-changed=$( { git diff --name-only "$base" HEAD -- \
-               'memory/Sens_wiki/wiki/erp/03-roles/' \
-               'memory/Sens_wiki/wiki/erp/04-business-logic/' \
-               'memory/Sens_wiki/wiki/erp/05-entities/' \
-               'memory/Sens_wiki/wiki/erp/06-state-machines/'; \
-             git diff --name-only -- \
-               'memory/Sens_wiki/wiki/erp/03-roles/' \
-               'memory/Sens_wiki/wiki/erp/04-business-logic/' \
-               'memory/Sens_wiki/wiki/erp/05-entities/' \
-               'memory/Sens_wiki/wiki/erp/06-state-machines/'; \
-             git diff --name-only --cached -- \
-               'memory/Sens_wiki/wiki/erp/03-roles/' \
-               'memory/Sens_wiki/wiki/erp/04-business-logic/' \
-               'memory/Sens_wiki/wiki/erp/05-entities/' \
-               'memory/Sens_wiki/wiki/erp/06-state-machines/'; } | sort -u )
-
-log=memory/Sens_wiki/wiki/log.md
-miss=0
-for f in $changed; do
-  [ -f "$f" ] || continue
-  card=$(basename "$f" .md)
-  if ! grep -q "\[\[$card\]\]" "$log"; then
-    echo "WARN: $f — wiki/log.md 找不到含 [[$card]] 的條目（缺 log 溯源）"
-    miss=1
-  fi
-done
-[ $miss -eq 0 ] && echo "OK：本輪異動正本卡皆有 log.md 條目"
-# (b) 動機行非空：對含該卡的條目人工判讀「動機：」行是否為空（健檢/納入類免）
-```
-
-**判定**：
-- OK：本輪異動正本卡皆有含 `[[卡名]]` 的 log.md 條目，且實質異動條目「動機」行非空
-- Warning：缺條目（找不到含該卡的 log 條目）/ 實質異動條目「動機」行為空
-
----
-
-## 四、執行流程
-
-### Step 1：宣告稽核範圍
-
-依模式回報：
-- 全量：「執行 vault-audit 全量稽核，13 維度 ...」
-- 單維度：「執行 vault-audit 維度 N（XXX）...」
-- 修復：「執行 vault-audit + fix ...」
-
-### Step 2：依序執行各維度
-
-每維度執行：
-1. Bash 命令（grep / find / obsidian CLI）
-2. 整理命中清單
-3. 判定 OK / Warning / Error
-
-### Step 3：產出對話報告
+1. **宣告範圍與模式**（全量／單維度 N／修復）。
+2. **依序執行各維度**：Bash／obsidian-cli 取證 → 整理命中清單 → 判定。跳過任一維度必須標注原因。
+3. **產出對話報告**：
 
 ```markdown
 # Vault Audit 報告（YYYY-MM-DD HH:MM）
 
 ## 摘要
-- 模式：全量 / 單維度（X） / 修復
-- 總體狀態：OK / Warning / Error
-- 維度通過：X / 13
+- 模式 / 總體狀態（OK / Warning / Error）/ 維度通過 X / 12
 
 ## 維度結果
-
-### 維度 1 頁面間矛盾：OK ✓ / Warning / Error
-（命中筆數 + 主要案例）
-
-### 維度 2 過時宣稱：...
-（同上）
-
-...
+### 維度 N <名稱>：<判定>
+（命中筆數＋主要案例；OK 維度一行帶過）
 
 ## 主要發現（top 3-5）
-1. ...
-2. ...
-3. ...
-
 ## 建議下一步
-- [自動修復可做的]：建議跑 mode C 修復
-- [需 Miles 決策的]：列出待 Miles 處理項
-- [需跑 vault-insight 的]：建議跑 insight skill
+- 可自動修復項（mode C）/ 需 Miles 裁決項 / 建議跑 vault-insight 項
 ```
 
-### Step 4：追加 wiki/log.md 一筆
-
-追加到 `memory/Sens_wiki/wiki/log.md`（動作=健檢、標籤=audit；最新在上、加在檔首說明分隔線下方）：
+4. **追加 wiki/log.md 一筆**（動作=健檢、標籤=audit；最新在上）：
 
 ```markdown
-## [YYYY-MM-DD HH:MM] 健檢(audit) | 全量 / 單維度（N） / 修復，13 維度 X 通過
-- 變更：稽核 ERP_Vault，<總體狀態 OK / Warning / Error>；維度 1 矛盾 <status>、維度 8 OQ <status>、...（只列非 OK 維度）
+## [YYYY-MM-DD HH:MM] 健檢(audit) | 全量／單維度（N）／修復，12 維度 X 通過
+- 變更：稽核 ERP_Vault，<總體狀態>；只列非 OK 維度與筆數
 - 動機：免（健檢類）
-- 衝突：無
+- 衝突：無（或列發現的矛盾＋已開 OQ）
 ```
 
-長敘事（逐維度命中清單、主要發現、下一步建議）留在對話報告，不灌進 log。
+長敘事留在對話報告，不灌進 log。
 
----
+## 四、修復模式（mode C）
 
-## 五、自動修復可做 vs 不可做
-
-| 可自動修復 | 不可自動修復 |
+| 可自動修復（仍須 Miles 確認） | 不可自動修復 |
 |-----------|--------------|
-| 建立缺失連結的 stub 頁面（含 frontmatter + TODO 註記） | 頁面間矛盾（需 LLM 判斷） |
-| 為過時卡列出「last-reviewed 更新提醒」清單 | Vault ↔ OpenSpec 對齊（需 Miles 決策） |
-| 為 orphan 卡建議納入 README 索引 | OQ 解答（需 Miles / 利害關係人）|
-| 為缺 frontmatter 必填欄位的卡補預設值 | 角色補建決策 |
+| 補 frontmatter 缺欄位（依 wiki-schema 預設） | 頁面間矛盾（並排呈報 Miles 裁決） |
+| 列過時卡的 review 提醒清單 | OQ 解答 |
+| 為孤島卡建議連入位置 | source 方向錯誤的改向（涉及依據判斷） |
+| 死鏈改向或建 stub（stub 須 status: draft、檔名即標題、不寫 H1） | 內容性缺口補寫 |
 
-修復模式（mode C）執行步驟：
-1. 先全量稽核
-2. 對「可自動修復」項列出清單 + 取得 Miles 確認
-3. Miles 確認後執行修復
-4. 追加 wiki/log.md 一筆（動作=健檢、標籤=audit，於變更行註記修復項）
+步驟：全量稽核 → 列可修復清單給 Miles 確認 → 執行 → log 記一筆（變更行註記修復項）。
 
----
+## 五、Anti-Pattern（禁止行為）
+
+- 讀取或解析 OpenSpec／Prototype／memory 其他目錄的檔案內容（路徑存在測試除外）
+- 動 `raw/` 任何檔（唯讀層）
+- 讀寫 `00-meta/changelog.md`（已凍結封存）
+- 只追加 log 不產對話報告（Miles 看不到）
+- 修復未經 Miles 確認直接動檔
+- 誇大判定（OK 報成 Warning，信號疲勞）；跳過維度不標原因
+- 發現矛盾自行調和改卡（鐵則：並排比對呈報）
 
 ## 六、與其他 skill 的協作
 
-| Skill | 協作方式 |
-|-------|---------|
-| `oq-manage` | 維度 6 / 8 發現 inline OQ / 過期 OQ 時，建議觸發 oq-manage mode D / C |
-| `vault-insight` | 維度 8 / 9 / 10 發現系統性議題時，建議觸發 vault-insight |
-| OpenSpec 層稽核 | 本 skill 只處理 Vault 層，OpenSpec 層不在範圍 |
-
----
-
-## 七、Anti-Pattern（禁止行為）
-
-- ❌ **跑於 ERP_Vault 以外的目錄**（範圍嚴格限制）
-- ❌ **未產出對話報告，只追加 wiki/log.md**（Miles 看不到）
-- ❌ **讀寫 `00-meta/changelog.md`**（已凍結封存，操作史統一寫 wiki/log.md）
-- ❌ **修復模式未經 Miles 確認直接動檔**
-- ❌ **誇大判定**（OK 報成 Warning，導致信號疲勞）
-- ❌ **跳過維度卻不標註原因**（透明性）
-
----
-
-## 八、輸出範例
-
-對話報告範例：
-
-```markdown
-# Vault Audit 報告（2026-05-19 15:30）
-
-## 摘要
-- 模式：全量
-- 總體狀態：Warning（2 個維度 Error，5 個 Warning，3 個 OK）
-- 維度通過：3 / 13
-
-## 維度結果
-
-### 維度 1 頁面間矛盾：OK ✓
-0 筆矛盾。
-
-### 維度 2 過時宣稱：Warning
-3 卡 last-reviewed > 90 天：
-- `04-business-logic/報價邏輯.md`（last-reviewed: 2026-02-01）
-- ...
-
-### 維度 6 規則遵守：OK ✓
-0 inline `[!question]`（Phase D 後保持）
-
-### 維度 8 OQ 健康度：Error
-4 OQ 缺 expected-resolution-at：XM-002 / XM-003 / PI-001 / PI-002
-2 OQ raised-at > 30 天無進度：SHP-005 / PT-001
-
-### 維度 9 角色 alignment：Error
-11 角色仍標「OpenSpec 缺漏」，無對應 user-roles spec change 補建
-建議跑 `vault-insight` 提煉「角色補建」系統性議題
-
-...
-
-## 主要發現
-1. **角色 alignment 11 角色長期未補**（已建議 vault-insight）
-2. **6 OQ 缺解答時程**（影響跨主題分析）
-3. **3 卡需 review 更新**
-
-## 建議下一步
-- 跑 `vault-insight` 識別「角色補建」系統性議題
-- Miles 補 6 個 OQ 的 expected-resolution-at
-- review 3 卡並更新 last-reviewed
-```
-
----
-
-## 九、frontmatter 範本（供 stub 自動建檔用）
-
-當 mode C 修復「缺失連結」時，建議的 stub 卡格式：
-
-```yaml
----
-type: <推斷類型>
-module: [<推斷模組>]
-status: draft
-last-reviewed: <今日>
-audit-stub: true  # 標記由 audit 自動建檔
----
-
-# <檔名 = 標題>
-
-> [!info] Stub 卡
-> 本卡由 vault-audit mode C 於 <YYYY-MM-DD> 自動建立。內容待補。
-> 觸發來源：<哪個卡的 dangling link>
-
-## 待補內容
-
-- 描述
-- 涉及範圍
-- 來源
-```
+| Skill | 協作 |
+|-------|------|
+| `oq-manage` | 維度 1／6／8 發現矛盾、inline OQ、過期 OQ → 建議 mode B／C／D |
+| `vault-insight` | 維度 8 系統性議題、KPI／Phase 進度對照（原維度 10 職責）→ 移交 insight |
+| `vault-ingest` | 維度 9 raw 超期／累積 → 建議 mode B／C |
