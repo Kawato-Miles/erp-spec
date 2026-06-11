@@ -80,7 +80,7 @@ obsidian eval "Object.keys(app.metadataCache.unresolvedLinks).filter(k => Object
 
 **目的**：缺必填欄位的卡進不了載入決策表與領域 grep。
 
-方法：依 [[wiki-schema]] 現行必填——`type`／`module`（中文 enum）／`business-domain`（適用 type）／`status`／`last-reviewed`；正本卡（03/04/05/06）另須 `source`。同時抓仍殘留的已廢欄位（`related-spec`、英文 module token——轉換期舊卡隨異動統一，殘留即列出供順手清理）。
+方法：依 [[wiki-schema]] 現行必填——`type`／`module`（中文 enum）／`business-domain`（適用 type）／`status`／`last-reviewed`；正本卡（03/04/05/06）另須 `source`。同時列英文 module token 殘留（轉換期舊卡隨異動統一，列 Info 供順手清理）。注意：`related-spec` 是合法的補充參照欄位（wiki-schema 明文「非正確性來源」），不是廢欄位、不列偵測。
 判定：OK＝0 缺；Warning＝1-5；Error＝> 5。
 
 ### 維度 6：規約遵守

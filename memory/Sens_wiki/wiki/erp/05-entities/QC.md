@@ -3,6 +3,8 @@ type: entity
 module:
   - qc
   - production-task
+business-domain:
+  - 生產執行
 related-spec: openspec/specs/qc/spec.md
 status: active
 last-reviewed: 2026-05-19

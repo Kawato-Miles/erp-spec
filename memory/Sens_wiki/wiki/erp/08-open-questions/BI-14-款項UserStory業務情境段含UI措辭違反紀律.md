@@ -54,7 +54,7 @@ expected-resolution-at: 2026-06-15
 ## 處理優先順序
 
 - 屬「卡內容修補」非「結構缺漏」，可在後續批次處理
-- 與 [[BI-12]]（related-test-cases 配對）可同批處理
+- 與 [[BI-12-款項UserStory批次backfill business-domain與related-test-cases|BI-12]]（related-test-cases 配對）可同批處理
 
 ## 來源稽核軸
 

@@ -3,6 +3,8 @@ type: state-machine
 module:
   - qc
   - production-task
+business-domain:
+  - 生產執行
 related-spec: openspec/specs/production-task/spec.md
 status: active
 last-reviewed: 2026-06-09

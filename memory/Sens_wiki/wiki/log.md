@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-11 12:33] 健檢(audit) | mode C 修復：OQ 短名互引補全名＋9 卡補 business-domain
+- 變更：[[BI-13-第一輪稽核識別的領域缺漏項|BI-13]]／[[BI-14-款項UserStory業務情境段含UI措辭違反紀律|BI-14]]／[[AR-10-主管覆寫分派是否允許破例派工|AR-10]]／[[AR-6-退件率分母是否排除技術退件|AR-6]]／[[AR-8-免審稿適用條件與核可機制|AR-8]] 與 12-insights 兩卡——OQ 短名互引（[[ORD-002]] 式）批量補為全檔名帶別名，消除死鏈（13 層 US 卡不動，遷移中）；[[QC]]／[[任務]]／[[工單]]／[[生產任務]]／[[QC 狀態]] 補 business-domain 生產執行、[[出貨單]] 補履約與售後、[[印件]] 補跨領域、[[諮詢單]]／[[需求單]] 補售前。
+- 動機：Miles 確認執行 audit mode C 修復（2026-06-11）。
+- 衝突：兩項自我修正——(1) `related-spec` 經查 wiki-schema 為合法補充參照欄位非廢欄位，skill 維度 5 偵測項已修正、不清理；(2) [[轉交]] 經查 [[stakeholders]] 有角色定義（場內製作完成項目的移動、與品檢人員獨立），非訂單管理人殘影——已回滾誤刪的兩處連結，「轉交是否建角色卡」列入待 Miles 裁決。
+
 ## [2026-06-11 12:12] 健檢(audit) | 全量，12 維度 6 通過（skill 重構後首跑）
 - 變更：稽核 ERP_Vault，總體 Warning／Error 並存——維度 1 矛盾 Warning（「已執行」舊措辭殘留 8 卡 24 處＝確認可執行 Phase 2 已知範圍；QCRecord 舊模型 2 卡＝QC-002 待裁決範圍；無新矛盾）、維度 3 孤島 Error（10-references 3 張 index、11/12 各 1-2 張、OQ 卡 5＋張無入鏈；13 層 US 卡不計，遷移中）、維度 4 死鏈 Error（[[轉交]]×3＝訂單管理人更早期殘影、[[BOM]]×2＝本輪角色卡新增但實體卡不存在、[[印件檔案備註上限]]×3、OQ 短名互引 6＋處、其餘為 log／範本占位不計）、維度 5 frontmatter Error（9 正本卡缺 business-domain、related-spec 廢欄位 10 檔、英文 module 殘留 31 檔屬轉換政策內）、維度 8 OQ Error（open 達 79 個遠超 insight 建議線 15、缺 expected-resolution-at 8＋）、維度 10 review Error（六月 daily 0 張、W23／W24 weekly 缺）；維度 2／6／7／9／11／12 通過。
 - 動機：免（健檢類）。

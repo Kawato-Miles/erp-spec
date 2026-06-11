@@ -46,7 +46,7 @@ spec § 免審決策樹.md 描述了免審稿的下游邏輯（建 source=免審
 
 ## 暫定處理
 
-- US-AR-002 acceptance criteria 引此 OQ wiki link，業務流程 step 2 「業務判斷是否屬於免審稿情境」加註「核可機制待 [[AR-8]] 解答後補入」
+- US-AR-002 acceptance criteria 引此 OQ wiki link，業務流程 step 2 「業務判斷是否屬於免審稿情境」加註「核可機制待 [[AR-8-免審稿適用條件與核可機制|AR-8]] 解答後補入」
 - 暫不影響系統行為描述
 
 ## 待 Miles 確認
