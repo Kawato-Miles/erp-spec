@@ -3,7 +3,7 @@ type: open-question
 module:
   - 訂單管理
 oq-id: ORD-026
-status: open
+status: answered
 priority: low
 audience: internal
 raised-at: 2026-05-28
@@ -14,6 +14,8 @@ related-vault:
 related-oq: []
 related-change: relax-order-detail-edit-conditions
 expected-resolution-at: 2026-Q4
+answered-at: 2026-06-11
+answered-by: Miles
 ---
 
 # ORD-026：OrderAttachment.purposeNote 上線前驗證是否轉 LOV
@@ -63,3 +65,7 @@ OrderAttachment.purposeNote 是否需上線前轉 `purposeType` enum（LOV）？
 - erp-consultant Phase 3 設計挑戰 Challenge 6
 - senior-pm Phase 4 收斂建議標記新 OQ
 - openspec/changes/relax-order-detail-edit-conditions/design.md § D4 OrderAttachment 實體設計
+
+## 決議（2026-06-11）
+
+定案維持混合策略（候選做法 3，已採用）：`purposeNote` 維持 free-text 上線，累積 ≥ 20 筆樣本（或上線前 1 個月，先到者為準）時另開新 OQ 引用本卡評估轉 LOV。落地去處：Prototype `orderAttachment.ts` 註解已修正撞號殘留（原誤指 ORD-019，2026-06-11 改正為本卡）。

@@ -3,7 +3,7 @@ type: open-question
 module:
   - 售後服務
 oq-id: AFT-9
-status: open
+status: answered
 priority: low
 audience: internal
 raised-at: 2026-05-26
@@ -12,6 +12,8 @@ notion-link:
 expected-resolution-at: 2026-Q4
 related-change: add-sales-manager-after-sales-page
 related-insight:
+answered-at: 2026-06-11
+answered-by: Miles
 ---
 
 # AFT-9：業務主管全公司售後管理頁「最後活動時間」欄是否需升級為 `last_activity_at` derived field
@@ -71,3 +73,7 @@ related-insight:
 - change `add-sales-manager-after-sales-page` Phase 3 顧問識別風險（C5：updatedAt 語意污染）+ Phase 4 PM 採納為留 OQ 觀察
 - 既有 spec：[after-sales-ticket spec § Requirement: 業務主管全公司售後管理頁](../../../../openspec/specs/after-sales-ticket/spec.md)（本 change ADDED）「最後活動時間」欄資料來源說明
 - 業界對標：[Zendesk Workflow recipe: Managing your escalation queue](https://support.zendesk.com/hc/en-us/articles/4408821995290-Workflow-recipe-Managing-your-escalation-queue)（Latest Update 欄位通用模式）
+
+## 決議（2026-06-11）
+
+定案維持方向 A：沿用 `updatedAt` 作為「最後活動時間」欄資料來源（已採用）。不預先建 derived field。落地去處：無需落地（現況即定案）。卡內所列升級觸發條件（業務主管反映語意混淆 / 純 metadata 欄位加入造成漂移）任一出現時，另開新 OQ 引用本卡啟動方向 B 評估。

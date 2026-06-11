@@ -3,7 +3,7 @@ type: open-question
 module:
   - 訂單管理
 oq-id: ORD-016
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-21
@@ -13,6 +13,8 @@ related-vault:
   - "[[印件]]"
 related-oq: []
 expected-resolution-at: 2026-06-15
+answered-at: 2026-06-11
+answered-by: Miles
 ---
 
 # ORD-016：印件詳情 Side Panel 與編輯印件 Panel 並行邊界
@@ -62,3 +64,7 @@ refine-order-detail-tabs change 規劃階段：
 - 優點：動線統一（檢視 → 切換為編輯模式）、主表操作欄精簡
 - 缺點：Side Panel 需新增「編輯」按鈕 + view/edit mode 切換 state、開發成本上升
 - 影響：DESIGN.md 「列表 row 詳細資訊預覽」決策樹可能要補「含編輯模式」變體
+
+## 決議（2026-06-11）
+
+定案採方案 A「兩個 Panel 互斥」：開檢視 Panel 時自動關閉編輯 Panel、開編輯 Panel 時自動關閉檢視 Panel。落地去處：Prototype `OrderDetail.tsx` 印件 row 操作欄兩個按鈕 onClick 已補互斥（2026-06-11 實作）。方案 C（編輯動作併入 Side Panel）不採，保持最小可行。

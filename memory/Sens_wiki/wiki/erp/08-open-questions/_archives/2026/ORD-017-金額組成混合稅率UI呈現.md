@@ -3,7 +3,7 @@ type: open-question
 module:
   - 訂單管理
 oq-id: ORD-017
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-21
@@ -14,6 +14,8 @@ related-vault:
   - "[[訂單]]"
 related-oq: []
 expected-resolution-at: 2026-07-31
+answered-at: 2026-06-11
+answered-by: Miles
 ---
 
 # ORD-017：金額組成混合稅率（免稅品）UI 呈現策略
@@ -77,3 +79,7 @@ refine-order-detail-tabs change 規劃階段：
 
 - 需先確認業務需求（方案選擇依賴實際業務頻率與發票規範）
 - 可能影響：Invoice Data Model（need `tax_exempt_amount` 欄位？）、發票開立 spec、ezpay 整合
+
+## 決議（2026-06-11）
+
+定案維持單一稅率（5%）假設（沿原 change 決議）。混合稅率（免稅品）場景待實際業務需求出現時另開 change 處理，屆時一併確認免稅品訂單頻率與發票拆分規範。落地去處：無需落地（現況即定案）；UI 候選方案 A/B/C 留存本卡供屆時參考，不預先實作。

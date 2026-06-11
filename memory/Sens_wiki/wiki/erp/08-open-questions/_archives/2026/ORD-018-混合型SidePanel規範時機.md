@@ -5,7 +5,7 @@ module:
   - 訂單管理
   - 售後服務
 oq-id: ORD-018
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-25
@@ -15,6 +15,8 @@ related-vault:
   - "[[ORD-016-印件SidePanel與編輯Panel並行邊界]]"
 related-oq: []
 expected-resolution-at: 2026-06-30
+answered-at: 2026-06-11
+answered-by: Miles
 ---
 
 # ORD-018：混合型 SidePanel 規範時機
@@ -72,3 +74,7 @@ expected-resolution-at: 2026-06-30
 
 - 優點：明確區分唯讀 / 編輯區、未來擴充彈性
 - 缺點：增加 API surface（YAGNI）；現階段沒有實際 mixed SidePanel consumer 數量支撐
+
+## 決議（2026-06-11）
+
+定案「實際需求出現時再決」（沿 2026-05-25 Miles 原拍板，本卡結案不再掛佇列）。落地去處：Prototype `DESIGN.md` § 1.5 混合型段已改寫為自包含描述（移除對本卡的跨庫連結，2026-06-11）。實際混合型需求出現時另開新 OQ 或於對應 change 內規範。
