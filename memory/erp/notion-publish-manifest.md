@@ -36,4 +36,3 @@
 | US-ORD-034 | wiki/erp/13-user-stories/order-management/US-ORD-034-業務查訂單下印件狀態.md | https://www.notion.so/3743886511fa816fae99de1891bcf67a | 2026-06-03 |
 | US-ORD-035 | wiki/erp/13-user-stories/order-management/US-ORD-035-業務於訂單異動已核可後校正退款金額.md | https://www.notion.so/3743886511fa81fbae33c12186303a90 | 2026-06-03 |
 | US-ORD-036 | wiki/erp/13-user-stories/order-management/US-ORD-036-業務主管改派訂單負責業務.md | https://www.notion.so/3743886511fa81f78e23f8f88ef5cddc | 2026-06-03 |
-| TC-ORD-001 | wiki/erp/15-test-cases/order-management/TC-ORD-001-補收免審直達已執行驗收.md | https://www.notion.so/2b93886511fa817fbd65e7608726f036（ERP 測試案例資料庫；本卡個別案例正文待建於此資料庫） |  |
