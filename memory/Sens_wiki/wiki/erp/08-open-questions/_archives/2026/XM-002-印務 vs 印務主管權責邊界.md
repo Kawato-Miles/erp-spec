@@ -5,12 +5,14 @@ module:
   - work-order
   - production-task
 oq-id: XM-002
-status: open
+status: answered
 priority: medium
 audience: internal
 expected-resolution-at: 2026-Q3  # 預設值，待 Miles 確認實際時程
 raised-at: 2026-05-19
 raised-by: Miles
+answered-at: 2026-06-11
+answered-by: Miles（工單建立鏈與 BOM 歸屬拍板）
 source-link: memory/Sens_wiki/wiki/erp/03-roles/_alignment-report.md (Phase A 角色清單對齊識別)
 related-vault:
   - "[[印務]]"
@@ -61,3 +63,13 @@ Phase A 角色清單對齊（_alignment-report.md）識別出原 OpenSpec user-r
 
 - 優點：審核前置，責任明確
 - 缺點：流程環節多、可能拖慢生產
+
+## 決議（2026-06-11）
+
+三個子問題全數由 2026-06-11 工單建立鏈拍板與角色卡 v2 重寫覆蓋：
+
+1. **印務能直接建生產任務嗎**：能——印務在被分派的工單上建立生產任務、填寫製程，送印務主管審核；但**工單本身不由印務建立**（系統自動產生第一張、印務主管加開與分派）。
+2. **印務主管的審核涵蓋範圍**：製程審核（核可／退回「重新確認製程」）＋工單的加開與統一分派；分派後該工單主責即移交印務（規劃與追蹤），主管不代管。
+3. **BOM 維護分工**：BOM 主檔（材料／製程／裝訂）由印務主管維護，是成本推算正本；[[EC 商品管理]] 只取用不維護。
+
+落地去處：[[印務]]、[[印務主管]]（v2 重寫，含職務範圍三分法與邊界理由）、[[工單狀態]]（建立鏈四處修正）。
