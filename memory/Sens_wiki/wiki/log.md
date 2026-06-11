@@ -12,6 +12,11 @@ last-reviewed: 2026-06-02
 完整規約見 `.claude/rules/sens-wiki.md` § 四。卡的歷史 = 搜 `[[卡名]]` 命中本檔條目 + git 歷史；決策脈絡見 OQ 卡。
 
 
+## [2026-06-11 22:10] 納入(amend) | Phase B 修實體首張——售後服務卡依憲章重寫＋兩 OQ
+- 變更：[[售後服務]] 依實體憲章全面重寫（補「欄位（業務可見）」三子表 14 欄全中文五欄表、欄位正本收回本卡不再掛 OpenSpec、移除 3 處迭代史 callout 與 12 種技術 token、移除 Prototype 實作細節段、關聯補基數、範圍外點名結案歸納標記與遷移標記；獨立稽核 agent 十維度勾稽 8 過 2 修已修正）；新增 [[AFT-10-售後單文字欄位修改鎖定規則|AFT-10]]（客訴原文與結案後回饋的鎖定規則 spec 未明定）、[[AFT-11-售後類型枚舉是否含色差爭議|AFT-11]]（spec 內部 6 值 vs 7 值矛盾，實體卡暫採 6 值待裁決）
+- 動機：Miles 指示（2026-06-11）Phase B 開修、售後先行驗證憲章可執行性；欄位正本歸 wiki 實體卡為既定分工
+- 衝突：spec 內部售後類型枚舉矛盾，已開 [[AFT-11-售後類型枚舉是否含色差爭議|AFT-11]] 待 Miles 裁決，未靜默選版
+
 ## [2026-06-11 21:46] 健檢(audit) | 00-meta 死鏈修補：wiki-schema 命名範例改用實際存在的 meta 卡名
 - 變更：[[wiki-schema]] § 七 Meta 卡命名範例移除不存在的 `vault-charter` / `editing-conventions` / `sync-workflow` / `audit-log`，改列實際存在的 `scope-boundary` / `wiki-schema` / `business-domain-taxonomy` / `changelog`（`[[vault-charter]]` 與 `[[wiki-architecture]]` 兩卡從未建立，其語意已由 [[index]] § Wiki 憲章與 [[erp_index]] 涵蓋；同批 `.claude/rules/sens-wiki.md` § 七入口引用同步改指既有正本卡，依規約不另記）
 - 衝突：raw/README.md § 八仍有 `[[vault-charter]]` 與 `[[audit-log]]` 死鏈，因 raw/ 唯讀規約未動，呈報 Miles 裁決
