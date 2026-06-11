@@ -5,7 +5,7 @@ module:
 business-domain:
   - 款項與發票
 oq-id: BI-12
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-28
@@ -16,6 +16,8 @@ related-vault:
   - "（見 erp-planning-pre-check skill 附件）"
 related-oq: []
 expected-resolution-at: 2026-06-15
+answered-at: 2026-06-11
+answered-by: Miles
 ---
 
 # BI-12 款項相關 User Story 批次 backfill business-domain + related-test-cases
@@ -56,3 +58,9 @@ expected-resolution-at: 2026-06-15
 
 - 第一輪實證示範卡：US-ORD-010 / 011 / 013 / 020 / 021（已 backfill）
 - 跨層影響：本批 backfill 完成後需同步檢查對應 Test Case 反向連結（解 0/56 → 18/56 缺漏問題）
+
+## 決議（2026-06-11）
+
+問題載體消失即結案。Miles 拍板（2026-06-11）廢止移除 test-case 單元（驗收知識正本歸位業務情境卡判準與下游規格 Scenario，驗收執行歸 Prototype 端對端測試 / 試用 / 交付單驗收條件），`related-test-cases` frontmatter 欄位隨之失效。本 OQ 的後半題項（補 `related-test-cases` 反向連結）所依附的欄位已不存在，問題不再成立。前段「批次 backfill `business-domain`」題項在角色卡 v2 與 mode C 修復輪已分別推進，非本卡承載重點。
+
+前例：[[ORD-001-會計階段標記是否錯誤|ORD-001]]——範本演進使「參與階段」欄位廢除後，問題載體消失即結案。本案同理，依 oq-manage 規約移入 `_archives/2026/`。
