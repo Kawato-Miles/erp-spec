@@ -1,7 +1,7 @@
 # Notion 發布管線清單（manifest）
 
 > 對外發布狀態的唯一正本（2026-06-10 自 wiki 卡 frontmatter 撤離至此，設計見 `docs/superpowers/specs/2026-06-10-wiki-log-consolidation-design.md`）。
-> 擁有者：`erp-user-story` mode B / `erp-test-case` / `oq-manage` 推送模式——推送成功後更新本表，全程不碰 wiki/。
+> 擁有者：`erp-user-story` mode B / `oq-manage` 推送模式——推送成功後更新本表，全程不碰 wiki/。
 > delta 判定：本表「最後推送日」對比卡 `last-reviewed` 與 git 異動；卡不在表中 = 從未推送。
 > wiki 卡 frontmatter 禁含外部系統狀態欄位（wiki-schema 鐵則）。
 

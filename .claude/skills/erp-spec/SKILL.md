@@ -147,7 +147,7 @@ skill/agent 讀取元資料：`mcp__notion__notion-fetch`（讀 properties）或
 | 關聯 User Story | BRD 的使用者情境段落應引用 Notion User Story DB，不直接寫故事描述；若創建新 User Story，依下方「User Story 撰寫規格」新增至 Notion DB |
 | 資料模型以 Notion 為正本 | 欄位定義統一維護於 Notion 資料欄位 DB（https://www.notion.so/32c3886511fa803e9f30edbb020d10ce）；PRD 不重複定義欄位；涉及新增 / 修改欄位時，先更新 Notion DB，再在 PRD 中記錄異動欄位的 Notion 連結與業務規則 |
 | 新增欄位須填 `排序` 值 | 在 Notion 資料欄位 DB 新增欄位時，必須填寫 `排序` 欄位（數字），依 UI 閱讀順序排列：從 `id`（= 1）開始，依序為識別碼 → 所屬上層 FK → 核心業務欄位 → 狀態 / 金額 / 計算欄位 → 備註類 → 系統時間戳（created_at / updated_at）。各資料表使用 100 為間距（QuoteRequest = 1–99、QuoteRequestItem = 101–199 …），新欄位插入時取所在區段的空號即可 |
-| 測試計畫不寫 | 測試案例獨立維護於 Notion ERP Test Case DB；Spec 完成後觸發 `erp-test-case` skill 建立對應 TC |
+| 測試計畫不寫 | 測試案例屬下游產物（驗收知識正本＝業務情境判準與規格 Scenario），不在 Spec 內維護 |
 
 #### User Story 撰寫規格
 

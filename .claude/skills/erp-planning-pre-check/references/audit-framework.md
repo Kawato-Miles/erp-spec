@@ -41,7 +41,7 @@ last-reviewed: 2026-05-28
 | L1.6 Billing & Cash | 款項 / 發票 / 收款 / 對帳 / OA / Payment / Invoice / PlannedInvoice / 退款 / 補收 / 折讓 | 同上（filter billing-cash） |
 | Cross-domain | 任何稽核 MUST 自動載入 | 03-roles（全）+ 02-domain + 07-scenarios + 06-state-machines + 01-products + Master Data |
 
-### 軸 2：卡類型（7 類）
+### 軸 2：卡類型（6 類）
 
 對應 Vault 既有目錄結構：
 
@@ -49,11 +49,10 @@ last-reviewed: 2026-05-28
 |-------|---------------------|---------|
 | **1. 角色** | `03-roles/` | 該領域涉及的角色職責 / 權限 / 工作流是否完整？面對客戶決策場景是否寫清楚？|
 | **2. 實體** | `05-entities/` + OpenSpec spec § Data Model | 該領域核心實體欄位 / 狀態 / 關聯是否完整？資料模型是否與 spec 對齊？|
-| **3. 流程** | `07-scenarios/` + `04-business-logic/` + 各模組 spec | 端到端業務流程是否從頭到尾每一步都明示？角色傳遞 / 狀態轉換是否清楚？|
-| **4. 情境** | `07-scenarios/` + 領域專屬情境檔（如 `payment-invoice-scenarios.md`）| 真實業務情境是否覆蓋？情境變體 / 邊界 case 是否含？|
-| **5. User Story** | `13-user-stories/<module>/` | 業務動作是否完整覆蓋？acceptance criteria 是否 2-5 條？**`related-test-cases` 欄位是否齊備**（受 Miles 第六輪反饋強化）？業務情境段是否符合 erp-user-story skill 紀律（禁 UI 措辭 / 禁中英夾雜）？|
-| **6. 業務邏輯** | `04-business-logic/` | 跨模組規則 / 連帶矩陣 / 計算邏輯是否完整？|
-| **7. 法規 / 外部硬約束** | `04-business-logic/` 內法規類卡 | 外部硬約束（ezPay / MIG / 國稅局等）是否獨立成卡（非埋在 spec）？|
+| **3. 流程（服務藍圖）** | `04-business-logic/服務藍圖/` + 各模組 spec | 該領域所屬的端到端業務鏈（型）是否有藍圖且階段齊備？角色交接 / 決策點是否清楚？|
+| **4. 業務情境** | `07-scenarios/`（遷移期含 `13-user-stories/<module>/` 既有卡與領域專屬情境檔）| 該領域的目標完成過程是否有卡（接力型 / 能力型 / 排程型）？步驟判準是否為可觀測業務結果？延伸岔路是否涵蓋已知例外？|
+| **5. 業務邏輯** | `04-business-logic/` | 跨模組規則 / 連帶矩陣 / 計算邏輯是否完整？|
+| **6. 法規 / 外部硬約束** | `04-business-logic/` 內法規類卡 | 外部硬約束（ezPay / MIG / 國稅局等）是否獨立成卡（非埋在 spec）？|
 
 ### 雙軸量化矩陣
 
@@ -61,9 +60,9 @@ last-reviewed: 2026-05-28
 
 範例（Billing & Cash 領域第一輪稽核）：
 
-| | 角色 | 實體 | 流程 | 情境 | User Story | 業務邏輯 | 法規 |
-|--|------|------|------|------|-----------|---------|------|
-| Billing & Cash | N=3/M=2/K=1 | N=5/M=3/K=2 | N=2/M=1/K=0 | N=13/M=0/K=2 | N=15/M=10/K=5 | N=1/M=1/K=3 | N=0/M=1/K=0 |
+| | 角色 | 實體 | 流程 | 業務情境 | 業務邏輯 | 法規 |
+|--|------|------|------|---------|---------|------|
+| Billing & Cash | N=3/M=2/K=1 | N=5/M=3/K=2 | N=2/M=1/K=0 | N=13/M=0/K=2 | N=1/M=1/K=3 | N=0/M=1/K=0 |
 
 **禁「大致 OK」「再看看」等非量化結論**（受 YouTube /goal 影片啟發）。
 
@@ -81,17 +80,16 @@ last-reviewed: 2026-05-28
 - **同時自動載入跨領域共用層**（不需 Claude 判斷）
 - 跨領域共用層：03-roles 全部 + 02-domain + 07-scenarios + 06-state-machines + 01-products + Master Data
 
-### Step 3：逐卡類型稽核（7 類）
+### Step 3：逐卡類型稽核（6 類）
 
 - 依雙軸矩陣逐格檢查
-- **User Story 必檢 `related-test-cases` 欄位**（解 0/56 缺漏）
 - **量化產出**每格「已涵蓋 N / 待修補 M / OQ K」三個明確數字
 
 ### Step 4：修補 / 標 OQ
 
 - 修補：**在既有卡內 edit 補入缺漏**（不新建抽象卡）
 - 缺漏項標 OQ（含「來源稽核軸（領域 × 卡類型）」標記）
-- 跨層影響傳播檢查（商業需求 ↔ User Story ↔ spec ↔ Test Case 四層雙向追溯）
+- 跨層影響傳播檢查（商業需求 ↔ 業務情境 ↔ spec 三層雙向追溯）
 
 ### Step 5：閉環驗證（**禁 false completion**）
 
@@ -102,9 +100,8 @@ last-reviewed: 2026-05-28
 ## 四、修補規則
 
 - **edit 既有卡** + 缺漏標 OQ
-- **不新建抽象卡**（受 Miles 第四輪反饋拍板：明明就有 Role / 情境 / User Story 等參考資料，缺漏代表既有卡內容有缺或有錯）
+- **不新建抽象卡**（受 Miles 第四輪反饋拍板：明明就有角色 / 業務情境等參考資料，缺漏代表既有卡內容有缺或有錯）
 - 連帶矩陣必填（業務邏輯類卡含「連帶實體 / 跨模組影響」章節）
-- **User Story 必檢 `related-test-cases` 欄位**（Miles 第六輪反饋：「acceptance criteria 一層一層作為 Test Case 稽核」）
 - 缺漏項標 OQ 後 Miles 確認再修補（避免逼答產生不準內容）
 
 ## 五、稽核產出格式（量化矩陣）
@@ -120,8 +117,8 @@ last-reviewed: 2026-05-28
 
 ### 雙軸量化矩陣
 
-| | 角色 | 實體 | 流程 | 情境 | User Story | 業務邏輯 | 法規 |
-|--|------|------|------|------|-----------|---------|------|
+| | 角色 | 實體 | 流程 | 業務情境 | 業務邏輯 | 法規 |
+|--|------|------|------|---------|---------|------|
 | <領域 X> | N=?/M=?/K=? | ... | ... | ... | ... | ... | ... |
 | cross-domain | ... | ... | ... | ... | ... | ... | ... |
 
@@ -136,22 +133,21 @@ last-reviewed: 2026-05-28
 
 ### Step 5 閉環驗證結果
 - 修補後格子變化：<格子 A>「待修補 M=3 → 已涵蓋 N=8」/ <格子 B>「未轉成功，已標 OQ」
-- 跨層影響檢查：<商業需求 / User Story / spec / Test Case 四層追溯結果>
+- 跨層影響檢查：<商業需求 / 業務情境 / spec 三層追溯結果>
 
 ### 反模式識別
 - <若識別到稽核五大反模式之一，追加到 audit-failure-patterns.md>
 ```
 
-## 六、跨層影響稽核（商業需求 ↔ User Story ↔ spec ↔ Test Case）
+## 六、跨層影響稽核（商業需求 ↔ 業務情境 ↔ spec）
 
-四層雙向追溯規則：
+三層雙向追溯規則：
 
 | 層級 | 上游影響檢查 | 下游影響檢查 |
 |------|-------------|-------------|
-| **商業需求**（KPI / Phase / 痛點）| — | 哪些 User Story / spec / Test Case 受影響？|
-| **User Story**（acceptance criteria）| 是否仍對齊上游商業需求？| 是否有對應 spec § Scenarios / Test Case？|
-| **spec § Requirements / Scenarios** | 是否覆蓋 User Story 的 acceptance criteria？| 是否有對應 Test Case 驗收？|
-| **Test Case**（Notion ERP Test Case DB）| 是否覆蓋 spec § Scenarios + User Story acceptance criteria？| — |
+| **商業需求**（KPI / Phase / 痛點）| — | 哪些業務情境 / spec 受影響？|
+| **業務情境**（過程步驟 + 判準）| 是否仍對齊上游商業需求？| 是否有對應 spec § Scenarios？|
+| **spec § Requirements / Scenarios** | 是否覆蓋業務情境的步驟判準？| — |
 
 **規則**：上層改動 → MUST 重審所有下層；下層發現缺漏 → MUST 反向修補上層或標 OQ。
 
@@ -207,7 +203,6 @@ last-reviewed: 2026-05-28
 | `vault-audit` skill | Vault 整體健康稽核（12 維度）— 與本框架不同：vault-audit 是「日常 Vault 健康」、本框架是「規劃前準備」|
 | `vault-insight` skill | 跨主題模式提煉 — 與本框架互補 |
 | `oq-manage` skill | OQ 管理 — 本框架 Step 4 缺漏項標 OQ 走 oq-manage mode B |
-| `erp-user-story` skill | User Story 撰寫紀律 — 本框架軸 2 的「User Story」卡類型稽核依此 skill 紀律 |
 | `misjudgement-record` skill | 誤審記錄 — 本框架識別到誤審反模式時觸發 |
 | [[audit-failure-patterns]] | 稽核五大反模式追蹤卡（規劃中，本框架 § 9.1 紀錄正本）|
 
