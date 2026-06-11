@@ -166,9 +166,9 @@ last-reviewed: 2026-05-19
 - [[生管]] / [[師傅]]：派工 / 執行
 - [[品檢人員]] / [[出貨人員]]：品檢 / 出貨
 
-## 用於產生 Test Case
+## 用於產生驗收判準
 
-每個情境衍生 → Notion ERP Test Case DB。產 user story / test case 規範見 `erp-user-story` / `erp-test-case` skill；13 款項情境詳述見 [付款發票情境](payment-invoice-scenarios.md)。
+每個情境的判準為下游驗收測試的取材來源；13 款項情境詳述見 [付款發票情境](payment-invoice-scenarios.md)。
 
 ## 來源
 

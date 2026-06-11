@@ -23,7 +23,6 @@ last-reviewed: 2026-06-10
 | **商業邏輯** | `service-blueprint` / `business-rule` | 服務藍圖（端到端業務鏈）+ 商業規則（決策邏輯、領域知識、外部約束）| `04-business-logic/` |
 | **狀態 / 角色 / 資料** | `state-machine` / `role` / `entity` | 狀態轉換、角色權責、實體欄位 | `06` / `03` / `05` |
 | **業務情境（過程）** | `scenario` | 業務目標的完成過程（接力型／能力型／排程型），判準內嵌、引用各正本 | `07-scenarios/` |
-| **驗收項目** | `test-case` | 業務層驗收（UAT） | `15-test-cases/` |
 
 ### 連結方向
 
@@ -32,7 +31,7 @@ last-reviewed: 2026-06-10
 | `source` | 往上 | 依據（這張卡為什麼對） | 只指更上層卡或外部來源。禁指同層、下層、OpenSpec |
 | `implemented-by` | 往下 | 導航（被誰實作） | 指 OpenSpec / Prototype。不承載正確性 |
 
-依據鏈：`驗收項目 → 業務情境 → 商業規則 → 使用者拍板 / 產業慣例 / 法規`
+依據鏈：`業務情境 → 商業規則 → 使用者拍板 / 產業慣例 / 法規`
 
 ### 增修紀律
 
@@ -93,7 +92,6 @@ last-reviewed: 2026-06-10
 ### 高量層（指向各層索引，不逐卡列）
 - **OQ**：[[wiki/erp/08-open-questions/README|OQ 索引]]
 - **使用者故事（廢止單元，遷移期）**：`13-user-stories/`（新卡一律進 07-scenarios 業務情境）
-- **驗收項目**：`15-test-cases/`
 - **回顧**：`14-reviews/`
 
 ---

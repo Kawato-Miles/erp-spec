@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-11 13:14] 納入(amend) | test-case 單元廢止移除＋驗收職責歸位業務情境
+- 變更：`15-test-cases/` 整目錄刪除（README／_migration-ui-from-userstory／_template-test-case／TC-ORD-001 共四檔）——驗收單元下架；[[wiki-schema]] 刪 type enum test-case 列、位階表驗收項目列、type=test-case schema 整段（含 tc-id 與 related-test-cases 回連說明）、type=user-story 範例的 related-test-cases 欄位與「介面層級驗收歸 test-case」措辭、目錄對應表 15-test-cases 兩列、命名規約 Test Case 卡整段、§ 十一職責表 test-case 列（scenario 列「不該寫 test-case 範本」lint 訊號保留），§ 11.2 改為只指 erp-user-story；[[erp_index]] 刪分層表驗收項目列、高量層 15-test-cases 行、依據鏈起點由「驗收項目 →」改「業務情境 →」；[[scope-boundary]] 收錄表刪 Test Case 列、技術層測試段改寫為「驗收知識正本＝業務情境判準＋下游規格 Scenario、測試案例屬下游產物不進 Vault」、判斷表與違反案例同步去 15-test-cases 指向；[[付款發票邏輯]] § 九刪「產 Test Case：見 erp-test-case skill」行、標題去 Test Case；[[payment-invoice-scenarios]] 收尾段同類行刪除、acceptance criteria 對應去 test case；[[07-scenarios/README]]「用於產生 Test Case」段改「用於產生驗收判準」、移除 erp-user-story／erp-test-case 兩 skill 名；[[13-user-stories/README]] 三處 [[erp-test-case]] 引用拔除（介面驗收去向改述、Mode B 註解、§ 八 skill 列表）；[[BI-12-款項UserStory批次backfill business-domain與related-test-cases|BI-12]] 標 answered 補拍板紀錄並移入 _archives/2026（載體消失即結案，前例 ORD-001）。
+- 動機：Miles 拍板——SDD 端到端推演確認驗收知識正本＝業務情境判準＋規格 Scenario，執行載體＝e2e／試用／交付單驗收條件；test-case 單元職責被上游判準與下游執行夾消，廢止即刪不留備註。
+- 衝突：無。56 張既有 user-story 卡的 related-test-cases 空欄位留待分領域遷移一併清理；歷史層（12-insights／audit-failure-patterns／openspec archive／既有 log 條目）引用維持原樣。
+
 ## [2026-06-11 13:09] 同步(oq) | OQ 管理 v3 落地——封存制＋狀態正規化＋內外部分流啟用
 - 變更：[[08-open-questions/README|OQ README]] 整卡重寫——刪人工策展清單表（靜態清單必過時，查詢改走 oq-manage mode A 活查詢）、改為結構說明（平層＝只放 open 的待裁決佇列／`_archives/<拍板年份>/`＝已結案封存）＋三軸線（狀態嚴格三值／audience 判斷問句「誰能回答」／封存規約）、type 改 meta；[[wiki-schema]] § type=open-question 重寫——status 嚴格三值禁自創值禁行內註解、audience 語意正式化（internal＝開發迭代議題、external＝要與業務單位確認的商業層面未知內容＋expected-resolution-at 必填＋notion-url 欄位）、封存與序號永不重用規約；存量遷移——12 張違規狀態正規化（resolved×8、closed×4 → answered，皆有決議段；ORD-027 行內註解清除，內容已在決議段）、34 張 answered 卡移 `_archives/2026/`（wiki link 按檔名解析不斷鏈），平層淨化為 78 張 open。
 - 動機：Miles 指示重構 OQ 管理（2026-06-11）——封存定案 OQ 脫平層、狀態定義清楚、內外部分流（內部＝開發迭代待確認、外部＝與業務單位確認的商業問題）；audit 曾測得 6 種狀態寫法並存、79 open 含已拍板未封存者，平層數字失真。

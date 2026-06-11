@@ -47,8 +47,8 @@ last-reviewed: 2026-05-21
 
 ### UI 與驗收的去向
 
-- **UI 操作層已移除**（原階段 2）。介面層級驗收下移 [[erp-test-case]]（業務級 happy/edge）；真正的 UI 點擊操作歸 Prototype 端對端測試（Playwright spec，frontmatter `implemented-by` 指向）。
-- 成功條件是 test-case 的取材種子：正向→happy、守衛→edge。
+- **UI 操作層已移除**（原階段 2）。介面層級驗收屬下游驗收執行產物；真正的 UI 點擊操作歸 Prototype 端對端測試（Playwright spec，frontmatter `implemented-by` 指向）。
+- 成功條件是下游驗收測試的取材種子：正向→happy、守衛→edge。
 
 ## 二之二、獨立性紀律（禁 anchor 故事）
 
@@ -155,7 +155,7 @@ PM 從 prerequisites 鏈可看出動作順序與相依關係，不需依賴 anch
 
 觸發詞「推 user story 到 Notion」「同步 user story」→ [[erp-user-story]] skill mode B
 
-> 原「補 UI 操作層（Mode B）」已隨 2026-06-01 單階段化移除；介面層級驗收改由 [[erp-test-case]] 承接、UI 點擊歸 Prototype e2e。
+> 原「補 UI 操作層（Mode B）」已隨 2026-06-01 單階段化移除；介面層級驗收屬下游驗收執行產物、UI 點擊歸 Prototype e2e。
 
 1. 列出 status=active + 未列入 `memory/erp/notion-publish-manifest.md` 或推送日過舊的卡
 2. 批次推送（property mapping 詳見 skill）
@@ -174,7 +174,6 @@ PM 從 prerequisites 鏈可看出動作順序與相依關係，不需依賴 anch
 - [[erp-user-story]] — 新增 / 推送 Notion 主 skill
 - [[oq-manage]] — 識別到不確定項時觸發
 - [[vault-audit]] — 維度 13 lint（第三階段實作）
-- [[erp-test-case]] — Test Case 撰寫時引用本目錄 user story 的 acceptance criteria
 
 ## 九、與 OpenSpec change 工作流的整合
 
