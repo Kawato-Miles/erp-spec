@@ -24,8 +24,8 @@ last-reviewed: 2026-05-31
 | `business-rule` | 商業規則（決策邏輯、領域知識、外部約束） | `04-business-logic/` 各子目錄 |
 | `entity` | 資料模型實體 | `05-entities/` |
 | `state-machine` | 狀態機 | `06-state-machines/` |
-| `scenario` | 跨模組情境 | `07-scenarios/` |
-| `user-story` | 業務 User Story（單一故事，單階段業務情境）| `13-user-stories/` |
+| `scenario` | 業務情境（目標完成過程；接力型／能力型／排程型） | `07-scenarios/` |
+| `user-story` | 已廢止（2026-06-11 併入 scenario）；既有卡遷移期間保留 | `13-user-stories/`（遷移期） |
 | `open-question` | OQ 卡 | `08-open-questions/` |
 | `canvas-ref` | Canvas 對應的 markdown 描述 | `09-canvases/` |
 | `reference` | 外部連結索引 | `10-references/` |
@@ -40,8 +40,8 @@ last-reviewed: 2026-05-31
 |------|----------|---------|
 | 產品策略 | `product-vision` / `phase` / `metric` | `01-products/` |
 | 商業邏輯 | `service-blueprint`（服務藍圖）/ `business-rule`（商業規則） | `04-business-logic/` |
-| 流程 / 狀態 / 角色 / 資料 | `scenario` / `state-machine` / `role` / `entity` | `07` / `06` / `03` / `05` |
-| 操作步驟 | `user-story` | `13-user-stories/` |
+| 狀態 / 角色 / 資料 | `state-machine` / `role` / `entity` | `06` / `03` / `05` |
+| 業務情境（過程） | `scenario` | `07-scenarios/` |
 | 驗收項目 | 某具體輸入下的可勾稽驗收結論 | `test-case` | `15-test-cases/<module>/` |
 
 > 產品策略（`01-products/`）定商業方向，本 schema 屬文件管理層（`type=meta`）。架構概述見 [[erp_index]] § 一。
@@ -251,20 +251,23 @@ last-reviewed: YYYY-MM-DD
 ```yaml
 ---
 type: scenario
+variant: 接力型 | 能力型 | 排程型      # 必填；判定見 07-scenarios/_template-business-scenario.md § 二
 module:
-  - cross-module
-source:                          # 往上層 = 正確性根據（所依據的 business-logic 規則 / 商業流程共用規則），禁指 OpenSpec / 同層 / 下層；見 § 4.0
-  - "[[<上層卡>]]"
-implemented-by:                  # 往下層 = 導航（OpenSpec spec 檔層，不綁標題錨點），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/business-scenarios/spec.md"
-related-spec: openspec/specs/business-scenarios/spec.md  # 補充參照，非正確性來源
-related-notion: <Notion 業務情境 DB 連結>
-status: active
+  - <模組>
+business-domain:
+  - <六領域之一或跨領域>
+source:                          # 往上層 = 正確性根據（服務藍圖 / business-logic 規則 / 拍板 OQ / 外部依據），禁指 OpenSpec / 同層 / 下層
+  - "[[<藍圖或規則卡>]]"
+implemented-by:                  # 往下層 = 導航（實作規格檔層），可多值 / 可留空
+  - "openspec/specs/<模組>/spec.md"
+status: draft | active
 last-reviewed: YYYY-MM-DD
 ---
 ```
 
 ### type=user-story
+
+> **已廢止（2026-06-11）**：user-story 併入 scenario（業務情境，能力型）。本段保留供遷移期既有卡 lint；新卡一律依 type=scenario。
 
 ```yaml
 ---
@@ -467,14 +470,14 @@ related-changes:                   # 本期涉及的 openspec change
 | `04-business-logic/` | `service-blueprint` / `business-rule` |
 | `05-entities/` | `entity` |
 | `06-state-machines/` | `state-machine` |
-| `07-scenarios/` | `scenario` / `meta`（`README.md`）|
+| `07-scenarios/` | `scenario`（業務情境）/ `meta` |
 | `08-open-questions/` | `open-question` / `meta`（`README.md`）|
 | `09-canvases/` | `.canvas` 檔（無 frontmatter）/ `canvas-ref` |
 | `10-references/` | `reference` |
 | `12-insights/` | `insight` / `meta`（`README.md`）|
 | `13-user-stories/` | `meta`（`README.md` / `_template.md`）|
-| `13-user-stories/<module>/` | `user-story` |
-| `13-user-stories/_shared/` | `user-story`（module=cross-module）|
+| `13-user-stories/<module>/` | `user-story`（遷移期，廢止單元）|
+| `13-user-stories/_shared/` | `user-story`（module=cross-module；遷移期，廢止單元）|
 | `raw/` | `raw` / `meta`（`README.md` / `_template.md`）|
 | `raw/_attachments/` | 任意檔（PDF / 圖 / docx / 訪談錄音轉文字等）；不需 frontmatter |
 | `14-reviews/` | `meta`（`README.md`）|
@@ -554,6 +557,8 @@ related-changes:                   # 本期涉及的 openspec change
 > 本維度由 daily-brief / weekly-review skill 引入後預留，待 vault-audit skill 第二階段擴充實作。
 
 ### 維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）
+
+> **已廢止（2026-06-11）**：隨 user-story 併入業務情境，本維度由業務情境範本 § 十二稽核維度取代；保留供遷移期既有卡 lint。
 
 **Error 條件**：
 - 業務情境段缺「作為 / 我希望 / 以便 / 成功條件」任一 H3
@@ -659,6 +664,8 @@ related-changes:                   # 本期涉及的 openspec change
 - 範例：`15-test-cases/billing-cash/TC-ORD-002-諮詢取消半額退費.md`
 
 ### Scenario 卡 scenario-id（流程／狀態／角色／資料層旅程卡，2026-05-31 新增）
+
+> **已廢止（2026-06-11）**：業務情境卡不再配 scenario-id（名稱即連結指向的位置）；既有 scenario-id 保留至遷移清理。
 
 > scenario 卡採旅程卡（journey）粒度，以 `scenario-id` 標識，供 user-story / test-case 反向引用某段端到端旅程。scenario 拆旅程卡 + 標 scenario-id。
 

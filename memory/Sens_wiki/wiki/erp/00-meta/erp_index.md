@@ -21,8 +21,8 @@ last-reviewed: 2026-06-10
 |------|------|------|------|
 | **產品策略** | `product-vision` / `phase` / `metric` | 願景、痛點、Phase、北極星指標、利害關係人 | `01-products/` |
 | **商業邏輯** | `service-blueprint` / `business-rule` | 服務藍圖（端到端業務鏈）+ 商業規則（決策邏輯、領域知識、外部約束）| `04-business-logic/` |
-| **流程 / 狀態 / 角色 / 資料** | `scenario` / `state-machine` / `role` / `entity` | 跨模組情境、狀態轉換、角色權責、實體欄位 | `07` / `06` / `03` / `05` |
-| **操作步驟** | `user-story` | 角色在情境下的具體操作與驗收條件 | `13-user-stories/` |
+| **狀態 / 角色 / 資料** | `state-machine` / `role` / `entity` | 狀態轉換、角色權責、實體欄位 | `06` / `03` / `05` |
+| **業務情境（過程）** | `scenario` | 業務目標的完成過程（接力型／能力型／排程型），判準內嵌、引用各正本 | `07-scenarios/` |
 | **驗收項目** | `test-case` | 業務層驗收（UAT） | `15-test-cases/` |
 
 ### 連結方向
@@ -32,7 +32,7 @@ last-reviewed: 2026-06-10
 | `source` | 往上 | 依據（這張卡為什麼對） | 只指更上層卡或外部來源。禁指同層、下層、OpenSpec |
 | `implemented-by` | 往下 | 導航（被誰實作） | 指 OpenSpec / Prototype。不承載正確性 |
 
-依據鏈：`驗收項目 → 操作步驟 → 商業規則 → 商業規則（source）→ 使用者拍板 / 產業慣例 / 法規`
+依據鏈：`驗收項目 → 業務情境 → 商業規則 → 使用者拍板 / 產業慣例 / 法規`
 
 ### 增修紀律
 
@@ -50,12 +50,12 @@ last-reviewed: 2026-06-10
 
 | 業務領域 | 應載入 |
 |---------|-------|
-| **L1.1 售前** | `03-roles/業務.md` / `諮詢.md` + `04-business-logic/營運規則/售前/` + `05-entities/需求單.md` / `諮詢單.md` + `06-state-machines/需求單狀態.md` / `諮詢單狀態.md` + `13-user-stories/quote-request/` / `consultation-request/` + 共用層 |
-| **L1.2 訂單管理** | `03-roles/業務.md` / `業務主管.md` + `05-entities/訂單.md` + `06-state-machines/訂單狀態.md` + `13-user-stories/order-management/`（非款項類）+ 共用層 |
-| **L1.3 印前審稿** | `03-roles/審稿.md` + `04-business-logic/營運規則/訂單到交付/` + `04-business-logic/領域知識/` + `05-entities/印件.md` + `06-state-machines/印件狀態.md` + `13-user-stories/prepress-review/` + 共用層 |
+| **L1.1 售前** | `03-roles/業務.md` / `諮詢.md` + `04-business-logic/營運規則/售前/` + `05-entities/需求單.md` / `諮詢單.md` + `06-state-machines/需求單狀態.md` / `諮詢單狀態.md` + `07-scenarios/`（業務情境；遷移期既有卡在 `13-user-stories/quote-request/` / `consultation-request/`）+ 共用層 |
+| **L1.2 訂單管理** | `03-roles/業務.md` / `業務主管.md` + `05-entities/訂單.md` + `06-state-machines/訂單狀態.md` + `07-scenarios/`（業務情境；遷移期既有卡在 `13-user-stories/order-management/` 非款項類）+ 共用層 |
+| **L1.3 印前審稿** | `03-roles/審稿.md` + `04-business-logic/營運規則/訂單到交付/` + `04-business-logic/領域知識/` + `05-entities/印件.md` + `06-state-machines/印件狀態.md` + `07-scenarios/`（業務情境；遷移期既有卡在 `13-user-stories/prepress-review/`）+ 共用層 |
 | **L1.4 生產執行** | `03-roles/印務.md` / `生管.md` / `師傅.md` + `04-business-logic/領域知識/` + `05-entities/工單.md` / `生產任務.md` + `06-state-machines/工單狀態.md` / `生產任務狀態.md` / `任務狀態.md` + 共用層 |
 | **L1.5 履約與售後** | `03-roles/出貨.md` + `05-entities/出貨單.md` / `售後服務.md` + `06-state-machines/出貨單狀態.md` + 共用層 |
-| **L1.6 款項與發票** | `03-roles/會計.md` + `04-business-logic/營運規則/帳務/` + `04-business-logic/外部約束/` + `05-entities/帳務.md` + `13-user-stories/order-management/`（款項類）+ 共用層 |
+| **L1.6 款項與發票** | `03-roles/會計.md` + `04-business-logic/營運規則/帳務/` + `04-business-logic/外部約束/` + `05-entities/帳務.md` + `07-scenarios/`（業務情境；遷移期既有卡在 `13-user-stories/order-management/` 款項類）+ 共用層 |
 | **跨領域共用層**（必載） | `03-roles/` + `02-domain/` + `07-scenarios/` + `06-state-machines/` + `01-products/` + `04-business-logic/服務藍圖/` |
 
 ---
@@ -87,12 +87,12 @@ last-reviewed: 2026-06-10
 ### 狀態機（06-state-machines）
 - [[需求單狀態]] / [[諮詢單狀態]] / [[訂單狀態]] / [[訂單異動狀態]] / [[印件狀態]] / [[工單狀態]] / [[生產任務狀態]] / [[任務狀態]] / [[QC 狀態]] / [[出貨單狀態]] / [[分期請款狀態]] / [[售後服務狀態]]
 
-### 情境（07-scenarios）
-- [[訂單異動流程]]
+### 業務情境（07-scenarios）
+- [[訂單異動流程]]（其餘卡分領域遷移中，暫見 13-user-stories/ 與 07-scenarios/README）
 
 ### 高量層（指向各層索引，不逐卡列）
 - **OQ**：[[wiki/erp/08-open-questions/README|OQ 索引]]
-- **使用者故事**：[[wiki/erp/13-user-stories/README|US 索引]]
+- **使用者故事（廢止單元，遷移期）**：`13-user-stories/`（新卡一律進 07-scenarios 業務情境）
 - **驗收項目**：`15-test-cases/`
 - **回顧**：`14-reviews/`
 
