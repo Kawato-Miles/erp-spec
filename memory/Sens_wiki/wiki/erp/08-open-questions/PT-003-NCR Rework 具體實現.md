@@ -1,8 +1,8 @@
 ---
 type: open-question
 module:
-  - production-task
-  - qc
+  - 生產任務
+  - 品檢
 oq-id: PT-003
 status: open
 priority: high
@@ -15,7 +15,6 @@ source-link: openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspectio
 related-vault:
   - "[[品檢人員]]"
   - "[[生產任務]]"
-  - "[[補生產]]"
 related-changes:
   - reclassify-qc-and-add-inspection
 related-follow-up:

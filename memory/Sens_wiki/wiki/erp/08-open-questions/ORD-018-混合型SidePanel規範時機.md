@@ -3,7 +3,7 @@ type: open-question
 module:
   - prototype-shared-ui
   - 訂單管理
-  - after-sales-ticket
+  - 售後服務
 oq-id: ORD-018
 status: open
 priority: medium

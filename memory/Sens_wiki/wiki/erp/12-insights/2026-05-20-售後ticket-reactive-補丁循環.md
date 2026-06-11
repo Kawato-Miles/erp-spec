@@ -1,9 +1,9 @@
 ---
 type: insight
 module:
-  - after-sales-ticket
+  - 售後服務
   - 訂單管理
-  - cross-module
+  - 跨模組
 status: open
 priority: high
 raised-at: 2026-05-20

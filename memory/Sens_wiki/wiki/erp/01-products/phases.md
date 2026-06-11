@@ -1,7 +1,7 @@
 ---
 type: phase
 module:
-  - cross-module
+  - 跨模組
 related-notion: https://www.notion.so/32c3886511fa81359354e33087d23f23
 status: active
 last-reviewed: 2026-06-09

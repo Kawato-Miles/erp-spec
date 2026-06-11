@@ -1,8 +1,8 @@
 ---
 type: open-question
 module:
-  - prepress-review
-  - production-task
+  - 印前審稿
+  - 生產任務
 oq-id: AR-13
 status: open
 priority: medium

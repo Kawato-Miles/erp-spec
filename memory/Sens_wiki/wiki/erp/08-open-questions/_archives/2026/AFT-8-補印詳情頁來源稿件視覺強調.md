@@ -1,7 +1,7 @@
 ---
 type: open-question
 module:
-  - after-sales-ticket
+  - 售後服務
   - prototype-shared-ui
 oq-id: AFT-8
 status: answered

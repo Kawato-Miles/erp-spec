@@ -1,7 +1,7 @@
 ---
 type: open-question
 module:
-  - after-sales-ticket
+  - 售後服務
   - 訂單管理
 oq-id: AFT-5
 status: open

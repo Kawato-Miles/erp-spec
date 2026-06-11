@@ -1,8 +1,8 @@
 ---
 type: state-machine
 module:
-  - qc
-  - production-task
+  - 品檢
+  - 生產任務
 business-domain:
   - 生產執行
 related-spec: openspec/specs/production-task/spec.md

@@ -1,8 +1,8 @@
 ---
 type: open-question
 module:
-  - prepress-review
-  - quote-request
+  - 印前審稿
+  - 需求單
 oq-id: AR-8
 status: open
 priority: medium

@@ -1,9 +1,8 @@
 ---
 type: open-question
 module:
-  - after-sales-ticket
-  - work-order
-  - task-dispatch-board
+  - 售後服務
+  - 工單
 oq-id: AFT-4
 status: open
 priority: medium

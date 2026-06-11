@@ -1,9 +1,9 @@
 ---
 type: open-question
 module:
-  - qc
-  - prepress-review
-  - cross-module
+  - 品檢
+  - 印前審稿
+  - 跨模組
 oq-id: QC-001
 status: answered
 priority: medium

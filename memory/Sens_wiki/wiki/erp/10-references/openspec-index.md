@@ -1,7 +1,7 @@
 ---
 type: reference
 module:
-  - cross-module
+  - 跨模組
 status: active
 last-reviewed: 2026-05-19
 ---
@@ -30,7 +30,7 @@ last-reviewed: 2026-05-19
 | [after-sales-ticket/spec.md](../../../openspec/specs/after-sales-ticket/spec.md) | v0.1 | [[售後服務]] |
 | [work-order/spec.md](../../../openspec/specs/work-order/spec.md) | v0.5 | [[工單]]、[[工單狀態]] |
 | [production-task/spec.md](../../../openspec/specs/production-task/spec.md) | v0.3 | [[生產任務]]、[[任務]]、[[生產任務狀態]]、[[任務狀態]] |
-| [prepress-review/spec.md](../../../openspec/specs/prepress-review/spec.md) | v1.5 | [[稿件管理規則]]、[[審稿分配規則]]、[[免審決策樹]]、[[難易度機制]]、[[印件檔案備註上限]] |
+| [prepress-review/spec.md](../../../openspec/specs/prepress-review/spec.md) | v1.5 | [[稿件管理規則]]、[[審稿分配規則]]、[[免審決策樹]]、[[難易度機制]]、印件檔案備註上限（實作參數） |
 | [qc/spec.md](../../../openspec/specs/qc/spec.md) | 草稿 | [[品檢人員]]、[[QC 狀態]] |
 | material-master / process-master / binding-master | v0.1 | BOM 底層（Phase B 未深入） |
 

@@ -1,7 +1,7 @@
 ---
 type: domain
 module:
-  - cross-module
+  - 跨模組
 related-spec: memory/shared/context/industry.md
 status: active
 last-reviewed: 2026-05-19

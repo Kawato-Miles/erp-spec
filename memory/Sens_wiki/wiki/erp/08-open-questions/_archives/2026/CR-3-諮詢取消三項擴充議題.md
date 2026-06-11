@@ -1,7 +1,7 @@
 ---
 type: open-question
 module:
-  - consultation-request
+  - 諮詢單
 oq-id: CR-3
 status: answered
 priority: low

@@ -1,7 +1,7 @@
 ---
 type: reference
 module:
-  - cross-module
+  - 跨模組
 status: active
 last-reviewed: 2026-05-19
 ---

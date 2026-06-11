@@ -1,7 +1,7 @@
 ---
 type: metric
 module:
-  - cross-module
+  - 跨模組
 related-notion: https://www.notion.so/d8ae867eb00947439a9c0fc47de52e84
 status: active
 last-reviewed: 2026-05-19

@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-11 17:32] 健檢(audit) | mode C 第二批——殘餘死鏈修復＋module 全面中文化 115 檔
+- 變更：死鏈 17 處修復——[[訂單]] 兩處（訂單額外費用改同卡錨點 [[#訂單額外費用明細]]、US-ORD-034 補全檔名）、[[印件]]／[[需求單]]／[[openspec-index]]／[[prototype-index]] 的「印件檔案備註上限」死鏈轉純文字（500 字上限屬實作參數不開卡）、[[PT-003-NCR Rework 具體實現|PT-003]] frontmatter 刪 [[補生產]] 占位（未來 change 範疇）、[[XM-003-訂單管理人 vs 業務權責邊界|XM-003]] 歷史描述兩處訂單管理人轉純文字、[[付款發票邏輯]]／[[11-review-knowledge/README|11 README]]／[[user-story-spec]] 資料夾連結轉純文字、[[cross-agent-checklist]]／[[lightweight-review-mode]] 的 [[OQ 編號]] 改角括號占位、[[sequential-design-collaboration]]／[[audit-failure-patterns]] 的 skill 名 wiki link 轉 code 格式、[[archive-completeness-misjudgement]] 的 audit-log 改指 [[log]]、[[2026-05-30-test-case-內移vault-skill稽核]] 已刪檔引用轉純文字附註；module 英文 token 全面中文化 115 檔（frontmatter 限定、依 wiki-schema 對照表＋enum 外自由值語意歸位、同卡重複值去重；07-scenarios／13-user-stories 依 Miles 指示避開、wiki-schema 教示範例保留）。
+- 動機：Miles 指示執行 audit 殘餘小宗清理（2026-06-11）；[[BOM]] ×2 死鏈不修（待 BOM 素材建卡後自動解析）。
+- 衝突：無。
+
 ## [2026-06-11 17:16] 納入(amend) | 確認可執行 Phase 2 第一批——04／05 層五卡改名
 - 變更：[[發票法規硬約束-ezPay-MIG]] 連帶矩陣一處「OrderAdjustment 已執行」改「確認可執行」；[[付款發票邏輯]] 連帶矩陣一處＋相關卡描述「已執行認列與回退」改「確認可執行認列」；[[對帳一致性]] 五處（應收組成定義、差額提示例與面板訊息、服從義務、相關卡）；[[售後服務]] 兩處（速覽退款流程與容器規則段，含錨點 [[訂單異動規則#退款已執行認列]] 改現行章節名 #退款確認可執行認列）；[[訂單異動]] 三處（定位一句話、狀態欄位列舉、執行時間欄說明）。
 - 動機：確認可執行模型 Phase 2 引用層統一（Phase 1 拍板 2026-06-10：「已執行」全狀態機改名「確認可執行」）；本批為 04／05 層，07-scenarios 三卡（訂單異動流程含舊累計推進機制 12 處、payment-invoice-scenarios、README）已修又回滾——Miles 指示業務情境與使用者故事單元重構中、避開該層，留待重構輪以新模型直接重寫。

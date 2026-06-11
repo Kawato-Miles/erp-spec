@@ -1,7 +1,7 @@
 ---
 type: open-question
 module:
-  - prepress-review
+  - 印前審稿
 oq-id: AR-5
 status: open
 priority: medium

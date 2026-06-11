@@ -1,7 +1,7 @@
 ---
 type: review-knowledge
 module:
-  - cross-module
+  - 跨模組
 business-domain:
   - 跨領域
 status: active
@@ -12,7 +12,7 @@ last-reviewed: 2026-05-28
 
 > 累積 `erp-planning-pre-check` skill 稽核過程中識別到的五大反模式案例。
 > 受 YouTube /goal 影片啟發（執行者與稽核者分離 + 閉環化 + 五大反模式）。
-> 與 [[misjudgement-record]] 互補：misjudgement 記三視角審查 agent 誤審；本卡記稽核盲點。
+> 與 `misjudgement-record` 互補：misjudgement 記三視角審查 agent 誤審；本卡記稽核盲點。
 
 ## 一、五大反模式定義
 
@@ -161,14 +161,14 @@ last-reviewed: 2026-05-28
 ### 紀律層
 
 - 識別到反模式 MUST 追加本卡（不只口頭說「下次注意」）
-- 與 [[misjudgement-record]] 配合：稽核反模式 vs 審查誤判 分別記錄
+- 與 `misjudgement-record` 配合：稽核反模式 vs 審查誤判 分別記錄
 - 與 [[erp-design-patterns]] 互補：本卡記反模式 / erp-design-patterns 記正模式
 
 ## 四、相關卡
 
 - （見 erp-planning-pre-check skill 附件） — 稽核框架正本
 - [[business-domain-taxonomy]] — 6 領域分類
-- [[misjudgement-record]] — 三視角審查 agent 誤審記錄
+- `misjudgement-record` — 三視角審查 agent 誤審記錄
 - [[user-story-spec]] — User Story 撰寫紀律（INVEST）
 - [[erp-design-patterns]] — 5 ERP 設計範式（正模式）
 

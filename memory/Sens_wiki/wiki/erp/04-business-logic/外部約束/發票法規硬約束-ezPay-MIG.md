@@ -3,9 +3,9 @@ type: business-rule
 mutability: external
 module:
   - 訂單管理
-  - after-sales-ticket
-  - consultation-request
-  - cross-module
+  - 售後服務
+  - 諮詢單
+  - 跨模組
 business-domain:
   - 款項與發票
 related-spec: openspec/specs/order-management/spec.md

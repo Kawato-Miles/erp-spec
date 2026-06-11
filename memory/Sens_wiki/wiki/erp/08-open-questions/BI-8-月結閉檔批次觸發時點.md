@@ -2,7 +2,6 @@
 type: open-question
 module:
   - 訂單管理
-  - finance
 oq-id: BI-8
 status: open
 priority: medium

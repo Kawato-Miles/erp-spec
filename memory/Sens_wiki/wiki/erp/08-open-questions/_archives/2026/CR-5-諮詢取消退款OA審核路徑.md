@@ -1,7 +1,7 @@
 ---
 type: open-question
 module:
-  - consultation-request
+  - 諮詢單
   - 訂單管理
   - state-machines
 oq-id: CR-5

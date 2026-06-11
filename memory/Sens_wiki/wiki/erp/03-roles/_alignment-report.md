@@ -1,7 +1,7 @@
 ---
 type: meta
 module:
-  - cross-module
+  - 跨模組
 related-notion: https://www.notion.so/32c3886511fa8144b38adc9266395d15
 status: active
 last-reviewed: 2026-05-19

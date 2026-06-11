@@ -1,8 +1,8 @@
 ---
 type: open-question
 module:
-  - production-task
-  - qc
+  - 生產任務
+  - 品檢
 oq-id: PT-002
 status: open
 priority: low

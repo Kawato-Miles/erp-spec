@@ -1,7 +1,7 @@
 ---
 type: open-question
 module:
-  - after-sales-ticket
+  - 售後服務
 oq-id: AFT-9
 status: open
 priority: low

@@ -200,7 +200,7 @@ Claude 協調者依 CLAUDE.md § ERP 討論主動路由 識別到本次討論為
    - 即使全部對齊（無不一致），三張表 **MUST** 列出
    - 不對齊項 **MUST** 標明處置（如「指標 X 未被實作覆蓋 → 開 OQ」）
    - 第三張表 supersession 列 **MUST** 標 MODIFIED（不可 ADDED）；任一既有規則「未對齊 wiki 正本」**MUST** 標處置（archive 後回補 wiki 商業邏輯卡）
-6. **未解爭議 → OQ**：擬觸發 [[oq-manage]] mode B 開立的 OQ 清單
+6. **未解爭議 → OQ**：擬觸發 `oq-manage` mode B 開立的 OQ 清單
 
 **「未滿足商業需求」的處理**（PM 自決，選 A 或 B 並在輸出明示選了哪條與理由）：
 - **路徑 A**：駁回顧問方案，請協調者重跑 Phase 3（僅限「實作層可調整就能滿足」）

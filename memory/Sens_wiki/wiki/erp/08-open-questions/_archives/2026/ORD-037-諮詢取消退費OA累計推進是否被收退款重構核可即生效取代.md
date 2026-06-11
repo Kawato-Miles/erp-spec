@@ -2,7 +2,7 @@
 type: open-question
 module:
   - 訂單管理
-  - consultation-request
+  - 諮詢單
   - state-machines
 oq-id: ORD-037
 status: answered

@@ -1,8 +1,8 @@
 ---
 type: open-question
 module:
-  - qc
-  - production-task
+  - 品檢
+  - 生產任務
 oq-id: QC-002
 status: open
 priority: medium

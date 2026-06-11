@@ -1,7 +1,7 @@
 ---
 type: open-question
 module:
-  - consultation-request
+  - 諮詢單
 oq-id: CR-4
 status: answered
 priority: medium

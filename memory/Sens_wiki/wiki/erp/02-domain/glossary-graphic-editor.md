@@ -1,7 +1,7 @@
 ---
 type: glossary
 module:
-  - graphic-editor
+  - 圖編
 related-spec: memory/graphic-editor/glossary.md
 status: active
 last-reviewed: 2026-05-19

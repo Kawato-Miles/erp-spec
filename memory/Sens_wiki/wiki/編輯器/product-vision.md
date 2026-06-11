@@ -1,7 +1,7 @@
 ---
 type: product-vision
 module:
-  - graphic-editor
+  - 圖編
 status: draft
 last-reviewed: 2026-05-19
 ---

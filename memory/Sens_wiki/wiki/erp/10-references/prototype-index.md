@@ -1,7 +1,7 @@
 ---
 type: reference
 module:
-  - cross-module
+  - 跨模組
 status: active
 last-reviewed: 2026-05-19
 ---
@@ -16,7 +16,7 @@ last-reviewed: 2026-05-19
 |----------------|-----------|----------|
 | `src/types/quote.ts` L54-57 | [[難易度機制]] | `difficultyLevel` enum 定義 |
 | `src/types/quote.ts` L58-61 | [[免審決策樹]] | `skipReview` 欄位定義 |
-| `src/types/quote.ts` L62-70 + `CLIENT_NOTE_MAX_LENGTH` | [[印件檔案備註上限]] | 500 字限制 |
+| `src/types/quote.ts` L62-70 + `CLIENT_NOTE_MAX_LENGTH` | 印件檔案備註上限（實作參數） | 500 字限制 |
 | `src/types/quote.ts` § QuoteStatus | [[需求單狀態]] | 6 個狀態 |
 | `src/types/workOrder.ts` § WorkOrderStatus | [[工單狀態]] | 工單狀態定義 |
 | `src/types/workOrder.ts` § ProductionTaskStatus | [[生產任務狀態]] | 4 種工廠路徑 |
@@ -42,7 +42,7 @@ last-reviewed: 2026-05-19
 |---------|---------|
 | [[難易度機制]] | `src/types/quote.ts`、`src/utils/prepressReview.ts` |
 | [[免審決策樹]] | 同上 |
-| [[印件檔案備註上限]] | `src/types/quote.ts` `CLIENT_NOTE_MAX_LENGTH` 常數、UI 字數驗證 |
+| 印件檔案備註上限（實作參數） | `src/types/quote.ts` `CLIENT_NOTE_MAX_LENGTH` 常數、UI 字數驗證 |
 | [[齊套邏輯]] | `src/utils/printItemStatus.ts`（齊套計算實作）|
 | [[付款發票邏輯]] | `src/utils/ezpayMockup.ts`、`src/data/mockOrders.ts` |
 

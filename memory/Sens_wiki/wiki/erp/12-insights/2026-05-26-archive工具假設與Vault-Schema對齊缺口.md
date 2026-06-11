@@ -1,7 +1,7 @@
 ---
 type: insight
 module:
-  - cross-module
+  - 跨模組
 status: open
 priority: high
 raised-at: 2026-05-26

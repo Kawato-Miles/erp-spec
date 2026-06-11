@@ -1,7 +1,7 @@
 ---
 type: product-vision
 module:
-  - cross-module
+  - 跨模組
 related-spec: openspec/config.yaml
 related-notion: https://www.notion.so/32c3886511fa81359354e33087d23f23
 status: active

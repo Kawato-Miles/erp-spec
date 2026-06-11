@@ -1,8 +1,8 @@
 ---
 type: open-question
 module:
-  - after-sales-ticket
-  - prepress-review
+  - 售後服務
+  - 印前審稿
 oq-id: AFT-7
 status: answered
 priority: medium

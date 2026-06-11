@@ -2,7 +2,6 @@
 type: open-question
 module:
   - 訂單管理
-  - finance
 oq-id: BI-10
 status: open
 priority: low

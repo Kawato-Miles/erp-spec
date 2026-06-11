@@ -1,9 +1,9 @@
 ---
 type: open-question
 module:
-  - cross-module
-  - work-order
-  - production-task
+  - 跨模組
+  - 工單
+  - 生產任務
 oq-id: XM-002
 status: answered
 priority: medium
