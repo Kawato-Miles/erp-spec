@@ -392,8 +392,8 @@
 系統 SHALL 通過此端到端情境驗證「兩個 BillingCompany 並存 + 多期付款 + 發票合併」的資料流，作為三方對帳邏輯的整合測試。Prototype MUST 能完整跑通下列 10 步驟並對帳通過。
 
 **情境設定**：
-- 帳務公司 A：森紙股份有限公司（ezpay_merchant_id = 3502275）
-- 帳務公司 B：奕果有限公司（ezpay_merchant_id = 3502276）
+- 帳務公司 A：感官股份有限公司（ezpay_merchant_id = 3502275，測試代號）
+- 帳務公司 B：柏樂創意有限公司（ezpay_merchant_id = 3502276，測試代號）
 - 客戶 X：與兩家帳務公司都有業務往來
 - 訂單 #O-25050601 的 billing_company = A
 - 訂單 #O-25050602 的 billing_company = B
