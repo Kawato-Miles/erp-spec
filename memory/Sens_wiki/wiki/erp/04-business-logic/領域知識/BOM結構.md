@@ -9,7 +9,6 @@ business-domain:
   - 跨領域
 source:
   - "[[../../../raw/2026-06-11-miles-upload-公司實際印務用工單範例|公司實際印務用工單（W-20250801-07）]]"
-  - "Miles 拍板（2026-06-11）：BOM 已開發完成、納入 wiki 領域知識卡；BOM 主檔由印務主管維護、EC 商品管理只取用"
 implemented-by:
   - "openspec/specs/material-master/spec.md"
   - "openspec/specs/process-master/spec.md"

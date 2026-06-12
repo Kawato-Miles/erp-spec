@@ -8,7 +8,6 @@ business-domain:
   - 售前
 source:
   - "Notion 核心角色權責表（連結見 related-notion）"
-  - "Miles 拍板（2026-06-11）：主責 EC 商品、不動訂單、不管理 BOM——只使用 BOM 組合商品、決定定價與選項"
 implemented-by: []
 related-notion: https://www.notion.so/32e3886511fa81f09be5ed74c6f51306
 status: active

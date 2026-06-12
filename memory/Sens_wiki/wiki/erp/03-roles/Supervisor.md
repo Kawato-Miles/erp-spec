@@ -6,7 +6,6 @@ business-domain:
   - 跨領域
 source:
   - "Notion 核心角色權責表（連結見 related-notion）"
-  - "Miles 拍板（2026-06-10）：Supervisor 定位為 C-level 高階主管，經營監督看儀表板"
 implemented-by: []
 related-notion: https://www.notion.so/91f2aa7094de4e129d65ff3069900a16
 status: active

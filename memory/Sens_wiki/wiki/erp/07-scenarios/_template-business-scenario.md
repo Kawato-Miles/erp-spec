@@ -183,7 +183,7 @@ type: scenario
 variant: 接力型 | 能力型 | 排程型
 module: [模組，中文值，見 wiki-schema § 二]
 business-domain: [六領域之一或跨領域]
-source:                # 往上＝正確性根據：服務藍圖／04 規則卡／拍板 OQ／外部依據（Miles 拍板、印刷業實務）；禁指同層、下層、實作文件
+source:                # 往上＝正確性根據：服務藍圖／04 規則卡／拍板 OQ／外部依據（印刷業實務、法規、客戶訪談）；禁指同層、下層、實作文件
   - "[[<藍圖或規則卡>]]"
 implemented-by:        # 往下＝導航中繼資料（非正文內容）：實作規格檔層；可多值、可留空
   - "openspec/specs/<模組>/spec.md"
