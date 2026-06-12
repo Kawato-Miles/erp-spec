@@ -10,9 +10,7 @@ raised-at: 2026-05-21
 raised-by: erp-consultant-agent
 source-link: US-AR-006 / US-AR-005 批 1 雙視角審查
 related-vault:
-  - "[[US-AR-005-監控當日審稿工作量]]"
-  - "[[US-AR-006-比對審稿人員績效]]"
-  - "[[US-AR-007-執行印件審稿]]"
+  - "[[印件審稿]]"
 related-oq: []
 expected-resolution-at: 2026-Q3
 ---

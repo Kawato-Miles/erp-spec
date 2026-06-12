@@ -17,7 +17,7 @@ last-reviewed: 2026-06-10
 
 **觸發詞**：諮詢、報價、需求單、議價、諮詢費、成交、難易度。
 
-**對應目錄**：`04-business-logic/營運規則/售前/`、`13-user-stories/quote-request/`、`13-user-stories/consultation-request/`。
+**對應目錄**：`04-business-logic/營運規則/售前/`、`07-scenarios/`（需求單與諮詢業務情境）。
 
 ### 訂單管理
 
@@ -25,7 +25,7 @@ last-reviewed: 2026-06-10
 
 **觸發詞**：訂單、訂單異動、訂單備註、訂單取消、明細調整。
 
-**對應目錄**：`13-user-stories/order-management/`（非款項類）。
+**對應目錄**：`07-scenarios/`（訂單管理業務情境，非款項類）。
 
 ### 印前審稿
 
@@ -33,7 +33,7 @@ last-reviewed: 2026-06-10
 
 **觸發詞**：審稿、打樣、稿件、印件規格、審稿輪次、免審、補件。
 
-**對應目錄**：`04-business-logic/營運規則/訂單到交付/`（審稿相關）、`04-business-logic/領域知識/`（打樣、稿件管理）、`13-user-stories/prepress-review/`。
+**對應目錄**：`04-business-logic/營運規則/訂單到交付/`（審稿相關）、`04-business-logic/領域知識/`（打樣、稿件管理）、`07-scenarios/`（審稿業務情境）。
 
 ### 生產執行
 

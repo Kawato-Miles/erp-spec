@@ -10,8 +10,7 @@ raised-at: 2026-05-21
 raised-by: senior-pm-agent
 source-link: US-AR-005 / US-AR-006 批 1 雙視角審查
 related-vault:
-  - "[[US-AR-005-監控當日審稿工作量]]"
-  - "[[US-AR-006-比對審稿人員績效]]"
+  - "[[印件審稿]]"
 related-oq: []
 expected-resolution-at: 2026-Q4
 ---

@@ -25,7 +25,6 @@ last-reviewed: 2026-05-31
 | `entity` | 資料模型實體 | `05-entities/` |
 | `state-machine` | 狀態機 | `06-state-machines/` |
 | `scenario` | 業務情境（目標完成過程；接力型／能力型／排程型） | `07-scenarios/` |
-| `user-story` | 已廢止（2026-06-11 併入 scenario）；既有卡遷移期間保留 | `13-user-stories/`（遷移期） |
 | `open-question` | OQ 卡 | `08-open-questions/` |
 | `canvas-ref` | Canvas 對應的 markdown 描述 | `09-canvases/` |
 | `reference` | 外部連結索引 | `10-references/` |
@@ -263,50 +262,6 @@ last-reviewed: YYYY-MM-DD
 ---
 ```
 
-### type=user-story
-
-> **已廢止（2026-06-11）**：user-story 併入 scenario（業務情境，能力型）。本段保留供遷移期既有卡 lint；新卡一律依 type=scenario。
-
-```yaml
----
-type: user-story
-us-id: US-<MODULE>-<NNN>                   # 如 US-AR-001（沿用 Notion 既有編碼）
-module:
-  - <module>                                # 對齊本 schema § 二 module enum
-role:
-  - "[[<角色卡>]]"                          # wiki link 至 03-roles/
-priority: high | medium | low
-status: draft | active | deprecated
-created-at: YYYY-MM-DD
-last-reviewed: YYYY-MM-DD
-source:                                     # 往上層 = 正確性根據 + 來源（防 AI 拿自己寫的東西當依據再生內容），必填 ≥ 1；指更上層卡（business-logic 規則 / scenario）或最上層依據（raw / 訪談）；禁指其他 user-story 卡（同層繞回自己）、禁指 OpenSpec（方向顛倒）；見 § 4.0
-  - "[[<raw / 業務邏輯卡 / scenario>]]"
-implemented-by:                             # 往下層 = 導航（OpenSpec spec 檔層不綁標題錨點 / Prototype e2e），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/<module>/spec.md"
-related-spec: openspec/specs/<module>/spec.md  # 補充參照，非正確性來源
-related-scenarios:                          # 連到跨模組情境（可選）
-  - "[[07-scenarios/README#情境 X]]"
-related-business-logic:                     # 連到業務邏輯卡（可選）
-  - "[[<業務邏輯卡>]]"
-related-entities:                           # 連到實體卡（可選）
-  - "[[<實體卡>]]"
-prerequisites:                              # 相依性（2026-05-22 新增）：本 US 執行前須完成的前置動作
-  - "[[<US-XX-NNN>]]"                       # 其他 user story（具體 wiki link）
-  - "<系統行為或角色準備動作的文字描述>"   # 如「系統自動分派完成」「審稿主管已維護能力等級」
----
-```
-
-**防止 AI 拿自己寫的東西當依據再生內容的規約**：
-- 每張 user-story 卡必填 `source` ≥ 1 條（指向 raw / spec / 業務邏輯卡 / 訪談紀錄）
-- 禁止 Claude 引用其他 user-story 卡作為 source（會造成 AI 拿自己寫的東西當依據再生內容）
-- 全卡（H2「業務情境」）禁含 UI 措辭（見 § 六 維度 13）；UI 點擊操作不在 user-story（歸 Prototype e2e）（2026-06-01 單階段化，移除原「UI 操作（易變層）」段與 stage / ui-binding 欄位）
-
-**禁彙整型入口故事規約**（2026-05-22 新增）：
-- **MUST NOT** 建立「統合多角色 / 多動作」的 user story 作為總分結構入口（彙整型入口故事）
-- 違反 INVEST 的「每張故事彼此獨立」原則；統合卡造成維護困難 + 隱藏相依性
-- 跨多角色 / 多動作的端到端流程 **MUST** 由 [[../07-scenarios]] 處理
-- user story 間的相依性以 `prerequisites` 欄位記錄，禁用彙整型入口故事代替
-
 ### type=open-question
 
 > 平層 `08-open-questions/`＝未結案佇列（只放 status=open）；`08-open-questions/_archives/<拍板年份>/`＝已結案封存（answered／cancelled 拍板即移入，封存卡只增不改、翻案開新 OQ 引舊卡）。序號取號平層與封存一起算、永不重用。操作一律走 `oq-manage` skill。
@@ -447,9 +402,6 @@ related-changes:                   # 本期涉及的 openspec change
 | `09-canvases/` | `.canvas` 檔（無 frontmatter）/ `canvas-ref` |
 | `10-references/` | `reference` |
 | `12-insights/` | `insight` / `meta`（`README.md`）|
-| `13-user-stories/` | `meta`（`README.md` / `_template.md`）|
-| `13-user-stories/<module>/` | `user-story`（遷移期，廢止單元）|
-| `13-user-stories/_shared/` | `user-story`（module=cross-module；遷移期，廢止單元）|
 | `raw/` | `raw` / `meta`（`README.md` / `_template.md`）|
 | `raw/_attachments/` | 任意檔（PDF / 圖 / docx / 訪談錄音轉文字等）；不需 frontmatter |
 | `14-reviews/` | `meta`（`README.md`）|
@@ -526,33 +478,6 @@ related-changes:                   # 本期涉及的 openspec change
 
 > 本維度由 daily-brief / weekly-review skill 引入後預留，待 vault-audit skill 第二階段擴充實作。
 
-### 維度 13：User Story 撰寫紀律（Phase 3 待 vault-audit 實作）
-
-> **已廢止（2026-06-11）**：隨 user-story 併入業務情境，本維度由業務情境範本 § 十二稽核維度取代；保留供遷移期既有卡 lint。
-
-**Error 條件**：
-- 業務情境段缺「作為 / 我希望 / 以便 / 成功條件」任一 H3
-- 全卡含 UI 措辭（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal / 選單 / 視窗 / Side Panel / Toast / Banner / Dialog / 表格欄位 / 篩選器 等）
-- 內容含英文欄位名（payment / printItem / orderAdjustment / quoteRequest / workOrder / productionTask / reviewRound / paymentPlan 等）未轉中文
-- 缺來源（frontmatter `source` 為空或不存在）
-- 成功條件非 Gherkin 格式（缺 Given/When/Then 結構）
-- 命名不符 `US-<MODULE>-<NNN>-<slug>.md`
-- frontmatter 缺 us-id / module / role / priority / status / created-at / source 任一必填項
-
-**Warning 條件**：
-- 成功條件 > 5 條（業界共識，建議 split story）
-- 成功條件 < 2 條（過於模糊）
-- 單一成功條件含多個獨立 When/Then（疑似 scope creep，建議拆條或 split story）
-- last-reviewed > 90 天 + status=active
-- source 指向其他 user-story 卡（疑似 AI 拿自己寫的東西當依據再生內容）
-- 「我希望」段字數 > 30 字（違反 INVEST Small，對應 [[user-story-spec#五、撰寫原則|user-story-spec § 五]]，2026-05-21 新增）
-- 「成功條件」單一情境塞 ≥ 2 個獨立業務規則（違反 Testable 單一可驗證原則，2026-05-21 新增）
-
-**Lint 例外**（2026-05-21 新增）：
-- 外部使用者角色（如 B2C 會員 / EC 註冊會員）允許 `role` 為純文字而非 wiki link 至 `03-roles/`；對應 [[AR-1-B2C會員是否納入正式角色|AR-1]] 決策
-
-> 本維度由 erp-user-story skill 引入後預留，待 vault-audit skill 第三階段擴充實作。
-
 ### 維度 14：卡類型內容職責邊界（2026-05-28 新增）
 
 > 之前 schema 只規範 frontmatter（§ 四）+ user-story 內容（維度 13），其他卡類型正文無邊界 → business-logic / scenario 卡易混入 user-story 格式模板 / test-case 範本等越界內容。本維度補此缺口。詳見 § 十一。
@@ -600,28 +525,6 @@ related-changes:                   # 本期涉及的 openspec change
 - 格式：`<MODULE>-<NNN>-<簡述 slug>.md`
 - MODULE 前綴：QR / ORD / WO / PI / PT / QC / SHP / CR / AS / XM
 - NNN 三位數字補零
-
-### User Story 卡
-
-- 格式：`US-<MODULE>-<NNN>-<簡述 slug>.md`
-- MODULE 前綴對照（保留 Notion 既有 US-AR-NNN 編碼 + 對齊 OQ 命名 + 補主檔模組）：
-  - `QR` 需求單
-  - `ORD` 訂單管理
-  - `CR` 諮詢單
-  - `AS` 售後服務
-  - `WO` 工單管理
-  - `PT` 生產任務
-  - `AR` 稿件審查（沿用 Notion 既有 US-AR-NNN 編碼）
-  - `QC` 品檢
-  - `SHP` 出貨
-  - `MM` 材料主檔
-  - `PM` 工序主檔
-  - `BM` 裝訂主檔
-  - `XM` 跨模組（放 `13-user-stories/_shared/`）
-- NNN 三位數字補零
-- 簡述 slug：繁體中文、名詞或動詞 + 名詞片語
-- 範例：`13-user-stories/prepress-review/US-AR-001-審核稿件.md`
-- 範例：`13-user-stories/_shared/US-XM-001-訂單跨帳務公司付款.md`
 
 ### Scenario 卡 scenario-id（流程／狀態／角色／資料層旅程卡，2026-05-31 新增）
 

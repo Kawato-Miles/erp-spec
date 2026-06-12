@@ -10,7 +10,7 @@ raised-at: 2026-05-21
 raised-by: senior-pm-agent
 source-link: US-AR-003 批 2 senior-pm 審查
 related-vault:
-  - "[[US-AR-003-維護審稿人員能力等級]]"
+  - "[[維護審稿員能力等級]]"
 related-oq: []
 expected-resolution-at: 2026-Q3
 ---

@@ -11,7 +11,7 @@ raised-at: 2026-05-21
 raised-by: senior-pm-agent
 source-link: US-AR-002 批 1 senior-pm 審查
 related-vault:
-  - "[[US-AR-002-設定印件難易度與免審稿]]"
+  - "[[印件審稿]]"
   - "[[免審決策樹]]"
 related-oq: []
 expected-resolution-at: 2026-Q3

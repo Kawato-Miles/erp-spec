@@ -51,10 +51,10 @@ last-reviewed: 2026-06-10
 |---------|-------|
 | **L1.1 售前** | `03-roles/業務.md` / `諮詢.md` + `04-business-logic/營運規則/售前/` + `05-entities/需求單.md` / `諮詢單.md` + `06-state-machines/需求單狀態.md` / `諮詢單狀態.md` + `07-scenarios/`（業務情境）+ 共用層 |
 | **L1.2 訂單管理** | `03-roles/業務.md` / `業務主管.md` / `印務主管.md` + `05-entities/訂單.md` + `06-state-machines/訂單狀態.md` + `07-scenarios/`（業務情境，訂單管理八卡已遷入）+ 共用層 |
-| **L1.3 印前審稿** | `03-roles/審稿.md` + `04-business-logic/營運規則/訂單到交付/` + `04-business-logic/領域知識/` + `05-entities/印件.md` + `06-state-machines/印件狀態.md` + `07-scenarios/`（業務情境；遷移期既有卡在 `13-user-stories/prepress-review/`）+ 共用層 |
+| **L1.3 印前審稿** | `03-roles/審稿.md` + `04-business-logic/營運規則/訂單到交付/` + `04-business-logic/領域知識/` + `05-entities/印件.md` + `06-state-machines/印件狀態.md` + `07-scenarios/`（審稿業務情境四卡已遷入）+ 共用層 |
 | **L1.4 生產執行** | `03-roles/印務.md` / `生管.md` / `師傅.md` + `04-business-logic/領域知識/` + `05-entities/工單.md` / `生產任務.md` + `06-state-machines/工單狀態.md` / `生產任務狀態.md` / `任務狀態.md` + 共用層 |
 | **L1.5 履約與售後** | `03-roles/出貨.md` + `05-entities/出貨單.md` / `售後服務.md` + `06-state-machines/出貨單狀態.md` + 共用層 |
-| **L1.6 款項與發票** | `03-roles/會計.md` + `04-business-logic/營運規則/帳務/` + `04-business-logic/外部約束/` + `05-entities/帳務.md` + `07-scenarios/`（業務情境；遷移期既有卡在 `13-user-stories/order-management/` 款項類）+ 共用層 |
+| **L1.6 款項與發票** | `03-roles/會計.md` + `04-business-logic/營運規則/帳務/` + `04-business-logic/外部約束/` + `05-entities/帳務.md` + `07-scenarios/`（款項與發票業務情境六卡）+ 共用層 |
 | **跨領域共用層**（必載） | `03-roles/` + `02-domain/` + `07-scenarios/` + `06-state-machines/` + `01-products/` + `04-business-logic/服務藍圖/` |
 
 ---
@@ -90,11 +90,11 @@ last-reviewed: 2026-06-10
 - 款項與發票領域：[[訂單異動流程]] / [[請款期次規劃]] / [[期次開立發票]] / [[收款核銷分配]] / [[對帳與催收]] / [[諮詢費結算收尾]]
 - 售前領域：[[諮詢受理與出口分流]] / [[需求單報價成交]] / [[需求單流失]] / [[需求單參考附件保存]] / [[需求單複製建單]]
 - 訂單管理領域：[[訂單成立確認]] / [[訂單印件規格維護]] / [[訂單客戶與聯絡資料維護]] / [[訂單三類備註維護]] / [[訂單複製建單]] / [[訂單其他附件保存]] / [[訂單負責業務改派]] / [[單據分享與職務代理]]（跨單據能力，訂單為落地例）
-- 其餘領域分批遷移中，暫見 13-user-stories/ 與 07-scenarios/README
+- 印前審稿領域：[[印件審稿]] / [[打樣後稿件問題重審]] / [[覆寫審稿分派]] / [[維護審稿員能力等級]]
+- 其餘領域分批遷移中，暫見 07-scenarios/README
 
 ### 高量層（指向各層索引，不逐卡列）
 - **OQ**：[[wiki/erp/08-open-questions/README|OQ 索引]]
-- **使用者故事（廢止單元，遷移期）**：`13-user-stories/`（新卡一律進 07-scenarios 業務情境）
 - **回顧**：`14-reviews/`
 
 ---

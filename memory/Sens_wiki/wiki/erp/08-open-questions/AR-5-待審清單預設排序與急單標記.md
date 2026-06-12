@@ -10,7 +10,7 @@ raised-at: 2026-05-21
 raised-by: senior-pm-agent
 source-link: US-AR-007 pilot of pilot 雙視角審查
 related-vault:
-  - "[[US-AR-007-執行印件審稿]]"
+  - "[[印件審稿]]"
   - "[[審稿分配規則]]"
 related-oq: []
 expected-resolution-at: 2026-Q3
@@ -20,7 +20,7 @@ expected-resolution-at: 2026-Q3
 
 ## 問題
 
-[[US-AR-007-執行印件審稿]] 業務流程 step 1「審稿員查看分派給自己的待審印件清單」未指定預設排序規則：當審稿員的待審清單累積 50+ 件時，**哪件先審？是否支援「急單 / 一般」優先級標記？**
+[[印件審稿]] 主成功過程中審稿人員查看分派給自己的待審印件清單時未指定預設排序規則：當審稿員的待審清單累積 50+ 件時，**哪件先審？是否支援「急單 / 一般」優先級標記？**
 
 senior-pm 視角審查發現此 gap，列為 medium 急迫度 OQ。
 

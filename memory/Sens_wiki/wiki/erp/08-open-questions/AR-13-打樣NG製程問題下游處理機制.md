@@ -11,7 +11,7 @@ raised-at: 2026-05-23
 raised-by: claude-research
 source-link: resolve-prepress-review-gaps-ar-10-ar-12 archive 衍生
 related-vault:
-  - "[[US-AR-011-打樣後重新處理稿件]]"
+  - "[[打樣後稿件問題重審]]"
   - "[[打樣流程]]"
 related-oq:
   - "[[AR-12-打樣後新稿件實體機制與根因判定]]"

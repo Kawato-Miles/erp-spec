@@ -23,9 +23,8 @@ last-reviewed: 2026-06-09
 | 商業邏輯：商業規則（B 類，獨立決策邏輯 / 領域知識）| `04-business-logic/` | [[訂單異動規則]]、[[齊套邏輯]]、[[對帳一致性]] 等（`type: business-rule`）|
 | 資料模型實體與欄位（**含業務欄位表正本**） | `05-entities/` | 10 個實體卡；業務可見欄位表為正本（2026-06-09 從 OpenSpec Data Model 遷入） |
 | 狀態機（**含狀態列舉正本**） | `06-state-machines/` | 9 個狀態機卡；狀態列舉為正本 |
-| 跨模組情境 | `07-scenarios/` | 13 個情境 |
+| 業務情境（過程）| `07-scenarios/` | 業務目標完成過程；使用者故事單元已溶解併入此層 |
 | OQ | `08-open-questions/` | oq-manage skill 改寫後寫入 |
-| User Story（操作步驟）| `13-user-stories/` | 各模組業務故事（兩階段：業務情境 / UI 操作）|
 | KPI | `01-products/kpi/` | 各模組 KPI |
 | 視覺化 | `09-canvases/` | 6 張 Canvas |
 | 外部連結索引 | `10-references/` | Notion / OpenSpec / Prototype / decks |
