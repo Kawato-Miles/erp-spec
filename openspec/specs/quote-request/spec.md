@@ -562,61 +562,11 @@ QuoteRequest 資料模型 SHALL 新增 `requirement_note` 欄位（text，選填
 
 ## Data Model
 
-來源：本 spec § Data Model 為正本；Notion [資料欄位 DB](https://www.notion.so/32c3886511fa803e9f30edbb020d10ce) 為發布版本
+- 需求單與印件項目欄位正本：[wiki 需求單實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/需求單.md) § 欄位（業務可見）
+- Prototype 型別定義：`sens-erp-prototype/src/types/quote.ts`
+- Notion [資料欄位 DB](https://www.notion.so/32c3886511fa803e9f30edbb020d10ce) 為發布版本
 
-### QuoteRequest
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | 系統自動生成 |
-| 需求單編號 | quote_no | 字串 | Y | Y | 格式：Q-YYYYMMDD-XX |
-| 案名 | title | 字串 | Y | | 案名 |
-| 狀態 | status | 單選 | Y | | 需求確認中/待評估成本/已評估成本/議價中/成交/流失 |
-| 客戶 | customer_id | FK | Y | | FK->客戶 |
-| 負責業務 | sales_id | FK | Y | | FK->使用者 |
-| 印件類型 | print_type | 多選 | | | 27 種印件類型 |
-| 詢問來源 | inquiry_source | 單選 | Y | | Line/Facebook/Instagram/客戶介紹/業務拜訪/官網諮詢信/社群媒體/數位廣告 |
-| 帳務公司 | billing_company_id | FK | Y | Y | FK -> BillingCompany；對應發票主體（藍新 MerchantID_）；業務建單時選擇（bc-ssp 感官 / bc-bro 柏樂），已評估成本前可變更（留痕）；成交轉訂單時帶入訂單後鎖定 |
-| 來源諮詢單 | linked_consultation_request_id | FK | | | FK -> ConsultationRequest；非空表示由諮詢單轉入，詳情頁顯示「來自諮詢單」連結；流失時觸發建諮詢訂單收尾 |
-| 需求備註 | requirement_note | 文字 | | | 諮詢轉需求單時自 ConsultationRequest.consultation_topic + consultant_note 以雙區塊格式合併帶入（`[客戶原話]` + `[諮詢人員筆記]`，雙區塊定義見 consultation-request spec § 諮詢單轉需求單欄位帶入；consultant_note 為空時省略筆記區塊）；業務於需求單細化時可編輯 |
-| 發票開立方式 | invoice_type | 單選 | | | 電子發票/隨貨附發票/月結開立/紙本發票另計 |
-| 客戶期望交期 | expected_delivery_date | 日期 | | | 客戶期望交期 |
-| 報價截止日 | quote_deadline | 日期 | | | 報價截止日 |
-| 評估印務主管 | estimated_by_manager_id | FK | Y | | FK->使用者（印務主管），進入「待評估成本」後鎖定 |
-| 收款條件備註 | payment_terms_note | 文字 | | | 業務跟客戶討論的收款條件紀錄；最長 500 字；終態（成交 / 流失）後鎖定；成交轉訂單時帶入訂單同名欄位供業務主管審核 |
-| 關聯訂單 | linked_order_id | FK | | | FK->訂單，成交後系統寫入 |
-| 流失原因 | lost_reason | 單選 | | | 流失時必填 |
-| 流失補充說明 | lost_note | 文字 | | | 流失補充說明 |
-| 備註 | notes | 文字 | | | |
-| Slack 討論串連結 | slack_thread_url | 字串 | | | Webhook 成功後自動回填 |
-| 未稅金額 | amount_excl_tax | 整數 | | Y | 系統自動計算 |
-| 稅額 | tax_amount | 整數 | | Y | 系統自動計算 |
-| 含稅總額 | total_incl_tax | 整數 | | Y | 系統自動計算 |
-| 建立者 | created_by | FK | Y | Y | |
-| 更新時間 | updated_at | 日期時間 | Y | Y | |
-| 建立時間 | created_at | 日期時間 | Y | Y | |
-
-### QuoteRequestItem
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | |
-| 需求單 | quote_request_id | FK | Y | Y | FK->需求單 |
-| 項目編號 | item_no | 字串 | Y | Y | 格式：{quote_no}-{seq} |
-| 排序 | seq | 整數 | Y | | 排序用 |
-| 印件名稱 | name | 字串 | Y | | 印件名稱 |
-| 規格備註 | spec_note | 文字 | Y | | 規格備註 |
-| 數量 | quantity | 小數 | Y | | 數量 |
-| 單位 | unit | 單選 | | | 張/本/冊/份/個/卷/盒/套/批 |
-| 成本總額 | cost_estimate | 整數 | | | 成本總額 |
-| 報價總額（未稅） | price_per_unit | 整數 | | | 報價總額（未稅） |
-| 毛利率 | profit_margin | 小數 | | Y | 系統自動計算毛利率 |
-| 預計產線 | expected_production_lines | M:N | | | 多選；FK -> ProductionLine（透過 QuoteRequestItemExpectedLine） |
-| 出貨日期 | delivery_date | 日期 | | | 出貨日期 |
-| 出貨方式 | delivery_method | 字串 | | | 出貨方式 |
-| 包裝說明 | packaging_note | 文字 | | | 包裝說明 |
-| 建立時間 | created_at | 日期時間 | Y | Y | |
-| 更新時間 | updated_at | 日期時間 | Y | Y | |
+以下為技術層支援實體欄位：
 
 ### QuoteRequestItemExpectedLine（需求單印件預計產線 junction）
 
@@ -625,19 +575,6 @@ QuoteRequest 資料模型 SHALL 新增 `requirement_note` 欄位（text，選填
 | 識別碼 | id | UUID | Y | Y | 主鍵 |
 | 印件項目 | item_id | FK | Y | Y | FK -> QuoteRequestItem |
 | 產線 | production_line_id | FK | Y | Y | FK -> ProductionLine |
-
-### QuoteRequestItemAttachment
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | |
-| 印件項目 | item_id | FK | Y | Y | FK->印件項目 |
-| 檔案名稱 | filename | 字串 | Y | | |
-| 檔案類型 | file_type | 單選 | Y | | image/pdf |
-| 檔案路徑 | file_url | 字串 | Y | | |
-| 檔案大小（KB） | file_size_kb | 整數 | Y | Y | |
-| 上傳者 | uploaded_by | FK | Y | Y | |
-| 上傳時間 | uploaded_at | 日期時間 | Y | Y | |
 
 ### QuoteRequestPriceLog
 

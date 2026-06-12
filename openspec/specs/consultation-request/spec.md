@@ -7,40 +7,7 @@ TBD - created by archiving change add-consultation-request-and-revise-approval-g
 
 系統 SHALL 提供 ConsultationRequest 諮詢單實體，作為「客人付款後尚未進入訂單流程」的前置紀錄。實體 SHALL 包含 14 個來自外部 surveycake 表單的蒐集欄位，以及系統內生欄位（id、時間戳、狀態、結果、關聯需求單與後續訂單、**諮詢人員筆記**、**取消理由分類**）。
 
-**表單蒐集欄位（webhook 帶入）：**
-
-| # | 欄位 | 類型 | 必填 | 說明 |
-|---|------|------|------|------|
-| 1 | `customer_type` | enum: `general` / `corporate` | Y | 散客 / 企業客 |
-| 2 | `company_tax_id` | string(8) | corporate 必填 | 公司統編 |
-| 3 | `company_name` | string | corporate 必填 | 公司抬頭 |
-| 4 | `consultation_invoice_option` | enum: `defer_to_main_order` / `issue_now` | Y | 諮詢費發票時間點（**本 change 後降為客戶意向參考，不再驅動系統行為**，見 § 諮詢費發票時間點處理）|
-| 5 | `company_phone` | string | Y | 市話 |
-| 6 | `extension` | string | N | 分機 |
-| 7 | `contact_name` | string | Y | 聯絡人（須與身份證件相同） |
-| 8 | `mobile` | string | Y | 手機 |
-| 9 | `email` | string | Y | 區分大小寫 |
-| 10 | `reserved_date` | date | Y | 預約日期 |
-| 11 | `reserved_time` | enum: `10:30 / 11:00 / ... / 18:30`（30 分鐘間隔） | Y | 預約時間 |
-| 12 | `visitor_count` | int(1-4) | Y | 來訪人數 |
-| 13 | `consultation_topic` | text | Y | 客戶原始填寫的討論內容（**唯讀**，不允許諮詢人員或業務覆寫；對齊 ISO 9001 客戶指示可追溯不可竄改原則） |
-| 14 | `estimated_quantity_band` | enum: `1-100` / `101-300` / `301-500` / `501-1000` / `1000+` | Y | 預計製作數量級距 |
-
-**系統內生欄位：**
-
-| 欄位 | 類型 | 說明 |
-|------|------|------|
-| `consultation_request_id` | PK | 主鍵 |
-| `created_at` | timestamp | webhook 收到付款成功時間 |
-| `consultant_id` | FK -> 使用者 | 諮詢人員自我認領時寫入（見 § 諮詢人員認領） |
-| `consulted_at` | timestamp | 實際諮詢時間（諮詢開始記錄） |
-| `status` | enum | `待諮詢` / `已轉需求單` / `完成諮詢` / `已取消` |
-| `consultation_fee` | decimal | 諮詢費（含稅，固定 NT$ 2000） |
-| `consultant_note` | text（最長 2000 字，非必填）| 諮詢人員與客戶溝通記錄；獨立於客戶原話 `consultation_topic` 的雙欄位設計（編輯規則見 § 諮詢人員筆記欄位） |
-| `cancel_reason_category` | enum 6 值（`找到其他廠商` / `預算問題` / `需求改變` / `時間無法配合` / `諮詢人員無法出席` / `其他（原因請參考備註）`）| 取消理由分類；`status = 已取消` 時 SHALL 非空必填，其他狀態 SHALL 為 NULL；「其他」情境的補充說明寫入 `consultant_note` 欄位（本 change 不新增獨立 note 欄位） |
-| `linked_quote_request_id` | FK -> QuoteRequest | 諮詢結束選做大貨時建立 |
-| `linked_consultation_order_id` | FK -> Order | 諮詢訂單關聯（完成諮詢 / 需求單流失 / 諮詢取消時建立） |
-| `payments` | ConsultationPayment[] | 沿用訂單付款結構（paidAt / amount / paymentMethod / paymentRef / recordedBy / notes）|
+欄位正本（14 個表單蒐集欄位＋系統內生欄位）見 [wiki 諮詢單實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/諮詢單.md) § 欄位（業務可見）。客戶原話唯讀不可竄改（對齊 ISO 9001）；取消理由分類於已取消狀態必填、其他狀態為空。
 
 **狀態機說明（v2 簡化）**：諮詢進行中不需狀態追蹤，狀態機收斂為四值：
 

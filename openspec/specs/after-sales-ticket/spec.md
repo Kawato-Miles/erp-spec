@@ -21,34 +21,7 @@
 
 系統 SHALL 提供 AfterSalesTicket 實體，作為訂單已完成後客訴 / 不良 / 規格不符 / 物流問題 / 工法限制 / 交期延誤等售後事件的承載容器。一張 AfterSalesTicket 屬於單一 Order，記錄業務 / 諮詢與業務主管討論後的決議結果、責任歸屬、售後類型分類，並關聯下游動作（OrderAdjustment / PrintItem / SalesAllowance）。
 
-**核心欄位：**
-
-| 欄位 | 類型 | 必填 | 說明 |
-|------|------|------|------|
-| `id` | PK | Y | 主鍵 |
-| `order_id` | FK -> Order | Y | 所屬訂單；強制 `Order.status = 已完成` |
-| `case_no` | string | Y | 售後服務單編號（系統產生，格式：AS-YYYYMMDD-XX）|
-| `opened_at` | timestamp | Y | 建立時間 |
-| `opened_by` | FK -> 使用者 | Y | 建立者（業務 / 諮詢）|
-| `customer_complaint` | text | Y | 客訴內容 / 售後事件描述 |
-| `case_category` | enum | Y | 售後類型分類（印件瑕疵 / 規格不符 / 物流問題 / 工法限制 / 交期延誤 / 其他）|
-| `responsibility` | enum | Y | 責任歸屬（公司認賠 / 客戶承擔 / 共同分擔）|
-| `resolution` | enum | N | 決議處理方式（不處理 / 退款 / 補印 / 退款+補印），決議前為 NULL |
-| `slack_thread_url` | URL | N | 業務 / 諮詢與主管討論的 Slack thread URL，手動貼入 |
-| `additional_complaint_log` | array<{logged_at, note}> | N | 客戶後續補述紀錄（escape hatch），預設空陣列 |
-| `customer_feedback_note` | text | N | 結案後客戶回饋備註（不主動詢問）|
-| `status` | enum | Y | 受理中 / 處理中 / 已結案（狀態機，見「AfterSalesTicket 狀態機」Requirement）|
-| `closure_status` | enum | Y | 未結案 / 已結案（derived from status）|
-| `closed_at` | timestamp | N | 結案時間，結案後寫入 |
-| `closed_by` | FK -> 使用者 | N | 結案者 |
-| `legacy_migrated` | boolean | N | 標記是否為從歷史 OrderAdjustment(phase=after_completion) 遷移而來 |
-
-**關聯欄位（反向關聯）：**
-
-| 關聯 | 說明 |
-|------|------|
-| `linked_adjustments` | 0..N 個 OrderAdjustment（透過 OrderAdjustment.linked_after_sales_ticket_id）|
-| `linked_print_items` | 0..N 個 PrintItem（補印用，透過 PrintItem.related_after_sales_ticket_id）|
+欄位正本見 [wiki 售後服務實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/售後服務.md) § 欄位（業務可見）；關聯（0..N 訂單異動單、0..N 補印印件）見同卡 § 關鍵關聯。
 
 #### Scenario: 業務 / 諮詢於已完成訂單建立 AfterSalesTicket
 
