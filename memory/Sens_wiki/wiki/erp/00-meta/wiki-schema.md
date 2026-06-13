@@ -397,13 +397,13 @@ related-changes:                   # 本期涉及的 openspec change
 | `05-entities/` | `entity` |
 | `06-state-machines/` | `state-machine` |
 | `07-scenarios/` | `scenario`（業務情境）/ `meta` |
-| `08-open-questions/` | `open-question` / `meta`（`README.md`）|
+| `08-open-questions/` | `open-question` / `meta`（`OQ運作總覽.md`）|
 | `09-canvases/` | `.canvas` 檔（無 frontmatter）/ `canvas-ref` |
 | `10-references/` | `reference` |
-| `12-insights/` | `insight` / `meta`（`README.md`）|
+| `12-insights/` | `insight` / `meta`（`insight定位說明.md`）|
 | `raw/` | `raw` / `meta`（`README.md` / `_template.md`）|
 | `raw/_attachments/` | 任意檔（PDF / 圖 / docx / 訪談錄音轉文字等）；不需 frontmatter |
-| `14-reviews/` | `meta`（`README.md`）|
+| `14-reviews/` | `meta`（`回顧機制總覽.md`）|
 | `14-reviews/daily/` | `review`（review-kind=daily）/ `meta`（`_template.md`）|
 | `14-reviews/weekly/` | `review`（review-kind=weekly）/ `meta`（`_template.md`）|
 

@@ -9,7 +9,7 @@ raised-by: vault-insight skill
 triggered-by: audit-接續（vault-audit 維度 4 / 8 發現多重 OQ 收尾相關問題）
 related-vault:
   - "[[changelog]]"
-  - "[[wiki/erp/08-open-questions/README]]"
+  - "[[OQ運作總覽]]"
 related-oq:
   - PT-002
   - PT-003
@@ -123,7 +123,7 @@ ORD-001、PI-001、PI-002、PT-001、PT-002、SHP-005、XM-002、XM-003、XM-006
 
 ### Vault 卡
 - [[changelog]]
-- [[wiki/erp/08-open-questions/README]]
+- [[OQ運作總覽]]
 - （已移除，見各 skill）
 
 ### OQ

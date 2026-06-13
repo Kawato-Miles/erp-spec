@@ -18,9 +18,9 @@ last-reviewed: 2026-05-19
 | 使用者權責 | https://www.notion.so/32c3886511fa8144b38adc9266395d15 | [[_alignment-report]]、`03-roles/*.md` |
 | 業務情境 DB | https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05 | [[線下訂單流程]]（端到端導讀）+ 各業務情境卡 |
 | 數量換算規則 | https://www.notion.so/32c3886511fa81e9a77adbd21cfc9d4a | [[數量換算規則]] |
-| KPI DB | https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f | [[wiki/erp/01-products/kpi/README]] |
+| KPI DB | https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f | [[KPI總覽]] |
 | Impact Score DB | https://www.notion.so/d8ae867eb00947439a9c0fc47de52e84 | [[impact-score-framework]] |
-| Follow-up DB（OQ + Task）| https://www.notion.so/32c3886511fa808e9754ea1f18248d92 | [[wiki/erp/08-open-questions/README]] |
+| Follow-up DB（OQ + Task）| https://www.notion.so/32c3886511fa808e9754ea1f18248d92 | [[OQ運作總覽]] |
 | 資料欄位 DB | https://www.notion.so/32c3886511fa803e9f30edbb020d10ce | `05-entities/*.md` |
 | 測試案例 DB | https://www.notion.so/2b93886511fa817fbd65e7608726f036 | [[付款發票邏輯]] § 九 |
 | Feature DB（發布版 BRD）| https://www.notion.so/2823886511fa83d08c16815824afd2b7 | — |

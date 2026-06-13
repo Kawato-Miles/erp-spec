@@ -4,10 +4,10 @@ module:
   - 跨模組
 related-notion: https://www.notion.so/32c3886511fa808e9754ea1f18248d92
 status: active
-last-reviewed: 2026-06-11
+last-reviewed: 2026-06-13
 ---
 
-# Open Questions（OQ）總覽
+# OQ 運作總覽
 
 OQ 是**待裁決佇列**：每張卡一個待確認的問題，拍板後決議寫回卡、封存出平層。所有操作（查詢／新增／解答封存／遷出／批次整理）統一走 `oq-manage` skill；frontmatter 正本見 [[wiki-schema]] § type=open-question。
 

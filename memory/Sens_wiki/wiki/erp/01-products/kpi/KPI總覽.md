@@ -4,10 +4,10 @@ module:
   - 跨模組
 related-notion: https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f
 status: draft
-last-reviewed: 2026-05-19
+last-reviewed: 2026-06-13
 ---
 
-# KPI 子目錄（總覽）
+# KPI 總覽
 
 > Notion KPI DB 鏡像入口。Phase B Stage 5 為**骨架版**，僅含 schema + 北極星指標。詳細各模組 KPI 條目於後續手動補建。
 

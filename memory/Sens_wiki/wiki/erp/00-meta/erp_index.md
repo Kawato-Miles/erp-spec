@@ -96,7 +96,7 @@ last-reviewed: 2026-06-10
 
 
 ### 高量層（指向各層索引，不逐卡列）
-- **OQ**：[[wiki/erp/08-open-questions/README|OQ 索引]]
+- **OQ**：[[OQ運作總覽|OQ 索引]]
 - **回顧**：`14-reviews/`
 
 ---

@@ -431,7 +431,7 @@ Miles 喊：「weekly review」，本週累積了 4 張售後相關 raw
 
 ## 十二、相關卡
 
-- [[../../memory/Sens_wiki/wiki/erp/14-reviews/README|14-reviews 入口]]
+- [[../../memory/Sens_wiki/wiki/erp/14-reviews/回顧機制總覽|回顧機制總覽]]
 - [[../../memory/Sens_wiki/wiki/erp/14-reviews/weekly/_template|Weekly Review 模板]]
 - [[../../memory/Sens_wiki/wiki/erp/00-meta/wiki-schema|Wiki Schema]] § 一 type=review / § 四 frontmatter / § 七命名規約
 - [[../../memory/Sens_wiki/wiki/log|操作史 log.md]] — weekly-review 寫入記錄（動作=健檢、標籤=weekly）

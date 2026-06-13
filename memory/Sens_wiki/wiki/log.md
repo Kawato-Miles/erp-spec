@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-13 23:55] 納入(amend) | wiki README 改名為行為語意命名＋12-insights 刪動態清單消除同步中斷風險
+- 變更：[[OQ運作總覽]]（舊 `08-open-questions/README.md`）改名、標題更新；[[審查知識路由]]（舊 `11-review-knowledge/README.md`）改名、標題更新；[[insight定位說明]]（舊 `12-insights/README.md`）改名＋精簡——刪動態 Insight 清單（§ 一至 § 三，靜態清單必過時）與重複段（§ 四觸發指引、§ 五 Anti-Pattern、§ 六 生命週期，正本在 vault-insight SKILL.md），只留定位說明＋查詢方式；[[回顧機制總覽]]（舊 `14-reviews/README.md`）改名、標題更新；[[KPI總覽]]（舊 `01-products/kpi/README.md`）改名、標題更新；活躍引用全面更新（[[erp_index]]、[[wiki-schema]]、[[notion-index]]、CLAUDE.md、daily-brief SKILL、weekly-review SKILL、2 張 insight 卡）
+- 動機：README 命名無法自描述行為；12-insights 動態清單與 SKILL.md 重複維護導致索引中斷風險。Miles 2026-06-13 拍板方案 B（只留操作手冊型、依行為命名、繁中、接受歷史死鏈）
+- 衝突：歷史檔（log.md / changelog.md / daily-weekly review）中舊 README wikilink 成為死鏈，屬已知且可接受（歷史快照記錄當時狀態）
+
 ## [2026-06-13 23:18] 納入(amend) | 帳務商業邏輯卡同步 align 退款正值化（只改 Payment 層、保留 OA 層）
 - 變更：[[付款發票邏輯]] Payment 實體用途／連帶矩陣／折讓退款分離／三軸公式／收款淨額公式 5 處「退款負值」改為「款項類型＝退款、金額正值、收款淨額依款項類型加減」、[[對帳一致性]] 收款淨額定義與例子 2 收款端改依款項類型加減、[[訂單異動規則]] 退款款項「記負數」改「款項類型＝退款、正值」（規則 § 退款送審／退款確認可執行認列／款項紀錄直接建退款＋例子 2／3／10）並於補收免審例子 1 補「補收款項以一般收款建立、款項類型＝收款、三軸補足應收上升差額」對稱明確
 - 動機：align-billing-and-order-entities-with-brd 已定退款正值化（金額一律正值、方向由款項類型表示、收款淨額依款項類型加減），Prototype（commit ad14492）與 OpenSpec 已對齊，本次補同步上游 BRD 商業邏輯卡（align 改下游卻漏同步本層）；OA 訂單異動單層 amount<0 表應收調整方向、align 未改故保留。Miles 2026-06-13 拍板同步帳務卡到正值化模型
