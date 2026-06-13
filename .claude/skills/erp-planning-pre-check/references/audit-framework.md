@@ -33,7 +33,7 @@ last-reviewed: 2026-05-28
 
 | 領域 | 觸發詞 | 載入目錄 |
 |------|--------|---------|
-| L1.1 Pre-sales | 諮詢 / 報價 / 需求單 / 議價 | 03-roles + 04-business-logic + 05-entities + 06-state-machines + 13-user-stories（filter pre-sales） |
+| L1.1 Pre-sales | 諮詢 / 報價 / 需求單 / 議價 | 03-roles + 04-business-logic + 05-entities + 06-state-machines + 07-scenarios（filter pre-sales） |
 | L1.2 Order Management | 訂單 / 異動 / 訂單備註 | 同上（filter order-management） |
 | L1.3 Prepress | 審稿 / 打樣 / 稿件 / 印件規格 | 同上（filter prepress） |
 | L1.4 Production | 工單 / 任務 / 派工 / 排程 / QC / 補印 / 工序 / 入庫 | 同上（filter production） |
@@ -50,7 +50,7 @@ last-reviewed: 2026-05-28
 | **1. 角色** | `03-roles/` | 該領域涉及的角色職責 / 權限 / 工作流是否完整？面對客戶決策場景是否寫清楚？|
 | **2. 實體** | `05-entities/` + OpenSpec spec § Data Model | 該領域核心實體欄位 / 狀態 / 關聯是否完整？資料模型是否與 spec 對齊？|
 | **3. 流程（服務藍圖）** | `04-business-logic/服務藍圖/` + 各模組 spec | 該領域所屬的端到端業務鏈（型）是否有藍圖且階段齊備？角色交接 / 決策點是否清楚？|
-| **4. 業務情境** | `07-scenarios/`（遷移期含 `13-user-stories/<module>/` 既有卡與領域專屬情境檔）| 該領域的目標完成過程是否有卡（接力型 / 能力型 / 排程型）？步驟判準是否為可觀測業務結果？延伸岔路是否涵蓋已知例外？|
+| **4. 業務情境** | `07-scenarios/`（業務情境卡 + 領域專屬情境檔）| 該領域的目標完成過程是否有卡（接力型 / 能力型 / 排程型）？步驟判準是否為可觀測業務結果？延伸岔路是否涵蓋已知例外？|
 | **5. 業務邏輯** | `04-business-logic/` | 跨模組規則 / 連帶矩陣 / 計算邏輯是否完整？|
 | **6. 法規 / 外部硬約束** | `04-business-logic/` 內法規類卡 | 外部硬約束（ezPay / MIG / 國稅局等）是否獨立成卡（非埋在 spec）？|
 

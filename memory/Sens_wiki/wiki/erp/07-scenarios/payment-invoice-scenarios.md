@@ -16,7 +16,7 @@ last-reviewed: 2026-06-03
 
 **來源**：[Notion follow-up「提供收款情境」](https://www.notion.so/3573886511fa80b39093d8c76b57737a)
 **整理**：2026-05-12（refactor-order-adjustment-and-cleanup change archive 隨附）
-**用途**：付款發票領域的業務情境詳述（13 情境），作為產 user story / test case 的原始素材
+**用途**：付款發票領域的業務情境詳述（13 情境），作為業務情境卡的素材來源
 
 13 個情境分類：
 - 特殊發票開立方式 8 個（F1-F8；F9 跨訂單混合匯款屬人工流程不做）
@@ -476,9 +476,9 @@ last-reviewed: 2026-06-03
 
 ---
 
-## 產生 User Story 的去處
+## 產生業務情境的去處
 
-本文件 13 情境為產 user story 的**原始素材**。**格式規範與撰寫紀律不在本卡**（避免 business-logic 卡混入 user-story 規範，對應 [[wiki-schema#十一、卡類型內容職責邊界]]）：
+本文件 13 情境為業務情境卡的**素材來源**。**格式規範與撰寫紀律不在本卡**（避免 business-logic 卡混入 user-story 規範，對應 [[wiki-schema#十一、卡類型內容職責邊界]]）：
 
 - **產業務情境卡**：見 [[_template-business-scenario]] 範本（INVEST / 禁 anchor / 中英夾雜紀律）
 - **情境 → acceptance criteria 對應**：13 情境各自的「驗證重點」段可作為 user story acceptance criteria 的來源

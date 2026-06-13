@@ -54,7 +54,7 @@ description: >
 
 | 稽核 / 增修對象 | 由哪個 skill / workflow 負責 |
 |----------------|----------------------------|
-| **規劃 ERP 功能前**的 know-how 缺漏稽核（補既有真實狀況）| `erp-planning-pre-check`（雙軸 6 領域 × 7 卡類型）|
+| **規劃 ERP 功能前**的 know-how 缺漏稽核（補既有真實狀況）| `erp-planning-pre-check`（雙軸 6 領域 × 6 卡類型）|
 | **explore 定案後**把商業邏輯變動**增修進 wiki 各位階**| **本 skill（wiki-amend）** |
 | ERP_Vault **整體健康檢查**（12 維度，定期 / 週期）| `vault-audit` |
 | 識別到不確定項（待確認 / 待釐清）| `oq-manage` mode B（開獨立 OQ 卡，禁 inline）|

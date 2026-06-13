@@ -1,9 +1,9 @@
 export const meta = {
   name: 'erp-precheck-audit',
-  description: 'ERP 規劃前 know-how 稽核 fan-out：依領域並行稽核（6 領域 × 7 卡類型雙軸）+ schema 結構化輸出 + 對抗式互審找漏 + 彙整修補清單。對應 erp-planning-pre-check skill 的 Step 3，維持「執行者/稽核者分離」（workflow 內 agent 為稽核者，主對話 agent 為修補者）。',
+  description: 'ERP 規劃前 know-how 稽核 fan-out：依領域並行稽核（6 領域 × 6 卡類型雙軸）+ schema 結構化輸出 + 對抗式互審找漏 + 彙整修補清單。對應 erp-planning-pre-check skill 的 Step 3，維持「執行者/稽核者分離」（workflow 內 agent 為稽核者，主對話 agent 為修補者）。',
   whenToUse: '規劃 ERP 功能前、跨 ≥2 領域稽核時。單模組局部變動用 skill 既有單 agent 即可，不需此 workflow。',
   phases: [
-    { title: '雙軸稽核', detail: '每領域一個 sonnet 稽核 agent 跑 7 卡類型矩陣（N/M/K）', model: 'sonnet' },
+    { title: '雙軸稽核', detail: '每領域一個 sonnet 稽核 agent 跑 6 卡類型矩陣（N/M/K）', model: 'sonnet' },
     { title: '對抗式互審', detail: '每領域一個 sonnet agent 試圖找第一輪漏掉的缺漏', model: 'sonnet' },
     { title: '彙整', detail: 'reduce 成統一量化矩陣 + 待修補清單 + OQ 清單 + wiki 回補清單' },
   ],
@@ -37,12 +37,12 @@ const AUDIT_SCHEMA = {
     loadedCards: { type: 'array', items: { type: 'string' }, description: '本次實際載入的 Vault 卡路徑' },
     matrix: {
       type: 'array',
-      description: '7 卡類型雙軸矩陣，每格 N/M/K 三數字',
+      description: '6 卡類型雙軸矩陣，每格 N/M/K 三數字',
       items: {
         type: 'object',
         additionalProperties: false,
         properties: {
-          cardType: { type: 'string', enum: ['角色', '實體', '流程', '情境', 'User Story', '業務邏輯', '法規'] },
+          cardType: { type: 'string', enum: ['角色', '實體', '流程', '業務情境', '業務邏輯', '法規'] },
           covered: { type: 'integer', description: '已涵蓋 N' },
           toFix: { type: 'integer', description: '待修補 M' },
           oq: { type: 'integer', description: '待確認 OQ K' },
@@ -107,9 +107,9 @@ function auditPrompt(domain) {
 
 ## MUST 執行
 1. 先讀 memory/Sens_wiki/wiki/erp/00-meta/business-domain-taxonomy.md 確認此領域邊界與所屬卡。
-2. 依領域載入 memory/Sens_wiki/wiki/erp/ 對應卡：04-business-logic（商業邏輯正本）/ 05-entities / 06-state-machines / 07-scenarios / 13-user-stories / 03-roles，並讀跨領域共用層（02-domain glossary / 01-products）。
-3. 對此領域 × 7 卡類型（角色 / 實體 / 流程 / 情境 / User Story / 業務邏輯 / 法規）逐格稽核，每格給「已涵蓋 N / 待修補 M / 待確認 OQ K」三個明確整數（禁「大致 OK」非量化結論）。
-4. User Story 卡類型 MUST 檢查 related-test-cases 欄位是否齊備。
+2. 依領域載入 memory/Sens_wiki/wiki/erp/ 對應卡：04-business-logic（商業邏輯正本）/ 05-entities / 06-state-machines / 07-scenarios / 03-roles，並讀跨領域共用層（02-domain glossary / 01-products）。
+3. 對此領域 × 6 卡類型（角色 / 實體 / 流程 / 業務情境 / 業務邏輯 / 法規）逐格稽核，每格給「已涵蓋 N / 待修補 M / 待確認 OQ K」三個明確整數（禁「大致 OK」非量化結論）。
+4. 業務情境卡類型 MUST 檢查變體判定（接力型 / 能力型 / 排程型）是否正確、步驟判準是否為可觀測業務結果。
 5. 業務邏輯卡類型 MUST 檢查連帶矩陣（連帶實體 / 跨模組影響）。
 6. 待修補項 MUST 指向「應 edit 補入的既有卡路徑」（禁新建抽象卡）。
 7. 列出本次設計定案後將被改寫的 wiki 商業邏輯卡（pre-check 不修、交棒 archive 回補）。

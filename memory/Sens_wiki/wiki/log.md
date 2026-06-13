@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-13 18:08] 同步(amend) | Phase C 稽核補修——pre-check fan-out 腳本與框架三方對齊 6 卡＋遷移期路徑與過時措辭清零
+- 變更：[[payment-invoice-scenarios]] 用途描述與「產 User Story 的去處」段過時措辭改業務情境（唯一 wiki 異動；其餘為 skill / 設定層：`.claude/workflows/erp-precheck-audit.js` 7 卡→6 卡與去 13-user-stories 載入路徑、`audit-framework.md` 兩處遷移期 13-user-stories 路徑改 07-scenarios、`wiki-amend` SKILL 描述 7→6 卡、`CLAUDE.md` OpenSpec PRD 層去「User Story」、pre-check SKILL 補 v1.3 版本對照）
+- 動機：Phase C 獨立稽核抓出 fan-out 腳本未隨框架收斂同步（7 卡 + User Story + related-test-cases 殘留）；全域死引用最終清零（erp-user-story 0 / 13-user-stories 死路徑 0）
+- 衝突：無（SKILL v1.0 changelog 的「7 卡」屬歷史初版記錄，依只追加層保留、v1.3 已補對照）
+
 ## [2026-06-13 18:01] 同步(amend) | Phase C：erp-user-story skill 刪除＋下游死引用與位階表對齊新架構
 - 變更：[[CLAUDE.md]] 路由表「新增/修改 User Story」row 改為「新增/修改業務情境」（指 [[_template-business-scenario]] 不經 skill）、載入決策表去 `13-user-stories/` 改 `07-scenarios/`、收尾 §10 與對外發布 row 去 erp-user-story 引用；[[wiki-amend]] § 位階表刪除 user-story row、切分判準與 frontmatter 必填位階去 user-story；[[erp-planning-pre-check]] 逐卡稽核由 7 類收斂為 6 類（情境＋User Story 合併為「業務情境」、跨層傳播由四層改三層、量化矩陣與 fan-out 同步改 6 卡）；[[wiki-schema]] § 11.2 死引用 `user-story-spec` + `erp-user-story` skill 改指 [[_template-business-scenario]]；[[付款發票邏輯]] 與 [[payment-invoice-scenarios]] 卡尾「產 User Story」引用改「產業務情境卡」指範本。
 - 動機：使用者故事單元溶解（Phase B 13-user-stories 目錄已隨審稿/諮詢批次刪除）後，skill 與設定層對齊新架構——erp-user-story skill 失去依附對象故刪除，下游死引用與卡類型位階表回收。
