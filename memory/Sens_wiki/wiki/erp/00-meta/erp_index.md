@@ -1,5 +1,6 @@
 ---
 type: meta
+module: 跨模組
 status: active
 last-reviewed: 2026-06-10
 ---
@@ -62,7 +63,7 @@ last-reviewed: 2026-06-10
 ## 三、卡片清單
 
 ### 產品策略（01-products）
-- [[wiki/erp/01-products/product-vision|產品願景]] / [[phases]] / [[success-metrics]] / [[impact-score-framework]] / [[pain-points]] / [[stakeholders]]
+- [[wiki/erp/01-products/產品願景|產品願景]] / [[階段規劃]] / [[成功指標]] / [[影響力評分框架]] / [[痛點]] / [[關係人]]
 
 ### 術語表（02-domain）
 - [[ERP系統術語表]]

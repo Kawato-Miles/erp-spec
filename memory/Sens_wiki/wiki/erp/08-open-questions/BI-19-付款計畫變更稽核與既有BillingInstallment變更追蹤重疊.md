@@ -19,7 +19,7 @@ related-oq:
 
 ## 問題描述
 
-`align-business-consultation-coverage-gaps` change 新增 Requirement「付款計畫變更分階段稽核」與兩個 Data Model 欄位，與 [[BI-1-原始日期基準凍結時點]]（2026-05-28 Miles 已拍板）所定的 BillingInstallment 變更追蹤機制**語意重疊、欄名不一致**，疑似重造已解的輪子。
+`align-business-consultation-coverage-gaps` change 新增 Requirement「付款計畫變更分階段稽核」與兩個 Data Model 欄位，與 [[BI-1-原始日期基準凍結時點|BI-1-原始日期基準凍結時點（已封存）]]（2026-05-28 Miles 已拍板）所定的 BillingInstallment 變更追蹤機制**語意重疊、欄名不一致**，疑似重造已解的輪子。
 
 | 面向 | BI-1 已解（既有正本）| align- 新增 |
 |------|---------------------|------------|

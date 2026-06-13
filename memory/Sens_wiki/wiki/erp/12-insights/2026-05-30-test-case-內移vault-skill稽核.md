@@ -120,4 +120,4 @@ Miles 完成 Obsidian 架構調整（5/31 建 `15-test-cases/` + `_template-test
 
 - **關鍵差異**：原 insight 建議「test-case 正文內移 vault」，Miles 5/31 定案改為 **Vault 只放索引卡（frontmatter + happy/edge 索引 + 依據鏈），正文仍存 Notion**。故 A-7「憲法句 Vault 不放 test-case 正文」**不翻轉**（維持正確），insight 該項作廢。
 - **已完成**：`erp-test-case` skill 重寫對齊（三模式 + Step 2 讀 Vault user-story + 回填 related-test-cases wiki link）；3 決策採建議預設（Test Scenario 分組用目錄+卡內 happy/edge / TC 單階段 / related-test-cases 改 Vault wiki link）；連帶 user-story 單階段化（移除兩階段，UI 下移 test-case + Prototype e2e）。
-- **未竟（漸進）**：16 張抽出的 UI 內容（_migration-ui-from-userstory，已隨 test-case 單元廢止刪除）seed 成 TC 卡 + Notion 正文；既有 user-story `related-test-cases` 空欄回填（併 [[BI-12-款項UserStory批次backfill business-domain與related-test-cases|BI-12]] / [[BI-13-第一輪稽核識別的領域缺漏項|BI-13]]）；sync-workflow 流程 1-C 與 scope-boundary test-case 定位補述（skill Mode C 已涵蓋推送機制）。
+- **未竟（漸進）**：16 張抽出的 UI 內容（_migration-ui-from-userstory，已隨 test-case 單元廢止刪除）seed 成 TC 卡 + Notion 正文；既有 user-story `related-test-cases` 空欄回填（併 [[BI-12-款項UserStory批次backfill business-domain與related-test-cases|BI-12（已封存）]] / [[BI-13-第一輪稽核識別的領域缺漏項|BI-13]]）；sync-workflow 流程 1-C 與 scope-boundary test-case 定位補述（skill Mode C 已涵蓋推送機制）。

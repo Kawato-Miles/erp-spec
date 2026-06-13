@@ -1,5 +1,6 @@
 ---
 type: meta
+module: 跨模組
 status: active
 last-reviewed: 2026-05-19
 ---
@@ -65,7 +66,7 @@ mcp__notion__notion-query-database-view
 - **一條 User Story 只描述一個角色的一個需求**；若跨角色，**MUST** 拆成多條
 - **下游連鎖反應不入本 US**（2026-05-21 新增）：如「合格 → 自動建工單」「終態 → 棄用 + 建新印件」屬下游模組或跨模組情境的職責，本 US 以 wiki link 引用 業務情境層（07-scenarios） 或對應 spec 處理，不在本 US 重複描述實作邏輯
 - **禁 anchor 故事**（2026-05-22 新增）：**MUST NOT** 建立「統合多角色 / 多動作的 user story」作為總分結構入口。理由：違反 INVEST Independent（每張 user story MUST 描述單一角色的單一情境）；統合卡造成維護困難（改一處要回溯統合卡）+ 隱藏相依性。**跨多角色 / 多動作的端到端流程 MUST 由 業務情境層（07-scenarios） 處理**（07-scenarios 既有定義為「跨模組業務情境」，2026-05-22 擴展涵蓋「跨模組或跨角色的端到端流程」）
-- **相依性以 prerequisites 欄位記錄**（2026-05-22 新增）：user story 之間若有「A 完成才能 B」相依性，**MUST** 在 frontmatter `prerequisites` 欄位列具體相依項，**MUST NOT** 用 anchor 故事代替相依性表達。`prerequisites` 接受三類值：(a) 其他 user story `[[US-XX-NNN]]`、(b) 系統行為描述（如「系統自動分派完成」純文字）、(c) 角色準備動作（如「審稿主管已維護能力等級」）
+- **相依性以 prerequisites 欄位記錄**（2026-05-22 新增）：user story 之間若有「A 完成才能 B」相依性，**MUST** 在 frontmatter `prerequisites` 欄位列具體相依項，**MUST NOT** 用 anchor 故事代替相依性表達。`prerequisites` 接受三類值：(a) 其他情境卡或 user story wiki link、(b) 系統行為描述（如「系統自動分派完成」純文字）、(c) 角色準備動作（如「審稿主管已維護能力等級」）
 
 ## 六、寫入計畫格式
 

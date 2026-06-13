@@ -69,7 +69,7 @@ expected-action-at: 2026-06-30
 
 - [[ceo-review-framework]]（trade-off 記錄目標位置）
 - [[../11-review-knowledge/_shared/lightweight-review-mode]]
-- [[ORD-018-混合型SidePanel規範時機]]（混合型 SidePanel 需求出現時 trigger 重構 review）
+- [[ORD-018-混合型SidePanel規範時機|ORD-018-混合型SidePanel規範時機（已封存）]]（混合型 SidePanel 需求出現時 trigger 重構 review）
 - [add-side-panel-shared-components/design.md](../../../openspec/changes/archive/2026-05-25-add-side-panel-shared-components/design.md) § D6（trade-off 紀錄）
 - [add-review-rounds-to-print-item-side-panel/design.md](../../../openspec/changes/archive/2026-05-25-add-review-rounds-to-print-item-side-panel/design.md) § D1（apply 階段重做紀錄）
 - `openspec/specs/prototype-shared-ui/spec.md` § SidePanel 共用元件組

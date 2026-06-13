@@ -1,5 +1,6 @@
 ---
 type: meta
+module: 跨模組
 status: active
 last-reviewed: 2026-05-29
 last-case-added: 2026-05-29
@@ -89,7 +90,7 @@ last-case-added: 2026-05-29
   3. 對 frontmatter 字段值的「缺 / 不缺」判定，MUST 先 grep / read 確認對應行內容再宣告
   4. **規則**：審查 frontmatter 必填項時，agent MUST 在報告引用「frontmatter Line N: `key: value`」形式，不能僅以「缺 X」一句帶過
 - **適用 agent**：跨 agent 通用（任何審查 Vault 卡 frontmatter 的場景）
-- **相關情境**：[[US-AR-007-執行印件審稿]] 雙視角審查（2026-05-21）
+- **相關情境**：[[印件審稿]] 雙視角審查（2026-05-21）
 
 ### 2026-05-29「諮詢取消退款 OA 可調誤綁人工核可」誤審
 

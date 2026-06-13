@@ -23,7 +23,7 @@ last-reviewed: 2026-06-13
 | `Phase` | relation | Phase 1 / 2 / 3 |
 | `Feature` | relation | 對應功能 |
 
-## 北極星指標（已在 [[success-metrics]] 詳述）
+## 北極星指標（已在 [[成功指標]] 詳述）
 
 ### Phase 1：EC 規格品 BOM 覆蓋率
 
@@ -39,10 +39,7 @@ last-reviewed: 2026-06-13
 
 ## 各模組 KPI（Phase B / C 補建）
 
-> [!warning] 待補
-> 各模組可量化 KPI（如審稿命中率、工單交期準確度、QC 通過率等）需從 Notion KPI DB 抓取 rows 後寫入此目錄。
->
-> 建議命名格式：`<模組>-<KPI 名稱>.md`，例：`prepress-review-命中率.md`、`work-order-交期準確度.md`
+各模組可量化 KPI（如審稿命中率、工單交期準確度、QC 通過率等）於後續 Phase 從 Notion KPI DB 抓取 rows 寫入此目錄。命名格式：`<模組>-<KPI 名稱>.md`。
 
 ## 同步策略
 

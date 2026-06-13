@@ -94,7 +94,7 @@ last-reviewed: 2026-05-28
 **情境**：第一輪 Billing & Cash 稽核時識別到 `03-roles/會計.md` 參與階段標記為「審稿」階段，但實際業務職責涵蓋全程（建單 / 出貨 / 月結對帳 / 報表）。
 **領域**：Billing & Cash
 **卡類型**：1. 角色
-**修正方式**：edit `03-roles/會計.md` 補「月結對帳節奏」段 + 修正參與階段欄位（已開 [[ORD-001-會計階段標記是否錯誤|ORD-001]] 等 Miles 拍板）
+**修正方式**：edit `03-roles/會計.md` 補「月結對帳節奏」段 + 修正參與階段欄位（已開 [[ORD-001-會計階段標記是否錯誤|ORD-001（已封存）]] 等 Miles 拍板）
 **根因**：角色卡頭部 metadata「參與階段」未追上業務範疇擴張（refine-after-sales / billing-installment 累積後職責變寬但卡未更新）
 **衍生 OQ**：[[BI-13-第一輪稽核識別的領域缺漏項]]
 
@@ -103,7 +103,7 @@ last-reviewed: 2026-05-28
 **情境**：第一輪 Billing & Cash 稽核時識別到 18 張款項相關 User Story 的 `related-test-cases` frontmatter 欄位全為空陣列（`[]`），acceptance criteria 無對應 Test Case 反向連結。
 **領域**：Billing & Cash
 **卡類型**：5. User Story
-**修正方式**：批次 backfill `related-test-cases`（從 Notion ERP Test Case DB 配對）；已開 [[BI-12-款項UserStory批次backfill business-domain與related-test-cases|BI-12]]
+**修正方式**：批次 backfill `related-test-cases`（從 Notion ERP Test Case DB 配對）；已開 [[BI-12-款項UserStory批次backfill business-domain與related-test-cases|BI-12（已封存）]]
 **根因**：User Story 與 Test Case 兩邊各自累積，缺「上層改了下層需重審」正式機制（受 Miles 第六輪反饋拍板：「User Story 從 acceptance criteria 到 Test Case 一層一層稽核」）
 **衍生紀律**：（見 erp-planning-pre-check skill 附件） § 六 跨層影響稽核（商業需求 ↔ User Story ↔ spec ↔ Test Case 四層雙向追溯）
 

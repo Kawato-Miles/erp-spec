@@ -1,5 +1,6 @@
 ---
 type: meta
+module: 跨模組
 status: deprecated-verify-only
 last-reviewed: 2026-05-28
 ---

@@ -2,6 +2,7 @@
 type: review-knowledge
 scope: shared
 topic: e2e-planning
+module: 跨模組
 status: active
 last-reviewed: 2026-05-20
 ---

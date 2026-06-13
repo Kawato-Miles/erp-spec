@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-14 11:00] 健檢(audit) | Mode C 修復：死鏈 + frontmatter + 01-products 改名
+- 變更：A1 已封存 OQ 引用修復——約 30 張正本卡的封存 OQ 引用加別名（`[[OQ|OQ（已封存）]]`）；A2 散落實體名死鏈修復（[[ERP系統術語表]] 別名）；A3 三張正本卡 13-user-stories 引用改指 07-scenarios（[[review-loading-checklist]]、[[pm-data-map]]、[[user-story-spec]]）；A4 審查知識死鏈修復（[[2026-06-13-生產分類與派工設計骨架]] 術語表連結）；B module 欄位批次回填 27 張卡；C1 [[QR-001-雙欄計價具體規則]]、[[QR-002-報價有效期限與議價規則]] 補 expected-resolution-at（external OQ 必填）；C2 [[KPI總覽]] 移除 `[!warning] 待補` callout 改為正文描述；C3 01-products 6 張卡改名繁中語意化（product-vision→[[產品願景]]、phases→[[階段規劃]]、pain-points→[[痛點]]、success-metrics→[[成功指標]]、impact-score-framework→[[影響力評分框架]]、stakeholders→[[關係人]]）+ 19 檔 46 處引用同步更新
+- 動機：免（健檢類）
+- 衝突：無
+
 ## [2026-06-14 00:07] 健檢(pre-check) | L1.6 帳務稽核（議題：待出金退款清單＋退款戶頭）
 - 變更：量化矩陣 已涵蓋 N=5／待補 M=4／待確認 K=3；本次不修補卡（待商業需求確認後另開 change）；預計補落點＝[[帳務]] 實體卡退款款項補「退款收款帳號」欄位 + 新增「待出金退款清單組成」業務邏輯卡；既有已覆蓋＝[[會計]]／[[業務主管]] 出金與退款報表職責、[[帳務流程]] §6 月底出金流程（ORD-034／BI-8 已拍板：退款月底由會計手動出金、非系統排程批次）
 - 動機：免（健檢類）

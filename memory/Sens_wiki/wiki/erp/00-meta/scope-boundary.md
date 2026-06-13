@@ -1,5 +1,6 @@
 ---
 type: meta
+module: 跨模組
 status: active
 last-reviewed: 2026-06-09
 ---
@@ -14,9 +15,9 @@ last-reviewed: 2026-06-09
 
 | 類別 | 對應目錄 | 範例 |
 |------|---------|------|
-| 產品策略（願景、痛點、Phase、KPI） | `01-products/` | [[wiki/erp/01-products/product-vision]]、[[phases]]、[[success-metrics]]、[[impact-score-framework]] |
-| 商業目標 / Phase / 北極星指標 | `01-products/` | [[wiki/erp/01-products/product-vision]]、[[phases]]、[[success-metrics]] |
-| 痛點 / 利害關係人 / Impact Score | 同上 | [[pain-points]]、[[stakeholders]]、[[impact-score-framework]] |
+| 產品策略（願景、痛點、Phase、KPI） | `01-products/` | [[wiki/erp/01-products/產品願景]]、[[階段規劃]]、[[成功指標]]、[[影響力評分框架]] |
+| 商業目標 / Phase / 北極星指標 | `01-products/` | [[wiki/erp/01-products/產品願景]]、[[階段規劃]]、[[成功指標]] |
+| 痛點 / 利害關係人 / Impact Score | 同上 | [[痛點]]、[[關係人]]、[[影響力評分框架]] |
 | ERP 術語表 | `02-domain/` | [[ERP系統術語表]] |
 | 角色 R&R | `03-roles/` | 16 角色 + [[_alignment-report]] |
 | 商業邏輯：服務藍圖（A 類，端到端業務鏈）| `04-business-logic/` | 線下訂單流程、諮詢服務流程等（`type: service-blueprint`）|

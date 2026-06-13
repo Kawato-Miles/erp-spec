@@ -1,5 +1,6 @@
 ---
 type: meta
+module: 跨模組
 status: active
 last-reviewed: 2026-05-19
 ---
@@ -39,7 +40,7 @@ last-reviewed: 2026-05-19
 
 1. **Vault `04-business-logic/` 對應領域卡**（商業邏輯正本，**MUST 先於 openspec 讀取**）— 依本次議題領域載入（如審稿 → 審稿分配規則 / 免審決策樹 / 打樣流程 / 稿件管理規則 / 印件生產流程；款項 → 付款發票邏輯 等），這是商業規則的 ground truth
 2. **Vault `03-roles/` 對應角色卡**（角色職責正本）— 角色日常工作、痛點來源
-4. **User Story** — 確認新功能是否有對應故事基礎（Vault `13-user-stories/` 內部正本 + 嵌入各模組 spec）
+4. **業務情境** — 確認新功能是否有對應情境基礎（Vault `07-scenarios/` 業務情境卡）
 5. **Notion 產品目標** — 確認新功能能真實貢獻哪個 KPI
 6. **Vault `08-open-questions/`** — 避免重複設計已討論過的問題；查詢時 **MUST** 同時閱讀「決議與理由」，了解已解答 OQ 的最終決策，確保新設計不與既有決策衝突
 
