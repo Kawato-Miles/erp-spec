@@ -64,8 +64,8 @@ last-reviewed: 2026-06-10
 ### 產品策略（01-products）
 - [[wiki/erp/01-products/product-vision|產品願景]] / [[phases]] / [[success-metrics]] / [[impact-score-framework]] / [[pain-points]] / [[stakeholders]]
 
-### 領域知識（02-domain）
-- [[printing-industry]] / [[glossary-erp]] / [[glossary-shared]] / [[glossary-graphic-editor]]
+### 術語表（02-domain）
+- [[ERP系統術語表]] / [[印刷業共用術語表]] / [[圖編術語表]]
 
 ### 角色（03-roles）
 - [[業務]] / [[業務主管]] / [[諮詢]] / [[會計]] / [[審稿人員]] / [[審稿主管]] / [[印務]] / [[印務主管]] / [[生管]] / [[師傅]] / [[品檢人員]] / [[廠務]] / [[出貨人員]] / [[Supervisor]] / [[外包廠商]] / [[中國廠商]] / [[EC 商品管理]]

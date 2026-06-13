@@ -134,10 +134,5 @@ last-reviewed: 2026-05-19
 
 ## 相關卡
 
-- [[printing-industry]] — 印刷業背景
-- [[glossary-shared]] — 跨產品共用術語
-- [[glossary-graphic-editor]] — 圖編術語
-
-## 來源
-
-- `memory/erp/glossary.md`（原 memory 檔）
+- [[印刷業共用術語表]] — 跨產品共用術語
+- [[圖編術語表]] — 圖編術語

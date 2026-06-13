@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-13 18:38] 納入(amend) | 生產情境推演 E 缺口回填——生產狀況監控掛 Phase 2 北極星
+- 變更：[[生產流程]] 痛點段補一條——生產狀況監控為 [[phases|Phase 2]] 北極星（訂單流程完整完成率）的核心支撐能力，記錄兩角色兩視角（業務從訂單看可出貨量＝入庫數量、印務從工單／印件看生產數量入庫數量等現場細節因印件跨工單），明示功能設計尚未展開、本卡只記監控需求與兩視角存在。
+- 動機：生產情境推演缺口 E（臨時分批時業務／印務需即時知道生產狀況）Miles 確認為現況需求並指認屬 Phase 2 北極星核心；先記痛點與需求認知、不調整業務／印務角色卡（功能未設計、滿足方式未定）。
+- 衝突：無；F 缺口（打樣多種狀況）Miles 暫停、待補 raw 資料後再確認。
+
 ## [2026-06-13 18:08] 同步(amend) | Phase C 稽核補修——pre-check fan-out 腳本與框架三方對齊 6 卡＋遷移期路徑與過時措辭清零
 - 變更：[[payment-invoice-scenarios]] 用途描述與「產 User Story 的去處」段過時措辭改業務情境（唯一 wiki 異動；其餘為 skill / 設定層：`.claude/workflows/erp-precheck-audit.js` 7 卡→6 卡與去 13-user-stories 載入路徑、`audit-framework.md` 兩處遷移期 13-user-stories 路徑改 07-scenarios、`wiki-amend` SKILL 描述 7→6 卡、`CLAUDE.md` OpenSpec PRD 層去「User Story」、pre-check SKILL 補 v1.3 版本對照）
 - 動機：Phase C 獨立稽核抓出 fan-out 腳本未隨框架收斂同步（7 卡 + User Story + related-test-cases 殘留）；全域死引用最終清零（erp-user-story 0 / 13-user-stories 死路徑 0）
@@ -402,4 +407,8 @@ last-reviewed: 2026-06-02
 
 ## [2026-05-31] 同步 | 建立 Sens_wiki 操作框架與雙主題結構
 - 變更：新增根目錄操作模式 CLAUDE.md（已於同日上移為 `.claude/rules/sens-wiki.md`，見同日「操作模式上移」entry）；初始化本操作史與 [[index|總目錄]]；確立雙主題（ERP / 圖編 canvas）並列、共用 `raw/` 與 `assets/`；ERP 既有 16 層內容卡沿用、未動。
+- 衝突：無。
+## [2026-06-13] 同步（amend） | 02-domain 重構：移除 printing-industry + glossary 改中文命名 + 術語正本遷 wiki
+- 變更：[[printing-industry]] 刪除（百科式產業背景，內容已由 [[04-business-logic/領域知識/]] 各卡覆蓋，刪後無孤兒）；[[ERP系統術語表]]（原 glossary-erp）/ [[印刷業共用術語表]]（原 glossary-shared）/ [[圖編術語表]]（原 glossary-graphic-editor）改中文檔名；三卡相關卡段落移除已刪 printing-industry 引用、互引 wiki link 改用新名；[[erp_index]] § 三節標籤「領域知識（02-domain）」改「術語表（02-domain）」；[[scope-boundary]] 印刷業 domain 行改用新卡名；[[05-entities/任務]]、[[05-entities/生產任務]] glossary-erp 節錨引用改 ERP系統術語表；[[wiki/編輯器/product-vision]] 路徑更新。memory 舊版（memory/erp、shared、graphic-editor 各 glossary.md）刪除，CLAUDE.md 熱快取路徑全數更新為 wiki 路徑。
+- 動機：wiki 版已是術語正本，memory 版與 wiki 版並存造成維護路徑不明確；printing-industry.md 為百科式背景，製程知識已由 04-business-logic/領域知識/ 涵蓋，保留反增認知負擔。
 - 衝突：無。
