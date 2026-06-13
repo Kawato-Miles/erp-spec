@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-13 23:58] 納入(amend) | 打樣流程回正：標準流程為正本、實務捷徑掛 OQ
+- 變更：[[打樣流程]] 規則段「大貨參考打樣不重新審」改回標準流程（打樣與大貨都走完整審稿），實務捷徑（大貨參考打樣免審）改列為註記指 [[PI-005-大貨參考打樣稿件的免審觸發機制|PI-005]]
+- 動機：Miles 釐清（2026-06-13）標準流程上大貨走完整審稿才是商業正本，實務不重走一次屬系統設計層；兩卡統一寫標準流程，捷徑留 PI-005 待 change
+- 衝突：無（[[打樣決策與重新打樣]] 情境卡本就寫標準流程，回正後一致）
+
 ## [2026-06-13 23:55] 納入(amend) | wiki README 改名為行為語意命名＋12-insights 刪動態清單消除同步中斷風險
 - 變更：[[OQ運作總覽]]（舊 `08-open-questions/README.md`）改名、標題更新；[[審查知識路由]]（舊 `11-review-knowledge/README.md`）改名、標題更新；[[insight定位說明]]（舊 `12-insights/README.md`）改名＋精簡——刪動態 Insight 清單（§ 一至 § 三，靜態清單必過時）與重複段（§ 四觸發指引、§ 五 Anti-Pattern、§ 六 生命週期，正本在 vault-insight SKILL.md），只留定位說明＋查詢方式；[[回顧機制總覽]]（舊 `14-reviews/README.md`）改名、標題更新；[[KPI總覽]]（舊 `01-products/kpi/README.md`）改名、標題更新；活躍引用全面更新（[[erp_index]]、[[wiki-schema]]、[[notion-index]]、CLAUDE.md、daily-brief SKILL、weekly-review SKILL、2 張 insight 卡）
 - 動機：README 命名無法自描述行為；12-insights 動態清單與 SKILL.md 重複維護導致索引中斷風險。Miles 2026-06-13 拍板方案 B（只留操作手冊型、依行為命名、繁中、接受歷史死鏈）
