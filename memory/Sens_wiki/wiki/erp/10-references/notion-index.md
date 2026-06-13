@@ -16,7 +16,7 @@ last-reviewed: 2026-05-19
 |------|-----|----------|
 | 產品目標 | https://www.notion.so/32c3886511fa81359354e33087d23f23 | [[wiki/erp/01-products/product-vision]]、[[pain-points]]、[[success-metrics]] |
 | 使用者權責 | https://www.notion.so/32c3886511fa8144b38adc9266395d15 | [[_alignment-report]]、`03-roles/*.md` |
-| 業務情境 DB | https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05 | [[wiki/erp/07-scenarios/README]] |
+| 業務情境 DB | https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05 | [[線下訂單流程]]（端到端導讀）+ 各業務情境卡 |
 | 數量換算規則 | https://www.notion.so/32c3886511fa81e9a77adbd21cfc9d4a | [[數量換算規則]] |
 | KPI DB | https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f | [[wiki/erp/01-products/kpi/README]] |
 | Impact Score DB | https://www.notion.so/d8ae867eb00947439a9c0fc47de52e84 | [[impact-score-framework]] |
