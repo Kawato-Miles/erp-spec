@@ -144,7 +144,7 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 - `source`：enum（**審稿 / 免審稿 / 售後補印**）。`售後補印` 由 after-sales-ticket 模組於補印 PrintItem 建立同 transaction 系統自動產生（refine-supplementary-print-skip-review 2026-05-20 歸檔），沿用來源印件最終合格稿件、reviewerId 為 NULL、result 自動 = 合格、`sourcePrintItemId` 指向來源印件；詳見 [印件實體業務語意](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) § 補印印件特殊規則
 - `submitted_at`：送審時間（免審稿路徑為印件建立時間；售後補印路徑為補印 PrintItem 建立時間）
 - `result`：enum（合格 / 不合格）
-- `reject_reason_category`：enum LOV（不合格時必填）。**PI-009 定案 10 項**：出血不足 / 解析度過低 / 色彩模式錯誤（RGB 未轉 CMYK）/ 缺少必要元素（圖 / 文字 / 字型）/ 版面超出安全區 / 尺寸不符 / 特殊工藝圖層異常（燙金 / 白墨 / 模切）/ 字型未外框 / 技術性退件（檔案損毀 / 無法開啟等；KPI 不合格率分母排除） / 其他（需 review_note 補充）。**對齊 quote-request spec § 需求單流失歸因的 LOV 設計模式**，以結構化方式記錄便於統計分析與圖編器 Preflight 規則對映
+- `reject_reason_category`：enum LOV（不合格時必填）。**PI-009 定案 10 項**：出血不足 / 解析度過低 / 色彩模式錯誤（RGB 未轉 CMYK）/ 缺少必要元素（圖 / 文字 / 字型）/ 版面超出安全區 / 尺寸不符 / 特殊工藝圖層異常（燙金 / 白墨 / 模切）/ 字型未外框 / 技術性退件（檔案損毀 / 無法開啟等；KPI 不合格率分母排除） / 其他（需 review_note 補充）。**對齊 quote-request spec § 需求單流失歸因的 LOV 設計模式**，以結構化方式記錄便於統計分析與線上編輯器 Preflight 規則對映
 - `review_note`：text（最長 **1000 字**，非必填）。**本 change 語意擴充**：原敘述為「不合格時建議填寫」，現擴充為**合格 / 不合格每輪皆可填**（審稿與補件方多次來回，每輪皆有機會給補件方 / 後續角色留備註）。每輪的 `review_note` **各自保留**（跟輪次走，不覆寫）；印件層透過 `current_round_id → review_note` 顯示最新一筆作為摘要（見新增 Requirement「印件層最新一筆審稿備註顯示」）。**可修改 + 稽核**：該輪 Round submit 後 `review_note` **允許審稿人員回頭修改**（供糾正打錯字 / 補充內容）；每次修改 MUST 寫入印件 ActivityLog「審稿備註修改」事件（actor / round_no / from / to / timestamp）；修改若發生於補件方已進入補件頁之後，系統 SHALL 觸發 Toast 通知補件方（跨系統真實通知管道待 [XM-006](https://www.notion.so/3473886511fa817f98e1f4e8a2f84473) 處理）
 
 **PrintItem 層新增**：

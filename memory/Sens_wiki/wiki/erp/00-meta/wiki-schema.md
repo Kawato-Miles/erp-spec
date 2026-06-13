@@ -52,11 +52,11 @@ module:
   - 需求單 | 訂單管理 | 諮詢單 | 售後服務
   - 工單 | 生產任務 | 印前審稿 | 品檢
   - 材料主檔 | 製程主檔 | 裝訂主檔
-  - 圖編                    # 圖編產品
+  - 線上編輯器                    # 線上編輯器產品
   - 跨模組                  # 跨模組（狀態機 / 商業流程 / 業務情境 / 使用者角色）
 ```
 
-**新舊值對照**（轉換期查表用）：需求單 = quote-request、訂單管理 = order-management、諮詢單 = consultation-request、售後服務 = after-sales-ticket、工單 = work-order、生產任務 = production-task、印前審稿 = prepress-review、品檢 = qc、材料主檔 = material-master、製程主檔 = process-master、裝訂主檔 = binding-master、圖編 = graphic-editor、跨模組 = cross-module。
+**新舊值對照**（轉換期查表用）：需求單 = quote-request、訂單管理 = order-management、諮詢單 = consultation-request、售後服務 = after-sales-ticket、工單 = work-order、生產任務 = production-task、印前審稿 = prepress-review、品檢 = qc、材料主檔 = material-master、製程主檔 = process-master、裝訂主檔 = binding-master、線上編輯器 = graphic-editor、跨模組 = cross-module。
 
 ## 二B、business-domain Enum（必填，2026-05-28 新增）
 
@@ -144,7 +144,7 @@ related-notion: <URL>  # 若有
 ---
 type: glossary
 module:
-  - <ERP|圖編|跨產品>
+  - <ERP|線上編輯器|跨產品>
 status: active
 last-reviewed: YYYY-MM-DD
 ---

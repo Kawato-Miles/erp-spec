@@ -1,6 +1,6 @@
 # impeccable 使用指引（ERP 場景）
 
-> **定位**：印刷業 ERP 系統與線上圖編輯器使用 impeccable 設計稽核 skill 的選擇決策樹。
+> **定位**：印刷業 ERP 系統與線上編輯器使用 impeccable 設計稽核 skill 的選擇決策樹。
 > **觸發時機**：(1) 開新 OpenSpec change 前，對既有頁面 / 元件做 UX 評估；(2) Prototype 完成後驗收 review；(3) 需要量化 UX 健康度（Nielsen scoring）時；(4) 設計討論時需要選對 impeccable 指令時。
 > **不適用**：日常 commit-level QA（成本太高）、brand register 設計（ERP 屬 product register）。
 

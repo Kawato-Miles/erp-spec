@@ -413,7 +413,12 @@ last-reviewed: 2026-06-02
 - 動機：wiki 版已是術語正本，memory 版與 wiki 版並存造成維護路徑不明確；printing-industry.md 為百科式背景，製程知識已由 04-business-logic/領域知識/ 涵蓋，保留反增認知負擔。
 - 衝突：無。
 
-## [2026-06-13] 同步（amend） | 術語表歸位——跨產品獨立目錄 + 圖編搬回編輯器主題
-- 變更：[[印刷業共用術語表]] 從 `erp/02-domain/` 搬至 `wiki/跨產品/`（新建跨產品目錄）；[[圖編術語表]] 從 `erp/02-domain/` 搬至 `wiki/編輯器/`；[[erp_index]] 術語表段只留 [[ERP系統術語表]]、跨領域共用層移除 `02-domain/`；[[scope-boundary]] 更新；總目錄 [[index]] 新增「跨產品」段與「編輯器」段術語表引用；[[wiki/編輯器/product-vision]] 移除舊路徑引用、改 wikilink 指向；CLAUDE.md 熱快取路徑三處更新。三張術語表 frontmatter 清除已廢棄的 `related-spec`、module 修正為對應歸屬。
-- 動機：ERP 術語歸 ERP、圖編術語歸編輯器、跨產品共用術語獨立目錄——各術語表放在其歸屬主題下，消除「圖編和跨產品術語掛在 ERP 目錄」的錯位。
+## [2026-06-13] 同步（amend） | 術語表歸位——跨產品獨立目錄 + 線上編輯器搬回編輯器主題
+- 變更：[[印刷業共用術語表]] 從 `erp/02-domain/` 搬至 `wiki/跨產品/`（新建跨產品目錄）；[[線上編輯器術語表]] 從 `erp/02-domain/` 搬至 `wiki/編輯器/`；[[erp_index]] 術語表段只留 [[ERP系統術語表]]、跨領域共用層移除 `02-domain/`；[[scope-boundary]] 更新；總目錄 [[index]] 新增「跨產品」段與「編輯器」段術語表引用；[[wiki/編輯器/product-vision]] 移除舊路徑引用、改 wikilink 指向；CLAUDE.md 熱快取路徑三處更新。三張術語表 frontmatter 清除已廢棄的 `related-spec`、module 修正為對應歸屬。
+- 動機：ERP 術語歸 ERP、線上編輯器術語歸編輯器、跨產品共用術語獨立目錄——各術語表放在其歸屬主題下，消除「線上編輯器和跨產品術語掛在 ERP 目錄」的錯位。
+- 衝突：無。
+
+## [2026-06-13] 同步（amend） | 全庫「圖編」統一更名為「線上編輯器」
+- 變更：[[線上編輯器術語表]]（原圖編術語表）改名；[[product-vision]]、[[ERP系統術語表]]、[[印刷業共用術語表]]、[[index]]、[[wiki-schema]]、[[erp-design-patterns]] 內文「圖編」→「線上編輯器」；CLAUDE.md 產品簡稱與熱快取路徑更新；agent guideline（ceo / erp-consultant）、skill（erp-spec / notion-to-github）、memory（industry / impeccable-usage / principles / prototype-guidelines）、openspec（prepress-review spec）同步置換。共 17 檔異動。
+- 動機：「圖編」為內部簡稱，外部與新人看不懂；統一為「線上編輯器」符合產品正式名稱。
 - 衝突：無。

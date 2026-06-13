@@ -1,6 +1,6 @@
 # 工作原則（Working Principles）
 
-> **角色層通用原則**，適用於所有產品與專案，不限 ERP 或圖編器。
+> **角色層通用原則**，適用於所有產品與專案，不限 ERP 或線上編輯器。
 > 專案特定規範見各專案記憶檔（`memory/erp/`、`memory/graphic-editor/` 等）。
 >
 > 最後更新：2026-04-19
@@ -74,7 +74,7 @@
 
 > **注意**：本 section 定義工作流框架（通用）。**具體的檔案清單與驗證標準見各專案記憶**：
 > - **ERP**：`memory/erp/spec-iteration-workflow.md`
-> - **圖編**：`memory/graphic-editor/spec-iteration-workflow.md`（待建立）
+> - **線上編輯器**：`memory/graphic-editor/spec-iteration-workflow.md`（待建立）
 
 ### 5.1 迭代前：定義驗證標準
 
