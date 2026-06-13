@@ -1,7 +1,7 @@
 {
 	"nodes":[
 		{"id":"title","type":"text","text":"# 商業情境 Traceability\n\n13 個跨模組情境\n→ 涉及模組 → 涉及實體 → 對應 spec\n\n用途：AI / Miles 確認情境覆蓋率","x":-800,"y":200,"width":600,"height":220,"color":"5"},
-		{"id":"scenarios-index","type":"file","file":"wiki/erp/07-scenarios/README.md","x":0,"y":0,"width":320,"height":100,"color":"2"},
+		{"id":"scenarios-index","type":"file","file":"wiki/erp/04-business-logic/服務藍圖/線下訂單流程.md","x":0,"y":0,"width":320,"height":100,"color":"2"},
 		{"id":"s1","type":"text","text":"## #1 全流程驗證\n\n模組：全部\n實體：需求單 → 訂單 → 工單 → 生產任務 → QC → 出貨單","x":400,"y":-200,"width":320,"height":140,"color":"4"},
 		{"id":"s2","type":"text","text":"## #2 打樣決策流程\n\n模組：work-order / prepress-review\n3 個分支：OK / NG(製程) / NG(稿件)","x":400,"y":-40,"width":320,"height":140,"color":"4"},
 		{"id":"s3","type":"text","text":"## #3 製程審核與工單收回\n\n模組：work-order\n狀態：草稿 ↔ 製程確認中 ↔ 製程審核完成","x":400,"y":120,"width":320,"height":140,"color":"4"},

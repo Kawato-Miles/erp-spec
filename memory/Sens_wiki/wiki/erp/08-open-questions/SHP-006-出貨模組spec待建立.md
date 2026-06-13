@@ -32,6 +32,8 @@ expected-resolution-at: 2026-Q3
 
 需決定：**何時開 OpenSpec change 補建出貨模組 spec。** 補齊後才能把 [[出貨單]] / [[出貨單狀態]] 的重複欄位 / 狀態描述砍掉、改為引用 OpenSpec spec。
 
+建 spec 時須一併修正的不一致（2026-06-12 生產收尾批盤點發現）：business-scenarios spec 分批出貨情境的出貨單狀態鏈寫「未處理 → 打包中 → 待出貨 → 出貨中 → 已送達」為**舊列舉**，與 [[出貨單狀態]] 正本（未處理 / 運送中 / 已送達 / 異常 / 已作廢，打包不入狀態）不一致；建出貨模組 spec 時以 wiki 正本為準收斂。
+
 ## 涉及範圍
 
 - 模組：order-management（出貨單）、cross-module
