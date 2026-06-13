@@ -628,6 +628,6 @@ related-changes:                   # 本期涉及的 openspec change
 
 ### 11.2 共通原則
 
-- **產 user story 一律 cross-reference 而非複製模板**：business-logic / scenario 卡若要說明「如何產 user story」，MUST 指向 [[user-story-spec]] + `erp-user-story` skill，**禁複製格式模板進卡**
+- **產業務情境一律 cross-reference 而非複製模板**：business-logic / scenario 卡若要說明「如何產業務情境」，MUST 指向 [[_template-business-scenario]]（業務情境範本），**禁複製格式模板進卡**；[[user-story-spec]] 為歷史方法論（業務情境範本已吸收 INVEST / 禁 anchor / 中英夾雜紀律）
 - **越界內容移到對應卡類型**：發現越界內容時移到該內容職責所屬的卡類型（如實體 Data Model 從 business-logic 移到 entity）
 - **cross-reference 用 wiki link / skill 名稱**，不複製內容（避免雙份維護 + 防止 AI 拿自己寫的東西當依據再生內容）

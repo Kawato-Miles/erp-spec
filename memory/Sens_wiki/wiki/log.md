@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-13 18:01] 同步(amend) | Phase C：erp-user-story skill 刪除＋下游死引用與位階表對齊新架構
+- 變更：[[CLAUDE.md]] 路由表「新增/修改 User Story」row 改為「新增/修改業務情境」（指 [[_template-business-scenario]] 不經 skill）、載入決策表去 `13-user-stories/` 改 `07-scenarios/`、收尾 §10 與對外發布 row 去 erp-user-story 引用；[[wiki-amend]] § 位階表刪除 user-story row、切分判準與 frontmatter 必填位階去 user-story；[[erp-planning-pre-check]] 逐卡稽核由 7 類收斂為 6 類（情境＋User Story 合併為「業務情境」、跨層傳播由四層改三層、量化矩陣與 fan-out 同步改 6 卡）；[[wiki-schema]] § 11.2 死引用 `user-story-spec` + `erp-user-story` skill 改指 [[_template-business-scenario]]；[[付款發票邏輯]] 與 [[payment-invoice-scenarios]] 卡尾「產 User Story」引用改「產業務情境卡」指範本。
+- 動機：使用者故事單元溶解（Phase B 13-user-stories 目錄已隨審稿/諮詢批次刪除）後，skill 與設定層對齊新架構——erp-user-story skill 失去依附對象故刪除，下游死引用與卡類型位階表回收。
+- 衝突：無。
+
 ## [2026-06-13 17:54] 納入(amend) | 生產情境推演釐清外發回廠現況——三項確認回填＋PT-008
 - 變更：[[轉交單]] 定位對齊「串聯上下兩個生產任務的轉交工作單據」（原寫印件站間移動）＋範圍註記場內已釐清場外待評估；[[生管]] 概述補「只派廠內工作，外包／中國廠整任務交付不經生管派工」；[[印件生產流程]] 補三條——外發＝一筆掛外包廠 BOM 的生產任務（任務層切開）、待處理區與場外回場內系統表達待評估、回廠數量清點與品質品檢現場為兩動作；新增 [[PT-008-外發回廠流轉的系統設計範圍|PT-008]]（場外回場內單據歸屬／待處理區是否進系統／清點與品檢是否分開三子題）。
 - 動機：生產段「廠內＋外發回廠」情境推演（驗證 wiki 覆蓋度），Miles 回答四項缺口——A.1／A.3／D 為已確認設計回填，A.2／B／C 屬現況已釐清、系統設計待評估開 PT-008。本階段先對齊現況、不做系統設計決策（現場純人工無標準化）。
