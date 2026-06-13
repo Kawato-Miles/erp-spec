@@ -412,3 +412,8 @@ last-reviewed: 2026-06-02
 - 變更：[[printing-industry]] 刪除（百科式產業背景，內容已由 [[04-business-logic/領域知識/]] 各卡覆蓋，刪後無孤兒）；[[ERP系統術語表]]（原 glossary-erp）/ [[印刷業共用術語表]]（原 glossary-shared）/ [[圖編術語表]]（原 glossary-graphic-editor）改中文檔名；三卡相關卡段落移除已刪 printing-industry 引用、互引 wiki link 改用新名；[[erp_index]] § 三節標籤「領域知識（02-domain）」改「術語表（02-domain）」；[[scope-boundary]] 印刷業 domain 行改用新卡名；[[05-entities/任務]]、[[05-entities/生產任務]] glossary-erp 節錨引用改 ERP系統術語表；[[wiki/編輯器/product-vision]] 路徑更新。memory 舊版（memory/erp、shared、graphic-editor 各 glossary.md）刪除，CLAUDE.md 熱快取路徑全數更新為 wiki 路徑。
 - 動機：wiki 版已是術語正本，memory 版與 wiki 版並存造成維護路徑不明確；printing-industry.md 為百科式背景，製程知識已由 04-business-logic/領域知識/ 涵蓋，保留反增認知負擔。
 - 衝突：無。
+
+## [2026-06-13] 同步（amend） | 術語表歸位——跨產品獨立目錄 + 圖編搬回編輯器主題
+- 變更：[[印刷業共用術語表]] 從 `erp/02-domain/` 搬至 `wiki/跨產品/`（新建跨產品目錄）；[[圖編術語表]] 從 `erp/02-domain/` 搬至 `wiki/編輯器/`；[[erp_index]] 術語表段只留 [[ERP系統術語表]]、跨領域共用層移除 `02-domain/`；[[scope-boundary]] 更新；總目錄 [[index]] 新增「跨產品」段與「編輯器」段術語表引用；[[wiki/編輯器/product-vision]] 移除舊路徑引用、改 wikilink 指向；CLAUDE.md 熱快取路徑三處更新。三張術語表 frontmatter 清除已廢棄的 `related-spec`、module 修正為對應歸屬。
+- 動機：ERP 術語歸 ERP、圖編術語歸編輯器、跨產品共用術語獨立目錄——各術語表放在其歸屬主題下，消除「圖編和跨產品術語掛在 ERP 目錄」的錯位。
+- 衝突：無。

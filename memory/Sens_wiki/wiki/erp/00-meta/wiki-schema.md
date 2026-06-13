@@ -138,16 +138,15 @@ related-notion: <URL>  # 若有
 ---
 ```
 
-### type=domain / glossary
+### type=glossary
 
 ```yaml
 ---
-type: <domain|glossary>
+type: glossary
 module:
-  - cross-module
+  - <ERP|圖編|跨產品>
 status: active
 last-reviewed: YYYY-MM-DD
-related-spec: <memory/erp/glossary.md 或 memory/shared/...>  # 來源 memory 檔
 ---
 ```
 

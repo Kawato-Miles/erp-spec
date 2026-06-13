@@ -56,6 +56,9 @@ Sens 多主題知識庫，依主題分流。本頁列**憲章、主題與入口*
 
 ## 主題
 
+### 跨產品（印刷業共用知識）
+- [[印刷業共用術語表]] — 跨 ERP 與圖編的印刷流程、色彩管理、紙張材料術語
+
 ### ERP（產品 — 以業務需求 BRD 角度管理）
 - 詳細目錄與稽核載入決策表：[[erp_index]] 
 - 主題治理規則：[[wiki-schema]]、[[scope-boundary]]、[[business-domain-taxonomy]]
@@ -63,4 +66,5 @@ Sens 多主題知識庫，依主題分流。本頁列**憲章、主題與入口*
 
 ### 線上印刷編輯器（產品）
 - 產品願景：[[wiki/編輯器/product-vision|圖編產品願景]]（Phase A placeholder，內容待遷入）
+- 術語表：[[圖編術語表]]
 - 結構：沿用共用標準與新增主題 recipe（見 `.claude/rules/sens-wiki.md`）

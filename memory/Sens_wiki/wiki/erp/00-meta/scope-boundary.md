@@ -17,7 +17,7 @@ last-reviewed: 2026-06-09
 | 產品策略（願景、痛點、Phase、KPI） | `01-products/` | [[wiki/erp/01-products/product-vision]]、[[phases]]、[[success-metrics]]、[[impact-score-framework]] |
 | 商業目標 / Phase / 北極星指標 | `01-products/` | [[wiki/erp/01-products/product-vision]]、[[phases]]、[[success-metrics]] |
 | 痛點 / 利害關係人 / Impact Score | 同上 | [[pain-points]]、[[stakeholders]]、[[impact-score-framework]] |
-| 印刷業術語表 | `02-domain/` | [[ERP系統術語表]]、[[印刷業共用術語表]]、[[圖編術語表]] |
+| ERP 術語表 | `02-domain/` | [[ERP系統術語表]] |
 | 角色 R&R | `03-roles/` | 16 角色 + [[_alignment-report]] |
 | 商業邏輯：服務藍圖（A 類，端到端業務鏈）| `04-business-logic/` | 線下訂單流程、諮詢服務流程等（`type: service-blueprint`）|
 | 商業邏輯：商業規則（B 類，獨立決策邏輯 / 領域知識）| `04-business-logic/` | [[訂單異動規則]]、[[齊套邏輯]]、[[對帳一致性]] 等（`type: business-rule`）|

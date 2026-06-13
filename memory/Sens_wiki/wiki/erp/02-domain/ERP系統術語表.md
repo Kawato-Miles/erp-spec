@@ -1,8 +1,7 @@
 ---
 type: glossary
 module:
-  - 跨模組
-related-spec: memory/erp/glossary.md
+  - ERP
 status: active
 last-reviewed: 2026-05-19
 ---

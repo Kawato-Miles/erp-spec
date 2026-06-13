@@ -55,7 +55,7 @@ last-reviewed: 2026-06-10
 | **L1.4 生產執行** | `03-roles/印務.md` / `生管.md` / `師傅.md` + `04-business-logic/領域知識/` + `05-entities/工單.md` / `生產任務.md` + `06-state-machines/工單狀態.md` / `生產任務狀態.md` / `任務狀態.md` + 共用層 |
 | **L1.5 履約與售後** | `03-roles/出貨.md` + `05-entities/出貨單.md` / `售後服務.md` + `06-state-machines/出貨單狀態.md` + 共用層 |
 | **L1.6 款項與發票** | `03-roles/會計.md` + `04-business-logic/營運規則/帳務/` + `04-business-logic/外部約束/` + `05-entities/帳務.md` + `07-scenarios/`（款項與發票業務情境六卡）+ 共用層 |
-| **跨領域共用層**（必載） | `03-roles/` + `02-domain/` + `07-scenarios/` + `06-state-machines/` + `01-products/` + `04-business-logic/服務藍圖/` |
+| **跨領域共用層**（必載） | `03-roles/` + `07-scenarios/` + `06-state-machines/` + `01-products/` + `04-business-logic/服務藍圖/` |
 
 ---
 
@@ -65,7 +65,7 @@ last-reviewed: 2026-06-10
 - [[wiki/erp/01-products/product-vision|產品願景]] / [[phases]] / [[success-metrics]] / [[impact-score-framework]] / [[pain-points]] / [[stakeholders]]
 
 ### 術語表（02-domain）
-- [[ERP系統術語表]] / [[印刷業共用術語表]] / [[圖編術語表]]
+- [[ERP系統術語表]]
 
 ### 角色（03-roles）
 - [[業務]] / [[業務主管]] / [[諮詢]] / [[會計]] / [[審稿人員]] / [[審稿主管]] / [[印務]] / [[印務主管]] / [[生管]] / [[師傅]] / [[品檢人員]] / [[廠務]] / [[出貨人員]] / [[Supervisor]] / [[外包廠商]] / [[中國廠商]] / [[EC 商品管理]]
