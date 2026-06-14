@@ -37,7 +37,8 @@ expected-resolution-at:
 ## 討論記錄
 
 - 2026-06-15 P2-g：原以為 prototype 拆期有「兩期合計＝原期次」硬擋需移除，重驗發現拆期 UI 已於 Layer 3 cutover 移除、硬擋在死元件中（不在實際畫面），故不動 prototype。
-- Miles 方向確立但功能未設計，先開 OQ 追蹤。
+- 2026-06-15 Miles 補重分配模型規則：重分配＝刪除期次或調整期次金額；刪除已開立發票的期次 MUST 先作廢發票（期次↔發票 1:1）、調整金額自由不判斷靠三軸對帳。已寫入 [[付款發票邏輯]] §五F 正本（並修 [[分期請款狀態]]→付款發票邏輯 取消規則斷鏈）。
+- 餘下開放項：重分配 UI 實作 + order-billing spec 拆期 Scenario 改寫/退役 + dead code（SplitDialog）清除。
 
 ## 待解答
 

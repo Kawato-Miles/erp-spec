@@ -3,7 +3,7 @@ type: open-question
 module:
   - 訂單管理
 oq-id: BI-22
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-06-15
@@ -17,6 +17,12 @@ expected-resolution-at:
 ---
 
 # BI-22：收款核銷 prototype 與 spec/BRD 對齊（月結機制 + 稽核事件模型）
+
+## 裁決與結案（Miles，2026-06-15）
+
+- **月結閉檔鎖設計直接取消**：prototype `lockedByPeriodClose` 與月結批次機制不採用，款項可編輯性以「款項完成條件（對帳附件 + 入帳期次分配）」控制（見 [[款項狀態]]）。lockedByPeriodClose 欄位待 prototype 移除。
+- **誰接住剩餘實作**：lockedByPeriodClose 移除 + 稽核事件模型 SET 收斂（移除已廢 OVERRIDDEN/ADJUSTED_AFTER_COMPLETE、實作 PAYMENT_ALLOCATION_SET、spec 補 PRE_COMPLETION）+ adjustPaymentAllocationsAfterComplete 改寫，統一歸入「收款核銷 prototype 對齊 change」（非待裁決問題，屬 prototype 實作對齊正本）。
+- 本 OQ 結案封存。
 
 ## 問題描述
 
