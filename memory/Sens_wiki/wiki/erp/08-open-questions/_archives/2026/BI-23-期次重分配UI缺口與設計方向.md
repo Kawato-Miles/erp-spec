@@ -3,7 +3,7 @@ type: open-question
 module:
   - 訂單管理
 oq-id: BI-23
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-06-15
@@ -17,6 +17,16 @@ expected-resolution-at:
 ---
 
 # BI-23：期次重分配的 UI 缺口與設計方向
+
+## 裁決與結案（Miles，2026-06-15）
+
+**原判定「期次重分配 UI 未實作」為誤判**（先前只看到拆期 1→2 SplitDialog 退役，未查期次刪除/編輯）。重驗確認 prototype **已完整實作**重分配：
+
+- `BillingInstallmentListCard` / `OrderBillingInstallmentSection` 有「編輯」（調金額/日期/品項）與「刪除/取消」按鈕（`cancelBillingInstallment`、`updateBillingInstallment`）。
+- 「刪除已開立發票期次須先作廢發票」守衛已實作（需求 6：disabled + tooltip + toast「請先至發票 Tab 作廢後再刪除」）。
+- 「1 期改 2 期」由業務刪除原期次 + 新建兩筆達成（取代拆期 UI）；`splitBillingInstallment` store action 保留系統內生（諮詢連動）。
+
+處置：(1) 規則已補 [[付款發票邏輯]] §五F 正本；(2) order-billing spec 已直接修正——拆期 Scenario 改寫為刪除+新建、補「刪除已開立發票期次須先作廢」Scenario、行為規則改期次重分配（2026-06-15）。殘留僅 `BillingInstallmentSplitDialog` UI 元件 dead code 可選擇性清理（store action 保留）。本 OQ 結案封存。
 
 ## 問題描述
 
