@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-15 00:50] 同步(oq) | 訂單管理三方比對 P0 裁決：訂單類型三值統一、折讓品項缺口
+- 變更：[[ORD-029-訂單類型enum對齊spec與prototype]] 補裁決——正本訂單類型先統一三值（線下單／線上單／諮詢單）、EC 值（客製單／點數／線上單EC）收斂待 EC 整合；新增 [[BI-21-折讓單缺ezPay折讓品項五欄]]——折讓單缺 ezPay allowance_issue 所需折讓商品五欄，延後處理
+- 動機：2026-06-14 訂單管理（含印件／款項發票）prototype/wiki/spec 三方一致性比對，Miles 裁決 P0（折讓符號正值、訂單異動終態改名確認可執行已於 prototype 同步、訂單類型三值統一）；折讓品項五欄屬結構新增，開 OQ 避免本輪 scope creep
+- 衝突：無
+
 ## [2026-06-14 23:09] 納入(amend) | 架構卡 ER 改回正規 erDiagram（雙引號中文＋crow's foot 基數）
 - 變更：[[2026-06-13-生產模組架構設計]] §九 ER 由 flowchart 改回**正規 UML erDiagram**——實體名加雙引號支援中文渲染（裸用中文才 parse error）、保留 crow's foot 基數記法（恰好一/零或一/一或多/零或多）；補基數讀法說明＋五層歸屬文字（erDiagram 無 subgraph 分層）；業務層級維持上一版修正（成品庫存掛印件、成本差異掛工單、工作包對生產任務可無、配方工序段展開成生產任務）
 - 動機：Miles 2026-06-14 指正「ER-model 要用 UML 規範（含基數）、不可用 flowchart 箭頭代替」，並提示參照可渲染的 [[訂單狀態]]（stateDiagram ASCII id＋中文 label）；查 mermaid 官方文件確認 erDiagram 實體名加雙引號即支援 unicode，並以 mermaid-cli 實機驗證出 SVG

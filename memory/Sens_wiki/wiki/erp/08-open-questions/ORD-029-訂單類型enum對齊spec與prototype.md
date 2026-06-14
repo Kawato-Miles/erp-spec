@@ -37,11 +37,20 @@ expected-resolution-at:
 - erp-consultant 對 enhance-order-list-filter 的輕量審查點出：因本次把「訂單類型」明列進訂單列表篩選欄位集（US-ORD-009），放大了 spec ↔ prototype 枚舉不一致的可見性。
 - 建議不在 enhance-order-list-filter 內修正（避免 scope creep），開本 OQ 留專門 change 處理。
 
-## 待解答
+## 裁決（Miles，2026-06-15）
 
-- [ ] 訂單類型 enum 以何者為準：prototype 收斂為 spec 三值（線下 / 線上 / 諮詢），或 spec 擴充納入「客製單」？
-- [ ] 「諮詢」vs「諮詢訂單」、「線下」vs「線下單」、「線上」vs「線上單EC」用詞統一為哪一組？
-- [ ] 對齊後是否牽動既有依 order_type 分流的邏輯（如諮詢訂單終態收斂、B2B/B2C 分流）？
+三方比對（prototype / wiki / spec 訂單類型枚舉互不一致）後拍板：
+
+- **正本訂單類型先統一為三值：線下單 / 線上單 / 諮詢單**（單維，用詞帶「單」）。
+- prototype 既有「線上單EC」併入「線上單」；prototype 的「客製單」與 spec 的「點數」**本輪先不收斂，待後續 EC 整合再處理**。
+- 故本輪**不動** prototype / spec 的 order_type 枚舉，僅記錄此決定；EC 值收斂屬後續 EC 整合 change 的範疇。
+
+## 待解答（剩餘）
+
+- [x] 訂單類型 enum 以何者為準 → 已裁決：三值（線下單 / 線上單 / 諮詢單）。
+- [x] 用詞統一 → 已裁決：帶「單」（線下單 / 線上單 / 諮詢單）。
+- [ ] 「客製單」與「點數」如何併入三值（待 EC 整合處理）。
+- [ ] 對齊後依 order_type 分流的下游邏輯（諮詢訂單終態收斂、B2B / B2C 分流）影響盤點（隨 EC 整合一併處理）。
 
 ## 候選方案（若有）
 
