@@ -43,7 +43,7 @@ expected-resolution-at:
 
 - **正本訂單類型先統一為三值：線下單 / 線上單 / 諮詢單**（單維，用詞帶「單」）。
 - prototype 既有「線上單EC」併入「線上單」；prototype 的「客製單」與 spec 的「點數」**本輪先不收斂，待後續 EC 整合再處理**。
-- 故本輪**不動** prototype / spec 的 order_type 枚舉，僅記錄此決定；EC 值收斂屬後續 EC 整合 change 的範疇。
+- 2026-06-15 補充：spec 與 wiki 直接採用三值（線下 / 線上 / 諮詢）——spec L1338「訂單類型 enum 範圍」已對齊（移除舊一般/點數＋訂單來源雙軸）、wiki 訂單卡 enum 與敘述已對齊；`點數`（EC 會員儲值）等 EC 專屬類型於 wiki/spec 註記「待 EC 整合納入」。prototype 既有 `線上單EC` / `客製單` / `諮詢訂單` 枚舉清理（→ 線上 / EC / 諮詢）隨 EC 整合 change 處理。
 
 ## 待解答（剩餘）
 
