@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-06-14 14:01] 納入(ingest-B) | 蒸餾 ezPay 發票異動完整 API + 金額 sign 鐵則進 MIG 卡
+- 變更：[[發票法規硬約束-ezPay-MIG]] §四 重寫為發票異動四 API（作廢 invoice_invalid / 開立折讓 allowance_issue / 確認取消折讓 allowance_touch_issue / 作廢折讓 allowanceInvalid，各補 endpoint+參數+檢核+上傳時點）+ 新增 §4.6 金額 sign 鐵則（三實體：訂單異動可正可負、收款紀錄正值+款項類型、折讓單正值；ezPay 全 API 正值不收負額）+ §六 退款方向 row 交叉連結 + §九 來源註記；原始素材 [[2026-05-26-miles-upload-ezpay-invoice-api-spec]] 破例補錄回 raw 分析段（Miles 授權；原卡作廢折讓段僅摘流程未含參數）
+- 動機：折讓金額 sign 待確認（order-billing spec「折讓 MUST 負數」vs wiki/prototype 正值矛盾）→ 核 ezPay PDF §5-8 確認折讓 API 一律正值、不支援負額折讓；補齊原 raw 卡「當時有缺」的作廢/折讓 API 參數，確保後續理解發票/退款內容正確（Miles 2026-06-14 指示）
+- 衝突：order-billing spec § 折讓單建立 / § 退款 Payment 與折讓分離 / § 發票異動流程 仍寫舊負數模型，與本卡 §4.6 抵觸——由 order-billing cleanup（折入 add-pending-refund-payout-list change）改正值處理
+
 ## [2026-06-14 11:38] 納入(amend) | 補退款出金 BRD：退款收款帳號欄位 + 待出金退款清單組成卡
 - 變更：[[帳務]] 收款紀錄欄位表新增「退款收款帳號」（退款每筆當次由客戶提供、可異於付款帳號、與付款序號語意分清）；新增 [[待出金退款清單組成]] 業務邏輯卡（資料源＝處理中退款款項逐筆、每筆＝金額＋來源訂單＋退款戶頭、款項層非異動單層、支援一張退款異動拆多筆分期退）；[[帳務流程]] §6 補連入新卡
 - 動機：退款月底由 [[會計]] 批次出金、[[業務主管]] 整理逐筆待退清單之需求；商業需求 Miles 2026-06-14 確認三點（退款戶頭當次提供、拆多筆分期退業務自決、防漏退不納入本案）；為後續 change 鋪 BRD（propose 前先更新 wiki）

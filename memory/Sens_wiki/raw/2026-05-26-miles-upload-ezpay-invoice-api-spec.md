@@ -96,6 +96,35 @@ attached-files:
 
 ---
 
+## 補錄（2026-06-14，Miles 破例授權補進 raw 分析段）：作廢 / 折讓完整 API 參數與金額 sign
+
+> 上方「原始素材 § 作廢、折讓、查詢」（L85-90）當時僅摘流程、未抄 API 參數，是「當時有缺」之處。本段依附件 [[_attachments/EZP_INVI_1.2.2.pdf]] §5-8 補齊，並補上跨實體金額 sign 結論。屬破例補進（raw 層原則唯讀），Miles 2026-06-14 明確授權。
+
+### 發票異動四 API（PDF §5-8）
+
+| 動作 | endpoint | 必填參數（PostData 內含）| 上傳 / 時點 |
+|------|----------|------------------------|------------|
+| 作廢發票 | `invoice_invalid` | 發票號碼（InvoiceNumber）、作廢原因（InvalidReason, Varchar6，中文 6 字 / 英文 20 字）| 限奇數月 14 日前作廢前兩月開立發票，超期改折讓 |
+| 開立折讓 | `allowance_issue` | 發票號碼（InvoiceNo）、折讓商品五欄（ItemName/ItemCount/ItemUnit/ItemPrice/ItemAmt）、折讓總金額（TotalAmt）、確認方式（Status：0=暫存待確認 / 1=立即確認）、買受人信箱（選填）| Status=1 隔日上傳財政部 |
+| 確認 / 取消折讓 | `allowance_touch_issue` | 觸發折讓狀態（AllowanceStatus：C=確認 / D=取消）、折讓號（AllowanceNo）、折讓總金額（TotalAmt）| 確認後隔日上傳；已確認後不可再取消 |
+| 作廢折讓 | `allowanceInvalid` | 折讓號（AllowanceNo）、作廢原因（InvalidReason, Varchar6）| 已確認折讓需撤銷走此；隔日上傳財政部 |
+
+- 折讓檢核（PDF）：折讓總金額 = 折讓商品小計 + 折讓商品稅額（與發票開立同邏輯）。
+- 折讓回應：AllowanceNo（折讓號）、AllowanceAmt（折讓金額）、RemainAmt（折讓後剩餘發票金額）。
+- 折讓商品 ItemPrice 同發票：B2B 未稅 / B2C 含稅；含稅時 ItemTaxAmt=0。
+
+### 金額 sign 結論（關鍵，原 raw 卡完全沒談）
+
+- ezPay **全 API 金額一律正整數**：發票 TotalAmt、折讓 TotalAmt / AllowanceAmt、各商品 ItemAmt 皆正值（PDF 範例 ItemAmt=200、AllowanceAmt=500）。
+- ezPay **不支援負額發票、不支援負額折讓**；「退款 / 減額」方向以「作廢」或「折讓」兩個獨立 API 動作表示，不以負數表示。
+- 內部三實體 sign 慣例由「是否送 ezPay」決定：
+  - 訂單異動（OrderAdjustment）：不送 ezPay、純內部應收調整載具 → 可正可負（補收 + / 退款 −）
+  - 收款紀錄（Payment）：不送 ezPay、內部金流紀錄 → 一律正值 + 款項類型（收款 / 退款）表方向
+  - 折讓單（SalesAllowance）：送 ezPay `allowance_issue` → 一律正值（ezPay 規定）
+- 影響：order-billing spec「折讓金額 MUST 為負數 / 折讓限負數防呆」與此抵觸，須改正值（由 order-billing cleanup 另案處理）。
+
+---
+
 ## 第一輪初步分析（Claude 寫）
 
 ### 觀察與既有 vault 的關聯
