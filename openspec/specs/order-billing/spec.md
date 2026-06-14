@@ -99,10 +99,10 @@
 
 發票自身狀態機只有「開立 / 作廢」兩態，**折讓資訊不入發票狀態機**，改以 derived 衍生標籤呈現於 UI。系統 SHALL 即時計算每張發票的折讓衍生屬性，於發票清單與發票詳情頁顯示。
 
-**衍生欄位算法**：
+**衍生欄位算法**（折讓金額一律正值）：
 
 ```
-folded = ∑ 折讓單.|折讓金額|
+folded = ∑ 折讓單.折讓金額
          where invoice_id = X AND status = 已確認
 
 remaining = 發票金額 - folded
@@ -110,7 +110,7 @@ remaining = 發票金額 - folded
 折讓衍生標籤：
   if 發票狀態 = 作廢                            → 顯示「－」（不適用）
   elif folded = 0                              → 顯示「無折讓」
-  elif 0 < folded < 發票金額                    → 顯示「已部分折讓 -{folded}」
+  elif 0 < folded < 發票金額                    → 顯示「已部分折讓 -{folded}」（顯示前綴 − 表減項，folded 本身為正值）
   elif folded = 發票金額                        → 顯示「已完全折讓」
 ```
 
@@ -137,14 +137,14 @@ remaining = 發票金額 - folded
 
 #### Scenario: 折讓變動後衍生標籤即時更新
 
-- **GIVEN** 發票 = 100,000，已有折讓單 #1 = -10,000（已確認）
+- **GIVEN** 發票 = 100,000，已有折讓單 #1 = 10,000（已確認）
 - **WHEN** 業務作廢折讓單 #1（狀態 → 已作廢）
 - **THEN** 折讓衍生標籤 SHALL 從「已部分折讓 -10,000」變回「無折讓」
 - **AND** 剩餘可折讓金額 SHALL 從 90,000 回到 100,000
 
 ### Requirement: 折讓單（SalesAllowance）建立、確認、作廢
 
-業務 / 諮詢 SHALL 可於已開立發票的詳情頁建立折讓單（中文：銷貨折讓證明單；依台灣統一發票使用辦法第 20 條），用於發票已開後不能整張作廢時，附加在原發票上的部分減額憑證。折讓單建立不需業務主管核可。折讓金額 MUST 為負數且絕對值 MUST ≤ 該發票尚未折讓的剩餘金額（即原發票金額 - 已確認折讓累計）。折讓建立時系統 SHALL 呼叫藍新（Mockup）兩段式流程：開立折讓 → 觸發確認折讓，狀態直接寫入「已確認」。已確認折讓可作廢（情境：金額打錯 / 客戶撤回投訴 / 開錯發票 / 雙重開立），作廢後該筆折讓單狀態 = 已作廢，發票剩餘可折讓金額回到作廢前狀態。一張發票 SHALL 可建立多筆折讓單，直到累計金額 = 原發票金額（已完全折讓）。
+業務 / 諮詢 SHALL 可於已開立發票的詳情頁建立折讓單（中文：銷貨折讓證明單；依台灣統一發票使用辦法第 20 條），用於發票已開後不能整張作廢時，附加在原發票上的部分減額憑證。折讓單建立不需業務主管核可。折讓金額 MUST 為正數且 MUST ≤ 該發票尚未折讓的剩餘金額（即原發票金額 - 已確認折讓累計）；金額一律正值、不收負額（ezPay `allowance_issue` 契約，見 [發票法規硬約束-ezPay-MIG](../../../memory/Sens_wiki/wiki/erp/04-business-logic/外部約束/發票法規硬約束-ezPay-MIG.md) §4.6）。折讓建立時系統 SHALL 呼叫藍新（Mockup）兩段式流程：開立折讓 → 觸發確認折讓，狀態直接寫入「已確認」。已確認折讓可作廢（情境：金額打錯 / 客戶撤回投訴 / 開錯發票 / 雙重開立），作廢後該筆折讓單狀態 = 已作廢，發票剩餘可折讓金額回到作廢前狀態。一張發票 SHALL 可建立多筆折讓單，直到累計金額 = 原發票金額（已完全折讓）。
 
 **Priority**: P0
 
@@ -152,21 +152,21 @@ remaining = 發票金額 - folded
 
 #### Scenario: 業務開立折讓單
 
-- **WHEN** 業務於發票 = 100,000 詳情頁點擊「開立折讓」，填入金額 -10,000、原因「品質投訴」
+- **WHEN** 業務於發票 = 100,000 詳情頁點擊「開立折讓」，填入金額 10,000、原因「品質投訴」
 - **THEN** 系統 SHALL 建立折讓單紀錄、Mockup 產生藍新折讓號（A + 14 碼數字）
 - **AND** 系統 SHALL Mockup 呼叫藍新「開立折讓」+「觸發確認折讓」兩段式 API，狀態直接寫入「已確認」（不停留於草稿）
 - **AND** Mockup 回傳折讓後剩餘金額 = 90,000
 
 #### Scenario: 折讓金額超過剩餘可折讓金額被擋
 
-- **GIVEN** 發票 = 100,000 已有折讓單 #1 = -50,000（已確認）
-- **WHEN** 業務嘗試開立折讓單 #2 = -60,000
+- **GIVEN** 發票 = 100,000 已有折讓單 #1 = 50,000（已確認）
+- **WHEN** 業務嘗試開立折讓單 #2 = 60,000
 - **THEN** 系統 SHALL 拒絕並提示「折讓金額不可超過發票剩餘 50,000」
 
-#### Scenario: 折讓限負數防呆
+#### Scenario: 折讓限正數防呆
 
-- **WHEN** 業務於折讓金額欄位輸入正數或零
-- **THEN** 系統 SHALL 拒絕並提示「折讓金額必須為負數」
+- **WHEN** 業務於折讓金額欄位輸入負數或零
+- **THEN** 系統 SHALL 拒絕並提示「折讓金額必須為正數」
 
 #### Scenario: 業務作廢已確認的折讓
 
@@ -177,7 +177,7 @@ remaining = 發票金額 - folded
 
 ### Requirement: 退款 Payment 與折讓分離（先記退款，再開折讓）
 
-退款收款紀錄與折讓單為**分離設計**，符合業界會計分離原則（Credit Memo 與 Refund 分軸）。實務流程：(1) 業務 / 諮詢先在訂單詳情頁建立退款收款紀錄（收款方式 = 「退款」、金額為負數）；(2) 視情境決定後續：(a) 已開立發票且需保留發票 → 開立折讓單；(b) 發票錯誤可作廢 → 作廢原發票重開。系統 SHALL NOT 在折讓建立時自動建立收款紀錄。退款收款紀錄與折讓單完全解耦，系統不記錄兩者對應（帳平以三軸總額比對），後續反查以訂單活動紀錄為準。
+退款收款紀錄與折讓單為**分離設計**，符合業界會計分離原則（Credit Memo 與 Refund 分軸）。實務流程：(1) 業務 / 諮詢先在訂單詳情頁建立退款收款紀錄（款項類型 = 退款、金額為正值；退款方向由款項類型表示，非以負數，見 [發票法規硬約束-ezPay-MIG](../../../memory/Sens_wiki/wiki/erp/04-business-logic/外部約束/發票法規硬約束-ezPay-MIG.md) §4.6）；(2) 視情境決定後續：(a) 已開立發票且需保留發票 → 開立折讓單；(b) 發票錯誤可作廢 → 作廢原發票重開。系統 SHALL NOT 在折讓建立時自動建立收款紀錄。退款收款紀錄與折讓單完全解耦，系統不記錄兩者對應（帳平以三軸總額比對），後續反查以訂單活動紀錄為準。
 
 **Priority**: P0
 
@@ -186,15 +186,15 @@ remaining = 發票金額 - folded
 #### Scenario: 業務先建退款 Payment 再開折讓
 
 - **GIVEN** 發票 #1 = 100,000 已開立、客戶已付款
-- **WHEN** 客戶投訴 10,000 元品質瑕疵，業務先於訂單詳情頁建立收款紀錄（金額 = -10,000、收款方式 = 退款）
-- **AND** 業務於發票 #1 開立折讓單（折讓金額 = -10,000、原因 = 品質瑕疵）
+- **WHEN** 客戶投訴 10,000 元品質瑕疵，業務先於訂單詳情頁建立收款紀錄（款項類型 = 退款、金額 = 10,000）
+- **AND** 業務於發票 #1 開立折讓單（折讓金額 = 10,000、原因 = 品質瑕疵）
 - **THEN** 活動紀錄 MUST 分別記載收款紀錄建立與折讓單開立（退款與折讓不建立 FK 關聯，後續反查以活動紀錄為準）
 - **AND** 系統 SHALL NOT 自動建立任何收款紀錄
 
 #### Scenario: 業務先建退款後決定走作廢重開
 
 - **GIVEN** 發票 #1 = 100,000 已開立但金額誤填
-- **WHEN** 業務先建立收款紀錄（金額 = -100,000、收款方式 = 退款）
+- **WHEN** 業務先建立收款紀錄（款項類型 = 退款、金額 = 100,000）
 - **AND** 業務作廢發票 #1，重新開立發票 #2（金額正確）
 - **THEN** 系統 SHALL 接受兩個獨立動作（退款收款紀錄、作廢發票）
 - **AND** 折讓單不需建立
@@ -203,9 +203,9 @@ remaining = 發票金額 - folded
 
 - **WHEN** 業務 / 會計開啟訂單詳情頁的對帳檢視面板
 - **THEN** 收款紀錄區段 SHALL 分兩桶顯示：
-- **AND** 一般收款（收款方式 ≠ 退款）：累計正項
-- **AND** 退款（收款方式 = 退款）：累計負項
-- **AND** 收款淨額 SHALL = 一般收款 - |退款|
+- **AND** 一般收款（款項類型 = 收款）：累計正項
+- **AND** 退款（款項類型 = 退款）：金額以正值記錄，對帳時作減項
+- **AND** 收款淨額 SHALL = 一般收款合計 - 退款合計
 
 ### Requirement: 三方對帳檢視面板
 
@@ -551,20 +551,7 @@ remaining = 發票金額 - folded
 
 ### Requirement: SalesAllowanceFile 折讓回簽附件
 
-每筆折讓單 SHALL 支援多檔回簽檔案上傳，透過子表折讓回簽附件儲存。檔案用途包含：用印折讓單 PDF、客戶端折讓證明、其他補充文件。
-
-折讓回簽附件欄位：
-
-| 欄位 | 型別 | 必填 | 唯讀 | 說明 |
-|------|------|------|------|------|
-| id | UUID | Y | Y | 主鍵 |
-| 折讓單 ID | FK | Y | Y | FK → 折讓單 |
-| filename | 字串 | Y | | |
-| file_url | 字串 | Y | Y | |
-| file_size_kb | 整數 | Y | Y | |
-| file_type | 字串 | Y | | MIME type（如 application/pdf, image/jpeg）|
-| uploaded_by | FK | Y | Y | FK → 使用者 |
-| uploaded_at | 日期時間 | Y | Y | |
+每筆折讓單 SHALL 支援多檔回簽檔案上傳，透過子表折讓回簽附件儲存。檔案用途包含：用印折讓單 PDF、客戶端折讓證明、其他補充文件。附件欄位（業務可見「回簽附件」）正本見 wiki [帳務](../../../memory/Sens_wiki/wiki/erp/05-entities/帳務.md) § 折讓單；檔案技術欄位（檔名 / 連結 / 大小 / 類型 / 上傳者 / 上傳時間）為實作細節，不在 spec 複述。
 
 業務 SHALL 可於折讓單詳情頁上傳 / 刪除 / 下載檔案；活動紀錄 MUST 記錄每次上傳 / 刪除動作。
 
@@ -574,7 +561,7 @@ remaining = 發票金額 - folded
 
 #### Scenario: 業務上傳折讓單回簽檔
 
-- **GIVEN** 折讓單 SA-001 狀態 = 已確認、折讓金額 = -3,000
+- **GIVEN** 折讓單 SA-001 狀態 = 已確認、折讓金額 = 3,000
 - **WHEN** 業務於折讓單詳情頁上傳「用印折讓單.pdf」
 - **THEN** 系統 SHALL 建立折讓回簽附件紀錄
 - **AND** 折讓單詳情頁 SHALL 顯示已上傳的檔案清單
@@ -587,13 +574,9 @@ remaining = 發票金額 - folded
 - **THEN** 系統 SHALL 建立第二筆折讓回簽附件紀錄
 - **AND** 兩筆檔案 SHALL 並列顯示
 
----
-
 ### Requirement: PaymentFile 收款對帳附件
 
-每筆收款紀錄 SHALL 支援多檔對帳檔案上傳，透過子表收款對帳附件儲存。檔案用途包含：對帳截圖、收據照片、匯款信 PDF、第三方付款證明。
-
-收款對帳附件欄位結構同 § 折讓回簽附件（父實體 FK 改為收款紀錄 ID）。
+每筆收款紀錄 SHALL 支援多檔對帳檔案上傳，透過子表收款對帳附件儲存。檔案用途包含：對帳截圖、收據照片、匯款信 PDF、第三方付款證明。附件欄位（業務可見「對帳附件」）正本見 wiki [帳務](../../../memory/Sens_wiki/wiki/erp/05-entities/帳務.md) § 收款紀錄；檔案技術欄位結構同折讓回簽附件，為實作細節，不在 spec 複述。
 
 業務 SHALL 可於收款記錄詳情頁上傳 / 刪除 / 下載檔案；活動紀錄 MUST 記錄每次動作。
 
@@ -603,45 +586,10 @@ remaining = 發票金額 - folded
 
 #### Scenario: 業務上傳收款對帳截圖
 
-- **GIVEN** 收款紀錄 P-001 狀態 = 已收訖、金額 = 30,000
+- **GIVEN** 收款紀錄 P-001 狀態 = 已收訖、款項類型 = 收款、金額 = 30,000
 - **WHEN** 業務上傳「銀行對帳截圖.png」
 - **THEN** 系統 SHALL 建立收款對帳附件紀錄
 - **AND** 收款記錄 SHALL 顯示已上傳的檔案清單
-
----
-
-### Requirement: 訂單金額 Data Model 雙欄擴充
-
-Order Data Model 金額相關欄位 SHALL 同時包含 `_with_tax` 與 `_without_tax` 兩個基準的儲存：
-
-| 業務語義 | 含稅欄位（既有保留）| 未稅欄位（新增）|
-|---------|-------------------|----------------|
-| 商品小計 | `subtotal_with_tax` | `subtotal_without_tax` |
-| 其他費用小計 | `other_fee_with_tax` | `other_fee_without_tax` |
-| 運費 | `shipping_fee_with_tax` | `shipping_fee_without_tax` |
-| 諮詢費 | `consult_fee_with_tax` | `consult_fee_without_tax` |
-| 折扣金額 | `discount_amount`（含稅）| `discount_without_tax` |
-| 訂單總額 | `total_with_tax` | `total_without_tax` |
-| 稅額 | — | `tax_amount`（= total_with_tax − total_without_tax）|
-
-新增欄位 type 為 Decimal(12,2)，必填，預設 0；既有 `_with_tax` 欄位定義不變更。
-
-訂單異動金額與訂單額外費用金額 SHALL 同時包含含稅 / 未稅兩欄；既有單欄定義為含稅，新增未稅欄位。
-
-折讓單折讓金額 SHALL 同時包含含稅 / 未稅兩欄；既有單欄定義為含稅，新增未稅欄位。
-
-收款紀錄金額不拆雙欄（實際收款金額為含稅實收）。
-
-**Priority**: P0
-
-**Rationale**: 雙欄計價的資料欄位擴充是 § 雙欄計價輸入與顯示 的實作基礎，缺此欄位定義則含稅未稅無處儲存。
-
-#### Scenario: 既有訂單未稅欄位回填
-
-- **GIVEN** 既有 Order 資料的 `_with_tax` 欄位有值、`_without_tax` 欄位為空
-- **WHEN** 資料遷移腳本執行
-- **THEN** 系統 SHALL 計算 `_without_tax = round(_with_tax / 1.05)` 並寫入
-- **AND** 系統 SHALL 計算 `tax_amount = total_with_tax − total_without_tax` 並寫入
 
 ### Requirement: Payment 修正路徑（已完成不可改回處理中）
 
@@ -662,41 +610,11 @@ Order Data Model 金額相關欄位 SHALL 同時包含 `_with_tax` 與 `_without
 
 #### Scenario: 業務取消已完成 Payment 後重建
 
-- **GIVEN** 收款紀錄 P-099（已完成、金額 = -5000、關聯訂單異動 OA-099 確認可執行）
+- **GIVEN** 收款紀錄 P-099（已完成、款項類型 = 退款、金額 = 5000、關聯訂單異動 OA-099 確認可執行）
 - **WHEN** 業務於 OA-099 編輯介面 P-099 row 點「取消」
 - **THEN** 系統 SHALL 邏輯刪除 P-099（已完成收款紀錄保留稽核軌跡）
 - **AND** OA-099 SHALL 維持「確認可執行」（訂單異動確認可執行於核可時已生效、不回退已核可）；對帳應退差額 SHALL 重現並觸發不可忽略警示
 - **AND** 業務 SHALL 可於 OA-099 編輯介面重新建立新退款收款紀錄沖銷應退差額
-
----
-
-### Requirement: 既有資料 Migration（一次性 backfill）
-
-本 change 上線時 SHALL 對既有所有 Payment 執行一次性 backfill：
-
-- 所有收款狀態為 null 的既有收款紀錄（含一般收款 + 退款 + 補收 + 諮詢費）SHALL 設為收款狀態 = '已完成'、完成時間 = 建立時間
-- 理由：refine-after-sales-refund + refactor change 時期的設計即為「建立 = 完成」，既有資料的收款時間與附件也已是「實際發生」狀態，backfill 為「已完成」符合實質
-
-Migration SHALL 為冪等：重複執行不會改變已 backfill 的資料。
-
-**Priority**: P0
-
-**Rationale**: 新增收款狀態雙態後既有資料全為 null，不 backfill 則對帳收款淨額計算會把所有既有收款排除，帳務數字全面錯誤。
-
-#### Scenario: 既有退款 Payment 自動 backfill 為已完成
-
-- **GIVEN** 既有資料庫中有一筆退款收款紀錄 P-old（金額 = -5000, 收款方式 = '退款', 收款狀態 = null, 建立時間 = 2026-05-20T10:00:00Z）
-- **WHEN** 系統執行 Migration
-- **THEN** P-old 的收款狀態 SHALL 被 backfill 為 '已完成'
-- **AND** P-old 的完成時間 SHALL 被 backfill 為 2026-05-20T10:00:00Z（= 建立時間）
-- **AND** Migration 結束後訂單異動 invariant SHALL 仍滿足（既有「確認可執行訂單異動 → 必有關聯退款收款紀錄」已隱含「已完成」語意）
-
-#### Scenario: 既有一般收款 Payment 自動 backfill 為已完成
-
-- **GIVEN** 既有資料庫中有一筆一般收款紀錄 P-old2（金額 = +30000, 收款方式 = '銀行轉帳', 收款狀態 = null, 建立時間 = 2026-04-10）
-- **WHEN** 系統執行 Migration
-- **THEN** P-old2 的收款狀態 SHALL 被 backfill 為 '已完成'
-- **AND** 對帳收款淨額計算結果 SHALL 與本 change 上線前一致（向後相容）
 
 ### Requirement: 處理中 Payment 老化追蹤
 
@@ -787,22 +705,13 @@ Migration SHALL 為冪等：重複執行不會改變已 backfill 的資料。
 
 ### Requirement: 發票品項符合 ezPay 與電子發票法規硬約束
 
-發票品項陣列 SHALL 對齊 ezPay 電子發票 API（[EZP_INVI_1.2.2](../../../memory/Sens_wiki/raw/_attachments/EZP_INVI_1.2.2.pdf)）對品項的五欄結構要求 + 平台檢核硬性條件。法規源頭：財政部電子發票整合服務平台 MIG（Message Implementation Guideline）。詳細規格與印刷業實務衝突點參見 raw 卡 [2026-05-26-miles-upload-ezpay-invoice-api-spec](../../../memory/Sens_wiki/raw/2026-05-26-miles-upload-ezpay-invoice-api-spec.md)。
-
-每個 InvoiceItem MUST 包含五欄：
-
-| 欄位 | 對應藍新（ezPay） | 型別 | 必填 | 約束 |
-|------|---------|------|------|------|
-| 品名 | ItemName | 字串 (≤ 30) | Y | 商品名稱 |
-| 數量 | ItemCount | 整數 (Int(5)) | Y | 純整數 ≤ 99999 |
-| 單位 | ItemUnit | 列舉 | Y | 必須來自 `prototype-shared-ui` 的共用單位 LOV（≤ 2 中文字 / ≤ 6 英數字符合 ezPay Varchar(2)）|
-| 單價 | ItemPrice | 整數 (Int(10)) | Y | 純整數；B2B 為未稅金額 / B2C 為含稅金額 |
-| 小計 | ItemAmt | 整數 (Int(10)) | Y | 系統計算 = 數量 × 單價，業務不可手動覆寫 |
+發票品項陣列 SHALL 對齊 ezPay 電子發票 API 對品項的五欄結構要求 + 平台檢核硬性條件。發票品項欄位（品名 / 數量 / 單位 / 單價 / 小計）與 ezPay 對應正本見 wiki [帳務](../../../memory/Sens_wiki/wiki/erp/05-entities/帳務.md) § 發票（Invoice）發票品項 + [發票法規硬約束-ezPay-MIG](../../../memory/Sens_wiki/wiki/erp/04-business-logic/外部約束/發票法規硬約束-ezPay-MIG.md) §二（五欄硬約束）。法規源頭：財政部電子發票整合服務平台 MIG。
 
 平台檢核硬性條件（不可違反）：
 
 - 小計 = 數量 × 單價（每筆品項皆須成立）
-- 發票金額 = 銷售額（未稅） + 稅額（既有規則，與本 change 無關但仍須符合）
+- 發票金額 = 銷售額（未稅） + 稅額
+- 數量為純整數 ≤ 99999；單價為純整數（B2B 未稅 / B2C 含稅）；單位來自 `prototype-shared-ui` 共用單位 LOV（≤ 2 中文字 / ≤ 6 英數字）
 
 **Priority**: P0
 
@@ -1310,7 +1219,7 @@ overdue_days 欄位定義見 § 應收帳款帳齡底層欄位與訂單列表帳
 業務 / 諮詢 SHALL 處理發票異動的三種情境，依情境選擇對應流程：
 
 **情境 A：發票錯誤可作廢**（同期未交付未申報，藍新 Mockup 階段不檢查申報期）
-- 業務於 Invoice 詳情頁點擊「作廢」，填入 invalid_reason
+- 業務於 Invoice 詳情頁點擊「作廢」，填入作廢原因
 - Invoice.status → 作廢
 - 字軌號碼不重用，新發票流水 +1
 
@@ -1322,17 +1231,17 @@ overdue_days 欄位定義見 § 應收帳款帳齡底層欄位與訂單列表帳
 **情境 C：已開發票後客戶要求金額調整（先退款，再決定折讓 / 作廢）**
 
 實務步驟（業務 / 諮詢 SHALL 依此順序）：
-1. 業務於訂單詳情頁建立退款 Payment（amount 為負數、payment_method = 「退款」、可選關聯 BillingInstallment 請款期次）
+1. 業務於訂單詳情頁建立退款收款紀錄（款項類型 = 退款、金額為正值、可選關聯請款期次）
 2. 視情境決定後續：
-   - **路徑 a（保留發票走折讓）**：業務於 Invoice 詳情頁點擊「開立折讓」，填入 allowance_amount（負數）、reason。SalesAllowance.status = 已確認。折讓與步驟 1 的退款 Payment 不建立關聯。
-   - **路徑 b（作廢重開）**：業務作廢原 Invoice、開立新 Invoice。退款 Payment 不需關聯 SalesAllowance。
+   - **路徑 a（保留發票走折讓）**：業務於 Invoice 詳情頁點擊「開立折讓」，填入折讓金額（正值）、原因。折讓單狀態 = 已確認。折讓與步驟 1 的退款收款紀錄不建立關聯。
+   - **路徑 b（作廢重開）**：業務作廢原 Invoice、開立新 Invoice。退款收款紀錄不需關聯折讓單。
 3. 已確認折讓可作廢（→ 已作廢，發票回到折讓前狀態）
 
 **約束**：
-- 折讓金額 |allowance_amount| MUST ≤ 該發票尚未折讓的剩餘金額
+- 折讓金額 MUST ≤ 該發票尚未折讓的剩餘金額
 - 折讓 + 退款不需主管核可（業務 / 諮詢可單獨執行）
 - 作廢不需主管核可（業務 / 諮詢可單獨執行）
-- 系統 SHALL NOT 在折讓建立時自動建立 Payment（折讓 / 退款分離原則）
+- 系統 SHALL NOT 在折讓建立時自動建立收款紀錄（折讓 / 退款分離原則）
 
 **Priority**: P0
 
@@ -1340,28 +1249,26 @@ overdue_days 欄位定義見 § 應收帳款帳齡底層欄位與訂單列表帳
 
 #### Scenario: 客戶要求改公司名（情境 B）
 
-- **GIVEN** Invoice #1 buyer_name = "錯誤公司名"，已開立
-- **WHEN** 業務作廢 Invoice #1（reason = 公司名錯誤）
-- **AND** 業務開立 Invoice #2（buyer_name = "正確公司名"）
-- **THEN** Invoice #1.status SHALL = 作廢
-- **AND** Invoice #2 SHALL 為新紀錄，ezpay_merchant_order_no 流水 +1
+- **GIVEN** 發票 #1 買受人名稱 = "錯誤公司名"，已開立
+- **WHEN** 業務作廢發票 #1（原因 = 公司名錯誤）
+- **AND** 業務開立發票 #2（買受人名稱 = "正確公司名"）
+- **THEN** 發票 #1 狀態 SHALL = 作廢
+- **AND** 發票 #2 SHALL 為新紀錄，藍新自訂編號流水 +1
 
 #### Scenario: 折讓 + 退款流程（情境 C 路徑 a）
 
-- **GIVEN** Invoice #1 = 100,000 已開立、客戶已付款
-- **WHEN** 客戶投訴 10,000 元品質瑕疵，業務先建立退款 Payment（amount = -10,000、payment_method = 退款）
-- **AND** 業務於 Invoice #1 開立 SalesAllowance #1（allowance_amount = -10,000、reason = 品質投訴）
-- **THEN** SalesAllowance.status SHALL → 已確認
-- **AND** Invoice #1 剩餘可折讓金額 SHALL = 90,000
-- **AND** 系統 SHALL NOT 自動建立任何 Payment（折讓 / 退款分離原則）
+- **GIVEN** 發票 #1 = 100,000 已開立、客戶已付款
+- **WHEN** 客戶投訴 10,000 元品質瑕疵，業務先建立退款收款紀錄（款項類型 = 退款、金額 = 10,000）
+- **AND** 業務於發票 #1 開立折讓單 #1（折讓金額 = 10,000、原因 = 品質投訴）
+- **THEN** 折讓單狀態 SHALL → 已確認
+- **AND** 發票 #1 剩餘可折讓金額 SHALL = 90,000
+- **AND** 系統 SHALL NOT 自動建立任何收款紀錄（折讓 / 退款分離原則）
 
 #### Scenario: 折讓金額超過剩餘可折讓金額被擋
 
-- **GIVEN** Invoice = 100,000 已有 SalesAllowance #1 = -50,000（已確認）
-- **WHEN** 業務嘗試開立 SalesAllowance #2 = -60,000
+- **GIVEN** 發票 = 100,000 已有折讓單 #1 = 50,000（已確認）
+- **WHEN** 業務嘗試開立折讓單 #2 = 60,000
 - **THEN** 系統 SHALL 拒絕並提示「折讓金額不可超過發票剩餘 50,000」
-
----
 
 ### Requirement: 業務先填一半再補齊資料流程（一般收款）
 
@@ -1440,7 +1347,7 @@ Payment 切已完成 → BillingInstallment.payment_status derived 更新
 4. 若點「作廢」：系統呼叫第三方發票平台執行作廢
    - 成功：發票狀態變「作廢」，新發票流水號自動 +1
    - 失敗（平台回應「跨齊報稅期不可作廢」）：UI MUST 顯示明確錯誤訊息「此發票已跨齊報稅期無法作廢，請改開折讓單」並引導改點「折讓」
-5. 若點「折讓」：系統開立折讓單（金額為負）關聯既有發票
+5. 若點「折讓」：系統開立折讓單（金額為正值；折讓金額一律正值，見 [發票法規硬約束-ezPay-MIG](../../../memory/Sens_wiki/wiki/erp/04-business-logic/外部約束/發票法規硬約束-ezPay-MIG.md) §4.6）關聯既有發票
 
 **業務不需自行判斷規則**：業務面對發票異動時直接依直覺點「作廢」（最常見動作），系統依第三方平台實際回應引導正確流程。
 
@@ -1520,24 +1427,24 @@ Invoice SHALL 有獨立狀態機：開立 → 作廢（終態）。
 
 #### Scenario: 折讓開立後立即為已確認
 
-- **WHEN** 業務開立 SalesAllowance
+- **WHEN** 業務開立折讓單
 - **THEN** 系統 SHALL Mockup 呼叫藍新「開立折讓」+「觸發確認折讓」兩段式 API
-- **AND** SalesAllowance.status SHALL 直接寫入「已確認」（不停留於草稿）
-- **AND** issued_at 與 confirmed_at MUST 同時寫入
+- **AND** 折讓單狀態 SHALL 直接寫入「已確認」（不停留於草稿）
+- **AND** 開立時間與確認時間 MUST 同時寫入
 
 #### Scenario: 業務作廢已確認的折讓（undo 機制）
 
-- **GIVEN** SalesAllowance.status = 已確認
+- **GIVEN** 折讓單狀態 = 已確認
 - **WHEN** 業務於折讓詳情頁點擊「作廢折讓」並填入原因（如：金額打錯）
-- **THEN** status SHALL → 已作廢
-- **AND** 系統 MUST 寫入 invalid_reason、invalid_at
+- **THEN** 折讓單狀態 SHALL → 已作廢
+- **AND** 系統 MUST 寫入作廢原因、作廢時間
 - **AND** 該發票剩餘可折讓金額 SHALL 回到作廢前狀態（因為已作廢折讓不再扣減）
 
 #### Scenario: 已作廢的折讓不參與對帳
 
 - **WHEN** 系統計算發票淨額
-- **THEN** 系統 SHALL 排除 status = 已作廢 的 SalesAllowance
-- **AND** 系統 SHALL 只扣減 status = 已確認 的 |allowance_amount|
+- **THEN** 系統 SHALL 排除狀態 = 已作廢 的折讓單
+- **AND** 系統 SHALL 只扣減狀態 = 已確認 的折讓金額（折讓金額一律正值）
 
 ### Requirement: BillingInstallment 雙維度狀態機
 
