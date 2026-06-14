@@ -1118,12 +1118,7 @@ overdue_days 欄位定義見 § 應收帳款帳齡底層欄位與訂單列表帳
 - **WHEN** 執行手動分配
 - **THEN** 系統 SHALL 建立關聯分配記錄
 
-**Rationale**: 移除硬性期次綁定，改用分配表建立關係，使單筆款項可彈性核銷至多期或保留預收。
-
-- **款項類型**：新增「款項類型」欄位（收款 / 退款）。
-- **金額**：不論收款或退款，輸入之金額一律為正數。
-- **款項方式**：重命名為「款項方式」，包含「現金 / 信用卡 / 銀行轉帳 / 支票 / 其他」，排除「退款」金流媒介。
-- **款項狀態**：重命名為「款項狀態」，包含「處理中 / 已完成 / 已取消」。
+款項紀錄（Payment）的欄位與列舉值（款項類型、金額、款項方式、款項狀態等）正本見 [帳務實體卡 § 收款紀錄](../../../memory/Sens_wiki/wiki/erp/05-entities/帳務.md)，本 spec 不複寫。
 
 ### Requirement: 對帳差錯偵測涵蓋已取消但有開立發票訂單
 
@@ -1328,7 +1323,7 @@ Payment 切已完成 → BillingInstallment.payment_status derived 更新
 - **GIVEN** 訂單成立後總額 30000
 - **WHEN** 業務建立 BillingInstallment BI-001（scheduled_amount=30000, due_date=2026-06-01, expected_invoice_date=2026-05-15, items=[訂金品項], note=「訂金 30%」）
 - **AND** 業務於 BI-001 點「一鍵開立發票」→ 系統建立 Invoice INV-001（total_amount=30000, items=深拷貝, source_billing_installment_id=BI-001.id）
-- **AND** 業務登錄 Payment P-001（amount=30000）→ 於入帳明細手動勾選 BI-001 填 30000 建 PaymentAllocation PA-001（payment_id=P-001, billing_installment_id=BI-001, allocated=30000, auto_allocated=false）
+- **AND** 業務登錄 Payment P-001（amount=30000）→ 於入帳明細手動勾選 BI-001 填 30000 建 PaymentAllocation PA-001（payment_id=P-001, billing_installment_id=BI-001, allocated=30000）
 - **AND** 業務切 P-001 為已完成
 - **THEN** BI-001.invoicing_status = 已開立、payment_status = 已收訖（兩維度均推進完成）
 

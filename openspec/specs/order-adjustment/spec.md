@@ -305,7 +305,7 @@ OrderAdjustment 處於非終態時 SHALL NOT 阻擋主訂單狀態推進。
 >
 > - 異動欄位正本：[wiki 訂單異動實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/訂單異動.md) § 欄位（業務可見）
 > - 訂單核心欄位：[wiki 訂單實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/訂單.md)
-> - Prototype 型別定義：`sens-erp-prototype/src/types/order.ts`
+> - Prototype 型別定義：`sens-erp-prototype/src/types/orderAdjustment.ts`
 
 ### 實體關聯總覽
 
