@@ -1088,9 +1088,9 @@ overdue_days 欄位定義見 § 應收帳款帳齡底層欄位與訂單列表帳
 - **WHEN** 系統顯示 BI-101
 - **THEN** BI-101 逾期天數 SHALL = NULL
 
-### Requirement: OrderActivityLog 擴充 6 個事件型別
+### Requirement: OrderActivityLog 擴充 7 個事件型別
 
-活動紀錄 SHALL 新增以下 6 個事件型別記錄請款期次與收款核銷分配的稽核軌跡：
+活動紀錄 SHALL 新增以下 7 個事件型別記錄請款期次、收款核銷分配與完成前金額調降的稽核軌跡：
 
 | 事件型別 | 觸發時機 | 記錄欄位 |
 |---------|---------|---------|
@@ -1100,6 +1100,7 @@ overdue_days 欄位定義見 § 應收帳款帳齡底層欄位與訂單列表帳
 | SPLIT | 拆期（原期次取消 + 建兩筆新期次）| 操作者 / 時間戳 / 原期次 ID / 新期次 ID 陣列 / 拆分規格 |
 | CANCELLED | 期次取消（是否已取消 = true）| 操作者 / 時間戳 / 期次 ID / 取消原因 |
 | PAYMENT_ALLOCATION_SET | 業務手動建立 / 修改收款入帳明細（取代已廢自動分配模型的 PAYMENT_ALLOCATION_OVERRIDDEN + PAYMENT_ALLOCATION_ADJUSTED_AFTER_COMPLETE 兩事件）| 操作者 / 時間戳 / 分配 ID / 收款紀錄 ID / 期次 ID / 分配金額 |
+| PRE_COMPLETION_AMOUNT_DECREASE | 訂單完成前印件 / 訂單額外費用金額調降致應收減少（弱把關留痕、不阻擋，供主管事後查見）| 操作者 / 時間戳 / 調降對象（印件 ID 或訂單額外費用 ID）/ 調降前後金額 |
 
 **Priority**: P0
 
