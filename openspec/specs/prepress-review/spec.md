@@ -27,9 +27,7 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 
 ### Requirement: 印件自動分配機制
 
-系統 SHALL 在以下時機自動將印件分配給審稿人員：
-- B2C 訂單付款成功後
-- B2B 訂單建立並付款成功後（沿用既有 order-management 付款後流程）
+系統 SHALL 在**印件首次上傳稿件檔案時**自動依難易度將印件分配給審稿人員（訂單成立後才有審稿指派；審稿看的是訂單中的印件實體，需求單為來源單據、成交後留存不變，見 [審稿分配規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/審稿分配規則.md)）。B2C 由會員上傳、B2B 由業務代為上傳，觸發時機一致。
 
 自動分配演算法 SHALL 依下列順序挑選被指派者：
 
@@ -42,16 +40,26 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 
 分配完成後，系統 SHALL 將該印件加入被指派審稿人員的待審列表，並記錄分配事件至印件 ActivityLog。
 
-#### Scenario: B2C 付款後自動分配
+**分配後的維持與重派**：分派一律跟著「上傳稿件」走。印件分配後，補件、退回重審、業務改稿（＝再次上傳稿件）時，若 `difficulty_level` 自上次分派後未變則沿用原審稿人員（見 § 補件回原審稿人員）；若業務已更正 `difficulty_level`，則於該次上傳時依新難易度重新執行分配演算法。`difficulty_level` 被更正本身 MUST NOT 立即觸發重派——僅即時反映於介面供審稿主管參考、得隨時手動覆寫；系統的自動重派發生在下一次上傳稿件。
 
-- **WHEN** B2C 訂單付款成功且印件未走免審稿路徑
-- **THEN** 系統 SHALL 立即執行自動分配演算法
+#### Scenario: B2C 會員首次上傳稿件後自動分配
+
+- **WHEN** B2C 會員於訂單成立後首次上傳印件稿件檔，且印件未走免審稿路徑
+- **THEN** 系統 SHALL 立即依難易度執行自動分配演算法
 - **AND** 將印件指派給符合規則的審稿人員
 
-#### Scenario: B2B 訂單付款後自動分配
+#### Scenario: B2B 業務首次上傳稿件後自動分配
 
-- **WHEN** B2B 訂單建立並付款成功且印件未走免審稿路徑
-- **THEN** 系統 SHALL 執行自動分配演算法
+- **WHEN** B2B 業務於訂單成立後代為首次上傳印件稿件檔，且印件未走免審稿路徑
+- **THEN** 系統 SHALL 依難易度執行自動分配演算法
+
+#### Scenario: 難易度更正不立即重派、下次上傳才套用
+
+- **GIVEN** 印件首次上傳稿件時 `difficulty_level = 4`，分配給審稿人員 A
+- **WHEN** 業務於後續將 `difficulty_level` 更正為 8（初始填錯或需求變更）
+- **THEN** 系統 MUST NOT 立即重新分派（A 仍為當前審稿人員）
+- **AND** 介面 SHALL 即時顯示新難易度，審稿主管得手動覆寫
+- **AND** 直到該印件下一次上傳稿件（如補件）時，系統 SHALL 依新難易度 8 重新分派
 
 #### Scenario: 能力最接近原則
 
@@ -91,6 +99,8 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 
 覆寫時，目標審稿人員的 `max_difficulty_level` MUST ≥ 印件 `difficulty_level`。**能力不足者 SHALL 不出現於主管覆寫的審稿人員候選清單**（UI 層預先過濾，而非事後拒絕），讓主管在做決定前就看到約束。覆寫後，印件 SHALL 從原審稿人員的待審列表移除，加入新指派者的待審列表，並記錄覆寫事件至 ActivityLog（含 from_user、to_user、reason）。
 
+**批次覆寫**：審稿主管 SHALL 可一次選取多件印件批次轉派給同一審稿人員。批次覆寫時，目標審稿人員的 `max_difficulty_level` MUST ≥ 所選印件中的最高 `difficulty_level`；候選清單同樣於 UI 層預先過濾能力不足者。完成後各印件 SHALL 分別記錄覆寫 ActivityLog。
+
 **設計理由（為何主管覆寫嚴格擋，自動派工卻允許破例）**：
 - 自動派工的「破例派工」（spec § 印件自動分配機制「降級路徑」）是系統不得已的降級 — 無人能力夠時保證印件不卡住，留 ActivityLog 給主管事後監看做人力決策
 - 主管手動覆寫是「主動行為」，不應比自動派工更寬鬆 — 避免主管隨意覆寫造成審稿品質問題
@@ -105,6 +115,14 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 - **WHEN** 審稿主管將印件從 A 覆寫指派給 B 並填寫 reason
 - **THEN** 系統 SHALL 完成轉指派
 - **AND** 記錄 ActivityLog：時間、主管、from=A、to=B、覆寫 reason
+
+#### Scenario: 批次覆寫多件印件
+
+- **GIVEN** 審稿主管選取 3 件印件（`difficulty_level` 分別為 4 / 6 / 8）
+- **WHEN** 主管批次轉派給審稿人員 E
+- **THEN** 系統 SHALL 要求 E 的 `max_difficulty_level ≥ 8`（所選最高難易度）
+- **AND** 候選清單僅顯示 `max_difficulty_level ≥ 8` 的審稿人員
+- **AND** 完成後各印件分別記錄覆寫 ActivityLog
 
 #### Scenario: 覆寫候選清單預先過濾能力不足者
 
@@ -353,7 +371,7 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 
 ### Requirement: 補件回原審稿人員
 
-印件自「不合格」轉為「已補件」時，系統 SHALL 將此印件重新加入**原審稿人員**的待審列表，不重新執行自動分配。
+印件自「不合格」轉為「已補件」時（業務再次上傳稿件），若難易度未變，系統 SHALL 將此印件重新加入**原審稿人員**的待審列表，不重新執行自動分配；若難易度自上次分派後已被業務更正，則依新難易度重新分派（見 § 印件自動分配機制 § 分配後的維持與重派）。
 
 #### Scenario: 補件退回原審稿人員
 
@@ -363,12 +381,12 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 - **THEN** 系統 SHALL 將此印件加入 A 的待審列表
 - **AND** 系統 SHALL **不**重新執行自動分配演算法
 
-#### Scenario: 原審稿人員離線時改由主管覆寫
+#### Scenario: 補件印件仍可由主管覆寫轉派
 
-- **GIVEN** 原審稿人員 A 當前可用狀態為「不在崗」
-- **WHEN** 印件進入「已補件」狀態
-- **THEN** 系統 SHALL 於審稿主管的覆寫待辦清單中標示此印件
-- **AND** 主管 SHALL 執行覆寫分配操作才能讓印件進入新審稿人員的待審列表
+- **GIVEN** 印件進入「已補件」並回到原審稿人員 A 的待審列表
+- **WHEN** 審稿主管需要改派（例如 A 不在崗、工作量考量）
+- **THEN** 審稿主管 SHALL 可隨時透過覆寫分配將此印件轉派（見「審稿主管覆寫分配」Requirement）
+- **AND** 系統不另設「不在崗」自動特例，改派一律走主管覆寫
 
 ---
 
@@ -391,7 +409,7 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 
 **Event 欄位**（按型別選填）：
 - `id / timestamp / type / actor`（所有事件共用）
-- `assigned_to / rule_hit`（自動分配）
+- `assigned_to / rule_hit`（自動分配）。`rule_hit` enum：能力最接近 / 負載最少 / tie-break / 破例派給能力最高者
 - `from_user / to_user / reason`（主管覆寫）
 - `round_no / round_result / reject_reason_category / review_note`（送出審核）
 - `from_status / to_status`（狀態轉移）
@@ -411,7 +429,7 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 
 #### Scenario: 自動分配事件保留
 
-- **WHEN** 訂單回簽 / 付款後系統為印件自動分派審稿人員
+- **WHEN** 印件首次上傳稿件後系統為其自動分派審稿人員
 - **THEN** 系統 SHALL 建立 `type = '自動分配', actor = '系統', assigned_to = 審稿人員 id, rule_hit = 命中規則` 的 ActivityLog 事件
 
 #### Scenario: 審稿備註修改事件保留（ISO 9001 稽核）
@@ -797,7 +815,7 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 
 - **WHEN** 會員或業務於印件首次建立時填寫 `client_note`
 - **THEN** 系統 SHALL 儲存至 `PrintItem.client_note`
-- **AND** 印件 ActivityLog SHALL 記錄「稿件上傳」事件（含 client_note 欄位值），**不**額外記錄「稿件備註修改」
+- **AND** 首次填寫的 `client_note` 隨印件首次上傳的 Round 1 承載（`submitted_at` / `submitted_files`），**不**另記「稿件備註修改」事件（「稿件上傳」事件已於 § 印件 ActivityLog 移除、改由 Round 承載）
 
 ---
 
@@ -1176,11 +1194,11 @@ B2C 訂單印件合格後，系統 SHALL 自動執行此操作（不需人工介
 
 **Rationale**: 審稿階段流程是印件從稿件到生產的端到端流程定義，需明確確認可製作與退回重審兩個分支路徑。
 
-#### Scenario: 付款後觸發自動分配
+#### Scenario: 首次上傳稿件後觸發自動分配
 
-- **WHEN** 訂單付款成功
-- **AND** 訂單內存在未走免審路徑的印件
-- **THEN** 系統 SHALL 對每一筆印件執行自動分配演算法
+- **WHEN** 訂單成立後，印件首次上傳稿件檔
+- **AND** 該印件未走免審路徑
+- **THEN** 系統 SHALL 對該印件執行自動分配演算法
 - **AND** 分配結果 SHALL 記錄於該印件的 ActivityLog
 
 #### Scenario: B2C 合格後自動確認可製作並建工單
