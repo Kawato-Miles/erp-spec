@@ -25,10 +25,11 @@ expected-resolution-at: 2026-Q3
 `resolve-prepress-review-gaps-ar-10-ar-12` archive 時（2026-05-23）拍板：
 
 - `sampleResult = NG-稿件問題` → 系統自動觸發棄用 + clone 新印件流程（議題 1 已解）
-- `sampleResult = NG-製程問題` → **業務 UI 自行建新打樣 WorkOrder 重做**（系統不自動建，保留業務決定權）
+- `sampleResult = NG-製程問題` → 業務 UI 自行建新打樣 WorkOrder（舊版，**已於 2026-06-16 推翻**）
 
-但 **NG-製程問題的下游處理機制細節尚未定義**：
-- 業務怎麼建新打樣 WorkOrder？（手動填表 / 系統一鍵建立？）
+**2026-06-16 Miles 裁決（建工單機制已定）**：`sampleResult = NG-製程問題` → **系統自動於同一打樣印件下建立新打樣工單（一律重打、不再保留業務決定權）**，新工單初始狀態為草稿（對齊候選方案 B 的「系統建工單」部分，不含重做原因 enum）。
+
+但 **NG-製程問題的殘留下游機制仍未定義**：
 - 重做的成本如何記錄？（同一印件下多個打樣 WorkOrder 的計費邏輯？）
 - 是否需要記錄製程問題原因（紙張色差 / 設備偏差 / 油墨配色等）以利後續分析？
 - 是否與 [production-task spec § NCR Disposition](../../../../openspec/specs/production-task/spec.md) 機制（rework / use_as_is / scrap）整合？
@@ -50,14 +51,15 @@ expected-resolution-at: 2026-Q3
 
 ## 暫定處理
 
-- spec § 打樣結果業務判定 「NG-製程問題」分支描述「業務 UI 自行建新打樣 WorkOrder（系統不自動建，保留業務決定權；下游自動化待 OQ AR-13）」
-- US-AR-011 業務流程在 NG-製程問題分支引此 OQ wiki link
+- 建工單機制已拍板（2026-06-16）：系統自動建新打樣工單、一律重打、初始草稿；wiki [[打樣流程]] / [[打樣決策與重新打樣]] 已對齊。
+- 殘留三項仍 open：重做成本記錄（同印件多打樣工單計費）、製程根因結構化 enum、是否整合 production-task NCR Disposition。
+- spec § 打樣結果業務判定「NG-製程問題」分支待同步為「系統自動建」（PRD 層後續批次處理）。
 
 ## 待 Miles 確認（等業務累積 NG-製程問題案例後再決定）
 
 1. 業務實際發生 NG-製程問題的頻率與根因分布如何？
-2. 是否需要系統一鍵建立新打樣 WorkOrder（B 選項）？
-3. 是否值得整合 production-task NCR 機制（C 選項）？跨模組整合的工程成本是否划算？
+2. 重做成本如何記錄（同印件多個打樣工單的計費）？
+3. 是否值得整合 production-task NCR 機制（C 選項）？跨模組整合的工程成本是否划算？是否需要製程根因結構化 enum？
 
 ## 觸發解決時機建議
 
