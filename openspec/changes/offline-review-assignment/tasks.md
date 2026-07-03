@@ -42,3 +42,7 @@
 - [x] 6.4 取消印件角度清單：移除 /prepress/inbox 清單頁與 /prepress/in-progress 頁（路由、選單、ROLE_HOME 改指待審訂單）；審稿詳情頁 /prepress/inbox/:id 保留——完成判準：選單無「待審印件」項，reviewer 登入直達待審訂單
 - [x] 6.5 訂單詳情移除「分派審稿人員」入口（業務「開啟討論」保留）——完成判準：order_manager 檢視訂單詳情無分派按鈕
 - [x] 6.6 e2e 更新：全流程 spec 改在待審訂單模組操作分派與批審；印件清單相關舊測試改寫或移除——完成判準：`npx playwright test` 全套通過且無 console.error
+
+## 7. 待分派審稿清單（2026-07-03 拍板擴充）
+
+- [x] 7.1 待審訂單模組加 pendingAssign 模式（母集合過濾任一待分派印件）、路由 /prepress/pending-assign、訂單管理人選單「待分派審稿」——完成判準：D5 出現於清單、分派完成後自清單消失（e2e 驗證）
