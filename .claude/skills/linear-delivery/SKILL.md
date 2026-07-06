@@ -2,7 +2,7 @@
 name: linear-delivery
 description: >
   把已定案的規格交付到 Linear（project 描述 + 各角色 Task issue），依「自包含標準模板」產出、並以 Rubric 評分稽核到通過才發布。
-  定位：規格確認後對開發團隊的交付物製作 + 品質把關。對開發與公司而言 Notion / Linear 為正本，OpenSpec 為 PM 內部工作版本不外露。
+  定位：規格確認後對開發團隊的交付物製作 + 品質把關。對開發與公司而言 Linear 為唯一正本（交付內容自包含），OpenSpec 為 PM 內部工作版本不外露。
   觸發時機：Miles 說「交付到 Linear」「發布給開發」「把 X 模組交付給開發」「調整 Linear 上的 project / issue」「依評分稽核交付文件」。
   此 skill 強制：先精煉模板再產出（不抓單一既有 issue 當對照）+ 交付前跑 Rubric 評分（執行者與評審分離）+ 缺口顯性化不捏造。
   **強制規則（禁止以下 anti-pattern）**：
@@ -21,7 +21,7 @@ description: >
 
 把**已定案的規格**交付到 Linear，讓開發團隊拿到可動工的需求；交付前用 Rubric 評分把關品質。
 
-- **正本邊界**：對開發與公司而言，**Notion / Linear 為正本**，OpenSpec spec 是 PM 內部工作版本，交付內容 MUST NOT 外露 `openspec/...` 路徑。
+- **正本邊界**：對開發與公司而言，**Linear 為唯一正本，交付內容自包含**（不依賴任何外部 BRD 頁面；Notion 已停用為 BRD）。OpenSpec spec 與 wiki 是 PM 內部工作版本，交付內容 MUST NOT 外露 `openspec/...` 路徑或內部檔名。
 - **方法論來源**：Gary Chen《/goal 功能怎麼用》影片 —— 「實作者 + 評審」雙角色 + 提示詞 5 元素 + Rubric 6 步驟。對齊 CLAUDE.md karpathy § 4「Goal-Driven Execution」與 `erp-planning-pre-check` 的「執行者 / 稽核者分離」。
 
 ### 與其他 skill 分工
@@ -63,7 +63,7 @@ description: >
 由 senior-pm（PM agent）跑 references/rubric.md：逐維度給通過 / 部分 / 未通過 + evidence-anchored（引用草稿具體位置）+ 違反禁令 + 修正方向。D4 真實性一票否決。
 
 ## Constraint（限制條件）
-- 交付內容只引用 Notion BRD / Notion 資料欄位 DB / Linear 互指；MUST NOT 外露 openspec 路徑或 PM 內部術語
+- 交付內容自包含、跨單據只以 Linear 識別碼互指；MUST NOT 外露 openspec 路徑、內部檔名或 PM 內部術語
 - 依 references/delivery-template.md 自包含模板產出；MUST NOT 抓單一既有 issue 當對照
 - save_project 帶 state:<交付前原狀態> 防 Kick off；save_issue 只傳 id + description，保留 estimate / assignee / cycle / priority / milestone / labels
 - 視圖層模組（複用中台）沿用中台狀態機、不另繪
@@ -90,7 +90,7 @@ description: >
 由 senior-pm（PM agent）跑 references/rubric.md：逐維度給通過 / 部分 / 未通過 + evidence-anchored（實際 Read sales-platform / order-management / after-sales-ticket spec 查證每條規則來源）+ 違反禁令 + 修正方向。D4 真實性一票否決。
 
 ## Constraint（限制條件）
-- 交付內容只引用 Notion BRD / Notion 資料欄位 DB / Linear 互指；不外露 openspec 路徑
+- 交付內容自包含、跨單據只以 Linear 識別碼互指；不外露 openspec 路徑（案發當時規則為 Notion / Linear 雙正本，2026-07-06 起 Notion 停用為 BRD）
 - 依 references/delivery-template.md 自包含模板產出；不抓單一既有 issue 當對照
 - save_project 帶 state: Planned（業務平台交付前原狀態）防 Kick off；save_issue 只傳 id + description，保留 assignee（Yana / Eric）/ estimate / cycle 等
 - 業務平台為視圖層，沿用中台訂單 / 印件 / 售後服務單狀態機、不另繪
@@ -122,7 +122,7 @@ description: >
 ### Step 1：抓已定案規格
 
 - 讀對應模組 OpenSpec spec（Purpose / Requirements / Data Model）與 `state-machines/spec.md`（狀態節點 / 轉換 / 觸發）
-- 取得**對外正本連結**：Notion BRD URL（spec Purpose 段「來源 BRD」）、Notion 資料欄位 DB URL（篩選該模組）
+- 抓**欄位正本**：讀 wiki 實體卡（`05-entities/`）「欄位（業務可見）」段，供 Step 2 資料欄位段轉譯為自包含欄位表（轉譯後不外露內部路徑）
 - 確認目標 Linear project / issue（list_projects / list_issues）與其既有欄位（避免覆蓋）
 - **迭代交付（非首次）只反映 archived change**：若為「依這次更新同步」的迭代交付，依 iteration-delta-publish（已移除，delta 計算邏輯自包含於本 skill） 算 delta，只取 `openspec/changes/archive/` 內的 change，**active（未 archive）change 不交付**（尚未進 main spec）
 - **中台 vs 業務平台 project 分流**：核心邏輯 + 狀態機變動的正本在**中台** project，業務平台為視圖層僅沿用、不另繪狀態機。交付前確認 delta 目標 project 正確（核心 change 投中台，勿誤投視圖層）
@@ -133,7 +133,7 @@ description: >
 
 > **MUST NOT** 拿「另一個需求 / issue 的內容」當對照範本 —— 實例會被修改或刪除，對照即失效。標準模板是從多個既有交付物**精煉出的自包含結構**，更新走版本控管（見本檔 § Rubric 與模板演化）。
 
-- **project 描述 = 模組層 What**：概述（指 Notion BRD）/ 使用情境（Use Case + Key Feature 分 Phase）/ Spec（Design / 功能邏輯 / **驗收條件** / 資料欄位指 Notion DB / FE / BE）/ 狀態機 UML
+- **project 描述 = 模組層 What**：概述（自包含：一句定位＋一句範圍邊界）/ 使用情境（Use Case + Key Feature 分 Phase）/ Spec（Design / 功能邏輯 / **驗收條件** / 資料欄位自包含欄位表 / FE / BE）/ 狀態機 UML
   - **驗收條件**：自業務情境步驟判準與規格 Scenario 轉譯為 3-5 條可勾稽情境（流程用情境式、規則用條列），與功能邏輯說明分工（前者寫驗收情境、後者寫規則本體）；缺料記 OQ 標另案。成品禁出現內部路徑。
 - **Task issue = 角色層 How**：概述（指回 project 段落 + 負責範圍）+ 實作細節 checklist
 - 禁中英夾雜（英文識別碼用「中文（英文）」格式）
@@ -182,7 +182,7 @@ description: >
 
 | # | 維度 | 一句話 | 性質 |
 |---|------|--------|------|
-| 1 | 正本邊界 | 只引用開發看的正本（Notion / Linear），不外露 OpenSpec | 一般 |
+| 1 | 正本邊界 | 交付內容自包含、只以 Linear 互指，不外露 OpenSpec 與內部檔名 | 一般 |
 | 2 | 分層與顆粒度 | project 寫完整 What、issue 寫該角色 How，不重複不空洞 | 一般 |
 | 3 | 完整性 | 必要區塊齊備；狀態密集模組每個狀態機附 UML | 一般 |
 | 4 | 真實性（不捏造）| 來源未定義就記 OQ 標另案，不自編 | **一票否決** |

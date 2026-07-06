@@ -23,16 +23,17 @@ D4 真實性（不捏造）：通過 / 未通過（一票否決）
 
 ## D1 · 正本邊界
 
-**定義**：交付內容只引用「開發與公司看的正本」（Notion BRD / Notion 資料欄位 DB / Linear 互指）。OpenSpec spec 是 PM 內部工作版本，不外露。
+**定義**：Linear 為對開發的唯一正本，交付內容自包含、跨單據只以 Linear 識別碼互指（Notion 已停用為 BRD，不引用）。OpenSpec spec 與 wiki 是 PM 內部工作版本，不外露。
 
 **絕對不要**：
 - 絕對不要在交付內容寫 `openspec/specs/...` 或任何 `.md` 內部檔路徑
 - 絕對不要把「規格正本」指向開發打不開的內部檔
+- 絕對不要引用 Notion 頁面 / DB 連結當交付依據（Notion 已停用為 BRD）
 - 絕對不要把 PM 內部流程術語（change / delta / archive / OQ 編號）寫進給開發的內容
 
-**正例**：資料欄位段寫「Notion 資料欄位 DB（篩選『模組』= 訂單）：[連結]」；背景指 Notion BRD。
+**正例**：資料欄位段以自包含欄位表呈現（業務語言、只列本批相關欄位）；跨 issue 以 Linear 識別碼（如 FE-259）互指。
 
-**反例（本次真實）**：資料欄位段寫「規格正本：openspec/specs/order-management/spec.md § Data Model」、各 Backend issue `## Ref` 列 `openspec/specs/...`。Miles 指出「對開發與公司 Notion / Linear 才是正本，不用加這些說明」。
+**反例（2026-06-01 真實）**：資料欄位段寫「規格正本：openspec/specs/order-management/spec.md § Data Model」、各 Backend issue `## Ref` 列 `openspec/specs/...`。Miles 指出對開發與公司而言 Linear 上的內容才是正本，內部工作版本引用不該出現。
 
 **評分**：無任何內部引用 = 通過；殘留 1-2 處 = 部分；多處或核心指向內部檔 = 未通過。
 
@@ -100,3 +101,4 @@ D4 真實性（不捏造）：通過 / 未通過（一票否決）
 | v1.1 | 2026-06-01 | Step 4 評審者從通用 sub-agent 改為 senior-pm（PM agent）| 業務平台訂單管理交付驗證時，通用評審對 ERP spec 細節不熟，D4 真實性查證誤判：把 order-management「訂單列表最長逾期天數篩選」（L1401，真有）與已移除的「Payment 老化主管聚合」（L2640，v1.12 移除）混淆，在一票否決維度卡最久仍判錯。senior-pm 熟 ERP spec / Vault，能正確查證來源；通用 agent 憑 CLAUDE.md spec 清單描述猜測不可靠 |
 | v1.2 | 2026-06-01 | Step 5 改剛性閉環（修完必重評、達標才寫入）+ 評審獨立性（重評餵完整草稿不暗示改動）+ 防 reward hacking（不放水 / 不表面改字過關）+ 硬上限 3 輪卡住問 Miles；評審輸出補迭代輪次 / 達標判定 / evidence-anchored 引用位置 | Miles 要「PRD 修到通過 Goal 為止」。上網研究三類最佳實踐後補強：/goal（supervisor 完全獨立評審防 mission drift）、LLM-as-judge（3 級窄量表 + 禁令對抗 leniency bias + analytic 逐維度 + evidence-anchored）、agentic loop（reward hacking 防呆 + 迭代上限）。修正「業務平台交付時修一輪沒重評就自審寫入」鬆散處 —— 評審才能判通過、實作者不能自判 |
 | v1.3 | 2026-06-11 | D3 完整性必要區塊清單加入「驗收條件」（可勾稽情境、3-5 條、二元判定、與功能邏輯說明分工、不混 Definition of Done）；不新增評分維度 | 驗收條件最佳實踐查證：格式採情境式（Given/When/Then）與規則式條列混用、依素材性質分流（Altexsoft / Scrum Alliance）；數量 3-5 條、超量即拆（Scrum Alliance / Mike Cohn）；outcome 導向、可量化閾值、各條獨立（Atlassian / Scrum Alliance）；驗收條件 ≠ Definition of Done 不混寫（Mike Cohn / Atlassian）。「可驗證 / 不寫做法」已由 D2、D4 覆蓋，「附得齊不齊」歸完整性，故併入 D3 避免維度爆炸 |
+| v1.4 | 2026-07-06 | D1 正本邊界自「Notion / Linear 雙正本」收斂為「Linear 唯一正本、交付內容自包含」；新增禁令「不引用 Notion 連結當交付依據」；資料欄位正例改自包含欄位表 | 審稿交付盤點時發現 prepress-review spec 無 Notion BRD 連結（Purpose 段 TBD），Miles 拍板：已不再使用 Notion 作為 BRD，交付文件拿掉 Notion 引用 |
