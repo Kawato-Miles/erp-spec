@@ -564,7 +564,6 @@ QuoteRequest 資料模型 SHALL 新增 `requirement_note` 欄位（text，選填
 
 - 需求單與印件項目欄位正本：[wiki 需求單實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/需求單.md) § 欄位（業務可見）
 - Prototype 型別定義：`sens-erp-prototype/src/types/quote.ts`
-- Notion [資料欄位 DB](https://www.notion.so/32c3886511fa803e9f30edbb020d10ce) 為發布版本
 
 以下為技術層支援實體欄位：
 

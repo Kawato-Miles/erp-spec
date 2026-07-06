@@ -27,8 +27,8 @@ context: |
   - 文件即規格（所有決策記錄在相關檔案）
 
   規格管理：
-  - OpenSpec 為規格工作版本（正本），Notion 為發布版本（團隊閱讀用）
-  - 規格異動在 OpenSpec 進行，確認後推到 Notion
+  - OpenSpec 為規格工作版本（正本）；對開發的發布以 Linear 為唯一正本（經 linear-delivery skill 交付，內容自包含，不再使用 Notion 作為發布版）
+  - 規格異動在 OpenSpec 進行，累積 archived change 後交付 Linear
   - Notion 資源索引（URL 正本）：memory/shared/notion-index.md
 
   Prototype 技術棧：React + TypeScript + Tailwind + shadcn/ui
@@ -36,12 +36,6 @@ context: |
 
   OpenSpec Specs（23 個 main specs，目錄結構見 openspec/specs/）：
   - 涵蓋需求單 / 諮詢 / 訂單（含訂單帳務、訂單異動）/ 工單 / 生產任務 / 審稿 / QC / 售後等模組 specs，與業務情境等跨模組 specs，及 prototype 工程 specs（狀態機 Requirement 已分散至各模組 spec，不再有獨立 state-machines spec）
-
-  Notion 發布版本（確認後手動推送）：
-  - 需求單 v1.9：https://www.notion.so/3293886511fa80998ac0e8cdf555da68
-  - 訂單管理 v0.5：https://www.notion.so/32c3886511fa806bad41d755349b0567
-  - 工單管理 v0.4：https://www.notion.so/32c3886511fa80f98a43def401d1edce
-  - 生產任務 v0.2：https://www.notion.so/32c3886511fa806ab1d5c2b815bf9c94
 
   Notion 參考資源（仍在 Notion 維護，未遷入 OpenSpec）：
   - 業務情境 DB：https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05
@@ -55,11 +49,11 @@ context: |
   - 業務欄位 → wiki 05-entities/（業務欄位表正本）
   - 系統行為規格（Requirement + Scenario + 轉換規則）→ OpenSpec 各模組 spec
 
-  變更管理工作流（原 erp-spec 核心原則整合）：
-  - 建立 change 前：查詢 Notion OQ DB 列出相關未解 OQ（oq-manage skill）
+  變更管理工作流：
+  - 建立 change 前：查詢 Vault 08-open-questions/ 列出相關未解 OQ（oq-manage skill）
   - 建立 proposal 前：觸發 senior-pm agent（前期介入模式），確認問題框架
-  - specs/design 完成後：三視角審查（senior-pm + ceo-reviewer + erp-consultant 平行執行）
-  - Notion 推送：累積數個 change 後手動決定推送時機
+  - specs/design 階段：依變動性質五級分級走序列協作（Phase 4 verify consistency 三張對照表；分級表見 CLAUDE.md § ERP 討論主動路由）
+  - Linear 交付：累積數個 archived change 後由 Miles 觸發 linear-delivery skill
 
 rules:
   explore:
@@ -69,8 +63,8 @@ rules:
     - 使用繁體中文撰寫
     - Capabilities 名稱使用英文 kebab-case
     - 引用 Notion 頁面時使用 [可讀名稱](URL) 格式
-    - "[2026-05-19] 商業背景必須引用 ERP_Vault 對應節點：建立 proposal 時必須在 ## Why 或 ## Background 段以相對路徑 link 引用 memory/erp/ERP_Vault/ 下對應的卡（如 04-business-logic/、05-entities/、03-roles/）"
-    - "[2026-05-19] OQ 操作正本變更為 Vault：建立前先查詢 ERP_Vault/08-open-questions/（oq-manage skill 已改寫），列出相關未解 OQ"
+    - "[2026-05-19] 商業背景必須引用 ERP_Vault 對應節點：建立 proposal 時必須在 ## Why 或 ## Background 段以相對路徑 link 引用 memory/Sens_wiki/wiki/erp/ 下對應的卡（如 04-business-logic/、05-entities/、03-roles/）"
+    - "[2026-05-19] OQ 操作正本變更為 Vault：建立前先查詢 memory/Sens_wiki/wiki/erp/08-open-questions/（oq-manage skill 已改寫），列出相關未解 OQ"
     - 觸發 senior-pm agent（前期介入模式），確認問題框架後再撰寫
   specs:
     - 需求描述使用 SHALL/MUST 規範用語
@@ -78,7 +72,7 @@ rules:
     - Scenario 標題使用 #### （四個 #），不可用三個
     - 不使用 emoji
     - "新增或修改 Requirement 前，須確認與 wiki 對應卡的一致性（03-roles 角色職責 / 04-business-logic 業務規則 / 05-entities 業務欄位 / 06-state-machines 狀態列舉）；發現不一致時優先更新 wiki 卡（商業需求正本）"
-    - "[2026-05-30] 撰寫 delta 前 MUST 先枚舉所有相關既有規則：grep openspec/specs/** + ERP_Vault（04-business-logic / 05-entities / 06-state-machines / 07-scenarios / 13-user-stories）內提及本主題的既有 Requirement / 規則，逐條決定 ADDED / MODIFIED / REMOVED 再動筆（防漏看；converge change 漏看 order-management 三條 + wiki 6 卡的教訓）"
+    - "[2026-05-30] 撰寫 delta 前 MUST 先枚舉所有相關既有規則：grep openspec/specs/** + ERP_Vault（04-business-logic / 05-entities / 06-state-machines / 07-scenarios）內提及本主題的既有 Requirement / 規則，逐條決定 ADDED / MODIFIED / REMOVED 再動筆（防漏看；converge change 漏看 order-management 三條 + wiki 6 卡的教訓）"
     - "[2026-05-30] ADDED vs MODIFIED 紀律：新 Requirement 若語意取代既有 Requirement / Scenario，MUST 用 ## MODIFIED Requirements（copy 完整既有再改）或 ## REMOVED，MUST NOT 用 ## ADDED——archive sync 按 exact-title 比對、ADDED 新標題只增不刪、會與被取代的舊 Requirement 物理並存致矛盾；僅對『巨大且多數不變』的 Requirement（如整個訂單狀態機）才可 ADDED 修訂局部 + archive 後手動清理舊描述"
     - "[2026-06-09] 每個 Requirement MUST 含 **Priority**（P0 核心不可缺 / P1 重要可分期 / P2 效率優化）與 **Rationale**（一句話連回業務痛點或營運目標）。缺少任一項視為不完整。"
     - "[2026-06-09] 描述段與 Scenario 中的欄位名 MUST 使用 wiki 實體卡（05-entities/）定義的「介面欄位」業務中文名稱，MUST NOT 使用 snake_case 技術欄位名或 PascalCase 實體名。範例：用「訂單類型」不用 order_type、用「收款紀錄」不用 Payment。"
@@ -110,7 +104,7 @@ rules:
     - 若 change 引入新業務流程，須先補對應 e2e 測試案例（並驗證通過）才能進入歸檔（archive）
   archive:
     - "[2026-05-19] 歸檔前 MUST 掃描 design.md / proposal.md / specs/ 內未解 `## Open Questions` section"
-    - "[2026-05-19] 對每筆未解 OQ 觸發 oq-manage mode B 建 Vault OQ 卡（memory/erp/ERP_Vault/08-open-questions/<MODULE>-<NNN>-<簡述>.md），含去重流程"
+    - "[2026-05-19] 對每筆未解 OQ 觸發 oq-manage mode B 建 Vault OQ 卡（memory/Sens_wiki/wiki/erp/08-open-questions/<MODULE>-<NNN>-<簡述>.md），含去重流程"
     - "[2026-05-19] design.md / proposal.md 原處 OQ 條目改為「→ 對應 Vault OQ：[[<MODULE>-<NNN>-<簡述>]]」雙向引用，不刪除原 section"
     - "[2026-05-19] 已解 OQ 在 design.md 內保留「決議與理由」標注；若決議影響跨 change 商業邏輯，同步遷 Vault OQ 卡並標 status: answered"
     - "[2026-05-19] 上述步驟全部完成後才能 archive；oq-manage skill mode D 可協助批次處理"

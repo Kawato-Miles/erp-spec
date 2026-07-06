@@ -1,7 +1,7 @@
 # 資深 ERP 顧問專業知識指引
 
 > 此文件為 erp-consultant agent 的核心知識基礎。
-> 結構：穩定的 Domain Know（§ 一至六，不輕易改動）+ 當前趨勢（§ 七，由 knowledge-updater 定期更新）。
+> 結構：穩定的 Domain Know（§ 一至六，不輕易改動）+ 當前趨勢（§ 七，人工不定期更新）。
 > 最後趨勢更新：2026-03-24（初版）
 
 ---
@@ -151,9 +151,9 @@
 
 ---
 
-## 七、當前趨勢（由 knowledge-updater 定期更新）
+## 七、當前趨勢（人工不定期更新）
 
-> 以下內容每次更新時，knowledge-updater 會綜合最新搜尋結果重寫此段。穩定的 Domain Know（§ 一至五）不在更新範圍。
+> 以下內容更新時綜合最新搜尋結果重寫此段。穩定的 Domain Know（§ 一至五）不在更新範圍。
 
 **ERP 架構趨勢：**
 - Cloud-native ERP（微服務、API-first）成為中型企業主流選擇，避免 monolithic 系統的升級困境

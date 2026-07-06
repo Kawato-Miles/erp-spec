@@ -16,7 +16,6 @@ last-case-added: 2026-05-29
 
 **跨視角衝突依協議分流處理（2026-05-28 更新）**：
 - 在 [[sequential-design-collaboration]] 中：由 Phase 4 PM verify consistency 集中處理（CEO 指標 ↔ 顧問實作對齊表、PM 範疇 ↔ 顧問實作對齊表）
-- 在 [[multi-agent-discussion-protocol]] 中（過渡期保留，verify 前審查）：由 Round 2「跨視角質疑」步驟顯式提出
 
 | Agent | 載入範圍 | 不需主動載入 |
 |-------|---------|------------|
@@ -170,6 +169,5 @@ propose `## Why` 段 wiki link 引用 `[[../07-scenarios/<情境名>]]`。
 - [[language-conventions]] — 用語規範
 - [[insight-discipline]] — Insight 規範
 - [[cross-agent-checklist]] — 跨 agent checklist
-- [[multi-agent-discussion-protocol]] — 多 Agent 輪次討論協議
 - [[erp-naming-misjudgements]] — ERP 顧問命名誤審記錄（專屬）
 - [[ceo-review-pitfalls]] — CEO 審查誤區（專屬）

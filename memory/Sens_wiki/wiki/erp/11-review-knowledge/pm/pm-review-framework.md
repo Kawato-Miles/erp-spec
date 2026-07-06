@@ -18,7 +18,6 @@ last-reviewed: 2026-05-28
 
 | 觸發場景 | 5 維度角色 | 對應協議 / 呼叫情境 |
 |---------|-----------|------------------|
-| BRD verify 前最終審查 | 審查維度 | [[multi-agent-discussion-protocol]]（過渡期保留） |
 | Miles 單獨呼叫 PM 審查既有 BRD | 審查維度 | 直接呼叫 agent |
 | **序列協作 Phase 1 釐清需求範疇** | **思考維度** | [[sequential-design-collaboration]] Phase 1 |
 | **序列協作 Phase 2/3 中介評估下游輸出** | **思考維度** | [[sequential-design-collaboration]] Phase 2/3 |
@@ -72,7 +71,7 @@ last-reviewed: 2026-05-28
 | 範疇邊界 | PM 重點 | CEO 看「現場是否可行」；ERP 看「跨模組整合節點是否定義」 |
 | 優先順序 | PM 重點 | CEO 看「導入阻力 vs ROI」 |
 
-跨視角的關聯問題透過 [[multi-agent-discussion-protocol]] § Round 2「跨視角質疑」步驟顯式提出。
+跨視角的關聯問題由 [[sequential-design-collaboration]] Phase 4 PM verify consistency 集中處理。
 
 ## 五、相關卡
 

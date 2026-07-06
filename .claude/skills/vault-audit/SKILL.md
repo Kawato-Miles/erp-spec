@@ -107,7 +107,7 @@ grep -rn "（待補\|（待釐清\|（待確認" memory/Sens_wiki/wiki/ --includ
 2. **方向正確**：`source` 禁指 OpenSpec／Prototype（正確性根據只能往上：拍板／權責表／04 規則卡／法規）、禁指同層或下層卡。
 
 ```bash
-grep -rn "openspec/\|sens-erp-prototype/" memory/Sens_wiki/wiki/ --include="*.md" | grep -A0 "source:"  # source 區塊內出現實作路徑即 Error
+grep -rn -A3 "^source:" memory/Sens_wiki/wiki/ --include="*.md" | grep "openspec/\|sens-erp-prototype/"  # source 欄位（含 YAML 清單項）指實作路徑即 Error；implemented-by 指 openspec 為合法導航，不在本檢查範圍，命中後須人工確認該行屬 source 區塊
 ```
 
 判定：OK＝路徑全存在且方向正確；Warning＝1-3 斷路徑；Error＝source 指實作層（違反引用方向鐵則）。

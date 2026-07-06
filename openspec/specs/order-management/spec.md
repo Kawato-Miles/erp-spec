@@ -2266,7 +2266,6 @@ UI 呈現（Dialog 對應、helper function、條件顯示）見 DESIGN.md §10.
 > - 帳務實體欄位：[order-billing spec](../order-billing/spec.md) § Data Model
 > - 異動實體欄位：[order-adjustment spec](../order-adjustment/spec.md) § Data Model
 > - Prototype 型別定義：`sens-erp-prototype/src/types/order.ts`
-> - Notion 資料欄位 DB（發布版）：[https://www.notion.so/32c3886511fa803e9f30edbb020d10ce](https://www.notion.so/32c3886511fa803e9f30edbb020d10ce)
 
 ### 實體關聯總覽
 

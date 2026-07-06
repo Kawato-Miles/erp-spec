@@ -1,6 +1,6 @@
 # Notion MCP 操作指引
 
-> 適用所有涉及 Notion 的 Skill（erp-spec、oq-manage、notion-to-github 等）。
+> 適用所有涉及 Notion 的 Skill（oq-manage、vault-ingest 等）。
 > 每次呼叫 Notion MCP 工具前，先對照本頁檢查清單，避免失敗浪費 Token。
 >
 > 官方文件：https://developers.notion.com/guides/mcp/mcp-supported-tools

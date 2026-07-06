@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-07-06 16:25] 健檢(audit) | 工作流全鏈稽核後修復——舊三視角輪次協議除役 + 過時標記清整
+- 變更：刪除 [[multi-agent-discussion-protocol]]（淘汰條件達成：≥4 個 change 走 sequential Phase 4、verify 前三視角實務已停用，Miles 拍板除役）；[[sequential-design-collaboration]] 定位段改主協議自述、verify 前改 Phase 4 涵蓋；[[lightweight-review-mode]] 升級目標改 sequential；[[dispatch-prompt-template]] 適用協議段移除舊協議；[[senior-pm-write-mode]] 觸發來源改 sequential Phase 4 裁決；[[審查知識路由]] 決策樹與載入序移除舊協議節點；[[pm-review-framework]]、[[ceo-review-framework]]、[[erp-review-framework]] 移除 verify 前審查 row；[[pm-data-map]]、[[review-loading-checklist]] 跨視角衝突改 Phase 4 集中處理；[[2026-05-28-agent-teams-evaluation]] 死鏈改純文字並標行動項已執行；[[_template-business-scenario]] 稽核維度數統一標明 13 維度
+- 動機：Miles 委託工作流全鏈稽核（BRD→OpenSpec→Prototype→Linear），拍板除役舊協議並清整過時標記；同批亦修 wiki 外的 CLAUDE.md／config.yaml／skill 檔（不在本 log 範圍）
+- 衝突：無
+
 ## [2026-07-06 11:55] 健檢(insight) | audit 接續（維度 8／9／10 同時亮燈）
 - 變更：產出 [[2026-07-06-知識庫收斂機制停擺]]（推論：OQ 收割、raw 精練、insight 結案、回顧四條收斂線同根因停擺——收斂型工作無觸發點、發散型內建於對話；下一步 5 條）；[[2026-06-11-OQ佇列缺三個分流維度]] 後續更新段補逾期追蹤（5 條行動僅 external 改判完成，餘 4 條待重排期）
 - 動機：免（健檢類）

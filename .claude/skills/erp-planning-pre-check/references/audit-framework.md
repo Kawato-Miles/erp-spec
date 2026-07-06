@@ -175,7 +175,7 @@ last-reviewed: 2026-05-28
 
 ### 9.1 五大反模式追蹤
 
-詳見 [[audit-failure-patterns]]（規劃中）。簡述：
+詳見 [[audit-failure-patterns]]。簡述：
 
 | 反模式 | 描述 | 對策 |
 |--------|------|------|
@@ -204,7 +204,7 @@ last-reviewed: 2026-05-28
 | `vault-insight` skill | 跨主題模式提煉 — 與本框架互補 |
 | `oq-manage` skill | OQ 管理 — 本框架 Step 4 缺漏項標 OQ 走 oq-manage mode B |
 | `misjudgement-record` skill | 誤審記錄 — 本框架識別到誤審反模式時觸發 |
-| [[audit-failure-patterns]] | 稽核五大反模式追蹤卡（規劃中，本框架 § 9.1 紀錄正本）|
+| [[audit-failure-patterns]] | 稽核五大反模式追蹤卡（反模式登錄正本）|
 
 ## 十一、來源
 

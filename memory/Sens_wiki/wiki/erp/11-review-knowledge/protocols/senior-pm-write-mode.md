@@ -8,7 +8,7 @@ last-reviewed: 2026-05-19
 # Senior PM 寫入流程（Mode A / Mode B）
 
 > 適用情境：[senior-pm](../../../../../.claude/agents/senior-pm.md) 是本系統唯一可直接寫入 Notion 的 review agent。本卡定義其兩種寫入模式的觸發、執行邏輯、限制。
-> **觸發來源**：[[multi-agent-discussion-protocol]] § 討論後處置「BRD 內容修改」類型；或 Miles 直接指定 Mode A/B。
+> **觸發來源**：[[sequential-design-collaboration]] Phase 4 匯報後，Miles 裁決出「BRD 內容修改」行動項目；或 Miles 直接指定 Mode A/B。
 
 ## 一、預設行為
 
@@ -70,9 +70,9 @@ last-reviewed: 2026-05-19
 
 **限制**：**MUST NOT** 執行計畫以外的任何寫入操作。
 
-## 五、從多 Agent 討論觸發的標準流程
+## 五、從協作討論觸發的標準流程
 
-[[multi-agent-discussion-protocol]] § 討論後處置 識別「BRD 內容修改」行動項目時，Claude 協調者依下序執行：
+[[sequential-design-collaboration]] Phase 4 匯報後，Miles 裁決出「BRD 內容修改」行動項目時，Claude 協調者依下序執行：
 
 ### 步驟一：觸發 Mode B Phase 1
 
@@ -119,6 +119,6 @@ senior-pm 執行完畢，返回已寫入清單。Claude 將清單摘要回報 Mi
 
 ## 七、相關卡
 
-- [[multi-agent-discussion-protocol]] — 多 Agent 輪次討論
+- [[sequential-design-collaboration]] — 序列式設計協作協議
 - [[lightweight-review-mode]] — 單 Agent 輕量審查
 - [[user-story-spec]] — User Story 撰寫規格（寫入 User Story DB 的格式）

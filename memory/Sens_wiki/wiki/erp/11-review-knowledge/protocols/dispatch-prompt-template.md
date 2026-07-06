@@ -8,7 +8,7 @@ last-reviewed: 2026-05-30
 # Dispatch Prompt Template — Sub-agent 呼叫 5 區塊標準
 
 > Claude 協調者呼叫三個 sub-agent（senior-pm / ceo-reviewer / erp-consultant）時，prompt **MUST** 依本卡 5 區塊組裝，降低 lossy context hand-off 風險。
-> **適用協議**：[[sequential-design-collaboration]] Phase 1-4 全部呼叫、[[multi-agent-discussion-protocol]] Round 1-N 呼叫（過渡期保留）、[[lightweight-review-mode]] 單 agent 呼叫。
+> **適用協議**：[[sequential-design-collaboration]] Phase 1-4 全部呼叫、[[lightweight-review-mode]] 單 agent 呼叫。
 > **業界依據**：Anthropic Multi-Agent Research System 強調「detailed task descriptions prevent duplicated work」；業界文獻明確指出「dispatch prompt 是 orchestrator-worker pattern 中最重要的 artifact」。
 
 ## 一、定位
@@ -24,7 +24,6 @@ last-reviewed: 2026-05-30
 ### 與其他協議的關係
 
 - [[sequential-design-collaboration]]：本卡 § 3 範例覆蓋 Phase 1-4 全部 dispatch 場景
-- [[multi-agent-discussion-protocol]]（過渡期）：Round 1-N 呼叫亦 MUST 依本卡組裝，僅標記從 `[PHASE]` 改為 `[ROUND]`
 - [[lightweight-review-mode]]：單 agent 呼叫亦適用，標記用 `[MODE: LIGHTWEIGHT]`
 - [[senior-pm-write-mode]]：本卡的 `[PROTOCOL][PHASE][ROUND]` 標記與 senior-pm-write-mode 的 `[MODE]` 標記**正交**，可疊加使用（如 Phase 4 PM 觸發寫入時兩標記並列）
 
@@ -61,7 +60,7 @@ Read-first（協調者已注入，agent 不需重複讀）：
 
 Agent 仍需主動讀（視角專屬）：
 - 視角專屬 framework 卡（依 Phase 對應）：[[ceo-review-framework]] / [[erp-review-framework]] / [[pm-review-framework]]
-- 本協議卡：[[sequential-design-collaboration]] / [[multi-agent-discussion-protocol]] / [[lightweight-review-mode]]
+- 本協議卡：[[sequential-design-collaboration]] / [[lightweight-review-mode]]
 - 議題對應 OpenSpec spec（如 openspec/specs/order-management/spec.md）
 - **枚舉所有提及本主題的既有 Requirement / 規則（wiki ERP_Vault 商業邏輯卡 + openspec specs 雙層）**：grep 本主題在 `openspec/specs/**` 與 ERP_Vault `04-business-logic/` `05-entities/` `06-state-machines/` 的所有 `### Requirement:` / 規則，避免漏看既有規則致 supersession 誤判
 - Vault `08-open-questions/` 該模組現有 OQ
@@ -271,7 +270,6 @@ Blast-radius guardrails：同範例 1
 ## 五、相關卡
 
 - [[sequential-design-collaboration]] — 序列協作協議主卡（本卡 5 區塊的使用情境）
-- [[multi-agent-discussion-protocol]] — 多 agent 輪次討論（過渡期保留）
 - [[lightweight-review-mode]] — 單 agent 輕量審查
 - [[senior-pm-write-mode]] — Senior PM 寫入流程（`[MODE]` 標記與本卡正交）
 - [[review-loading-checklist]] — 各 Agent 背景載入範圍（Read-first 區塊組裝依據）

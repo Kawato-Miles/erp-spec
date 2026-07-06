@@ -41,7 +41,6 @@
       "Bash(openspec validate:*)",
       "Bash(openspec archive:*)",
       "Bash(grep -E \"\\\\.\\(md|json|yaml\\)$\")",
-      "Edit(/.claude/skills/notion-to-github/**)",
       "Bash(./node_modules/.bin/tsc --noEmit)",
       "Bash(npx vite:*)",
       "Bash(npm install:*)",

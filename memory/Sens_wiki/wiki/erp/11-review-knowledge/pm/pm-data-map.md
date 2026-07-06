@@ -69,7 +69,7 @@ last-reviewed: 2026-05-19
 | CEO | 業務情境 DB / KPI DB / 商業流程（高層）|
 | ERP 顧問 | 狀態機 / 資料欄位 / 商業流程（完整）/ 跨模組整合 |
 
-**MUST NOT** 互相重複載入，跨視角的關聯問題透過 [[multi-agent-discussion-protocol]] § Round 2「跨視角質疑」處理。
+**MUST NOT** 互相重複載入，跨視角的關聯問題由 [[sequential-design-collaboration]] Phase 4 PM verify consistency 集中處理。
 
 ## 七、相關卡
 

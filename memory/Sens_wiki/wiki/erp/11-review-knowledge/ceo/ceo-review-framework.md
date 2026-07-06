@@ -18,7 +18,6 @@ last-reviewed: 2026-05-28
 
 | 觸發場景 | 6 維度角色 | 對應協議 / 呼叫情境 |
 |---------|-----------|------------------|
-| BRD verify 前最終審查 | 審查維度 | [[multi-agent-discussion-protocol]]（過渡期保留） |
 | 單 Agent 輕量審查 / 商業目標探索 | 審查維度 | [[lightweight-review-mode]] |
 | **序列協作 Phase 2 補管理需求** | **思考維度** | [[sequential-design-collaboration]] Phase 2 |
 | Miles 單獨呼叫審查既有設計 | 審查維度 | 直接呼叫 agent |

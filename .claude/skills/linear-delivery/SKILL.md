@@ -12,7 +12,7 @@ description: >
     4. 狀態密集模組禁交付沒有狀態機 UML 的文件；禁畫 spec 未定義的狀態轉換（捏造）
     5. 來源未定義時禁自編規則填入交付文件 MUST 停下來記 oq-manage mode B + 標「另案處理」
     6. 交付前 MUST 跑 references/rubric.md 4 維度評分；任一維度未通過禁發布；維度 4（真實性）為一票否決
-  不適用：GitHub Issues 交付（用 notion-to-github）、Vault 整體健康稽核（用 vault-audit）、規劃前 know-how 稽核（用 erp-planning-pre-check）。
+  不適用：Vault 整體健康稽核（用 vault-audit）、規劃前 know-how 稽核（用 erp-planning-pre-check）。
 ---
 
 # Linear 交付與評分稽核（linear-delivery）
@@ -29,7 +29,6 @@ description: >
 | 對象 | skill |
 |------|-------|
 | 交付到 **Linear**（project + issue）+ 評分把關 | 本 skill |
-| 交付到 **GitHub** Issues | `notion-to-github` |
 | Vault 整體健康稽核 | `vault-audit` |
 | 規劃前 know-how 稽核 | `erp-planning-pre-check` |
 
@@ -124,7 +123,7 @@ description: >
 - 讀對應模組 OpenSpec spec（Purpose / Requirements / Data Model）與 `state-machines/spec.md`（狀態節點 / 轉換 / 觸發）
 - 抓**欄位正本**：讀 wiki 實體卡（`05-entities/`）「欄位（業務可見）」段，供 Step 2 資料欄位段轉譯為自包含欄位表（轉譯後不外露內部路徑）
 - 確認目標 Linear project / issue（list_projects / list_issues）與其既有欄位（避免覆蓋）
-- **迭代交付（非首次）只反映 archived change**：若為「依這次更新同步」的迭代交付，依 iteration-delta-publish（已移除，delta 計算邏輯自包含於本 skill） 算 delta，只取 `openspec/changes/archive/` 內的 change，**active（未 archive）change 不交付**（尚未進 main spec）
+- **迭代交付（非首次）只反映 archived change**：若為「依這次更新同步」的迭代交付，算 delta 時只取 `openspec/changes/archive/` 內的 change，**active（未 archive）change 不交付**（尚未進 main spec）
 - **中台 vs 業務平台 project 分流**：核心邏輯 + 狀態機變動的正本在**中台** project，業務平台為視圖層僅沿用、不另繪狀態機。交付前確認 delta 目標 project 正確（核心 change 投中台，勿誤投視圖層）
 
 ### Step 2：依自包含標準模板產出（核心校正）

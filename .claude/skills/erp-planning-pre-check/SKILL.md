@@ -215,7 +215,7 @@ wiki 商業邏輯卡清單（涉及本主題、propose 前須先更新）：<列
 
 ## 七、反模式識別與追蹤
 
-詳見 `memory/Sens_wiki/wiki/erp/11-review-knowledge/_shared/audit-failure-patterns.md`（規劃中）。
+詳見 `memory/Sens_wiki/wiki/erp/11-review-knowledge/_shared/audit-failure-patterns.md`。
 
 五大反模式（YouTube /goal 影片）：
 - **Scope creep**：範圍漂移
