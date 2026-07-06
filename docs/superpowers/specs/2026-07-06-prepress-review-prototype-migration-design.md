@@ -109,9 +109,13 @@ mock 資料一律用真實業務格式（訂單編號、人名、日期），不
 
 比照 orders 模組 permissions.js 寫法：審稿人員本人才可完成審核／批次審稿（限自己負責且等待審稿的印件）；訂單管理人與審稿主管可分派／改派、不可完成審核。
 
-### store.js（zustand，action 對齊未來 API 動詞）
+### 審稿 action 歸屬（計畫階段收斂，2026-07-06）
 
-`submitReview`（完成審核）、`submitBatchReview`（批次審稿）、`assignReviewer`／`overrideAssignment`（分派／改派）、`uploadArtwork`（上傳稿件並觸發自動分派）、`startResupply`（補件重審）、`confirmProducible`（確認可製作）。訂單／印件資料異動透過 orders store 進行；審稿專屬狀態（審稿人員名冊）在本 store。handoff 時 action 逐顆換 React Query mutation。
+印件審稿資料異動 action 全數放 **orders store**（`orders/_lib/store.js` 擴充）：`submitReview`（完成審核）、`submitBatchReview`（批次審稿）、`assignReviewer`（分派／改派統一）、`uploadArtwork`（上傳稿件並觸發自動分派，升級既有 action）、`resupplyArtwork`（補件重審，升級既有 action）、`confirmProducible`（確認可製作）、`openReviewDiscussion`（審稿討論串）。理由：審稿資料掛在訂單的印件上，訂單詳情掛載點與審稿頁面共用同一份資料異動入口，orders 模組不需反向 import 審稿模組。
+
+審稿純函式（狀態機、自動分派演算法、輪次工廠）與審稿人員名冊放**腳手架層** `(prototype)/_lib/prepressReview.js`（零依賴，模擬正式環境的後端邏輯與人員主檔；handoff 時由後端 API 取代、原地留下）。審稿模組 `_lib/` 只放頁面級純函式（列表母集合過濾、逾期計算、權限判斷）。
+
+最終依賴圖：orders → 腳手架、prepress-review → orders（讀訂單資料）、prepress-review → 腳手架。orders 不依賴 prepress-review，可先行 handoff。handoff 時 action 逐顆換 React Query mutation。
 
 ## 七、頁面設計（套 recipe、只用真元件）
 
