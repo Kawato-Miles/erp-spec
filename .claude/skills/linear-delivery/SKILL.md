@@ -125,6 +125,7 @@ description: >
 - 確認目標 Linear project / issue（list_projects / list_issues）與其既有欄位（避免覆蓋）
 - **迭代交付（非首次）只反映 archived change**：若為「依這次更新同步」的迭代交付，算 delta 時只取 `openspec/changes/archive/` 內的 change，**active（未 archive）change 不交付**（尚未進 main spec）
 - **中台 vs 業務平台 project 分流**：核心邏輯 + 狀態機變動的正本在**中台** project，業務平台為視圖層僅沿用、不另繪狀態機。交付前確認 delta 目標 project 正確（核心 change 投中台，勿誤投視圖層）
+- **project 依平台實際模組開，勿按內容主題自創**：開新 project 前 MUST 確認該平台真有對應模組；平台上不存在的模組，內容以「情境擴充段」併入該平台既有 project（2026-07-07 實測：業務平台無審稿管理模組，誤開「業務平台 - 審稿管理」被 Miles 撤銷，審稿情境改以擴充段併入「業務平台 - 訂單管理」）
 
 ### Step 2：依自包含標準模板產出（核心校正）
 
