@@ -133,7 +133,7 @@ description: >
 
 > **MUST NOT** 拿「另一個需求 / issue 的內容」當對照範本 —— 實例會被修改或刪除，對照即失效。標準模板是從多個既有交付物**精煉出的自包含結構**，更新走版本控管（見本檔 § Rubric 與模板演化）。
 
-- **project 描述 = 模組層 What**：概述（自包含：一句定位＋一句範圍邊界）/ 使用情境（Use Case + Key Feature；phase 標示非固定產出，僅在 wiki 階段規劃或 Miles 拍板有明確階段時標註，MUST NOT 用 phase 表達本批做不做）/ Spec（Design / 功能邏輯 / **驗收條件** / FE / BE；不含資料欄位表）/ 狀態機 UML
+- **project 描述 = 模組層 What**：概述（自包含：一句定位＋一句範圍邊界）/ 使用情境（Use Case + Key Feature；phase 標示非固定產出，僅在 wiki 階段規劃或 Miles 拍板有明確階段時標註，MUST NOT 用 phase 區分 Scope / Out of Scope）/ Spec（Design / 功能邏輯 / **驗收條件** / FE / BE；不含資料欄位表）/ 狀態機 UML
   - **驗收條件**：自業務情境步驟判準與規格 Scenario 轉譯為 3-5 條可勾稽情境（流程用情境式、規則用條列），與功能邏輯說明分工（前者寫驗收情境、後者寫規則本體）；缺料記 OQ 標另案。成品禁出現內部路徑。
 - **Task issue = 角色層 How**：概述（指回 project 段落 + 負責範圍）+ 實作細節 checklist
 - **迭代交付擴充既有 project 描述時，MUST 融入既有段落結構**：新情境在原清單上加條目（Use Case 原 3 條加第 4 條、Key Feature 加項、功能邏輯說明清單加規則、Design 動線加線），缺的標準區塊（如驗收條件）可新增；**MUST NOT 在描述尾端另起一個平行的完整區塊**（概述＋使用情境＋Spec 全套重來一輪；2026-07-07 業務平台訂單管理審稿擴充實測：附加「審稿情境擴充」完整區塊被 Miles 退回，改融入各段）
