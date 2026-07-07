@@ -2,7 +2,7 @@
 name: linear-delivery
 description: >
   把已定案的規格交付到 Linear（project 描述 + 各角色 Task issue），依「自包含標準模板」產出、並以 Rubric 評分稽核到通過才發布。
-  定位：規格確認後對開發團隊的交付物製作 + 品質把關。對開發與公司而言 Linear 為唯一正本（交付內容自包含），OpenSpec 為 PM 內部工作版本不外露。
+  定位：規格確認後對開發團隊的交付物製作 + 品質把關。對開發而言 Linear 為交付正本（內容自包含）、wiki 為欄位與狀態正本（開發直接查閱）；OpenSpec 為 PM 內部工作版本不外露。
   觸發時機：Miles 說「交付到 Linear」「發布給開發」「把 X 模組交付給開發」「調整 Linear 上的 project / issue」「依評分稽核交付文件」。
   此 skill 強制：先精煉模板再產出（不抓單一既有 issue 當對照）+ 交付前跑 Rubric 評分（執行者與評審分離）+ 缺口顯性化不捏造。
   **強制規則（禁止以下 anti-pattern）**：
@@ -21,7 +21,7 @@ description: >
 
 把**已定案的規格**交付到 Linear，讓開發團隊拿到可動工的需求；交付前用 Rubric 評分把關品質。
 
-- **正本邊界**：對開發與公司而言，**Linear 為唯一正本，交付內容自包含**（不依賴任何外部 BRD 頁面；Notion 已停用為 BRD）。OpenSpec spec 與 wiki 是 PM 內部工作版本，交付內容 MUST NOT 外露 `openspec/...` 路徑或內部檔名。
+- **正本邊界**：對開發而言，**Linear 為交付正本（內容自包含）＋ wiki 為欄位與狀態正本（開發團隊直接查閱實體卡與狀態機卡，交付不複寫）**；Notion 已停用為 BRD。OpenSpec spec 是 PM 內部工作版本，交付內容 MUST NOT 外露 `openspec/...` 路徑。
 - **方法論來源**：Gary Chen《/goal 功能怎麼用》影片 —— 「實作者 + 評審」雙角色 + 提示詞 5 元素 + Rubric 6 步驟。對齊 CLAUDE.md karpathy § 4「Goal-Driven Execution」與 `erp-planning-pre-check` 的「執行者 / 稽核者分離」。
 
 ### 與其他 skill 分工
@@ -120,8 +120,8 @@ description: >
 
 ### Step 1：抓已定案規格
 
-- 讀對應模組 OpenSpec spec（Purpose / Requirements / Data Model）與 `state-machines/spec.md`（狀態節點 / 轉換 / 觸發）
-- **欄位不進交付內容**：欄位正本在 wiki 實體卡（`05-entities/`），開發端直接取得；交付文件不產資料欄位段、不複寫欄位表
+- 讀對應模組 OpenSpec spec（Purpose / Requirements / 轉換規則 Scenario）與 wiki 狀態機卡（`06-state-machines/`，狀態列舉與轉換的正本；舊 `state-machines/spec.md` 已除役）
+- **欄位不進交付內容**：欄位正本在 wiki 實體卡（`05-entities/`），開發團隊直接查閱 wiki；交付文件不產資料欄位段、不複寫欄位表
 - 確認目標 Linear project / issue（list_projects / list_issues）與其既有欄位（避免覆蓋）
 - **迭代交付（非首次）只反映 archived change**：若為「依這次更新同步」的迭代交付，算 delta 時只取 `openspec/changes/archive/` 內的 change，**active（未 archive）change 不交付**（尚未進 main spec）
 - **中台 vs 業務平台 project 分流**：核心邏輯 + 狀態機變動的正本在**中台** project，業務平台為視圖層僅沿用、不另繪狀態機。交付前確認 delta 目標 project 正確（核心 change 投中台，勿誤投視圖層）
@@ -133,10 +133,10 @@ description: >
 
 > **MUST NOT** 拿「另一個需求 / issue 的內容」當對照範本 —— 實例會被修改或刪除，對照即失效。標準模板是從多個既有交付物**精煉出的自包含結構**，更新走版本控管（見本檔 § Rubric 與模板演化）。
 
-- **project 描述 = 模組層 What**：概述（自包含：一句定位＋一句範圍邊界）/ 使用情境（Use Case + Key Feature 分 Phase）/ Spec（Design / 功能邏輯 / **驗收條件** / FE / BE；不含資料欄位表）/ 狀態機 UML
+- **project 描述 = 模組層 What**：概述（自包含：一句定位＋一句範圍邊界）/ 使用情境（Use Case + Key Feature；phase 標示非固定產出，僅在 wiki 階段規劃或 Miles 拍板有明確階段時標註，MUST NOT 用 phase 表達本批做不做）/ Spec（Design / 功能邏輯 / **驗收條件** / FE / BE；不含資料欄位表）/ 狀態機 UML
   - **驗收條件**：自業務情境步驟判準與規格 Scenario 轉譯為 3-5 條可勾稽情境（流程用情境式、規則用條列），與功能邏輯說明分工（前者寫驗收情境、後者寫規則本體）；缺料記 OQ 標另案。成品禁出現內部路徑。
 - **Task issue = 角色層 How**：概述（指回 project 段落 + 負責範圍）+ 實作細節 checklist
-- **迭代交付擴充既有 project 描述時，MUST 融入既有段落結構**：新情境在原清單上加條目（Use Case 原 3 條加第 4 條、Key Feature Phase 1 加項、功能邏輯說明清單加規則、Design 動線加線），缺的標準區塊（如驗收條件）可新增；**MUST NOT 在描述尾端另起一個平行的完整區塊**（概述＋使用情境＋Spec 全套重來一輪；2026-07-07 業務平台訂單管理審稿擴充實測：附加「審稿情境擴充」完整區塊被 Miles 退回，改融入各段）
+- **迭代交付擴充既有 project 描述時，MUST 融入既有段落結構**：新情境在原清單上加條目（Use Case 原 3 條加第 4 條、Key Feature 加項、功能邏輯說明清單加規則、Design 動線加線），缺的標準區塊（如驗收條件）可新增；**MUST NOT 在描述尾端另起一個平行的完整區塊**（概述＋使用情境＋Spec 全套重來一輪；2026-07-07 業務平台訂單管理審稿擴充實測：附加「審稿情境擴充」完整區塊被 Miles 退回，改融入各段）
 - 禁中英夾雜（英文識別碼用「中文（英文）」格式）
 
 ### Step 3：實作者自審
