@@ -162,27 +162,12 @@
 
 ## Data Model
 
-> 來源：本 spec § Data Model 為正本；Notion [資料欄位 DB](https://www.notion.so/32c3886511fa803e9f30edbb020d10ce) 為發布版本
+> 欄位正本（業務可見欄位表）在 wiki 實體卡；本段僅保留實作層計價結構與引用結構。
+>
+> - 裝訂方式欄位正本：[wiki 裝訂主檔實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/裝訂主檔.md) § 欄位（業務可見）
+> - 計價子分支組成與公式正本：[wiki BOM 結構卡](../../../memory/Sens_wiki/wiki/erp/04-business-logic/領域知識/BOM結構.md)
 
-### Binding（裝訂方式）
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | |
-| 裝訂名稱 | name | 字串 | Y | | 騎馬釘 / 硬殼膠裝 / 穿線膠裝⋯，由使用者自訂 |
-| 啟用狀態 | enabled | 布林值 | Y | | |
-| 跨頁設計 | cross_page | 布林值 | Y | | 是否支援跨頁設計；純顯示用，不影響系統邏輯 |
-| 示意圖片 | illustration_url | 字串 | | | 管理員上傳的示意圖 URL |
-| 每本最低金額 | min_amount_per_unit | 小數 | | | 單位：NTD；計算後低於此值取此值 |
-| 總價最低金額 | min_total_amount | 小數 | | | 單位：NTD；計算後低於此值取此值 |
-| 計價方式 | pricing_method | 單選 | Y | | 台數計價 / 頁數計價 / 本數計價 |
-| 備註 | notes | 文字 | | | |
-| 建立時間 | created_at | 日期時間 | Y | Y | |
-| 更新時間 | updated_at | 日期時間 | Y | Y | |
-
-**約束**：
-- 無廠商欄位（vendor_id）
-- 無群組欄位（group_id），為單層結構
+以下為實作層計價設定與生產任務引用結構（技術層欄位，非業務欄位正本；wiki 裝訂主檔卡明文將計價軸項目與價格矩陣格列為實作規格）：
 
 ### BindingPricingAxis（計價軸項目，統一表）
 

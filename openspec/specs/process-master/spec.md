@@ -171,36 +171,12 @@
 
 ## Data Model
 
-> 來源：本 spec § Data Model 為正本；Notion [資料欄位 DB](https://www.notion.so/32c3886511fa803e9f30edbb020d10ce) 為發布版本
+> 欄位正本（業務可見欄位表）在 wiki 實體卡；本段僅保留實作層計價結構與引用結構。
+>
+> - 工序群組 / 工序欄位正本：[wiki 工序主檔實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/工序主檔.md) § 欄位（業務可見）
+> - 計價子分支組成與公式正本：[wiki BOM 結構卡](../../../memory/Sens_wiki/wiki/erp/04-business-logic/領域知識/BOM結構.md)
 
-### ProcessGroup（工序群組）
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | |
-| 群組名稱 | name | 字串 | Y | | 表面處理 / 燙金燙銀 / 模切 / 壓線 / 打孔⋯ |
-| 顯示排序 | display_order | 整數 | | | 左側群組導覽排序 |
-| 啟用狀態 | enabled | 布林值 | Y | | |
-| 建立時間 | created_at | 日期時間 | Y | Y | |
-| 更新時間 | updated_at | 日期時間 | Y | Y | |
-
-**約束**：群組為單層結構，無 parent_id。
-
-### Process（工序）
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | |
-| 所屬群組 | group_id | FK | Y | | FK -> ProcessGroup；單群組主從關係 |
-| 工序名稱 | name | 字串 | Y | | 光膜 / 工序 A⋯，由使用者自訂 |
-| 工序廠商 | vendor_id | FK | | | FK -> Supplier（廠商主檔） |
-| 計價方式 | pricing_method | 單選 | Y | | 成品面積 / 工序面積 / 時間計價 / 成品數量 / 原紙張數 / 原紙令數 / 上機印數 |
-| 啟用狀態 | enabled | 布林值 | Y | | |
-| 備註 | notes | 文字 | | | |
-| 建立時間 | created_at | 日期時間 | Y | Y | |
-| 更新時間 | updated_at | 日期時間 | Y | Y | |
-
-**約束**：工序僅屬於單一群組，不可跨群組。
+以下為實作層計價設定與生產任務引用結構（技術層欄位，非業務欄位正本；wiki 工序主檔卡明文將計價區間／級距明細列為實作規格）：
 
 ### ProcessPricingRange（計價區間軸，統一表）
 

@@ -110,3 +110,4 @@ rules:
     - "[2026-05-19] 上述步驟全部完成後才能 archive；oq-manage skill mode D 可協助批次處理"
     - "[2026-05-30] archive 後 MUST 驗證 ADDED 殘留：對每個 delta ## ADDED Requirement，確認是否語意取代某既有 main spec Requirement / Scenario；若是，手動清理被取代的舊描述（避免新舊並存矛盾，converge 9 CRITICAL 教訓）"
     - "[2026-06-09] archive 後 MUST 驗證 wiki 已同步：propose 前已先更新 wiki（CLAUDE.md 收尾第 10 條），archive 時確認 wiki 實體卡（05-entities/ 欄位表）/ 狀態機卡（06-state-machines/ 狀態列舉）/ 商業邏輯卡（04-business-logic/）沒有遺漏項；若有遺漏當場補齊"
+    - "[2026-07-06] archive 前 MUST 掃描業務欄位表殘留（單一正本鐵則 gate）：執行 grep -rn \"^| 欄位 | 英文名稱\" openspec/specs/ 與本次 change 的 delta specs；命中者若屬業務實體欄位表即違規，MUST 先遷移至 wiki 實體卡（05-entities/）並改為引用後才能 archive；純技術層支援實體表（junction / log，內容限 UUID / FK / 時間戳等）可保留，但其前導文字 MUST 標明「技術層支援實體欄位，非業務欄位正本」"

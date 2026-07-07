@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-07-06 17:05] 納入(amend) | 工作包卡回補 spec 已定案但漏收的兩欄
+- 變更：[[工作包]] 欄位表補「備註」「確樣需求」兩列（work-package spec 已定案欄位、卡漏收），範圍外點名補建立時間與建立者
+- 動機：單一正本鐵則稽核發現 spec 欄位表與卡不同步，欄位為既定案內容回補（非新設計）；回補後 spec 欄位表改為引用本卡
+- 衝突：無
+
 ## [2026-07-06 16:25] 健檢(audit) | 工作流全鏈稽核後修復——舊三視角輪次協議除役 + 過時標記清整
 - 變更：刪除 [[multi-agent-discussion-protocol]]（淘汰條件達成：≥4 個 change 走 sequential Phase 4、verify 前三視角實務已停用，Miles 拍板除役）；[[sequential-design-collaboration]] 定位段改主協議自述、verify 前改 Phase 4 涵蓋；[[lightweight-review-mode]] 升級目標改 sequential；[[dispatch-prompt-template]] 適用協議段移除舊協議；[[senior-pm-write-mode]] 觸發來源改 sequential Phase 4 裁決；[[審查知識路由]] 決策樹與載入序移除舊協議節點；[[pm-review-framework]]、[[ceo-review-framework]]、[[erp-review-framework]] 移除 verify 前審查 row；[[pm-data-map]]、[[review-loading-checklist]] 跨視角衝突改 Phase 4 集中處理；[[2026-05-28-agent-teams-evaluation]] 死鏈改純文字並標行動項已執行；[[_template-business-scenario]] 稽核維度數統一標明 13 維度
 - 動機：Miles 委託工作流全鏈稽核（BRD→OpenSpec→Prototype→Linear），拍板除役舊協議並清整過時標記；同批亦修 wiki 外的 CLAUDE.md／config.yaml／skill 檔（不在本 log 範圍）

@@ -16,17 +16,9 @@
 
 ### Requirement: 工作包 Data Model
 
-系統 SHALL 維護 WorkPackage 資料表，欄位定義如下：
+系統 SHALL 維護 WorkPackage 資料表。欄位正本：[wiki 工作包實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/工作包.md) § 欄位（業務可見）。
 
-| 欄位 | 英文名稱 | 型別 | 必填 | 說明 |
-|------|---------|------|------|------|
-| 工作包 ID | id | UUID | Y | PK |
-| 工作包編號 | key | 字串 | Y | 唯一，系統自動產生，格式：WP-{工序}-{MMDD}-{流水號三碼} |
-| 指派師傅 | operator_id | FK | Y | FK -> 使用者（師傅） |
-| 備註 | notes | 文字 | | 生管填寫的工作包備註 |
-| 確樣需求 | sample_notes | 文字 | | 生管填寫，說明此工作包需特別注意的確樣事項 |
-| 建立時間 | created_at | datetime | Y | 系統自動填入 |
-| 建立者 | created_by | FK | Y | FK -> 使用者（生管） |
+技術層補充（非業務欄位正本）：工作包編號（key）系統自動產生且全域唯一，格式 WP-{工序}-{MMDD}-{流水號三碼}；id / created_at / created_by（FK -> 使用者（生管））等技術欄位依實作慣例。
 
 WorkPackage MUST NOT 包含狀態欄位。工作包的進度由包內生產任務狀態動態推導。
 

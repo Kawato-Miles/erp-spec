@@ -183,70 +183,12 @@
 
 ## Data Model
 
-> 來源：本 spec § Data Model 為正本；Notion [資料欄位 DB](https://www.notion.so/32c3886511fa803e9f30edbb020d10ce) 為發布版本
+> 欄位正本（業務可見欄位表）在 wiki 實體卡；本段僅保留實作層計價結構與引用結構。
+>
+> - 材料群組 / 材料 / 材料規格欄位正本：[wiki 材料主檔實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/材料主檔.md) § 欄位（業務可見）
+> - 計價子分支組成與公式正本：[wiki BOM 結構卡](../../../memory/Sens_wiki/wiki/erp/04-business-logic/領域知識/BOM結構.md)
 
-### MaterialGroup（材料群組）
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | |
-| 群組名稱 | name | 字串 | Y | | 包裝材料 / 名片材料 / 壓克力材料⋯ |
-| 顯示排序 | display_order | 整數 | | | 左側群組導覽排序 |
-| 啟用狀態 | enabled | 布林值 | Y | | |
-| 建立時間 | created_at | 日期時間 | Y | Y | |
-| 更新時間 | updated_at | 日期時間 | Y | Y | |
-
-**約束**：群組為單層結構，無 parent_id。
-
-### Material（材料）
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | |
-| 所屬群組 | group_id | FK | Y | | FK -> MaterialGroup |
-| 材料名稱 | name | 字串 | Y | | 白卡紙 / 銀卡紙⋯，由使用者自訂 |
-| 材料品牌 | brand | 字串 | Y | | 永豐 / 恆成⋯ |
-| 計價方式大類 | pricing_type | 單選 | Y | | 按重量 / 按面積 / 按數量 |
-| 採購單位 | purchase_unit | 單選 | Y | | 噸 / 張 / dm²⋯ |
-| 銷售單位 | sale_unit | 單選 | Y | | 噸 / 張 / dm²⋯ |
-| 啟用狀態 | enabled | 布林值 | Y | | |
-| 顯示排序 | display_order | 整數 | | | |
-| 建立時間 | created_at | 日期時間 | Y | Y | |
-| 更新時間 | updated_at | 日期時間 | Y | Y | |
-
-**唯一鍵**：`(name, brand, pricing_type)`。
-
-### MaterialSpec（材料規格）
-
-| 欄位 | 英文名稱 | 型別 | 必填 | 唯讀 | 說明 |
-|------|---------|------|------|------|------|
-| 識別碼 | id | UUID | Y | Y | |
-| 所屬材料 | material_id | FK | Y | Y | FK -> Material |
-| 規格名稱 | spec_name | 字串 | Y | | 230g / A2⋯，由使用者自訂 |
-| 啟用狀態 | enabled | 布林值 | Y | | |
-| 重量 | weight | 小數 | | | 單位：g |
-| 厚度 | thickness | 小數 | | | 單位：mm |
-| 進貨價 | purchase_price | 小數 | | | 單位：NTD |
-| 銷售價 | sale_price | 小數 | | | 單位：NTD |
-| 最小長邊 | min_long_side | 小數 | | | 單位：cm；設備約束 |
-| 最大長邊 | max_long_side | 小數 | | | 單位：cm；設備約束 |
-| 長邊起始倍數 | long_side_unit_increment | 小數 | | | 單位：倍；設備約束 |
-| 最小短邊 | min_short_side | 小數 | | | 單位：cm；設備約束 |
-| 最大短邊 | max_short_side | 小數 | | | 單位：cm；設備約束 |
-| 短邊起始倍數 | short_side_unit_increment | 小數 | | | 單位：倍；設備約束 |
-| 最小面積 | min_area | 小數 | | | 單位：cm²；設備約束 |
-| 計價方式子類型 | pricing_method | 單選 | | | 依 pricing_type 分支可選值；按數量可為 null |
-| 備註 | notes | 文字 | | | |
-| 建立時間 | created_at | 日期時間 | Y | Y | |
-| 更新時間 | updated_at | 日期時間 | Y | Y | |
-
-**pricing_method 與 pricing_type 對應表**：
-
-| Material.pricing_type | MaterialSpec.pricing_method 可選值 |
-|----------------------|----------------------------------|
-| 按重量 | 重量計 / 令價計 / 單張計 |
-| 按面積 | 單價面積 / 綜容積 |
-| 按數量 | null（無子類型） |
+以下為實作層計價設定與生產任務引用結構（技術層欄位，非業務欄位正本；wiki 材料主檔卡明文將計價子表細項列為實作規格）：
 
 ### PricingRuleWeightBased（按重量規格尺寸表）
 
