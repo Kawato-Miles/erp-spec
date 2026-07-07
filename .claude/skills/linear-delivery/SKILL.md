@@ -209,6 +209,7 @@ description: >
 
 | 主題 | 注意事項 |
 |------|---------|
+| **新 issue MUST 先開在 PM team 再轉對應 team** | PM team 掛有「同步建立 GitHub backlog issue」自動化；直接開在 FE / BE team 不會產生 GitHub 同步票（2026-07-07 中台審稿交付實測：直開 FE / BE 的票被 Miles 刪除重開）。正確流程：`save_issue` 帶 `team: "PM"` 建立 → 再 `save_issue` 帶 `id` + `team: "Front-End"` 或 `"Back-End"` 轉移（識別碼會換新，如 PM-790 → FE-354；GitHub 附件保留） |
 | **save_project 觸發狀態跳轉** | 更新 project 描述時 Linear 自動化會把 status 從 Backlog 帶到「Kick off」。`save_project` MUST 同時帶 `state: "Backlog"`（或交付前的原狀態）抑制，避免擅自推進看板 |
 | **欄位保留紀律** | `save_issue` 只傳 `id` + `description`；estimate / assignee / cycle / priority / milestone / labels 不傳即不動。交付只改「需求內容」，不碰排程與分派 |
 | **issue 互指自動關聯** | 描述內寫 issue 識別碼（如 FE-260 / BE-169）Linear 會自動轉成可點擊 cross-reference；提及某 issue 可能 touch 其 `updatedAt`（內容不變，屬良性 backlink）|
