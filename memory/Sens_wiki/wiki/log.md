@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-07-08 16:00] 健檢(insight) | raw 同主題累積（兩張 Odoo 調研卡）＋ Miles 指示合併提煉
+- 變更：產出 [[2026-07-08-Odoo參照與生產關建模原則]]；關鍵推論：pre-check 三處 as-is/to-be 對撞共享同一根因——「流程階段建模成狀態欄或獨立單據／位置」缺全生產關通用原則，先拍板原則三對撞即降為應用題；下一步 3 條（Miles 07-15 前裁決原則、Claude 同輪開 9 項 OQ、裁決後 wiki-amend 更新正本卡）；素材卡 [[2026-06-14-claude-research-Odoo製造與庫存模組]] 升 status=reviewed（防線 4：insight 禁讀 status=raw）
+- 動機：免（健檢類）
+- 衝突：無（三處對撞已在 10:30 pre-check 條目記載，本卡聚類不裁決）
+
 ## [2026-07-08 15:30] 納入(ingest-B) | Odoo 供應鏈調研精練為圖解參考卡（UML 流程圖＋ER-Model）
 - 變更：新增 [[Odoo供應鏈參考架構]]（10-references；4 張 ER-Model、端到端角色泳道圖、生產單據鏈/報工循序圖/廠間移轉泳道圖/品檢分流活動圖/揀貨出貨鏈、MO 與工單狀態機圖、設計原則對照表；十張圖已於 Obsidian 驗證渲染）；[[erp_index]] 高量層補外部參考入口；raw 卡 [[2026-07-08-claude-research-Odoo供應鏈生產到出貨流程]] status=ingested、精練去處回填
 - 動機：Miles 指示——調研報告文字過多難閱讀，流程改標準 UML（泳道圖等）、資料結構改 ER-Model，存 wiki 作後續 insight 參考
