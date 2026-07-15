@@ -2,14 +2,10 @@
 name: wiki-amend
 status: active
 description: >
-  explore 定案後 wiki 增修機制 skill。當 explore 定案涉及商業邏輯變動時，在進入 propose 之前先更新 wiki（ERP_Vault）商業邏輯正本，確保 BRD 先行、再往下設計實作規格。
-  正本方法論：[[erp_index]]（位階 / 溯源 / 引用方向）+ 04-business-logic/_template-business-logic.md（§4.0 原子化職責 / §4.1 共通骨架）+ [[wiki-schema]]（§四 frontmatter / §十一 內容職責邊界）+ wiki/log.md（唯一操作史）。
-  觸發時機：
-    1. explore 定案後、propose 之前，判斷涉及商業邏輯變動時
-    2. Miles 說「更新 wiki」「對齊 wiki」「wiki 回補」「先把商業邏輯寫進 wiki」
-  範圍：**只處理「商業邏輯變動增修進 wiki 各位階」**。
-  輸出：對話報告（建議 + 影響分析 + 優缺點三件套）+ 增修 / 新增 wiki 卡 + 追加 wiki/log.md + 標明哪些卡被異動。
+  explore 定案後 wiki 增修機制 skill：explore 定案涉及商業邏輯變動時，在進入 propose 之前先更新 wiki（ERP_Vault）商業邏輯正本，確保 BRD 先行、再往下設計實作規格。
+  觸發：explore 定案後、propose 之前判斷涉及商業邏輯變動時；Miles 說「更新 wiki」「對齊 wiki」「wiki 回補」「先把商業邏輯寫進 wiki」。
   不適用：規劃前 know-how 稽核（用 erp-planning-pre-check）、Vault 整體健康稽核（用 vault-audit）、純查詢術語 / 狀態機、識別不確定項（用 oq-manage mode B）、raw 素材精練（用 vault-ingest）。
+  歸類決策樹、方法論正本引用、輸出格式（三件套 + log.md）見本文。
 ---
 
 # explore 定案後 wiki 增修機制（wiki-amend）

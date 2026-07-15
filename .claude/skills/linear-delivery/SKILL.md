@@ -1,18 +1,10 @@
 ---
 name: linear-delivery
 description: >
-  把已定案的規格交付到 Linear（project 描述 + 各角色 Task issue），依「自包含標準模板」產出、並以 Rubric 評分稽核到通過才發布。
-  定位：規格確認後對開發團隊的交付物製作 + 品質把關。對開發而言 Linear 為交付正本（內容自包含）、wiki 為欄位與狀態正本（開發直接查閱）；OpenSpec 為 PM 內部工作版本不外露。
-  觸發時機：Miles 說「交付到 Linear」「發布給開發」「把 X 模組交付給開發」「調整 Linear 上的 project / issue」「依評分稽核交付文件」。
-  此 skill 強制：先精煉模板再產出（不抓單一既有 issue 當對照）+ 交付前跑 Rubric 評分（執行者與評審分離）+ 缺口顯性化不捏造。
-  **強制規則（禁止以下 anti-pattern）**：
-    1. 禁在交付內容寫 `openspec/specs/...` 或任何 PM 內部工作版本引用（正本邊界）
-    2. 禁拿「另一個需求 / issue 的內容」當對照範本（實例會變動 / 消失即失效）；MUST 依 references/delivery-template.md 自包含標準模板產出
-    3. 禁把實作細節（How）寫進 project 描述（What 層）；禁讓 Task issue 只剩「指回 project」一句而無該角色實作要點
-    4. 狀態密集模組禁交付沒有狀態機 UML 的文件；禁畫 spec 未定義的狀態轉換（捏造）
-    5. 來源未定義時禁自編規則填入交付文件 MUST 停下來記 oq-manage mode B + 標「另案處理」
-    6. 交付前 MUST 跑 references/rubric.md 4 維度符合性評分（評分 sub-agent 執行）；合格分數 = 8 / 8，未達禁發布；維度 4（真實性）為一票否決
+  把已定案的規格交付到 Linear（project 描述 + 各角色 Task issue），依自包含標準模板產出，交付前以 Rubric 評分稽核（執行者與評審分離、合格 8 / 8）才發布。對開發而言 Linear 為交付正本、wiki 為欄位與狀態正本；OpenSpec 為 PM 內部工作版本不外露。
+  觸發：Miles 說「交付到 Linear」「發布給開發」「把 X 模組交付給開發」「調整 Linear 上的 project / issue」「依評分稽核交付文件」。
   不適用：Vault 整體健康稽核（用 vault-audit）、規劃前 know-how 稽核（用 erp-planning-pre-check）。
+  強制規則（6 條 anti-pattern 禁令）與 Rubric 流程見本文與 references/。
 ---
 
 # Linear 交付與評分稽核（linear-delivery）

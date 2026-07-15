@@ -2,14 +2,9 @@
 name: oq-manage
 description: >
   OQ（Open Question）管理 skill。正本：Vault `memory/Sens_wiki/wiki/erp/08-open-questions/`（平層＝未結案佇列；`_archives/<YYYY>/`＝已結案封存）。
-  觸發時機：
-    1. 任何討論／撰寫中識別到設計不確定項（MUST 立即開檔，禁 inline 標注）
-    2. Miles 說「新增 OQ」「這個要記下來」「有個問題要確認」（mode B）
-    3. 討論開始前查特定模組未解 OQ（mode A）
-    4. OQ 已拍板（mode C 解答與封存）
-    5. Miles 說「遷出 [檔案] 的 OQ」或掃描發現 inline OQ 措辭（mode D）
-    6. Miles 說「整理 OQ」「掃 OQ」「OQ 健康」（mode E 批次整理）
+  觸發：識別到設計不確定項 MUST 立即開檔（禁 inline 標注）；mode A——討論前查模組未解 OQ；mode B——「新增 OQ」「這個要記下來」「有個問題要確認」；mode C——OQ 已拍板（解答與封存）；mode D——「遷出 [檔案] 的 OQ」或掃到 inline OQ 措辭；mode E——「整理 OQ」「掃 OQ」「OQ 健康」。
   不適用：已確認的決策記錄（直接寫正本卡）、術語定義更新、一般討論備忘、未消化的觀察素材（走 vault-ingest）。
+  狀態三值 / audience 判定 / 封存規則見本文。
 ---
 
 # oq-manage

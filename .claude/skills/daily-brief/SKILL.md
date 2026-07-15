@@ -1,27 +1,10 @@
 ---
 name: daily-brief
 description: >
-  ERP Vault 每日進度回顧 + 今日建議行動 skill。
-  寫入位置：Vault `memory/Sens_wiki/wiki/erp/14-reviews/daily/<YYYY-MM-DD>.md`（2026-05-21 新增）。
-  觸發時機：
-    1. Miles 說「開工」「daily」「daily brief」「今日要做什麼」「今日 brief」「今天該做什麼」
-    2. Miles 早上開始 ERP 規劃工作前主動觸發
-  此 skill 強制產出兩段內容：今日建議行動（≤ 3 條）+ 昨日進度摘要。
-  **強制規則（禁止以下 anti-pattern）**：
-    1. 禁止空洞讚美（「執行順利」「進度良好」等無 actionable 內容）
-    2. 禁無 source（每個觀察 MUST 指向具體 commit / OQ / 卡 / change）
-    3. 禁無 Next action（「今日建議行動」每條 MUST 帶具體可開始的第一步）
-    4. 禁與 log.md 重複（複述既有事件時引用而非重寫）
-    5. 禁編造（git log / log.md / OpenSpec / Vault 沒寫的事 MUST NOT 出現在 brief）
-    6. 禁附「產出位置」（如「該寫進 07-scenarios/」之類）— Miles 知道往哪寫，重複資訊
-    7. 禁附「預估時間」（如「1.5-2 小時 / 情境」）— 估時不準，浪費資訊
-    8. 排序 MUST 用「相依性 > 優先度 > 時效性」，MUST NOT 用「快速完成」當排序依據
-    9. 結構 MUST 用「現況 / Next action」兩段條列化（類似會議紀錄），MUST NOT 用長句段落
-    10. 現況段（事實 / 原因）與 Next action 段（執行動作）MUST 職責分離
-    11. 反目標段 MUST 對應本日具體誘惑 / 慣性弱點，禁空洞（「不浪費時間」屬無內容）
-    12. 昨日決策段只記「設計 / 範疇 / 取捨」決策，禁記執行細節
-    13. 昨日學到 1-2 條，禁超過 3 條（daily 是即時抓非大整理）；禁空洞「學到溝通重要」這類
+  ERP Vault 每日進度回顧 skill：今日建議行動（≤ 3 條）+ 昨日進度摘要兩段產出，寫入 Vault `14-reviews/daily/<YYYY-MM-DD>.md`。
+  觸發：Miles 說「開工」「daily」「daily brief」「今日要做什麼」「今日 brief」「今天該做什麼」，或早上開始 ERP 規劃工作前主動建議。
   不適用：週度回顧（用 weekly-review）、跨主題模式提煉（用 vault-insight）、Vault 健康稽核（用 vault-audit）。
+  強制規則（13 條 anti-pattern 禁令）與流程見本文。
 ---
 
 # daily-brief

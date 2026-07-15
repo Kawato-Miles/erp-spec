@@ -1,28 +1,10 @@
 ---
 name: weekly-review
 description: >
-  ERP Vault 每週回顧 skill：本週學到 / 本週完成 / 下週重點。
-  寫入位置：Vault `memory/Sens_wiki/wiki/erp/14-reviews/weekly/<YYYY-WNN>.md`（2026-05-21 新增）。
-  觸發時機：
-    1. Miles 說「週末整理」「weekly review」「本週回顧」「下週重點」「本週做了什麼」「這週學到什麼」
-    2. Miles 週末整理工作時主動觸發（建議週日晚上）
-  此 skill 強制產出三段內容：本週學到（3-5 條，提煉非複述）+ 本週完成（commits / change / OQ / raw / spec 統計）+ 下週重點（≤ 3 條）。
-  **強制規則（禁止以下 anti-pattern）**：
-    1. 禁止空洞讚美（「本週進度良好」「執行順利」等無 actionable 內容）
-    2. 禁無 source（每個觀察 MUST 指向具體 commit / OQ / 卡 / change / raw / insight）
-    3. 禁無 Next action（「下週重點」每條 MUST 帶具體可開始的第一步）
-    4. 禁複述（「本週學到什麼」MUST 提煉，不是「本週做了什麼」的複製）
-    5. 禁與 log.md / 本週 daily 卡重複（引用而非重寫）
-    6. 禁編造（git log / log.md / OpenSpec / Vault / 本週 daily 卡沒寫的事 MUST NOT 出現）
-    7. 禁附「產出位置」（如「該寫進 07-scenarios/」）— Miles 知道往哪寫，重複資訊
-    8. 禁附「預估時間 / 預估完成週幾」— 估時不準，浪費資訊
-    9. 「下週重點」排序 MUST 用「相依性 > 優先度 > 時效性」，MUST NOT 用「快速完成」當排序依據
-    10. 「下週重點」結構 MUST 用「現況 / Next action」兩段條列化（類似會議紀錄）
-    11. 現況段（事實 / 原因）與 Next action 段（執行動作）MUST 職責分離
-    12. 未完成原因分析 MUST 多問一層為什麼（找根因，不是表層觀察）；禁責備執行（「太忙」屬無內容）
-    13. 決策品質回顧聚焦「決策邏輯」而非 outcome；1-3 條，禁列舉所有決策
-    14. Pre-mortem 風險 MUST 具體（「可能失敗」屬無內容）；焦點是執行踩雷而非策略方向錯誤
+  ERP Vault 每週回顧 skill：本週學到 / 本週完成 / 下週重點三段產出，寫入 Vault `14-reviews/weekly/<YYYY-WNN>.md`。
+  觸發：Miles 說「週末整理」「weekly review」「本週回顧」「下週重點」「本週做了什麼」「這週學到什麼」，或週末整理工作時主動建議。
   不適用：日級回顧（用 daily-brief）、跨主題模式提煉（用 vault-insight）、Vault 健康稽核（用 vault-audit）。
+  強制規則（14 條 anti-pattern 禁令）與六步驟流程見本文 § 六、§ 八。
 ---
 
 # weekly-review

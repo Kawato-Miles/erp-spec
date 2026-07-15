@@ -2,14 +2,9 @@
 name: vault-ingest
 description: >
   ERP_Vault raw 素材承接與精練 skill（素材進入知識庫的唯一閘門）。
-  觸發時機：
-    1. Miles 說「存進 raw」「我要記」「先收集」「這份檔案存 raw」（mode A）
-    2. Claude 完成被指派的研究任務（WebFetch / WebSearch）後（mode A，自主）
-    3. Claude 在對話中識別「值得記」的素材（mode A，MUST 先問 Miles）
-    4. Miles 說「精練 [檔名]」「ingest 這張」「拆解 raw」（mode B）
-    5. Miles 說「看 raw」「掃 raw」「raw 待處理」；或累積 ≥ 10 張 status=raw 時建議（mode C）
-  範圍：寫入限 `memory/Sens_wiki/raw/`（mode A）與 Miles 確認後的 wiki 卡（mode B）；mode C 純報告不動檔。
+  觸發：mode A——Miles 說「存進 raw」「我要記」「先收集」「這份檔案存 raw」、Claude 完成研究任務後、Claude 識別「值得記」素材（MUST 先問 Miles）；mode B——「精練 [檔名]」「ingest 這張」「拆解 raw」；mode C——「看 raw」「掃 raw」「raw 待處理」或累積 ≥ 10 張 status=raw 時建議。
   不適用：已精練的知識更新（直接改既有 vault 卡）、明確未解問題（走 oq-manage）、UI 規範（留 DESIGN.md）。
+  Anti-Model-Collapse 防線與各 mode 流程見本文。
 ---
 
 # vault-ingest

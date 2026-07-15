@@ -1,14 +1,10 @@
 ---
 name: vault-insight
 description: >
-  ERP_Vault 跨主題模式識別與下一步提煉 skill。
-  觸發時機：
-    1. Miles 說「跑 insight」「精練 insight」「找下一步」「找系統性議題」
-    2. `08-open-questions/` 達 15 個 open OQ（建議 Miles 跑，不自動執行）
-    3. Phase 切換 / change archive 後（建議）
-    4. `vault-audit` 發現 ≥ 5 個 Error（自動建議）
-  範圍鐵則：只讀 `memory/Sens_wiki/wiki/`＋`raw/`（僅 status=ingested / reviewed，禁讀 status=raw 防 self-amplification）；MUST NOT 讀 OpenSpec、Prototype、memory/ 其他目錄。
+  ERP_Vault 跨主題模式識別與下一步提煉 skill，產出 `12-insights/` 卡。
+  觸發：Miles 說「跑 insight」「精練 insight」「找下一步」「找系統性議題」；建議時機——open OQ 達 15 個、Phase 切換 / change archive 後、vault-audit 發現 ≥ 5 個 Error。
   不適用：Vault 健康 lint（用 vault-audit）、日／週回顧（用 daily-brief / weekly-review）、單一卡片問題（直接編該卡）、OQ 解答（裁決權在 Miles）。
+  範圍鐵則（只讀 wiki/＋raw/ 的 ingested / reviewed，禁讀 status=raw）與步驟見本文。
 ---
 
 # vault-insight

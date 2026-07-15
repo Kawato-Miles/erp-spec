@@ -1,17 +1,10 @@
 ---
 name: vault-audit
 description: >
-  ERP_Vault 自審稽核 skill。對 `memory/Sens_wiki/wiki/` 執行 12 維度健康檢查（Karpathy LLM Wiki lint 模式 + Sens 特化），產出對話報告 + 追加 wiki/log.md 一筆（動作=健檢、標籤=audit）。
-  觸發時機：
-    1. Miles 說「跑 vault audit」「Vault 健康檢查」「audit vault」
-    2. 主動收尾發現 ≥ 5 個 Vault 卡異動時建議
-    3. change archive 後建議
-    4. 每 20+ commit 後建議
-    5. raw 累積 ≥ 10 張 status=raw 時自動建議（維度 9 觸發）
-    6. 本月 daily review 缺 ≥ 工作日 50% 時自動建議（維度 10 觸發）
-  範圍鐵則：**只讀 `memory/Sens_wiki/wiki/`＋`memory/Sens_wiki/raw/`（raw 唯讀）。MUST NOT 掃描或開啟 OpenSpec、Prototype、memory/ 其他目錄**——跨層對齊與進度追蹤不是 lint，分別歸 OpenSpec 工作流與 vault-insight。
-  輸出：對話報告 + 追加 `memory/Sens_wiki/wiki/log.md` 一筆（動作=健檢、標籤=audit；追加式、最新在上、禁覆寫）。
-  不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）、KPI 進度追蹤（用 vault-insight / weekly-review）、純對話內容稽核。
+  ERP_Vault 自審稽核 skill：對 wiki 執行 12 維度健康檢查（Karpathy LLM Wiki lint + Sens 特化），產出對話報告並追加 wiki/log.md。
+  觸發：Miles 說「跑 vault audit」「Vault 健康檢查」「audit vault」；主動建議時機——≥ 5 個 Vault 卡異動、change archive 後、每 20+ commit、raw 累積 ≥ 10 張 status=raw、本月 daily review 缺 ≥ 工作日 50%。
+  不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）、KPI 進度追蹤（用 vault-insight / weekly-review）。
+  範圍鐵則（只讀 wiki/＋raw/ 唯讀）與 12 維度定義見本文。
 ---
 
 # vault-audit
