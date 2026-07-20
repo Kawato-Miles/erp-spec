@@ -4,11 +4,13 @@ module:
   - 售後服務
   - 訂單管理
 oq-id: AFT-5
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-20
 raised-by: Miles (plan 階段)
+answered-at: 2026-07-20
+answered-by: Miles
 source-link: openspec/changes/archive/2026-05-20-refine-after-sales-refund-and-add-supplementary-print/design.md
 related-vault:
   - [[../05-entities/售後服務]]
@@ -54,6 +56,17 @@ expected-resolution-at: 2026-Q3
 - 業務 / 諮詢角色在補費場景的常見操作流程
 - 是否與 [[印件]] 的 BOM 展算 + 計價邏輯整合
 - 待確認補費金額計算邏輯後決定方案
+
+## 決議（2026-07-20 Miles 拍板）
+
+前提更新：售後服務單的「責任歸屬」欄位已於同日拍板移除（行為驅動模型），本卡背景段的 responsibility 觸發前提失效，問題改述為「業務決定此補印要向客戶收費時，補收異動單怎麼建、金額怎麼算」。
+
+結論：
+- **由誰建**：採候選做法 1——業務手動建。補印要收費就走既有訂單異動流程，業務自己到售後單內建補收異動單，系統不自動帶建、不內聯建單。
+- **金額怎麼算**：金額為業務與客戶協商的價格，不做工本費自動展算。
+- 商業現實：實務上補印再向客戶多收錢的情況幾乎不會發生（罕見路徑，不值得做自動化）。
+
+落地去處：[[售後服務規則]]（付費補印規則改寫：業務手動建補收異動單、金額為協商價、實務上少見）、[[售後服務]]（實體卡關鍵關聯補「收費由是否掛補收異動單體現」）。
 
 ## 來源
 
