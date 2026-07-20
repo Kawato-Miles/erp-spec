@@ -1,7 +1,7 @@
 ---
 name: linear-delivery
 description: >
-  把已定案的規格交付到 Linear（project 描述 + Task issue），依自包含標準模板（v2.1）產出，交付前以 Rubric 評分稽核（執行者與評審分離、合格 10 / 10）才發布。對開發而言 Linear 為交付正本、wiki 為欄位與狀態正本、Prototype 為介面與互動正本（交付附參照）；OpenSpec 為 PM 內部工作版本不外露。
+  把已定案的規格交付到 Linear（project 描述 + Task issue），依自包含標準模板（v2.2）產出，交付前以 Rubric 評分稽核（執行者與評審分離、合格 10 / 10）才發布。對開發而言 Linear 為交付正本、wiki 為欄位與狀態正本、Prototype 為介面與互動正本；OpenSpec 為 PM 內部工作版本不外露。
   觸發：Miles 說「交付到 Linear」「發布給開發」「把 X 模組交付給開發」「調整 Linear 上的 project / issue」「依評分稽核交付文件」。
   不適用：Vault 整體健康稽核（用 vault-audit）、規劃前 know-how 稽核（用 erp-planning-pre-check）。
   強制規則（7 條 anti-pattern 禁令）與 Rubric 流程見本文與 references/。
@@ -13,7 +13,7 @@ description: >
 
 把**已定案的規格**交付到 Linear，讓開發團隊拿到可動工的需求；交付前用 Rubric 評分把關品質。
 
-- **正本邊界**：對開發而言，**Linear 為交付正本（內容自包含）＋ wiki 為欄位與狀態正本（開發團隊直接查閱實體卡與狀態機卡，交付不複寫）＋ Prototype 為介面與互動正本（操作動線與版型以 Prototype 為準，交付附參照、不文字重述；為準／不為準邊界正本在 CLAUDE.md 分工宣告，交付不另附邊界表）**；Notion 已停用為 BRD。OpenSpec spec 是 PM 內部工作版本，交付內容 MUST NOT 外露 `openspec/...` 路徑。
+- **正本邊界**：對開發而言，**Linear 為交付正本（內容自包含）＋ wiki 為欄位與狀態正本（開發團隊直接查閱實體卡與狀態機卡，交付不複寫）＋ Prototype 為介面與互動正本（操作動線與版型以 Prototype 為準，交付不文字重述、不附 Prototype 參照格；為準／不為準邊界正本在 CLAUDE.md 分工宣告，交付不另附邊界表）**；Notion 已停用為 BRD。OpenSpec spec 是 PM 內部工作版本，交付內容 MUST NOT 外露 `openspec/...` 路徑。
 - **方法論來源**：Gary Chen《/goal 功能怎麼用》影片 —— 「實作者 + 評審」雙角色 + 提示詞 5 元素 + Rubric 6 步驟。對齊 CLAUDE.md karpathy § 4「Goal-Driven Execution」與 `erp-planning-pre-check` 的「執行者 / 稽核者分離」。
 
 ### 與其他 skill 分工
@@ -32,7 +32,7 @@ description: >
 
 | 元素 | 本 skill 的填法 |
 |------|----------------|
-| **Outcome（最終成果）** | Linear project 描述（What）+ Task issue（How）+ 狀態機 UML + v2.1 結構件（Prototype 參照／測試決策章／驗收測試段／Blocked by／milestone）齊備，且 Rubric 符合性評分達**合格分數 10 / 10**（由與實作者分離的評分 sub-agent 判定，非實作者自判）|
+| **Outcome（最終成果）** | Linear project 描述（What）+ Task issue（How）+ 狀態機 UML + v2.2 結構件（測試決策章／驗收測試段／Blocked by／milestone）齊備，且 Rubric 符合性評分達**合格分數 10 / 10**（由與實作者分離的評分 sub-agent 判定，非實作者自判）|
 | **Verification（驗證方式）** | 由評分 sub-agent 跑 `references/rubric.md` 5 維度符合性評分（每維度 0-2 分，合格 = 10 分且 D4 = 2）；逐條對照「絕對不要」禁令清單 |
 | **Constraint（限制條件）** | 只改本次交付的 project 描述與指定 issue 描述；**絕對不動** issue 的 estimate / assignee / cycle / priority / milestone / labels；不外露 OpenSpec 路徑 |
 | **Iteration Policy（迭代策略）** | 修完 MUST 重新評審（餵完整草稿、不暗示改動）；每輪記錄第 N 輪改了什麼 / 哪些維度未過 / 下一步；達標才停、硬上限 3 輪、卡住停下問 Miles |
@@ -48,7 +48,7 @@ description: >
 # /goal：交付「<模組名>」到 Linear（project <project-id>）
 
 ## Outcome（完工標準）
-<模組> 的 project 描述（模組層 What）+ Task issue（How 層，含驗收測試段與 Blocked by）齊備〔狀態密集模組另含每個狀態機 UML、有業務結果的功能另含驗收條件、有介面的 Feature 另含 Prototype 參照〕，且 references/rubric.md 5 維度符合性評分（D1 正本邊界 / D2 分層顆粒度 / D3 完整性 / D4 真實性 / D5 交付結構完整性）達合格分數 10 / 10。實作者不得自判完成。
+<模組> 的 project 描述（模組層 What）+ Task issue（How 層，含驗收測試段與 Blocked by）齊備〔狀態密集模組另含每個狀態機 UML、有業務結果的功能另含驗收條件〕，且 references/rubric.md 5 維度符合性評分（D1 正本邊界 / D2 分層顆粒度 / D3 完整性 / D4 真實性 / D5 交付結構完整性）達合格分數 10 / 10。實作者不得自判完成。
 
 ## Verification（驗證方式）
 由評分 sub-agent 跑 references/rubric.md：逐維度給 2 / 1 / 0 分 + evidence-anchored（引用草稿具體位置）+ 違反禁令 + 修正方向。合格 = 10 分，D4 真實性一票否決（必為 2）。
@@ -125,7 +125,7 @@ description: >
 
 > **MUST NOT** 拿「另一個需求 / issue 的內容」當對照範本 —— 實例會被修改或刪除，對照即失效。標準模板是從多個既有交付物**精煉出的自包含結構**，更新走版本控管（見本檔 § Rubric 與模板演化）。
 
-- **project 描述 = What 層（薄）**：概述（商業目標＋痛點，源 wiki）/ Use Case（業務敘事，源 wiki）/ Key Feature（Scope 主要／次要功能巢狀＋Out of Scope）/ 各 Feature 章（Prototype 參照＋Function 節＝商業邏輯＋驗收條件）/ 測試決策（受測介面 2-4 個＋測試先行說明，只此一處）/ 另案處理 / 狀態機。操作方式與介面呈現歸 Prototype 參照、實作規格下放 Task 票、欄位歸 wiki 實體卡；細則見 references/delivery-template.md v2.1 與 docs/superpowers/specs/2026-07-07-linear-delivery-architecture-design.md
+- **project 描述 = What 層（薄）**：概述（商業目標＋痛點，源 wiki）/ Use Case（業務敘事，源 wiki）/ Key Feature（Scope 主要／次要功能巢狀＋Out of Scope）/ 各 Feature 章（Function 節＝商業邏輯＋驗收條件）/ 測試決策（受測介面 2-4 個＋測試先行說明，只此一處）/ 另案處理 / 狀態機。操作方式與介面呈現歸 Prototype（介面與互動正本，交付不文字重述、不附參照格）、實作規格下放 Task 票、欄位歸 wiki 實體卡；細則見 references/delivery-template.md v2.2 與 docs/superpowers/specs/2026-07-07-linear-delivery-architecture-design.md
 - **Task issue = How 層**：單一 Task 票模板（按功能切、職能由開票時指派的 team 承載、不出設計票）：實作 checklist＋驗收測試段（先紅後綠、落在受測介面）＋Blocked by 段＋依賴與範圍；概述指回「Key Feature：<功能名>」章
 - **Milestone 與開票順序**：milestone＝縱向整合節點（一條可展示的端到端路徑）；開票 blockers-first、以 Linear 原生 blocking 關係連結（見 references/delivery-template.md § 四）
 - **迭代交付擴充既有 project 描述時，MUST 融入既有段落結構**：新情境在原清單上加條目（Use Case 原 3 條加第 4 條、Key Feature 加項、功能邏輯說明清單加規則、Design 動線加線），缺的標準區塊（如驗收條件）可新增；**MUST NOT 在描述尾端另起一個平行的完整區塊**（概述＋使用情境＋Spec 全套重來一輪；2026-07-07 業務平台訂單管理審稿擴充實測：附加「審稿情境擴充」完整區塊被 Miles 退回，改融入各段）
@@ -135,7 +135,7 @@ description: >
 
 主對話 agent（實作者）對照 `references/rubric.md` 5 維度的「絕對不要」禁令清單逐條自查，修掉明顯違規。
 
-自審 MUST 含：有業務可觀測結果的功能是否已附驗收條件、驗收條件是否 outcome 導向且二元可勾稽、是否誤把通用品質門檻（Definition of Done）混入驗收條件、驗收條件條目是否殘留內部路徑或檔名；以及 v2.1 結構件——有介面的 Feature 是否附 Prototype 參照、測試決策章是否在（且測試先行說明只此一處、票內不重複引言）、每張票是否有驗收測試段（每條標受測介面）與 Blocked by 段、是否誤開設計票或誤附邊界表。**結構性交付缺 v2.1 結構件者不得發布（由 D5 承接評分）。**
+自審 MUST 含：有業務可觀測結果的功能是否已附驗收條件、驗收條件是否 outcome 導向且二元可勾稽、是否誤把通用品質門檻（Definition of Done）混入驗收條件、驗收條件條目是否殘留內部路徑或檔名；以及 v2.2 結構件——測試決策章是否在（且測試先行說明只此一處、票內不重複引言）、每張票是否有驗收測試段（每條標受測介面）與 Blocked by 段、是否誤開設計票或誤附邊界表。**結構性交付缺 v2.2 結構件者不得發布（由 D5 承接評分）。**
 
 ### Step 4：符合性評分（執行者 / 評分者分離）
 
@@ -179,7 +179,7 @@ description: >
 | 2 | 分層與顆粒度 | project 寫完整 What、issue 寫該角色 How，不重複不空洞 | 一般 |
 | 3 | 完整性 | 必要區塊齊備；狀態密集模組每個狀態機附 UML | 一般 |
 | 4 | 真實性（不捏造）| 來源未定義就記 OQ 標另案，不自編 | **一票否決** |
-| 5 | 交付結構完整性 | v2.1 結構件齊備：Prototype 參照／測試決策章／驗收測試段／Blocked by／milestone，且不另開設計票、不另附邊界表 | 一般 |
+| 5 | 交付結構完整性 | v2.2 結構件齊備：測試決策章／驗收測試段／Blocked by／milestone，且不另開設計票、不另附邊界表 | 一般 |
 
 評分尺度：每維度 **通過 2 分 / 部分 1 分 / 未通過 0 分**，滿分 10。**合格分數 = 10 分（且維度 4 必為 2），未達即不發布**；維度 4 任一處捏造直接擋。
 
