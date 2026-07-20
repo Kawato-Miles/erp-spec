@@ -3,7 +3,7 @@ type: open-question
 module:
   - 訂單管理
 oq-id: BI-4
-status: open
+status: cancelled
 priority: medium
 audience: internal
 raised-at: 2026-05-28
@@ -61,3 +61,7 @@ expected-resolution-at: 2026-Q3
 - erp-consultant Phase 3 C-PM-3 反向挑戰（unify-billing-installment-and-reconciliation-csv change）
 - design.md § Open Questions OQ-BI-4
 - Prototype 程式碼：`src/types/orderAdjustment.ts` `SUPPLEMENTARY_CHARGE_HIGH_AMOUNT_THRESHOLD`
+
+## 結案（cancelled，2026-07-20）
+
+Miles 拍板（2026-07-20）：「大額補收事後監督」整條機制自規格移除（wiki [[訂單異動規則]]、order-billing 規格、Linear 交付同步刪除）——公司無此需求。機制不存在，大額門檻取值的問題隨之消滅，本卡以 cancelled 結案、無需後續接手。補收免審本體不受影響（[[訂單異動規則]] 補收免審條照舊）。
