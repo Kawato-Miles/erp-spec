@@ -1006,11 +1006,13 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 
 **各 enum 分支後續流程**：
 
-- **OK**（打樣通過）→ 開放大貨流程；業務後續手動建大貨工單。系統不自動觸發任何下游動作（保留業務決定權）
-- **NG-製程問題**（打樣品質問題，稿件本身無問題）→ 業務 UI 自行於同打樣印件下建新打樣 WorkOrder 重做；系統不自動建新工單（保留業務決定權；ng_process 下游自動化處理機制細節待 OQ AR-13 解後實作）
+- **OK**（打樣通過）→ 開放大貨流程；業務後續手動建大貨工單。系統不自動觸發任何下游動作（保留業務決定權）。純打樣訂單（無大貨印件）於此時滿足訂單完成守衛（見下方「純打樣訂單完成守衛」）
+- **NG-製程問題**（打樣品質問題，稿件本身無問題）→ 系統 SHALL 自動於同一打樣印件下建立新打樣 WorkOrder（`type = 打樣`、初始狀態 = 草稿；一律重打、不由業務決定），並同步執行：印件印製維度自「已送達」轉回「等待中」（僅打樣印件的回頭轉換，大貨印件無回頭）、`sampleResult` 重置回「待確認」、舊週期樣品報廢（自入庫數與累計送達數移出、數量帳按打樣週期歸零，報廢量計入成本，公式正本見 wiki 齊套邏輯卡）。重做成本記錄與製程根因結構化待 OQ AR-13
 - **NG-稿件問題**（稿件本身有問題，需重新處理稿件）→ 系統 SHALL 自動觸發「打樣後棄用原印件建新印件」流程（見下方 Requirement）
 
-**判定不可逆**：判定後 `sampleResult` 鎖定，不可由業務再次修改（避免規避稽核軌跡）。若判定錯誤需更正，須由業務主管走 ActivityLog 修正流程（本 spec 不展開細節）。
+**判定不可逆**：判定後 `sampleResult` 鎖定，不可由業務再次修改（避免規避稽核軌跡；NG-製程問題重打時由系統重置回「待確認」，屬系統動作、非業務修改）。若判定錯誤需更正，須由業務主管走 ActivityLog 修正流程（本 spec 不展開細節）。
+
+**純打樣訂單完成守衛**：訂單完成的「全部印件已送達」判定，對打樣印件 SHALL 加守衛「且 `sampleResult = OK`」——樣品送達後客戶評審期間（`sampleResult = 待確認`）訂單停留在「出貨中」、不自動完成。此守衛保護純打樣訂單（打樣印件為唯一印件）在客戶評審前誤達終態，也讓 NG-製程問題回頭重打不與訂單終態不可逆衝突；混合訂單因序列強制（打樣通過才放行大貨）於進出貨段時打樣早已 OK，不受影響。
 
 **ActivityLog 記錄**：判定動作 SHALL 寫入訂單層 ActivityLog（`Order.activityLogs`），格式為「填打樣結果：{result}（工單 {workOrderNo}）」（對齊 Prototype 既有實作）；印件層 ActivityLog（PrintItemActivityEvent）不引入新事件型別。
 
@@ -1022,14 +1024,21 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 - **AND** 系統 MUST NOT 自動觸發任何下游動作（業務後續手動建大貨工單）
 - **AND** 訂單層 ActivityLog SHALL 建立「填打樣結果：OK（工單 {workOrderNo}）」事件
 
-#### Scenario: 業務判定 NG-製程問題
+#### Scenario: 業務判定 NG-製程問題（系統自動重打）
 
-- **GIVEN** 打樣印件 X 對應的打樣 WorkOrder 已推進至「已完成」、`sampleResult = 待確認`
+- **GIVEN** 打樣印件 X 對應的打樣 WorkOrder 已推進至「已完成」、樣品已送達（印製維度 = 已送達）、`sampleResult = 待確認`
 - **WHEN** 業務於打樣 WorkOrder 詳情頁選擇 `NG-製程問題` 並確認
-- **THEN** 系統 SHALL 寫入 `PrintItem.sampleResult = NG-製程問題`
-- **AND** 系統 MUST NOT 自動建新打樣 WorkOrder（業務 UI 自行建）
+- **THEN** 系統 SHALL 寫入 `PrintItem.sampleResult = NG-製程問題` 並隨即自動建立新打樣 WorkOrder（同印件、`type = 打樣`、初始狀態 = 草稿）
+- **AND** 印件印製維度 SHALL 自「已送達」轉回「等待中」、`sampleResult` SHALL 重置回「待確認」
+- **AND** 舊週期樣品 SHALL 報廢：自入庫數與累計送達數移出、數量帳按打樣週期歸零（報廢量計入成本）
 - **AND** 訂單層 ActivityLog SHALL 建立「填打樣結果：NG-製程問題（工單 {workOrderNo}）」事件
-- **AND** UI SHALL 提示業務「請建立新的打樣工單（同印件）」
+
+#### Scenario: 純打樣訂單樣品送達後評審前不完成
+
+- **GIVEN** 純打樣訂單（僅一件打樣印件），樣品出貨單已送達（印件印製維度 = 已送達）、`sampleResult = 待確認`
+- **THEN** 訂單 SHALL 停留在「出貨中」、不推進「訂單完成」
+- **WHEN** 業務填寫 `sampleResult = OK`
+- **THEN** 訂單 SHALL 推進「訂單完成」
 
 #### Scenario: 業務判定 NG-稿件問題
 
