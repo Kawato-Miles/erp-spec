@@ -1549,14 +1549,15 @@ pt_qc_passed = sum(WorkRecord.passed_quantity
 
 ### Requirement: NCR（不合格紀錄）實體
 
-當 QC / inspection PT 的 WorkRecord 提交時 `failed_quantity > 0`，系統 MUST 自動建立 NCR 紀錄。
+NCR 是「東西做壞」的統一處置載體，一律由系統自動建立（無人工開單），觸發來源兩種：(1) QC / inspection PT 的 WorkRecord 提交時 `failed_quantity > 0`；(2) 業務填打樣結果 = `NG-製程問題`（見本 Requirement「打樣評審觸發」段）。出貨後客訴反饋為保留的未來擴充來源。
 
 NCR Data Model：
 
 | 欄位 | 型別 | 必填 | 說明 |
 |------|------|------|------|
 | `id` | UUID | Y | 主鍵 |
-| `source_work_record_id` | FK | Y | 觸發此 NCR 的 ProductionTaskWorkRecord |
+| `source_type` | 列舉 | Y | 觸發來源：`qc_work_record` / `sample_review` |
+| `source_work_record_id` | FK | N | 觸發此 NCR 的 ProductionTaskWorkRecord（`source_type = qc_work_record` 時必填；`sample_review` 時為 NULL）|
 | `defect_quantity` | 整數 | Y | 不合格數量（= source WorkRecord 的 failed_quantity）|
 | `disposition` | 列舉 | N | `rework` / `use_as_is` / `scrap`（pending 狀態時為 NULL）|
 | `disposition_at` | 日期時間 | N | 印務做決策時間 |
@@ -1583,13 +1584,22 @@ NCR Data Model：
 - **WHEN** QC 人員提交一筆 WorkRecord：reported=100、passed=100（failed = 0）
 - **THEN** 系統 MUST NOT 建立 NCR
 
+**打樣評審觸發（第二建立路徑，系統預填、即開即結）**：業務填打樣結果 = `NG-製程問題` 時，系統 MUST 自動建立 NCR 並全欄位預填：`source_type = sample_review`、`source_work_record_id = NULL`、`defect_category = process`、`disposition = rework`、`defect_quantity = 該打樣印件全數`、`status = resolved`（不經 pending——處置在填 NG 判定當下即確定，無需印務決策）、`disposition_by` 記系統、`disposition_at` = 判定時間。此路徑不適用「source WorkRecord 作廢 → pending 自動 cancelled」邊界（無 source WorkRecord 且一建即 resolved）。
+
+#### Scenario: 打樣 NG-製程問題自動建 NCR（即開即結）
+
+- **WHEN** 業務於打樣 WorkOrder 詳情頁填打樣結果 = `NG-製程問題`（判定流程見 prepress-review spec § 打樣結果業務判定）
+- **THEN** 系統 SHALL 自動建立 NCR：`source_type = sample_review`、`defect_category = process`、`disposition = rework`、`defect_quantity = 打樣印件全數`、`status = resolved`
+- **AND** rework 下游動作 SHALL 為系統於同一打樣印件建立新打樣 WorkOrder（依 source_type 分流，非 C3 補生產路徑）
+- **AND** 全程無人工開單或人工決策步驟
+
 ---
 
 ### Requirement: NCR Disposition 機制
 
 NCR 建立後 status = `pending`，印務 SHALL 對 NCR 做 Disposition 決策（三選一）：
 
-- `rework`：補做缺口（具體流程詳見 C3 `add-production-task-rework`）
+- `rework`：補做缺口。下游建單依 `source_type` 分流：`qc_work_record` 來源依 C3 `add-production-task-rework` 補生產；`sample_review` 來源＝系統於同一打樣印件建立新打樣 WorkOrder（兩路徑互斥，避免重複建單）
 - `use_as_is`：議價接受，印件數量鎖定，業務發起訂單異動退款（具體流程詳見 C3 / C4）
 - `scrap`：報廢，標記放棄
 
