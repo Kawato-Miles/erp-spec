@@ -24,11 +24,11 @@ expected-resolution-at: 正式上線階段
 
 ## 問題描述
 
-reclassify-qc 廢止 `QCRecord` 獨立實體，併入 ProductionTask。Prototype 階段不處理資料遷移（依 Miles 指示）。正式上線時需決定：
+reclassify-qc 廢止 `QCRecord` 獨立實體，併入 ProductionTask。**遷移標的更新（2026-07-21）**：品檢模型再拍板為**印件層品檢紀錄**（品檢型生產任務亦廢止，見 [[QC-002-QC兩張wiki卡退役或保留|QC-002]] 決議），既有資料（QCRecord 與 Prototype 品檢型任務實作）的最終遷移目標為 [[品檢紀錄]]（掛印件、分次驗、累計通過＝入庫）。Prototype 階段不處理資料遷移（依 Miles 指示）。正式上線時需決定：
 
-1. 既有 QCRecord 資料（生產環境）如何 migration 到 ProductionTask（type = qc / inspection）
-2. migration script 設計（mapping 規則、邊界情況、Rollback 策略）
-3. migration 時機（上線前 batch / 上線後漸進）
+1. 既有品檢資料（生產環境）如何遷移到印件層品檢紀錄
+2. 遷移腳本設計（對應規則、邊界情況、回復策略）
+3. 遷移時機（上線前批次 / 上線後漸進）
 
 ## 涉及範圍
 

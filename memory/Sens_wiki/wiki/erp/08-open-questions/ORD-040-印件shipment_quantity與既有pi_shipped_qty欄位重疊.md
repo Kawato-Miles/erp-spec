@@ -14,7 +14,7 @@ source-link: openspec/changes/archive/2026-06-01-align-business-consultation-cov
 related-oq: []
 ---
 
-# ORD-028：印件 shipment_quantity 與既有 pi_shipped_qty 出貨數量欄位重疊
+# ORD-040：印件 shipment_quantity 與既有 pi_shipped_qty 出貨數量欄位重疊
 
 ## 問題描述
 
