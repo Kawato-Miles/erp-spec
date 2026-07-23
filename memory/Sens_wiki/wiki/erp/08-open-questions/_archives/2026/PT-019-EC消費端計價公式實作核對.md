@@ -3,7 +3,7 @@ type: open-question
 module:
   - 報價
   - 工單
-oq-id: PT-015
+oq-id: PT-019
 status: answered
 priority: medium
 audience: internal
@@ -19,7 +19,7 @@ related-oq: []
 expected-resolution-at: 2026-Q4
 ---
 
-# PT-015：EC 消費端計價公式實作核對
+# PT-019：EC 消費端計價公式實作核對
 
 ## 背景
 
