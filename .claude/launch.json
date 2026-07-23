@@ -2,6 +2,12 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "erp",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "/Users/b-f-03-029/erp/apps/erp"],
+      "port": 3000
+    },
+    {
       "name": "sens-erp-prototype",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "/Users/b-f-03-029/sens-erp-prototype"],
