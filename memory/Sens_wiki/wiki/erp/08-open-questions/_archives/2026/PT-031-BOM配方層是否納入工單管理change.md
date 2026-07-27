@@ -4,7 +4,7 @@ module:
   - 工單
   - 生產任務
 oq-id: PT-031
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-07-27
@@ -17,6 +17,7 @@ related-vault:
 related-oq:
   - "[[PT-030-數量換算下行取整方向表述缺口|PT-030]]"
 expected-resolution-at: 工單管理 change verify 前（範疇級）
+answered-at: 2026-07-28
 tags:
   - 領域/生產執行
 ---
@@ -37,3 +38,7 @@ tags:
 
 - **A（納入本 change）**：線下單引用配方展開、工單沉澱為配方一次到位；但需新增配方主檔與配方工序段兩實體與展開規則，體積顯著超出「每個 change 體積小好驗收」拍板。
 - **B（不納入、另立落點）**：體積可控、四 change 節奏不變；「加放比例」生產任務層量測（覆寫倍數 vs 系統建議倍數差額）維持掛點不啟用，openspec BOM 行項目管理與配方層的關係維持未定。
+
+## 決議
+
+前提變更解題：2026-07-28 生產階段 high-level 重構設計拍板——「四個 change 依序」路線取消，改為 high-level 設計定案後 openspec 一次完整清整與對齊；work-order-management change 作廢。BOM 配方層納入清整範圍：工單管理模組（M1）「依 BOM 配方展開生產任務」為既定功能，配方主檔屬沿用主檔線（material／process／binding-master 沿用微調），不再有「落哪個 change」的分配問題。正本見 production-stage-high-level-design.md § 1。
