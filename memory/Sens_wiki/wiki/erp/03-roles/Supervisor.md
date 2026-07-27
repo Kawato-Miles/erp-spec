@@ -10,6 +10,8 @@ implemented-by: []
 related-notion: https://www.notion.so/91f2aa7094de4e129d65ff3069900a16
 status: active
 last-reviewed: 2026-06-11
+tags:
+  - 領域/全域
 ---
 
 ## 概述

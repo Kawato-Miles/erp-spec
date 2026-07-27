@@ -15,6 +15,9 @@ related-oq:
   - ORD-032
 related-change:
 expected-resolution-at: CRM 模組規劃時
+tags:
+  - 領域/訂單管理
+  - 領域/款項與發票
 ---
 
 # ORD-038：客戶（Customer）實體缺 OpenSpec 家

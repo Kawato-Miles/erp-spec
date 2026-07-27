@@ -19,6 +19,9 @@ related-change: refine-after-sales-refund-and-add-supplementary-print
 related-insight:
   - 2026-05-20-售後ticket-reactive-補丁循環
 expected-resolution-at: 2026-Q3
+tags:
+  - 領域/訂單管理
+  - 領域/履約與售後
 ---
 
 # AFT-3：OA 已核可後業務改金額是否需主動通知主管

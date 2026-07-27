@@ -15,6 +15,9 @@ related-vault:
   - "[[免審決策樹]]"
 related-oq: []
 expected-resolution-at: 2026-Q3
+tags:
+  - 領域/印前審稿
+  - 領域/售前
 ---
 
 # AR-8 免審稿適用條件與核可機制
