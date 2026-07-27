@@ -222,7 +222,7 @@ last-reviewed: 2026-06-10
 ```yaml
 type: service-blueprint
 module: [模組]
-business-domain: [售前 / 訂單管理 / 印前審稿 / 生產執行 / 履約與售後 / 款項與發票 / 跨領域]
+tags: [領域/<領域名>]  # 可多值；判定依 [[business-domain-taxonomy]]
 status: draft | active
 last-reviewed: YYYY-MM-DD
 ```
@@ -251,7 +251,7 @@ last-reviewed: YYYY-MM-DD
 ```yaml
 type: business-rule
 module: [模組]
-business-domain: [售前 / 訂單管理 / 印前審稿 / 生產執行 / 履約與售後 / 款項與發票 / 跨領域]
+tags: [領域/<領域名>]  # 可多值；判定依 [[business-domain-taxonomy]]
 mutability: external | domain | internal
 status: draft | active
 last-reviewed: YYYY-MM-DD

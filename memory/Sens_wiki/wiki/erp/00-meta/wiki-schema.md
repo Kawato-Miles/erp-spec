@@ -58,28 +58,19 @@ module:
 
 **新舊值對照**（轉換期查表用）：需求單 = quote-request、訂單管理 = order-management、諮詢單 = consultation-request、售後服務 = after-sales-ticket、工單 = work-order、生產任務 = production-task、印前審稿 = prepress-review、品檢 = qc、材料主檔 = material-master、製程主檔 = process-master、裝訂主檔 = binding-master、線上編輯器 = graphic-editor、跨模組 = cross-module。
 
-## 二B、business-domain Enum（必填，2026-05-28 新增）
+## 二B、領域 tag（`tags:` 欄位，必填，2026-07-28 取代 business-domain 欄位）
 
-> 業務領域分類，對應 [[business-domain-taxonomy]] 6 領域 + 跨領域共用層。
-> **新卡必填、舊卡視需要 backfill**（第一輪只 backfill Billing & Cash 領域卡作為實證）。
-> 對應 （見 erp-planning-pre-check skill 附件） 雙軸結構之軸 1，`erp-planning-pre-check` skill 用此欄位 grep 載入對應領域卡。
+> 業務領域分類，enum 正本、標注規則、檢索規約皆在 [[business-domain-taxonomy]]，本節只定 frontmatter 格式，不複寫判定規則。
 
 ```yaml
-business-domain:
-  - 售前              # 諮詢 / 報價 / 需求單
-  - 訂單管理          # 訂單 / 異動
-  - 印前審稿          # 稿件審查 / 打樣 / 印件規格
-  - 生產執行          # 工單 / 任務 / 排程 / 品檢 / 派工
-  - 履約與售後        # 出貨 / 售後 / 客訴
-  - 款項與發票        # 收款 / 開票 / 對帳 / 退款
-  - 跨領域            # 角色 / 術語 / 跨模組情境 / 狀態機 / KPI
+tags:
+  - 領域/售前          # 值域 = 六領域（售前 / 訂單管理 / 印前審稿 / 生產執行 / 履約與售後 / 款項與發票）+ 全域哨兵
+  - 領域/款項與發票    # 可多值：卡片沾幾個領域標幾個；全沾的極少數卡標 領域/全域
 ```
 
-**領域邊界判斷規則**：見 [[business-domain-taxonomy#四、邊界判斷規則]]。
-
-**適用 type**：
-- `role` / `business-logic` / `entity` / `state-machine` / `scenario` / `user-story` / `test-case` / `insight` / `raw` **必填**
-- `meta` / `glossary` / `domain` / `product-vision` / `phase` / `metric` / `open-question` / `reference` / `review` **視需要**（多為 cross-domain）
+- tag 值 MUST 逐字命中 [[business-domain-taxonomy]] enum，禁自創值。
+- 領域判定（觸發詞 + 邊界裁定）與必標範圍見 [[business-domain-taxonomy]] § 領域 tag 標注規則。
+- lint：缺 tag / 值不在 enum / 濫標 `領域/全域`（實際只沾一兩個領域）皆為 Error。
 
 ## 三、status Enum
 

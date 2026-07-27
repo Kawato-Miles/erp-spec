@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-07-28 01:41] 納入(amend) | 領域分類載體遷移為 tag：P1 立閘門（正本升格 + 範本改版）
+- 變更：[[business-domain-taxonomy]] 升格為領域 tag enum 正本 + 檢索規約正本（新增標注規則 / 檢索規約含「語意不確定先與 Miles 確認領域」/ 互斥測試 / 增設同步 checklist；廢「跨領域」值改多值 + `領域/全域` 哨兵）、[[wiki-schema]] § 二B business-domain enum 段改寫為領域 tag 格式規範、[[_template-role]] frontmatter 改 tags 並刪「多數角色屬跨領域」、[[_template-entity]] frontmatter 改 tags 且歸位步驟與邊際情境改多值標注、[[_template-business-logic]] 兩處 frontmatter 改 tags、[[_template-state-machine]] frontmatter 改 tags、[[_template-business-scenario]] frontmatter 改 tags
+- 動機：規劃前載入常漏卡（business-domain 覆蓋率 39%）或拖入整包共用層，且載入內容不可見；Miles 拍板遷移為 Obsidian tag（可在 tag 面板聚合審核）並抽出全 wiki 共用檢索規約。既有卡的 business-domain 欄位於標注完成驗收後才移除（雙軌回退路徑），完整分階段計劃見 plan 檔 wiki-tag-migration
+- 衝突：無
+
 ## [2026-07-27 15:40] 同步(amend) | 開機費分攤基礎拍板為拼版分攤
 - 變更：[[工作包]]（「分攤基礎」欄位預設定為拼版分攤——依本次上機拼版結果的占版比例攤分，一次拼版可含多個印件跨工單一起拼；備選版位數比／數量比／平均分攤不變）。
 - 動機：Miles 2026-07-27 補充拍板：開機費分攤基礎預計用拼版分攤，拼版時多個印件一起拼版。

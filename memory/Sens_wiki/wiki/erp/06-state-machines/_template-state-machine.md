@@ -181,7 +181,7 @@ last-reviewed: 2026-06-10
 ```yaml
 type: state-machine
 module: [模組，中文值，見 wiki-schema § 二]
-business-domain: [售前 / 訂單管理 / 印前審稿 / 生產執行 / 履約與售後 / 款項與發票 / 跨領域]
+tags: [領域/<領域名>]  # 可多值；判定依 [[business-domain-taxonomy]]
 source:                # 往上＝正確性根據：商業規則卡／服務藍圖／外部依據（拍板、法規）；禁指同層、下層、實作文件
   - "[[<商業規則卡>]]"
 implemented-by:        # 往下＝導航中繼資料（非正文內容）：實作規格檔層、原型型別檔；可多值、可留空

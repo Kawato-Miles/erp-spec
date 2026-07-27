@@ -150,7 +150,7 @@ last-reviewed: 2026-06-10
 ```yaml
 type: role
 module: [模組，中文值，見 wiki-schema § 二]
-business-domain: [六領域之一或跨領域；多數角色屬跨領域]
+tags: [領域/<領域名>]  # 可多值，角色沾哪幾個領域標哪幾個；判定依 [[business-domain-taxonomy]]
 source:                # 往上＝正確性根據：角色權責表／管理層拍板／04 分權規則卡；禁指同層、下層、實作文件
   - "[[<分權規則卡>]] 或 Notion 角色權責表（連結記 related-notion）"
 implemented-by:        # 往下＝導航中繼資料：實作規格檔層；可多值、可留空
