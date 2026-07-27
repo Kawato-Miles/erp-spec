@@ -5,6 +5,8 @@ module:
   - 品檢
 business-domain:
   - 生產執行
+tags:
+  - 領域/生產執行
 status: deprecated
 last-reviewed: 2026-07-21
 ---

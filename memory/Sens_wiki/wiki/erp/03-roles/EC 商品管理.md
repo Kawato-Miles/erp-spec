@@ -6,6 +6,8 @@ module:
   - 裝訂主檔
 business-domain:
   - 售前
+tags:
+  - 領域/售前
 source:
   - "Notion 核心角色權責表（連結見 related-notion）"
 implemented-by: []

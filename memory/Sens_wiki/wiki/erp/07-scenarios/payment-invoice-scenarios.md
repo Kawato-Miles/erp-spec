@@ -5,6 +5,8 @@ module:
   - after-sales-ticket
 business-domain:
   - 款項與發票
+tags:
+  - 領域/款項與發票
 related-spec: openspec/specs/order-management/spec.md
 status: active
 last-reviewed: 2026-06-03

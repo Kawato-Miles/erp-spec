@@ -4,6 +4,8 @@ module:
   - 訂單管理
 business-domain:
   - 履約與售後
+tags:
+  - 領域/履約與售後
 oq-id: ORD-040
 status: open
 priority: medium
