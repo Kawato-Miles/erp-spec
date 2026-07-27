@@ -56,4 +56,4 @@
 - **wiki 卡連帶（設計確認後依 wiki-amend 執行，21 條清單見 design.md § 落地順序）**：工單／印件／生產任務／任務／計價快照／材料主檔／物料消耗記錄／數量換算規則／齊套邏輯／印件生產流程／打樣流程／成本差異／兩張情境卡／兩張角色卡等。
 - **下游三個 change 依賴本 change 的八條跨 change 前提**（不拆廠、狀態機觸發點、任務交付定義、生產單位四值、快照四分項與參數組、數量帳分工、異動承接機制、建立來源清單）。
 - **Prototype**：erp repo 單一分支，本 change 對應四頁（工單列表／工單詳情／製程規劃頁／成本摘要頁），靜態假資料。
-- **未拍板依賴（阻斷級餘兩題，已開 OQ 卡待 Miles 裁決）**：[PT-029 計價快照四分項工序費缺席](../../../memory/Sens_wiki/wiki/erp/08-open-questions/PT-029-計價快照四分項與計價引擎工序費缺席.md)、[PT-030 數量換算下行取整方向](../../../memory/Sens_wiki/wiki/erp/08-open-questions/PT-030-數量換算下行取整方向表述缺口.md)。PT-028（工單已交付觸發）已於 2026-07-27 拍板採全部任務交付並回填 delta spec。設計對未拍板題已做承接或暫置，裁決後回補，不阻斷 artifact 產出（問寫分離）。其餘 OQ 見 design.md § Open Questions。
+- **未拍板依賴（阻斷級餘一題，已開 OQ 卡待 Miles 裁決）**：[PT-029 計價快照四分項工序費缺席](../../../memory/Sens_wiki/wiki/erp/08-open-questions/PT-029-計價快照四分項與計價引擎工序費缺席.md)。PT-028（工單已交付觸發＝全部任務交付）與 PT-030（下行換算無條件進位）已於 2026-07-27 拍板並回填 delta spec。設計對未拍板題已做承接或暫置，裁決後回補，不阻斷 artifact 產出（問寫分離）。其餘 OQ 見 design.md § Open Questions。

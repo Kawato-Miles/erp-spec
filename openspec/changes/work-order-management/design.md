@@ -57,7 +57,7 @@
 
 ### D5 工單層數量帳：兩數並存＋下限守衛
 
-- 「換算所需數量」（＝印件購買數量 × 每份印件生產數量，取整方向依 PT-030 裁決）與「目標數量」並存保存。不保存的後果：短出下修後購買數量變小，事後回推的加放比例被系統性灌水。
+- 「換算所需數量」（＝印件購買數量 × 每份印件生產數量，無條件進位；PT-030 拍板，2026-07-27）與「目標數量」並存保存。不保存的後果：短出下修後購買數量變小，事後回推的加放比例被系統性灌水。
 - 加放比例＝（目標數量 − 換算所需數量）÷ 換算所需數量，衍生不另存；工單頁三數並列、不告警不擋。
 - 送審守衛：目標數量 MUST ≥ 換算所需數量（[[印件生產流程]] 既有規則的系統執行）。
 - 生產任務層留「系統建議每份工單需生產數量」掛點（不可被覆寫值蓋掉），加放第二注入點（倍數覆寫差額）待 PT-031 落地後啟用。
@@ -107,7 +107,7 @@
 
 ## Risks / Trade-offs
 
-- **兩題阻斷級未拍板**（PT-029 四分項工序費／PT-030 下行取整；PT-028 已於 2026-07-27 拍板採全部交付並回填 delta spec）：確定率分母暫排除無應有分項者、守衛基準標依賴——承接設計使 artifact 可先行，但 **apply 前 MUST 拍板**，否則對應 Requirement 無法定稿。
+- **一題阻斷級未拍板**（PT-029 四分項工序費；PT-028 已拍板採全部交付、PT-030 已拍板下行無條件進位，皆已回填）：確定率分母暫排除無應有分項者——承接設計使 artifact 可先行，但 **apply 前 MUST 拍板**，否則對應 Requirement 無法定稿。
 - **QC 兩段先除役的空窗**：只存在於 openspec 行為層（wiki 品檢紀錄＋齊套邏輯為 active 正本無空窗），品檢出貨 change 補行為層。不先除役的代價是完成判定新舊公式並存矛盾，取捨選先除役。
 - **規則與動作分離**（材料軌別規則在本 change、記錄動作在派工追蹤）：留一段「規則已定、動作未實作」空窗，屬 Miles 原話的直接要求，可接受。
 - **暫估值失真風險**：現場把沒談的外包價填成主檔價可拉高確定率——防範＝併看補凍紀錄筆數（真暫估會留補凍紀錄、假主檔價不會）。
@@ -115,7 +115,7 @@
 
 ## Migration Plan（落地順序）
 
-1. **Miles 拍板**：阻斷級餘兩題（PT-029／PT-030；PT-028 已拍板採 A 並封存）＋確認項 A（八條 vs 九項拍板計數口徑）與 B（Prototype 四組對應）。範疇級與其餘 OQ 可後續分批。
+1. **Miles 拍板**：阻斷級餘一題（PT-029；PT-028 與 PT-030 已拍板封存並回填）＋確認項 A（八條 vs 九項拍板計數口徑）與 B（Prototype 四組對應）。範疇級與其餘 OQ 可後續分批。
 2. **wiki-amend**：依 Phase 4 表三執行 21 條 wiki 卡更新（W1-W21，全清單與 delta op 見 [collaboration/phase4-pm-report.md](collaboration/phase4-pm-report.md) 表三）；其中 W2／W3／W6／W9／W13／W18 六條標「裁決後回補」。wiki 先行、spec 後同步。
 3. **`/opsx:apply`**：依 tasks.md 執行（spec delta 定稿 → Prototype 四頁）。
 4. **`/opsx:verify` → `/opsx:archive`**：archive 前跑 vault-audit（本次 wiki 異動 ≥ 5 卡）。
@@ -125,7 +125,6 @@
 
 阻斷級（apply 前須拍板）：
 - [PT-029 計價快照四分項與計價引擎工序費缺席](../../../memory/Sens_wiki/wiki/erp/08-open-questions/PT-029-計價快照四分項與計價引擎工序費缺席.md)（唯一未滿足的商業需求項）
-- [PT-030 數量換算下行取整方向表述缺口](../../../memory/Sens_wiki/wiki/erp/08-open-questions/PT-030-數量換算下行取整方向表述缺口.md)（決定下限守衛基準是否有意義）
 
 範疇級與一般（可與 apply 並行收斂）：
 - [PT-031 BOM 配方層落點](../../../memory/Sens_wiki/wiki/erp/08-open-questions/PT-031-BOM配方層是否納入工單管理change.md)、[PT-032 六值落層](../../../memory/Sens_wiki/wiki/erp/08-open-questions/PT-032-工單類型與委外製作情境六值落層.md)、[PT-033 外包未報價凍結處理](../../../memory/Sens_wiki/wiki/erp/08-open-questions/PT-033-外包工序未報價時計價快照凍結處理.md)、[PT-034 重開守衛邊界](../../../memory/Sens_wiki/wiki/erp/08-open-questions/PT-034-工單補做重開守衛邊界.md)、[PT-035 印件累積成本取數](../../../memory/Sens_wiki/wiki/erp/08-open-questions/PT-035-印件累積成本取數來源與快照凍結原則一致性.md)、[PT-036 交辦前檢查留痕載體](../../../memory/Sens_wiki/wiki/erp/08-open-questions/PT-036-交辦前內容檢查留痕載體歸屬.md)、[PI-005 印件獨立交期](../../../memory/Sens_wiki/wiki/erp/08-open-questions/PI-005-印件是否需獨立交貨日期欄位.md)
