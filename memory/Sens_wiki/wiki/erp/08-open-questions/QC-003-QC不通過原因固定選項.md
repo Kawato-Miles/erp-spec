@@ -17,6 +17,8 @@ related-oq:
   - "[[QC-002-QC兩張wiki卡退役或保留|QC-002]]"
   - "[[PT-003-NCR Rework 具體實現|PT-003]]"
 expected-resolution-at: 2026-Q3
+tags:
+  - 領域/生產執行
 ---
 
 # QC-003：QC 不通過原因（固定選項）欄位與選項清單

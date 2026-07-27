@@ -14,6 +14,8 @@ related-vault:
 related-oq: []
 related-change: unify-billing-installment-and-reconciliation-csv
 expected-resolution-at: 2026-Q3
+tags:
+  - 領域/款項與發票
 ---
 
 # BI-2：折讓後期次 / 發票「已收訖」判定基準

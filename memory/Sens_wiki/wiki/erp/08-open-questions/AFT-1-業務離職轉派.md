@@ -17,6 +17,8 @@ related-insight:
   - 2026-05-20-售後ticket-reactive-補丁循環
 related-oq:
   - XM-008
+tags:
+  - 領域/履約與售後
 ---
 
 # AFT-1：業務離職 / 請假時未結案 ticket 的實務替代處理方式

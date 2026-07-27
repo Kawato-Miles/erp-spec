@@ -16,6 +16,8 @@ related-vault:
 related-oq:
   - "[[SHP-007-揀貨裝箱回報載體與出貨單狀態顆粒度|SHP-007]]"
 expected-resolution-at: 2026-Q3
+tags:
+  - 領域/履約與售後
 ---
 
 # AFT-12：揀貨／裝箱錯誤在售後服務事件分類的歸屬

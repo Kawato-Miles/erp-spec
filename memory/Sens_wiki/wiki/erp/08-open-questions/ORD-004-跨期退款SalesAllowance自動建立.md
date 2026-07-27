@@ -14,6 +14,8 @@ related-vault:
 related-oq:
 related-change: refine-after-sales-refund-and-add-supplementary-print
 expected-resolution-at: 2026-Q3
+tags:
+  - 領域/款項與發票
 ---
 
 # ORD-004：跨期退款的折讓單（SalesAllowance）自動建立 vs 提示業務手動建

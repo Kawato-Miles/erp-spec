@@ -14,6 +14,8 @@ related-vault:
   - "[[審稿分配規則]]"
 related-oq: []
 expected-resolution-at: 2026-Q3
+tags:
+  - 領域/印前審稿
 ---
 
 # AR-5 待審清單預設排序與急單標記

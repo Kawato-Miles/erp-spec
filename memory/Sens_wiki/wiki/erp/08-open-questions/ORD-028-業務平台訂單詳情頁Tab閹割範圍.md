@@ -14,6 +14,8 @@ related-oq:
   - ORD-024
   - ORD-039
 expected-resolution-at:
+tags:
+  - 領域/訂單管理
 ---
 
 # ORD-028：業務平台訂單詳情頁 Tab 閹割 / 動作可見性範圍

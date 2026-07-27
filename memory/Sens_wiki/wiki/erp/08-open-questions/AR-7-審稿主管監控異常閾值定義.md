@@ -13,6 +13,8 @@ related-vault:
   - "[[印件審稿]]"
 related-oq: []
 expected-resolution-at: 2026-Q4
+tags:
+  - 領域/印前審稿
 ---
 
 # AR-7 審稿主管監控異常閾值定義

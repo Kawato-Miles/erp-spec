@@ -12,6 +12,8 @@ source-link: openspec/specs/consultation-request/spec.md § 諮詢費付款成�
 related-vault:
   - "[[諮詢表單webhook串接約束]]"
 expected-resolution-at: 2026-07-15
+tags:
+  - 領域/售前
 ---
 
 # 問題描述

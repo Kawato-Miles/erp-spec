@@ -14,6 +14,8 @@ related-vault:
 related-oq: []
 related-change: unify-billing-installment-and-reconciliation-csv
 expected-resolution-at: 上線前（pre-launch validation）
+tags:
+  - 領域/款項與發票
 ---
 
 # BI-5：對帳 CSV 14 欄會計實務驗證

@@ -14,6 +14,8 @@ related-vault:
   - "[[付款發票邏輯]]"
 related-oq:
   - BI-17
+tags:
+  - 領域/款項與發票
 ---
 
 # ORD-035：Payment 缺完整 Data Model 實體表（阻 Notion schema 完整推送）

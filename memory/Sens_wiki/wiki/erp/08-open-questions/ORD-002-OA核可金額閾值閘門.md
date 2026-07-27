@@ -16,6 +16,8 @@ related-oq:
   - AFT-3
 related-change: refine-after-sales-refund-and-add-supplementary-print
 expected-resolution-at: 2026-Q3
+tags:
+  - 領域/訂單管理
 ---
 
 # ORD-002：OA 已核可後是否設「金額異動 ≥ 核可金額 × X% 需重新送審」閘門

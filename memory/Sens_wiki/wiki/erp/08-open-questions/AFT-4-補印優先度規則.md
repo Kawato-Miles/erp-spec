@@ -18,6 +18,9 @@ related-change: refine-after-sales-refund-and-add-supplementary-print
 related-insight:
   - 2026-05-20-售後ticket-reactive-補丁循環
 expected-resolution-at: 2026-Q3
+tags:
+  - 領域/履約與售後
+  - 領域/生產執行
 ---
 
 # AFT-4：補印印件的優先度規則 — 視覺識別 vs 強制高優先排程

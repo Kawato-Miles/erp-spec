@@ -13,6 +13,8 @@ related-vault:
   - "[[印件審稿]]"
 related-oq: []
 expected-resolution-at: 2026-Q3
+tags:
+  - 領域/印前審稿
 ---
 
 # AR-6 退件率分母是否排除技術退件

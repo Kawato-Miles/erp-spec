@@ -15,6 +15,8 @@ related-oq:
   - BI-5
 related-change: unify-billing-installment-and-reconciliation-csv
 expected-resolution-at: 上線前
+tags:
+  - 領域/款項與發票
 ---
 
 # BI-6：對帳 CSV 第 10 欄「收款日期」取值

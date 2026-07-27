@@ -15,6 +15,8 @@ related-vault:
 related-oq:
   - "[[CR-8-諮詢webhook建單失敗補救機制]]"
 expected-resolution-at: OpenSpec change 實作階段
+tags:
+  - 領域/印前審稿
 ---
 
 # AR-15 審稿討論 webhook 建立失敗補救

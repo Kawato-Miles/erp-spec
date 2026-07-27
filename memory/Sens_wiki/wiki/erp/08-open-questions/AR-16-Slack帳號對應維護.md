@@ -14,6 +14,8 @@ related-vault:
   - "[[訂單管理人]]"
 related-oq: []
 expected-resolution-at: OpenSpec change 實作階段
+tags:
+  - 領域/印前審稿
 ---
 
 # AR-16 Slack 帳號對應維護

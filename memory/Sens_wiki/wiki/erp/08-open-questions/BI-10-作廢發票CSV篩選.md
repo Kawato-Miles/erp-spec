@@ -15,6 +15,8 @@ related-oq:
   - BI-5
 related-change: unify-billing-installment-and-reconciliation-csv
 expected-resolution-at: 上線前
+tags:
+  - 領域/款項與發票
 ---
 
 # BI-10：作廢發票是否提供篩選選項列入 CSV

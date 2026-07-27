@@ -14,6 +14,8 @@ related-vault:
   - "[[售後服務規則]]"
   - "[[印件]]"
 expected-resolution-at: 2026-08-29
+tags:
+  - 領域/履約與售後
 ---
 
 # AFT-13 售後補印的生產與出貨進度是否回寫售後單

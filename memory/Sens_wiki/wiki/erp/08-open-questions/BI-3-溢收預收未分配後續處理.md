@@ -14,6 +14,8 @@ related-vault:
 related-oq: []
 related-change: unify-billing-installment-and-reconciliation-csv
 expected-resolution-at: 2026-Q3
+tags:
+  - 領域/款項與發票
 ---
 
 # BI-3：溢收「預收（未分配）」後續處理路徑

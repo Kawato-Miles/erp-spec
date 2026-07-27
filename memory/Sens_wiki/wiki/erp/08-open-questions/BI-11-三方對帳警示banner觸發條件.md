@@ -14,6 +14,8 @@ related-vault:
 related-oq: []
 related-change: unify-billing-installment-and-reconciliation-csv
 expected-resolution-at: apply 階段細化
+tags:
+  - 領域/款項與發票
 ---
 
 # BI-11：三方對帳警示 banner 觸發條件細化

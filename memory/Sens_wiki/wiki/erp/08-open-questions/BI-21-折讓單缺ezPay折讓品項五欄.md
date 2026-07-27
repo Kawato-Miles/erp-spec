@@ -14,6 +14,8 @@ related-vault:
   - "[[發票法規硬約束-ezPay-MIG]]"
 related-oq: []
 expected-resolution-at:
+tags:
+  - 領域/款項與發票
 ---
 
 # BI-21：折讓單（SalesAllowance）缺 ezPay 折讓商品五欄

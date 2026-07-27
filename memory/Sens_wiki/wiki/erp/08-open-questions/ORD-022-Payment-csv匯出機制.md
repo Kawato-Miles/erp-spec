@@ -16,6 +16,8 @@ related-oq:
   - [[ORD-021-處理中Payment老化追蹤機制|ORD-021-處理中Payment老化追蹤機制（已封存）]]
 related-change: remove-aging-payment-supervisor-dashboard
 expected-resolution-at: 2026-Q3
+tags:
+  - 領域/款項與發票
 ---
 
 # ORD-022：Payment csv 匯出機制

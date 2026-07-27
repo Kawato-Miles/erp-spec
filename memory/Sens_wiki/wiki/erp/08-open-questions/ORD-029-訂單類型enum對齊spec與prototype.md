@@ -13,6 +13,8 @@ related-vault:
   - "[[訂單]]"
 related-oq: []
 expected-resolution-at:
+tags:
+  - 領域/訂單管理
 ---
 
 # ORD-029：訂單類型（order_type）enum 在 spec 與 prototype 不一致

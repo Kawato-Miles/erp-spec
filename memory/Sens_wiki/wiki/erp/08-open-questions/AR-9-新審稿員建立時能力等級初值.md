@@ -13,6 +13,8 @@ related-vault:
   - "[[維護審稿員能力等級]]"
 related-oq: []
 expected-resolution-at: 2026-Q3
+tags:
+  - 領域/印前審稿
 ---
 
 # AR-9 新審稿員建立時能力等級初值

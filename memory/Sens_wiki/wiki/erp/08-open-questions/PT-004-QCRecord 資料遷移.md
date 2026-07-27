@@ -18,6 +18,8 @@ related-vault:
 related-changes:
   - reclassify-qc-and-add-inspection
 expected-resolution-at: 正式上線階段
+tags:
+  - 領域/生產執行
 ---
 
 # PT-004：既有 QCRecord 資料 migration 範圍與時機
