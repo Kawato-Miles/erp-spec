@@ -30,7 +30,6 @@ last-reviewed: 2026-05-31
 | `reference` | 外部連結索引 | `10-references/` |
 | `insight` | vault-insight 產出 | `12-insights/` |
 | `raw` | Raw 素材（已驗證的觀察 / 反饋 / 研究筆記，未精練）| `raw/` |
-| `review` | 每日 / 每週回顧（daily-brief 與 weekly-review skill 產出）| `14-reviews/daily/`、`14-reviews/weekly/` |
 
 **分層與 type 的對應**（對齊 [[erp_index]] § 一架構概述）：
 
@@ -348,34 +347,6 @@ ingested-to:                                           # status=ingested 時填
 - `miles-upload` 必須附真實 raw-source-link（原始檔出處）+ 原檔搬進 `raw/_attachments/<檔名>` + 在 `attached-files` 列出
 - raw 卡是「已驗證素材的歸檔」，不是 AI 自編內容的暫存區
 
-### type=review
-
-```yaml
----
-type: review
-review-kind: daily | weekly
-status: active
-created-at: YYYY-MM-DD            # daily 即當日；weekly 為週日（週末整理日）
-period:                            # 涵蓋區間
-  start: YYYY-MM-DD
-  end: YYYY-MM-DD
-module:
-  - cross-module
-related-vault:                     # 本期涉及的既有 vault 卡（含 raw / OQ / insight 等）
-  - "[[<卡>]]"
-related-commits:                   # 本期 commit hash 列表
-  - <hash>
-related-changes:                   # 本期涉及的 openspec change
-  - <change-id>
----
-```
-
-**Anti-Pattern 規約**：
-- 禁空洞讚美（「本週進度良好」「執行順利」等無 actionable 內容）
-- 禁無 source（每個觀察 MUST 指向具體 commit / OQ / 卡 / change）
-- 禁無下一步（daily「今日建議行動」、weekly「下週重點」MUST 帶具體 action）
-- 禁重複（與 audit-log 內容重複時引用而非重寫）
-
 ## 五、目錄允許 Page-Type 規約
 
 | 目錄 | 允許 type |
@@ -394,9 +365,6 @@ related-changes:                   # 本期涉及的 openspec change
 | `12-insights/` | `insight` / `meta`（`insight定位說明.md`）|
 | `raw/` | `raw` / `meta`（`README.md` / `_template.md`）|
 | `raw/_attachments/` | 任意檔（PDF / 圖 / docx / 訪談錄音轉文字等）；不需 frontmatter |
-| `14-reviews/` | `meta`（`回顧機制總覽.md`）|
-| `14-reviews/daily/` | `review`（review-kind=daily）/ `meta`（`_template.md`）|
-| `14-reviews/weekly/` | `review`（review-kind=weekly）/ `meta`（`_template.md`）|
 
 ## 六、Lint 規則（vault-audit 依此判定）
 
@@ -460,13 +428,6 @@ related-changes:                   # 本期涉及的 openspec change
 **Warning 條件**：1-5 張符合上述，或同主題 raw 累積 ≥ 3 張未精練
 
 > 本維度由 vault-ingest skill 引入後預留，待 vault-audit skill 第二階段擴充實作。
-
-### 維度 12：Review 規律性（Phase 2 待 vault-audit 實作）
-
-**Error 條件**：本月 daily review < 工作日數 × 50% 或本月無 weekly review
-**Warning 條件**：本週 daily review 缺 ≥ 2 工作日，或上週無 weekly review
-
-> 本維度由 daily-brief / weekly-review skill 引入後預留，待 vault-audit skill 第二階段擴充實作。
 
 ### 維度 14：卡類型內容職責邊界（2026-05-28 新增）
 
@@ -555,13 +516,6 @@ related-changes:                   # 本期涉及的 openspec change
 - 範例：`_attachments/富禾印務訪談2026-05-15.docx`
 - 範例：`_attachments/2026-05-21-廠商規格書-XX.pdf`
 - 大檔案（> 10 MB）建議考慮 git-lfs 或外部存放並只在 raw-source-link 留 URL（第一版不強制）
-
-### Review 卡
-
-- daily 格式：`<YYYY-MM-DD>.md`（如 `2026-05-21.md`）
-- weekly 格式：`<YYYY-WNN>.md`（NN 為 ISO 週數兩位數，如 `2026-W21.md`）
-- 範例：`14-reviews/daily/2026-05-21.md`
-- 範例：`14-reviews/weekly/2026-W21.md`
 
 ### Meta 卡（00-meta）
 

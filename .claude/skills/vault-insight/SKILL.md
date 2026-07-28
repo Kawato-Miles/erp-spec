@@ -3,7 +3,7 @@ name: vault-insight
 description: >
   ERP_Vault 跨主題模式識別與下一步提煉 skill，產出 `12-insights/` 卡。
   觸發：Miles 說「跑 insight」「精練 insight」「找下一步」「找系統性議題」；建議時機——open OQ 達 15 個、Phase 切換 / change archive 後、vault-audit 發現 ≥ 5 個 Error。
-  不適用：Vault 健康 lint（用 vault-audit）、日／週回顧（用 daily-brief / weekly-review）、單一卡片問題（直接編該卡）、OQ 解答（裁決權在 Miles）。
+  不適用：Vault 健康 lint（用 vault-audit）、單一卡片問題（直接編該卡）、OQ 解答（裁決權在 Miles）。
   範圍鐵則（只讀 wiki/＋raw/ 的 ingested / reviewed，禁讀 status=raw）與步驟見本文。
 ---
 
@@ -13,7 +13,7 @@ description: >
 
 **insight＝「從觀察到推論到下一步」的提煉**：把散在多張卡的訊號聚成系統性議題，產出帶具體行動的 insight 卡（`12-insights/`）。對標 Karpathy LLM Wiki 的 Query 操作——有價值的合成不留在對話，回存為新頁面。
 
-**insight 不是什麼**：不是 lint（矛盾／死鏈／缺欄位歸 vault-audit）；不是進度報告（完成統計歸 weekly-review）；不是 OQ 解答（裁決權在 Miles，insight 只聚類與建議處理順序）。
+**insight 不是什麼**：不是 lint（矛盾／死鏈／缺欄位歸 vault-audit）；不是 OQ 解答（裁決權在 Miles，insight 只聚類與建議處理順序）。
 
 **會過時的不寫進 skill**：本 skill 的輸入素材一律用「目錄＋frontmatter 條件」定義，禁止錨定具體卡名或當下的議題實例——卡會演進、議題會關閉，實例錨定是 skill 過時的根因。
 

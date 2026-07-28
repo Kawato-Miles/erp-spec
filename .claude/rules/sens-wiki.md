@@ -56,7 +56,7 @@ paths:
   - 動機：<業務理由，當下自足；得連 [[OQ卡]]>
   - 衝突：無（或：與 [[C]] 衝突，已開 [[OQ]]）
   ```
-  - 動作 enum（繁中）：**納入 / 查詢 / 健檢 / 同步**；次級標籤：納入（ingest-A/B/C、amend）、健檢（audit / pre-check / insight / daily / weekly）、同步（oq / misjudgement）、查詢（無標籤）。
+  - 動作 enum（繁中）：**納入 / 查詢 / 健檢 / 同步**；次級標籤：納入（ingest-A/B/C、amend）、健檢（audit / pre-check / insight）、同步（oq / misjudgement）、查詢（無標籤）。
   - **寫入當下自足**：條目所有欄位資訊在寫入那一刻必須已存在；禁任何「未來資訊」欄位（如下游 change 名——記條目時 change 尚不存在，BRD 先行）。
   - **log 的世界裡只有 wiki**：觸發寫入的充要條件 = 本次操作動到 `wiki/`。OpenSpec / Prototype / Notion 的事件不產生條目。
   - **變更行 MUST 逐卡 `[[卡名]]` + 一句話**，禁「更新多張卡」粗寫——卡的迭代脈絡靠搜 `[[卡名]]` 命中條目，寫粗即永久斷脈絡。

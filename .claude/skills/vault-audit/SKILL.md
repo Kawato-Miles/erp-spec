@@ -1,10 +1,10 @@
 ---
 name: vault-audit
 description: >
-  ERP_Vault 自審稽核 skill：對 wiki 執行 12 維度健康檢查（Karpathy LLM Wiki lint + Sens 特化），產出對話報告並追加 wiki/log.md。
-  觸發：Miles 說「跑 vault audit」「Vault 健康檢查」「audit vault」；主動建議時機——≥ 5 個 Vault 卡異動、change archive 後、每 20+ commit、raw 累積 ≥ 10 張 status=raw、本月 daily review 缺 ≥ 工作日 50%。
-  不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）、KPI 進度追蹤（用 vault-insight / weekly-review）。
-  範圍鐵則（只讀 wiki/＋raw/ 唯讀）與 12 維度定義見本文。
+  ERP_Vault 自審稽核 skill：對 wiki 執行 11 維度健康檢查（Karpathy LLM Wiki lint + Sens 特化），產出對話報告並追加 wiki/log.md。
+  觸發：Miles 說「跑 vault audit」「Vault 健康檢查」「audit vault」；主動建議時機——≥ 5 個 Vault 卡異動、change archive 後、每 20+ commit、raw 累積 ≥ 10 張 status=raw。
+  不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）、KPI 進度追蹤（用 vault-insight）。
+  範圍鐵則（只讀 wiki/＋raw/ 唯讀）與 11 維度定義見本文。
 ---
 
 # vault-audit
@@ -14,7 +14,7 @@ ERP_Vault 的 lint：找出**矛盾／過時／孤島／死鏈／缺欄位／違
 ## 〇、定位（每條維度都從這裡推導）
 
 - **lint 只管 wiki 自身的健康**：卡與卡之間對不對得上、連結活不活、欄位齊不齊、規約守沒守。
-- **lint 不做的事**：跨層對齊（wiki↔OpenSpec 的內容一致性屬 spec 撰寫時的四方比對）、進度追蹤（KPI／Phase 對照屬 vault-insight 與 weekly-review）、解答問題（OQ 解答權在 Miles）。
+- **lint 不做的事**：跨層對齊（wiki↔OpenSpec 的內容一致性屬 spec 撰寫時的四方比對）、進度追蹤（KPI／Phase 對照屬 vault-insight）、解答問題（OQ 解答權在 Miles）。
 - **範圍鐵則**：檔案讀取限 `memory/Sens_wiki/wiki/` 與 `memory/Sens_wiki/raw/`（唯讀）。維度 7 驗 frontmatter 引用的外部路徑時只做「檔案存在與否」測試（`test -f`），不開啟、不解析其內容。
 - 發現的問題**只報告不擅修**（mode C 修復須 Miles 確認）；矛盾依鐵則並排比對呈報，不自行調和。
 
@@ -22,13 +22,13 @@ ERP_Vault 的 lint：找出**矛盾／過時／孤島／死鏈／缺欄位／違
 
 | 模式 | 觸發句 | 用途 |
 |------|--------|------|
-| **A 全量** | 「跑 vault audit」「audit vault」「全量稽核」 | 12 維度全掃 |
+| **A 全量** | 「跑 vault audit」「audit vault」「全量稽核」 | 11 維度全掃 |
 | **B 單維度** | 「跑維度 N audit」「只查孤島」 | 針對性檢查 |
 | **C 修復** | 「audit 並修復」「audit + fix」 | 全掃＋可自動修復項經 Miles 確認後執行 |
 
-## 二、12 個稽核維度
+## 二、11 個稽核維度
 
-> 維度 1-6 為通用 lint（Karpathy），7-12 為 Sens 特化。每維度產出：命中清單＋判定（OK / Warning / Error；維度 11 為 Info）。
+> 維度 1-6 為通用 lint（Karpathy），7-11 為 Sens 特化。每維度產出：命中清單＋判定（OK / Warning / Error；維度 10 為 Info）。
 
 ### 維度 1：頁面間矛盾
 
@@ -129,13 +129,7 @@ grep -rn -A3 "^source:" memory/Sens_wiki/wiki/ --include="*.md" | grep "openspec
 
 判定：OK＝無超期無違反；Warning／Error 如上。raw 累積 ≥ 10 張另建議跑 vault-ingest mode C。
 
-### 維度 10：Review 規律性
-
-**目的**：daily／weekly 回顧卡（`14-reviews/`）斷更代表回顧機制失靈。
-
-檢查：本月 daily 卡數 < 已過工作日 × 50%＝Error；本月無 weekly＝Error；本週 daily 缺 ≥ 2 工作日＝Warning；上週無 weekly＝Warning。剛上線無歷史資料的月份自動 OK。
-
-### 維度 11：標題錨點（只查本輪異動卡，Info 不計分）
+### 維度 10：標題錨點（只查本輪異動卡，Info 不計分）
 
 **目的**：`implemented-by`／`source` 綁 `#Requirement: <標題>` 錨點，Requirement 改名即斷鏈（ORD-027 教訓）。存量卡不回頭批量改，只提示本輪異動卡。
 
@@ -145,7 +139,7 @@ changed=$( { git diff --name-only "$base" HEAD -- 'memory/Sens_wiki/wiki/'; git 
 for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && echo "INFO: $f 含標題錨點，建議改指 spec 檔層"; done
 ```
 
-### 維度 12：log 條目完整性（只查本輪異動的正本卡）
+### 維度 11：log 條目完整性（只查本輪異動的正本卡）
 
 **目的**：wiki/log.md 是唯一只追加操作史，正本卡異動沒留條目＝溯源斷。
 
@@ -162,7 +156,7 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 # Vault Audit 報告（YYYY-MM-DD HH:MM）
 
 ## 摘要
-- 模式 / 總體狀態（OK / Warning / Error）/ 維度通過 X / 12
+- 模式 / 總體狀態（OK / Warning / Error）/ 維度通過 X / 11
 
 ## 維度結果
 ### 維度 N <名稱>：<判定>
@@ -176,7 +170,7 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 4. **追加 wiki/log.md 一筆**（動作=健檢、標籤=audit；最新在上）：
 
 ```markdown
-## [YYYY-MM-DD HH:MM] 健檢(audit) | 全量／單維度（N）／修復，12 維度 X 通過
+## [YYYY-MM-DD HH:MM] 健檢(audit) | 全量／單維度（N）／修復，11 維度 X 通過
 - 變更：稽核 ERP_Vault，<總體狀態>；只列非 OK 維度與筆數
 - 動機：免（健檢類）
 - 衝突：無（或列發現的矛盾＋已開 OQ）

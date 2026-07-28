@@ -52,7 +52,7 @@ description: >
 |----------------|----------------------------|
 | **規劃 ERP 功能前**的 know-how 缺漏稽核（補既有真實狀況）| `erp-planning-pre-check`（雙軸 6 領域 × 6 卡類型）|
 | **explore 定案後**把商業邏輯變動**增修進 wiki 各位階**| **本 skill（wiki-amend）** |
-| ERP_Vault **整體健康檢查**（12 維度，定期 / 週期）| `vault-audit` |
+| ERP_Vault **整體健康檢查**（11 維度，定期 / 週期）| `vault-audit` |
 | 識別到不確定項（待確認 / 待釐清）| `oq-manage` mode B（開獨立 OQ 卡，禁 inline）|
 | raw 素材精練成卡 | `vault-ingest` mode B |
 
@@ -309,7 +309,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 
 - **CLAUDE.md § 主動收尾第 10 條**：change archive 後 wiki 對齊由本 skill 機制保障；但主要觸發時機已提前至 explore 定案後。每次增修 MUST 追加 wiki/log.md 一筆（唯一操作史）。
 - **`erp-planning-pre-check`**：規劃**前**補既有 know-how 缺漏；本 skill 規劃**中**（explore 定案後）增修商業邏輯進 wiki。兩者一前一中、不重疊。
-- **`vault-audit`**：定期 / 週期整體健康（12 維度）；本 skill point-of-change 即時回補。兩者一定期一即時。
+- **`vault-audit`**：定期 / 週期整體健康（11 維度）；本 skill point-of-change 即時回補。兩者一定期一即時。
 - **`oq-manage`**：本 skill Step 0 守門識別不確定項時觸發 mode B。
 - **`vault-ingest`**：本 skill Step 0 守門識別「已驗證未精練素材」時轉介進 raw。
 

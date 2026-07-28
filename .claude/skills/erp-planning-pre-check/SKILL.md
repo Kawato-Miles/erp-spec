@@ -202,7 +202,7 @@ wiki 商業邏輯卡清單（涉及本主題、propose 前須先更新）：<列
 
 | 其他 skill | 協作關係 |
 |----------|---------|
-| `vault-audit` | Vault 整體健康稽核（12 維度）— 本 skill 互補，本 skill 是規劃前準備 |
+| `vault-audit` | Vault 整體健康稽核（11 維度）— 本 skill 互補，本 skill 是規劃前準備 |
 | `vault-insight` | 跨主題模式提煉 — 本 skill 識別反模式時可觸發 |
 | `oq-manage` | 缺漏項 Step 4 標 OQ 走 mode B |
 | `misjudgement-record` | 識別到 agent 誤審反模式時觸發 |

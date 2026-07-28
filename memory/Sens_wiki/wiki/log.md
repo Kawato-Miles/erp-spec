@@ -7,11 +7,17 @@ last-reviewed: 2026-06-02
 # Sens 知識庫操作史
 
 **全知識庫唯一只追加層**（ERP 舊 changelog 已於 2026-06-10 凍結封存）。每次動 `wiki/` 後記一筆，最新在上（新筆置於本說明列下方、既有條目最上方）；既有條目只增、不改、不刪。
-格式：`## [YYYY-MM-DD HH:MM] <動作>(<標籤>) | <一句話簡述>`，動作 = 納入 / 查詢 / 健檢 / 同步；標籤 = ingest-A/B/C、amend、audit、pre-check、insight、daily、weekly、oq、misjudgement。
+格式：`## [YYYY-MM-DD HH:MM] <動作>(<標籤>) | <一句話簡述>`，動作 = 納入 / 查詢 / 健檢 / 同步；標籤 = ingest-A/B/C、amend、audit、pre-check、insight、oq、misjudgement。
 下記三行：「變更」（MUST 逐卡 `[[卡名]]` + 一句話，禁粗寫）、「動機」（實質異動正本卡必填，業務理由當下自足，得連 [[OQ卡]]；健檢 / 納入類免）、「衝突」。
 完整規約見 `.claude/rules/sens-wiki.md` § 四。卡的歷史 = 搜 `[[卡名]]` 命中本檔條目 + git 歷史；決策脈絡見 OQ 卡。
 
 ---
+
+## [2026-07-28 11:04] 納入(amend) | 回顧機制正式停用：14-reviews 目錄移除、daily-brief / weekly-review skill 刪除、vault-audit 改 11 維度
+
+- 變更：`14-reviews/`（含 [[回顧機制總覽]]、daily 1 張、weekly 2 張與範本）整目錄移除；[[wiki-schema]] 移除 type=review 定義、目錄允許表三列、Review 卡命名段與回顧規律 lint 維度；[[scope-boundary]] 移除 Daily / Weekly Review 收錄範圍兩處；[[erp_index]] 移除回顧索引列；[[2026-07-06-知識庫收斂機制停擺]] 後續更新段補記建議 4 拍板採 (c) 停用
+- 動機：Miles 拍板回顧機制無實際幫助，正式停用（即 2026-07-06 insight 卡建議 4 選項 (c)），讓稽核判定與真實工作模式一致
+- 衝突：無
 
 ## [2026-07-28 03:45] 同步(oq) | 生產階段重構後 OQ 歸屬清理：三張解答封存、三張措辭更新、五張時點改掛 openspec 清整
 
