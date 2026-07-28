@@ -13,6 +13,12 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-07-28 15:54] 納入(amend) | payment-invoice-scenarios 歸位帳務＋情境卡 source 補狀態機參考資料規則
+
+- 變更：[[payment-invoice-scenarios]] 由 `07-scenarios/` 移至 `04-business-logic/營運規則/帳務/`（檔名不動保連結）＋ frontmatter type 由自創值 business-logic 修正為 business-rule（mutability: internal）；[[_template-business-scenario]] 與 [[wiki-schema]] 的 scenario source 規則補訂——狀態機卡得並列為參考資料（部分情境由狀態機推導產生），但不得為唯一或直接源頭
+- 動機：Miles 拍板——該卡講開發票的規則、屬商業邏輯層非情境卡；情境的直接源頭應為藍圖／規則／拍板依據，狀態機僅作參考
+- 衝突：無
+
 ## [2026-07-28 15:44] 納入(amend) | 三層撰寫結構擴散至全部單元（骨架九張／範例七張／五規範收斂）＋實作對應欄位全庫移除
 
 - 變更：骨架新建八張——[[範本 - 角色]]、[[範本 - 狀態機]]、[[範本 - 業務情境]]、[[範本 - 服務藍圖]]、[[範本 - 商業規則]]、[[範本 - OQ]]、[[範本 - Insight]]、[[範本 - Raw 素材]]（自 raw/_template.md 搬移後刪原檔，meta 檔豁免 raw 唯讀鐵則）；範例卡新建七張——[[範例 - 角色]]（快照 [[諮詢]]）、[[範例 - 狀態機]]（快照 [[需求單狀態]]）、[[範例 - 業務情境]]（快照 [[訂單成立確認]]）、[[範例 - 服務藍圖]]（快照 [[生產流程]]）、[[範例 - 商業規則]]（快照 [[難易度機制]]）、[[範例 - OQ]]（快照封存卡 PT-028）、[[範例 - Insight]]（快照 2026-07-08 Odoo 參照卡）；規範收斂四張——[[_template-role]]、[[_template-state-machine]]、[[_template-business-scenario]]（章節編號保留護外部錨點）、[[_template-business-logic]]（章節編號全保留護 wiki-amend 錨點）；[[生產流程]] 措辭級清理（拍板日期五處、別名一處、中英夾雜一處）、[[訂單成立確認]] 段名前綴一處；[[wiki-schema]] § 4.0 收斂為 source 單欄＋五卡型 yaml 移除 module／implemented-by／related-spec＋目錄表補七個 example 條目；03-roles 19 張、04-business-logic 33 張、06-state-machines 16 張、07-scenarios 28 張批次移除實作對應欄位；[[index]] 憲章 BRD 自足句改寫（wiki 不承載實作對應）；[[卡片撰寫共用規範]] 適用範圍擴至八單元

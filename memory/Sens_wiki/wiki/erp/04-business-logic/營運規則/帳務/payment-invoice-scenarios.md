@@ -1,5 +1,6 @@
 ---
-type: business-logic
+type: business-rule
+mutability: internal
 tags:
   - 領域/款項與發票
 status: active

@@ -235,7 +235,7 @@ type: scenario
 variant: 接力型 | 能力型 | 排程型      # 必填；判定見 07-scenarios/_template-business-scenario.md § 二
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
-source:                          # 往上層 = 正確性根據（服務藍圖 / business-logic 規則 / 拍板 OQ / 外部依據），禁指 OpenSpec / 同層 / 下層
+source:                          # 往上層 = 正確性根據（服務藍圖 / business-logic 規則 / 拍板 OQ / 外部依據），禁指 OpenSpec / 同層 / 下層；狀態機卡僅得並列為參考資料，不得為唯一來源
   - "[[<藍圖或規則卡>]]"
 status: draft | active
 last-reviewed: YYYY-MM-DD
