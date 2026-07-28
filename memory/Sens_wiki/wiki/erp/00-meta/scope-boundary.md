@@ -2,7 +2,7 @@
 type: meta
 module: 跨模組
 status: active
-last-reviewed: 2026-06-09
+last-reviewed: 2026-07-28
 ---
 
 # Vault Scope Boundary（收 / 不收）
@@ -19,17 +19,17 @@ last-reviewed: 2026-06-09
 | 商業目標 / Phase / 北極星指標 | `01-products/` | [[wiki/erp/01-products/產品願景]]、[[階段規劃]]、[[成功指標]] |
 | 痛點 / 利害關係人 / Impact Score | 同上 | [[痛點]]、[[關係人]]、[[影響力評分框架]] |
 | ERP 術語表 | `02-domain/` | [[ERP系統術語表]] |
-| 角色 R&R | `03-roles/` | 16 角色 + [[_alignment-report]] |
+| 角色 R&R | `03-roles/` | 全部角色卡 + [[_alignment-report]] |
 | 商業邏輯：服務藍圖（A 類，端到端業務鏈）| `04-business-logic/` | 線下訂單流程、諮詢服務流程等（`type: service-blueprint`）|
 | 商業邏輯：商業規則（B 類，獨立決策邏輯 / 領域知識）| `04-business-logic/` | [[訂單異動規則]]、[[齊套邏輯]]、[[對帳一致性]] 等（`type: business-rule`）|
-| 資料模型實體與欄位（**含業務欄位表正本**） | `05-entities/` | 10 個實體卡；業務可見欄位表為正本（2026-06-09 從 OpenSpec Data Model 遷入） |
-| 狀態機（**含狀態列舉正本**） | `06-state-machines/` | 9 個狀態機卡；狀態列舉為正本 |
+| 資料模型實體與欄位（**含業務欄位表正本**） | `05-entities/` | 實體卡；業務可見欄位表為正本（2026-06-09 從 OpenSpec Data Model 遷入） |
+| 狀態機（**含狀態列舉正本**） | `06-state-machines/` | 狀態機卡；狀態列舉為正本 |
 | 業務情境（過程）| `07-scenarios/` | 業務目標完成過程；使用者故事單元已溶解併入此層 |
 | OQ | `08-open-questions/` | oq-manage skill 改寫後寫入 |
 | KPI | `01-products/kpi/` | 各模組 KPI |
-| 視覺化 | `09-canvases/` | 6 張 Canvas |
+| 視覺化 | `09-canvases/` | Canvas 視覺化 |
 | 外部連結索引 | `10-references/` | Notion / OpenSpec / Prototype / decks |
-| **Audit Log** | `00-meta/audit-log.md` | vault-audit / vault-insight skill 追加式日誌 |
+| **操作史** | `wiki/log.md` | 全知識庫唯一只追加層（[[log]]）；健檢／納入類條目皆記於此 |
 | **Wiki Schema** | `00-meta/wiki-schema.md` | Vault formal 治理規則（lint 依據）|
 | **Insights** | `12-insights/` | vault-insight skill 產出的跨主題模式識別 + 下一步建議 |
 | **Raw 素材** | `raw/` | 已驗證但未精練的觀察 / 反饋 / 研究筆記（由 vault-ingest skill 寫入；2026-05-21 新增）|
