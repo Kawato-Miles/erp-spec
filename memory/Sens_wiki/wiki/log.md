@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-07-28 11:05] 健檢(insight) | OQ 累積（audit 維度 8 Error：open 87、逾 30 天 60）
+- 變更：補強 [[2026-06-11-OQ佇列缺三個分流維度]]（同主題不新建）——追加 2026-07-28 後續更新：堆積主體仍是 5-6 月三群（訂單備註 8／帳務 BI／審稿 AR）、QC-002 已拍板但 PT-004 未收割（拍板不收 OQ 根因再實證）、領域 tag 化帶來按領域聚堆裁決新能力；重排期下一步 4 條（首場批次裁決會建議從訂單管理 16 張開刀），expected-action-at 更新 2026-08-07
+- 動機：免（健檢類）
+- 衝突：無
+
 ## [2026-07-28 11:04] 納入(amend) | 回顧機制正式停用：14-reviews 目錄移除、daily-brief / weekly-review skill 刪除、vault-audit 改 11 維度
 
 - 變更：`14-reviews/`（含 [[回顧機制總覽]]、daily 1 張、weekly 2 張與範本）整目錄移除；[[wiki-schema]] 移除 type=review 定義、目錄允許表三列、Review 卡命名段與回顧規律 lint 維度；[[scope-boundary]] 移除 Daily / Weekly Review 收錄範圍兩處；[[erp_index]] 移除回顧索引列；[[2026-07-06-知識庫收斂機制停擺]] 後續更新段補記建議 4 拍板採 (c) 停用
