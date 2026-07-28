@@ -25,6 +25,11 @@ last-reviewed: 2026-06-02
 - 動機：Miles 2026-07-28 grilling 拍板生產階段重構式規劃——以 wiki 商業現況為設計基準、不帶入調研導向設計；調研產物卡逐張檢視定案（工作包保留、計價快照簡化、成本差異改預實對照、在製品棄用、產線沿用標籤）；任務層拿掉（外包分組唯一歸派單、場內歸工作包）；材料恢復為生產任務類型（一樣派工報工由師傅處理）；正本＝production-stage-high-level-design.md 五節拍板
 - 衝突：材料建模推翻 2026-07-22「材料僅工單清單」拍板（Miles 本人 2026-07-28 拍板恢復，非矛盾殘留）
 
+## [2026-07-28 10:03] 納入(amend) | 領域 tag 化 P3 切讀取端：erp_index 載入決策表改為檢索規約指引
+- 變更：[[erp_index]] § 二「載入決策表」（六領域 × 目錄對映表）整表刪除，改一段檢索方式指引（依 [[business-domain-taxonomy]] § 檢索規約：判領域 → tag 查卡名清單 → 呈現 → 載入）
+- 動機：目錄對映表與領域 tag 是同一份知識的兩個載體，留著必漂移（單一正本鐵則）；載入方式的正本統一歸 taxonomy 檢索規約（Miles 拍板 plan wiki-tag-migration P3；erp-planning-pre-check / oq-manage mode A / vault-audit 維度 5 / rules 查詢列同步改版，非 wiki 檔不逐列）
+- 衝突：無
+
 ## [2026-07-28 02:35] 納入(amend) | 領域 tag 化 P2 批 4：20 項疑難卡 Miles 拍板落地，P2 標注全數完成
 - 變更（每卡同一句話：frontmatter 增領域 tag，值為 Miles 批 4 拍板結果）：
   - 全域哨兵 2：[[Supervisor]]、[[單據分享與職務代理]]

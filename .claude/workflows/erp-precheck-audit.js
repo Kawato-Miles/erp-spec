@@ -107,7 +107,7 @@ function auditPrompt(domain) {
 
 ## MUST 執行
 1. 先讀 memory/Sens_wiki/wiki/erp/00-meta/business-domain-taxonomy.md 確認此領域邊界與所屬卡。
-2. 依領域載入 memory/Sens_wiki/wiki/erp/ 對應卡：04-business-logic（商業邏輯正本）/ 05-entities / 06-state-machines / 07-scenarios / 03-roles，並讀跨領域共用層（02-domain glossary / 01-products）。
+2. 依 taxonomy § 檢索規約載入：以 frontmatter 領域 tag 查「領域/${domain}」+「領域/全域」的卡（涵蓋 03-roles / 04-business-logic / 05-entities / 06-state-machines / 07-scenarios），先列卡名清單再讀內容。
 3. 對此領域 × 6 卡類型（角色 / 實體 / 流程 / 業務情境 / 業務邏輯 / 法規）逐格稽核，每格給「已涵蓋 N / 待修補 M / 待確認 OQ K」三個明確整數（禁「大致 OK」非量化結論）。
 4. 業務情境卡類型 MUST 檢查變體判定（接力型 / 能力型 / 排程型）是否正確、步驟判準是否為可觀測業務結果。
 5. 業務邏輯卡類型 MUST 檢查連帶矩陣（連帶實體 / 跨模組影響）。

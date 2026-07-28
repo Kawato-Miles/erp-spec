@@ -27,19 +27,9 @@ last-reviewed: 2026-05-28
 
 ## 二、雙軸稽核框架
 
-### 軸 1：業務領域（6 領域 + cross-domain）
+### 軸 1：業務領域（6 領域 + 全域哨兵）
 
-對應 [[business-domain-taxonomy]]：
-
-| 領域 | 觸發詞 | 載入目錄 |
-|------|--------|---------|
-| L1.1 Pre-sales | 諮詢 / 報價 / 需求單 / 議價 | 03-roles + 04-business-logic + 05-entities + 06-state-machines + 07-scenarios（filter pre-sales） |
-| L1.2 Order Management | 訂單 / 異動 / 訂單備註 | 同上（filter order-management） |
-| L1.3 Prepress | 審稿 / 打樣 / 稿件 / 印件規格 | 同上（filter prepress） |
-| L1.4 Production | 工單 / 任務 / 派工 / 排程 / QC / 補印 / 工序 / 入庫 | 同上（filter production） |
-| L1.5 Fulfillment & After-sales | 出貨 / 配送 / 售後 / 客訴 / ticket | 同上（filter fulfillment-after-sales） |
-| L1.6 Billing & Cash | 款項 / 發票 / 收款 / 對帳 / OA / Payment / Invoice / PlannedInvoice / 退款 / 補收 / 折讓 | 同上（filter billing-cash） |
-| Cross-domain | 任何稽核 MUST 自動載入 | 03-roles（全）+ 02-domain + 07-scenarios + 06-state-machines + 01-products + Master Data |
+領域定義、觸發詞、邊界裁定、檢索規約的正本皆在 [[business-domain-taxonomy]]，本框架不複寫。載入方式：查該領域 tag（`領域/<領域名>`）+ `領域/全域` 哨兵卡，先出卡名清單、呈現後載入。
 
 ### 軸 2：卡類型（6 類）
 
@@ -70,15 +60,13 @@ last-reviewed: 2026-05-28
 
 ### Step 1：識別本次涉及的業務領域
 
-- 用觸發詞 → 領域 mapping 自動判斷（不需 Claude 手動選）
-- 從 6 領域中選 1-2 個（跨領域亦可）
-- 例：「補收 OA 執行條件」→ Billing & Cash + Order Management（跨領域）
+- 依 [[business-domain-taxonomy]] 觸發詞與邊界裁定判定，從 6 領域中選 1-2 個（可多領域）
+- 語意不確定（命中多領域或零命中）MUST 先向 Miles 確認，禁自行猜測
 
-### Step 2：載入該領域內卡 + 跨領域共用層
+### Step 2：依檢索規約載入該領域卡
 
-- 用 frontmatter `business-domain` grep 該領域卡
-- **同時自動載入跨領域共用層**（不需 Claude 判斷）
-- 跨領域共用層：03-roles 全部 + 02-domain + 07-scenarios + 06-state-machines + 01-products + Master Data
+- 查該領域 tag + `領域/全域` 出卡名清單 → 清單呈現於對話 → 確認後載入（[[business-domain-taxonomy]] § 檢索規約）
+- 判準是相關性，不設張數預算；視稽核需要另載 OpenSpec 對應模組 spec
 
 ### Step 3：逐卡類型稽核（6 類）
 
@@ -198,7 +186,7 @@ last-reviewed: 2026-05-28
 | 規範 | 角色 |
 |------|------|
 | [[business-domain-taxonomy]] | 6 領域定義 + 觸發詞清單（本框架軸 1 的依據）|
-| [[wiki-schema]] | frontmatter `business-domain` 欄位定義（本框架的執行載體）|
+| [[wiki-schema]] | frontmatter 領域 tag（`tags:`）格式規範（本框架的執行載體）|
 | [[erp_index]] | LLM 載入決策入口（本框架 Step 2 的對照表）|
 | `vault-audit` skill | Vault 整體健康稽核（12 維度）— 與本框架不同：vault-audit 是「日常 Vault 健康」、本框架是「規劃前準備」|
 | `vault-insight` skill | 跨主題模式提煉 — 與本框架互補 |

@@ -69,7 +69,7 @@ paths:
 | 工作流 | 做什麼 | 由誰執行 |
 |--------|--------|---------|
 | 納入（ingest）| 素材 `raw/` → 精練進 `wiki/` | `vault-ingest` skill |
-| 查詢（query）| 讀 index 定位 → 讀卡 → 附 `[[引用]]` 作答 → 高價值答案固化成卡（ERP 走 `12-insights/`），不讓探索價值只留對話 | 日常對話 |
+| 查詢（query）| 依 `business-domain-taxonomy` § 檢索規約（判領域，語意不確定先問 Miles → tag 查卡名清單 → 呈現 → 載入）→ 讀卡 → 附 `[[引用]]` 作答 → 高價值答案固化成卡（ERP 走 `12-insights/`），不讓探索價值只留對話 | 日常對話 |
 | 健檢（lint）| 巡檢：矛盾 / 死鏈 / 孤兒 / 過時 / 缺欄位 / **命名違反繁中語意化（直譯 / 中英夾雜）** | `vault-audit` skill |
 
 - **Obsidian 稽核 / 查詢一律優先用 `obsidian-cli`**：搜尋（`obsidian search`）、讀卡（`obsidian read`）、反向連結 / 死鏈 / 孤兒（`obsidian backlinks` / `deadends`，或 `obsidian eval` 查 `metadataCache.unresolvedLinks`）一律走 CLI，**不以 grep 當 vault 稽核手段**（grep 只看純文字，無法解析 wiki link 與 vault 索引）。

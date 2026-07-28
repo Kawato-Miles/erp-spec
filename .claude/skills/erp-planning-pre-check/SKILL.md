@@ -28,7 +28,7 @@ ERP 規劃前 know-how 稽核工具。**禁繞過稽核直接設計 / 禁新建�
 **Anti-pattern**（**MUST NOT**）：
 - 禁止「新建抽象卡」（如「業務一日時間軸」「商業模式畫布」等 — Miles 第四輪明確否決）
 - 禁止「繞過稽核直接設計」（任何規劃 MUST 先跑此 skill）
-- 禁止「跨領域全部讀」（用 business-domain 標籤精準載入）
+- 禁止「跨領域全部讀」（用領域 tag 精準載入，依 taxonomy 檢索規約）
 - 禁止「自編內容當已答」（缺漏項 MUST 標 OQ 等 Miles 確認）
 - 禁止「規劃中遇『不知道』繞過去自編」（遇到不知道 MUST 立即再跑本 skill）
 - 禁止「Claude 手動判斷該載哪個領域」（用觸發詞 → 領域 mapping 自動）
@@ -42,38 +42,15 @@ ERP 規劃前 know-how 稽核工具。**禁繞過稽核直接設計 / 禁新建�
 
 ### Step 1：識別本次涉及的業務領域
 
-**做法**：
-- 從 Miles 訊息中提取觸發詞
-- 用觸發詞 → 領域 mapping 自動判斷（不需 Claude 手動選）
-- 從 6 領域中選 1-2 個（跨領域亦可）
+**做法**：依 [[../../memory/Sens_wiki/wiki/erp/00-meta/business-domain-taxonomy]] § 領域定義（觸發詞 + 邊界裁定）判定領域，從 6 領域中選 1-2 個（可多領域）。觸發詞與判定規則的正本只在該卡，本 skill 不複寫。**語意不確定（觸發詞命中多領域或零命中）MUST 先向 Miles 確認要找哪個領域，禁自行猜測載入。**
 
-**觸發詞 → 領域 mapping**（依 [[../../memory/Sens_wiki/wiki/erp/00-meta/business-domain-taxonomy]] § 二）：
+### Step 2：依檢索規約載入該領域卡
 
-| 觸發詞 | 領域 |
-|--------|------|
-| 諮詢 / 報價 / 需求單 / 議價 / 諮詢費 / 成交 | L1.1 Pre-sales |
-| 訂單 / 訂單異動 / OA / 訂單備註 / 訂單取消 | L1.2 Order Management |
-| 審稿 / 打樣 / 稿件 / 印件規格 / 審稿輪次 / ReviewRound | L1.3 Prepress |
-| 工單 / 任務 / 派工 / 排程 / QC / 品檢 / 補印 / 工序 / 入庫 / NCR / Disposition | L1.4 Production |
-| 出貨 / 配送 / 售後 / 客訴 / ticket / 退貨 / 客戶不良 | L1.5 Fulfillment & After-sales |
-| 款項 / 發票 / 收款 / 對帳 / OA / Payment / Invoice / PlannedInvoice / 退款 / 補收 / 折讓 / 期次 / 老化 / 應收 / 應付 / SalesAllowance / PaymentInvoice | L1.6 Billing & Cash |
-
-**範例**：「補收 OA 執行條件」→ 含「補收」「OA」→ L1.6 Billing & Cash + L1.2 Order Management（跨領域）
-
-### Step 2：載入該領域內卡 + 跨領域共用層
-
-**做法**：
-- 用 `grep -l "business-domain: <領域>"` 載入該領域卡
-- **同時自動載入跨領域共用層**（不需 Claude 判斷）：03-roles + 02-domain + 07-scenarios + 06-state-machines + 01-products + Master Data
-
-**跨領域共用層清單**（任何稽核 MUST 載入）：
-- `03-roles/`（全部 16 角色）
-- `02-domain/glossary-*.md`
-- `07-scenarios/`（16 跨模組情境）
-- `06-state-machines/`（9 狀態機）
-- `01-products/`（vision / phases / kpi / impact-score）
-- Master Data：`material-master` / `process-master` / `binding-master` / `equipment` spec
-- 跨模組商業流程：`openspec/specs/business-processes/spec.md`
+**做法**（依 [[../../memory/Sens_wiki/wiki/erp/00-meta/business-domain-taxonomy]] § 檢索規約）：
+1. 查該領域 tag（`領域/<領域名>`）+ `領域/全域` 的卡，先只取**卡名清單**不讀內容
+2. 把命中卡名與張數攤在對話中（MUST，Miles 檢視漏／多）
+3. 確認清單後載入。判準是相關性（相關都載、不相關不載），不設張數預算
+4. 視稽核需要另載 OpenSpec 對應模組 spec（PRD 層對照用）
 
 ### Step 3：逐卡類型稽核（6 類）
 
@@ -240,3 +217,4 @@ wiki 商業邏輯卡清單（涉及本主題、propose 前須先更新）：<列
 | v1.1 | 2026-05-30 | Step 4 + ack 模板 + changelog 模板新增「wiki 商業邏輯卡清單 + 定案後回補清單」產出（pre-check 不修卡、交棒 archive 階段回補）。原因：converge change 漏對齊 wiki 6 卡 — 規劃時沒列受影響 wiki 卡，archive 後也就漏回補；補「pre-check 不修卡 → 定案後回補」配對步驟 |
 | v1.2 | 2026-06-10 | 稽核操作史輸出由 `00-meta/changelog.md` 改為 wiki/log.md 一筆（動作=健檢、標籤=pre-check，只記摘要：量化矩陣結論 + 修補卡清單），長敘事與決策軌跡留對話與 OQ 卡。原因：`00-meta/changelog.md` 凍結封存，wiki/log.md 成全知識庫唯一只追加操作史 |
 | v1.3 | 2026-06-13 | 卡類型由 7 類收斂為 6 類（原「情境」與「User Story」合併為「業務情境」），跨層追溯由四層（含 Test Case）改三層（商業需求 ↔ 業務情境 ↔ spec），移除 related-test-cases 必檢；SKILL 本體、references/audit-framework.md、`.claude/workflows/erp-precheck-audit.js` 三方同步。原因：使用者故事與 test-case 單元溶解、業務情境單元取代（Phase B / C）|
+| v1.4 | 2026-07-28 | 載入層改版：Step 1 觸發詞複本表刪除（正本只在 taxonomy，含「語意不確定先與 Miles 確認」）；Step 2 改依 taxonomy 檢索規約（tag 查卡名清單 → 呈現 → 載入），共用層固定全載清單刪除（改 `領域/全域` 哨兵卡必載）。原因：wiki 領域 tag 化 P3 切讀取端（plan wiki-tag-migration）|

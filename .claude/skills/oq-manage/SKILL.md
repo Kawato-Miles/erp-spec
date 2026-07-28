@@ -65,7 +65,7 @@ notion-url: <推送後回填>             # external 推送 Notion 後填
 
 ### Mode A：查詢（討論前帶入）
 
-輸入：模組或主題。步驟：grep 平層 `status: open`（依 module 過濾）。輸出：`<oq-id>：<簡述>（priority, audience, raised-at）` 清單，external 另列（提醒待外部確認項）。
+輸入：領域或主題。步驟：依 [[business-domain-taxonomy]] 檢索規約判定領域（語意不確定先與 Miles 確認）→ 查平層 `status: open` 且領域 tag（`領域/<領域名>`）命中的卡，先出卡名清單再讀內容。輸出：`<oq-id>：<簡述>（priority, audience, raised-at）` 清單，external 另列（提醒待外部確認項）。
 
 ### Mode B：新增（強制去重，禁跳步）
 
