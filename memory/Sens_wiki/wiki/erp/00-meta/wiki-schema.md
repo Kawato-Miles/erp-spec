@@ -252,6 +252,8 @@ last-reviewed: YYYY-MM-DD
 type: open-question
 module:
   - <中文 module，見 § 二>
+tags:
+  - 領域/<領域名>   # 必填，可多值；oq-manage mode A 依領域 tag 查佇列
 oq-id: <前綴>-<NNN>
 status: open | answered | cancelled   # 嚴格三值，禁 resolved / closed / active 等自創值，禁行內註解
 priority: high | medium | low
@@ -280,18 +282,19 @@ notion-url: <external 推送 Notion 後回填>
 type: insight
 module:
   - <模組>
+tags:
+  - 領域/<領域名>   # insight 屬正本卡被載入決策引用時必標
 status: open | in-progress | resolved | cancelled
 priority: high | medium | low
 raised-at: YYYY-MM-DD
 raised-by: vault-insight skill
-triggered-by: manual | OQ-累積 | phase-切換 | change-archive | audit
+triggered-by: manual | oq-accumulation | phase | change-archive | audit | raw
 related-vault:
   - <wiki link>
 related-oq:
   - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名
-related-raw:                  # 2026-05-21 新增：vault-insight 從 raw 素材累積識別 pattern 時填
+related-raw:                  # vault-insight 從 raw 素材累積識別 pattern 時填
   - "[[raw/<檔名>]]"          # MUST 是 status=ingested 或 reviewed 的卡（vault-ingest 防線 4）
-related-spec: <OpenSpec spec 路徑>  # 若有
 expected-action-at: YYYY-MM-DD
 resolved-at: YYYY-MM-DD  # status=resolved 時填
 ---
@@ -374,9 +377,19 @@ ingested-to:                                           # status=ingested 時填
 
 ### OQ 卡
 
-- 格式：`<MODULE>-<NNN>-<簡述 slug>.md`
-- MODULE 前綴：QR / ORD / WO / PI / PT / QC / SHP / CR / AS / XM
-- NNN 三位數字補零
+- 格式：`<前綴>-<NNN>-<簡述>.md`；NNN 三位補零，取號平層與 `_archives/` 一起算、永不重用
+- **前綴＝議題的英文縮寫**（2-3 大寫字母），enum 正本在此，oq-manage 取號時比對本表：
+
+| 前綴 | 議題 | 前綴 | 議題 |
+|------|------|------|------|
+| QR | 需求單（quote request）| CR | 諮詢（consultation request）|
+| ORD | 訂單（order）| AFT | 售後（after-sales）|
+| WO | 工單（work order）| AR | 審稿（artwork review）|
+| PI | 印件（print item）| BI | 帳務（billing）|
+| PT | 生產階段規劃（production）| XM | 跨模組與 vault 治理（cross-module）|
+| QC | 品檢 | SHP | 出貨（shipping）|
+
+- **新前綴的產生**：議題無可歸屬的既有前綴時，取議題英文名縮寫，**先增列本表再開卡**（enum 外前綴視為違規，vault-audit 維度 8 抓）
 
 ### 規則的連結指向位置命名（業務規則 / 共用規則，2026-05-31 補述）
 

@@ -6,7 +6,7 @@ tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]（insight 屬正本卡時必標）
 status: open          # open / in-progress / resolved / cancelled
 priority: high | medium | low
-raised-at: {{date}}
+raised-at: {{date}}   # Obsidian 插入自動帶入；AI 複製起手時手填今日日期
 raised-by: vault-insight skill
 triggered-by: <manual / oq-accumulation / phase / change-archive / audit / raw>
 related-vault:
@@ -16,6 +16,7 @@ related-oq:
 related-raw:
   - "[[raw/<檔名>]]"   # 素材含 raw 時填；MUST status=ingested／reviewed，不需要時刪除整個欄位
 expected-action-at: YYYY-MM-DD
+resolved-at: YYYY-MM-DD   # status=resolved 時填
 ---
 
 # <現象命名或根因一句話（不用「XX 檢討」式空名）>

@@ -13,6 +13,12 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-07-29 01:15] 納入(amend) | 模擬試跑回饋修補——骨架四處、規範兩處、schema 三處、範例八張同步日、五B 錨點
+
+- 變更：[[範本 - OQ]] 補 tags 欄（mode A 依領域 tag 查佇列，漏欄新卡查不到）、[[範本 - Raw 素材]] module 改繁中值＋精練去處段補註解用法、[[範本 - Insight]] 補 resolved-at、九張骨架的日期變數加「AI 起手手填」註記、[[範本 - 商業規則]] 加「範圍外」段；[[_template-business-logic]] § 九 段落表加範圍外（選填）＋ § 四 加多條規則動機同名子標配對 MAY；[[wiki-schema]] type=open-question 補 tags、type=insight 補 tags 並移除 related-spec（Miles 拍板：insight 不需實作參照，wiki 以商業需求與現況為主）與 triggered-by 值域統一、§ 七 OQ 前綴改為議題縮寫 enum 管理（正本表＋新前綴先增列再開卡；AS 改 AFT、補 AR／BI）；[[付款發票邏輯]] 五B 標題去日期敘述（修復跨檔錨點）；[[範例 - OQ]] 聲明補 tags 落差註記；八張範例卡 synced-with-template 更新至 2026-07-29
+- 動機：四個新對話模擬試跑（寫情境卡／開 OQ／收 raw／wiki-amend 錨點與甲式轉換）發現的可用性缺陷，Miles 確認修補方向後落地；wiki-amend 深層錨點七處與 oq-manage、vault-ingest 措辭同輪修於 .claude/（不屬 wiki，不列變更行）
+- 衝突：無
+
 ## [2026-07-29 00:37] 納入(amend) | user-story／test-case 治理殘留清除（單元已溶解，wiki 不再承載）
 
 - 變更：[[user-story-spec]] 刪除（歷史方法論，業務情境規範已吸收其紀律）；[[wiki-schema]] 清除 scenario-id 廢止段、§ 九六條 user-story／test-case anti-pattern、§ 11.1 該型列與各列越界措辭、§ 11.2 歷史方法論句；[[index]] 憲章舉例與 ERP 涵蓋清單同步（並移除已停用的每日每週回顧）；[[scope-boundary]] 移除溶解史敘述；[[付款發票邏輯]] § 九標題與指引改業務情境；[[payment-invoice-scenarios]] 指引措辭同步；[[pm-data-map]]、[[review-loading-checklist]]、[[lightweight-review-mode]]、[[early-intervention-framework]]、[[pm-review-framework]]、[[審查知識路由]]、[[senior-pm-write-mode]] 的 User Story 資料來源與載入項改為業務情境三層指向；[[audit-failure-patterns]] 對應紀律指向改 [[_template-business-scenario]]（案例敘述屬歷史保留）；[[BI-14-款項UserStory業務情境段含UI措辭違反紀律]] related-vault 死鏈修復

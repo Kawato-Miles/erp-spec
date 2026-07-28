@@ -1,11 +1,11 @@
 ---
 type: raw
 status: raw
-created-at: {{date}}
+created-at: {{date}}   # Obsidian 插入自動帶入；AI 複製起手時手填今日日期
 source: miles-dialogue | claude-research | claude-self-capture | prototype-dogfood | mes-study | miles-upload
 captured-by: miles | claude-on-task | claude-self
 module:
-  - cross-module
+  - 跨模組
 topic-tag:
   - <自由標籤>
 related-vault:
@@ -38,6 +38,8 @@ ingested-to:               # status=ingested 時填，列寫入的既有卡
 - [ ] 是否累積成 insight（≥ 3 張同主題後觸發 vault-insight）
 
 ## 精練去處（Mode B 完成後填）
+
+<!-- Mode A 寫入時保留下方註解樣板不填；Mode B 完成後以實際 wiki link 清單取代整段註解 -->
 
 <!-- Mode B step 6 寫入後在此列出 wiki link：
 - [[../04-business-logic/X]] — 新增 § A

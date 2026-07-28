@@ -52,7 +52,7 @@ description: >
 |----------------|----------------------------|
 | **規劃 ERP 功能前**的 know-how 缺漏稽核（補既有真實狀況）| `erp-planning-pre-check`（雙軸 6 領域 × 6 卡類型）|
 | **explore 定案後**把商業邏輯變動**增修進 wiki 各位階**| **本 skill（wiki-amend）** |
-| ERP_Vault **整體健康檢查**（11 維度，定期 / 週期）| `vault-audit` |
+| ERP_Vault **整體健康檢查**（12 維度，定期 / 週期）| `vault-audit` |
 | 識別到不確定項（待確認 / 待釐清）| `oq-manage` mode B（開獨立 OQ 卡，禁 inline）|
 | raw 素材精練成卡 | `vault-ingest` mode B |
 
@@ -159,7 +159,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 ### 切分判準（最易混的三組）
 
 - **共用規則 vs 業務規則**（business-logic 內部，[[erp_index]]）：問「這是『跨多條規則共用、被破壞則整個領域失效』的底線，還是『單一決策點的 if-then』？」前者共用規則（如對帳一致性），後者業務規則（如 補收免審）。
-- **流程・狀態・角色・資料四選一**（04-business-logic/_template-business-logic.md § 二 判斷流程）：
+- **流程・狀態・角色・資料四選一**（依 [[wiki-schema]] § 十一 卡類型內容職責邊界）：
   - 回答「資料的狀態怎麼變（狀態清單 / 轉換條件 / 觸發事件）」→ state-machine。
   - 回答「一件事從頭到尾、跨角色傳遞怎麼走完」→ scenario（口訣：「這是一段有先後順序、跨角色傳遞的旅程嗎？」是 → scenario）。
   - 回答「這個角色做什麼 / 把關什麼」→ role。
@@ -181,7 +181,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 | Rule of Three | 「未來是否會有『另一張卡 / 另一個 change / 另一條 OQ』需要**單獨引用**這條內容？」| 是（將被多處引用）| 否（只單處使用，如寫死常數）|
 | 位階 / 職責純度 | 「這條內容塞進候選既有卡會不會造成越界（規則塞進 state-machine、Data Model 塞進 business-logic）？」| 是（會越界 → 須獨立到正確 type）| 否（同 type 同職責，可併）|
 
-### 新增的下限（原子性，04-business-logic/_template-business-logic.md § 十二 擴張準則）
+### 新增的下限（原子性；本節即正本）
 
 即使過了三門檻，也不可拆過頭：
 
@@ -207,8 +207,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 
 新增獨立卡 MUST 同時：
 
-- 補 `source`（往上指更高位階 / 外部原點，禁指同層 / 下層 / OpenSpec）。
-- 補 `implemented-by`（往下指 OpenSpec Requirement 標題層，導航用）。
+- 補 `source`（往上指更高位階 / 外部原點，禁指同層 / 下層 / OpenSpec）；wiki 不設 `implemented-by` 等實作對應欄位。
 - 與被拆出的母卡 / 引用卡互設 wiki link（雙向可達，否則 vault-audit 維度 3 報 orphan）。
 - 若源自某 explore 議題 → 在 wiki/log.md 追加一筆（納入(amend)），變更行含該新卡 `[[卡名]]`。
 
@@ -232,7 +231,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 
 **三層起手**：各位階寫新卡一律從 `wiki/範本/` 對應骨架複製起手（範本 - 服務藍圖／範本 - 商業規則／範本 - 狀態機／範本 - 業務情境／範本 - 角色／範本 - 實體），合規樣貌對照各資料夾「範例 - <單元名>」凍結卡；共用治理見 `00-meta/卡片撰寫共用規範`。
 
-**正文共同段**（對齊 04-business-logic/_template-business-logic.md § 八 服務藍圖產出格式／§ 九 商業規則產出格式）：
+**正文共同段**（適用 entity／role／state-machine／scenario 位階，與各該規範的產出格式同構；**business-logic 位階不套本段**——服務藍圖依其規範 § 八、商業規則依 § 九 的段落結構）：
 
 1. 一句話定位（卡頂 `>` 引言）：是什麼、屬哪位階 / 哪業務領域、規則正本歸屬聲明。
 2. `## 這張卡要回答的問題`：列這張卡要回答的關鍵業務問句，每個問句正文有對應結論（判斷「卡完整了沒」= 每個問句是否都有結論，取代「大致 OK」非量化結論）。
@@ -291,7 +290,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 
 - **議題 → 卡**：在 wiki/log.md 該條目的變更行（逐卡 `[[卡名]]`）。
 - **卡 → 議題**：在 wiki/log.md 搜 `[[卡名]]`（命中的所有條目，最新在上）+ `git log --follow` 卡檔。
-- **directional anchor 標記**：被異動的正本卡 frontmatter 補 `implemented-by`（往下指 spec Requirement）+ 建議補 `provenance-commit`（記上次對齊的 commit SHA）；vault-audit 可 grep「某 spec Requirement 有 delta 但無任一 wiki 卡 provenance-commit 更新」→ 報 stale。
+- **異動溯源**：wiki 不設 `implemented-by` 等實作對應欄位；卡的異動溯源靠 wiki/log.md 條目（搜 `[[卡名]]`）與 git 歷史，不在 frontmatter 標記。
 - **對話報告**：本 skill 收尾在對話中列「本次異動卡清單」（卡名 + 新增 / 修改 / 移除 + 一句話變更），供 Miles 確認 + commit message 引用。
 
 ---
@@ -311,7 +310,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 
 - **CLAUDE.md § 主動收尾第 10 條**：change archive 後 wiki 對齊由本 skill 機制保障；但主要觸發時機已提前至 explore 定案後。每次增修 MUST 追加 wiki/log.md 一筆（唯一操作史）。
 - **`erp-planning-pre-check`**：規劃**前**補既有 know-how 缺漏；本 skill 規劃**中**（explore 定案後）增修商業邏輯進 wiki。兩者一前一中、不重疊。
-- **`vault-audit`**：定期 / 週期整體健康（11 維度）；本 skill point-of-change 即時回補。兩者一定期一即時。
+- **`vault-audit`**：定期 / 週期整體健康（12 維度）；本 skill point-of-change 即時回補。兩者一定期一即時。
 - **`oq-manage`**：本 skill Step 0 守門識別不確定項時觸發 mode B。
 - **`vault-ingest`**：本 skill Step 0 守門識別「已驗證未精練素材」時轉介進 raw。
 
@@ -325,7 +324,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 |------|------|---------|
 | `operating-principle` type | [[wiki-schema]] 現用 `product-vision` type 承載營運原則層；`operating-principle` 曾為候選**目標 type 名**，已決議沿用 `product-vision`、不新增此 type（決策脈絡見 `08-open-questions/` 拍板紀錄 + wiki/log.md）| [[erp_index]]（營運原則層沿用 product-vision type 之註）|
 | `01-products/operating-principles.md` | **尚未建立**（現有 product-vision.md / success-metrics.md 等）| [[erp_index]] |
-| 各位階 `_template-*.md` | **已建**：business-logic / state-machine / role / entity 各 `_template-<type>.md`、scenario 為 `_template-business-scenario.md`；**僅 operating-principle `_template-operating-principle.md` 尚未建立** | 04-business-logic/_template-business-logic.md § 四範式（已落地為獨立 template 檔）|
+| 各位階 `_template-*.md` | **已建**：business-logic / state-machine / role / entity 各 `_template-<type>.md`、scenario 為 `_template-business-scenario.md`；**僅 operating-principle `_template-operating-principle.md` 尚未建立** | [[卡片撰寫共用規範]]（跨位階治理）＋各 `_template-*` 規範 |
 | `source` frontmatter | business-logic 卡已全數移除 `implemented-by`／`related-spec`／`module`（實作對應屬 PRD 層，wiki 不承載）；多數卡已有 `source` | 補不出 source 的標 `source-gap` 待專輪 |
 | `provenance-commit` frontmatter | **尚未納入** wiki-schema | [[erp_index]]（drift 偵測建議，待 schema 補）|
 

@@ -2,11 +2,13 @@
 type: open-question
 module:
   - <中文 module，見 [[wiki-schema]] § 二>
+tags:
+  - 領域/<領域名>   # 必填，可多值；判定依 [[business-domain-taxonomy]]（mode A 依此查佇列）
 oq-id: <前綴>-<NNN>
 status: open
 priority: high | medium | low
 audience: internal | external   # 判斷問句「誰能回答」，判定規則見 oq-manage skill
-raised-at: {{date}}
+raised-at: {{date}}   # Obsidian 插入自動帶入；AI 複製起手時手填今日日期
 raised-by: <誰提出（人名／協作階段／skill 名）>
 source-link: <識別到此問題的出處：對話／卡／spec 路徑>
 related-vault:

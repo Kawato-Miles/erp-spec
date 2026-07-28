@@ -35,14 +35,14 @@ description: >
 
 1. **確認來源**：source 六選一（miles-dialogue／claude-research／claude-self-capture／prototype-dogfood／mes-study／miles-upload）＋captured-by 對應（miles／claude-on-task／claude-self）；claude-self-capture 先過防線 1。
 2. **分析分流**：識別 module 與候選相關卡（grep）；**「明確未解問題」（「該怎麼處理 X」「Y 是否要 Z」句式）MUST 改走 oq-manage mode B、不寫 raw**；與既有 raw 同主題則建議合併。
-3. **寫卡**：依骨架 `memory/Sens_wiki/wiki/範本/範本 - Raw 素材.md`（複製起手）；檔名 `<YYYY-MM-DD>-<source-slug>-<主題繁中名詞>.md`；「原始素材」一字不漏（miles-upload 走防線 2b 摘要式）、「第一輪初步分析」寫觀察與候選升級路徑、「待精練」留空。
+3. **寫卡**：依骨架 `memory/Sens_wiki/wiki/範本/範本 - Raw 素材.md`（複製起手）；檔名 `<YYYY-MM-DD>-<source-slug>-<主題繁中名詞>.md`；「原始素材」的粒度依 source：對話／觀察類（miles-dialogue／prototype-dogfood／claude-self-capture）一字不漏；claude-research／mes-study 文獻類可摘錄重點但 MUST 附 raw-source-link 並在卡內標明「摘錄重點，非全文轉錄」；miles-upload 走防線 2b 摘要式、「第一輪初步分析」寫觀察與候選升級路徑、「待精練」留空。
 4. **log 一筆**（納入(ingest-A)，動機免）。
 5. **回報精練建議**：不立即 ingest；提示「累積同主題 3 張跑 mode C／B」。
 
 ### Mode B：精練（六步）
 
 1. 讀目標 raw 卡＋其候選相關卡**全文**（不是摘要）。
-2. 對照 `00-meta/scope-boundary.md` 判升級路徑：04 規則／05 實體／06 狀態機／07 情境／OQ（轉 oq-manage）／insight（≥ 3 張同主題，轉 vault-insight，先把素材卡升 status=reviewed）／不進 vault（status=cancelled 附理由）。
+2. 對照 `00-meta/scope-boundary.md` 判升級路徑：04 規則／05 實體／06 狀態機／07 情境／11 審查與協作知識（審查方法、agent 協作協議類素材）／OQ（轉 oq-manage）／insight（≥ 3 張同主題，轉 vault-insight，先把素材卡升 status=reviewed）／不進 vault（status=cancelled 附理由）。
 3. **提議 cards diff**（每張卡列 diff 預覽＋不適用部分附去處），等 Miles 逐項批准（防線 3）。Miles 說「再看看」→ status=reviewed；說「重新分析」→ 維持 raw 重跑。
 4. OQ 候選 → 觸發 oq-manage mode B（去重）。
 5. insight 級 → 觸發 vault-insight。

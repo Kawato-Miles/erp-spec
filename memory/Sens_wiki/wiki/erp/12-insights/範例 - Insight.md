@@ -3,9 +3,9 @@ title: "範例 - Insight"
 type: example
 example-of: insight
 snapshot-source: "[[2026-07-08-Odoo參照與生產關建模原則]]"
-synced-with-template: 2026-07-28
+synced-with-template: 2026-07-29
 status: active
-last-reviewed: 2026-07-28
+last-reviewed: 2026-07-29
 ---
 
 # 範例 - Insight

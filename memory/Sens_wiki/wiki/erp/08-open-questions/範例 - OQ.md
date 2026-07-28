@@ -3,16 +3,16 @@ title: "範例 - OQ"
 type: example
 example-of: open-question
 snapshot-source: "[[PT-028-工單已交付觸發條件正本矛盾]]"
-synced-with-template: 2026-07-28
+synced-with-template: 2026-07-29
 status: active
-last-reviewed: 2026-07-28
+last-reviewed: 2026-07-29
 ---
 
 # 範例 - OQ
 
 > [!info] 本卡為撰寫範例的凍結快照，不是該 OQ 的正本
 > 內容取自 [[PT-028-工單已交付觸發條件正本矛盾]] 卡 2026-07-28 時點的完整快照（含 frontmatter），供開 OQ 卡時對照合規樣貌、稽核時當通過樣本。該 OQ 的現行內容一律以封存區的原卡為準。本卡只在撰寫方式變化時與 oq-manage skill § 一（規範）、[[範本 - OQ]]（骨架）同 commit 更新，維護規則見 [[卡片撰寫共用規範]] § 一。
-> 本卡 type 為 example，不屬於平層 open 佇列，OQ 查詢不會命中。
+> 本卡 type 為 example，不屬於平層 open 佇列，OQ 查詢不會命中。快照來源早於「OQ 卡 tags 必填」規則，frontmatter 無 tags——寫新卡依 [[範本 - OQ]] 骨架補領域 tag。
 
 ## frontmatter（快照）
 
