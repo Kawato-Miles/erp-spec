@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-07-28 16:23] 健檢(audit) | 全量，12 維度 3 通過（三層結構豁免與欄位防回流均生效）
+- 變更：稽核 ERP_Vault，Error；維度 1 矛盾 2 件（[[設備]] 卡內印刷計價歸屬新舊並存、[[2026-06-15-生產階段現況校正與as-is-tobe對齊]] 換算取整未同步 PT-030 拍板）、維度 3 孤島 18（封存 OQ 12＋canvas 6）、維度 4 死鏈 39（canvas 29／現行卡 3／骨架佔位 7）、維度 5 缺欄位 10（正本卡缺 source 8）、維度 6 違規 4 類（別名連結 413 處、英文檔名 3、inline 待補 2、退役卡迭代史）、維度 8 OQ open 87 逾 30 天 60、維度 9 raw reviewed 逾期 5、維度 12 抽樣 10 卡段落結構不符 4／殘留實作引用 19
+- 動機：免（健檢類）
+- 衝突：[[設備]] 與 [[2026-06-15-生產階段現況校正與as-is-tobe對齊]] 兩處並排比對已列對話報告待裁決，未自行調和
+
 ## [2026-07-28 15:54] 納入(amend) | payment-invoice-scenarios 歸位帳務＋情境卡 source 補狀態機參考資料規則
 
 - 變更：[[payment-invoice-scenarios]] 由 `07-scenarios/` 移至 `04-business-logic/營運規則/帳務/`（檔名不動保連結）＋ frontmatter type 由自創值 business-logic 修正為 business-rule（mutability: internal）；[[_template-business-scenario]] 與 [[wiki-schema]] 的 scenario source 規則補訂——狀態機卡得並列為參考資料（部分情境由狀態機推導產生），但不得為唯一或直接源頭

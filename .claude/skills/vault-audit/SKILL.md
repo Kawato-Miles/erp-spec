@@ -89,6 +89,7 @@ grep -rn "（待補\|（待釐清\|（待確認" memory/Sens_wiki/wiki/ --includ
 
 2. 命名繁中語意化：卡名與段落禁直譯、禁中英夾雜（rules § 五）；OQ 卡命名 `<前綴>-<NNN>-<簡述>`。
 3. 正文禁迭代史堆疊（「A 已棄用 → 改 B」並陳）。
+4. wiki link 禁別名（rules § 三）：`grep -rn "\[\[[^]]*|" memory/Sens_wiki/wiki/ --include="*.md"`，排除 log.md／changelog.md／`_archives/`（歷史層）。
 
 判定：OK＝0 違規；Warning＝1-3；Error＝> 3（觸發建議 `oq-manage` mode D 遷出）。
 
@@ -134,7 +135,7 @@ grep -rn -A3 "^source:" memory/Sens_wiki/wiki/ --include="*.md" | grep "openspec
 
 ```bash
 base=$(git merge-base HEAD origin/main 2>/dev/null || echo HEAD~1)
-changed=$( { git diff --name-only "$base" HEAD -- 'memory/Sens_wiki/wiki/'; git diff --name-only -- 'memory/Sens_wiki/wiki/'; } | sort -u )
+changed=$( { git -c core.quotepath=false diff --name-only "$base" HEAD -- 'memory/Sens_wiki/wiki/'; git -c core.quotepath=false diff --name-only -- 'memory/Sens_wiki/wiki/'; } | sort -u )   # quotepath=false 必加：中文路徑否則被轉義漏算
 for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && echo "INFO: $f 含標題錨點，建議改指 spec 檔層"; done
 ```
 
