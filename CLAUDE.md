@@ -158,7 +158,7 @@ Miles，印刷業 PM，負責兩個產品：**ERP 系統**（生產排程 / 採�
 | **Raw 素材收集 / 研究筆記** | 「存進 raw」「我要記」「先收集」「研究一下 X」「這份檔案存 raw」「把這個 PDF / 訪談 / 截圖收進來」/ Claude 完成 WebFetch 研究後 / Claude 主動識別「值得記」 | 觸發 `vault-ingest` mode A 寫入 `raw/<YYYY-MM-DD>-<source>-<topic>.md`（claude-self-capture **須 Miles 確認**，claude-research **須附真實 raw-source-link**，miles-upload **須原檔搬 `_attachments/` + 出處**）|
 | **批次掃描 raw** | 「看 raw」「掃 raw」「raw 待處理」/ 主動：累積 ≥ 10 張 status=raw | 觸發 `vault-ingest` mode C，產三狀態清單 + 同主題累積警示 + 過期警告 |
 | **精練 raw 卡** | 「精練 [檔名]」「ingest 這張」「拆解 raw」 | 觸發 `vault-ingest` mode B（含 oq-manage mode B / vault-insight 協同觸發判斷；cards diff **須 Miles 確認** 才動既有卡）|
-| **新增 / 修改業務情境** | 「寫業務情境」「補情境卡」「寫 [模組] 情境」/ 識別到 spec 需求須具體化為業務情境 | 依業務情境範本 [[wiki/erp/07-scenarios/_template-business-scenario]] 撰寫（判斷表定變體 → 六段格式 → 13 維度自審），不經 skill；產 `07-scenarios/<簡述>.md` |
+| **新增 / 修改業務情境** | 「寫業務情境」「補情境卡」「寫 [模組] 情境」/ 識別到 spec 需求須具體化為業務情境 | 依三層撰寫：從骨架 [[wiki/範本/範本 - 業務情境]] 複製起手 → 規則與 13 維度自審依規範 [[wiki/erp/07-scenarios/_template-business-scenario]] → 合規樣貌對照 [[wiki/erp/07-scenarios/範例 - 業務情境]]（共用治理見 [[wiki/erp/00-meta/卡片撰寫共用規範]]），不經 skill；產 `07-scenarios/<簡述>.md` |
 | **對外發布 / 迭代同步**（依這次更新同步 Notion / Linear）| 「依這次更新同步」「推迭代差異」「同步發布」「更新外部資料」「推 X 到 Notion / Linear」 | 算 delta（只取 archived change、active 不外露）→ 內部正本先到位 → 路由（業務情境卡對外推送若需要另做 skill（外部對接 wiki）；Linear → `linear-delivery`，中台 vs 業務平台 project 分流）→ 每面寫入前列清單給 Miles → 強制回填追蹤 |
 | **使用工程紀律框架（mattpocock）** | 「brainstorm / 對齊」「跑 TDD」「除錯」「code review」（限 prototype / erp repo 實作階段） | 實作前 MUST 先 `grilling` 對齊需求（軟強制，補回原 Superpowers SessionStart 消失的強制段；PM 規格階段對齊仍走 `senior-pm` / `/opsx`，不重複）；再依動作調用 mattpocock skill——TDD→`tdd`、除錯→`diagnosing-bugs`、程式碼審查→`code-review`。工程紀律優先於速度 |
 
@@ -329,7 +329,7 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
   - **角色 R&R 正本歸 wiki**：角色卡 `03-roles/`。
   - OpenSpec spec MUST NOT 複寫 wiki 欄位表或狀態列舉（改為引用 wiki 卡）。wiki 卡 MUST NOT 複寫 OpenSpec 的轉換規則或 Scenario。
 - **Prototype＝介面與互動正本（交付層，2026-07-15 新增）**：頁面結構與版型、操作動線、元件呈現以 Prototype 為準；mock 資料的值、API 形狀、權限的後端強制不在其權威範圍（此邊界僅此一處宣告，交付文件不另附邊界表）。交付到 Linear 時不設 Prototype 參照格，交付文件亦不文字重述操作動線。設計票（DE 票）不再產出，操作方式與介面由 Prototype 承載。
-- **引用方向**：OpenSpec change 的 Why 段以相對連結引 wiki 卡（下游引上游）。wiki 的 `implemented-by` 可指 OpenSpec Requirement 標題層與 Prototype 型別檔（導航用）。wiki 的 `source` 禁指 openspec/specs/（違者報錯）。
+- **引用方向**：OpenSpec change 的 Why 段以相對連結引 wiki 卡（下游引上游）。wiki 不承載與實作文件的對應（frontmatter 不設 `implemented-by`／`module` 等實作對應欄位，實作對應屬 PRD 層）。wiki 的 `source` 禁指 openspec/specs/（違者報錯）。
 - 細部「收 / 不收」邊界見 [scope-boundary](memory/Sens_wiki/wiki/erp/00-meta/scope-boundary.md)。**本分工僅此一處宣告；wiki 各卡與 .claude/rules 不得再重述。**
 
 ---
@@ -347,9 +347,9 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 | **商業層查詢**（商業目標 / 角色 / 商業邏輯 / 實體關聯 / 狀態機 / 跨模組情境）| 讀 wiki 總入口 [wiki/index.md](memory/Sens_wiki/wiki/index.md)，依 `[[business-domain-taxonomy]]` 檢索規約定位對應領域卡（判領域 → 領域 tag 查卡名清單 → 呈現 → 載入；入口即 router，不在此重列深路徑） | OpenSpec spec § Requirements（功能規格） |
 | **撰寫 OpenSpec change**（背景對齊）| Vault `04-business-logic/` + `05-entities/` + `03-roles/` 對應卡 → 引用至 proposal `## Why` | `09-canvases/` 視覺化、Notion 索引（`10-references/notion-index.md`） |
 | **撰寫 Spec / PRD** | 觸發 OpenSpec change 工作流（`/opsx:propose` 或 `/opsx:new`），背景資料由 Vault 對應卡引用 | 迭代時參考 `memory/erp/spec-iteration-workflow.md` |
-| 情境驗證 / 補情境 | Vault `07-scenarios/`（業務情境卡，範本 `_template-business-scenario`）+ 業務情境 spec（`openspec/specs/business-scenarios/spec.md`）| Vault `03-roles/`（角色責任分配）|
+| 情境驗證 / 補情境 | Vault `07-scenarios/`（業務情境卡；三層：骨架 `wiki/範本/範本 - 業務情境`／規範 `_template-business-scenario`／範例 `範例 - 業務情境`）+ 業務情境 spec（`openspec/specs/business-scenarios/spec.md`）| Vault `03-roles/`（角色責任分配）|
 | 確認 / 解答 Open Question | Vault `08-open-questions/`（**內部正本，2026-05-19 改寫**）+ 觸發 `oq-manage` skill | Notion OQ DB（對外確認版，見 § OQ 工作流）|
-| 業務情境 | Vault `07-scenarios/`（業務情境卡，範本 `_template-business-scenario`）| 各模組 spec § Scenarios（Acceptance Scenarios，Given/When/Then 工程驗收）、Vault `03-roles/` |
+| 業務情境 | Vault `07-scenarios/`（業務情境卡；三層：骨架 `wiki/範本/範本 - 業務情境`／規範 `_template-business-scenario`／範例 `範例 - 業務情境`）| 各模組 spec § Scenarios（Acceptance Scenarios，Given/When/Then 工程驗收）、Vault `03-roles/` |
 | **審查方法論 / 框架查詢** | Vault `11-review-knowledge/`（入口 [審查知識路由](memory/Sens_wiki/wiki/erp/11-review-knowledge/審查知識路由.md)）| 對應 agent.md（`.claude/agents/<name>.md`）|
 | **Prototype 製作** | `/Users/b-f-03-029/sens-erp-prototype/DESIGN.md`（設計規範唯一權威）+ 對應 Spec + 狀態機 spec | Notion 測試案例 DB：https://www.notion.so/2b93886511fa817fbd65e7608726f036 |
 | Prototype 驗證 / 反饋 | `/Users/b-f-03-029/sens-erp-prototype/src/` 對應模組 + `/Users/b-f-03-029/sens-erp-prototype/DESIGN.md` | — |

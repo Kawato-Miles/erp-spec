@@ -1,19 +1,10 @@
 ---
 type: business-rule
 mutability: domain
-module:
-  - 材料主檔
-  - 製程主檔
-  - 裝訂主檔
 source:
   - "[[../../../raw/2026-06-11-miles-upload-公司實際印務用工單範例|公司實際印務用工單（W-20250801-07）]]"
   - "計價設定現況查證：sens-print-core dev 分支全套計價 model ＋ options 發布管線 ＋ 報價 quote_item（2026-07-23）"
   - "計價公式現況對證：sensation-api dev 分支計價引擎 `product/pricing/`（engine／markup／imposition／mother_sheet 與 material M1-M5／process P1-P8／binding B1-B3／equipment E1-E3 各 spec 模組）（2026-07-23）"
-implemented-by:
-  - "openspec/specs/material-master/spec.md"
-  - "openspec/specs/process-master/spec.md"
-  - "openspec/specs/binding-master/spec.md"
-  - "sens-erp-prototype/src/data/bomMasterMock.ts"
 status: active
 last-reviewed: 2026-07-23
 tags:

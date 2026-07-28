@@ -1,7 +1,5 @@
 ---
 type: state-machine
-module:
-  - 品檢
 status: deprecated
 last-reviewed: 2026-07-21
 ---

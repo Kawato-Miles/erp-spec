@@ -1,7 +1,7 @@
 ---
 type: raw
 status: raw
-created-at: YYYY-MM-DD
+created-at: {{date}}
 source: miles-dialogue | claude-research | claude-self-capture | prototype-dogfood | mes-study | miles-upload
 captured-by: miles | claude-on-task | claude-self
 module:
@@ -13,6 +13,9 @@ related-vault:
 raw-source-link: <對話片段 / WebFetch URL / Slack URL / 原始檔出處>
 attached-files:  # source=miles-upload 必填；其他可選；不需要時刪除整個欄位
   - "_attachments/<檔名>"
+ingested-at: YYYY-MM-DD    # status=ingested 時填（mode B 完成）
+ingested-to:               # status=ingested 時填，列寫入的既有卡
+  - "[[<寫入的既有卡>]]"
 ---
 
 # <主題標題>
@@ -41,3 +44,5 @@ attached-files:  # source=miles-upload 必填；其他可選；不需要時刪�
 - [[../08-open-questions/Y-001-Z]] — 升級為 OQ
 - 取消（理由：...）
 -->
+
+<!-- 起手提醒（填完刪除本註解）：命名規約、各 mode 流程、Anti-Model-Collapse 四道防線見 .claude/skills/vault-ingest/SKILL.md 與 raw/README.md；共用治理（流程／停下鐵則／紀律）見 00-meta/卡片撰寫共用規範 -->

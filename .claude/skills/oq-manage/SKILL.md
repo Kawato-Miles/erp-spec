@@ -36,30 +36,17 @@ OQ 是**待裁決佇列**：每張卡一個待確認的問題，拍板後決議�
 
 檔名：`<前綴>-<NNN>-<問題簡述>.md`（簡述繁中名詞、不含序號重複、不用問號）。
 
-```yaml
----
-type: open-question
-module:
-  - <中文 module，見 wiki-schema § 二>
-oq-id: <前綴>-<NNN>
-status: open
-priority: high | medium | low
-audience: internal | external
-raised-at: YYYY-MM-DD
-raised-by: <誰提出>
-source-link: <識別到此問題的出處：對話／卡／spec 路徑>
-related-vault:
-  - "[[<相關卡>]]"
-related-oq:
-  - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名（別名的 | 會截斷表格且易斷鏈）
-expected-resolution-at: YYYY-MM-DD   # external 必填（預期確認時點）；internal 建議填
-answered-at: YYYY-MM-DD              # 拍板時填
-answered-by: <拍板者>
-notion-url: <推送後回填>             # external 推送 Notion 後填
----
-```
+**骨架正本見 `memory/Sens_wiki/wiki/範本/範本 - OQ.md`**（frontmatter 樣板＋正文段落與填寫提示）。開卡 MUST 從骨架複製起手，不從本文散文重組結構；合規樣貌對照 `08-open-questions/範例 - OQ`。骨架異動時與規範、範例同 commit 更新（治理見 `00-meta/卡片撰寫共用規範` § 一）。
 
-正文骨架：問題描述／待解答（checkbox）／（候選方案）／（部分拍板）／（決議——拍板時補，含結論＋落地去處 `[[卡名]]`）。
+欄位判定說明（骨架只放樣板，判定規則在此）：
+
+- `oq-id`：序號取該前綴現有最大值＋1（平層與 `_archives/` 一起算，永不重用），與檔名前段一致。
+- `status`：嚴格三值，見 § 〇；status 行禁止行內註解。
+- `audience`：開卡必判，判斷問句「誰能回答這個問題」，判定表見 § 〇；不判就預設 internal 屬紅旗（見 § 三）。
+- `expected-resolution-at`：external 必填（預期確認時點），internal 建議填。
+- `answered-at` / `answered-by`：拍板時才填（mode C）。
+- `notion-url`：audience=external 推送 Notion Follow-up DB 後回填。
+- `related-oq` / `related-vault`：一律 `[[完整檔名]]`，禁別名、禁短名。
 
 ## 二、五個 mode（輸入 → 步驟 → 輸出）
 

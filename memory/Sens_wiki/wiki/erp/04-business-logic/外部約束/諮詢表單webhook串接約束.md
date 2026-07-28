@@ -1,7 +1,5 @@
 ---
 type: business-rule
-module:
-  - 諮詢單
 mutability: external
 status: active
 last-reviewed: 2026-06-12

@@ -1,18 +1,11 @@
 ---
 type: scenario
 variant: 接力型
-module:
-  - 工單
-  - 生產任務
-  - 品檢
 tags:
   - 領域/生產執行
 source:
   - "[[線下訂單流程]] 階段 9（品檢）"
   - "[[齊套邏輯]]（品檢通過累計＝入庫、工單完成判定正本）"
-implemented-by:
-  - "openspec/specs/work-order/spec.md"
-  - "openspec/specs/production-task/spec.md"
 status: active
 last-reviewed: 2026-07-22
 ---

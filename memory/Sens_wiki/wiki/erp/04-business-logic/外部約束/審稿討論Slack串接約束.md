@@ -1,8 +1,5 @@
 ---
 type: business-rule
-module:
-  - 印前審稿
-  - 訂單管理
 mutability: external
 status: active
 last-reviewed: 2026-07-02

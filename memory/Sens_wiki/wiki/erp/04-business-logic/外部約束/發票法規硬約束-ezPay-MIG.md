@@ -1,12 +1,6 @@
 ---
 type: business-rule
 mutability: external
-module:
-  - 訂單管理
-  - 售後服務
-  - 諮詢單
-  - 跨模組
-related-spec: openspec/specs/order-management/spec.md
 status: active
 last-reviewed: 2026-06-09
 tags:

@@ -1,0 +1,67 @@
+---
+title: "範例 - OQ"
+type: example
+example-of: open-question
+snapshot-source: "[[PT-028-工單已交付觸發條件正本矛盾]]"
+synced-with-template: 2026-07-28
+status: active
+last-reviewed: 2026-07-28
+---
+
+# 範例 - OQ
+
+> [!info] 本卡為撰寫範例的凍結快照，不是該 OQ 的正本
+> 內容取自 [[PT-028-工單已交付觸發條件正本矛盾]] 卡 2026-07-28 時點的完整快照（含 frontmatter），供開 OQ 卡時對照合規樣貌、稽核時當通過樣本。該 OQ 的現行內容一律以封存區的原卡為準。本卡只在撰寫方式變化時與 oq-manage skill § 一（規範）、[[範本 - OQ]]（骨架）同 commit 更新，維護規則見 [[卡片撰寫共用規範]] § 一。
+> 本卡 type 為 example，不屬於平層 open 佇列，OQ 查詢不會命中。
+
+## frontmatter（快照）
+
+```yaml
+type: open-question
+module:
+  - 工單
+oq-id: PT-028
+status: answered
+priority: high
+audience: internal
+raised-at: 2026-07-27
+raised-by: 序列協作 Phase 1（工單管理 change，senior-pm 既有規則枚舉）
+source-link: openspec/changes/work-order-management（序列協作 Phase 4 匯報，2026-07-27）
+related-vault:
+  - "[[工單狀態]]"
+  - "[[任務狀態]]"
+  - "[[派單狀態]]"
+related-oq: []
+expected-resolution-at: 工單管理 change 實作前（阻斷級）
+answered-at: 2026-07-27
+answered-by: Miles
+```
+
+## 正文（快照）
+
+
+# PT-028 工單已交付觸發條件正本矛盾
+
+## 問題描述
+
+wiki [[工單狀態]] 寫「**全部**任務交付產線後觸發工單已交付（取最落後）」，openspec work-order spec 寫「**首個**任務交付時觸發、後續任務交付不影響工單狀態」。兩份既有正本互相矛盾，非 2026-07-27 拍板造成。工單不拆廠拍板後一張工單同時含多家廠商，影響面比拆廠時代更大，未拍板前工單狀態機無法定案。
+
+## 待解答
+
+- [x] 「工單已交付」的觸發條件採全部任務交付或首個任務交付？
+
+## 候選方案
+
+- **A（全部交付才推進，wiki 版）**：下游看到「工單已交付」即代表所有廠商都收到、責任轉移語意乾淨；但單內一家外包廠遲遲不接單時整張工單卡在「製程審核完成」，現場已開工卻不反映。
+- **B（首個交付即推進，openspec 版）**：現場一有動靜即反映；但「工單已交付」不再保證所有廠商都收到，印務交付追蹤的把關點消失，且會讓 CEO 營運指標「製程審核完成未交付停滯清單」實質失效（首家一交付即離開關卡，測不到落後的廠商）。
+- **C（CEO 第三路徑）**：責任轉移點採全部交付（狀態機層等同 A），另以「已交付 3/5 家」衍生訊號呈現部分交付進度。顧問確認 C 在狀態機層與 A 完全相同，實際分歧只有 A／B 兩個。
+
+不受影響項（裁決任一方向皆不動）：派單發送（任務層動作、不看工單狀態）、收回守衛（看任務層）、其餘管理指標。設計已把觸發條件抽為具名守衛參數，裁決後改值即可，不動狀態列舉與下游。
+
+裁決後同步三處：[[工單狀態]] 轉換條件、openspec work-order spec 工單狀態機 Requirement、任務獨立交付操作 Scenario。
+
+## 決議
+
+採 **A（全部任務交付才推進，wiki 版）**。理由：「工單已交付」的營運用途是責任轉移點（單已在工廠手上、追蹤責任從印務轉現場），全部交付才推進使此語意成立；「已交付 N/M 家」部分交付進度以狀態解耦的衍生訊號呈現（CEO 第三路徑的訊號部分照設計保留，不需新狀態）。2026-07-27 Miles 拍板。
+
+落地去處：wiki [[工單狀態]] 原文即為全部任務交付、不需修改；openspec work-order 舊「首個任務交付」條文由工單管理 change delta spec（§ 工單狀態機、§ 任務獨立交付操作）取代定案，change archive 時同步回 main spec。

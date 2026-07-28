@@ -93,16 +93,13 @@ tags:
 
 ### 4.0 往上指依據、往下指實作的通則（2026-05-31 新增）
 
-> 對齊 [[erp_index]] § 一連結方向。所有承載商業邏輯的卡（`business-rule` / `service-blueprint` / `entity` / `state-machine` / `scenario` / `role` / `user-story` / `test-case`）採「往上 `source` + 往下 `implemented-by`」兩欄連結，整張圖的連結不會繞回自己（例外：`entity` 卡僅採 `source`，不設 `implemented-by`，見 § type=entity）。
+> 對齊 [[erp_index]] § 一連結方向。所有承載商業邏輯的卡（`business-rule` / `service-blueprint` / `entity` / `state-machine` / `scenario` / `role`）採「往上 `source`」單欄連結，整張圖的連結不會繞回自己。這些卡型一律**不設 `module` / `implemented-by` / `related-spec`**——與實作模組／實作文件的對應屬 PRD 層，wiki 不承載；領域歸屬由 `tags`（`領域/<領域名>`）承載。
 
 | 欄位 | 方向 | 用途 | 指向對象 | 硬規則 |
 |------|------|------|---------|--------|
 | `source` | 往**上層**（更上層）| **正確性根據**（這張卡為什麼對 → 上層卡授權）| 更上層的 Vault 卡（營運原則 / 共用規則 / 業務規則 / 流程狀態角色資料 / 操作步驟），或最上層的依據（法規 / 客戶訪談 / 產業慣例；管理層決策本身不留卡上，脈絡歸 log 與 OQ）| **禁指 OpenSpec spec**（OpenSpec 是實作規格，不是正確性來源，方向顛倒）；**禁指同層卡**（平行卡不互為正確性根據，容易繞回自己）；**禁指下層卡**（下層不授權上層）|
-| `implemented-by` | 往**下層**（實作層）| **導航 / 覆蓋**（這張卡落到哪 → 下層實作位置）| OpenSpec spec 檔（`openspec/specs/<module>/spec.md`，**不綁 `#Requirement: <標題>` 標題錨點**）/ Prototype 端對端測試 / Prototype 型別檔 | **不承載正確性**（只是導航）；**可多值**；**可留空 = 待實作**（漸進填寫，不強制）；**禁用標題錨點寫關聯**（見下）|
 
 - `source` 的「往上指更上層」原則，使依據鏈終止於最上層的依據（法規／訪談／產業慣例），不在 Vault 內部繞回自己；管理層決策不寫進 source，脈絡由 log 與 OQ 承載。
-- `implemented-by` 連到 OpenSpec **spec 檔層**（非行號、**非 `#Requirement: <標題>` 標題錨點**）；要標明對應哪條 Requirement 時，於卡內文字描述（如「實作於 § <標題>」），**不綁進連結錨點**。留空代表該卡尚未落到 OpenSpec / Prototype，屬待實作狀態。
-  - **不用標題錨點寫關聯（2026-06-01 ORD-027 教訓）**：OpenSpec Requirement 標題會改名（如縮寫中文化 / 措辭調整），標題錨點一改即斷鏈、且反過來卡住標題改名（牽動所有引用它的卡）。故關聯一律指 spec 檔層級，Requirement 名稱只當文字描述。既有已寫標題錨點的卡先留著、不回頭批量改，新卡 / 被 change 異動的卡採新寫法。
 - 連結不繞回自己由 § 六維度 15 lint 把關（`source` 鏈繞回自己報 Error、`source` 指向 OpenSpec 報 Error）。
 
 ### type=meta
@@ -161,12 +158,8 @@ last-reviewed: YYYY-MM-DD
 ```yaml
 ---
 type: role
-module:
-  - <主要模組>
 source:                          # 往上層 = 正確性根據（營運原則 / 商業流程共用規則 / 權責表），禁指 OpenSpec / 同層 / 下層；見 § 4.0
   - "[[<上層卡或最上層依據>]]"
-implemented-by:                  # 往下層 = 導航（OpenSpec spec 檔層，不綁標題錨點），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/<對應模組>/spec.md"
 related-notion: <Notion 核心角色權責 DB 連結>
 status: active
 last-reviewed: YYYY-MM-DD
@@ -178,8 +171,6 @@ last-reviewed: YYYY-MM-DD
 ```yaml
 ---
 type: service-blueprint
-module:
-  - <模組>
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
 status: active
@@ -193,8 +184,6 @@ last-reviewed: YYYY-MM-DD
 ---
 type: business-rule
 mutability: external | domain | internal  # 可變性：external=外部約束 / domain=領域知識 / internal=營運規則
-module:
-  - <模組>
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
 source:
@@ -226,20 +215,13 @@ last-reviewed: YYYY-MM-DD
 ---
 ```
 
-- entity 卡不設 `module` / `implemented-by` / `related-spec`：這三欄是與實作模組／實作文件的對應，屬 PRD 層，wiki 不承載。領域歸屬由 `tags`（`領域/<領域名>`）承載。
-
 ### type=state-machine
 
 ```yaml
 ---
 type: state-machine
-module:
-  - <模組>
 source:                          # 往上層 = 正確性根據（所屬 business-logic 規則 / 流程狀態角色資料層情境），禁指 OpenSpec / 同層 / 下層；見 § 4.0
   - "[[<上層卡>]]"
-implemented-by:                  # 往下層 = 導航（OpenSpec spec 檔層，不綁標題錨點），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/<對應模組>/spec.md"
-related-spec: openspec/specs/<對應模組>/spec.md  # 補充參照，非正確性來源
 status: active
 last-reviewed: YYYY-MM-DD
 ---
@@ -251,14 +233,10 @@ last-reviewed: YYYY-MM-DD
 ---
 type: scenario
 variant: 接力型 | 能力型 | 排程型      # 必填；判定見 07-scenarios/_template-business-scenario.md § 二
-module:
-  - <模組>
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
 source:                          # 往上層 = 正確性根據（服務藍圖 / business-logic 規則 / 拍板 OQ / 外部依據），禁指 OpenSpec / 同層 / 下層
   - "[[<藍圖或規則卡>]]"
-implemented-by:                  # 往下層 = 導航（實作規格檔層），可多值 / 可留空
-  - "openspec/specs/<模組>/spec.md"
 status: draft | active
 last-reviewed: YYYY-MM-DD
 ---
@@ -367,17 +345,17 @@ ingested-to:                                           # status=ingested 時填
 | `00-meta/` | `meta` |
 | `01-products/` | `product-vision` / `phase` / `metric` |
 | `02-domain/` | `domain` / `glossary` |
-| `03-roles/` | `role` / `meta`（`_alignment-report.md`）|
-| `04-business-logic/` | `service-blueprint` / `business-rule` |
+| `03-roles/` | `role` / `meta`（`_alignment-report.md`／`_template-role.md`）/ `example`（`範例 - 角色.md`）|
+| `04-business-logic/` | `service-blueprint` / `business-rule` / `meta`（`_template-business-logic.md`）/ `example`（`範例 - 服務藍圖.md`／`範例 - 商業規則.md`）|
 | `05-entities/` | `entity` / `meta`（`_template-entity.md`）/ `example`（`範例 - 實體.md`）|
+| `06-state-machines/` | `state-machine` / `meta`（`_template-state-machine.md`）/ `example`（`範例 - 狀態機.md`）|
 | `wiki/範本/`（vault 層，跨主題） | 骨架檔（內容為填空 frontmatter 樣板，豁免本 schema 檢查；見 [[卡片撰寫共用規範]] § 一）|
-| `06-state-machines/` | `state-machine` |
-| `07-scenarios/` | `scenario`（業務情境）/ `meta` |
-| `08-open-questions/` | `open-question` / `meta`（`OQ運作總覽.md`）|
+| `07-scenarios/` | `scenario`（業務情境）/ `meta`（`_template-business-scenario.md` 等）/ `example`（`範例 - 業務情境.md`）|
+| `08-open-questions/` | `open-question` / `meta`（`OQ運作總覽.md`）/ `example`（`範例 - OQ.md`）|
 | `09-canvases/` | `.canvas` 檔（無 frontmatter）/ `canvas-ref` |
 | `10-references/` | `reference` |
-| `12-insights/` | `insight` / `meta`（`insight定位說明.md`）|
-| `raw/` | `raw` / `meta`（`README.md` / `_template.md`）|
+| `12-insights/` | `insight` / `meta`（`insight定位說明.md`）/ `example`（`範例 - Insight.md`）|
+| `raw/` | `raw` / `meta`（`README.md`）|
 | `raw/_attachments/` | 任意檔（PDF / 圖 / docx / 訪談錄音轉文字等）；不需 frontmatter |
 
 ## 六、Lint 規則（vault-audit 依此判定）
@@ -464,19 +442,18 @@ ingested-to:                                           # status=ingested 時填
 
 **Error 條件**：
 - `source` 鏈繞回自己（A 的 source 指 B、B 的 source 直接或間接指回 A）— 違反連結不繞回自己
-- 任一卡 `source` 指向 OpenSpec spec 路徑（`openspec/specs/...`）— 方向顛倒（OpenSpec 是實作規格非正確性來源，應改填 `implemented-by` 或改指上層 Vault 卡）
+- 任一卡 `source` 指向 OpenSpec spec 路徑（`openspec/specs/...`）— 方向顛倒（OpenSpec 是實作規格非正確性來源，應改指上層 Vault 卡或最上層依據）
 - `test-case` 卡 `source` 未指任何 user-story 卡（驗收項目未依操作步驟）
 - `user-story` 卡 `source` 指向另一 `user-story` 卡（同層繞回自己，已於維度 13 涵蓋，此處併入把關）
 
 **Warning 條件**：
 - `source` 指向同層平行卡（如 business-logic 業務規則 A 指業務規則 B 而非所屬共用規則）— 疑似橫向耦合，建議改指上層卡
 - 承載商業邏輯的卡（business-logic / entity / state-machine / scenario / role / user-story / test-case）`source` 欄位為空 — 缺正確性根據（漸進補齊，非硬性）
-- `implemented-by` 全空且 status=active 超過 90 天 — 疑似 active 卡長期未落到實作（提示而非錯誤，因 implemented-by 可留空=待實作）
 
 **提示（Info）條件**：
-- `implemented-by`（或 `source`）值含 `#Requirement:` 標題錨點（如 `openspec/specs/<module>/spec.md#Requirement: <標題>`）— 標題錨點易因 Requirement 改名斷鏈（2026-06-01 ORD-027 教訓），建議改指 spec 檔層、Requirement 名稱以文字描述。**僅對本輪新增 / 異動的卡提示**（既有存量卡先留著、不回頭批量改，故不對未異動卡報此項，避免噪音）。
+- `source` 值含 `#Requirement:` 等標題錨點 — 標題錨點易因標題改名斷鏈，關聯一律指檔層、名稱以文字描述。
 
-> `source` 往上層 + `implemented-by` 往下層的兩欄設計，使依據鏈終止於最上層的依據（依據鏈終止於法規／訪談／產業慣例等最上層依據），下層導航鏈終止於 OpenSpec / Prototype，整張圖的連結不會繞回自己。本維度待 vault-audit skill 擴充實作「檢查有沒有繞回自己」的偵測邏輯。
+> `source` 往上層的單欄設計，使依據鏈終止於最上層的依據（法規／訪談／產業慣例），整張圖的連結不會繞回自己。本維度待 vault-audit skill 擴充實作「檢查有沒有繞回自己」的偵測邏輯。
 
 ## 七、命名規約
 
@@ -556,7 +533,7 @@ ingested-to:                                           # status=ingested 時填
 - ❌ user-story `source` 指向其他 user-story 卡（AI 拿自己寫的東西當依據再生內容的風險）
 - ❌ user-story stage=business-only 但 UI 操作段已填內容（stage 不一致）
 - ❌ `source` 鏈繞回自己（違反連結不繞回自己，見 § 六維度 15）
-- ❌ `source` 指向 OpenSpec spec 路徑（方向顛倒，應改 `implemented-by` 或改指上層 Vault 卡）
+- ❌ `source` 指向 OpenSpec spec 路徑（方向顛倒，應改指上層 Vault 卡或最上層依據）
 - ❌ test-case `source` 未指 user-story 卡（驗收項目未依操作步驟）
 - ❌ 卡片 frontmatter 含外部系統狀態欄位（`notion-published-at` / `notion-page-url` 等——發布追蹤唯一正本在 `memory/erp/notion-publish-manifest.md`，見 § 四鐵則）
 

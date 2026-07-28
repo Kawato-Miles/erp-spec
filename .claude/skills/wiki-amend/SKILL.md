@@ -146,7 +146,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 
 ### 第 1 步：判位階（沿「問句的抽象度」由高到低）
 
-依新內容回答的問句性質，對照六位階單一職責（04-business-logic/_template-business-logic.md §4.0、[[erp_index]]）：
+依新內容回答的問句性質，對照六位階單一職責（04-business-logic/_template-business-logic.md § 二 分類判斷表、[[erp_index]]）：
 
 | 新內容回答的問題 | 可否驗算 | 位階 | type / 載體 | 目錄 |
 |----------------|---------|------|------------|------|
@@ -159,7 +159,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 ### 切分判準（最易混的三組）
 
 - **共用規則 vs 業務規則**（business-logic 內部，[[erp_index]]）：問「這是『跨多條規則共用、被破壞則整個領域失效』的底線，還是『單一決策點的 if-then』？」前者共用規則（如對帳一致性），後者業務規則（如 補收免審）。
-- **流程・狀態・角色・資料四選一**（04-business-logic/_template-business-logic.md §4.0.1）：
+- **流程・狀態・角色・資料四選一**（04-business-logic/_template-business-logic.md § 二 判斷流程）：
   - 回答「資料的狀態怎麼變（狀態清單 / 轉換條件 / 觸發事件）」→ state-machine。
   - 回答「一件事從頭到尾、跨角色傳遞怎麼走完」→ scenario（口訣：「這是一段有先後順序、跨角色傳遞的旅程嗎？」是 → scenario）。
   - 回答「這個角色做什麼 / 把關什麼」→ role。
@@ -181,7 +181,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 | Rule of Three | 「未來是否會有『另一張卡 / 另一個 change / 另一條 OQ』需要**單獨引用**這條內容？」| 是（將被多處引用）| 否（只單處使用，如寫死常數）|
 | 位階 / 職責純度 | 「這條內容塞進候選既有卡會不會造成越界（規則塞進 state-machine、Data Model 塞進 business-logic）？」| 是（會越界 → 須獨立到正確 type）| 否（同 type 同職責，可併）|
 
-### 新增的下限（原子性，04-business-logic/_template-business-logic.md 原則 6）
+### 新增的下限（原子性，04-business-logic/_template-business-logic.md § 十二 擴張準則）
 
 即使過了三門檻，也不可拆過頭：
 
@@ -216,7 +216,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 
 ## 五、各位階 Template（一致水平）
 
-> Template 元規格保證六位階一致——不同人 / agent 寫同類卡落在同一結構。對齊 [[wiki-schema]] § 四 frontmatter + § 十一內容職責邊界 + 04-business-logic/_template-business-logic.md §4.0 / §4.1。
+> Template 元規格保證六位階一致——不同人 / agent 寫同類卡落在同一結構。對齊 [[wiki-schema]] § 四 frontmatter + § 十一內容職責邊界 + 04-business-logic/_template-business-logic.md § 二／§ 八／§ 九。
 
 ### 5.0 共同骨架（所有位階套用）
 
@@ -230,7 +230,9 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 - `implemented-by`：往**下游** = 導航 / 覆蓋。指 OpenSpec Requirement 標題層 / prototype。不承載正確性。
 - `provenance-commit`（可選但建議）：記上次對齊的 commit SHA，供 vault-audit stale 偵測。
 
-**正文共同段**（對齊 04-business-logic/_template-business-logic.md §4.1）：
+**三層起手**：各位階寫新卡一律從 `wiki/範本/` 對應骨架複製起手（範本 - 服務藍圖／範本 - 商業規則／範本 - 狀態機／範本 - 業務情境／範本 - 角色／範本 - 實體），合規樣貌對照各資料夾「範例 - <單元名>」凍結卡；共用治理見 `00-meta/卡片撰寫共用規範`。
+
+**正文共同段**（對齊 04-business-logic/_template-business-logic.md § 八 服務藍圖產出格式／§ 九 商業規則產出格式）：
 
 1. 一句話定位（卡頂 `>` 引言）：是什麼、屬哪位階 / 哪業務領域、規則正本歸屬聲明。
 2. `## 這張卡要回答的問題`：列這張卡要回答的關鍵業務問句，每個問句正文有對應結論（判斷「卡完整了沒」= 每個問句是否都有結論，取代「大致 OK」非量化結論）。
@@ -242,7 +244,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 
 **規則卡推理結構**：
 
-- 規則型卡逐條照「意圖 → 既有規則 / 一定要成立的底線（引用更高位階卡）→ 套用本案 → 結論」四步寫，與 04-business-logic/_template-business-logic.md 原則 1 的「意圖 → 規則 → 營運動機」分欄對齊。
+- 規則型卡逐條照「意圖 → 既有規則 / 一定要成立的底線（引用更高位階卡）→ 套用本案 → 結論」四步寫，與 04-business-logic/_template-business-logic.md § 四 撰寫規則的「意圖 → 規則 → 營運動機」呈現對齊。
 - 設計理由先寫被駁回的方案 / 立場，再逐條給駁回理由並承認被採納的好建議（記下設計取捨，不只記結論）。
 
 ### 5.1 各位階特有章節
@@ -264,7 +266,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 - [ ] 「這張卡要回答的問題」段每個問句正文有對應結論（取代「大致 OK」）。
 - [ ] 營運背景段無實作術語當主詞、無中英夾雜（技術詞括號附註）。
 - [ ] 正文零迭代史（歷史見 wiki/log.md 與 git）、無任何迭代史尾行；正文零「待確認 / 待釐清」inline OQ 措辭（→ oq-manage mode B）。
-- [ ] 越界檢查（04-business-logic/_template-business-logic.md §4.0 越界表）：未寫入不屬本 type 職責的內容。
+- [ ] 越界檢查（04-business-logic/_template-business-logic.md § 十 不收清單）：未寫入不屬本 type 職責的內容。
 - [ ] 相關連結雙向可達、語意分類；無 dangling link、非 orphan。
 - [ ] 規則單一正本：未在第二張卡複寫規則本體。
 - [ ] 「隔壁鄰居測試」：營運背景抽一句，問「Miles / 主管不看程式碼能否懂」。
@@ -324,7 +326,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 | `operating-principle` type | [[wiki-schema]] 現用 `product-vision` type 承載營運原則層；`operating-principle` 曾為候選**目標 type 名**，已決議沿用 `product-vision`、不新增此 type（決策脈絡見 `08-open-questions/` 拍板紀錄 + wiki/log.md）| [[erp_index]]（營運原則層沿用 product-vision type 之註）|
 | `01-products/operating-principles.md` | **尚未建立**（現有 product-vision.md / success-metrics.md 等）| [[erp_index]] |
 | 各位階 `_template-*.md` | **已建**：business-logic / state-machine / role / entity 各 `_template-<type>.md`、scenario 為 `_template-business-scenario.md`；**僅 operating-principle `_template-operating-principle.md` 尚未建立** | 04-business-logic/_template-business-logic.md § 四範式（已落地為獨立 template 檔）|
-| `source` / `implemented-by` frontmatter | 現況 0 張 business-logic 卡有此雙欄，全部僅 `related-spec`（指 OpenSpec，方向顛倒）| [[erp_index]] 試點；`related-spec` 過渡期保留，語意等同 implemented-by 弱版；補不出 source 的標 `source-gap` 待專輪 |
+| `source` frontmatter | business-logic 卡已全數移除 `implemented-by`／`related-spec`／`module`（實作對應屬 PRD 層，wiki 不承載）；多數卡已有 `source` | 補不出 source 的標 `source-gap` 待專輪 |
 | `provenance-commit` frontmatter | **尚未納入** wiki-schema | [[erp_index]]（drift 偵測建議，待 schema 補）|
 
 > **遷移誠實原則**：本 skill 是「前進標準」（新卡照此填）。既有卡的全面遷移屬 [[erp_index]] 試點範圍，本 skill 不要求一次全改。執行時若遇待建項尚未就緒（如 operating-principle 卡不存在但變動影響營運原則層），MUST 在對話中明說「此位階載體尚未建立，建議先觸發落地路徑或請 Miles 拍板」，不假裝已有。

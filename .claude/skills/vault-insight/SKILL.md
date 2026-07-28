@@ -51,44 +51,7 @@ description: >
 
 **insight 卡**：`12-insights/<YYYY-MM-DD>-<主題>.md`
 
-```markdown
----
-type: insight
-module:
-  - <中文 module，見 wiki-schema>
-tags:
-  - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]（insight 屬正本卡時必標）
-status: open          # open / in-progress / resolved / cancelled
-priority: <high|medium|low>
-raised-at: YYYY-MM-DD
-raised-by: vault-insight skill
-triggered-by: <manual / oq-accumulation / phase / change-archive / audit / raw>
-related-vault:
-  - "[[<相關卡>]]"
-related-oq:
-  - "[[<OQ 全檔名>]]"   # 禁別名、禁短名（別名的 | 會截斷表格且易斷鏈）
-related-raw:
-  - "[[raw/<檔名>]]"   # 若素材含 raw；MUST status=ingested / reviewed
-expected-action-at: YYYY-MM-DD
----
-
-## 背景
-<觸發情境，一段>
-
-## 觀察
-1. <事實>（[[來源卡]]）
-2. …（≥ 3 條，每條有來源）
-
-## 推論
-<觀察聚成什麼系統性議題／根因，1-3 段>
-
-## 下一步建議
-1. [誰] [何時] [做什麼] → [預期結果]
-2. …
-
-## 後續更新
-（status 變化時追加；resolved 後移 `12-insights/_archives/<YYYY>/` 並記 log）
-```
+**骨架正本見 `memory/Sens_wiki/wiki/範本/範本 - Insight.md`**（frontmatter 樣板＋五段正文與填寫提示）。產卡 MUST 從骨架複製起手，不從本文散文重組結構；合規樣貌對照 `12-insights/範例 - Insight`。骨架異動時與規範、範例同 commit 更新（治理見 `00-meta/卡片撰寫共用規範` § 一）。填入內容須通過 § 二步 4 自查閘門與 § 四紅旗清單。
 
 **log 條目**（動作=健檢、標籤=insight，最新在上）：
 

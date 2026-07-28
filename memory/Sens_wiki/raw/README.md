@@ -111,5 +111,5 @@ Karpathy LLM Wiki 模式中的「raw 層」對應位置。承接尚未精練但�
 - [[scope-boundary|Scope Boundary]] — 進 raw vs 進 OQ vs 進 vault 卡的判斷準則
 - [[vault-charter|Vault Charter]] — 三邊治理章程
 - [[audit-log|Audit Log]] — 所有 ingest 操作的時序日誌
-- [[raw/_template|Raw 卡模板]] — Mode A 寫入時複製此檔結構
+- [[範本 - Raw 素材]] — raw 卡骨架正本，Mode A 寫入時複製此檔結構起手
 - `.claude/skills/vault-ingest/SKILL.md` — vault-ingest skill 主檔（三 mode 流程）
