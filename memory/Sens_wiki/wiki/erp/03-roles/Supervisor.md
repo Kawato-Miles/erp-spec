@@ -2,8 +2,6 @@
 type: role
 module:
   - 跨模組
-business-domain:
-  - 跨領域
 source:
   - "Notion 核心角色權責表（連結見 related-notion）"
 implemented-by: []

@@ -56,8 +56,8 @@ description: >
 type: insight
 module:
   - <中文 module，見 wiki-schema>
-business-domain:
-  - <六領域或跨領域>
+tags:
+  - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]（insight 屬正本卡時必標）
 status: open          # open / in-progress / resolved / cancelled
 priority: <high|medium|low>
 raised-at: YYYY-MM-DD

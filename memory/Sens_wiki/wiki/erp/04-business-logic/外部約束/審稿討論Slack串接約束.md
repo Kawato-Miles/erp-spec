@@ -3,8 +3,6 @@ type: business-rule
 module:
   - 印前審稿
   - 訂單管理
-business-domain:
-  - 印前審稿
 mutability: external
 status: active
 last-reviewed: 2026-07-02

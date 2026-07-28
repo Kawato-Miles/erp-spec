@@ -2,8 +2,6 @@
 type: open-question
 module:
   - 訂單管理
-business-domain:
-  - 款項與發票
 tags:
   - 領域/款項與發票
 oq-id: BI-14

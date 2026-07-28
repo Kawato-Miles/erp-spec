@@ -5,8 +5,6 @@ module:
   - 材料主檔
   - 製程主檔
   - 裝訂主檔
-business-domain:
-  - 跨領域
 source:
   - "[[../../../raw/2026-06-11-miles-upload-公司實際印務用工單範例|公司實際印務用工單（W-20250801-07）]]"
   - "計價設定現況查證：sens-print-core dev 分支全套計價 model ＋ options 發布管線 ＋ 報價 quote_item（2026-07-23）"

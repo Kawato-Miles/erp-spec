@@ -222,7 +222,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 
 **Frontmatter 共同欄位**（對齊 [[wiki-schema]] § 四）：
 
-- `type`（該位階 type）/ `module` / `business-domain`（role / business-logic / entity / state-machine / scenario 必填）/ `status`（draft / active / deprecated）/ `last-reviewed`。
+- `type`（該位階 type）/ `module` / `tags`（領域 tag，必標範圍與判定依 [[business-domain-taxonomy]]）/ `status`（draft / active / deprecated）/ `last-reviewed`。
 
 **溯源雙欄（[[erp_index]] 單向溯源，前進標準）**：
 

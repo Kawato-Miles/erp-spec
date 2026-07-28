@@ -3,8 +3,6 @@ type: business-logic
 module:
   - 訂單管理
   - after-sales-ticket
-business-domain:
-  - 款項與發票
 tags:
   - 領域/款項與發票
 related-spec: openspec/specs/order-management/spec.md

@@ -6,8 +6,6 @@ module:
   - 售後服務
   - 諮詢單
   - 跨模組
-business-domain:
-  - 款項與發票
 related-spec: openspec/specs/order-management/spec.md
 status: active
 last-reviewed: 2026-06-09

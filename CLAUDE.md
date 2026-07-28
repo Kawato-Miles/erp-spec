@@ -150,7 +150,7 @@ Miles，印刷業 PM，負責兩個產品：**ERP 系統**（生產排程 / 採�
 | 規格撰寫 / 變更 | 「寫 spec」「新增功能」「修改 XX 規格」「規劃文件」 | `/opsx:propose` → 序列協作 Phase 1-4 完整流程（含 OQ 查詢 + PM 釐清 + Phase 2 PM↔CEO 來回上限 2 + Phase 3 PM↔ERP 顧問來回上限 2 + Phase 4 PM 匯報含 verify consistency 三張對照表，依 [[sequential-design-collaboration]] + [[dispatch-prompt-template]]）|
 | 規格草稿驗收前審查 | `/opsx:verify` 前需最終確認 | 不啟動 agent，由 sequential Phase 4 verify consistency（三張對照表）涵蓋 |
 | 系統一致性 / 狀態機確認 | 「會不會跟 XX 衝突」「這個狀態怎麼設計」「資料怎麼連」 | `erp-consultant` 單 agent 輕量審查（依 [[lightweight-review-mode]]）+ 讀取 wiki `06-state-machines/` 各狀態機卡 + 各模組 spec 內嵌狀態機 Requirement |
-| **規劃 ERP 功能 know-how 稽核（任何模組討論前）** | 「規劃」「設計」「修改 X 邏輯」+ 業務領域觸發詞（諮詢 / 報價 / 訂單 / 工單 / 審稿 / QC / 出貨 / 售後 / 款項 / 發票 / 收款 / 對帳 / OA / Payment / Invoice / PlannedInvoice / 退款 / 補收 / 折讓 / 期次 / 老化 等）| **第一句 MUST 跑 `erp-planning-pre-check` skill**（依 [[business-domain-taxonomy]] 6 領域識別 → 載入該領域 + 跨領域共用層 → 雙軸量化稽核 6 領域 × 6 卡類型）+ ack 量化矩陣結果（每格 N/M/K 三數字，禁「大致 OK」非量化結論）+ **MUST 列 BI-/ORD- 雙系列 open OQ 清單** + **MUST 依連帶矩陣列出本次變動的連帶影響範圍**（七實體）+ 修補既有卡（**禁新建抽象卡**）+ Step 5 閉環驗證 + 反模式追蹤；執行者與稽核者分離（sub-agent 跑稽核 + 主對話 agent 跑修補）|
+| **規劃 ERP 功能 know-how 稽核（任何模組討論前）** | 「規劃」「設計」「修改 X 邏輯」+ 業務領域觸發詞（諮詢 / 報價 / 訂單 / 工單 / 審稿 / QC / 出貨 / 售後 / 款項 / 發票 / 收款 / 對帳 / OA / Payment / Invoice / PlannedInvoice / 退款 / 補收 / 折讓 / 期次 / 老化 等）| **第一句 MUST 跑 `erp-planning-pre-check` skill**（依 [[business-domain-taxonomy]] 檢索規約判領域——語意不確定先問 Miles——查領域 tag + `領域/全域` 出卡名清單、呈現後載入 → 雙軸量化稽核 6 領域 × 6 卡類型）+ ack 量化矩陣結果（每格 N/M/K 三數字，禁「大致 OK」非量化結論）+ **MUST 列 BI-/ORD- 雙系列 open OQ 清單** + **MUST 依連帶矩陣列出本次變動的連帶影響範圍**（七實體）+ 修補既有卡（**禁新建抽象卡**）+ Step 5 閉環驗證 + 反模式追蹤；執行者與稽核者分離（sub-agent 跑稽核 + 主對話 agent 跑修補）|
 | **識別到不確定項（任何時機）** | 「這個需確認」「先列 OQ」「待釐清」「待補」「[!question]」 | **立即觸發 `oq-manage` mode B 開獨立檔**（含去重流程），原處改 wiki link 引用；**不可只 inline 標注或用 callout** |
 | **識別到 agent 誤審（任何時機）** | 「審錯了」「方向錯了」「規則太學術」「以後別這樣審」「記下來」「這是誤審」| **立即觸發 `misjudgement-record` mode B 寫入對應誤審卡**（自動分類至跨 agent 通用 / ERP 命名 / CEO 誤區 + 去重 + 四要素提取）；**不可只口頭說「下次注意」** |
 | **Vault 健康檢查 / audit** | 「跑 vault audit」「audit vault」「Vault 健康」/ 主動：≥ 5 Vault 卡異動 / change archive 後 / 每 20+ commit | 觸發 `vault-audit` skill（12 維度，範圍只讀 wiki/＋raw/ 唯讀），產對話報告 + 追加 wiki/log.md（健檢(audit)） |
@@ -346,7 +346,7 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 
 | Task 類型 | 必讀 | 視需要 |
 |----------|------|--------|
-| **商業層查詢**（商業目標 / 角色 / 商業邏輯 / 實體關聯 / 狀態機 / 跨模組情境）| 讀 wiki 總入口 [wiki/index.md](memory/Sens_wiki/wiki/index.md)，依 ERP 主題進入 `[[erp_index]]` 的「載入決策表」路由定位對應領域卡（入口即 router，不在此重列深路徑） | OpenSpec spec § Requirements（功能規格） |
+| **商業層查詢**（商業目標 / 角色 / 商業邏輯 / 實體關聯 / 狀態機 / 跨模組情境）| 讀 wiki 總入口 [wiki/index.md](memory/Sens_wiki/wiki/index.md)，依 `[[business-domain-taxonomy]]` 檢索規約定位對應領域卡（判領域 → 領域 tag 查卡名清單 → 呈現 → 載入；入口即 router，不在此重列深路徑） | OpenSpec spec § Requirements（功能規格） |
 | **撰寫 OpenSpec change**（背景對齊）| Vault `04-business-logic/` + `05-entities/` + `03-roles/` 對應卡 → 引用至 proposal `## Why` | `09-canvases/` 視覺化、Notion 索引（`10-references/notion-index.md`） |
 | **撰寫 Spec / PRD** | 觸發 OpenSpec change 工作流（`/opsx:propose` 或 `/opsx:new`），背景資料由 Vault 對應卡引用 | 迭代時參考 `memory/erp/spec-iteration-workflow.md` |
 | 情境驗證 / 補情境 | Vault `07-scenarios/`（業務情境卡，範本 `_template-business-scenario`）+ 業務情境 spec（`openspec/specs/business-scenarios/spec.md`）| Vault `03-roles/`（角色責任分配）|

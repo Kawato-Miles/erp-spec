@@ -4,8 +4,6 @@ module:
   - 材料主檔
   - 製程主檔
   - 裝訂主檔
-business-domain:
-  - 售前
 tags:
   - 領域/售前
 source:

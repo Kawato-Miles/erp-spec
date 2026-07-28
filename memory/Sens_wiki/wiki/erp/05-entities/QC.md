@@ -3,8 +3,6 @@ title: "QC（QCRecord，已退役）"
 type: entity
 module:
   - 品檢
-business-domain:
-  - 生產執行
 tags:
   - 領域/生產執行
 status: deprecated

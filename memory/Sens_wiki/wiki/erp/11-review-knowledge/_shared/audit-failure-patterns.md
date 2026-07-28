@@ -2,8 +2,6 @@
 type: review-knowledge
 module:
   - 跨模組
-business-domain:
-  - 跨領域
 status: active
 last-reviewed: 2026-05-28
 ---

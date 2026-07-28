@@ -5,8 +5,6 @@ module:
   - 工單
   - 生產任務
   - 品檢
-business-domain:
-  - 生產執行
 tags:
   - 領域/生產執行
 source:

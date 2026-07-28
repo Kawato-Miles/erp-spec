@@ -25,6 +25,11 @@ last-reviewed: 2026-06-02
 - 動機：Miles 2026-07-28 grilling 拍板生產階段重構式規劃——以 wiki 商業現況為設計基準、不帶入調研導向設計；調研產物卡逐張檢視定案（工作包保留、計價快照簡化、成本差異改預實對照、在製品棄用、產線沿用標籤）；任務層拿掉（外包分組唯一歸派單、場內歸工作包）；材料恢復為生產任務類型（一樣派工報工由師傅處理）；正本＝production-stage-high-level-design.md 五節拍板
 - 衝突：材料建模推翻 2026-07-22「材料僅工單清單」拍板（Miles 本人 2026-07-28 拍板恢復，非矛盾殘留）
 
+## [2026-07-28 11:00] 納入(amend) | 領域 tag 化 P5 收尾：全庫 business-domain 欄位移除（雙軌結束），遷移案完結
+- 變更：136 張卡 frontmatter 移除 business-domain 欄位（值已由領域 tag 承載，逐卡清單同批 1/3/4/補批 log 條目，封存區不動）；[[wiki-schema]] § 二 module 註與三個 type 範本區塊改 tags、§ 二B 標題去過渡措辭；[[business-domain-taxonomy]] 各領域「對應目錄」行移除（載入正本統一歸檢索規約）＋演化紀錄補一列
+- 動機：P4 驗收通過（10/10）後依 plan wiki-tag-migration 結束雙軌；同批更新非 wiki 檔（CLAUDE.md 兩處路由、vault-audit 維度 5 改「偵測到 business-domain 即 Error」、wiki-amend / vault-insight 範本欄位）不逐列
+- 衝突：無
+
 ## [2026-07-28 10:40] 納入(amend) | 領域 tag 化 P4 驗收通過（第一輪 9/10、修觸發詞後 10/10），生產執行觸發詞補五詞
 - 變更：[[business-domain-taxonomy]] 生產執行觸發詞補「開機費、拼版、工作包、BOM、耗料」（互斥檢查與其他五領域零重疊）
 - 動機：golden set 題 3（開機費分攤基礎）盲判時觸發詞零命中、依規約停下要確認——行為合規但字彙不足；補詞後重驗通過。10 題驗收：獨立盲判 agent 判領域 + 腳本比對關鍵卡，第一輪 9/10（題 10 行為題通過），修補後 10/10；驗收紀錄正本在 memory/erp/wiki-tag-golden-set.md

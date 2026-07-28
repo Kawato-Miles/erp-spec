@@ -45,7 +45,7 @@ last-reviewed: 2026-05-31
 
 ## 二、module Enum（多選）
 
-> 2026-06-10 起 module 值改用繁體中文（與 business-domain 一致）。舊卡的英文 token 隨各卡被異動時逐步統一，新卡一律用中文值。
+> 2026-06-10 起 module 值改用繁體中文。舊卡的英文 token 隨各卡被異動時逐步統一，新卡一律用中文值。
 
 ```yaml
 module:
@@ -58,7 +58,7 @@ module:
 
 **新舊值對照**（轉換期查表用）：需求單 = quote-request、訂單管理 = order-management、諮詢單 = consultation-request、售後服務 = after-sales-ticket、工單 = work-order、生產任務 = production-task、印前審稿 = prepress-review、品檢 = qc、材料主檔 = material-master、製程主檔 = process-master、裝訂主檔 = binding-master、線上編輯器 = graphic-editor、跨模組 = cross-module。
 
-## 二B、領域 tag（`tags:` 欄位，必填，2026-07-28 取代 business-domain 欄位）
+## 二B、領域 tag（`tags:` 欄位，必填）
 
 > 業務領域分類，enum 正本、標注規則、檢索規約皆在 [[business-domain-taxonomy]]，本節只定 frontmatter 格式，不複寫判定規則。
 
@@ -165,8 +165,8 @@ last-reviewed: YYYY-MM-DD
 type: service-blueprint
 module:
   - <模組>
-business-domain:
-  - <領域或 cross-domain>
+tags:
+  - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
 status: active
 last-reviewed: YYYY-MM-DD
 ---
@@ -180,8 +180,8 @@ type: business-rule
 mutability: external | domain | internal  # 可變性：external=外部約束 / domain=領域知識 / internal=營運規則
 module:
   - <模組>
-business-domain:
-  - <領域或 cross-domain>
+tags:
+  - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
 source:
   - "<依據來源：產業慣例 / 法規 / 客戶訪談 / 上層商業規則卡>"
 status: active
@@ -241,8 +241,8 @@ type: scenario
 variant: 接力型 | 能力型 | 排程型      # 必填；判定見 07-scenarios/_template-business-scenario.md § 二
 module:
   - <模組>
-business-domain:
-  - <六領域之一或跨領域>
+tags:
+  - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
 source:                          # 往上層 = 正確性根據（服務藍圖 / business-logic 規則 / 拍板 OQ / 外部依據），禁指 OpenSpec / 同層 / 下層
   - "[[<藍圖或規則卡>]]"
 implemented-by:                  # 往下層 = 導航（實作規格檔層），可多值 / 可留空
