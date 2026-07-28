@@ -25,6 +25,10 @@ last-reviewed: 2026-06-02
 - 動機：Miles 2026-07-28 grilling 拍板生產階段重構式規劃——以 wiki 商業現況為設計基準、不帶入調研導向設計；調研產物卡逐張檢視定案（工作包保留、計價快照簡化、成本差異改預實對照、在製品棄用、產線沿用標籤）；任務層拿掉（外包分組唯一歸派單、場內歸工作包）；材料恢復為生產任務類型（一樣派工報工由師傅處理）；正本＝production-stage-high-level-design.md 五節拍板
 - 衝突：材料建模推翻 2026-07-22「材料僅工單清單」拍板（Miles 本人 2026-07-28 拍板恢復，非矛盾殘留）
 
+## [2026-07-28 10:50] 健檢(audit) | mode C 修復：維度 5 的 101 缺欄中 99 屬稽核規則誤報，修 lint 規則＋補 1 張真缺欄卡
+- 變更：[[archive-completeness-misjudgement]] 補 status: active 與 last-reviewed（取 git 最後修改日 2026-06-14）；維度 5 規則修正為「依 wiki-schema 各 type 必填欄位表檢查」（open-question / insight / review 以 raised-at / created-at 承載時間，不檢 last-reviewed）——修正後重跑維度 5 缺欄 0
+- 動機：mode C 查證發現 86 張 OQ 與 insight / review 卡的「缺 last-reviewed」是 lint 用一體適用清單、未依 schema 各 type 定義所致；依「修規則不塞欄位」原則處置（避免把 99 張卡塞進 schema 未定義的欄位）
+- 衝突：無
 ## [2026-07-28 10:35] 健檢(audit) | 全量，12 維度 7 通過（Error 5：孤島 25、死鏈 6 檔、frontmatter 缺欄 101、OQ 過期 60、Review 斷更）
 - 變更：稽核 ERP_Vault，總體 Error；非 OK 維度——維度 3 孤島 25（20 張 OQ 平層卡結構性未被連入＋階段規劃＋2 canvas＋2 review-knowledge）、維度 4 死鏈 6 檔（12-insights 4 張＋10-references 2 張殘留引用已移除的任務／任務狀態／在製品／成本差異）、維度 5 缺基本欄位 101（大宗 14-reviews 缺 last-reviewed、11-review-knowledge 缺 status；領域 tag 三項 lint 全數 0 違規、business-domain 殘留 0）、維度 8 OQ open 逾 30 天 60 張（無狀態違規、無未封存）、維度 10 七月 daily 0 張 weekly 0 張
 - 動機：免（健檢類；領域 tag 化 P1-P5 完成後首檢）

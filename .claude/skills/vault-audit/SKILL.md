@@ -73,7 +73,7 @@ obsidian eval "Object.keys(app.metadataCache.unresolvedLinks).filter(k => Object
 
 **目的**：缺必填欄位的卡進不了載入決策表與領域 grep。
 
-方法：依 [[wiki-schema]] 現行必填——`type`／`module`（中文 enum）／`tags`（領域 tag，必標範圍見 [[business-domain-taxonomy]] § 領域 tag 標注規則）／`status`／`last-reviewed`；正本卡（03/04/05/06）另須 `source`。領域 tag 三項 lint：必標範圍內缺 tag／tag 值不在 taxonomy enum／濫標 `領域/全域`（實際只沾一兩個領域），皆計違規。同時列英文 module token 殘留（列 Info 供順手清理）；`business-domain` 欄位已全庫移除，偵測到即 Error（防舊範本回流）。注意：`related-spec` 是合法的補充參照欄位（wiki-schema 明文「非正確性來源」），不是廢欄位、不列偵測。
+方法：依 [[wiki-schema]] **各 type 的必填欄位表**檢查（禁用一體適用清單——open-question / insight / review 以 `raised-at` / `created-at` 承載時間，schema 未列 `last-reviewed`，不得檢缺）。通用必檢：`type`／`status`／`tags`（領域 tag，必標範圍見 [[business-domain-taxonomy]] § 領域 tag 標注規則）；`module` 與 `last-reviewed` 依該 type 的 schema 段；正本卡（03/04/05/06）另須 `source`。領域 tag 三項 lint：必標範圍內缺 tag／tag 值不在 taxonomy enum／濫標 `領域/全域`（實際只沾一兩個領域），皆計違規。同時列英文 module token 殘留（列 Info 供順手清理）；`business-domain` 欄位已全庫移除，偵測到即 Error（防舊範本回流）。注意：`related-spec` 是合法的補充參照欄位（wiki-schema 明文「非正確性來源」），不是廢欄位、不列偵測。
 判定：OK＝0 缺；Warning＝1-5；Error＝> 5。
 
 ### 維度 6：規約遵守

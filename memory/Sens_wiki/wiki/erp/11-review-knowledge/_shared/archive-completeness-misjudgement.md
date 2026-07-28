@@ -6,6 +6,8 @@ agents:
   - ceo-reviewer
   - erp-consultant
 case-id: ARCHIVE-001
+status: active
+last-reviewed: 2026-06-14
 recorded-at: 2026-05-26
 recorded-by: Miles + Claude
 related-change: complete-payment-status-ui-and-followups
