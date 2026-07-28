@@ -115,6 +115,22 @@ last-reviewed: YYYY-MM-DD
 ---
 ```
 
+### type=example（凍結範例卡）
+
+```yaml
+---
+title: "範例 - <單元名>"
+type: example
+example-of: <entity|role|state-machine|scenario|...>   # 對應單元的 type
+snapshot-source: "[[<快照來源卡>]]"
+synced-with-template: YYYY-MM-DD   # 最後與規範同步日，不得早於對應 _template 規範檔的最後實質修改
+status: active
+last-reviewed: YYYY-MM-DD
+---
+```
+
+- 定位與治理鐵則見 [[卡片撰寫共用規範]] § 一：凍結快照非正本、與骨架／規範同 commit 更新、豁免孤島與 frontmatter 完整性 lint、不受所屬目錄語意鐵則約束。
+
 ### type=product-vision / phase / metric
 
 ```yaml
@@ -356,7 +372,8 @@ ingested-to:                                           # status=ingested 時填
 | `02-domain/` | `domain` / `glossary` |
 | `03-roles/` | `role` / `meta`（`_alignment-report.md`）|
 | `04-business-logic/` | `service-blueprint` / `business-rule` |
-| `05-entities/` | `entity` |
+| `05-entities/` | `entity` / `meta`（`_template-entity.md`）/ `example`（`範例 - 實體.md`）|
+| `wiki/範本/`（vault 層，跨主題） | 骨架檔（內容為填空 frontmatter 樣板，豁免本 schema 檢查；見 [[卡片撰寫共用規範]] § 一）|
 | `06-state-machines/` | `state-machine` |
 | `07-scenarios/` | `scenario`（業務情境）/ `meta` |
 | `08-open-questions/` | `open-question` / `meta`（`OQ運作總覽.md`）|
