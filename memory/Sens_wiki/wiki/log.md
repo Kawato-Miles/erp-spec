@@ -18,6 +18,12 @@ last-reviewed: 2026-06-02
 - 動機：免（健檢類）
 - 衝突：無
 
+## [2026-07-28 11:21] 健檢(audit) | 單維度（4 死鏈），回顧機制移除後驗證通過
+
+- 變更：稽核 ERP_Vault 死鏈，OK；回顧機制相關死鏈僅存於只追加層（本檔 2 筆）與已凍結 changelog（3 筆），正本卡零殘留
+- 動機：免（健檢類）
+- 衝突：無
+
 ## [2026-07-28 11:04] 納入(amend) | 回顧機制正式停用：14-reviews 目錄移除、daily-brief / weekly-review skill 刪除、vault-audit 改 11 維度
 
 - 變更：`14-reviews/`（含 [[回顧機制總覽]]、daily 1 張、weekly 2 張與範本）整目錄移除；[[wiki-schema]] 移除 type=review 定義、目錄允許表三列、Review 卡命名段與回顧規律 lint 維度；[[scope-boundary]] 移除 Daily / Weekly Review 收錄範圍兩處；[[erp_index]] 移除回顧索引列；[[2026-07-06-知識庫收斂機制停擺]] 後續更新段補記建議 4 拍板採 (c) 停用
