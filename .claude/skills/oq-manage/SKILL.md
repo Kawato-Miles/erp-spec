@@ -51,7 +51,7 @@ source-link: <識別到此問題的出處：對話／卡／spec 路徑>
 related-vault:
   - "[[<相關卡>]]"
 related-oq:
-  - <相關 OQ 全檔名 wiki link（帶別名），禁短名>
+  - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名（別名的 | 會截斷表格且易斷鏈）
 expected-resolution-at: YYYY-MM-DD   # external 必填（預期確認時點）；internal 建議填
 answered-at: YYYY-MM-DD              # 拍板時填
 answered-by: <拍板者>

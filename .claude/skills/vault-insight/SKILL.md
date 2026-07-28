@@ -66,7 +66,7 @@ triggered-by: <manual / oq-accumulation / phase / change-archive / audit / raw>
 related-vault:
   - "[[<相關卡>]]"
 related-oq:
-  - <OQ 全檔名 wiki link（帶別名），禁短名>
+  - "[[<OQ 全檔名>]]"   # 禁別名、禁短名（別名的 | 會截斷表格且易斷鏈）
 related-raw:
   - "[[raw/<檔名>]]"   # 若素材含 raw；MUST status=ingested / reviewed
 expected-action-at: YYYY-MM-DD
