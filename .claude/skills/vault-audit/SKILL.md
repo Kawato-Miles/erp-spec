@@ -1,10 +1,10 @@
 ---
 name: vault-audit
 description: >
-  ERP_Vault 自審稽核 skill：對 wiki 執行 11 維度健康檢查（Karpathy LLM Wiki lint + Sens 特化），產出對話報告並追加 wiki/log.md。
+  ERP_Vault 自審稽核 skill：對 wiki 執行 12 維度健康檢查（Karpathy LLM Wiki lint + Sens 特化），產出對話報告並追加 wiki/log.md。
   觸發：Miles 說「跑 vault audit」「Vault 健康檢查」「audit vault」；主動建議時機——≥ 5 個 Vault 卡異動、change archive 後、每 20+ commit、raw 累積 ≥ 10 張 status=raw。
   不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）、KPI 進度追蹤（用 vault-insight）。
-  範圍鐵則（只讀 wiki/＋raw/ 唯讀）與 11 維度定義見本文。
+  範圍鐵則（只讀 wiki/＋raw/ 唯讀）與 12 維度定義見本文。
 ---
 
 # vault-audit
@@ -22,13 +22,13 @@ ERP_Vault 的 lint：找出**矛盾／過時／孤島／死鏈／缺欄位／違
 
 | 模式 | 觸發句 | 用途 |
 |------|--------|------|
-| **A 全量** | 「跑 vault audit」「audit vault」「全量稽核」 | 11 維度全掃 |
+| **A 全量** | 「跑 vault audit」「audit vault」「全量稽核」 | 12 維度全掃 |
 | **B 單維度** | 「跑維度 N audit」「只查孤島」 | 針對性檢查 |
 | **C 修復** | 「audit 並修復」「audit + fix」 | 全掃＋可自動修復項經 Miles 確認後執行 |
 
-## 二、11 個稽核維度
+## 二、12 個稽核維度
 
-> 維度 1-6 為通用 lint（Karpathy），7-11 為 Sens 特化。每維度產出：命中清單＋判定（OK / Warning / Error；維度 10 為 Info）。
+> 維度 1-6 為通用 lint（Karpathy），7-12 為 Sens 特化。每維度產出：命中清單＋判定（OK / Warning / Error；維度 10 為 Info）。
 
 ### 維度 1：頁面間矛盾
 
@@ -57,7 +57,7 @@ threshold=$(date -v-90d +%Y-%m-%d 2>/dev/null || date -d "90 days ago" +%Y-%m-%d
 obsidian deadends   # 或 obsidian eval 查 metadataCache 反向連結為 0 的卡
 ```
 
-判定：OK＝0 孤島（README／index／範本性質檔除外）；Warning＝1-3；Error＝> 3。
+判定：OK＝0 孤島（README／index／`wiki/範本/` 骨架檔／各資料夾「範例 - 」卡除外——三層結構豁免見 [[卡片撰寫共用規範]] § 一鐵則 4）；Warning＝1-3；Error＝> 3。
 
 ### 維度 4：死鏈（未解析連結）
 
@@ -73,7 +73,7 @@ obsidian eval "Object.keys(app.metadataCache.unresolvedLinks).filter(k => Object
 
 **目的**：缺必填欄位的卡進不了載入決策表與領域 grep。
 
-方法：依 [[wiki-schema]] **各 type 的必填欄位表**檢查（禁用一體適用清單——open-question / insight / review 以 `raised-at` / `created-at` 承載時間，schema 未列 `last-reviewed`，不得檢缺）。通用必檢：`type`／`status`／`tags`（領域 tag，必標範圍見 [[business-domain-taxonomy]] § 領域 tag 標注規則）；`module` 與 `last-reviewed` 依該 type 的 schema 段；正本卡（03/04/05/06）另須 `source`。領域 tag 三項 lint：必標範圍內缺 tag／tag 值不在 taxonomy enum／濫標 `領域/全域`（實際只沾一兩個領域），皆計違規。同時列英文 module token 殘留（列 Info 供順手清理）；`business-domain` 欄位已全庫移除，偵測到即 Error（防舊範本回流）。注意：`related-spec` 是合法的補充參照欄位（wiki-schema 明文「非正確性來源」），不是廢欄位、不列偵測。
+方法：依 [[wiki-schema]] **各 type 的必填欄位表**檢查（禁用一體適用清單——open-question / insight / review 以 `raised-at` / `created-at` 承載時間，schema 未列 `last-reviewed`，不得檢缺）。通用必檢：`type`／`status`／`tags`（領域 tag，必標範圍見 [[business-domain-taxonomy]] § 領域 tag 標注規則）；`module` 與 `last-reviewed` 依該 type 的 schema 段；正本卡（03/04/05/06）另須 `source`。領域 tag 三項 lint：必標範圍內缺 tag／tag 值不在 taxonomy enum／濫標 `領域/全域`（實際只沾一兩個領域），皆計違規。同時列英文 module token 殘留（列 Info 供順手清理）；`business-domain` 欄位已全庫移除，偵測到即 Error（防舊範本回流）。豁免：`wiki/範本/` 骨架檔（填空樣板）與 `type: example` 範例卡不檢必填欄位（[[卡片撰寫共用規範]] § 一鐵則 4；範例卡另由維度 12 勾稽）。已移除欄位偵測：六個正本卡型（entity／role／service-blueprint／business-rule／state-machine／scenario）偵測到 `module`／`implemented-by`／`related-spec` 即 Error（已全庫移除，防回流；insight 的 `related-spec` 與 OQ／insight／raw 的 `module` 仍合法）。`title` 為選填（檔名即標題，僅標題需附註時填），不列缺欄。
 判定：OK＝0 缺；Warning＝1-5；Error＝> 5。
 
 ### 維度 6：規約遵守
@@ -94,16 +94,15 @@ grep -rn "（待補\|（待釐清\|（待確認" memory/Sens_wiki/wiki/ --includ
 
 ### 維度 7：出鏈有效性與方向
 
-**目的**：frontmatter 的 `source`／`implemented-by` 是依據鏈，斷了或指錯方向都會誤導下游。
+**目的**：frontmatter 的 `source` 是依據鏈，指錯方向會誤導下游（`implemented-by` 已全庫移除，見維度 5）。
 
-1. **路徑存在**：`implemented-by` 指的外部檔案路徑做 `test -f`（只測存在、不開啟內容——範圍鐵則）。
-2. **方向正確**：`source` 禁指 OpenSpec／Prototype（正確性根據只能往上：拍板／權責表／04 規則卡／法規）、禁指同層或下層卡。
+**方向正確**：`source` 禁指 OpenSpec／Prototype（正確性根據只能往上：拍板／權責表／04 規則卡／法規）、禁指同層或下層卡；scenario 卡的 source 得並列狀態機卡為參考資料，但不得為唯一來源。
 
 ```bash
-grep -rn -A3 "^source:" memory/Sens_wiki/wiki/ --include="*.md" | grep "openspec/\|sens-erp-prototype/"  # source 欄位（含 YAML 清單項）指實作路徑即 Error；implemented-by 指 openspec 為合法導航，不在本檢查範圍，命中後須人工確認該行屬 source 區塊
+grep -rn -A3 "^source:" memory/Sens_wiki/wiki/ --include="*.md" | grep "openspec/\|sens-erp-prototype/"  # source 欄位（含 YAML 清單項）指實作路徑即 Error
 ```
 
-判定：OK＝路徑全存在且方向正確；Warning＝1-3 斷路徑；Error＝source 指實作層（違反引用方向鐵則）。
+判定：OK＝方向全正確；Error＝source 指實作層（違反引用方向鐵則）。
 
 ### 維度 8：OQ 健康度
 
@@ -131,7 +130,7 @@ grep -rn -A3 "^source:" memory/Sens_wiki/wiki/ --include="*.md" | grep "openspec
 
 ### 維度 10：標題錨點（只查本輪異動卡，Info 不計分）
 
-**目的**：`implemented-by`／`source` 綁 `#Requirement: <標題>` 錨點，Requirement 改名即斷鏈（ORD-027 教訓）。存量卡不回頭批量改，只提示本輪異動卡。
+**目的**：`source` 或正文連結綁 `#Requirement: <標題>` 錨點，Requirement 改名即斷鏈（ORD-027 教訓）。存量卡不回頭批量改，只提示本輪異動卡。
 
 ```bash
 base=$(git merge-base HEAD origin/main 2>/dev/null || echo HEAD~1)
@@ -146,6 +145,16 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 檢查：本輪 git 異動的 03/04/05/06 目錄卡，逐卡在 `wiki/log.md` 找含 `[[卡名]]` 的條目；實質異動條目「動機」行須非空（健檢／納入類免）。
 判定：OK＝全有條目且動機非空；Warning＝缺條目或動機空白。
 
+### 維度 12：撰寫規範勾稽（本輪異動卡＋全部範例卡）
+
+**目的**：把各單元規範的「稽核維度」表真正接進 lint——寫卡宣稱合規不算數，稽核者逐項勾才算（執行者／稽核者分離，[[卡片撰寫共用規範]] § 二）。
+
+檢查兩部分：
+1. **本輪異動的正本卡**（範圍取法同維度 10）：依卡的 type 載入對應規範的稽核維度表逐項勾——entity → `_template-entity` § 十、role → `_template-role`、state-machine → `_template-state-machine`、scenario → `_template-business-scenario` § 十二、service-blueprint／business-rule → `_template-business-logic` § 十三；以該單元「範例 - 」卡為通過樣本對照。存量未異動卡不掃（避免噪音，隨異動逐步覆蓋）。
+2. **全部「範例 - 」卡**：`synced-with-template` 不得早於對應規範檔的最後實質修改（`git log -1 --format=%ad --date=short -- <規範檔>` 比對）；範例卡正文須與快照來源卡在最後同步時點一致性抽查（至少驗段落結構同構）。
+
+判定：OK＝異動卡全數通過該型維度且範例卡同步日有效；Warning＝1-3 項未過；Error＝範例卡同步日早於規範修改（三層同 commit 鐵則被破壞）。
+
 ## 三、執行流程
 
 1. **宣告範圍與模式**（全量／單維度 N／修復）。
@@ -156,7 +165,7 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 # Vault Audit 報告（YYYY-MM-DD HH:MM）
 
 ## 摘要
-- 模式 / 總體狀態（OK / Warning / Error）/ 維度通過 X / 11
+- 模式 / 總體狀態（OK / Warning / Error）/ 維度通過 X / 12
 
 ## 維度結果
 ### 維度 N <名稱>：<判定>
@@ -170,7 +179,7 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 4. **追加 wiki/log.md 一筆**（動作=健檢、標籤=audit；最新在上）：
 
 ```markdown
-## [YYYY-MM-DD HH:MM] 健檢(audit) | 全量／單維度（N）／修復，11 維度 X 通過
+## [YYYY-MM-DD HH:MM] 健檢(audit) | 全量／單維度（N）／修復，12 維度 X 通過
 - 變更：稽核 ERP_Vault，<總體狀態>；只列非 OK 維度與筆數
 - 動機：免（健檢類）
 - 衝突：無（或列發現的矛盾＋已開 OQ）
