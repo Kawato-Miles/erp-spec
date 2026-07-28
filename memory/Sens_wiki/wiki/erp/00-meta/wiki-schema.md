@@ -93,7 +93,7 @@ tags:
 
 ### 4.0 往上指依據、往下指實作的通則（2026-05-31 新增）
 
-> 對齊 [[erp_index]] § 一連結方向。所有承載商業邏輯的卡（`business-rule` / `service-blueprint` / `entity` / `state-machine` / `scenario` / `role` / `user-story` / `test-case`）採「往上 `source` + 往下 `implemented-by`」兩欄連結，整張圖的連結不會繞回自己。
+> 對齊 [[erp_index]] § 一連結方向。所有承載商業邏輯的卡（`business-rule` / `service-blueprint` / `entity` / `state-machine` / `scenario` / `role` / `user-story` / `test-case`）採「往上 `source` + 往下 `implemented-by`」兩欄連結，整張圖的連結不會繞回自己（例外：`entity` 卡僅採 `source`，不設 `implemented-by`，見 § type=entity）。
 
 | 欄位 | 方向 | 用途 | 指向對象 | 硬規則 |
 |------|------|------|---------|--------|
@@ -219,17 +219,14 @@ last-reviewed: YYYY-MM-DD
 ```yaml
 ---
 type: entity
-module:
-  - <模組>
 source:                          # 往上層 = 正確性根據（所屬 business-logic 規則 / 流程狀態角色資料層情境），禁指 OpenSpec / 同層 / 下層；見 § 4.0
   - "[[<上層卡>]]"
-implemented-by:                  # 往下層 = 導航（OpenSpec spec 檔層不綁標題錨點 / Prototype 型別檔），可多值 / 可留空=待實作；見 § 4.0
-  - "openspec/specs/<模組>/spec.md"
-related-spec: openspec/specs/<模組>/spec.md  # 補充參照，非正確性來源
 status: active
 last-reviewed: YYYY-MM-DD
 ---
 ```
+
+- entity 卡不設 `module` / `implemented-by` / `related-spec`：這三欄是與實作模組／實作文件的對應，屬 PRD 層，wiki 不承載。領域歸屬由 `tags`（`領域/<領域名>`）承載。
 
 ### type=state-machine
 

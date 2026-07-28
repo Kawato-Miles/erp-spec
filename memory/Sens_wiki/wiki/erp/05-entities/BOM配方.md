@@ -1,15 +1,10 @@
 ---
 type: entity
-module:
-  - 工單
-  - 生產任務
-  - 印件
 tags:
   - 領域/生產執行
 source:
   - "[[BOM結構]]（材料／工序／裝訂三主檔與計價的規則正本）"
   - "[[2026-06-13-生產模組架構設計]]（BOM 與工單不耦合、依 BOM 拆生產任務的架構正本）"
-implemented-by:
 status: draft
 last-reviewed: 2026-07-22
 ---
