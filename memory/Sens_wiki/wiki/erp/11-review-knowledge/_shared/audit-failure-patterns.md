@@ -22,7 +22,7 @@ last-reviewed: 2026-05-28
 - User Story 同時涵蓋多角色 / 多動作（違反 INVEST Independent）
 - 業務邏輯卡塞了「實體 Data Model」內容
 **對策**：嚴格依雙軸分類；發現越界時回卡類型本職；超範圍內容拆到對應卡
-**對應紀律**：[[user-story-spec]] § INVEST / `erp-user-story` skill 兩階段紀律 / `oq-manage` 禁 anchor 故事
+**對應紀律**：業務情境撰寫規範 [[_template-business-scenario]]（已吸收 INVEST 與兩階段紀律）/ `oq-manage` 禁 anchor 故事
 
 ### 2. False completion（假完成）
 
@@ -167,7 +167,6 @@ last-reviewed: 2026-05-28
 - （見 erp-planning-pre-check skill 附件） — 稽核框架正本
 - [[business-domain-taxonomy]] — 6 領域分類
 - `misjudgement-record` — 三視角審查 agent 誤審記錄
-- [[user-story-spec]] — User Story 撰寫紀律（INVEST）
 - [[erp-design-patterns]] — 5 ERP 設計範式（正模式）
 
 ## 五、來源

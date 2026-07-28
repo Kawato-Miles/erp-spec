@@ -35,7 +35,7 @@ last-reviewed: 2026-05-28
 
 | 議題性質 | 選用 Agent |
 |---------|-----------|
-| 問題定義 / 使用者需求 / KPI / User Story | [senior-pm](../../../../../.claude/agents/senior-pm.md) |
+| 問題定義 / 使用者需求 / KPI / 業務情境 | [senior-pm](../../../../../.claude/agents/senior-pm.md) |
 | 狀態機 / 資料一致性 / 跨模組整合 / 命名 | [erp-consultant](../../../../../.claude/agents/erp-consultant.md) |
 | 商業可行性 / 角色合理性 / 現場操作 | [ceo-reviewer](../../../../../.claude/agents/ceo-reviewer.md) |
 

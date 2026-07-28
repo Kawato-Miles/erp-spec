@@ -24,7 +24,7 @@ last-reviewed: 2026-07-28
 | 商業邏輯：商業規則（B 類，獨立決策邏輯 / 領域知識）| `04-business-logic/` | [[訂單異動規則]]、[[齊套邏輯]]、[[對帳一致性]] 等（`type: business-rule`）|
 | 資料模型實體與欄位（**含業務欄位表正本**） | `05-entities/` | 實體卡；業務可見欄位表為正本（2026-06-09 從 OpenSpec Data Model 遷入） |
 | 狀態機（**含狀態列舉正本**） | `06-state-machines/` | 狀態機卡；狀態列舉為正本 |
-| 業務情境（過程）| `07-scenarios/` | 業務目標完成過程；使用者故事單元已溶解併入此層 |
+| 業務情境（過程）| `07-scenarios/` | 業務目標完成過程 |
 | OQ | `08-open-questions/` | oq-manage skill 改寫後寫入 |
 | KPI | `01-products/kpi/` | 各模組 KPI |
 | 視覺化 | `09-canvases/` | Canvas 視覺化 |

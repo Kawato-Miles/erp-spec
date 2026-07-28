@@ -121,4 +121,3 @@ senior-pm 執行完畢，返回已寫入清單。Claude 將清單摘要回報 Mi
 
 - [[sequential-design-collaboration]] — 序列式設計協作協議
 - [[lightweight-review-mode]] — 單 Agent 輕量審查
-- [[user-story-spec]] — User Story 撰寫規格（寫入 User Story DB 的格式）

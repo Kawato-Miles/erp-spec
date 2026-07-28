@@ -378,21 +378,9 @@ ingested-to:                                           # status=ingested 時填
 - MODULE 前綴：QR / ORD / WO / PI / PT / QC / SHP / CR / AS / XM
 - NNN 三位數字補零
 
-### Scenario 卡 scenario-id（流程／狀態／角色／資料層旅程卡，2026-05-31 新增）
-
-> **已廢止（2026-06-11）**：業務情境卡不再配 scenario-id（名稱即連結指向的位置）；既有 scenario-id 保留至遷移清理。
-
-> scenario 卡採旅程卡（journey）粒度，以 `scenario-id` 標識，供 user-story / test-case 反向引用某段端到端旅程。scenario 拆旅程卡 + 標 scenario-id。
-
-- frontmatter `scenario-id` 格式：`SC-<主題 slug>-<NNN>`
-- `<主題 slug>`：繁體中文主題詞（旅程主題，非模組代號；跨模組情境用主題分類比模組前綴更貼合）
-- NNN 三位數字補零
-- 檔名仍依「一般卡」規約（繁體中文名詞片語，如 `訂單異動流程.md`），`scenario-id` 在 frontmatter 標識，兩者分工：檔名給人讀、scenario-id 給連結指向的位置
-- 範例 scenario-id：`SC-訂單異動-001`、`SC-諮詢取消-001`、`SC-退款折讓-001`
-
 ### 規則的連結指向位置命名（業務規則 / 共用規則，2026-05-31 補述）
 
-> 商業規則卡內的「單條規則」以**業務語意命名的連結指向位置**標識，供 scenario / user-story / test-case 跨卡 wiki link 引用單條規則。撰寫規範見 `04-business-logic/_template-business-logic.md`。
+> 商業規則卡內的「單條規則」以**業務語意命名的連結指向位置**標識，供 scenario 等下游卡跨卡 wiki link 引用單條規則。撰寫規範見 `04-business-logic/_template-business-logic.md`。
 
 - 規則的連結指向位置用**業務語意命名**（如 `#補收免審`、`#諮詢取消半額退費`），**不用流水號**（如 `#R1`）
 - 理由：流水號重排 / 重用會讓連回來的連結斷掉；用業務語意命名時改規則只改內容、定位點不變，跨卡引用不斷鏈
@@ -443,14 +431,8 @@ ingested-to:                                           # status=ingested 時填
 - ❌ 命名不合規約
 - ❌ Wiki link 連到不存在的卡（dangling）
 - ❌ 沒有任何卡連到它的孤島卡（orphan，除 README / index 性質）
-- ❌ user-story 業務情境段含 UI 措辭（按鈕 / 下拉 / 彈窗 / 點擊 / 分頁 / Tab / Modal 等）
-- ❌ user-story 內容含未轉中文的英文欄位名（payment / printItem / orderAdjustment 等）
-- ❌ user-story `source` frontmatter 為空（缺來源）
-- ❌ user-story `source` 指向其他 user-story 卡（AI 拿自己寫的東西當依據再生內容的風險）
-- ❌ user-story stage=business-only 但 UI 操作段已填內容（stage 不一致）
 - ❌ `source` 鏈繞回自己（違反連結不繞回自己，見 § 六維度 15）
 - ❌ `source` 指向 OpenSpec spec 路徑（方向顛倒，應改指上層 Vault 卡或最上層依據）
-- ❌ test-case `source` 未指 user-story 卡（驗收項目未依操作步驟）
 - ❌ 卡片 frontmatter 含外部系統狀態欄位（`notion-published-at` / `notion-page-url` 等——發布追蹤唯一正本在 `memory/erp/notion-publish-manifest.md`，見 § 四鐵則）
 
 ## 十、與其他規範的關係
@@ -467,22 +449,21 @@ ingested-to:                                           # status=ingested 時填
 
 ## 十一、卡類型內容職責邊界（2026-05-28 新增）
 
-> 各卡類型的「正文內容職責」。之前 schema 只規範 frontmatter（§ 四）+ user-story 內容（§ 六維度 13），其他卡類型正文無邊界 → business-logic / scenario 卡易混入 user-story 格式模板 / test-case 範本 / UI 措辭等越界內容（對應 [[audit-failure-patterns]] Scope creep 反模式）。維度 14 依本節 lint。
+> 各卡類型的「正文內容職責」邊界，防止越界內容混入（對應 [[audit-failure-patterns]] Scope creep 反模式）。vault-audit 維度 12（撰寫規範勾稽）依各單元規範的不收清單 lint，本節是跨類型總覽。
 
 ### 11.1 各卡類型內容職責
 
 | 卡類型 | 正文該寫（職責內容）| 不該寫（越界內容）|
 |-------|------------------|------------------|
-| `service-blueprint` | 端到端業務鏈（流程階段 / 角色交接 / 決策分叉）| 規則細節（引用商業規則卡）/ user-story / test-case / 實作術語 |
-| `business-rule` | 商業規則 / 領域知識 / 外部約束 | user-story 格式模板 / test-case 步驟範本 / UI 措辭 / 完整實體 Data Model / 欄位定義 / 計算公式 |
-| `scenario` | 跨模組端到端情境（角色傳遞 / 狀態鏈）| user-story 格式模板 / test-case 範本 / 計價公式細節（屬 business-logic）|
-| `entity` | 實體欄位 / 關聯 / 狀態 | 業務流程敘述（屬 business-logic / scenario）/ user-story |
+| `service-blueprint` | 端到端業務鏈（流程階段 / 角色交接 / 決策分叉）| 規則細節（引用商業規則卡）/ 實作術語 |
+| `business-rule` | 商業規則 / 領域知識 / 外部約束 | 情境格式模板 / UI 措辭 / 完整實體 Data Model / 欄位定義 |
+| `scenario` | 跨模組端到端情境（角色傳遞 / 狀態鏈）| 計價公式細節（屬 business-logic）/ UI 措辭（歸 Prototype）|
+| `entity` | 實體欄位 / 關聯 / 狀態 | 業務流程敘述（屬 business-logic / scenario）|
 | `role` | 角色職責 / 權限 / 工作流 / 痛點 | 跨角色流程細節（屬 scenario）/ 實體欄位定義 |
 | `state-machine` | 狀態定義 / 轉換條件 / 觸發事件 | 業務情境敘述（屬 scenario）/ UI 措辭 |
-| `user-story` | 業務情境（單階段：作為 / 我希望 / 以便 / Gherkin 成功條件）| 詳見 § 六維度 13；UI 操作不在此（歸 Prototype e2e）|
 
 ### 11.2 共通原則
 
-- **產業務情境一律 cross-reference 而非複製模板**：business-logic / scenario 卡若要說明「如何產業務情境」，MUST 指向 [[_template-business-scenario]]（業務情境撰寫規範），**禁把範本格式說明複製進內容卡正文**（「寫新卡從 `wiki/範本/` 骨架複製起手填寫」屬正常撰寫流程，不在此禁令內）；[[user-story-spec]] 為歷史方法論（業務情境範本已吸收 INVEST / 禁 anchor / 中英夾雜紀律）
+- **產業務情境一律 cross-reference 而非複製模板**：business-logic / scenario 卡若要說明「如何產業務情境」，MUST 指向 [[_template-business-scenario]]（業務情境撰寫規範），**禁把範本格式說明複製進內容卡正文**（「寫新卡從 `wiki/範本/` 骨架複製起手填寫」屬正常撰寫流程，不在此禁令內）
 - **越界內容移到對應卡類型**：發現越界內容時移到該內容職責所屬的卡類型（如實體 Data Model 從 business-logic 移到 entity）
 - **cross-reference 用 wiki link / skill 名稱**，不複製內容（避免雙份維護 + 防止 AI 拿自己寫的東西當依據再生內容）

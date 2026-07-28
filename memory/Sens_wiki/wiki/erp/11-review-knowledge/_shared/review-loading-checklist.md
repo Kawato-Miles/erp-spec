@@ -19,9 +19,9 @@ last-case-added: 2026-05-29
 
 | Agent | 載入範圍 | 不需主動載入 |
 |-------|---------|------------|
-| [senior-pm](../../../../../.claude/agents/senior-pm.md) | 產品目標、User Story、使用者情境（角色權責）、Notion KPI DB | 狀態機細節、技術流程 |
-| [ceo-reviewer](../../../../../.claude/agents/ceo-reviewer.md) | BRD 本體、KPI DB、商業流程（高層摘要） | User Story 細節、狀態機 |
-| [erp-consultant](../../../../../.claude/agents/erp-consultant.md) | 狀態機（上層 + 下層）、商業流程（完整）、資料模型實體 | 產品目標、User Story DB |
+| [senior-pm](../../../../../.claude/agents/senior-pm.md) | 產品目標、業務情境、使用者情境（角色權責）、Notion KPI DB | 狀態機細節、技術流程 |
+| [ceo-reviewer](../../../../../.claude/agents/ceo-reviewer.md) | BRD 本體、KPI DB、商業流程（高層摘要） | 業務情境細節、狀態機 |
+| [erp-consultant](../../../../../.claude/agents/erp-consultant.md) | 狀態機（上層 + 下層）、商業流程（完整）、資料模型實體 | 產品目標、業務情境細節 |
 | 全部 | `_shared/` 全部 5 卡（含本卡 + [[prototype-stage-context]]、[[language-conventions]]、[[insight-discipline]]、[[cross-agent-checklist]]）| — |
 
 ## 二、設計理解摘要（防誤審強制步驟）

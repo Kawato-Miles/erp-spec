@@ -475,7 +475,7 @@ last-reviewed: 2026-06-03
 
 ## 產生業務情境的去處
 
-本文件 13 情境為業務情境卡的**素材來源**。**格式規範與撰寫紀律不在本卡**（避免 business-logic 卡混入 user-story 規範，對應 [[wiki-schema#十一、卡類型內容職責邊界]]）：
+本文件 13 情境為業務情境卡的**素材來源**。**格式規範與撰寫紀律不在本卡**（避免 business-logic 卡混入情境格式規範，對應 [[wiki-schema#十一、卡類型內容職責邊界]]）：
 
 - **產業務情境卡**：見 [[_template-business-scenario]] 範本（INVEST / 禁 anchor / 中英夾雜紀律）
 - **情境 → acceptance criteria 對應**：13 情境各自的「驗證重點」段可作為 user story acceptance criteria 的來源

@@ -13,6 +13,12 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-07-29 00:37] 納入(amend) | user-story／test-case 治理殘留清除（單元已溶解，wiki 不再承載）
+
+- 變更：[[user-story-spec]] 刪除（歷史方法論，業務情境規範已吸收其紀律）；[[wiki-schema]] 清除 scenario-id 廢止段、§ 九六條 user-story／test-case anti-pattern、§ 11.1 該型列與各列越界措辭、§ 11.2 歷史方法論句；[[index]] 憲章舉例與 ERP 涵蓋清單同步（並移除已停用的每日每週回顧）；[[scope-boundary]] 移除溶解史敘述；[[付款發票邏輯]] § 九標題與指引改業務情境；[[payment-invoice-scenarios]] 指引措辭同步；[[pm-data-map]]、[[review-loading-checklist]]、[[lightweight-review-mode]]、[[early-intervention-framework]]、[[pm-review-framework]]、[[審查知識路由]]、[[senior-pm-write-mode]] 的 User Story 資料來源與載入項改為業務情境三層指向；[[audit-failure-patterns]] 對應紀律指向改 [[_template-business-scenario]]（案例敘述屬歷史保留）；[[BI-14-款項UserStory業務情境段含UI措辭違反紀律]] related-vault 死鏈修復
+- 動機：Miles 拍板——使用者故事與驗收項目單元已溶解併入業務情境，wiki 不再承載其治理規則，殘留條文與新三層結構矛盾
+- 衝突：無；BI-13／BI-14 兩張 open OQ 的標的多屬已溶解單元，處置留 Miles 裁決
+
 ## [2026-07-29 00:28] 納入(amend) | wiki-schema 與三層範本結構對齊（消除四處矛盾＋雙正本分工宣告）
 
 - 變更：[[wiki-schema]] 六處——§ 八 wiki link 規約改禁別名（移除帶別名寫法）、type=open-question 與 type=insight 樣板的 related-oq 改「完整檔名禁別名禁短名」、§ 六 lint 維度定義收斂為指向 vault-audit skill 正本（消除兩套維度編號分裂）、§ 11.2 補「骨架複製起手不屬禁複製模板禁令」釐清、§ 十關係表補三層結構與共用規範、§ 七命名補「範本 - ／範例 - 」規約、§ 四補「schema 管欄位定義值域、骨架管起手樣板、重疊以 schema 為準」分工句

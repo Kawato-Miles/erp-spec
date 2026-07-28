@@ -32,7 +32,7 @@ last-reviewed: 2026-05-19
 
 - 這個功能的主要使用者是誰？他們的首要需求是什麼？
 - 有沒有次要使用者（如主管查看報表）？他們的需求與主要使用者是否有衝突？
-- 目前 [User Story DB](https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d) 中是否已有對應的 User Story？若無，應先新增（依 [[user-story-spec]] 起草）
+- 目前 `07-scenarios/` 是否已有對應的業務情境卡？若無，應先補（依三層撰寫：骨架 [[範本 - 業務情境]]＋規範 [[_template-business-scenario]]）
 
 ### 3. 成功定義
 
@@ -71,6 +71,5 @@ last-reviewed: 2026-05-19
 ## 五、相關卡
 
 - [[pm-review-framework]] — PM BRD 審查 5 維度
-- [[user-story-spec]] — User Story 撰寫規格（若需新增 US）
 - [[pm-data-map]] — PM 視角資料地圖
 - [[lightweight-review-mode]] — 前期介入通常以單 Agent 輕量模式執行

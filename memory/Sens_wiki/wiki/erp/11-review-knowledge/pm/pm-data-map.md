@@ -23,7 +23,7 @@ last-reviewed: 2026-05-19
 |---------|------|--------------|
 | 商業流程 | 核心業務規則、決策邏輯 | wiki `04-business-logic/`（正本）+ 各模組 spec |
 | 使用者情境 | 角色日常工作、職責、痛點 | wiki `03-roles/`（正本）|
-| User Story DB | 已定義的業務故事（US-001 起）| 嵌入各模組 spec（已遷至 OpenSpec）|
+| 業務情境卡 | 業務目標的完成過程 | wiki `07-scenarios/`（正本）|
 | 產品目標 / KPI | 商業目標與可量化指標 | [Notion 產品目標](https://www.notion.so/32c3886511fa81359354e33087d23f23) |
 | KPI DB | 各模組可量化成功指標（以 Feature 欄位篩選） | [Notion KPI DB](https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f) |
 | 狀態機（上層）| 需求單 / 訂單 / 工單 / 印件狀態轉換 | wiki `06-state-machines/` 各狀態機卡 + 各模組 spec（狀態機已拆分至對應模組） |
@@ -65,7 +65,7 @@ last-reviewed: 2026-05-19
 
 | 視角 | 重點資料 |
 |------|---------|
-| PM（本卡）| 產品目標 / KPI / User Story / 使用者情境 |
+| PM（本卡）| 產品目標 / KPI / 業務情境 / 使用者情境 |
 | CEO | 業務情境 DB / KPI DB / 商業流程（高層）|
 | ERP 顧問 | 狀態機 / 資料欄位 / 商業流程（完整）/ 跨模組整合 |
 

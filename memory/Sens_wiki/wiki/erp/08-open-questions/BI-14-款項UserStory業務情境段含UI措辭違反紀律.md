@@ -13,7 +13,7 @@ raised-by: erp-planning-pre-check skill 第一輪實證（backfill 時識別）
 source-link: /Users/b-f-03-029/.claude/plans/prototype-effervescent-sutton.md
 related-vault:
   - "[[audit-failure-patterns]]"
-  - "[[user-story-spec]]"
+  - "[[_template-business-scenario]]"
 related-oq:
   - BI-12
 expected-resolution-at: 2026-06-15

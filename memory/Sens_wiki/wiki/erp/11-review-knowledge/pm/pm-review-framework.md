@@ -35,7 +35,7 @@ last-reviewed: 2026-05-28
 
 ### 2. 使用者需求對齊
 
-- 每個功能需求都能對應到 [[user-story-spec|User Story DB]] 中的具體故事嗎？
+- 每個功能需求都能對應到 `07-scenarios/` 的具體業務情境卡嗎？
 - 有沒有功能是「技術上合理但使用者不會用」的設計？
 - 有沒有遺漏了某個角色的核心需求？
 
@@ -76,7 +76,6 @@ last-reviewed: 2026-05-28
 ## 五、相關卡
 
 - [[early-intervention-framework]] — 前期介入 5 維度（PM 另一種工作模式）
-- [[user-story-spec]] — User Story 撰寫規格
 - [[pm-data-map]] — PM 視角資料地圖
 - [[cross-agent-checklist]] — 跨 agent 共用 checklist
 - [[insight-discipline]] — Insight 規範
