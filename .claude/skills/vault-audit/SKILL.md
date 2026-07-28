@@ -103,7 +103,7 @@ grep -rn "（待補\|（待釐清\|（待確認" memory/Sens_wiki/wiki/ --includ
 grep -rn -A3 "^source:" memory/Sens_wiki/wiki/ --include="*.md" | grep "openspec/\|sens-erp-prototype/"  # source 欄位（含 YAML 清單項）指實作路徑即 Error
 ```
 
-判定：OK＝方向全正確；Error＝source 指實作層（違反引用方向鐵則）。
+判定：OK＝方向全正確；Error＝source 指實作層（違反引用方向鐵則）或 source 鏈繞回自己（A 的 source 指 B、B 直接或間接指回 A；深鏈偵測邏輯待擴充，先查直接互指）。
 
 ### 維度 8：OQ 健康度
 

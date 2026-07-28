@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-05-31
+last-reviewed: 2026-07-29
 ---
 
 # Wiki Schema（Formal）
@@ -89,6 +89,7 @@ tags:
 
 ## 四、各 type 必填 Frontmatter 欄位
 
+> 本節的 yaml 區塊是**欄位定義與值域的正本**；可複製的起手樣板由 `wiki/範本/` 骨架卡承載。兩者重疊處以本節為準，骨架異動時與本節同 commit 對齊（治理見 [[卡片撰寫共用規範]] § 一）。
 > **鐵則：卡片 frontmatter 禁含外部系統狀態欄位**（2026-06-10 新增）。「這張卡何時被推到哪個外部系統」是發布管線的狀態，不是商業知識——對外發布追蹤（Notion URL / 最後推送日）唯一正本在 `memory/erp/notion-publish-manifest.md`，由發布類 skill 維護，全程不回寫 wiki 卡。性質同「source 禁指 OpenSpec」：wiki 獨立維護，不與外部系統耦合。
 
 ### 4.0 往上指依據、往下指實作的通則（2026-05-31 新增）
@@ -264,7 +265,7 @@ source-link: <識別到此問題的出處>
 related-vault:
   - <wiki link>
 related-oq:
-  - <相關 OQ 全檔名 wiki link（帶別名），禁短名>
+  - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名
 expected-resolution-at: YYYY-MM-DD  # external 必填；internal 建議填
 answered-at: YYYY-MM-DD  # 拍板時填
 answered-by: <拍板者>
@@ -287,7 +288,7 @@ triggered-by: manual | OQ-累積 | phase-切換 | change-archive | audit
 related-vault:
   - <wiki link>
 related-oq:
-  - <oq-id>
+  - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名
 related-raw:                  # 2026-05-21 新增：vault-insight 從 raw 素材累積識別 pattern 時填
   - "[[raw/<檔名>]]"          # MUST 是 status=ingested 或 reviewed 的卡（vault-ingest 防線 4）
 related-spec: <OpenSpec spec 路徑>  # 若有
@@ -358,102 +359,11 @@ ingested-to:                                           # status=ingested 時填
 | `raw/` | `raw` / `meta`（`README.md`）|
 | `raw/_attachments/` | 任意檔（PDF / 圖 / docx / 訪談錄音轉文字等）；不需 frontmatter |
 
-## 六、Lint 規則（vault-audit 依此判定）
+## 六、Lint 規則
 
-### 維度 1：頁面間矛盾
+**Lint 維度定義的正本在 `.claude/skills/vault-audit/SKILL.md`**（12 維度：編號、檢查方法、判定門檻、三層結構豁免），本節不重複維度清單——兩處並存曾造成維度編號分裂與豁免漏列。
 
-**Error 條件**：同概念在多卡有明確矛盾敘述
-**Warning 條件**：補充性差異（不矛盾，但細節不同）
-
-### 維度 2：過時宣稱
-
-**Error 條件**：> 5 卡 `last-reviewed` > 90 天 + `status: active`
-**Warning 條件**：1-5 卡符合上述
-
-### 維度 3：孤立頁面
-
-**Error 條件**：> 3 個 orphan（除 README / index 性質檔）
-**Warning 條件**：1-3 個 orphan
-
-### 維度 4：缺失連結
-
-**Error 條件**：> 5 個 dangling wiki link
-**Warning 條件**：1-5 個 dangling
-
-### 維度 5：數據缺口
-
-**Error 條件**：> 5 個必填 frontmatter 欄位缺失
-**Warning 條件**：1-5 個缺失
-
-### 維度 6：規則遵守
-
-**Error 條件**：
-- 任何 Vault 卡（除 README anti-pattern 說明）有 `[!question]` callout
-- 任何 Vault 卡有 inline OQ 措辭（「待確認 / 待釐清 / 需確認 / 尚未確認 / 待補」）
-- OQ 卡未遵守 `<MODULE>-<NNN>-<簡述>.md` 命名
-
-**Warning 條件**：1-3 違規
-
-### 維度 7：Vault ↔ OpenSpec 對齊
-
-**Error 條件**：明顯不對齊（如某模組無 Vault 對應卡 / Vault 引用的 spec 不存在）
-**Warning 條件**：< 3 個缺漏
-
-### 維度 8：OQ 健康度
-
-**Error 條件**：> 3 OQ open 過久（raised-at > 30 天 + 無進度）
-**Warning 條件**：1-3 OQ
-
-### 維度 9：角色 alignment 落後狀態
-
-**Error 條件**：> 5 角色持續落後 + 已過 60 天
-**Warning 條件**：1-5 角色持續落後
-
-### 維度 10：KPI / Phase 進度對照
-
-**Error 條件**：多數 KPI 無法對照 Vault / spec 內容
-**Warning 條件**：少數 KPI 缺對應
-
-### 維度 11：Raw 健康度（Phase 2 待 vault-audit 實作）
-
-**Error 條件**：> 5 張 raw 卡 `status: raw` 且 `created-at` > 180 天
-**Warning 條件**：1-5 張符合上述，或同主題 raw 累積 ≥ 3 張未精練
-
-> 本維度由 vault-ingest skill 引入後預留，待 vault-audit skill 第二階段擴充實作。
-
-### 維度 14：卡類型內容職責邊界（2026-05-28 新增）
-
-> 之前 schema 只規範 frontmatter（§ 四）+ user-story 內容（維度 13），其他卡類型正文無邊界 → business-logic / scenario 卡易混入 user-story 格式模板 / test-case 範本等越界內容。本維度補此缺口。詳見 § 十一。
-
-**Error 條件**：
-- business-logic / scenario / entity / role / state-machine 卡正文含 **user-story 格式模板**（「作為 [」+「我希望」+「以便」三者連續出現於同一程式碼區塊或段落）
-- business-logic / scenario 卡正文含 **test-case 範本**（「測試案例：」+「前置條件：」+「測試步驟：」+「預期結果：」連續出現）
-
-**Warning 條件**：
-- business-logic 卡正文含完整實體 Data Model 表格（疑似 entity 內容越界）
-- scenario 卡正文含計價公式細節（疑似 business-logic 越界）
-- 任一卡正文用「複製格式模板」而非「cross-reference skill / spec」說明如何產 user story / test case
-
-> 本維度 2026-05-28 由 `erp-planning-pre-check` 第一輪稽核發現 business-logic 卡缺內容規範後新增（付款發票邏輯.md § 九 + payment-invoice-scenarios.md § 使用建議曾混入 user-story 範本，已清理為 cross-reference）。對應 [[audit-failure-patterns]] Scope creep 反模式。
-
-### 維度 15：依據鏈健康度（往上指依據、不繞回自己；2026-05-31 新增）
-
-> 對齊 § 4.0 往上指依據、往下指實作的通則。`source` 鏈的連結不會繞回自己；`source` 方向必須往上層（更上層），不得指向 OpenSpec（方向顛倒）。本維度把關「依據往上、實作往下」的紀律。
-
-**Error 條件**：
-- `source` 鏈繞回自己（A 的 source 指 B、B 的 source 直接或間接指回 A）— 違反連結不繞回自己
-- 任一卡 `source` 指向 OpenSpec spec 路徑（`openspec/specs/...`）— 方向顛倒（OpenSpec 是實作規格非正確性來源，應改指上層 Vault 卡或最上層依據）
-- `test-case` 卡 `source` 未指任何 user-story 卡（驗收項目未依操作步驟）
-- `user-story` 卡 `source` 指向另一 `user-story` 卡（同層繞回自己，已於維度 13 涵蓋，此處併入把關）
-
-**Warning 條件**：
-- `source` 指向同層平行卡（如 business-logic 業務規則 A 指業務規則 B 而非所屬共用規則）— 疑似橫向耦合，建議改指上層卡
-- 承載商業邏輯的卡（business-logic / entity / state-machine / scenario / role / user-story / test-case）`source` 欄位為空 — 缺正確性根據（漸進補齊，非硬性）
-
-**提示（Info）條件**：
-- `source` 值含 `#Requirement:` 等標題錨點 — 標題錨點易因標題改名斷鏈，關聯一律指檔層、名稱以文字描述。
-
-> `source` 往上層的單欄設計，使依據鏈終止於最上層的依據（法規／訪談／產業慣例），整張圖的連結不會繞回自己。本維度待 vault-audit skill 擴充實作「檢查有沒有繞回自己」的偵測邏輯。
+本 schema 承載 lint 所依據的**定義層**：type 與 status 值域（§ 一、§ 三）、領域 tag（§ 二B）、各 type 欄位定義（§ 四，含 § 4.0 依據鏈方向與「不繞回自己」）、目錄允許 type（§ 五）、命名規約（§ 七）、wiki link 規約（§ 八）、Anti-Pattern（§ 九）、內容職責邊界（§ 十一）。vault-audit 依這些定義判定，schema 異動時同輪檢查 skill 是否需同步。
 
 ## 七、命名規約
 
@@ -508,6 +418,12 @@ ingested-to:                                           # status=ingested 時填
 - 範例：`_attachments/2026-05-21-廠商規格書-XX.pdf`
 - 大檔案（> 10 MB）建議考慮 git-lfs 或外部存放並只在 raw-source-link 留 URL（第一版不強制）
 
+### 範本與範例卡（三層結構）
+
+- 骨架：`範本 - <單元名>.md`，一律置 `wiki/範本/`
+- 範例：`範例 - <單元名>.md`，置所屬單元資料夾
+- 單元名用繁中（實體／角色／狀態機／業務情境／服務藍圖／商業規則），既定技術 token 例外（OQ／Insight／Raw 素材）
+
 ### Meta 卡（00-meta）
 
 - 簡短英文 kebab-case：`scope-boundary` / `wiki-schema` / `business-domain-taxonomy` / `changelog`
@@ -515,7 +431,7 @@ ingested-to:                                           # status=ingested 時填
 
 ## 八、Wiki Link 規約
 
-- 內部連結：`[[節點名]]`、`[[節點名|顯示文字]]`、`[[節點名#段落]]`
+- 內部連結：`[[節點名]]`、`[[節點名#段落]]`；**禁用別名**（`[[節點名|顯示文字]]` 的 `|` 會截斷表格儲存格且易斷鏈），補充說明寫在連結外
 - 連 OpenSpec / Prototype：用相對路徑 markdown link（如 `[spec.md](../../../openspec/specs/xxx/spec.md)`）
 - **禁止 wiki link 到 vault 外**（Obsidian 不解析）
 
@@ -543,7 +459,11 @@ ingested-to:                                           # status=ingested 時填
 |------|------|------|
 | [[erp_index]] | 入口 + 架構概述 | 分層結構、連結方向的定義 |
 | [[scope-boundary]] | Vault 收 / 不收 | scope-boundary 決定什麼進 Vault，本 schema 決定怎麼寫 |
-| `04-business-logic/_template-business-logic.md` | 商業邏輯撰寫準則 | 撰寫流程、分類判斷、產出格式 |
+| [[卡片撰寫共用規範]] | 三層結構治理＋共用撰寫流程／停下鐵則／紀律 | 本 schema 管欄位定義，共用規範管撰寫治理 |
+| 各單元規範 `_template-*`（entity／role／state-machine／business-scenario／business-logic） | 該單元撰寫規則與稽核維度 | 產出格式、判斷表、稽核維度的單元正本 |
+| `wiki/範本/` 骨架卡（範本 - <單元名>） | 寫新卡的起手樣板 | 樣板層；欄位定義與值域以本 schema § 四為準 |
+| 各資料夾範例卡（範例 - <單元名>） | 合規凍結快照 | 稽核通過樣本，治理見 [[卡片撰寫共用規範]] § 一 |
+| `.claude/skills/vault-audit/SKILL.md` | 12 維度 lint 定義 | 本 schema 提供定義層，skill 提供檢查與判定（§ 六） |
 
 ## 十一、卡類型內容職責邊界（2026-05-28 新增）
 
@@ -563,6 +483,6 @@ ingested-to:                                           # status=ingested 時填
 
 ### 11.2 共通原則
 
-- **產業務情境一律 cross-reference 而非複製模板**：business-logic / scenario 卡若要說明「如何產業務情境」，MUST 指向 [[_template-business-scenario]]（業務情境範本），**禁複製格式模板進卡**；[[user-story-spec]] 為歷史方法論（業務情境範本已吸收 INVEST / 禁 anchor / 中英夾雜紀律）
+- **產業務情境一律 cross-reference 而非複製模板**：business-logic / scenario 卡若要說明「如何產業務情境」，MUST 指向 [[_template-business-scenario]]（業務情境撰寫規範），**禁把範本格式說明複製進內容卡正文**（「寫新卡從 `wiki/範本/` 骨架複製起手填寫」屬正常撰寫流程，不在此禁令內）；[[user-story-spec]] 為歷史方法論（業務情境範本已吸收 INVEST / 禁 anchor / 中英夾雜紀律）
 - **越界內容移到對應卡類型**：發現越界內容時移到該內容職責所屬的卡類型（如實體 Data Model 從 business-logic 移到 entity）
 - **cross-reference 用 wiki link / skill 名稱**，不複製內容（避免雙份維護 + 防止 AI 拿自己寫的東西當依據再生內容）
