@@ -22,15 +22,7 @@ paths:
 ## 三、共用標準（所有主題、所有卡都遵守）
 
 - **所有 wiki 頁面使用 Markdown**
-- **所有生成的 wiki 都必須包含下列 frontmatter 必填**：
-  ``` yaml
-  ---
-  type: "資料結構"
-  status: "草稿|有效|棄用"
-  last-reviewed: YYYY-MM-DD
-  ---
-  ```
-  `title` 為**選填**：檔名即標題；僅當標題需附註時才填（如實體卡的 `訂單（Order）` 附實體碼）。各 type 的完整必填欄位表以 wiki-schema 為準（OQ／insight／raw 以 `raised-at`／`created-at` 承載時間）。
+- **frontmatter**：各 type 的必填欄位與值域以 [[wiki-schema]] § 四為正本、樣板由 `wiki/範本/` 各骨架卡承載，本檔不重複定義。
 - **內部連結**：每個 wiki 頁面必須有 `##關聯區域`，連結到相關內容，並使用 Obsidian `[[wikilink]]` 語法，不用完整相對路徑，絕不能產生孤島頁面。連結一律 `[[完整卡名]]`，**禁用別名**（`[[卡名|別名]]` 的 `|` 會截斷表格儲存格且易斷鏈）；補充說明寫在連結外。
 - **外部連結**：連 vault 外（OpenSpec / Prototype）用相對路徑 markdown link。
 - **命名繁中語意化（產出評分標準）**：所有命名依語意翻譯、不直譯、不中英夾雜（見 § 一語言鐵則）；帶序號的卡用 `前綴-NNN-簡述`（NNN 三位補零）。
