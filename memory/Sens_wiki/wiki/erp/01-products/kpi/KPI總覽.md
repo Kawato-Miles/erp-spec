@@ -5,6 +5,8 @@ module:
 related-notion: https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f
 status: draft
 last-reviewed: 2026-06-13
+tags:
+  - 領域/全域
 ---
 
 # KPI 總覽

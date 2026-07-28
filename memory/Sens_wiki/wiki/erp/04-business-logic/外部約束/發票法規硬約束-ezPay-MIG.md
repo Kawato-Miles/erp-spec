@@ -11,6 +11,8 @@ business-domain:
 related-spec: openspec/specs/order-management/spec.md
 status: active
 last-reviewed: 2026-06-09
+tags:
+  - 領域/款項與發票
 ---
 
 # 發票法規硬約束（ezPay + 財政部 MIG）

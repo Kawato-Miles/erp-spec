@@ -11,6 +11,8 @@ last-reviewed: 2026-07-02
 source:
   - "公司決策（2026-07-02 Miles 拍板）：線下單審稿討論以 ERP 發起的 Slack 討論串進行"
   - "Slack Webhook 介面契約（第三方介面）"
+tags:
+  - 領域/印前審稿
 ---
 
 > 線下單審稿討論的第三方介面約束：ERP 透過 Slack Webhook 建立審稿討論串。Slack 是公司無法自行更改介面規格的第三方服務，ERP 只能依其約定格式發送。

@@ -8,6 +8,8 @@ mutability: external
 status: active
 last-reviewed: 2026-06-12
 source: SurveyCake 表單規格 + 金流平台付款通知（webhook）介面契約
+tags:
+  - 領域/售前
 ---
 
 > 售前諮詢的兩個第三方介面硬約束：客戶填寫的 SurveyCake 表單，以及金流平台的付款成功通知（webhook）。

@@ -18,6 +18,9 @@ implemented-by:
   - "sens-erp-prototype/src/data/bomMasterMock.ts"
 status: active
 last-reviewed: 2026-07-23
+tags:
+  - 領域/生產執行
+  - 領域/售前
 ---
 
 ## 現況

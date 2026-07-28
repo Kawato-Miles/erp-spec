@@ -4,6 +4,8 @@ module:
   - ERP
 status: active
 last-reviewed: 2026-05-19
+tags:
+  - 領域/全域
 ---
 
 # ERP 系統術語表（完整版）
