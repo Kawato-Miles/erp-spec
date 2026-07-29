@@ -14,8 +14,8 @@ related-vault:
   - "[[品檢紀錄]]"
   - "[[生產任務]]"
 related-oq:
-  - "[[QC-002-QC兩張wiki卡退役或保留|QC-002]]"
-  - "[[PT-003-NCR Rework 具體實現|PT-003]]"
+  - "[[QC-002-QC兩張wiki卡退役或保留]]"
+  - "[[PT-003-NCR Rework 具體實現]]"
 expected-resolution-at: 2026-Q3
 tags:
   - 領域/生產執行
@@ -36,7 +36,7 @@ tags:
 - 影響範圍：
   - [[品檢紀錄]] 實體卡「不通過原因」欄位的固定選項清單（欄位正本歸 wiki，該卡已標註待本 OQ）
   - 未來良率 / 不良率 KPI 細分（[[生產績效指標]]）的分組維度來源
-  - 與 [[PT-003-NCR Rework 具體實現|PT-003]]（不良品處置 NCR/Disposition）的銜接（原因 → 處置）
+  - 與 [[PT-003-NCR Rework 具體實現]]（不良品處置 NCR/Disposition）的銜接（原因 → 處置）
 
 ## 部分拍板
 
