@@ -50,4 +50,4 @@ notion-url: <推送後回填>             # audience=external 推送 Notion 後�
 
 落地去處：<決議改了哪些正本卡，逐卡 [[卡名]]；無需落地則寫明「無需落地（現況即定案）」>
 
-<!-- 起手提醒（填完刪除本註解）：檔名規則、audience 判定、去重與封存流程見 .claude/skills/oq-manage/SKILL.md；合規樣貌對照 08-open-questions/範例 - OQ；共用治理（流程／停下鐵則／紀律）見 00-meta/卡片撰寫共用規範 -->
+<!-- 起手提醒（填完刪除本註解）：撰寫規則與稽核維度見 08-open-questions/規範 - OQ（一卡一議題／範圍宣告／檔名序號／段落紀律）；去重與封存流程、audience 判定見 .claude/skills/oq-manage/SKILL.md；合規樣貌對照 08-open-questions/範例 - OQ；共用治理（流程／停下鐵則／紀律）見 00-meta/卡片撰寫共用規範 -->

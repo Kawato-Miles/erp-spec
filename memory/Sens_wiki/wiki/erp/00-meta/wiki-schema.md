@@ -355,7 +355,7 @@ ingested-to:                                           # status=ingested 時填
 | `06-state-machines/` | `state-machine` / `meta`（`規範 - 狀態機.md`）/ `example`（`範例 - 狀態機.md`）|
 | `wiki/範本/`（vault 層，跨主題） | 骨架檔（內容為填空 frontmatter 樣板，豁免本 schema 檢查；見 [[卡片撰寫共用規範]] § 一）|
 | `07-scenarios/` | `scenario`（業務情境）/ `meta`（`規範 - 業務情境.md` 等）/ `example`（`範例 - 業務情境.md`）|
-| `08-open-questions/` | `open-question` / `meta`（`OQ運作總覽.md`）/ `example`（`範例 - OQ.md`）|
+| `08-open-questions/` | `open-question` / `meta`（`OQ運作總覽.md`／`規範 - OQ.md`）/ `example`（`範例 - OQ.md`）|
 | `09-canvases/` | `.canvas` 檔（無 frontmatter）/ `canvas-ref` |
 | `10-references/` | `reference` |
 | `12-insights/` | `insight` / `meta`（`insight定位說明.md`）/ `example`（`範例 - Insight.md`）|

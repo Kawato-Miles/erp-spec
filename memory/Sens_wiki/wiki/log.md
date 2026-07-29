@@ -13,6 +13,12 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-07-29 14:45] 納入(amend) | OQ 三層補齊——規範 - OQ 新建（一卡一議題／範圍宣告／互引不複述），oq-manage skill 收斂為純流程
+
+- 變更：[[規範 - OQ]] 新建（OQ 單元撰寫規範：判斷表／前提確認／一卡一議題鐵則（判準＝一個決議段能結案整張卡）／範圍宣告／互引不複述／檔名序號／段落紀律／修改前檢查／邊際情境／停下條件／不收清單／八項稽核維度；frontmatter 值域引 wiki-schema § 四不複寫、流程留 oq-manage skill）；[[卡片撰寫共用規範]] 三處（適用範圍 OQ 改指規範 - OQ、治理鐵則 4 豁免擴及規範卡、相關卡補規範 - OQ）；[[wiki-schema]] § 目錄表 08-open-questions 補規範 - OQ；[[範本 - OQ]] 起手提醒註解改指規範 - OQ；[[範例 - OQ]] 快照聲明的規範指向同步
+- 動機：Miles 拍板（2026-07-29 生產階段清整前置）——OQ 是唯一無撰寫規範層的高量卡型，導致一卡多議題、互引複述造成範圍矛盾無從判讀；所有卡型統一三層結構（骨架／規範／範例），新卡型出現時照同一套管理。流程與撰寫切分：規範卡管「一張 OQ 卡長什麼樣」、skill 管「OQ 怎麼流動」，同一條規則只在一處宣告
+- 衝突：無；oq-manage skill 與 vault-audit 維度 12 接線（open-question → 規範 - OQ § 九）修於 .claude/，不列變更行。存量 89 張 open OQ 依新規範屬待收斂（生產域 29 張本輪處理，其餘另輪）
+
 ## [2026-07-29 14:36] 同步(amend) | 規範層改名——五張 _template-* 改「規範 - <單元名>」，三層命名全繁中對稱
 
 - 變更：[[規範 - 角色]]（原 _template-role）、[[規範 - 商業邏輯]]（原 _template-business-logic，維持一張管服務藍圖與商業規則）、[[規範 - 實體]]（原 _template-entity）、[[規範 - 狀態機]]（原 _template-state-machine）、[[規範 - 業務情境]]（原 _template-business-scenario）五檔以 Obsidian rename 改名並自動更新 wikilink；[[index]] 憲章分工句、[[wiki-schema]]（§ 目錄表／§ 十職責表／frontmatter 註解等 9 處）、[[卡片撰寫共用規範]]（分工句／三層表／相關卡）路徑文字同步；六張骨架卡起手提醒註解與 [[範本 - 業務情境]] frontmatter 引用同步；五張規範卡互引 sibling 路徑同步；[[2026-05-30-test-case-內移vault-skill稽核]] 加歷史快照註記（舊路徑不再指向現存檔案）；`.obsidian/app.json` userIgnoreFilters 補「/規範 - /」（規範卡比照骨架、範例豁免搜尋與 graph）
