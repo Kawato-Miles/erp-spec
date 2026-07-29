@@ -2,7 +2,7 @@
 type: business-rule
 mutability: domain
 source:
-  - "[[../../../raw/2026-06-11-miles-upload-公司實際印務用工單範例|公司實際印務用工單（W-20250801-07）]]"
+  - "[[2026-06-11-miles-upload-公司實際印務用工單範例]]"
   - "計價設定現況查證：sens-print-core dev 分支全套計價 model ＋ options 發布管線 ＋ 報價 quote_item（2026-07-23）"
   - "計價公式現況對證：sensation-api dev 分支計價引擎 `product/pricing/`（engine／markup／imposition／mother_sheet 與 material M1-M5／process P1-P8／binding B1-B3／equipment E1-E3 各 spec 模組）（2026-07-23）"
 status: active
@@ -36,6 +36,7 @@ BOM 主檔由[[印務]]維護（2026-07-22 拍板：主檔維護先讓印務處�
 
 ### 計價引擎計算框架（正本）
 
+> 計價參數的欄位正本分兩處（現況雙軌）：**印刷計價歸 [[設備]]**（設備三型 E1-E3 的令數與千車階梯、色數與特殊色倍率）、**後加工計價歸 [[工序主檔]]**（工序八法 P1-P8）；材料歸 [[材料主檔]]、裝訂歸 [[裝訂主檔]]。查計價歸屬到此為止，不必再往其他卡確認。
 > 本段是 BOM 成本計算的唯一正本，依 EC 後台計價引擎現況程式（sensation-api `product/pricing`）逐式對證（2026-07-23），後續工單成本沿用同一套邏輯。欄位表歸 [[材料主檔]]／[[工序主檔]]／[[裝訂主檔]]／[[設備]]；拼模與放損的業務換算歸 [[數量換算規則]]。
 
 **總流程**：
