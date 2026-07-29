@@ -202,7 +202,7 @@ last-reviewed: YYYY-MM-DD
 | `domain` | 領域知識（產業事實） | `領域知識/` | 產業本身改變時（極少） |
 | `internal` | 營運規則（公司決策） | `營運規則/` | 訪談、管理層拍板可改 |
 
-撰寫流程與產出格式詳見 `04-business-logic/_template-business-logic.md`。
+撰寫流程與產出格式詳見 `04-business-logic/規範 - 商業邏輯.md`。
 
 ### type=entity
 
@@ -233,7 +233,7 @@ last-reviewed: YYYY-MM-DD
 ```yaml
 ---
 type: scenario
-variant: 接力型 | 能力型 | 排程型      # 必填；判定見 07-scenarios/_template-business-scenario.md § 二
+variant: 接力型 | 能力型 | 排程型      # 必填；判定見 07-scenarios/規範 - 業務情境.md § 二
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
 source:                          # 往上層 = 正確性根據（服務藍圖 / business-logic 規則 / 拍板 OQ / 外部依據），禁指 OpenSpec / 同層 / 下層；狀態機卡僅得並列為參考資料，不得為唯一來源
@@ -349,12 +349,12 @@ ingested-to:                                           # status=ingested 時填
 | `00-meta/` | `meta` |
 | `01-products/` | `product-vision` / `phase` / `metric` |
 | `02-domain/` | `domain` / `glossary` |
-| `03-roles/` | `role` / `meta`（`_alignment-report.md`／`_template-role.md`）/ `example`（`範例 - 角色.md`）|
-| `04-business-logic/` | `service-blueprint` / `business-rule` / `meta`（`_template-business-logic.md`）/ `example`（`範例 - 服務藍圖.md`／`範例 - 商業規則.md`）|
-| `05-entities/` | `entity` / `meta`（`_template-entity.md`）/ `example`（`範例 - 實體.md`）|
-| `06-state-machines/` | `state-machine` / `meta`（`_template-state-machine.md`）/ `example`（`範例 - 狀態機.md`）|
+| `03-roles/` | `role` / `meta`（`_alignment-report.md`／`規範 - 角色.md`）/ `example`（`範例 - 角色.md`）|
+| `04-business-logic/` | `service-blueprint` / `business-rule` / `meta`（`規範 - 商業邏輯.md`）/ `example`（`範例 - 服務藍圖.md`／`範例 - 商業規則.md`）|
+| `05-entities/` | `entity` / `meta`（`規範 - 實體.md`）/ `example`（`範例 - 實體.md`）|
+| `06-state-machines/` | `state-machine` / `meta`（`規範 - 狀態機.md`）/ `example`（`範例 - 狀態機.md`）|
 | `wiki/範本/`（vault 層，跨主題） | 骨架檔（內容為填空 frontmatter 樣板，豁免本 schema 檢查；見 [[卡片撰寫共用規範]] § 一）|
-| `07-scenarios/` | `scenario`（業務情境）/ `meta`（`_template-business-scenario.md` 等）/ `example`（`範例 - 業務情境.md`）|
+| `07-scenarios/` | `scenario`（業務情境）/ `meta`（`規範 - 業務情境.md` 等）/ `example`（`範例 - 業務情境.md`）|
 | `08-open-questions/` | `open-question` / `meta`（`OQ運作總覽.md`）/ `example`（`範例 - OQ.md`）|
 | `09-canvases/` | `.canvas` 檔（無 frontmatter）/ `canvas-ref` |
 | `10-references/` | `reference` |
@@ -393,7 +393,7 @@ ingested-to:                                           # status=ingested 時填
 
 ### 規則的連結指向位置命名（業務規則 / 共用規則，2026-05-31 補述）
 
-> 商業規則卡內的「單條規則」以**業務語意命名的連結指向位置**標識，供 scenario 等下游卡跨卡 wiki link 引用單條規則。撰寫規範見 `04-business-logic/_template-business-logic.md`。
+> 商業規則卡內的「單條規則」以**業務語意命名的連結指向位置**標識，供 scenario 等下游卡跨卡 wiki link 引用單條規則。撰寫規範見 `04-business-logic/規範 - 商業邏輯.md`。
 
 - 規則的連結指向位置用**業務語意命名**（如 `#補收免審`、`#諮詢取消半額退費`），**不用流水號**（如 `#R1`）
 - 理由：流水號重排 / 重用會讓連回來的連結斷掉；用業務語意命名時改規則只改內容、定位點不變，跨卡引用不斷鏈
@@ -455,7 +455,7 @@ ingested-to:                                           # status=ingested 時填
 | [[erp_index]] | 入口 + 架構概述 | 分層結構、連結方向的定義 |
 | [[scope-boundary]] | Vault 收 / 不收 | scope-boundary 決定什麼進 Vault，本 schema 決定怎麼寫 |
 | [[卡片撰寫共用規範]] | 三層結構治理＋共用撰寫流程／停下鐵則／紀律 | 本 schema 管欄位定義，共用規範管撰寫治理 |
-| 各單元規範 `_template-*`（entity／role／state-machine／business-scenario／business-logic） | 該單元撰寫規則與稽核維度 | 產出格式、判斷表、稽核維度的單元正本 |
+| 各單元規範 `規範 - <單元名>`（實體／角色／狀態機／業務情境／商業邏輯） | 該單元撰寫規則與稽核維度 | 產出格式、判斷表、稽核維度的單元正本 |
 | `wiki/範本/` 骨架卡（範本 - <單元名>） | 寫新卡的起手樣板 | 樣板層；欄位定義與值域以本 schema § 四為準 |
 | 各資料夾範例卡（範例 - <單元名>） | 合規凍結快照 | 稽核通過樣本，治理見 [[卡片撰寫共用規範]] § 一 |
 | `.claude/skills/vault-audit/SKILL.md` | 12 維度 lint 定義 | 本 schema 提供定義層，skill 提供檢查與判定（§ 六） |
@@ -477,6 +477,6 @@ ingested-to:                                           # status=ingested 時填
 
 ### 11.2 共通原則
 
-- **產業務情境一律 cross-reference 而非複製模板**：business-logic / scenario 卡若要說明「如何產業務情境」，MUST 指向 [[_template-business-scenario]]（業務情境撰寫規範），**禁把範本格式說明複製進內容卡正文**（「寫新卡從 `wiki/範本/` 骨架複製起手填寫」屬正常撰寫流程，不在此禁令內）
+- **產業務情境一律 cross-reference 而非複製模板**：business-logic / scenario 卡若要說明「如何產業務情境」，MUST 指向 [[規範 - 業務情境]]（業務情境撰寫規範），**禁把範本格式說明複製進內容卡正文**（「寫新卡從 `wiki/範本/` 骨架複製起手填寫」屬正常撰寫流程，不在此禁令內）
 - **越界內容移到對應卡類型**：發現越界內容時移到該內容職責所屬的卡類型（如實體 Data Model 從 business-logic 移到 entity）
 - **cross-reference 用 wiki link / skill 名稱**，不複製內容（避免雙份維護 + 防止 AI 拿自己寫的東西當依據再生內容）

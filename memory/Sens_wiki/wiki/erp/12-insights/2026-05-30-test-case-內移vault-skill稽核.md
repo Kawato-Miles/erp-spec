@@ -22,6 +22,8 @@ expected-action-at:
 
 # 2026-05-30：test-case 管理內移 Vault — skill 稽核與內移路徑
 
+> 歷史快照註記（2026-07-29）：本卡所引 `_template-*` 規範檔已全數改名為「規範 - <單元名>」（如 `_template-business-logic` → [[規範 - 商業邏輯]]）；文中舊路徑為當時狀態，不再指向現存檔案。
+
 ## 背景
 
 稽核 `erp-test-case` skill 是否過時，揭露核心轉折：test case 的管理正本應從 Notion 移進 Vault（Obsidian），Notion 降為對外發布版，比照已內移的 [[wiki/erp/13-user-stories/README|User Story]]。

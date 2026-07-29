@@ -13,15 +13,21 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-07-29 14:36] 同步(amend) | 規範層改名——五張 _template-* 改「規範 - <單元名>」，三層命名全繁中對稱
+
+- 變更：[[規範 - 角色]]（原 _template-role）、[[規範 - 商業邏輯]]（原 _template-business-logic，維持一張管服務藍圖與商業規則）、[[規範 - 實體]]（原 _template-entity）、[[規範 - 狀態機]]（原 _template-state-machine）、[[規範 - 業務情境]]（原 _template-business-scenario）五檔以 Obsidian rename 改名並自動更新 wikilink；[[index]] 憲章分工句、[[wiki-schema]]（§ 目錄表／§ 十職責表／frontmatter 註解等 9 處）、[[卡片撰寫共用規範]]（分工句／三層表／相關卡）路徑文字同步；六張骨架卡起手提醒註解與 [[範本 - 業務情境]] frontmatter 引用同步；五張規範卡互引 sibling 路徑同步；[[2026-05-30-test-case-內移vault-skill稽核]] 加歷史快照註記（舊路徑不再指向現存檔案）；`.obsidian/app.json` userIgnoreFilters 補「/規範 - /」（規範卡比照骨架、範例豁免搜尋與 graph）
+- 動機：Miles 拍板（2026-07-29 生產階段清整前置）——三層結構（範本／規範／範例）命名應全繁中對稱，`_template-` 英文檔名為三層唯一破格且違反命名繁中語意化鐵則；商業邏輯規範維持一張管兩種骨架（拆檔錨點風險高於對稱收益）
+- 衝突：無；log／changelog／docs 歷史層依鐵則不改，舊名引用屬歷史事實。vault 外同步（wiki-amend／vault-audit skill、root CLAUDE.md）不列變更行
+
 ## [2026-07-29 01:15] 納入(amend) | 模擬試跑回饋修補——骨架四處、規範兩處、schema 三處、範例八張同步日、五B 錨點
 
-- 變更：[[範本 - OQ]] 補 tags 欄（mode A 依領域 tag 查佇列，漏欄新卡查不到）、[[範本 - Raw 素材]] module 改繁中值＋精練去處段補註解用法、[[範本 - Insight]] 補 resolved-at、九張骨架的日期變數加「AI 起手手填」註記、[[範本 - 商業規則]] 加「範圍外」段；[[_template-business-logic]] § 九 段落表加範圍外（選填）＋ § 四 加多條規則動機同名子標配對 MAY；[[wiki-schema]] type=open-question 補 tags、type=insight 補 tags 並移除 related-spec（Miles 拍板：insight 不需實作參照，wiki 以商業需求與現況為主）與 triggered-by 值域統一、§ 七 OQ 前綴改為議題縮寫 enum 管理（正本表＋新前綴先增列再開卡；AS 改 AFT、補 AR／BI）；[[付款發票邏輯]] 五B 標題去日期敘述（修復跨檔錨點）；[[範例 - OQ]] 聲明補 tags 落差註記；八張範例卡 synced-with-template 更新至 2026-07-29
+- 變更：[[範本 - OQ]] 補 tags 欄（mode A 依領域 tag 查佇列，漏欄新卡查不到）、[[範本 - Raw 素材]] module 改繁中值＋精練去處段補註解用法、[[範本 - Insight]] 補 resolved-at、九張骨架的日期變數加「AI 起手手填」註記、[[範本 - 商業規則]] 加「範圍外」段；[[規範 - 商業邏輯]] § 九 段落表加範圍外（選填）＋ § 四 加多條規則動機同名子標配對 MAY；[[wiki-schema]] type=open-question 補 tags、type=insight 補 tags 並移除 related-spec（Miles 拍板：insight 不需實作參照，wiki 以商業需求與現況為主）與 triggered-by 值域統一、§ 七 OQ 前綴改為議題縮寫 enum 管理（正本表＋新前綴先增列再開卡；AS 改 AFT、補 AR／BI）；[[付款發票邏輯]] 五B 標題去日期敘述（修復跨檔錨點）；[[範例 - OQ]] 聲明補 tags 落差註記；八張範例卡 synced-with-template 更新至 2026-07-29
 - 動機：四個新對話模擬試跑（寫情境卡／開 OQ／收 raw／wiki-amend 錨點與甲式轉換）發現的可用性缺陷，Miles 確認修補方向後落地；wiki-amend 深層錨點七處與 oq-manage、vault-ingest 措辭同輪修於 .claude/（不屬 wiki，不列變更行）
 - 衝突：無
 
 ## [2026-07-29 00:37] 納入(amend) | user-story／test-case 治理殘留清除（單元已溶解，wiki 不再承載）
 
-- 變更：[[user-story-spec]] 刪除（歷史方法論，業務情境規範已吸收其紀律）；[[wiki-schema]] 清除 scenario-id 廢止段、§ 九六條 user-story／test-case anti-pattern、§ 11.1 該型列與各列越界措辭、§ 11.2 歷史方法論句；[[index]] 憲章舉例與 ERP 涵蓋清單同步（並移除已停用的每日每週回顧）；[[scope-boundary]] 移除溶解史敘述；[[付款發票邏輯]] § 九標題與指引改業務情境；[[payment-invoice-scenarios]] 指引措辭同步；[[pm-data-map]]、[[review-loading-checklist]]、[[lightweight-review-mode]]、[[early-intervention-framework]]、[[pm-review-framework]]、[[審查知識路由]]、[[senior-pm-write-mode]] 的 User Story 資料來源與載入項改為業務情境三層指向；[[audit-failure-patterns]] 對應紀律指向改 [[_template-business-scenario]]（案例敘述屬歷史保留）；[[BI-14-款項UserStory業務情境段含UI措辭違反紀律]] related-vault 死鏈修復
+- 變更：[[user-story-spec]] 刪除（歷史方法論，業務情境規範已吸收其紀律）；[[wiki-schema]] 清除 scenario-id 廢止段、§ 九六條 user-story／test-case anti-pattern、§ 11.1 該型列與各列越界措辭、§ 11.2 歷史方法論句；[[index]] 憲章舉例與 ERP 涵蓋清單同步（並移除已停用的每日每週回顧）；[[scope-boundary]] 移除溶解史敘述；[[付款發票邏輯]] § 九標題與指引改業務情境；[[payment-invoice-scenarios]] 指引措辭同步；[[pm-data-map]]、[[review-loading-checklist]]、[[lightweight-review-mode]]、[[early-intervention-framework]]、[[pm-review-framework]]、[[審查知識路由]]、[[senior-pm-write-mode]] 的 User Story 資料來源與載入項改為業務情境三層指向；[[audit-failure-patterns]] 對應紀律指向改 [[規範 - 業務情境]]（案例敘述屬歷史保留）；[[BI-14-款項UserStory業務情境段含UI措辭違反紀律]] related-vault 死鏈修復
 - 動機：Miles 拍板——使用者故事與驗收項目單元已溶解併入業務情境，wiki 不再承載其治理規則，殘留條文與新三層結構矛盾
 - 衝突：無；BI-13／BI-14 兩張 open OQ 的標的多屬已溶解單元，處置留 Miles 裁決
 
@@ -38,37 +44,37 @@ last-reviewed: 2026-06-02
 
 ## [2026-07-28 15:54] 納入(amend) | payment-invoice-scenarios 歸位帳務＋情境卡 source 補狀態機參考資料規則
 
-- 變更：[[payment-invoice-scenarios]] 由 `07-scenarios/` 移至 `04-business-logic/營運規則/帳務/`（檔名不動保連結）＋ frontmatter type 由自創值 business-logic 修正為 business-rule（mutability: internal）；[[_template-business-scenario]] 與 [[wiki-schema]] 的 scenario source 規則補訂——狀態機卡得並列為參考資料（部分情境由狀態機推導產生），但不得為唯一或直接源頭
+- 變更：[[payment-invoice-scenarios]] 由 `07-scenarios/` 移至 `04-business-logic/營運規則/帳務/`（檔名不動保連結）＋ frontmatter type 由自創值 business-logic 修正為 business-rule（mutability: internal）；[[規範 - 業務情境]] 與 [[wiki-schema]] 的 scenario source 規則補訂——狀態機卡得並列為參考資料（部分情境由狀態機推導產生），但不得為唯一或直接源頭
 - 動機：Miles 拍板——該卡講開發票的規則、屬商業邏輯層非情境卡；情境的直接源頭應為藍圖／規則／拍板依據，狀態機僅作參考
 - 衝突：無
 
 ## [2026-07-28 15:44] 納入(amend) | 三層撰寫結構擴散至全部單元（骨架九張／範例七張／五規範收斂）＋實作對應欄位全庫移除
 
-- 變更：骨架新建八張——[[範本 - 角色]]、[[範本 - 狀態機]]、[[範本 - 業務情境]]、[[範本 - 服務藍圖]]、[[範本 - 商業規則]]、[[範本 - OQ]]、[[範本 - Insight]]、[[範本 - Raw 素材]]（自 raw/_template.md 搬移後刪原檔，meta 檔豁免 raw 唯讀鐵則）；範例卡新建七張——[[範例 - 角色]]（快照 [[諮詢]]）、[[範例 - 狀態機]]（快照 [[需求單狀態]]）、[[範例 - 業務情境]]（快照 [[訂單成立確認]]）、[[範例 - 服務藍圖]]（快照 [[生產流程]]）、[[範例 - 商業規則]]（快照 [[難易度機制]]）、[[範例 - OQ]]（快照封存卡 PT-028）、[[範例 - Insight]]（快照 2026-07-08 Odoo 參照卡）；規範收斂四張——[[_template-role]]、[[_template-state-machine]]、[[_template-business-scenario]]（章節編號保留護外部錨點）、[[_template-business-logic]]（章節編號全保留護 wiki-amend 錨點）；[[生產流程]] 措辭級清理（拍板日期五處、別名一處、中英夾雜一處）、[[訂單成立確認]] 段名前綴一處；[[wiki-schema]] § 4.0 收斂為 source 單欄＋五卡型 yaml 移除 module／implemented-by／related-spec＋目錄表補七個 example 條目；03-roles 19 張、04-business-logic 33 張、06-state-machines 16 張、07-scenarios 28 張批次移除實作對應欄位；[[index]] 憲章 BRD 自足句改寫（wiki 不承載實作對應）；[[卡片撰寫共用規範]] 適用範圍擴至八單元
+- 變更：骨架新建八張——[[範本 - 角色]]、[[範本 - 狀態機]]、[[範本 - 業務情境]]、[[範本 - 服務藍圖]]、[[範本 - 商業規則]]、[[範本 - OQ]]、[[範本 - Insight]]、[[範本 - Raw 素材]]（自 raw/_template.md 搬移後刪原檔，meta 檔豁免 raw 唯讀鐵則）；範例卡新建七張——[[範例 - 角色]]（快照 [[諮詢]]）、[[範例 - 狀態機]]（快照 [[需求單狀態]]）、[[範例 - 業務情境]]（快照 [[訂單成立確認]]）、[[範例 - 服務藍圖]]（快照 [[生產流程]]）、[[範例 - 商業規則]]（快照 [[難易度機制]]）、[[範例 - OQ]]（快照封存卡 PT-028）、[[範例 - Insight]]（快照 2026-07-08 Odoo 參照卡）；規範收斂四張——[[規範 - 角色]]、[[規範 - 狀態機]]、[[規範 - 業務情境]]（章節編號保留護外部錨點）、[[規範 - 商業邏輯]]（章節編號全保留護 wiki-amend 錨點）；[[生產流程]] 措辭級清理（拍板日期五處、別名一處、中英夾雜一處）、[[訂單成立確認]] 段名前綴一處；[[wiki-schema]] § 4.0 收斂為 source 單欄＋五卡型 yaml 移除 module／implemented-by／related-spec＋目錄表補七個 example 條目；03-roles 19 張、04-business-logic 33 張、06-state-machines 16 張、07-scenarios 28 張批次移除實作對應欄位；[[index]] 憲章 BRD 自足句改寫（wiki 不承載實作對應）；[[卡片撰寫共用規範]] 適用範圍擴至八單元
 - 動機：Miles 拍板——三層撰寫結構（骨架／規範／範例）套用到所有會寫 wiki 的單元，實體先行驗證通過後全面擴散；module 與 implemented-by 屬實作對應（PRD 層）wiki 不承載
 - 衝突：無新增矛盾；各單元存量卡違規與既有正本矛盾（title 必填 vs 檔名即標題、wiki-amend 商業規則段落結構與規範 § 九 分裂等）已列對話回報待裁決
 
 ## [2026-07-28 15:06] 納入(amend) | 實體卡關聯段訂為資料關聯模型（ER model）＋訂單卡關聯段訂正
 
-- 變更：[[_template-entity]] 補 MUST——「關鍵關聯」段＝資料關聯模型，只收有資料對應的實體並標基數，僅業務牽動者移「相關連結」（產出格式與稽核維度 8 同步改寫）；[[卡片撰寫共用規範]] 分工句補「各單元專業內容表示法歸各單元規範」（實體＝ER、狀態機＝UML 狀態圖＋表格）；[[範本 - 實體]] 關鍵關聯段加收錄準則註記；[[訂單]] 關聯段依 ER 訂正——工單改列相關連結（透過印件間接）、發票折讓收款改指 [[帳務]] 實體並標 1:N、補需求單／諮詢單／自身關聯（對應來源追溯的連結欄位）；[[範例 - 實體]] 重新快照
+- 變更：[[規範 - 實體]] 補 MUST——「關鍵關聯」段＝資料關聯模型，只收有資料對應的實體並標基數，僅業務牽動者移「相關連結」（產出格式與稽核維度 8 同步改寫）；[[卡片撰寫共用規範]] 分工句補「各單元專業內容表示法歸各單元規範」（實體＝ER、狀態機＝UML 狀態圖＋表格）；[[範本 - 實體]] 關鍵關聯段加收錄準則註記；[[訂單]] 關聯段依 ER 訂正——工單改列相關連結（透過印件間接）、發票折讓收款改指 [[帳務]] 實體並標 1:N、補需求單／諮詢單／自身關聯（對應來源追溯的連結欄位）；[[範例 - 實體]] 重新快照
 - 動機：Miles 拍板——關聯收錄準則是實體卡專屬的專業表示法（資料關聯模型），各卡型的專業內容表示法由各型規範各自定義；撰寫測試發現「間接牽動標不出基數」的規則缺口由此補訂
 - 衝突：無
 
 ## [2026-07-28 12:35] 納入(amend) | 撰寫規則補訂（段名統一／禁別名／status 升級／欄位未拍板寫法）＋訂單卡段名統一
 
-- 變更：[[_template-entity]] 補兩條——段名一律依骨架不加實體名前綴（MUST）、欄位未拍板時的寫法（邊際情境）；[[卡片撰寫共用規範]] 定案步驟補 status draft→active 升級規則；[[範本 - 實體]] status 欄加註記；[[訂單]] 段名統一為骨架名（欄位（業務可見）／關鍵關聯／額外費用明細／備註資料）＋移除唯一別名連結＋清除殘留迭代日期一處；[[範例 - 實體]] 重新快照；`.claude/rules/sens-wiki.md` § 三內部連結補「禁用別名」、oq-manage 與 vault-insight skill 的 related-oq 格式同步改禁別名
+- 變更：[[規範 - 實體]] 補兩條——段名一律依骨架不加實體名前綴（MUST）、欄位未拍板時的寫法（邊際情境）；[[卡片撰寫共用規範]] 定案步驟補 status draft→active 升級規則；[[範本 - 實體]] status 欄加註記；[[訂單]] 段名統一為骨架名（欄位（業務可見）／關鍵關聯／額外費用明細／備註資料）＋移除唯一別名連結＋清除殘留迭代日期一處；[[範例 - 實體]] 重新快照；`.claude/rules/sens-wiki.md` § 三內部連結補「禁用別名」、oq-manage 與 vault-insight skill 的 related-oq 格式同步改禁別名
 - 動機：Miles 拍板——段名跨卡統一不帶實體名（狀態機的「狀態」段不因卡而異名，同理適用全卡型）；wiki link 一律完整卡名禁別名（別名的直線符號會截斷表格儲存格且易斷鏈）；另兩條為撰寫測試發現的規則缺口補訂
 - 衝突：無
 
 ## [2026-07-28 12:13] 納入(amend) | 實體卡移除實作對應欄位＋訂單卡合規清理＋範例卡重新快照
 
-- 變更：[[wiki-schema]] type=entity 移除 module／implemented-by／related-spec 三欄（§ 4.0 加 entity 例外註記）、[[訂單]] frontmatter 同步移除兩欄＋正文清除迭代日期敘述與實作文件引用（備註段 spec 連結、來源段雛形實作與行為規格兩行）、`05-entities/` 其餘 28 張實體卡 frontmatter 批次移除同欄位、[[範例 - 實體]] 依清理後的 [[訂單]] 重新快照、[[範本 - 實體]] 骨架與 [[_template-entity]] 撰寫規則同步（欄位對應屬 PRD 層不承載）
+- 變更：[[wiki-schema]] type=entity 移除 module／implemented-by／related-spec 三欄（§ 4.0 加 entity 例外註記）、[[訂單]] frontmatter 同步移除兩欄＋正文清除迭代日期敘述與實作文件引用（備註段 spec 連結、來源段雛形實作與行為規格兩行）、`05-entities/` 其餘 28 張實體卡 frontmatter 批次移除同欄位、[[範例 - 實體]] 依清理後的 [[訂單]] 重新快照、[[範本 - 實體]] 骨架與 [[規範 - 實體]] 撰寫規則同步（欄位對應屬 PRD 層不承載）
 - 動機：Miles 拍板——module 與 implemented-by 是與實作模組／實作文件的對應，屬 PRD 層，wiki（BRD）不需要；訂單卡原含迭代敘述與實作引用，違反實體卡稽核維度，凍結範例的來源卡須先合規才能當通過樣本（撰寫測試發現）
 - 衝突：無
 
 ## [2026-07-28 11:54] 納入(amend) | 撰寫範本三層結構落地（實體單元先行）
 
-- 變更：[[卡片撰寫共用規範]] 新建（三層結構治理鐵則＋共用撰寫流程／停下鐵則／紀律／修改原則）、[[範本 - 實體]] 新建（骨架，置 `wiki/範本/`）、[[範例 - 實體]] 新建（[[訂單]] 2026-07-28 凍結快照）、[[_template-entity]] 收斂為純規範（骨架與 frontmatter 樣板外移至骨架卡、標竿引用由 [[訂單]] 改指 [[範例 - 實體]]、同構共用段改引共用規範、章節重編）、[[wiki-schema]] 新增 type=example 定義與目錄表兩列、[[index]] 憲章分工句由「各 _template 管執行標準」擴為三層結構宣告
+- 變更：[[卡片撰寫共用規範]] 新建（三層結構治理鐵則＋共用撰寫流程／停下鐵則／紀律／修改原則）、[[範本 - 實體]] 新建（骨架，置 `wiki/範本/`）、[[範例 - 實體]] 新建（[[訂單]] 2026-07-28 凍結快照）、[[規範 - 實體]] 收斂為純規範（骨架與 frontmatter 樣板外移至骨架卡、標竿引用由 [[訂單]] 改指 [[範例 - 實體]]、同構共用段改引共用規範、章節重編）、[[wiki-schema]] 新增 type=example 定義與目錄表兩列、[[index]] 憲章分工句由「各 _template 管執行標準」擴為三層結構宣告
 - 動機：Miles 拍板範本治理重構——既有痛點為寫新卡無骨架可起手（規範散文與骨架混寫）、規範正面例子指向持續演化的實際卡致範例靜默失準；改採骨架／規範／範例三層同 commit 治理，實體單元先行驗證，通過後擴散其餘單元
 - 衝突：無
 
@@ -183,7 +189,7 @@ last-reviewed: 2026-06-02
 - 衝突：無
 
 ## [2026-07-28 01:41] 納入(amend) | 領域分類載體遷移為 tag：P1 立閘門（正本升格 + 範本改版）
-- 變更：[[business-domain-taxonomy]] 升格為領域 tag enum 正本 + 檢索規約正本（新增標注規則 / 檢索規約含「語意不確定先與 Miles 確認領域」/ 互斥測試 / 增設同步 checklist；廢「跨領域」值改多值 + `領域/全域` 哨兵）、[[wiki-schema]] § 二B business-domain enum 段改寫為領域 tag 格式規範、[[_template-role]] frontmatter 改 tags 並刪「多數角色屬跨領域」、[[_template-entity]] frontmatter 改 tags 且歸位步驟與邊際情境改多值標注、[[_template-business-logic]] 兩處 frontmatter 改 tags、[[_template-state-machine]] frontmatter 改 tags、[[_template-business-scenario]] frontmatter 改 tags
+- 變更：[[business-domain-taxonomy]] 升格為領域 tag enum 正本 + 檢索規約正本（新增標注規則 / 檢索規約含「語意不確定先與 Miles 確認領域」/ 互斥測試 / 增設同步 checklist；廢「跨領域」值改多值 + `領域/全域` 哨兵）、[[wiki-schema]] § 二B business-domain enum 段改寫為領域 tag 格式規範、[[規範 - 角色]] frontmatter 改 tags 並刪「多數角色屬跨領域」、[[規範 - 實體]] frontmatter 改 tags 且歸位步驟與邊際情境改多值標注、[[規範 - 商業邏輯]] 兩處 frontmatter 改 tags、[[規範 - 狀態機]] frontmatter 改 tags、[[規範 - 業務情境]] frontmatter 改 tags
 - 動機：規劃前載入常漏卡（business-domain 覆蓋率 39%）或拖入整包共用層，且載入內容不可見；Miles 拍板遷移為 Obsidian tag（可在 tag 面板聚合審核）並抽出全 wiki 共用檢索規約。既有卡的 business-domain 欄位於標注完成驗收後才移除（雙軌回退路徑），完整分階段計劃見 plan 檔 wiki-tag-migration
 - 衝突：無
 
@@ -415,7 +421,7 @@ last-reviewed: 2026-06-02
 - 衝突：無
 
 ## [2026-07-06 16:25] 健檢(audit) | 工作流全鏈稽核後修復——舊三視角輪次協議除役 + 過時標記清整
-- 變更：刪除 [[multi-agent-discussion-protocol]]（淘汰條件達成：≥4 個 change 走 sequential Phase 4、verify 前三視角實務已停用，Miles 拍板除役）；[[sequential-design-collaboration]] 定位段改主協議自述、verify 前改 Phase 4 涵蓋；[[lightweight-review-mode]] 升級目標改 sequential；[[dispatch-prompt-template]] 適用協議段移除舊協議；[[senior-pm-write-mode]] 觸發來源改 sequential Phase 4 裁決；[[審查知識路由]] 決策樹與載入序移除舊協議節點；[[pm-review-framework]]、[[ceo-review-framework]]、[[erp-review-framework]] 移除 verify 前審查 row；[[pm-data-map]]、[[review-loading-checklist]] 跨視角衝突改 Phase 4 集中處理；[[2026-05-28-agent-teams-evaluation]] 死鏈改純文字並標行動項已執行；[[_template-business-scenario]] 稽核維度數統一標明 13 維度
+- 變更：刪除 [[multi-agent-discussion-protocol]]（淘汰條件達成：≥4 個 change 走 sequential Phase 4、verify 前三視角實務已停用，Miles 拍板除役）；[[sequential-design-collaboration]] 定位段改主協議自述、verify 前改 Phase 4 涵蓋；[[lightweight-review-mode]] 升級目標改 sequential；[[dispatch-prompt-template]] 適用協議段移除舊協議；[[senior-pm-write-mode]] 觸發來源改 sequential Phase 4 裁決；[[審查知識路由]] 決策樹與載入序移除舊協議節點；[[pm-review-framework]]、[[ceo-review-framework]]、[[erp-review-framework]] 移除 verify 前審查 row；[[pm-data-map]]、[[review-loading-checklist]] 跨視角衝突改 Phase 4 集中處理；[[2026-05-28-agent-teams-evaluation]] 死鏈改純文字並標行動項已執行；[[規範 - 業務情境]] 稽核維度數統一標明 13 維度
 - 動機：Miles 委託工作流全鏈稽核（BRD→OpenSpec→Prototype→Linear），拍板除役舊協議並清整過時標記；同批亦修 wiki 外的 CLAUDE.md／config.yaml／skill 檔（不在本 log 範圍）
 - 衝突：無
 
@@ -729,7 +735,7 @@ last-reviewed: 2026-06-02
 - 衝突：無（SKILL v1.0 changelog 的「7 卡」屬歷史初版記錄，依只追加層保留、v1.3 已補對照）
 
 ## [2026-06-13 18:01] 同步(amend) | Phase C：erp-user-story skill 刪除＋下游死引用與位階表對齊新架構
-- 變更：[[CLAUDE.md]] 路由表「新增/修改 User Story」row 改為「新增/修改業務情境」（指 [[_template-business-scenario]] 不經 skill）、載入決策表去 `13-user-stories/` 改 `07-scenarios/`、收尾 §10 與對外發布 row 去 erp-user-story 引用；[[wiki-amend]] § 位階表刪除 user-story row、切分判準與 frontmatter 必填位階去 user-story；[[erp-planning-pre-check]] 逐卡稽核由 7 類收斂為 6 類（情境＋User Story 合併為「業務情境」、跨層傳播由四層改三層、量化矩陣與 fan-out 同步改 6 卡）；[[wiki-schema]] § 11.2 死引用 `user-story-spec` + `erp-user-story` skill 改指 [[_template-business-scenario]]；[[付款發票邏輯]] 與 [[payment-invoice-scenarios]] 卡尾「產 User Story」引用改「產業務情境卡」指範本。
+- 變更：[[CLAUDE.md]] 路由表「新增/修改 User Story」row 改為「新增/修改業務情境」（指 [[規範 - 業務情境]] 不經 skill）、載入決策表去 `13-user-stories/` 改 `07-scenarios/`、收尾 §10 與對外發布 row 去 erp-user-story 引用；[[wiki-amend]] § 位階表刪除 user-story row、切分判準與 frontmatter 必填位階去 user-story；[[erp-planning-pre-check]] 逐卡稽核由 7 類收斂為 6 類（情境＋User Story 合併為「業務情境」、跨層傳播由四層改三層、量化矩陣與 fan-out 同步改 6 卡）；[[wiki-schema]] § 11.2 死引用 `user-story-spec` + `erp-user-story` skill 改指 [[規範 - 業務情境]]；[[付款發票邏輯]] 與 [[payment-invoice-scenarios]] 卡尾「產 User Story」引用改「產業務情境卡」指範本。
 - 動機：使用者故事單元溶解（Phase B 13-user-stories 目錄已隨審稿/諮詢批次刪除）後，skill 與設定層對齊新架構——erp-user-story skill 失去依附對象故刪除，下游死引用與卡類型位階表回收。
 - 衝突：無。
 
@@ -779,7 +785,7 @@ last-reviewed: 2026-06-02
 - 衝突：候選矛盾隨比對報告呈報 Miles，不靜默調和。
 
 ## [2026-06-12 12:22] 納入(amend) | 全 wiki 卡清除「Miles 拍板」類來源記錄（28 檔）
-- 變更：24 檔 frontmatter source 的「Miles 拍板／確認／指示（日期）：…」整行刪除——[[EC 商品管理]]／[[Supervisor]]／[[出貨人員]]／[[印務]]／[[印務主管]]／[[會計]]／[[生管]]／[[廠務]]（03 層）、[[現金流出把關]]／[[發票收款彈性]]／[[工序相依性規則]]／[[明細時點分界]]／[[訂單異動規則]]／[[BOM結構]]（04 層）、[[出貨單狀態]]（06 層）、[[單據分享與職務代理]]／[[對帳與催收]]／[[訂單三類備註維護]]／[[訂單印件規格維護]]／[[訂單客戶與聯絡資料維護]]／[[訂單成立確認]]／[[訂單異動流程]]／[[訂單複製建單]]／[[訂單負責業務改派]]（07 層）；內文兩處（[[phases]] 迭代史行刪除、[[訂單三類備註維護]] 內文括號注刪除）；規範層兩檔同步（[[wiki-schema]] 六處——source 指向對象改「法規／客戶訪談／產業慣例，管理層決策不留卡上、脈絡歸 log 與 OQ」、role 與 business-rule 範例去拍板字樣、維度說明歷史敘事改寫；[[_template-business-scenario]] source 範例同步）。清除後全部卡 source 仍有剩餘依據、無空欄。
+- 變更：24 檔 frontmatter source 的「Miles 拍板／確認／指示（日期）：…」整行刪除——[[EC 商品管理]]／[[Supervisor]]／[[出貨人員]]／[[印務]]／[[印務主管]]／[[會計]]／[[生管]]／[[廠務]]（03 層）、[[現金流出把關]]／[[發票收款彈性]]／[[工序相依性規則]]／[[明細時點分界]]／[[訂單異動規則]]／[[BOM結構]]（04 層）、[[出貨單狀態]]（06 層）、[[單據分享與職務代理]]／[[對帳與催收]]／[[訂單三類備註維護]]／[[訂單印件規格維護]]／[[訂單客戶與聯絡資料維護]]／[[訂單成立確認]]／[[訂單異動流程]]／[[訂單複製建單]]／[[訂單負責業務改派]]（07 層）；內文兩處（[[phases]] 迭代史行刪除、[[訂單三類備註維護]] 內文括號注刪除）；規範層兩檔同步（[[wiki-schema]] 六處——source 指向對象改「法規／客戶訪談／產業慣例，管理層決策不留卡上、脈絡歸 log 與 OQ」、role 與 business-rule 範例去拍板字樣、維度說明歷史敘事改寫；[[規範 - 業務情境]] source 範例同步）。清除後全部卡 source 仍有剩餘依據、無空欄。
 - 動機：Miles 指示（2026-06-12）——決策來源記錄不放卡上；決策脈絡由 log 動機行與 OQ 拍板紀錄承載（每筆拍板皆已在 log），卡上重複記錄無資訊量。13 層 US 卡四檔殘留不動（遷移中將消失）；log 與 OQ／insight／11-review 歷史層維持原樣。
 - 衝突：無。
 
@@ -823,7 +829,7 @@ last-reviewed: 2026-06-02
 - 衝突：無
 
 ## [2026-06-11 21:30] 納入(amend) | 實體層範本憲章化——對齊 sibling 〇~十二骨架＋計算內容三層分工定案
-- 變更：[[_template-entity]] 全面重構為與角色／狀態機／商業邏輯範本同構的〇~十二治理骨架（定位節引 [[index]] § Wiki 憲章、三判斷表〔獨立成卡／資訊歸層／欄位收錄〕、前提確認、error handle、goal-driven 稽核十維度以 [[訂單]] 為通過標竿、執行者／稽核者分離），北極星定為「欄位內容業務語言為目標、wiki 維持 BRD 定位為原則」；[[_template-business-logic]] § 十不收清單計算公式列拆分（欄位具體組成式→實體卡欄位表貼著欄位寫、程式碼層級公式→OpenSpec，本層只留 high-level 決策政策）
+- 變更：[[規範 - 實體]] 全面重構為與角色／狀態機／商業邏輯範本同構的〇~十二治理骨架（定位節引 [[index]] § Wiki 憲章、三判斷表〔獨立成卡／資訊歸層／欄位收錄〕、前提確認、error handle、goal-driven 稽核十維度以 [[訂單]] 為通過標竿、執行者／稽核者分離），北極星定為「欄位內容業務語言為目標、wiki 維持 BRD 定位為原則」；[[規範 - 商業邏輯]] § 十不收清單計算公式列拆分（欄位具體組成式→實體卡欄位表貼著欄位寫、程式碼層級公式→OpenSpec，本層只留 high-level 決策政策）
 - 動機：Miles 拍板（2026-06-11）——實體層補足 SDD 缺口：欄位正本歸實體卡不掛 OpenSpec、實體層收具體組成式更具體、商業層保持商業用語 high-level；同時消除兩範本「計算公式」路由互指對方的循環死角
 - 衝突：無
 
@@ -918,7 +924,7 @@ last-reviewed: 2026-06-02
 - 衝突：[[訂單]] 實體卡「可以編輯的人」含原訂單管理人之訂單編輯權，與印務主管「調度唯讀」視角衝突——未擅自調和，並列標注並聚焦於 XM-003 殘留待解。
 
 ## [2026-06-11 11:56] 納入(amend) | 廢止範本改為直接刪除＋業務情境範本去源由行
-- 變更：[[_template-scenario]]（07 舊情境範本）與 [[13-user-stories/_template]]（舊使用者故事範本）兩檔刪除（原標廢止留檔，仍可能被誤套用）；[[_template-business-scenario]] 開頭刪「本單元由 07／13 合併而成、設計定案見設計文件」一行（源由屬操作史、外部文件引用不屬範本正文）；[[_template-test-case]] 參考列與 [[13-user-stories/README]] 工作流步驟對已刪範本的引用改指業務情境範本
+- 變更：[[_template-scenario]]（07 舊情境範本）與 [[13-user-stories/_template]]（舊使用者故事範本）兩檔刪除（原標廢止留檔，仍可能被誤套用）；[[規範 - 業務情境]] 開頭刪「本單元由 07／13 合併而成、設計定案見設計文件」一行（源由屬操作史、外部文件引用不屬範本正文）；[[_template-test-case]] 參考列與 [[13-user-stories/README]] 工作流步驟對已刪範本的引用改指業務情境範本
 - 動機：Miles 指示（2026-06-11）——廢止範本留備註之後還是會用錯，直接刪；範本開頭只放撰寫當下需要的內容，源由歸 log
 - 衝突：無（log 與已凍結 changelog 內對已刪範本的歷史引用維持原樣，屬歷史層；[[_template-test-case]] 的 source 分工仍寫 user-story，整本對齊業務情境屬後續對齊輪）
 
@@ -938,12 +944,12 @@ last-reviewed: 2026-06-02
 - 衝突：A（工單由系統自動產生＋審稿主管增加，非印務自建）帶出與審稿主管卡「不接觸工單」的衝突及細節待釐清，印務／印務主管卡暫停；C（訂單管理人）未獲裁決，既有 [[XM-003-訂單管理人 vs 業務權責邊界|XM-003]] 已涵蓋待解；D（EC 商品管理權限矛盾）待重新說明。
 
 ## [2026-06-11 11:17] 納入(amend) | log 條目修復＋業務情境範本占位連結統一
-- 變更：[[log]] 六筆條目修復——三筆時間戳依對應 commit 真實時間修正（13:10 改 11:06、11:40 改 10:46、11:05 改 10:37，原為超前系統時間的未來時間）、三段缺標頭的條目本體補回標頭（角色範本 v2＝02:27、訂單異動確認可執行落地＝06-10 23:06、訂單異動狀態卡 v3＝06-10 22:22，原黏在 03:54 條目下致卡名搜尋誤歸屬）；[[_template-business-scenario]] 七處說明性占位連結改角括號占位形式，與 03／06 範本一致、消除未解析連結誤報
+- 變更：[[log]] 六筆條目修復——三筆時間戳依對應 commit 真實時間修正（13:10 改 11:06、11:40 改 10:46、11:05 改 10:37，原為超前系統時間的未來時間）、三段缺標頭的條目本體補回標頭（角色範本 v2＝02:27、訂單異動確認可執行落地＝06-10 23:06、訂單異動狀態卡 v3＝06-10 22:22，原黏在 03:54 條目下致卡名搜尋誤歸屬）；[[規範 - 業務情境]] 七處說明性占位連結改角括號占位形式，與 03／06 範本一致、消除未解析連結誤報
 - 動機：Miles 指示修正（2026-06-11）；時間戳與標頭以 git commit 時間為客觀依據回填
 - 衝突：無（殘留一處歷史排序倒置：22:22 條目物理位置在 22:50 條目之上，屬既有插入順序、未搬動既有條目，是否調整待 Miles 裁決）
 
 ## [2026-06-11 11:09] 納入(amend) | 業務情境單元定案——合併情境與使用者故事為單一卡型（三變體）
-- 變更：[[_template-business-scenario]] 新建（業務情境範本，憲章同構十二節、接力型／能力型／排程型）、[[_template-role]] 不收清單與撰寫紀律改指業務情境並補「情境引用不算二次宣告主責」、[[_template-business-logic]] 補藍圖切分線（型不含判準）與外部約束介面契約措辭、[[_template-entity]] 指向措辭更新、[[_template-state-machine]] 不收清單改指業務情境、[[wiki-schema]] type=scenario 加 variant 並廢止 user-story／scenario-id、[[erp_index]] 分層表與依據鏈更新、[[線下訂單流程]] 與 [[諮詢服務流程]] 相關卡段改指業務情境、[[_template-scenario]]／[[07-scenarios/README]]／[[13-user-stories/_template]]／[[13-user-stories/README]] 標廢止
+- 變更：[[規範 - 業務情境]] 新建（業務情境範本，憲章同構十二節、接力型／能力型／排程型）、[[規範 - 角色]] 不收清單與撰寫紀律改指業務情境並補「情境引用不算二次宣告主責」、[[規範 - 商業邏輯]] 補藍圖切分線（型不含判準）與外部約束介面契約措辭、[[規範 - 實體]] 指向措辭更新、[[規範 - 狀態機]] 不收清單改指業務情境、[[wiki-schema]] type=scenario 加 variant 並廢止 user-story／scenario-id、[[erp_index]] 分層表與依據鏈更新、[[線下訂單流程]] 與 [[諮詢服務流程]] 相關卡段改指業務情境、[[_template-scenario]]／[[07-scenarios/README]]／[[13-user-stories/_template]]／[[13-user-stories/README]] 標廢止
 - 動機：07／13 兩層存在實證重複維護（13 業務流程段重述 07 接力），且兩單元未憲章化；Miles 拍板方案二（單一卡型、判準內嵌、廢序號與三段式與 Gherkin 鷹架、服務藍圖留 04 以「型／實例」切分），設計定案見 docs/superpowers/specs/2026-06-11-business-scenario-unit-design.md
 - 衝突：無（既有 59 張 US 卡與 16 個舊情境保留原處，分領域遷移；遷移時與實作規格矛盾將逐筆呈報）
 
@@ -1053,7 +1059,7 @@ last-reviewed: 2026-06-02
 - 衝突：US-ORD-013 改 role 後檔名仍「會計執行退款處理」、與 US-ORD-011 職責重疊 → 開 ORD-034 待 retitle/合併；main spec § 訂單取消流程舊退款序列未對齊訂單收退款模型重構 → 開 ORD-033。
 
 ## [2026-06-02] 健檢 | 商業邏輯／狀態機卡範本過時舉例清理（訂單收退款模型重構 淘汰機制殘留）
-- 變更：[[_template-business-logic]] §不變條件 與 [[_template-state-machine]] §轉換條件與觸發事件 兩處示範舉例，由訂單收退款模型重構 已淘汰的「退款已執行＝對應款項累計達金額」舊機制，改為結構恆定的中性例子（工單↔生產任務狀態聚合：「工單為已完成→其下所有生產任務皆為已完成」／「對應生產任務全部完成」）；教學意圖（可驗算 invariant 格式／系統自動推進判斷依據）不變。
+- 變更：[[規範 - 商業邏輯]] §不變條件 與 [[規範 - 狀態機]] §轉換條件與觸發事件 兩處示範舉例，由訂單收退款模型重構 已淘汰的「退款已執行＝對應款項累計達金額」舊機制，改為結構恆定的中性例子（工單↔生產任務狀態聚合：「工單為已完成→其下所有生產任務皆為已完成」／「對應生產任務全部完成」）；教學意圖（可驗算 invariant 格式／系統自動推進判斷依據）不變。
 - 理由：範本舉例綁定單一 change 的已淘汰設計會誤導照抄者、且讓本體殘留失效機制影子；改用非金流認列、最不易被 change 推翻的狀態聚合示範以根治再過時。當前正本見 [[訂單異動規則]] §退款已執行認列。
 - 衝突：無。
 

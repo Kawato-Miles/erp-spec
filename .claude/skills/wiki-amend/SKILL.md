@@ -146,7 +146,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 
 ### 第 1 步：判位階（沿「問句的抽象度」由高到低）
 
-依新內容回答的問句性質，對照六位階單一職責（04-business-logic/_template-business-logic.md § 二 分類判斷表、[[erp_index]]）：
+依新內容回答的問句性質，對照六位階單一職責（04-business-logic/規範 - 商業邏輯.md § 二 分類判斷表、[[erp_index]]）：
 
 | 新內容回答的問題 | 可否驗算 | 位階 | type / 載體 | 目錄 |
 |----------------|---------|------|------------|------|
@@ -215,7 +215,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 
 ## 五、各位階 Template（一致水平）
 
-> Template 元規格保證六位階一致——不同人 / agent 寫同類卡落在同一結構。對齊 [[wiki-schema]] § 四 frontmatter + § 十一內容職責邊界 + 04-business-logic/_template-business-logic.md § 二／§ 八／§ 九。
+> Template 元規格保證六位階一致——不同人 / agent 寫同類卡落在同一結構。對齊 [[wiki-schema]] § 四 frontmatter + § 十一內容職責邊界 + 04-business-logic/規範 - 商業邏輯.md § 二／§ 八／§ 九。
 
 ### 5.0 共同骨架（所有位階套用）
 
@@ -243,19 +243,19 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 
 **規則卡推理結構**：
 
-- 規則型卡逐條照「意圖 → 既有規則 / 一定要成立的底線（引用更高位階卡）→ 套用本案 → 結論」四步寫，與 04-business-logic/_template-business-logic.md § 四 撰寫規則的「意圖 → 規則 → 營運動機」呈現對齊。
+- 規則型卡逐條照「意圖 → 既有規則 / 一定要成立的底線（引用更高位階卡）→ 套用本案 → 結論」四步寫，與 04-business-logic/規範 - 商業邏輯.md § 四 撰寫規則的「意圖 → 規則 → 營運動機」呈現對齊。
 - 設計理由先寫被駁回的方案 / 立場，再逐條給駁回理由並承認被採納的好建議（記下設計取捨，不只記結論）。
 
 ### 5.1 各位階特有章節
 
 | 位階 / type | 載體路徑（含落地狀態）| 特有章節 | MUST NOT（越界禁項）|
 |------------|---------------------|---------|---------------------|
-| 營運原則 / operating-principle | `01-products/operating-principles.md`（待建）+ `_template-operating-principle.md`（待建）| `## 原則陳述`（一句話價值 / 分權方向）+ `## 分權方向`（誰把關什麼、誰不被阻擋）+ `## 為什麼這是最上層、不再往上追`（說明為何此原則是最上層依據、不再上溯）。source 終止於外部原點（Miles 拍板 + 印刷業實務）、禁再上溯、禁指任何內部卡；status 轉 active 須 Miles 拍板；無 implemented-by | 可驗算的底線（屬共用規則 business-logic）|
-| 共用規則 / 業務規則 / business-logic | `04-business-logic/` + `_template-business-logic.md`（已建）| 規則型：依 `wiki/範本/範本 - 商業規則` 骨架八段（現況／規則／為什麼這樣定／適用範圍／領域知識?／具體例子／例外情境?／相關卡，正本＝ `_template-business-logic.md` § 九）——「一定要成立的底線」寫進「規則」段、邊界反例寫進「例外情境」段；具體例子 1-3 個真實格式含具體數字，禁 UI 措辭。索引型額外：`## 分類概覽` + `## 連帶矩陣`（七實體 depends-on / affects）。規則用語意 slug；共用規則卡標「領域一定要成立的底線」、業務規則 source 可往上指共用規則卡 | 跨模組完整流程（→ scenario）/ 狀態轉換圖（→ state-machine）/ 角色職責清單（→ role）/ 完整實體 Data Model（→ entity）|
-| 狀態 / state-machine | `06-state-machines/` + `_template-state-machine.md`（已建）| `## 狀態清單`（含「狀態 / 說明 / 對應營運需求」三欄）+ `## 狀態轉換`（流程圖 / 轉換規則）+ `## 關鍵狀態 / 轉換的營運動機`（逐條：轉換 → 動機 → 1 例子）+ `## 與其他狀態機 / 實體的關係`。轉換動機 wiki link 指 business-logic 正本 | 規則本體 / 計算公式 / 跨情境例子（→ business-logic）/ UI 措辭 / 業務情境敘述（→ scenario）|
-| 業務情境 / scenario | `07-scenarios/` + `_template-business-scenario.md`（已建）| 一卡一目標完成過程，六段格式（概述 / 主成功過程 / 延伸岔路 / 收斂狀態 / 範圍外 / 相關卡）；三變體（接力型 / 能力型 / 排程型），判準引 04 不複寫。每步「依某規則」wiki link 指 business-logic 正本 | 規則本體與計算公式（→ business-logic）/ 狀態轉換規則（→ state-machine）/ 介面操作 |
-| 角色 / role | `03-roles/` + `_template-role.md`（已建）| `## 基本資料` + `## 主要工作職責`（非顯然把關理由補營運動機）+ `## 職責邊界`（每條附「為什麼這樣切」）+ `## 關切點` + `## 預期阻力`。分權判斷準則細則指 business-logic 正本。Lint 例外：外部使用者角色（B2C 會員）允許 role 為純文字非 wiki link | 跨角色流程細節（→ scenario）/ 實體欄位定義（→ entity）/ 分權規則判斷準則細則（→ business-logic）|
-| 資料 / entity | `05-entities/` + `_template-entity.md`（已建）| `## 核心欄位`（非顯然營運理由的欄位在說明欄補「為什麼要存」）+ `## 關鍵關聯` + `## 相關狀態機`（指 state-machine 卡）。欄位承載規則 wiki link 指 business-logic | 業務流程敘述（→ business-logic / scenario）/ 完整狀態轉換邏輯（→ state-machine）|
+| 營運原則 / operating-principle | `01-products/operating-principles.md`（待建）+ `規範 - 營運原則.md`（待建）| `## 原則陳述`（一句話價值 / 分權方向）+ `## 分權方向`（誰把關什麼、誰不被阻擋）+ `## 為什麼這是最上層、不再往上追`（說明為何此原則是最上層依據、不再上溯）。source 終止於外部原點（Miles 拍板 + 印刷業實務）、禁再上溯、禁指任何內部卡；status 轉 active 須 Miles 拍板；無 implemented-by | 可驗算的底線（屬共用規則 business-logic）|
+| 共用規則 / 業務規則 / business-logic | `04-business-logic/` + `規範 - 商業邏輯.md`（已建）| 規則型：依 `wiki/範本/範本 - 商業規則` 骨架八段（現況／規則／為什麼這樣定／適用範圍／領域知識?／具體例子／例外情境?／相關卡，正本＝ `規範 - 商業邏輯.md` § 九）——「一定要成立的底線」寫進「規則」段、邊界反例寫進「例外情境」段；具體例子 1-3 個真實格式含具體數字，禁 UI 措辭。索引型額外：`## 分類概覽` + `## 連帶矩陣`（七實體 depends-on / affects）。規則用語意 slug；共用規則卡標「領域一定要成立的底線」、業務規則 source 可往上指共用規則卡 | 跨模組完整流程（→ scenario）/ 狀態轉換圖（→ state-machine）/ 角色職責清單（→ role）/ 完整實體 Data Model（→ entity）|
+| 狀態 / state-machine | `06-state-machines/` + `規範 - 狀態機.md`（已建）| `## 狀態清單`（含「狀態 / 說明 / 對應營運需求」三欄）+ `## 狀態轉換`（流程圖 / 轉換規則）+ `## 關鍵狀態 / 轉換的營運動機`（逐條：轉換 → 動機 → 1 例子）+ `## 與其他狀態機 / 實體的關係`。轉換動機 wiki link 指 business-logic 正本 | 規則本體 / 計算公式 / 跨情境例子（→ business-logic）/ UI 措辭 / 業務情境敘述（→ scenario）|
+| 業務情境 / scenario | `07-scenarios/` + `規範 - 業務情境.md`（已建）| 一卡一目標完成過程，六段格式（概述 / 主成功過程 / 延伸岔路 / 收斂狀態 / 範圍外 / 相關卡）；三變體（接力型 / 能力型 / 排程型），判準引 04 不複寫。每步「依某規則」wiki link 指 business-logic 正本 | 規則本體與計算公式（→ business-logic）/ 狀態轉換規則（→ state-machine）/ 介面操作 |
+| 角色 / role | `03-roles/` + `規範 - 角色.md`（已建）| `## 基本資料` + `## 主要工作職責`（非顯然把關理由補營運動機）+ `## 職責邊界`（每條附「為什麼這樣切」）+ `## 關切點` + `## 預期阻力`。分權判斷準則細則指 business-logic 正本。Lint 例外：外部使用者角色（B2C 會員）允許 role 為純文字非 wiki link | 跨角色流程細節（→ scenario）/ 實體欄位定義（→ entity）/ 分權規則判斷準則細則（→ business-logic）|
+| 資料 / entity | `05-entities/` + `規範 - 實體.md`（已建）| `## 核心欄位`（非顯然營運理由的欄位在說明欄補「為什麼要存」）+ `## 關鍵關聯` + `## 相關狀態機`（指 state-machine 卡）。欄位承載規則 wiki link 指 business-logic | 業務流程敘述（→ business-logic / scenario）/ 完整狀態轉換邏輯（→ state-machine）|
 
 ### 5.2 Template 自審清單（一份兩用：撰寫檢查 = vault-audit 稽核維度）
 
@@ -265,7 +265,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 - [ ] 「這張卡要回答的問題」段每個問句正文有對應結論（取代「大致 OK」）。
 - [ ] 營運背景段無實作術語當主詞、無中英夾雜（技術詞括號附註）。
 - [ ] 正文零迭代史（歷史見 wiki/log.md 與 git）、無任何迭代史尾行；正文零「待確認 / 待釐清」inline OQ 措辭（→ oq-manage mode B）。
-- [ ] 越界檢查（04-business-logic/_template-business-logic.md § 十 不收清單）：未寫入不屬本 type 職責的內容。
+- [ ] 越界檢查（04-business-logic/規範 - 商業邏輯.md § 十 不收清單）：未寫入不屬本 type 職責的內容。
 - [ ] 相關連結雙向可達、語意分類；無 dangling link、非 orphan。
 - [ ] 規則單一正本：未在第二張卡複寫規則本體。
 - [ ] 「隔壁鄰居測試」：營運背景抽一句，問「Miles / 主管不看程式碼能否懂」。
@@ -324,7 +324,7 @@ wiki 回補完成後，依 § 5.2 自審清單逐項勾，確保每張異動卡�
 |------|------|---------|
 | `operating-principle` type | [[wiki-schema]] 現用 `product-vision` type 承載營運原則層；`operating-principle` 曾為候選**目標 type 名**，已決議沿用 `product-vision`、不新增此 type（決策脈絡見 `08-open-questions/` 拍板紀錄 + wiki/log.md）| [[erp_index]]（營運原則層沿用 product-vision type 之註）|
 | `01-products/operating-principles.md` | **尚未建立**（現有 product-vision.md / success-metrics.md 等）| [[erp_index]] |
-| 各位階 `_template-*.md` | **已建**：business-logic / state-machine / role / entity 各 `_template-<type>.md`、scenario 為 `_template-business-scenario.md`；**僅 operating-principle `_template-operating-principle.md` 尚未建立** | [[卡片撰寫共用規範]]（跨位階治理）＋各 `_template-*` 規範 |
+| 各位階 `規範 - <單元名>.md` | **已建**：規範 - 商業邏輯／規範 - 狀態機／規範 - 角色／規範 - 實體／規範 - 業務情境；**僅 `規範 - 營運原則.md` 尚未建立** | [[卡片撰寫共用規範]]（跨位階治理）＋各「規範 - 」卡 |
 | `source` frontmatter | business-logic 卡已全數移除 `implemented-by`／`related-spec`／`module`（實作對應屬 PRD 層，wiki 不承載）；多數卡已有 `source` | 補不出 source 的標 `source-gap` 待專輪 |
 | `provenance-commit` frontmatter | **尚未納入** wiki-schema | [[erp_index]]（drift 偵測建議，待 schema 補）|
 
