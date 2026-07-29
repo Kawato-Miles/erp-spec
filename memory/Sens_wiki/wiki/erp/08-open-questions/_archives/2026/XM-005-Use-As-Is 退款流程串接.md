@@ -18,9 +18,6 @@ related-vault:
 expected-resolution-at: 2026-Q3
 answered-at: 2026-07-29
 answered-by: Miles
-tags:
-  - 領域/款項與發票
-  - 領域/生產執行
 ---
 
 # XM-005：議價交付（Use-As-Is）pi_planned_qty 鎖定 + 業務退款流程串接

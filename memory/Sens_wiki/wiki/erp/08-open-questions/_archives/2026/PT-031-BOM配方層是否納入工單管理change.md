@@ -18,8 +18,6 @@ related-oq:
   - "[[PT-030-數量換算下行取整方向表述缺口|PT-030]]"
 expected-resolution-at: 工單管理 change verify 前（範疇級）
 answered-at: 2026-07-28
-tags:
-  - 領域/生產執行
 ---
 
 # PT-031 BOM 配方層是否納入工單管理 change
