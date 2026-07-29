@@ -22,7 +22,6 @@ related-oq:
   - XM-001
   - XM-004
   - XM-005
-related-spec: openspec/specs/after-sales-ticket/spec.md
 expected-action-at: 2026-06-15
 ---
 

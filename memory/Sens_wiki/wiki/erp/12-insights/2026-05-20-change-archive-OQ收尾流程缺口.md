@@ -17,7 +17,6 @@ related-oq:
   - PT-005
   - XM-005
   - XM-007
-related-spec: openspec/changes/archive/2026-05-20-reclassify-qc-and-add-inspection/
 expected-action-at: 2026-06-01
 ---
 

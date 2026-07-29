@@ -27,7 +27,6 @@ last-reviewed: 2026-07-29
 | `scenario` | 業務情境（目標完成過程；接力型／能力型／排程型） | `07-scenarios/` |
 | `open-question` | OQ 卡 | `08-open-questions/` |
 | `canvas-ref` | Canvas 對應的 markdown 描述 | `09-canvases/` |
-| `reference` | 外部連結索引 | `10-references/` |
 | `insight` | vault-insight 產出 | `12-insights/` |
 | `raw` | Raw 素材（已驗證的觀察 / 反饋 / 研究筆記，未精練）| `raw/` |
 
@@ -138,7 +137,6 @@ module:
   - cross-module  # 或具體模組
 status: active
 last-reviewed: YYYY-MM-DD
-related-notion: <URL>  # 若有
 ---
 ```
 
@@ -161,7 +159,7 @@ last-reviewed: YYYY-MM-DD
 type: role
 source:                          # 往上層 = 正確性根據（營運原則 / 商業流程共用規則 / 權責表），禁指 OpenSpec / 同層 / 下層；見 § 4.0
   - "[[<上層卡或最上層依據>]]"
-related-notion: <Notion 核心角色權責 DB 連結>
+  - "Notion 核心角色權責表：<URL>"   # 外部依據的網址一律寫在 source，正文與其他欄位不放外部網址
 status: active
 last-reviewed: YYYY-MM-DD
 ---
@@ -300,18 +298,6 @@ resolved-at: YYYY-MM-DD  # status=resolved 時填
 ---
 ```
 
-### type=reference
-
-```yaml
----
-type: reference
-module:
-  - cross-module
-status: active
-last-reviewed: YYYY-MM-DD
----
-```
-
 ### type=raw
 
 ```yaml
@@ -357,7 +343,6 @@ ingested-to:                                           # status=ingested 時填
 | `07-scenarios/` | `scenario`（業務情境）/ `meta`（`規範 - 業務情境.md` 等）/ `example`（`範例 - 業務情境.md`）|
 | `08-open-questions/` | `open-question` / `meta`（`OQ運作總覽.md`／`規範 - OQ.md`）/ `example`（`範例 - OQ.md`）|
 | `09-canvases/` | `.canvas` 檔（無 frontmatter）/ `canvas-ref` |
-| `10-references/` | `reference` |
 | `12-insights/` | `insight` / `meta`（`insight定位說明.md`）/ `example`（`範例 - Insight.md`）|
 | `raw/` | `raw` / `meta`（`README.md`）|
 | `raw/_attachments/` | 任意檔（PDF / 圖 / docx / 訪談錄音轉文字等）；不需 frontmatter |

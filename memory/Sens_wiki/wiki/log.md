@@ -21,6 +21,12 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-07-30 01:49] 納入(amend) | wiki 外部引用邊界收斂——正本卡零 openspec、外部網址一律歸 source、10-references 退役
+
+- 變更：`10-references/` 整個目錄退役——[[2026-07-08-claude-research-Odoo供應鏈參考架構圖解]] 移入 `raw/` 並補 raw 防線欄位（status=ingested、raw-source-link 指 Odoo 18.0 官方文件、ingested-to 指 [[2026-07-08-Odoo參照與生產關建模原則]]），四張索引卡（decks／notion／openspec／prototype）刪除；[[wiki-schema]] 移除 `type: reference` 定義與目錄列、§ 四 role 樣板改為「外部依據網址寫在 source」、移除 `related-notion` 欄位定義；[[erp_index]] 外部參考行移除；[[scope-boundary]] 外部連結索引列與 decks 入口移除、decks 業務性內容改為「精練時直接寫入對應 wiki 卡」；[[規範 - 實體]] § 七「來源」段定義改寫（**禁列實作規格導航**——change 會 archive 或作廢、路徑必然失效）；19 張實體卡與 01-products／04-business-logic／07-scenarios 共 27 處 openspec 內文引用清除（行為規格導航整行刪、範圍外聲明保留語意去路徑）；[[範本 - 角色]] 與 [[範例 - 角色]] 的 related-notion 欄位收斂；03-roles 16 張、01-products 7 張、[[OQ運作總覽]] 共 24 張卡的 `related-notion` 併入 `source`；[[痛點]]、[[關係人]]、[[產品願景]]、[[影響力評分框架]]、[[階段規劃]]、[[成功指標]]、[[KPI總覽]]、[[_alignment-report]]、[[尺寸範本]]、[[付款發票邏輯]]、[[payment-invoice-scenarios]] 內文網址移除並歸 source；7 張卡的 `related-spec` 欄位移除（實作對應屬 PRD 層）；[[2026-07-08-Odoo參照與生產關建模原則]] 與 [[範例 - Insight]] 的 Odoo 卡引用改指 raw 新位置
+- 動機：Miles 拍板（2026-07-30）——wiki 內文不應指向 openspec（實作層），外部網址應經 raw 進入 wiki 後被引用、source 才放網址；10-references 索引層整個刪除不另遷移，僅 Odoo 調研因具參考價值移入 raw
+- 衝突：無。保留項：外部約束卡的介接端點網址（屬約束內容本身）、[[範例 - 角色]] 快照中的 frontmatter 範例、OQ 卡 `source-link` 指 change 路徑（溯源語意，改寫為場景描述列待辦）、log 與 changelog 歷史層
+
 ## [2026-07-30 01:28] 健檢(audit) | 全量，12 維度 6 通過（生產域清整後驗收，對照 07-28 基線）
 
 - 變更：稽核 ERP_Vault，Warning；維度 1 矛盾 0 件（基線 2 件已修：[[設備]] 印刷計價歸屬、[[生產任務狀態]] 任務層殘留）、維度 4 死鏈現行卡 86（本輪零新增，[[BI-24-印刷計價歸屬雙軌校正後M2連帶卡待同步]] 舊名殘留於 log 屬歷史層不改；餘為 user-story 溶解殘留與已移除實體引用等既有問題）、維度 5 缺欄 3（[[發票法規硬約束-ezPay-MIG]] 與 [[payment-invoice-scenarios]] 缺 source、[[2026-06-15-生產階段現況校正與as-is-tobe對齊]] 缺 raised-at；基線 10）、維度 6 別名連結 214 處 61 檔（生產域 49 張已全清、餘為非生產域另輪範圍；基線 413）、維度 8 open 85 逾 30 天 58、維度 9 raw reviewed 逾期 5、維度 11 三塊異動未記 log（本輪補記）、維度 12 八張範例卡 synced-with-template 落後於規範修改已更新至 2026-07-30

@@ -13,7 +13,6 @@ related-vault:
   - "[[../11-review-knowledge/_shared/lightweight-review-mode]]"
 related-oq:
   - ORD-018
-related-spec: openspec/specs/prototype-shared-ui/spec.md
 expected-action-at: 2026-06-30
 ---
 

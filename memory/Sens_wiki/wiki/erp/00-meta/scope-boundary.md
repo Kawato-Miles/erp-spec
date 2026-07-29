@@ -28,7 +28,6 @@ last-reviewed: 2026-07-28
 | OQ | `08-open-questions/` | oq-manage skill 改寫後寫入 |
 | KPI | `01-products/kpi/` | 各模組 KPI |
 | 視覺化 | `09-canvases/` | Canvas 視覺化 |
-| 外部連結索引 | `10-references/` | Notion / OpenSpec / Prototype / decks |
 | **操作史** | `wiki/log.md` | 全知識庫唯一只追加層（[[log]]）；健檢／納入類條目皆記於此 |
 | **Wiki Schema** | `00-meta/wiki-schema.md` | Vault formal 治理規則（lint 依據）|
 | **Insights** | `12-insights/` | vault-insight skill 產出的跨主題模式識別 + 下一步建議 |
@@ -118,7 +117,7 @@ ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」�
 | 設計方案比較 | `decks/after-sales-design-comparison.html` |
 | Spec 撰寫過程的圖解 | `decks/` 其他過程圖解 |
 
-→ decks/ 中**業務性內容**（流程圖、欄位對照、業務流程變更說明）會以連結形式進 Vault（見 [[decks-index]]），**非業務性的決策評估**留 decks 原處。
+→ decks/ 中**業務性內容**（流程圖、欄位對照、業務流程變更說明）於精練時直接寫入對應 wiki 卡，不另設索引層。
 
 ## 三、判斷準則對照表
 
@@ -153,4 +152,3 @@ ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」�
 
 - [[erp_index]] — 入口 + 架構概述
 - [[wiki-schema]] — frontmatter 規範
-- [[decks-index]] — decks/ 業務性內容入口

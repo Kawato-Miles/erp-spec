@@ -3,8 +3,7 @@ type: role
 tags:
   - 領域/售前
 source:
-  - "Notion 核心角色權責表（連結見 related-notion）"
-related-notion: https://www.notion.so/32e3886511fa81f09be5ed74c6f51306
+  - "Notion 核心角色權責表：https://www.notion.so/32e3886511fa81f09be5ed74c6f51306"
 status: active
 last-reviewed: 2026-06-11
 ---

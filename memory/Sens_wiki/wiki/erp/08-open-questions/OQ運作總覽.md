@@ -1,8 +1,9 @@
 ---
 type: meta
+source:
+  - "Notion 資源：https://www.notion.so/32c3886511fa808e9754ea1f18248d92"
 module:
   - 跨模組
-related-notion: https://www.notion.so/32c3886511fa808e9754ea1f18248d92
 status: active
 last-reviewed: 2026-06-13
 ---
@@ -36,7 +37,7 @@ OQ 是**待裁決佇列**：每張卡一個待確認的問題，拍板後決議�
 
 ## Notion 同步策略
 
-- Notion [Follow-up DB](https://www.notion.so/32c3886511fa808e9754ea1f18248d92) 為**對外確認版**（audience=external 專用）；Vault 永遠是正本
+- Notion Follow-up DB 為**對外確認版**（audience=external 專用）；Vault 永遠是正本
 - 推送由 Miles 觸發，skill 不主動推；推送後回填該卡 frontmatter `notion-url`
 
 ## 相關文件

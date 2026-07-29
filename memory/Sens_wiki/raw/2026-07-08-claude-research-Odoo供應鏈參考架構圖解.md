@@ -1,14 +1,31 @@
 ---
-type: reference
+type: raw
+status: ingested
+created-at: 2026-07-08
+source: claude-research
+captured-by: claude-on-task
 module:
   - 跨模組
-status: active
-last-reviewed: 2026-07-08
+  - 工單
+  - 生產任務
+  - 出貨
+topic-tag:
+  - Odoo
+  - 供應鏈
+  - 參考架構
+  - 位置化建模
+related-vault:
+  - "[[2026-07-08-Odoo參照與生產關建模原則]]"
+  - "[[2026-06-13-生產模組架構設計]]"
+raw-source-link: https://www.odoo.com/documentation/18.0/applications/inventory_and_mrp.html（逐段官方文件 URL 見 [[2026-07-08-claude-research-Odoo供應鏈生產到出貨流程]] 總表）
+ingested-at: 2026-07-08
+ingested-to:
+  - "[[2026-07-08-Odoo參照與生產關建模原則]]"
 ---
 
 # Odoo 供應鏈參考架構（生產 → 報工 → 廠間移轉 → 品檢 → 揀貨 → 出貨）
 
-> 外部系統參考卡（非公司商業記憶正本）：Odoo 18.0 供應鏈實作方式的圖解精練版，供生產關規劃與後續 insight 對照。事實出處與逐段官方文件 URL 見文末參考資料的兩張 raw 卡；本卡只呈現架構，不重複敘述。
+> 外部系統參考素材（非公司商業記憶正本，2026-07-30 自 wiki 10-references 移入 raw）：Odoo 18.0 供應鏈實作方式的圖解精練版，供生產關規劃與後續 insight 對照。事實出處與逐段官方文件 URL 見文末參考資料的兩張 raw 卡；本卡只呈現架構，不重複敘述。
 
 ## 概述
 

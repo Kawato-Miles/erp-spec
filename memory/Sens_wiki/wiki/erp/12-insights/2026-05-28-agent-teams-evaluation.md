@@ -12,7 +12,6 @@ related-vault:
   - "[[dispatch-prompt-template]]"
   - "[[2026-05-28-claude-research-agent-teams-vs-subagents]]"
 related-oq: []
-related-spec: 不涉及 spec
 expected-action-at: 條件觸發時重評（見 § 四）
 ---
 

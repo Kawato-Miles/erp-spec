@@ -1,8 +1,9 @@
 ---
+source:
+  - "Notion 資源：https://www.notion.so/32c3886511fa8144b38adc9266395d15"
 type: meta
 module:
   - 跨模組
-related-notion: https://www.notion.so/32c3886511fa8144b38adc9266395d15
 status: active
 last-reviewed: 2026-05-19
 ---
@@ -117,5 +118,5 @@ OpenSpec 將「品管」定義為單一角色，但 Notion DB 拆分為兩個獨
 
 ## 來源
 
-- Notion 核心角色權責表（16 角色 ground truth）：[使用者權責](https://www.notion.so/32c3886511fa8144b38adc9266395d15)
+- Notion 核心角色權責表（16 角色 ground truth）：使用者權責
 - OpenSpec user-roles spec：已廢除（2026-06-09），角色職責正本統一在 wiki `03-roles/`

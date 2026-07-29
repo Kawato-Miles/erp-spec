@@ -1,8 +1,9 @@
 ---
 type: metric
+source:
+  - "Notion 資源：https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f"
 module:
   - 跨模組
-related-notion: https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f
 status: draft
 last-reviewed: 2026-06-13
 tags:
@@ -52,5 +53,5 @@ tags:
 
 ## 來源
 
-- Notion [KPI DB](https://www.notion.so/0ec626299b6545fab5f7e49dffc15e9f)（`collection://32e38865-11fa-8011-b3d2-000bc2ff77fb`）
-- Notion 產品目標頁 § 五、成功指標：[產品目標](https://www.notion.so/32c3886511fa81359354e33087d23f23)
+- Notion KPI DB
+- Notion 產品目標頁 § 五、成功指標：產品目標

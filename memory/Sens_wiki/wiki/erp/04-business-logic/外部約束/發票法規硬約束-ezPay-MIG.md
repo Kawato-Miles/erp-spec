@@ -127,7 +127,7 @@ ezPay **全 API 金額一律正整數**（發票 TotalAmt、折讓 TotalAmt / Al
 | **單價小數** | `ItemPrice` 限 Int（純整數）| DM 0.5 元/張、傳單 2.5 元/張常見 | 不換算；前端 lint 擋小數（業務自行調整為「批 / 式」計價）|
 | **品項拆解** | 自由分項 | 多印件 + 多收費類型（製版 / 印刷 / 後加工 / 運費）| 業務 / 諮詢自由輸入，預設從訂單印件帶入但可改 |
 | **數量上限** | `ItemCount` Int(5)=99999 | 超大量 DM / 名片可能爆 | 拆多項或改單位（如「千張」）|
-| **單位字數** | 限中文 2 字 / 英數 6 字 | 「組合包裝」「特殊規格」太長 | 限 dropdown 強制合規（[[../../../../openspec/specs/prototype-shared-ui/spec.md|prototype-shared-ui spec]] § 共用單位 LOV）|
+| **單位字數** | 限中文 2 字 / 英數 6 字 | 「組合包裝」「特殊規格」太長 | 限 dropdown 強制合規（共用單位選單（實作規格層） § 共用單位 LOV）|
 | **退款方向** | 作廢 / 折讓兩種，不可「負額發票」（金額一律正值，見 §4.6）| 想直接負額紀錄 | MUST 走折讓流程；退款金流另以內部退款款項處理（款項類型=退款、正值）|
 
 ## 七、連帶實體關聯（連帶矩陣）
@@ -175,5 +175,3 @@ ezPay **全 API 金額一律正整數**（發票 TotalAmt、折讓 TotalAmt / Al
 - [[業務]]（款項追款）
 - [[payment-invoice-scenarios]]（13 業務情境細節，同目錄）
 - [[business-domain-taxonomy]] § L1.6 Billing & Cash
-- [[../../../../openspec/specs/order-management/spec.md|order-management spec]] § 「發票品項符合 ezPay 與電子發票法規硬約束」（L2969+）
-- [[../../../../openspec/specs/prototype-shared-ui/spec.md|prototype-shared-ui spec]] § 共用單位 LOV
