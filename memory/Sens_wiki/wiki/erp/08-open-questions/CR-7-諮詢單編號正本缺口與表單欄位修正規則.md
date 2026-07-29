@@ -8,7 +8,7 @@ priority: medium
 audience: internal
 raised-at: 2026-06-12
 raised-by: Claude（實體卡憲章化 Phase B 反向拆欄位時識別）
-source-link: openspec/specs/consultation-request/spec.md § 諮詢單實體與表單欄位
+source-link: 諮詢單實作規格盤點（§ 諮詢單實體與表單欄位）
 related-vault:
   - "[[諮詢單]]"
 expected-resolution-at: 2026-07-15

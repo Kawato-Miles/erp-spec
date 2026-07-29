@@ -8,7 +8,7 @@ priority: medium
 audience: external
 raised-at: 2026-06-12
 raised-by: Phase B 諮詢批次遷移
-source-link: openspec/specs/consultation-request/spec.md § 諮詢費付款成功觸發自動建單（不建訂單）
+source-link: 諮詢單實作規格盤點（§ 諮詢費付款成功觸發自動建單）
 related-vault:
   - "[[諮詢表單webhook串接約束]]"
 expected-resolution-at: 2026-07-15

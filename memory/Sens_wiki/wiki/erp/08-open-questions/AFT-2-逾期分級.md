@@ -49,5 +49,5 @@ tags:
 ## 來源
 
 - change `add-my-after-sales-action-page-and-remove-owner-transfer` plan § 5 個待 propose 階段細決議項目
-- 既有 spec：[after-sales-ticket spec § 訂單列表售後狀態欄位與篩選器](../../../../openspec/specs/after-sales-ticket/spec.md)（DEFAULT_RED_LIGHT_DAYS = 7）
+- 既有實作規格已定義訂單列表的售後狀態欄位與篩選器（實作規格層）（DEFAULT_RED_LIGHT_DAYS = 7）
 - 業界對照：客服 ticket 系統普遍採 SLA 分級

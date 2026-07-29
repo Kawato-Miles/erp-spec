@@ -12,7 +12,6 @@ recorded-at: 2026-05-26
 recorded-by: Miles + Claude
 related-change: complete-payment-status-ui-and-followups
 related-vault:
-  - [[../../00-meta/audit-log]]
   - [[../../08-open-questions/ORD-021-處理中Payment老化追蹤機制]]
   - [[../../08-open-questions/ORD-019-會計處理中Payment應收應付處理]]
   - [[../../08-open-questions/ORD-020-取消已完成Payment邏輯刪除vs物理刪除]]
@@ -90,5 +89,5 @@ Claude 在 archive 階段未把「tasks.md 全部勾選」當 hard gate。判斷
 ## 來源
 
 - 本誤審案例由 `complete-payment-status-ui-and-followups` change 補完前 archive 漏實作識別
-- 對應 Vault [audit-log.md](audit-log.md) 2026-05-26 18:00 entry
+- 對應操作史 [[log]] 2026-05-26 18:00 條目（原 audit-log.md 已於 2026-06-10 併入 log.md）
 - 對應 memory feedback `feedback_implement_all_spec_requirements`

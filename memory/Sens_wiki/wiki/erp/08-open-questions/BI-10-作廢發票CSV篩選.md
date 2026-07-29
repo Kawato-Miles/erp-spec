@@ -8,7 +8,7 @@ priority: low
 audience: internal
 raised-at: 2026-05-28
 raised-by: senior-pm (Phase 4 PM 匯報) + Miles 拍板 5「作廢發票預設不列」
-source-link: openspec/changes/unify-billing-installment-and-reconciliation-csv/design.md
+source-link: 付款期次與對帳 CSV 統一 change 設計討論
 related-vault:
   - [[../04-business-logic/付款發票邏輯]]
 related-oq:

@@ -8,12 +8,12 @@ priority: medium
 audience: internal
 raised-at: 2026-05-26
 raised-by: Miles + remove-aging-payment-supervisor-dashboard change
-source-link: openspec/changes/archive/2026-05-26-remove-aging-payment-supervisor-dashboard/proposal.md
+source-link: 移除帳齡與付款主管儀表板 change（2026-05-26，已歸檔）
 related-vault:
   - [[../05-entities/訂單]]
   - [[../04-business-logic/付款發票邏輯]]
 related-oq:
-  - [[ORD-021-處理中Payment老化追蹤機制|ORD-021-處理中Payment老化追蹤機制（已封存）]]
+  - [[ORD-021-處理中Payment老化追蹤機制]]（已封存）
 related-change: remove-aging-payment-supervisor-dashboard
 expected-resolution-at: 2026-Q3
 tags:
@@ -91,4 +91,4 @@ Payment csv 匯出機制如何設計？分為三條子問題：
 ## 來源
 
 - `remove-aging-payment-supervisor-dashboard` change（2026-05-26）拆主管看板後留下的後續課題
-- 對應 [[ORD-021-處理中Payment老化追蹤機制|ORD-021-處理中Payment老化追蹤機制（已封存）]] § 答覆 § 第二階段決策
+- 對應 [[ORD-021-處理中Payment老化追蹤機制]]（已封存） § 答覆 § 第二階段決策

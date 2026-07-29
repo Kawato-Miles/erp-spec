@@ -1,6 +1,10 @@
 ---
 type: business-rule
 mutability: external
+source:
+  - "ezPay 電子發票技術串接手冊標準版 EZP_INVI_1.2.2（簡單行動支付股份有限公司，2024-04-22）"
+  - "財政部電子發票整合服務平台 Message Implementation Guideline（MIG）"
+  - "[[2026-05-26-miles-upload-ezpay-invoice-api-spec]]"
 status: active
 last-reviewed: 2026-06-09
 tags:

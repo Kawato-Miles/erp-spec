@@ -65,6 +65,6 @@ Sens 多主題知識庫，依主題分流。本頁列**憲章、主題與入口*
 - 涵蓋：產品願景 / 角色職責 / 業務邏輯 / 資料實體 / 狀態機 / 跨模組情境 / 待確認問題（OQ）/ 審查方法論 / 洞察
 
 ### 線上印刷編輯器（產品）
-- 產品願景：[[wiki/編輯器/product-vision|線上編輯器產品願景]]（Phase A placeholder，內容待遷入）
+- 產品願景：[[wiki/編輯器/product-vision]]（Phase A placeholder，內容待遷入）
 - 術語表：[[線上編輯器術語表]]
 - 結構：沿用共用標準與新增主題 recipe（見 `.claude/rules/sens-wiki.md`）

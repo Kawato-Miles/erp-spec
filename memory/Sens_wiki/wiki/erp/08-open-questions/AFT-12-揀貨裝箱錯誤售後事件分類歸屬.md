@@ -14,7 +14,7 @@ related-vault:
   - "[[揀貨人員]]"
   - "[[售後服務狀態]]"
 related-oq:
-  - "[[SHP-007-揀貨裝箱回報載體與出貨單狀態顆粒度|SHP-007]]"
+  - "[[SHP-007-揀貨裝箱回報載體與出貨單狀態顆粒度]]"
 expected-resolution-at: 2026-Q3
 tags:
   - 領域/履約與售後

@@ -60,7 +60,7 @@ expected-action-at: 2026-06-30
 
 2. **plan 階段加 Figma visual diff 必做項**（時程：下次 SidePanel / 卡片 / 列表頁 plan 時試行）→ Phase 1 探索清單加「figma_get_metadata + dom inspect 既有實作 + 列出 N 處 visual diff 給 Miles 核對」步驟 → 預期結果：apply 階段大改寫降至 ≤ 1 次
 
-3. **第 2 個詳情預覽型 SidePanel 出現時主動 review 元件 API**（時程：[[ORD-018-混合型SidePanel規範時機|ORD-018]] resolved 時或下次新 SidePanel 觸發）→ 對照 SidePanelBody / SidePanelSection / SidePanelFileList 等元件實際 API 是否符合新 consumer 需求、不符則重構 → 預期結果：避免 API 在第 3 / 4 consumer 出現時才一次大重構
+3. **第 2 個詳情預覽型 SidePanel 出現時主動 review 元件 API**（時程：[[ORD-018-混合型SidePanel規範時機]] resolved 時或下次新 SidePanel 觸發）→ 對照 SidePanelBody / SidePanelSection / SidePanelFileList 等元件實際 API 是否符合新 consumer 需求、不符則重構 → 預期結果：避免 API 在第 3 / 4 consumer 出現時才一次大重構
 
 4. **無需 action（已內化）**：DESIGN.md §0.1 line 52 與 §1.5 衝突已修、tasks § 4.0 子任務形成「跨章節衝突檢查」工作習慣
 
@@ -68,7 +68,7 @@ expected-action-at: 2026-06-30
 
 - [[ceo-review-framework]]（trade-off 記錄目標位置）
 - [[../11-review-knowledge/_shared/lightweight-review-mode]]
-- [[ORD-018-混合型SidePanel規範時機|ORD-018-混合型SidePanel規範時機（已封存）]]（混合型 SidePanel 需求出現時 trigger 重構 review）
+- [[ORD-018-混合型SidePanel規範時機]]（已封存）（混合型 SidePanel 需求出現時 trigger 重構 review）
 - [add-side-panel-shared-components/design.md](../../../openspec/changes/archive/2026-05-25-add-side-panel-shared-components/design.md) § D6（trade-off 紀錄）
 - [add-review-rounds-to-print-item-side-panel/design.md](../../../openspec/changes/archive/2026-05-25-add-review-rounds-to-print-item-side-panel/design.md) § D1（apply 階段重做紀錄）
 - `openspec/specs/prototype-shared-ui/spec.md` § SidePanel 共用元件組

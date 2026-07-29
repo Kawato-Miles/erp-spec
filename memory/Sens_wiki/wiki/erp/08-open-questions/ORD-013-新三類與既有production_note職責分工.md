@@ -8,7 +8,7 @@ priority: high
 audience: internal
 raised-at: 2026-05-20
 raised-by: erp-consultant (三視角審查 round 1)
-source-link: openspec/changes/add-order-note-section-with-template-tool/proposal.md
+source-link: 訂單備註區與範本工具 change 提案討論
 related-vault:
   - [[../05-entities/訂單]]
 related-oq:
@@ -26,7 +26,7 @@ tags:
 
 erp-consultant 三視角審查 round 1 指出：
 
-[既有 spec § Requirement: 訂單備註三類分欄](../../../openspec/specs/order-management/spec.md)已將備註拆為三類：
+既有實作規格的訂單備註三類分欄設計已將備註拆為三類：
 - `customer_note`（線上單客戶端，唯讀）
 - `internal_note`（內部備註，客戶不可見）
 - `production_note`（**線下單訂單製作備註：製作 / 交易 / 出貨備註彙整**）

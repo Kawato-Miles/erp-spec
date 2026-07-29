@@ -8,7 +8,7 @@ priority: high
 audience: external
 raised-at: 2026-05-28
 raised-by: ceo-reviewer (Phase 2 Challenge 5)
-source-link: openspec/changes/unify-billing-installment-and-reconciliation-csv/design.md
+source-link: 付款期次與對帳 CSV 統一 change 設計討論
 related-vault:
   - [[../03-roles/會計]]
 related-oq: []

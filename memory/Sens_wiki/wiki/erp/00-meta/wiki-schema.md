@@ -417,7 +417,7 @@ ingested-to:                                           # status=ingested 時填
 
 ## 八、Wiki Link 規約
 
-- 內部連結：`[[節點名]]`、`[[節點名#段落]]`；**禁用別名**（`[[節點名|顯示文字]]` 的 `|` 會截斷表格儲存格且易斷鏈），補充說明寫在連結外
+- 內部連結：`[[節點名]]`、`[[節點名#段落]]`；**禁用別名**（`[[節點名]]` 的 `|` 會截斷表格儲存格且易斷鏈），補充說明寫在連結外
 - 連 OpenSpec / Prototype：用相對路徑 markdown link（如 `[spec.md](../../../openspec/specs/xxx/spec.md)`）
 - **禁止 wiki link 到 vault 外**（Obsidian 不解析）
 

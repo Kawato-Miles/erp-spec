@@ -10,7 +10,7 @@ priority: medium
 audience: internal
 raised-at: 2026-06-01
 raised-by: doc-audit（align-business-consultation-coverage-gaps archive 合併後驗收）
-source-link: openspec/changes/archive/2026-06-01-align-business-consultation-coverage-gaps/
+source-link: 諮詢涵蓋缺口對齊 change（2026-06-01，已歸檔）
 related-oq: []
 ---
 

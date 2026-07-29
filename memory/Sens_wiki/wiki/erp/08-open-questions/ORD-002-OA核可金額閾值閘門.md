@@ -8,7 +8,7 @@ priority: low
 audience: internal
 raised-at: 2026-05-20
 raised-by: senior-pm (前期介入)
-source-link: openspec/changes/archive/2026-05-20-refine-after-sales-refund-and-add-supplementary-print/design.md
+source-link: 售後退款與補印 change 設計討論（2026-05-20，已歸檔）
 related-vault:
   - [[../05-entities/訂單]]
   - [[../06-state-machines/訂單狀態]]

@@ -8,7 +8,7 @@ priority: medium
 audience: internal
 raised-at: 2026-05-20
 raised-by: Miles (plan 階段)
-source-link: openspec/changes/archive/2026-05-20-refine-after-sales-refund-and-add-supplementary-print/design.md
+source-link: 售後退款與補印 change 設計討論（2026-05-20，已歸檔）
 related-vault:
   - [[../05-entities/訂單]]
 related-oq:
@@ -67,5 +67,5 @@ tags:
 Spec / Scenario 對應：
 
 - 原 business-processes spec § 處理中 Payment 期間 SalesAllowance 行為（已廢除 2026-06-09，內容遷至 order-management spec）
-- [order-management spec § Requirement: 訂單異動執行流程 § 處理中 Payment 期間禁止觸發 SalesAllowance](../../../../openspec/specs/order-management/spec.md)
+- 既有實作規格的訂單異動執行條文（實作規格層）
 

@@ -8,7 +8,7 @@ priority: medium
 audience: internal
 raised-at: 2026-06-02
 raised-by: erp-consultant（enhance-order-list-filter 輕量審查）
-source-link: openspec/changes/enhance-order-list-filter（erp-consultant 輕量審查 SHOULD-fix）
+source-link: 訂單列表篩選 change（erp-consultant 輕量審查）
 related-vault:
   - "[[訂單]]"
 related-oq: []
@@ -23,7 +23,7 @@ tags:
 
 訂單類型 enum 在規格與 prototype 兩邊的值與用詞不一致：
 
-- **spec**（`openspec/specs/order-management/spec.md` § 訂單建立 L46）：`order_type` = 「線下 / 線上 / 諮詢」**三值**。
+- **spec**（實作規格 § 訂單建立 L46）：`order_type` = 「線下 / 線上 / 諮詢」**三值**。
 - **prototype**（`sens-erp-prototype/src/pages/OrderList.tsx` L34）：`ALL_ORDER_TYPES` = 「線下單 / 線上單EC / 客製單」，且 L44-49 styles map 另含「諮詢訂單」，共出現 **4 種**顯示值。
 - 落差：spec 無「客製單」；spec「諮詢」vs prototype「諮詢訂單」用詞不一；prototype「線下單 / 線上單EC」帶後綴。
 

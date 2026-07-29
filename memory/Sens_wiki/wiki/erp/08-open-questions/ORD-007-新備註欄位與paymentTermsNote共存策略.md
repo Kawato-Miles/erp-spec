@@ -8,7 +8,7 @@ priority: high
 audience: internal
 raised-at: 2026-05-20
 raised-by: senior-pm (前期介入)
-source-link: openspec/changes/add-order-note-section-with-template-tool/proposal.md
+source-link: 訂單備註區與範本工具 change 提案討論
 related-vault:
   - [[../05-entities/訂單]]
   - [[../05-entities/需求單]]

@@ -47,7 +47,7 @@ erp-consultant + senior-pm 雙視角同步指出此 gap，影響 KPI 公式正�
 ## 暫定處理
 
 - US-AR-005 acceptance criteria 引此 OQ wiki link
-- US-AR-006 acceptance criteria 引此 OQ wiki link 並補一條「退件率計算分母範圍待 [[AR-6-退件率分母是否排除技術退件|AR-6]] 解答」
+- US-AR-006 acceptance criteria 引此 OQ wiki link 並補一條「退件率計算分母範圍待 [[AR-6-退件率分母是否排除技術退件]] 解答」
 - US-AR-007 維持「技術退件分類獨立統計，不計入不合格率 KPI」描述不變（已對齊選項 A 精神）
 
 ## 待 Miles 確認

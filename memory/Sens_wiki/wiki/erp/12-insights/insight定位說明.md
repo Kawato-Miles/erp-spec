@@ -26,7 +26,7 @@ last-reviewed: 2026-06-13
 ## 相關
 
 - [[OQ運作總覽]] — OQ 操作手冊
-- [[log|操作史]] — 追加式日誌（含每次 insight 紀錄）
-- [[wiki-schema|Wiki Schema]] — Vault 治理規則
+- [[log]] — 追加式日誌（含每次 insight 紀錄）
+- [[wiki-schema]] — Vault 治理規則
 - `.claude/skills/vault-insight/SKILL.md` — 觸發指引、紅旗清單、輸出範本（操作正本）
 - `.claude/skills/vault-audit/SKILL.md` — 配套 audit skill

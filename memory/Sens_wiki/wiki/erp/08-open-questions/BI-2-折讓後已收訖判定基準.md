@@ -8,7 +8,7 @@ priority: high
 audience: internal
 raised-at: 2026-05-28
 raised-by: senior-pm (Phase 1 釐清範疇，作為隱含假設標記)
-source-link: openspec/changes/unify-billing-installment-and-reconciliation-csv/design.md
+source-link: 付款期次與對帳 CSV 統一 change 設計討論
 related-vault:
   - [[../04-business-logic/付款發票邏輯]]
 related-oq: []
