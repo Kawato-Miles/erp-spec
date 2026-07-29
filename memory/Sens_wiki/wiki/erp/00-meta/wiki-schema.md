@@ -20,7 +20,7 @@ last-reviewed: 2026-07-29
 | `domain` | 印刷業 domain knowledge | `02-domain/` |
 | `glossary` | 術語表 | `02-domain/glossary-*.md` |
 | `role` | 角色 R&R | `03-roles/` |
-| `service-blueprint` | 服務藍圖（端到端業務鏈） | `04-business-logic/服務藍圖/` |
+| `service-blueprint` | 服務藍圖（公司提供什麼服務、商業行為的邊界） | `04-business-logic/服務藍圖/` |
 | `business-rule` | 商業規則（決策邏輯、領域知識、外部約束） | `04-business-logic/` 各子目錄 |
 | `entity` | 資料模型實體 | `05-entities/` |
 | `state-machine` | 狀態機 | `06-state-machines/` |
@@ -194,7 +194,7 @@ last-reviewed: YYYY-MM-DD
 ---
 ```
 
-**商業規則的三種可變性（`mutability`）**：
+**商業規則的三種可變性（`mutability`）**——與 `service-blueprint` 合計為商業邏輯層四型，一型一骨架，歸類決策樹與互斥判定句見 `04-business-logic/規範 - 商業邏輯.md` § 二：
 
 | `mutability` | 意義 | 子目錄 | 誰能改 |
 |---|---|---|---|
