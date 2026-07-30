@@ -146,7 +146,7 @@ last-reviewed: 2026-05-28
 - **稽核 sub-agent 跑稽核**（如 `erp-planning-pre-check` skill 在 sub-agent context 跑）
 - **主對話 agent 跑修補**（修補既有卡 / 新建法規卡 / 標 OQ）
 - **MUST NOT 由同一 agent 既寫卡又稽核**（self-amplification 風險）
-- 對應現有設計：`vault-audit` 與 `vault-insight` skill 分離 + 序列協作 PM / CEO / 顧問分離
+- 對應現有設計：`vault-audit`（lint 與建議）與本框架（規劃前 know-how 稽核）分離 + 序列協作 PM / CEO / 顧問分離
 
 ## 八、稽核回合 / 時間預算
 
@@ -169,7 +169,7 @@ last-reviewed: 2026-05-28
 |--------|------|------|
 | **Scope creep** | 範圍漂移（如「業務情境」吃掉「使用者角色」職責）| 嚴格依雙軸分類；發現越界回卡類型本職 |
 | **False completion** | 假完成（看似涵蓋卻漏 edge case）| Step 5 閉環驗證；跨層影響檢查 |
-| **Dead loops** | 死循環（OQ 反覆討論不收斂）| 對應 OQ ≥ 15 觸發 vault-insight；超過 3 輪標 OQ 等 Miles 決策 |
+| **Dead loops** | 死循環（OQ 反覆討論不收斂）| 對應 OQ 累積偏高時跑 vault-audit 維度 8；超過 3 輪標 OQ 等 Miles 決策 |
 | **Immeasurable targets** | 無法量化（卡空泛無 acceptance criteria）| 量化矩陣產出格式強制 N/M/K 三數字 |
 | **Token exhaustion** | 成本過高（如「狀態機」跨模組稽核）| 拆多次稽核；分批執行 |
 
@@ -189,7 +189,7 @@ last-reviewed: 2026-05-28
 | [[wiki-schema]] | frontmatter 領域 tag（`tags:`）格式規範（本框架的執行載體）|
 | [[erp_index]] | LLM 載入決策入口（本框架 Step 2 的對照表）|
 | `vault-audit` skill | Vault 整體健康稽核（11 維度）— 與本框架不同：vault-audit 是「日常 Vault 健康」、本框架是「規劃前準備」|
-| `vault-insight` skill | 跨主題模式提煉 — 與本框架互補 |
+| `vault-audit` skill | 知識庫 lint 與建議 — 與本框架互補 |
 | `oq-manage` skill | OQ 管理 — 本框架 Step 4 缺漏項標 OQ 走 oq-manage mode B |
 | `misjudgement-record` skill | 誤審記錄 — 本框架識別到誤審反模式時觸發 |
 | [[audit-failure-patterns]] | 稽核五大反模式追蹤卡（反模式登錄正本）|

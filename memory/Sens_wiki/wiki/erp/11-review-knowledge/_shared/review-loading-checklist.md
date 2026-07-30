@@ -104,7 +104,7 @@ last-case-added: 2026-05-29
 - **適用 agent**：跨 agent 通用（任何設計 OrderAdjustment / 審核流程 / 金額可調性的場景）
 - **相關 change**：converge-consultation-cancel-to-order-cancel-flow（序列協作 Phase 1 + C-1 拍板）
 
-## 四、change propose 前的端到端推演準則（vault-insight 2026-05-20 新增）
+## 四、change propose 前的端到端推演準則
 
 對應 [Vault Insight 2026-05-20 售後 ticket reactive 補丁循環](2026-05-20-售後ticket-reactive-補丁循環.md) 的教訓：售後 ticket 模組 1.5 個月內連續 5 個 change 都因「Miles 推演 → 發現新 gap」開單，根因是 propose 階段缺端到端 user journey 整合驗證。
 

@@ -134,7 +134,7 @@ last-reviewed: 2026-07-29
 | 術語定義 | 對應術語表 |
 | 實作任務追蹤 | OpenSpec change tasks |
 | 他卡範圍的問題複述 | 互引＋分界句（§ 3.3） |
-| 跨主題模式與下一步提煉 | `12-insights/`（vault-insight） |
+| 系統性議題與下一步建議 | `vault-audit` 報告的建議段（知識庫工作流待辦歸 `memory/` project 卡） |
 
 ---
 

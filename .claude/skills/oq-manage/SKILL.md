@@ -76,7 +76,7 @@ OQ 是**待裁決佇列**：每張卡一個待確認的問題，拍板後決議�
 | 情境 | 協作 |
 |------|------|
 | vault-ingest mode A 識別「明確未解問題」 | 轉入本 skill mode B（素材觀察留 raw、問題進 OQ） |
-| vault-insight 識別可批次結案的 OQ 群 | 走 mode C 逐張封存 |
+| vault-audit 識別可批次結案的 OQ 群 | 走 mode C 逐張封存 |
 | vault-audit 維度 8（OQ 健康度）／維度 12（依 type 載入規範 - OQ 稽核） | 巡檢平層超期／缺欄位／狀態違規，建議跑 mode E |
 | Notion Follow-up DB | 對外確認版（external 專用），推送由 Miles 觸發；Vault 永遠是正本 |
 | wiki/log.md | 每次 B／C／D／E 操作記一筆（同步(oq)） |

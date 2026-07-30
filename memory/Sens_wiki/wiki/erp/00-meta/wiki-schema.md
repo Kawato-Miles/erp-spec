@@ -26,7 +26,7 @@ last-reviewed: 2026-07-29
 | `scenario` | 業務情境（目標完成過程；接力型／能力型／排程型） | `07-scenarios/` |
 | `open-question` | OQ 卡 | `08-open-questions/` |
 | `canvas-ref` | Canvas 對應的 markdown 描述 | `09-canvases/` |
-| `insight` | vault-insight 產出 | `12-insights/` |
+| `insight` | **已退場，停止新增**（診斷與建議歸 `vault-audit` 報告、待裁決歸 OQ、工作流待辦歸 `memory/` project 卡）。存量 6 張隨各領域清整歸位至正本卡後，本列與 `12-insights/` 一併移除 | `12-insights/` |
 | `raw` | Raw 素材（已驗證的觀察 / 反饋 / 研究筆記，未精練）| `raw/` |
 
 **分層與 type 的對應**（對齊 [[erp_index]] § 一架構概述）：
@@ -79,16 +79,16 @@ tags:
 | `open` | OQ 開啟未解 |
 | `answered` | OQ 已解答 |
 | `cancelled` | OQ 取消（已不適用）|
-| `in-progress` | insight 進行中 |
-| `resolved` | insight 已落實 |
+| `in-progress` | insight 進行中（隨 insight 退場中） |
+| `resolved` | insight 已落實（隨 insight 退場中） |
 | `raw` | raw 卡剛寫入，待精練 |
 | `reviewed` | raw 卡已分析，等待 Miles 確認 |
-| `ingested` | raw 卡內容已寫入既有 vault 卡 / 升級為 OQ 或 insight |
+| `ingested` | raw 卡內容已寫入既有 vault 卡 / 升級為 OQ |
 
 ## 四、各 type 必填 Frontmatter 欄位
 
 > 本節的 yaml 區塊是**欄位定義與值域的正本**；可複製的起手樣板由 `wiki/範本/` 骨架卡承載。兩者重疊處以本節為準，骨架異動時與本節同 commit 對齊（治理見 [[卡片撰寫共用規範]] § 一）。
-> **通則一：`title` 只在檔名無法自我說明時填。** 檔名即標題，`title` 填與檔名相同的值屬冗餘（改名後變成第二個會 stale 的名字來源），故各 type 的 yaml 區塊一律不列 `title`。唯一該填的情形是檔名帶前綴而標題不含該前綴（如 `12-insights/` 的日期前綴檔名 `2026-06-13-生產模組架構設計`，`title` 填去掉日期的標題）。
+> **通則一：`title` 只在檔名無法自我說明時填。** 檔名即標題，`title` 填與檔名相同的值屬冗餘（改名後變成第二個會 stale 的名字來源），故各 type 的 yaml 區塊一律不列 `title`。唯一該填的情形是檔名帶前綴而標題不含該前綴（如日期前綴檔名 `2026-06-13-生產模組架構設計`，`title` 填去掉日期的標題）。
 > **通則二：欄位無值即刪整個欄位，不留空。** `related-oq:`、`notion-url:`、`expected-resolution-at:` 這類選填欄位沒有值時刪掉整行（含空 list `[]`），需要時再加回；留空欄位在稽核時無法區分「沒有」與「漏填」。
 > **通則三：`status: deprecated` 的退役 stub 卡豁免 `source` 與 `tags`。** 退役卡不承載商業邏輯、也不該被領域 tag 撈進檢索結果（現行正本才該被撈到），正文只留一句退役宣告＋重導向連結即可（樣貌見 [[QC]]、[[QC 狀態]]）。
 > **鐵則：卡片 frontmatter 禁含外部系統狀態欄位**（2026-06-10 新增）。「這張卡何時被推到哪個外部系統」是發布管線的狀態，不是商業知識——對外發布追蹤（Notion URL / 最後推送日）唯一正本在 `memory/erp/notion-publish-manifest.md`，由發布類 skill 維護，全程不回寫 wiki 卡。性質同「source 禁指 OpenSpec」：wiki 獨立維護，不與外部系統耦合。
@@ -277,8 +277,6 @@ related-oq:
   - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名
 related-change:                     # 承接此問題的 OpenSpec change 名（可多值）；無則刪整個欄位
   - <change 名>
-related-insight:                    # 相關的 12-insights 卡；無則刪整個欄位
-  - "[[<insight 卡>]]"
 expected-resolution-at: YYYY-MM-DD  # external 必填；internal 建議填
 answered-at: YYYY-MM-DD  # 拍板時填
 answered-by: <拍板者>
@@ -286,7 +284,7 @@ notion-url: <external 推送 Notion 後回填>
 ---
 ```
 
-### type=insight
+### type=insight（已退場，停止新增；欄位定義留供存量 6 張歸位前的 lint）
 
 ```yaml
 ---
@@ -298,13 +296,13 @@ tags:
 status: open | in-progress | resolved | cancelled
 priority: high | medium | low
 raised-at: YYYY-MM-DD
-raised-by: vault-insight skill
+raised-by: <誰提出>
 triggered-by: manual | oq-accumulation | phase | change-archive | audit | raw
 related-vault:
   - <wiki link>
 related-oq:
   - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名
-related-raw:                  # vault-insight 從 raw 素材累積識別 pattern 時填
+related-raw:                  # 從 raw 素材累積識別 pattern 時填
   - "[[raw/<檔名>]]"          # MUST 是 status=ingested 或 reviewed 的卡（vault-ingest 防線 4）
 expected-action-at: YYYY-MM-DD
 resolved-at: YYYY-MM-DD  # status=resolved 時填

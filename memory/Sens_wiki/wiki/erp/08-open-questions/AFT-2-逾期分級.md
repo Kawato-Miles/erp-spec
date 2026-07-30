@@ -10,8 +10,6 @@ raised-at: 2026-05-19
 raised-by: Miles
 expected-resolution-at: 2026-Q3
 related-change: add-my-after-sales-action-page-and-remove-owner-transfer
-related-insight:
-  - 2026-05-20-售後ticket-reactive-補丁循環
 tags:
   - 領域/履約與售後
 ---

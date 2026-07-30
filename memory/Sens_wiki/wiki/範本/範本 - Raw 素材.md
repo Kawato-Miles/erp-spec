@@ -29,13 +29,12 @@ ingested-to:               # status=ingested 時填，列寫入的既有卡
 - 觀察：<1-3 條與既有 vault 的關聯>
 - 候選相關卡：[[X]] / [[Y]]
 - 候選 OQ 候補：<若有，或標「無」>
-- 候選升級路徑：business-logic / scenario / OQ / insight / 不升級
+- 候選升級路徑：business-logic / scenario / OQ / 不升級
 
 ## 待精練（Mode B 處理）
 
 - [ ] 是否更新既有 vault 卡
 - [ ] 是否升級為 OQ（觸發 oq-manage mode B）
-- [ ] 是否累積成 insight（≥ 3 張同主題後觸發 vault-insight）
 
 ## 精練去處（Mode B 完成後填）
 

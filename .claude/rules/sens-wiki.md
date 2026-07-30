@@ -48,7 +48,7 @@ paths:
   - 動機：<業務理由，當下自足；得連 [[OQ卡]]>
   - 衝突：無（或：與 [[C]] 衝突，已開 [[OQ]]）
   ```
-  - 動作 enum（繁中）：**納入 / 查詢 / 健檢 / 同步**；次級標籤：納入（ingest-A/B/C、amend）、健檢（audit / pre-check / insight）、同步（oq / misjudgement）、查詢（無標籤）。
+  - 動作 enum（繁中）：**納入 / 查詢 / 健檢 / 同步**；次級標籤：納入（ingest-A/B/C、amend）、健檢（audit / pre-check）、同步（oq / misjudgement）、查詢（無標籤）。
   - **寫入當下自足**：條目所有欄位資訊在寫入那一刻必須已存在；禁任何「未來資訊」欄位（如下游 change 名——記條目時 change 尚不存在，BRD 先行）。
   - **log 的世界裡只有 wiki**：觸發寫入的充要條件 = 本次操作動到 `wiki/`。OpenSpec / Prototype / Notion 的事件不產生條目。
   - **變更行 MUST 逐卡 `[[卡名]]` + 一句話**，禁「更新多張卡」粗寫——卡的迭代脈絡靠搜 `[[卡名]]` 命中條目，寫粗即永久斷脈絡。
@@ -61,8 +61,8 @@ paths:
 | 工作流 | 做什麼 | 由誰執行 |
 |--------|--------|---------|
 | 納入（ingest）| 素材 `raw/` → 精練進 `wiki/` | `vault-ingest` skill |
-| 查詢（query）| 依 `business-domain-taxonomy` § 檢索規約（判領域，語意不確定先問 Miles → tag 查卡名清單 → 呈現 → 載入）→ 讀卡 → 附 `[[引用]]` 作答 → 高價值答案固化成卡（ERP 走 `12-insights/`），不讓探索價值只留對話 | 日常對話 |
-| 健檢（lint）| 巡檢：矛盾 / 死鏈 / 孤兒 / 過時 / 缺欄位 / **命名違反繁中語意化（直譯 / 中英夾雜）** | `vault-audit` skill |
+| 查詢（query）| 依 `business-domain-taxonomy` § 檢索規約（判領域，語意不確定先問 Miles → tag 查卡名清單 → 呈現 → 載入）→ 讀卡 → 附 `[[引用]]` 作答 → 高價值答案固化成對應正本卡（04 規則／05 實體／06 狀態機／07 情境），不讓探索價值只留對話 | 日常對話 |
+| 健檢（lint）| 巡檢：矛盾 / 死鏈 / 孤兒 / 過時 / 缺欄位 / **命名違反繁中語意化（直譯 / 中英夾雜）**；並產出建議——值得調查的新問題、該補的素材 | `vault-audit` skill |
 
 - **Obsidian 稽核 / 查詢一律優先用 `obsidian-cli`**：搜尋（`obsidian search`）、讀卡（`obsidian read`）、反向連結 / 死鏈 / 孤兒（`obsidian backlinks` / `deadends`，或 `obsidian eval` 查 `metadataCache.unresolvedLinks`）一律走 CLI，**不以 grep 當 vault 稽核手段**（grep 只看純文字，無法解析 wiki link 與 vault 索引）。
 - **矛盾不靜默覆寫**：發現矛盾立即開 OQ 卡（`oq-manage` skill），原處改連結引用，不直接蓋掉舊說法。

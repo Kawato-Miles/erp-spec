@@ -19,9 +19,9 @@ description: >
 | 2. 研究須真實來源 | source=claude-research 時 raw-source-link MUST 填真實 WebFetch URL／文件來源；無外部來源不寫 | 防編造看似合理但無出處的「研究結論」 |
 | 2b. 上傳須附原檔 | source=miles-upload 時原檔 MUST 搬 `raw/_attachments/<檔名>`＋frontmatter `attached-files` 列檔名＋raw-source-link 填原始出處；卡內文寫摘要重點（不貼全文）並標「原檔見 [[_attachments/<檔名>]]」 | 原始頁面刪了也找得回，永遠可追溯 |
 | 3. 精練須逐項批准 | mode B 的 cards diff 僅是提案，每張卡 Miles 看過說 OK 才動；禁「批准＋自動套用」一鍵流程 | 防跨卡連鎖更新時過度發揮、磨平細節 |
-| 4. insight 不讀 raw | vault-insight 只讀 status=ingested／reviewed，禁讀 status=raw | 防未驗證素材自我放大（self-amplification） |
+| 4. 合成不讀未驗證素材 | 讀 raw 做跨卡合成時只取 status=ingested／reviewed，禁讀 status=raw | 防未驗證素材自我放大（self-amplification） |
 
-**拒絕場景（防線 1＋2 的試金石）**：被要求「總結既有 vault 內容存進 raw」MUST 拒絕——讀 vault → 自己編 → 存 raw 是自迭代。替代：對話中直接給總結（不寫 raw）、或做有外部來源的研究再存、或走 vault-insight（讀 vault 合成是 insight 的事，產出進 12-insights 不進 raw）。
+**拒絕場景（防線 1＋2 的試金石）**：被要求「總結既有 vault 內容存進 raw」MUST 拒絕——讀 vault → 自己編 → 存 raw 是自迭代。替代：對話中直接給總結（不寫 raw）、或做有外部來源的研究再存、或把合成寫進對應正本卡（讀 vault 合成的產出是正本卡，不是 raw）。
 
 ## 一、三個 mode（輸入 → 步驟 → 輸出）
 
@@ -42,15 +42,14 @@ description: >
 ### Mode B：精練（六步）
 
 1. 讀目標 raw 卡＋其候選相關卡**全文**（不是摘要）。
-2. 對照 `00-meta/scope-boundary.md` 判升級路徑：04 規則／05 實體／06 狀態機／07 情境／11 審查與協作知識（審查方法、agent 協作協議類素材）／OQ（轉 oq-manage）／insight（≥ 3 張同主題，轉 vault-insight，先把素材卡升 status=reviewed）／不進 vault（status=cancelled 附理由）。
+2. 對照 `00-meta/scope-boundary.md` 判升級路徑：04 規則／05 實體／06 狀態機／07 情境／11 審查與協作知識（審查方法、agent 協作協議類素材）／OQ（轉 oq-manage）／不進 vault（status=cancelled 附理由）。同主題累積 ≥ 3 張時一併判「這批合起來是否該寫進某張正本卡」，先把素材卡升 status=reviewed。
 3. **提議 cards diff**（每張卡列 diff 預覽＋不適用部分附去處），等 Miles 逐項批准（防線 3）。Miles 說「再看看」→ status=reviewed；說「重新分析」→ 維持 raw 重跑。
 4. OQ 候選 → 觸發 oq-manage mode B（去重）。
-5. insight 級 → 觸發 vault-insight。
 6. **Miles 說 OK 後**執行寫入：更新既有卡、raw 卡 status=ingested＋ingested-at＋ingested-to、卡末「精練去處」填 wiki link、log 一筆（ingest-B，逐卡 `[[卡名]]`）。
 
 ### Mode C：批次掃描（純報告）
 
-列全部 status=raw 卡（依 source 分組、created-at 排序）→ 標記：同主題累積 ≥ 3 張（建議 mode B／insight）、status=raw > 30 天（建議處理或 cancelled）、status=reviewed > 5 天（提醒確認）→ 產報告＋log 一筆（ingest-C）。
+列全部 status=raw 卡（依 source 分組、created-at 排序）→ 標記：同主題累積 ≥ 3 張（建議 mode B）、status=raw > 30 天（建議處理或 cancelled）、status=reviewed > 5 天（提醒確認）→ 產報告＋log 一筆（ingest-C）。
 
 ## 二、進 raw／進 OQ／直接進卡（判斷表）
 
@@ -85,7 +84,6 @@ description: >
 | 銜接 | 怎麼做 |
 |------|--------|
 | oq-manage | mode A 步 2／mode B 步 4 的明確問題轉出；oq-manage 自記 log（oq 標） |
-| vault-insight | mode B 步 5 的 insight 級累積轉出（素材卡先升 reviewed）；insight 卡 frontmatter `related-raw` 留追溯 |
 | vault-audit | raw 健康（超期／防線違反／累積警示）由 audit 維度 9 巡檢，發現堆積建議跑 mode C |
 | misjudgement-record | 完全不交叉：誤審不存 raw |
 | OpenSpec change archive | archive 是 PRD 層事件不動 wiki；archive 時提醒跑 mode C 清積壓 |

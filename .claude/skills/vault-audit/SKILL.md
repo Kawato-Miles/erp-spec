@@ -3,7 +3,7 @@ name: vault-audit
 description: >
   ERP_Vault 自審稽核 skill：對 wiki 執行 13 維度健康檢查（Karpathy LLM Wiki lint + Sens 特化），產出對話報告並追加 wiki/log.md。
   觸發：Miles 說「跑 vault audit」「Vault 健康檢查」「audit vault」；主動建議時機——≥ 5 個 Vault 卡異動、change archive 後、每 20+ commit、raw 累積 ≥ 10 張 status=raw。
-  不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）、KPI 進度追蹤（用 vault-insight）。
+  不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）。
   範圍鐵則（只讀 wiki/＋raw/ 唯讀）與 13 維度定義見本文。
 ---
 
@@ -14,7 +14,8 @@ ERP_Vault 的 lint：找出**矛盾／過時／孤島／死鏈／缺欄位／違
 ## 〇、定位（每條維度都從這裡推導）
 
 - **lint 只管 wiki 自身的健康**：卡與卡之間對不對得上、連結活不活、欄位齊不齊、規約守沒守。
-- **lint 不做的事**：跨層對齊（wiki↔OpenSpec 的內容一致性屬 spec 撰寫時的四方比對）、進度追蹤（KPI／Phase 對照屬 vault-insight）、解答問題（OQ 解答權在 Miles）。
+- **lint 做兩件事**：診斷（卡與卡對不對得上、連結活不活、欄位齊不齊、規約守沒守）**與建議**（值得調查的新問題、該補的素材、該收割的 OQ 群）。建議只給方向，不排期、不指派——「誰在何時做」由 Miles 在對話中決定，落 OQ（待裁決）或 `memory/` project 卡（工作計畫）。
+- **lint 不做的事**：跨層對齊（wiki↔OpenSpec 的內容一致性屬 spec 撰寫時的四方比對）、解答問題（OQ 解答權在 Miles）、產出獨立的診斷卡（診斷留在本 skill 的報告與 log，不在 `wiki/` 另立一類卡）。
 - **範圍鐵則**：檔案讀取限 `memory/Sens_wiki/wiki/` 與 `memory/Sens_wiki/raw/`（唯讀）。維度 7 驗 frontmatter 引用的外部路徑時只做「檔案存在與否」測試（`test -f`），不開啟、不解析其內容。
 - 發現的問題**只報告不擅修**（mode C 修復須 Miles 確認）；矛盾依鐵則並排比對呈報，不自行調和。
 
@@ -73,7 +74,7 @@ obsidian eval "Object.keys(app.metadataCache.unresolvedLinks).filter(k => Object
 
 **目的**：缺必填欄位的卡進不了載入決策表與領域 grep。
 
-方法：依 [[wiki-schema]] **各 type 的必填欄位表**檢查（禁用一體適用清單——open-question / insight / review 以 `raised-at` / `created-at` 承載時間，schema 未列 `last-reviewed`，不得檢缺）。通用必檢：`type`／`status`／`tags`（領域 tag，必標範圍見 [[business-domain-taxonomy]] § 領域 tag 標注規則）；`module` 與 `last-reviewed` 依該 type 的 schema 段；正本卡（03/04/05/06）另須 `source`。領域 tag 三項 lint：必標範圍內缺 tag／tag 值不在 taxonomy enum／濫標 `領域/全域`（實際只沾一兩個領域），皆計違規。同時列英文 module token 殘留（列 Info 供順手清理）；`business-domain` 欄位已全庫移除，偵測到即 Error（防舊範本回流），但 `08-open-questions/_archives/` 排除——封存卡依 schema § 四規約只增不改、保留拍板當時原貌。豁免：`wiki/範本/` 骨架檔（填空樣板）與 `type: example` 範例卡不檢必填欄位（[[卡片撰寫共用規範]] § 一鐵則 5；範例卡另由維度 12 勾稽）；`status: deprecated` 退役 stub 卡不檢 `source` 與 `tags`（schema § 四通則三）。已移除欄位偵測：六個正本卡型（entity／role／service-blueprint／business-rule／state-machine／scenario）偵測到 `module`／`implemented-by`／`related-spec` 即 Error（已全庫移除，防回流；insight 的 `related-spec` 與 OQ／insight／raw 的 `module` 仍合法）。`title` 依 schema § 四通則一：只在檔名帶前綴而標題不含該前綴時填（如 `12-insights/` 日期前綴檔名），`title` 值與檔名相同即冗餘、列 Warning；不列缺欄。空欄位（含空 list `[]`）依通則二列 Warning。
+方法：依 [[wiki-schema]] **各 type 的必填欄位表**檢查（禁用一體適用清單——open-question / raw 以 `raised-at` / `created-at` 承載時間，schema 未列 `last-reviewed`，不得檢缺）。通用必檢：`type`／`status`／`tags`（領域 tag，必標範圍見 [[business-domain-taxonomy]] § 領域 tag 標注規則）；`module` 與 `last-reviewed` 依該 type 的 schema 段；正本卡（03/04/05/06）另須 `source`。領域 tag 三項 lint：必標範圍內缺 tag／tag 值不在 taxonomy enum／濫標 `領域/全域`（實際只沾一兩個領域），皆計違規。同時列英文 module token 殘留（列 Info 供順手清理）；`business-domain` 欄位已全庫移除，偵測到即 Error（防舊範本回流），但 `08-open-questions/_archives/` 排除——封存卡依 schema § 四規約只增不改、保留拍板當時原貌。豁免：`wiki/範本/` 骨架檔（填空樣板）與 `type: example` 範例卡不檢必填欄位（[[卡片撰寫共用規範]] § 一鐵則 5；範例卡另由維度 12 勾稽）；`status: deprecated` 退役 stub 卡不檢 `source` 與 `tags`（schema § 四通則三）。已移除欄位偵測：六個正本卡型（entity／role／service-blueprint／business-rule／state-machine／scenario）偵測到 `module`／`implemented-by`／`related-spec` 即 Error（已全庫移除，防回流；OQ／raw 的 `module` 仍合法）。`title` 依 schema § 四通則一：只在檔名帶前綴而標題不含該前綴時填（如 `12-insights/` 日期前綴檔名），`title` 值與檔名相同即冗餘、列 Warning；不列缺欄。空欄位（含空 list `[]`）依通則二列 Warning。
 判定：OK＝0 缺；Warning＝1-5；Error＝> 5。
 
 ### 維度 6：規約遵守
@@ -120,7 +121,7 @@ grep -rn "openspec/\|sens-erp-prototype/\|/erp/apps/" memory/Sens_wiki/wiki/erp/
 3. open 且 raised-at > 30 天無進度；priority high 長期擱置
 4. audience=external 缺 `expected-resolution-at`（external 必填）；缺 `source-link`
 
-判定：OK＝全健康；Warning＝1-3 需跟催；Error＝> 3 或任何狀態違規／未封存（建議跑 `oq-manage` mode E 整理、open 量大建議 `vault-insight`）。
+判定：OK＝全健康；Warning＝1-3 需跟催；Error＝> 3 或任何狀態違規／未封存（建議跑 `oq-manage` mode E 整理；open 量大時於建議段點出該收割的 OQ 群）。
 
 ### 維度 9：Raw 健康度（唯讀檢查，禁動 raw/ 任何檔）
 
@@ -129,7 +130,7 @@ grep -rn "openspec/\|sens-erp-prototype/\|/erp/apps/" memory/Sens_wiki/wiki/erp/
 檢查（讀 `memory/Sens_wiki/raw/` frontmatter）：
 - status=raw 超過 180 天＝Error、超過 90 天＝Warning
 - status=reviewed 超過 5 天未確認＝Warning
-- 同主題（topic-tag）累積 ≥ 3 張＝Warning（建議 vault-ingest mode B 或 vault-insight）
+- 同主題（topic-tag）累積 ≥ 3 張＝Warning（建議 vault-ingest mode B）
 - source=claude-research／miles-upload 缺 `raw-source-link`、miles-upload 缺 `attached-files`＝Error（Anti-Model-Collapse 防線）
 
 判定：OK＝無超期無違反；Warning／Error 如上。raw 累積 ≥ 10 張另建議跑 vault-ingest mode C。
@@ -197,7 +198,11 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 
 ## 主要發現（top 3-5）
 ## 建議下一步
-- 可自動修復項（mode C）/ 需 Miles 裁決項 / 建議跑 vault-insight 項
+- 可自動修復項（mode C）／需 Miles 裁決項
+## 建議調查的新問題與該補的素材
+- 值得調查的新問題：<被多張卡提及卻沒有自己頁面的概念、資料缺口、同類 OQ 聚成的系統性議題>；判定為待裁決的走 `oq-manage` mode B 開 OQ
+- 該補的素材：<哪個主題缺訪談／法規／業界參照，建議去找什麼>；素材到手走 `vault-ingest` mode A
+- 屬知識庫或工作流本身的待辦（非商業現況）：寫 `memory/` project 卡，不在 `wiki/` 留卡
 ```
 
 4. **追加 wiki/log.md 一筆**（動作=健檢、標籤=audit；最新在上）：
@@ -237,5 +242,4 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 | Skill | 協作 |
 |-------|------|
 | `oq-manage` | 維度 1／6／8 發現矛盾、inline OQ、過期 OQ → 建議 mode B／C／D |
-| `vault-insight` | 維度 8 系統性議題、KPI／Phase 進度對照（原維度 10 職責）→ 移交 insight |
 | `vault-ingest` | 維度 9 raw 超期／累積 → 建議 mode B／C |

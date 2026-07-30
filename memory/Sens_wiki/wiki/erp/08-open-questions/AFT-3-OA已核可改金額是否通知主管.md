@@ -16,8 +16,6 @@ related-vault:
 related-oq:
   - ORD-002
 related-change: refine-after-sales-refund-and-add-supplementary-print
-related-insight:
-  - 2026-05-20-售後ticket-reactive-補丁循環
 expected-resolution-at: 2026-Q3
 tags:
   - 領域/訂單管理

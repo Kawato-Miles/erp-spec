@@ -12,8 +12,6 @@ expected-resolution-at: 2026-Q3
 related-change:
   - add-my-after-sales-action-page-and-remove-owner-transfer
   - add-sales-manager-reassign-owner
-related-insight:
-  - 2026-05-20-售後ticket-reactive-補丁循環
 related-oq:
   - XM-008
 tags:

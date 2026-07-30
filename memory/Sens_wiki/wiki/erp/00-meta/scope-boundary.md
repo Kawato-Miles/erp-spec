@@ -30,7 +30,7 @@ last-reviewed: 2026-07-28
 | 視覺化 | `09-canvases/` | Canvas 視覺化 |
 | **操作史** | `wiki/log.md` | 全知識庫唯一只追加層（[[log]]）；健檢／納入類條目皆記於此 |
 | **Wiki Schema** | `00-meta/wiki-schema.md` | Vault formal 治理規則（lint 依據）|
-| **Insights** | `12-insights/` | vault-insight skill 產出的跨主題模式識別 + 下一步建議 |
+| ~~Insights~~（已退場）| `12-insights/` | 診斷與建議歸 `vault-audit` 報告段、待裁決歸 OQ、知識庫與工作流待辦歸 `memory/` project 卡。存量 6 張隨各領域清整歸位至正本卡 |
 | **Raw 素材** | `raw/` | 已驗證但未精練的觀察 / 反饋 / 研究筆記（由 vault-ingest skill 寫入；2026-05-21 新增）|
 
 ### 收的判斷準則

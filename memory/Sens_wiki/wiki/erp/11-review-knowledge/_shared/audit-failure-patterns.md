@@ -42,10 +42,10 @@ last-reviewed: 2026-05-28
 - Miles 與 Claude 來回討論同議題 ≥ 3 輪無進展
 - 修補 → 標 OQ → 再修補 → 又標 OQ 循環
 **對策**：
-- 對應 OQ 累積 ≥ 15 觸發 `vault-insight` 跨主題提煉
+- 對應 OQ 累積偏高時由 `vault-audit` 維度 8 點出
 - 單次稽核同領域最多 3 輪（超過標 OQ 等 Miles 決策）
 - 識別「死循環候選 OQ」獨立排程解答 session
-**對應紀律**：`vault-insight` skill 觸發條件 / `oq-manage` skill mode B 去重
+**對應紀律**：`vault-audit` 維度 8 OQ 健康度 / `oq-manage` skill mode B 去重
 
 ### 4. Immeasurable targets（無法量化）
 
