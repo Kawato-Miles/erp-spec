@@ -4,7 +4,6 @@ mutability: external
 status: active
 last-reviewed: 2026-07-02
 source:
-  - "公司決策（2026-07-02 Miles 拍板）：線下單審稿討論以 ERP 發起的 Slack 討論串進行"
   - "Slack Webhook 介面契約（第三方介面）"
 tags:
   - 領域/印前審稿

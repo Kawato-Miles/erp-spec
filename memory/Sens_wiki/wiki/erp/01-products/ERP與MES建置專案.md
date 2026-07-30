@@ -1,7 +1,6 @@
 ---
 type: phase
 source:
-  - "公司決策（Miles 拍板）：ERP / MES 建置專案的範疇與階段劃分"
   - "Notion 資源：https://www.notion.so/32c3886511fa81359354e33087d23f23"
 module:
   - 跨模組
