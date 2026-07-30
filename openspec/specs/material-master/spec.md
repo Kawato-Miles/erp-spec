@@ -133,32 +133,30 @@
 
 ### Requirement: 生產任務引用材料規格
 
-系統 SHALL 支援生產任務引用 MaterialSpec，除 `material_spec_id` 外，另需記錄 `pricing_selection`（使用者選擇的計價鍵），形狀依 Material.pricing_type 分支不同。pricing_selection 採混合帶入模式：系統依印件內容自動預設，使用者可手動覆寫。
+系統 SHALL 支援生產任務引用材料規格，除主檔項目外另記錄 `pricing_selection`（計價鍵）。生產任務的**生產單位類別 SHALL 由所引用材料主檔項目的承作廠商決定且對印務唯讀**——承作廠商留空即自有工廠，填外部廠商時依該廠商的類別（加工廠／外包廠／中國廠商）帶出。BOM SHALL NOT 規定某類主檔只能配某類廠商。
 
-#### Scenario: 按重量引用 -- selection 為單一規格
+pricing_selection 採混合帶入：目前由使用者手動選擇；拼版模數自動換算接上後由系統依印件內容預填，使用者 MAY 覆寫，生產任務 MUST 留存系統預設值與覆寫值兩版供稽核。
 
-- **WHEN** 生產任務引用 pricing_type = 按重量 的材料規格
-- **THEN** pricing_selection SHALL 形狀為 `{ size_name }`；例如 `{ size_name: "A2" }`
+**Priority**: P0
 
-#### Scenario: 按面積引用 -- selection 為巢狀二鍵
+**Rationale**: 執行方（自有或外發）的決策必須只有一個來源。若生產任務可人工改生產單位類別，同一道工序會出現「BOM 說外包、任務說自有」兩個真相，外包成本與派單的產生條件都會跟著錯。
 
-- **WHEN** 生產任務引用 pricing_type = 按面積 的材料規格
-- **THEN** pricing_selection SHALL 形狀為 `{ area_range_id, qty_range_id }`
+#### Scenario: 承作廠商決定生產單位類別
 
-#### Scenario: 按數量引用 -- selection 為單一級距
+- **GIVEN** 材料主檔項目的承作廠商為外部廠商、類別為加工廠
+- **WHEN** 印務以該項目建立生產任務
+- **THEN** 該任務的生產單位類別為加工廠且唯讀
 
-- **WHEN** 生產任務引用 pricing_type = 按數量 的材料規格
-- **THEN** pricing_selection SHALL 形狀為 `{ qty_tier_id }`
+#### Scenario: 承作廠商留空即自有工廠
 
-#### Scenario: 系統依印件內容預設 pricing_selection
+- **GIVEN** 材料主檔項目的承作廠商留空
+- **WHEN** 印務以該項目建立生產任務
+- **THEN** 該任務的生產單位類別為自有工廠、不產生派單
 
-- **WHEN** 開立生產任務時綁定印件
-- **THEN** 系統 SHALL 依印件的尺寸、印量自動計算並預填 pricing_selection
+#### Scenario: 手動輸入 pricing_selection（目前階段）
 
-#### Scenario: 使用者手動覆寫 pricing_selection
-
-- **WHEN** 使用者於生產任務頁面修改 pricing_selection
-- **THEN** 系統 SHALL 以覆寫後的 selection 重新計算成本；生產任務 MUST 留存系統預設值與覆寫值兩版供稽核
+- **WHEN** 印務於製程規劃建立引用材料規格的生產任務
+- **THEN** 使用者手動選擇 pricing_selection，系統不自動計算
 
 ### Requirement: 成本計算流程
 

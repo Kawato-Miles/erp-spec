@@ -1007,7 +1007,7 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 **各 enum 分支後續流程**：
 
 - **OK**（打樣通過）→ 開放大貨流程；業務後續手動建大貨工單。系統不自動觸發任何下游動作（保留業務決定權）。純打樣訂單（無大貨印件）於此時滿足訂單完成守衛（見下方「純打樣訂單完成守衛」）
-- **NG-製程問題**（打樣品質問題，稿件本身無問題）→ 系統 SHALL 自動建立一筆不符合報告（NCR，全欄位預填即開即結：source_type = sample_review、defect_category = process、disposition = rework、全數、resolved，見 production-task spec § NCR 實體「打樣評審觸發」），並自動於同一打樣印件下建立新打樣 WorkOrder（`type = 打樣`、初始狀態 = 草稿；一律重打、不由業務決定），同步執行：印件印製維度自「已送達」轉回「等待中」（僅打樣印件的回頭轉換，大貨印件無回頭）、`sampleResult` 重置回「待確認」、舊週期樣品報廢（自入庫數與累計送達數移出、數量帳按打樣週期歸零，報廢量計入成本，公式正本見 wiki 齊套邏輯卡）。重做成本記錄與製程根因結構化待 OQ AR-13
+- **NG-製程問題**（打樣品質問題，稿件本身無問題）→ 系統 SHALL 自動建立一筆不符合報告（NCR，全欄位預填即開即結：source_type = sample_review、defect_category = process、disposition = rework、全數、resolved，不符合報告的實體歸屬與欄位正本待 QC-005 裁決（批二 qc capability）），並自動於同一打樣印件下建立新打樣 WorkOrder（`type = 打樣`、初始狀態 = 草稿；一律重打、不由業務決定），同步執行：印件印製維度自「已送達」轉回「等待中」（僅打樣印件的回頭轉換，大貨印件無回頭）、`sampleResult` 重置回「待確認」、舊週期樣品報廢（自入庫數與累計送達數移出、數量帳按打樣週期歸零，報廢量計入成本，公式正本見 wiki 齊套邏輯卡）。重做成本記錄與製程根因結構化待 OQ AR-13
 - **NG-稿件問題**（稿件本身有問題，需重新處理稿件）→ 系統 SHALL 自動觸發「打樣後棄用原印件建新印件」流程（見下方 Requirement）
 
 **判定不可逆**：判定後 `sampleResult` 鎖定，不可由業務再次修改（避免規避稽核軌跡；NG-製程問題重打時由系統重置回「待確認」，屬系統動作、非業務修改）。若判定錯誤需更正，須由業務主管走 ActivityLog 修正流程（本 spec 不展開細節）。

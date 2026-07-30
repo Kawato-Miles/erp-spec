@@ -1490,9 +1490,9 @@ EC 專屬類型（`點數` EC 會員儲值、線上自定義來源等）於 EC �
   - 完成數量（pt_produced_qty，累計報工數）
   - 入庫數量（pt_warehouse_qty，QC 通過後依齊套性邏輯計算結果）
   - QC 狀態徽章（最近一次 QC 結果：通過 / 不合格 / 未檢；多筆 QC 時取最新一筆）
-  - 生產任務狀態（依 [production-task spec § 生產任務狀態機](../production-task/spec.md)）
+  - 生產任務狀態（依 [production-execution spec § 生產任務狀態轉換](../production-execution/spec.md)，列舉正本見 wiki 生產任務狀態卡）
 - 跨工單可見性：印件下所有工單與生產任務資訊 SHALL 對開啟此頁的印務 / 印務主管完整可見，不因工單負責人不同而隱藏
-- 進度呈現方式：採用印製狀態詞（本 spec § 印件印製維度狀態機 / [work-order spec § 工單狀態機](../work-order/spec.md) / [production-task spec § 生產任務狀態機](../production-task/spec.md) 所定義），不另計算百分比或總任務完成數
+- 進度呈現方式：採用印製狀態詞（本 spec § 印件印製維度狀態機 / [work-order spec § 工單狀態機](../work-order/spec.md) / [production-execution spec § 生產任務狀態轉換](../production-execution/spec.md) 所定義），不另計算百分比或總任務完成數
 
 齊套性視圖目的：讓使用者透過介面直接看到「預計 → 完成 → 入庫」三欄的數字流向，搭配狀態機 bubble-up 規則（本 spec § 跨實體狀態向上傳遞鏈），印務 SHALL 可判讀印件層的齊套性與瓶頸所在。
 
@@ -1542,7 +1542,7 @@ EC 專屬類型（`點數` EC 會員儲值、線上自定義來源等）於 EC �
 - **WHEN** 印務甲在印件 B 詳情頁勾選工單 #3（自己負責）下的 PT-6、PT-9 兩筆生產任務，點擊「批次報工」
 - **THEN** 系統 SHALL 開啟批次報工面板（重用工單詳情頁元件）
 - **AND** 面板中每筆生產任務 SHALL 標示其所屬工單編號，避免報錯
-- **AND** 提交後 SHALL 為每筆生產任務各建立一筆報工紀錄（依 production-task spec § 批次報工操作）
+- **AND** 提交後 SHALL 為每筆生產任務各建立一筆報工紀錄（依 [production-execution spec § 報工](../production-execution/spec.md)）
 
 #### Scenario: 非自己負責工單下的生產任務勾選框禁用
 

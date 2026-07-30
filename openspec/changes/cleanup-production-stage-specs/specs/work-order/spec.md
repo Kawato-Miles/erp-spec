@@ -102,7 +102,16 @@
 
 **Migration**: 見本 spec § 印務主管印件總覽。
 
+### Requirement: 完成度計算（齊套性邏輯 Kitting Logic）
+
+**Reason**: 併入本 spec § 工單完工判定（完工判定與完成度計算是同一件事的兩面，拆兩條會讓齊套規則的引用重複）。齊套性邏輯的規則正本在 wiki [齊套邏輯](../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)，spec 不複寫。
+
+**Migration**: 見本 spec § 工單完工判定。
+
 ## MODIFIED Requirements
+
+> 六條 Requirement 一併改名以對齊本輪的模組語彙：工單分配 → 工單分派、工單內容填寫 → 製程規劃、生產任務帶入規則 → 生產任務結構與帶入規則、任務獨立交付操作 → 任務交付、設備預計成本彙總 → 預估成本凍結、工單完成度自動計算 → 工單完工判定。
+
 
 ### Requirement: 工單草稿建立
 

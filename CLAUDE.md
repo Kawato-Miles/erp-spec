@@ -356,7 +356,7 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 
 - wiki 總入口（商業需求 KM 中樞）：[wiki/index.md](memory/Sens_wiki/wiki/index.md)
 - Notion URL 唯一正本：`memory/shared/notion-index.md`
-- OpenSpec 規格目錄：`openspec/specs/`（23 個模組，目錄結構即自描述）
+- OpenSpec 規格目錄：`openspec/specs/`（20 個模組，目錄結構即自描述）
 - Prototype repo：`/Users/b-f-03-029/sens-erp-prototype`（設計權威：`DESIGN.md`；實作進度：`README.md`）
 # CLAUDE.md
 

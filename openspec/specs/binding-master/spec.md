@@ -128,23 +128,30 @@
 
 ### Requirement: 生產任務引用裝訂
 
-系統 SHALL 支援生產任務引用 Binding，除 `binding_id` 外，另需記錄 `pricing_selection`（使用者選擇的計價鍵）。pricing_selection 採混合帶入模式：目前先由使用者手動輸入；後續排程上線後由系統依印件內容自動計算（含多工單拼版換算）並預填，使用者可覆寫。
+系統 SHALL 支援生產任務引用裝訂，除主檔項目外另記錄 `pricing_selection`（計價鍵）。生產任務的**生產單位類別 SHALL 由所引用裝訂主檔項目的承作廠商決定且對印務唯讀**——承作廠商留空即自有工廠，填外部廠商時依該廠商的類別（加工廠／外包廠／中國廠商）帶出。BOM SHALL NOT 規定某類主檔只能配某類廠商。
 
-#### Scenario: pricing_selection 統一形狀
+pricing_selection 採混合帶入：目前由使用者手動選擇；拼版模數自動換算接上後由系統依印件內容預填，使用者 MAY 覆寫，生產任務 MUST 留存系統預設值與覆寫值兩版供稽核。
 
-- **WHEN** 生產任務引用任何 pricing_method 的裝訂
-- **THEN** pricing_selection SHALL 形狀統一為 `{ x_axis_id, y_axis_id }`；FK 分別指向 BindingPricingAxis 的 X 軸與 Y 軸項目
+**Priority**: P0
+
+**Rationale**: 執行方（自有或外發）的決策必須只有一個來源。若生產任務可人工改生產單位類別，同一道工序會出現「BOM 說外包、任務說自有」兩個真相，外包成本與派單的產生條件都會跟著錯。
+
+#### Scenario: 承作廠商決定生產單位類別
+
+- **GIVEN** 裝訂主檔項目的承作廠商為外部廠商、類別為加工廠
+- **WHEN** 印務以該項目建立生產任務
+- **THEN** 該任務的生產單位類別為加工廠且唯讀
+
+#### Scenario: 承作廠商留空即自有工廠
+
+- **GIVEN** 裝訂主檔項目的承作廠商留空
+- **WHEN** 印務以該項目建立生產任務
+- **THEN** 該任務的生產單位類別為自有工廠、不產生派單
 
 #### Scenario: 手動輸入 pricing_selection（目前階段）
 
-- **WHEN** 開立生產任務時綁定裝訂
-- **THEN** 使用者 SHALL 手動選擇 pricing_selection；系統 MUST 不自動計算
-
-#### Scenario: 自動預填 pricing_selection（排程模組上線後）
-
-- **WHEN** 排程模組上線後開立生產任務，關聯至印件
-- **THEN** 系統 SHALL 依印件的尺寸、印量、拼版結果、裝訂所需台數 / 頁數 / 本數自動計算並預填 pricing_selection
-- **AND** 使用者 SHALL 可手動覆寫；生產任務 MUST 留存系統預設值與覆寫值兩版供稽核
+- **WHEN** 印務於製程規劃建立引用裝訂的生產任務
+- **THEN** 使用者手動選擇 pricing_selection，系統不自動計算
 
 ### Requirement: 裝訂成本計算流程
 
