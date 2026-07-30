@@ -56,7 +56,7 @@ module:
 
 **新舊值對照**（轉換期查表用）：需求單 = quote-request、訂單管理 = order-management、諮詢單 = consultation-request、售後服務 = after-sales-ticket、工單 = work-order、生產任務 = production-task、印前審稿 = prepress-review、品檢 = qc、材料主檔 = material-master、製程主檔 = process-master、裝訂主檔 = binding-master、線上編輯器 = graphic-editor、跨模組 = cross-module。
 
-## 二B、領域 tag（`tags:` 欄位，必填）
+## 二B、領域 tag（`tags:` 欄位，必標範圍內必填）
 
 > 業務領域分類，enum 正本、標注規則、檢索規約皆在 [[business-domain-taxonomy]]，本節只定 frontmatter 格式，不複寫判定規則。
 

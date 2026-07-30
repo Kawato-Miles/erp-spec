@@ -15,9 +15,9 @@ last-reviewed: 2026-07-28
 
 | 類別 | 對應目錄 | 範例 |
 |------|---------|------|
-| 產品策略（願景、痛點、Phase、KPI） | `01-products/` | [[wiki/erp/01-products/產品願景]]、[[階段規劃]]、[[成功指標]]、[[影響力評分框架]] |
-| 商業目標 / Phase / 北極星指標 | `01-products/` | [[wiki/erp/01-products/產品願景]]、[[階段規劃]]、[[成功指標]] |
-| 痛點 / 利害關係人 / Impact Score | 同上 | [[痛點]]、[[關係人]]、[[影響力評分框架]] |
+| 公司北極星指標（跨專案、長期） | `01-products/` | [[北極星指標]] |
+| 專案範疇與階段驗收指標（專案層，不進檢索範圍） | `01-products/` | [[ERP與MES建置專案]] |
+| 專案要解決的痛點 | `01-products/` | [[痛點]] |
 | ERP 術語表 | `02-domain/` | [[ERP系統術語表]] |
 | 角色 R&R | `03-roles/` | 全部角色卡 + [[_alignment-report]] |
 | 商業邏輯：服務藍圖（A 類，端到端業務鏈）| `04-business-logic/` | 線下訂單流程、諮詢服務流程等（`type: service-blueprint`）|
@@ -26,7 +26,7 @@ last-reviewed: 2026-07-28
 | 狀態機（**含狀態列舉正本**） | `06-state-machines/` | 狀態機卡；狀態列舉為正本 |
 | 業務情境（過程）| `07-scenarios/` | 業務目標完成過程 |
 | OQ | `08-open-questions/` | oq-manage skill 改寫後寫入 |
-| KPI | `01-products/kpi/` | 各模組 KPI |
+| 營運指標 / 模組級 KPI | `04-business-logic/` | 各領域指標卡（如 [[生產績效指標]]），算法正本隨領域走不集中放產品層 |
 | 視覺化 | `09-canvases/` | Canvas 視覺化 |
 | **操作史** | `wiki/log.md` | 全知識庫唯一只追加層（[[log]]）；健檢／納入類條目皆記於此 |
 | **Wiki Schema** | `00-meta/wiki-schema.md` | Vault formal 治理規則（lint 依據）|
