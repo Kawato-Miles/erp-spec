@@ -20,7 +20,7 @@ related-vault:
   - "[[生產任務]]"
 related-oq:
   - "[[PT-031-BOM配方層是否納入工單管理change]]"
-expected-resolution-at: 2026-08-08
+expected-resolution-at: 生產階段 openspec 完整清整時（Miles 2026-07-30 裁示，無固定日期）
 ---
 
 # PT-037 BOM 行項目與配方層兩套展開來源並存
@@ -39,6 +39,8 @@ wiki 側目前只承認配方路線：[[工單]] 卡的關聯段寫「依 [[BOM�
 ## 待解答
 
 - [ ] BOM 行項目（印件實例層的 BOM 清單）是被配方層取代而應廢止，或兩層並存各有職責？
+
+> 裁決時機：Miles 2026-07-30 裁示——不單獨拍板，等生產階段 openspec 完整清整、逐 spec 校對時一併決定（清整對照表見 production-stage-high-level-design.md § 1.3 的 work-order 與 production-task 兩列）。
 
 ## 候選方案
 

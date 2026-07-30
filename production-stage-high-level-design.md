@@ -132,7 +132,7 @@
 
 | 既有 spec | 處置 | 去向 |
 |-----------|------|------|
-| work-order | 重寫 | M1 |
+| work-order | 重寫 | M1；清整時 MUST 一併處理兩項待決——(1) BOM 行項目兩個 Requirement（「BOM 行項目管理」、「BOM 展開為生產任務」）的去留待 [[PT-037-BOM行項目與配方層兩套展開來源並存]] 裁決 (2) Requirement「工單草稿建立」的 Scenario「線上單審稿通過自動展開」在 Prototype 無觸發點，需決定保留、改寫或移後續 change |
 | production-task | 重寫 | 任務結構歸 M1、報工歸 M2；清整時 MUST 同步兩處既存不同步——生產任務「工廠類別由 BOM 行項目決定」改為三主檔各自承作廠商（2026-07-30 拍板）、產線的帶入來源改為配方工序段或印務手選（見 [[PT-037-BOM行項目與配方層兩套展開來源並存]]）|
 | work-package | 重寫 | M2（含上機日與設備，供 M3 視圖） |
 | task-dispatch-board | 重寫合併 | M2 派工介面 |
@@ -143,7 +143,7 @@
 | material-master／process-master／binding-master | 沿用微調 | BOM 三主檔（放損兩成分等既有拍板落點） |
 | （無）出貨 | 新建 | M4（解 SHP-006） |
 | （無）派單 | 新建 | M5 |
-| （無）配方管理 | 新建 | M6（印件款式與部件配方兩實體、引用展開與沉澱）|
+| （無）配方管理 | 已新建 | M6：print-item-style／bom-recipe／recipe-expansion 三個 capability 已於 2026-07-30 併入 main specs（change recipe-management 已封存）；Prototype 四頁已落 `prototype/production-stage` |
 | prototype-data-store／prototype-shared-ui | 隨 Prototype 清整 | 技術 spec，非業務模組 |
 
 ## 2. 核心實體與資料結構＋狀態機（2b）
