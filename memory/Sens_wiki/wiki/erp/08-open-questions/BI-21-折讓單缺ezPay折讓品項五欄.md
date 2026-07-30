@@ -12,8 +12,6 @@ source-link: /tmp/訂單管理三方比對報告-2026-06-14.md（P0#1(b)）
 related-vault:
   - "[[帳務]]"
   - "[[發票法規硬約束-ezPay-MIG]]"
-related-oq: []
-expected-resolution-at:
 tags:
   - 領域/款項與發票
 ---

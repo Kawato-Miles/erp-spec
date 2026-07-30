@@ -11,7 +11,6 @@ raised-by: ceo-reviewer (Phase 2 Challenge 5)
 source-link: 付款期次與對帳 CSV 統一 change 設計討論
 related-vault:
   - [[../03-roles/會計]]
-related-oq: []
 related-change: unify-billing-installment-and-reconciliation-csv
 expected-resolution-at: 上線前（pre-launch validation）
 tags:

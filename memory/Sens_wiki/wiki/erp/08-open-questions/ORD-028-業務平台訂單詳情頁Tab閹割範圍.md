@@ -9,11 +9,9 @@ audience: internal
 raised-at: 2026-06-01
 raised-by: Miles
 source-link: 本次對話（linear-delivery skill 交付業務平台 - 訂單管理時評審識別缺口）
-related-vault: []
 related-oq:
   - ORD-024
   - ORD-039
-expected-resolution-at:
 tags:
   - 領域/訂單管理
 ---

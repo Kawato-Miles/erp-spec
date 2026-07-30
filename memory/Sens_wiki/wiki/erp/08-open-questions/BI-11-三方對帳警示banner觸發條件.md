@@ -11,7 +11,6 @@ raised-by: erp-consultant (Phase 3 C-PM-2 反向挑戰)
 source-link: 付款期次與對帳 CSV 統一 change 設計討論
 related-vault:
   - [[../05-entities/訂單]]
-related-oq: []
 related-change: unify-billing-installment-and-reconciliation-csv
 expected-resolution-at: apply 階段細化
 tags:

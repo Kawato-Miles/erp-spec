@@ -11,7 +11,6 @@ raised-by: senior-pm (Phase 1 PM 假設)
 source-link: 付款期次與對帳 CSV 統一 change 設計討論
 related-vault:
   - [[../05-entities/訂單]]
-related-oq: []
 related-change: unify-billing-installment-and-reconciliation-csv
 expected-resolution-at: 2026-Q3
 tags:

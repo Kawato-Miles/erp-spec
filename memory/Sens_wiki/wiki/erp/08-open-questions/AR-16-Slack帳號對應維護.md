@@ -12,7 +12,6 @@ source-link: memory/Sens_wiki/wiki/erp/04-business-logic/外部約束/審稿討�
 related-vault:
   - "[[審稿討論Slack串接約束]]"
   - "[[訂單管理人]]"
-related-oq: []
 expected-resolution-at: OpenSpec change 實作階段
 tags:
   - 領域/印前審稿

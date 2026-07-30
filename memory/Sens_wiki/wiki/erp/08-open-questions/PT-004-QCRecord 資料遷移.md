@@ -14,7 +14,6 @@ related-vault:
   - "[[品檢人員]]"
   - "[[品檢紀錄]]"
   - "[[生產任務]]"
-related-oq: []
 expected-resolution-at: 正式上線階段
 tags:
   - 領域/生產執行

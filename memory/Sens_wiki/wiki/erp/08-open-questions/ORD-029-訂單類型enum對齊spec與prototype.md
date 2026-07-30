@@ -11,8 +11,6 @@ raised-by: erp-consultant（enhance-order-list-filter 輕量審查）
 source-link: 訂單列表篩選 change（erp-consultant 輕量審查）
 related-vault:
   - "[[訂單]]"
-related-oq: []
-expected-resolution-at:
 tags:
   - 領域/訂單管理
 ---

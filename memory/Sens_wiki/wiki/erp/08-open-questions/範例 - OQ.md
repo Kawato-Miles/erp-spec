@@ -1,5 +1,4 @@
 ---
-title: "範例 - OQ"
 type: example
 example-of: open-question
 snapshot-source: "[[PT-028-工單已交付觸發條件正本矛盾]]"

@@ -11,7 +11,6 @@ raised-by: Miles (plan 階段)
 source-link: 售後退款與補印 change 設計討論（2026-05-20，已歸檔）
 related-vault:
   - [[../05-entities/訂單]]
-related-oq:
 related-change: refine-after-sales-refund-and-add-supplementary-print
 expected-resolution-at: 2026-Q3
 tags:

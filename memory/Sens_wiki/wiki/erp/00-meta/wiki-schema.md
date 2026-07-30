@@ -88,6 +88,9 @@ tags:
 ## 四、各 type 必填 Frontmatter 欄位
 
 > 本節的 yaml 區塊是**欄位定義與值域的正本**；可複製的起手樣板由 `wiki/範本/` 骨架卡承載。兩者重疊處以本節為準，骨架異動時與本節同 commit 對齊（治理見 [[卡片撰寫共用規範]] § 一）。
+> **通則一：`title` 只在檔名無法自我說明時填。** 檔名即標題，`title` 填與檔名相同的值屬冗餘（改名後變成第二個會 stale 的名字來源），故各 type 的 yaml 區塊一律不列 `title`。唯一該填的情形是檔名帶前綴而標題不含該前綴（如 `12-insights/` 的日期前綴檔名 `2026-06-13-生產模組架構設計`，`title` 填去掉日期的標題）。
+> **通則二：欄位無值即刪整個欄位，不留空。** `related-oq:`、`notion-url:`、`expected-resolution-at:` 這類選填欄位沒有值時刪掉整行（含空 list `[]`），需要時再加回；留空欄位在稽核時無法區分「沒有」與「漏填」。
+> **通則三：`status: deprecated` 的退役 stub 卡豁免 `source` 與 `tags`。** 退役卡不承載商業邏輯、也不該被領域 tag 撈進檢索結果（現行正本才該被撈到），正文只留一句退役宣告＋重導向連結即可（樣貌見 [[QC]]、[[QC 狀態]]）。
 > **鐵則：卡片 frontmatter 禁含外部系統狀態欄位**（2026-06-10 新增）。「這張卡何時被推到哪個外部系統」是發布管線的狀態，不是商業知識——對外發布追蹤（Notion URL / 最後推送日）唯一正本在 `memory/erp/notion-publish-manifest.md`，由發布類 skill 維護，全程不回寫 wiki 卡。性質同「source 禁指 OpenSpec」：wiki 獨立維護，不與外部系統耦合。
 
 ### 4.0 往上指依據、往下指實作的通則（2026-05-31 新增）
@@ -115,7 +118,6 @@ last-reviewed: YYYY-MM-DD
 
 ```yaml
 ---
-title: "範例 - <單元名>"
 type: example
 example-of: <entity|role|state-machine|scenario|...>   # 對應單元的 type
 snapshot-source: "[[<快照來源卡>]]"
@@ -156,6 +158,8 @@ last-reviewed: YYYY-MM-DD
 ```yaml
 ---
 type: role
+tags:
+  - 領域/<領域名>   # 可多值，角色沾哪幾個領域標哪幾個；判定依 [[business-domain-taxonomy]]
 source:                          # 往上層 = 正確性根據（營運原則 / 商業流程共用規則 / 權責表），禁指 OpenSpec / 同層 / 下層；見 § 4.0
   - "[[<上層卡或最上層依據>]]"
   - "Notion 核心角色權責表：<URL>"   # 外部依據的網址一律寫在 source，正文與其他欄位不放外部網址
@@ -171,6 +175,8 @@ last-reviewed: YYYY-MM-DD
 type: service-blueprint
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
+source:                          # 往上層 = 正確性根據（營運原則 / 上層商業規則卡 / 客戶訪談 / 產業慣例），禁指 OpenSpec / 同層 / 下層；見 § 4.0
+  - "[[<上層卡或最上層依據>]]"
 status: active
 last-reviewed: YYYY-MM-DD
 ---
@@ -206,6 +212,8 @@ last-reviewed: YYYY-MM-DD
 ```yaml
 ---
 type: entity
+tags:
+  - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
 source:                          # 往上層 = 正確性根據（所屬 business-logic 規則 / 流程狀態角色資料層情境），禁指 OpenSpec / 同層 / 下層；見 § 4.0
   - "[[<上層卡>]]"
 status: active
@@ -218,6 +226,8 @@ last-reviewed: YYYY-MM-DD
 ```yaml
 ---
 type: state-machine
+tags:
+  - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
 source:                          # 往上層 = 正確性根據（所屬 business-logic 規則 / 流程狀態角色資料層情境），禁指 OpenSpec / 同層 / 下層；見 § 4.0
   - "[[<上層卡>]]"
 status: active
@@ -265,6 +275,10 @@ related-vault:
   - <wiki link>
 related-oq:
   - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名
+related-change:                     # 承接此問題的 OpenSpec change 名（可多值）；無則刪整個欄位
+  - <change 名>
+related-insight:                    # 相關的 12-insights 卡；無則刪整個欄位
+  - "[[<insight 卡>]]"
 expected-resolution-at: YYYY-MM-DD  # external 必填；internal 建議填
 answered-at: YYYY-MM-DD  # 拍板時填
 answered-by: <拍板者>
@@ -280,7 +294,7 @@ type: insight
 module:
   - <模組>
 tags:
-  - 領域/<領域名>   # insight 屬正本卡被載入決策引用時必標
+  - 領域/<領域名>   # 必填，可多值；判定依 [[business-domain-taxonomy]]（原「屬正本卡被載入決策引用時必標」的條件判準無法機械判定，2026-07-30 改無條件必填）
 status: open | in-progress | resolved | cancelled
 priority: high | medium | low
 raised-at: YYYY-MM-DD

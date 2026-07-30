@@ -13,7 +13,6 @@ related-vault:
   - "[[訂單]]"
 related-oq:
   - ORD-032
-related-change:
 expected-resolution-at: CRM 模組規劃時
 tags:
   - 領域/訂單管理

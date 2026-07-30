@@ -8,7 +8,6 @@ priority: medium
 audience: internal
 raised-at: 2026-05-19
 raised-by: Miles
-notion-link:
 expected-resolution-at: 2026-Q3
 related-change: add-my-after-sales-action-page-and-remove-owner-transfer
 related-insight:

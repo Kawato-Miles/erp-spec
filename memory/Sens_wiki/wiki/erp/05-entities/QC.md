@@ -1,5 +1,4 @@
 ---
-title: "QC"
 type: entity
 status: deprecated
 last-reviewed: 2026-07-21
