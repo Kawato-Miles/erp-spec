@@ -94,7 +94,7 @@ Karpathy LLM Wiki 模式中的「raw 層」對應位置。承接尚未精練但�
 | Claude 自迭代（讀 vault → 編 raw → 再讀） | `claude-self-capture` 必須 Miles 確認；自主寫入只在 `claude-on-task`（被指派研究）情境 |
 | LLM 編造「研究結論」 | `claude-research` 必須附真實 `raw-source-link`（WebFetch URL / 文件來源），無來源不寫 |
 | 跨卡更新時過度自由 | Mode B step 3「提議 cards diff」**只是提案**，Miles 確認後才動既有卡 |
-| Raw 噪音進入 insight | `vault-insight` 只讀 `status: ingested` 或 `reviewed`，**不讀** `status: raw` |
+| Raw 噪音進入跨卡合成 | 讀 raw 做合成時只取 `status: ingested` 或 `reviewed`，**不讀** `status: raw` |
 
 ## 七、與既有 skill 銜接
 
@@ -102,7 +102,6 @@ Karpathy LLM Wiki 模式中的「raw 層」對應位置。承接尚未精練但�
 |-------|-------|
 | [oq-manage](../../../.claude/skills/oq-manage/SKILL.md) | Mode A 識別「明確未解問題」時改走 oq-manage mode B；Mode B step 4 觸發 oq-manage mode B 開 OQ 卡 |
 | [vault-audit](../../../.claude/skills/vault-audit/SKILL.md) | 第二階段擴維度 11「raw 健康度」自動掃 status=raw > 90 / 180 天 |
-| [vault-insight](../../../.claude/skills/vault-insight/SKILL.md) | 第二階段加 raw（過濾 raw status）為素材來源 |
 | [misjudgement-record](../../../.claude/skills/misjudgement-record/SKILL.md) | 完全不交叉；誤審不存 raw |
 
 ## 八、相關卡
