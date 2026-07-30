@@ -12,7 +12,7 @@ Miles，印刷業 PM，負責兩個產品：**ERP 系統**（生產排程 / 採�
 | **ERP 系統** | ERP | 涵蓋生產排程、採購、倉儲、客戶訂單管理 |
 | **線上編輯器** | 線上編輯器 | B2B SaaS，客戶上傳圖片後依內容產生製作稿件（刀模線、壓克力開孔位置、固定版型套圖等） |
 
-→ 深度術語：`memory/Sens_wiki/wiki/erp/02-domain/ERP系統術語表.md`、`memory/Sens_wiki/wiki/編輯器/線上編輯器術語表.md`
+→ 深度術語：`memory/Sens_wiki/wiki/跨產品/印刷業共用術語表.md`（行業語言）、`memory/Sens_wiki/wiki/編輯器/線上編輯器術語表.md`。ERP 各實體、狀態、規則的定義不另立詞彙表，以各正本卡的一句話定位段為準
 
 ---
 
@@ -114,7 +114,7 @@ Miles，印刷業 PM，負責兩個產品：**ERP 系統**（生產排程 / 採�
   - 「min() 聚合」→「最少工單原則」或「基於 BOM 結構的齊套性邏輯 (Kitting Logic)」（描述取最小值的邏輯）
 - 應用位置：Notion 業務情境 DB、狀態機 spec、商業流程 spec 等所有相關文件
 - 每次修訂術語須同步更新所有相關文件，確保語境一致
-- 詳見 `memory/Sens_wiki/wiki/erp/02-domain/ERP系統術語表.md` 的完整術語表
+- 本對應表即為此規約的正本（wiki 不另立 ERP 術語表）
 
 **11. 跨頁面引用規則（Notion / BRD 引用）**
 - BRD / Spec / 討論文件內所有跨頁面引用，一律使用 `[可讀名稱](URL)` 格式，讓讀者可直接點擊跳轉
@@ -296,7 +296,7 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 
 ## ERP 高頻術語（熱快取）
 
-→ 完整術語：`memory/Sens_wiki/wiki/erp/02-domain/ERP系統術語表.md`
+→ ERP 的實體、狀態、規則定義**不設術語表**：查定義直接讀對應正本卡的「一句話定位」段，依 `[[business-domain-taxonomy]]` § 檢索規約定位（入口 `memory/Sens_wiki/wiki/erp/00-meta/erp_index.md`）。印刷業行業語言見 `memory/Sens_wiki/wiki/跨產品/印刷業共用術語表.md`
 
 ---
 

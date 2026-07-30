@@ -17,8 +17,7 @@ last-reviewed: 2026-07-29
 | `product-vision` | 產品願景 / 痛點 / 利害關係人 | `01-products/` |
 | `phase` | 產品 Phase 定義 | `01-products/phases.md` |
 | `metric` | KPI / 北極星指標 / Impact Score | `01-products/`、`01-products/kpi/` |
-| `domain` | 印刷業 domain knowledge | `02-domain/` |
-| `glossary` | 術語表 | `02-domain/glossary-*.md` |
+| `glossary` | 術語表（行業語言：換一家同業仍成立的詞彙） | `wiki/跨產品/`、`wiki/編輯器/` |
 | `role` | 角色 R&R | `03-roles/` |
 | `service-blueprint` | 服務藍圖（公司提供什麼服務、商業行為的邊界） | `04-business-logic/服務藍圖/` |
 | `business-rule` | 商業規則（決策邏輯、領域知識、外部約束） | `04-business-logic/` 各子目錄 |
@@ -334,7 +333,7 @@ ingested-to:                                           # status=ingested 時填
 |------|----------|
 | `00-meta/` | `meta` |
 | `01-products/` | `product-vision` / `phase` / `metric` |
-| `02-domain/` | `domain` / `glossary` |
+| `wiki/跨產品/`、`wiki/編輯器/`（vault 層，跨主題） | `glossary`（行業語言術語表）|
 | `03-roles/` | `role` / `meta`（`_alignment-report.md`／`規範 - 角色.md`）/ `example`（`範例 - 角色.md`）|
 | `04-business-logic/` | `service-blueprint` / `business-rule` / `meta`（`規範 - 商業邏輯.md`）/ `example`（`範例 - 服務藍圖.md`／`範例 - 商業規則.md`）|
 | `05-entities/` | `entity` / `meta`（`規範 - 實體.md`）/ `example`（`範例 - 實體.md`）|
