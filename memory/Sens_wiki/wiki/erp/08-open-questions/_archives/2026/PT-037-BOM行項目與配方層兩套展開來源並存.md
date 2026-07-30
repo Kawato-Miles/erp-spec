@@ -6,7 +6,9 @@ module:
 tags:
   - 領域/生產執行
 oq-id: PT-037
-status: open
+status: answered
+answered-at: 2026-07-30
+answered-by: Miles
 priority: high
 audience: internal
 raised-at: 2026-07-30
@@ -64,3 +66,11 @@ BOM 行項目只被兩份 spec 提及，波及面比預期小：
 不受影響項：[[印件配方]] 與 [[部件配方]] 的欄位定義、[[配方展開規則]] 的九條規則、Prototype 的 M6 四頁與展開行為（三案皆不動）；報價與 EC 兩側（零引用，任一案皆不波及）。
 
 裁決後要同步的位置：`openspec/specs/work-order/spec.md`（兩個 BOM 行項目 Requirement 的去留）、`openspec/specs/production-task/spec.md`（產線的帶入來源改為配方工序段或印務手選）、[[工單]] 卡（若採 B 或 C 需補該層的欄位與關聯）、[[生產任務]] 卡（展開來源敘述）、[[配方展開規則]]（若採 B 需補中間層的寫入規則）。
+
+## 決議（2026-07-30 Miles 拍板）
+
+**結論**：採 A 案，廢止 BOM 行項目層。印件不再持有 BOM 行清單——有配方者由 [[印件配方]] 與 [[部件配方]] 展開；無配方的一次性全客製品由印務在製程規劃時直接對 BOM 三類主檔挑項目建生產任務，料工資訊落在生產任務本身、不經中間層。
+
+**理由**：Prototype 現行行為就是 A 案，選 B 或 C 等於實作立刻與 spec 分歧；C 案主張的「事後查閱與成本追溯」職能已由「預估成本分項」（生產任務展開時凍結四分項）承擔，再留一個快照層是重複；A 案的代價（印件層失去單一料工彙總清單）是呈現問題不是資料問題，改由印件詳情頁跨旗下工單彙總生產任務承接。
+
+**落地去處**：`openspec/changes/cleanup-production-stage-specs/specs/work-order/spec.md` REMOVED「BOM 行項目管理」與「依 BOM 展開生產任務時帶入 BOM 引用欄位」（後者的行為正本改歸 `recipe-expansion`）；同 change 的 design.md § 決策四記錄裁決；[[工單]] 與 [[生產任務]] 兩卡的展開來源敘述本就只承認配方路線、不需改。印件層料工彙總的呈現歸批二的印件詳情頁介面工作。

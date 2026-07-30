@@ -4,7 +4,9 @@ module:
   - 訂單管理
   - 跨模組
 oq-id: SHP-006
-status: open
+status: answered
+answered-at: 2026-07-30
+answered-by: Miles
 priority: medium
 audience: internal
 raised-at: 2026-06-01
@@ -75,3 +77,11 @@ tags:
 
 - 不獨立 spec，於 order-management spec 內補出貨 Data Model + 狀態機 section
 - 優點：避免新增 spec 檔；缺點：出貨議題量若大，後續可能仍需拆出
+
+## 決議（2026-07-30 Miles 拍板）
+
+**結論**：出貨獨立成 `shipment` capability，不併入 order-management。時機為生產階段 openspec 清整的批二（與 M4 品檢、M5 派單同批）。
+
+**理由**：出貨有自己的單據（出貨單七態）、自己的角色接力（業務建單 → 揀貨人員裝箱 → 出貨人員交寄與送達）與自己的額度檢核（可出貨數量不得超過入庫數量），併進訂單模組會讓訂單 spec 再長一截且職責混淆。批二而非批一，是因為出貨對生產核心是單向依賴（吃品檢通過的入庫數），批一定案後不會回頭改。
+
+**落地去處**：`production-stage-openspec-cleanup-plan.md` § 三 capability 重組對照表與 § 四步驟 6；批二 change 建立 `openspec/specs/shipment/`。[[出貨單]] 與 [[出貨單狀態]] 兩卡維持欄位與狀態列舉正本，不改引 openspec。
