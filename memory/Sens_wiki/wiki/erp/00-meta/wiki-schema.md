@@ -431,8 +431,8 @@ ingested-to:                                           # status=ingested 時填
 ## 八、Wiki Link 規約
 
 - 內部連結：`[[節點名]]`、`[[節點名#段落]]`；**禁用別名**（`[[節點名]]` 的 `|` 會截斷表格儲存格且易斷鏈），補充說明寫在連結外
-- 連 OpenSpec / Prototype：用相對路徑 markdown link（如 `[spec.md](../../../openspec/specs/xxx/spec.md)`）
-- **禁止 wiki link 到 vault 外**（Obsidian 不解析）
+- **禁止指向實作文件**：卡的 frontmatter 與正文皆不得連 OpenSpec spec 或 Prototype 原始碼（實作對應屬 PRD 層，且 change 會 archive 或作廢、路徑必然失效）。需要指下游時，寫下游要解決的商業問題，不寫下游的檔案位置
+- **禁止 wiki link 到 vault 外**（Obsidian 不解析）；連 vault 外的非實作資源（法規、廠商規格書、外部服務文件）用相對路徑或 URL 的 markdown link
 
 ## 九、Anti-Pattern（vault-audit Error 級）
 

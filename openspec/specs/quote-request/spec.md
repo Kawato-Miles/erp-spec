@@ -517,7 +517,7 @@ QuoteRequest 資料模型 SHALL 新增 `requirement_note` 欄位（text，選填
 
 ### Requirement: 需求單印件單位來自共用 LOV
 
-需求單編輯頁的印件項目「單位」欄位 SHALL 為 dropdown 元件，選項來自 [prototype-shared-ui § 共用單位 LOV](../prototype-shared-ui/spec.md)。業務 SHALL NOT 自由輸入文字。
+需求單編輯頁的印件項目「單位」欄位 SHALL 為 dropdown 元件，選項為印件的單位值域（正本見 wiki [印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) 欄位表）。業務 SHALL NOT 自由輸入文字。
 
 #### Scenario: 需求單印件 dropdown 顯示完整 11 項
 

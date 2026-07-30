@@ -711,7 +711,7 @@ remaining = 發票金額 - folded
 
 - 小計 = 數量 × 單價（每筆品項皆須成立）
 - 發票金額 = 銷售額（未稅） + 稅額
-- 數量為純整數 ≤ 99999；單價為純整數（B2B 未稅 / B2C 含稅）；單位來自 `prototype-shared-ui` 共用單位 LOV（≤ 2 中文字 / ≤ 6 英數字）
+- 數量為純整數 ≤ 99999；單價為純整數（B2B 未稅 / B2C 含稅）；單位取自印件的單位值域（正本見 wiki [印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) 欄位表）
 
 **Priority**: P0
 
@@ -751,7 +751,7 @@ remaining = 發票金額 - folded
 
 - **GIVEN** 業務於品項列要選擇單位
 - **WHEN** 業務點擊單位欄位
-- **THEN** 系統 SHALL 顯示 dropdown，選項來自 [`prototype-shared-ui` § 共用單位 LOV](../prototype-shared-ui/spec.md)
+- **THEN** 系統 SHALL 顯示 dropdown，選項為印件的單位值域（正本見 wiki [印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) 欄位表）
 - **AND** 業務 SHALL NOT 自由輸入文字（防止填入超出 ezPay Varchar(2) 限制的值）
 
 #### Scenario: unitPrice label 依 Category 切換稅基提示

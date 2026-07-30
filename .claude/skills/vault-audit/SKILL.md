@@ -1,10 +1,10 @@
 ---
 name: vault-audit
 description: >
-  ERP_Vault 自審稽核 skill：對 wiki 執行 12 維度健康檢查（Karpathy LLM Wiki lint + Sens 特化），產出對話報告並追加 wiki/log.md。
+  ERP_Vault 自審稽核 skill：對 wiki 執行 13 維度健康檢查（Karpathy LLM Wiki lint + Sens 特化），產出對話報告並追加 wiki/log.md。
   觸發：Miles 說「跑 vault audit」「Vault 健康檢查」「audit vault」；主動建議時機——≥ 5 個 Vault 卡異動、change archive 後、每 20+ commit、raw 累積 ≥ 10 張 status=raw。
   不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）、KPI 進度追蹤（用 vault-insight）。
-  範圍鐵則（只讀 wiki/＋raw/ 唯讀）與 12 維度定義見本文。
+  範圍鐵則（只讀 wiki/＋raw/ 唯讀）與 13 維度定義見本文。
 ---
 
 # vault-audit
@@ -22,13 +22,13 @@ ERP_Vault 的 lint：找出**矛盾／過時／孤島／死鏈／缺欄位／違
 
 | 模式 | 觸發句 | 用途 |
 |------|--------|------|
-| **A 全量** | 「跑 vault audit」「audit vault」「全量稽核」 | 12 維度全掃 |
+| **A 全量** | 「跑 vault audit」「audit vault」「全量稽核」 | 13 維度全掃 |
 | **B 單維度** | 「跑維度 N audit」「只查孤島」 | 針對性檢查 |
 | **C 修復** | 「audit 並修復」「audit + fix」 | 全掃＋可自動修復項經 Miles 確認後執行 |
 
-## 二、12 個稽核維度
+## 二、13 個稽核維度
 
-> 維度 1-6 為通用 lint（Karpathy），7-12 為 Sens 特化。每維度產出：命中清單＋判定（OK / Warning / Error；維度 10 為 Info）。
+> 維度 1-6 為通用 lint（Karpathy），7-13 為 Sens 特化。每維度產出：命中清單＋判定（OK / Warning / Error；維度 10 為 Info）。
 
 ### 維度 1：頁面間矛盾
 
@@ -101,11 +101,14 @@ grep -rnE "待補|待釐清" memory/Sens_wiki/wiki/erp/0[34567]*/ --include="*.m
 
 **方向正確**：`source` 禁指 OpenSpec／Prototype（正確性根據只能往上：拍板／權責表／04 規則卡／法規）、禁指同層或下層卡；scenario 卡的 source 得並列狀態機卡為參考資料，但不得為唯一來源。
 
+**正文亦禁外連實作路徑**：frontmatter 之外，卡的正文與表格也不得出現 OpenSpec spec 或 Prototype 原始碼的路徑連結（實作對應屬 PRD 層；change 會 archive 或作廢、路徑必然失效）。歷史層豁免：`log.md`／`changelog.md`／`_archives/`／`raw/`；`08-open-questions/` 的 `source-link` 得記發現問題的實作位置（OQ 是問題單、非正本卡）。
+
 ```bash
 grep -rn -A3 "^source:" memory/Sens_wiki/wiki/ --include="*.md" | grep "openspec/\|sens-erp-prototype/"  # source 欄位（含 YAML 清單項）指實作路徑即 Error
+grep -rn "openspec/\|sens-erp-prototype/\|/erp/apps/" memory/Sens_wiki/wiki/erp/0[34567]*/ --include="*.md" | grep -v "08-open-questions/" | grep -v "_archives/"  # 正本卡正文外連實作路徑即 Error
 ```
 
-判定：OK＝方向全正確；Error＝source 指實作層（違反引用方向鐵則）或 source 鏈繞回自己（A 的 source 指 B、B 直接或間接指回 A；深鏈偵測邏輯待擴充，先查直接互指）。
+判定：OK＝方向全正確且正文無實作外連；Error＝`source` 指實作層、正本卡正文含實作路徑，或 source 鏈繞回自己（A 的 source 指 B、B 直接或間接指回 A；深鏈偵測邏輯待擴充，先查直接互指）。
 
 ### 維度 8：OQ 健康度
 
@@ -158,6 +161,24 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 
 判定：OK＝異動卡全數通過該型維度且範例卡同步日有效；Warning＝1-3 項未過；Error＝範例卡同步日早於規範修改（三層同 commit 鐵則被破壞）。
 
+### 維度 13：規則複寫（同一規則多處實質重述）
+
+**目的**：同一條規則寫在兩張卡上，改一處漏一處就變成矛盾——複寫是矛盾的前身，維度 1 只抓已經打架的，這條抓還沒打架但註定會打架的。正本原則見 [[erp_index]] § 增修紀律 3（規則只寫一次，其他層級引用不複寫）。
+
+**範圍**：本輪異動的正本卡（03／04／05／06／07），取法同維度 10。存量未異動卡不掃。
+
+**方法**（機械取證＋人工判讀，不可只靠 grep）：
+1. 從異動卡逐條抽出它陳述的規則句（含數值、閾值、角色、狀態值、觸發條件）。
+2. 每句取 2 至 3 個關鍵詞組合全庫搜（`obsidian search`，非 grep），排除歷史層與 OQ。
+3. 命中第二處時判斷屬哪一類：
+   - **實質重述**（兩處都在定義同一條規則）→ Error。處置：判定哪張是正本（依 [[scope-boundary]] 與各單元規範的正本歸屬），另一處改為 `[[卡名]]` 引用，只留該卡語境需要的一句話銜接。
+   - **引用**（一處定義、另一處以 `[[卡名]]` 指過去）→ OK，不計違規。
+   - **同名不同物**（兩處講的是不同實體的同名欄位或概念）→ Error，但處置是正名而非改引用（同名是混淆源本體）。
+
+**已知高風險位置**（歷史上出過事，優先掃）：工單建立來源、狀態轉換的觸發角色、欄位的計算口徑、外包與委外的粒度定義。
+
+判定：OK＝0 實質重述；Warning＝1-2 處；Error＝≥ 3 處或出現同名不同物。**發現時依鐵則並排呈報、不自行調和**（哪張是正本由 Miles 裁決）。
+
 ## 三、執行流程
 
 1. **宣告範圍與模式**（全量／單維度 N／修復）。
@@ -182,7 +203,7 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 4. **追加 wiki/log.md 一筆**（動作=健檢、標籤=audit；最新在上）：
 
 ```markdown
-## [YYYY-MM-DD HH:MM] 健檢(audit) | 全量／單維度（N）／修復，12 維度 X 通過
+## [YYYY-MM-DD HH:MM] 健檢(audit) | 全量／單維度（N）／修復，13 維度 X 通過
 - 變更：稽核 ERP_Vault，<總體狀態>；只列非 OK 維度與筆數
 - 動機：免（健檢類）
 - 衝突：無（或列發現的矛盾＋已開 OQ）

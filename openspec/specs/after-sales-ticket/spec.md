@@ -315,7 +315,7 @@ OrderAdjustment 金額修改依金額編輯閘門（正本見 wiki [訂單異動
 
 補印場景下，業務 SHALL 於 ticket 內建立補印 PrintItem。系統建 PrintItem 時：
 
-- 自動寫入 `PrintItem.type = '補印印件'`（refine-after-sales-refund-and-add-supplementary-print change 新增，詳見 [prototype-shared-ui spec § PrintItemTypeLabel 共用元件](../prototype-shared-ui/spec.md) 三值列舉設計）
+- 自動寫入印件類型＝補印印件（三值列舉正本見 wiki [印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) 欄位表）
 - 自動寫入 `related_after_sales_ticket_id` FK，供下游工單流程回溯來源
 
 **[本 change 變更] 補印審稿自動通過 + 沿用原稿**：
