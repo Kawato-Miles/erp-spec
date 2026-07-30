@@ -5,7 +5,7 @@
 本規格與各模組 spec 的 Scenarios 互補：模組 spec 定義 requirement-level 行為（WHEN/THEN），本規格提供跨模組端到端的狀態追蹤表。
 
 - 來源：[業務情境 DB](https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05)（Notion 發布版本）
-- 相依規格：各模組 spec 狀態機 Requirement（work-order / production-execution / order-management / order-billing / order-adjustment / prepress-review / after-sales-ticket / consultation-request）、wiki [04-business-logic/](../../../../memory/Sens_wiki/wiki/erp/04-business-logic/)（商業流程正本）、wiki [03-roles/](../../../../memory/Sens_wiki/wiki/erp/03-roles/)（角色職責正本）
+- 相依規格：各模組 spec 狀態機 Requirement（work-order / production-execution / order-management / order-billing / order-adjustment / prepress-review / after-sales-ticket / consultation-request）、wiki [04-business-logic/](../../../memory/Sens_wiki/wiki/erp/04-business-logic/)（商業流程正本）、wiki [03-roles/](../../../memory/Sens_wiki/wiki/erp/03-roles/)（角色職責正本）
 
 ---
 ## Requirements

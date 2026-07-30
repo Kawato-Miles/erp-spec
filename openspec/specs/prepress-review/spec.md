@@ -215,7 +215,7 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 
 審稿人員 SHALL 可於「待審訂單」模組展開訂單後，勾選**同訂單內**多個分派給自己的待審印件（審稿維度為「等待審稿」或「已補件」）執行批次審稿，一次送出整批判定（同訂單限制由訂單展開結構天然滿足）。線上單與線下單皆適用。
 
-批次審稿規則（檔案與備註規則正本見 [稿件管理規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/領域知識/稿件管理規則.md)）：
+批次審稿規則（檔案與備註規則正本見 [稿件管理規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/稿件管理規則.md)）：
 
 - **整批同一結果**：一次批次送審 SHALL 整批合格或整批不合格；系統 MUST NOT 允許同批內混合結果。個別印件有問題時由審稿人員自批次移除、另行單獨送審。
 - **批次合格的檔案規則**：
@@ -990,7 +990,7 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 
 ### Requirement: 打樣結果業務判定
 
-業務（owner of 訂單）SHALL 於**打樣印件**（與大貨印件同時建立，見 wiki [打樣流程](../../../../memory/Sens_wiki/wiki/erp/04-business-logic/打樣流程.md)）對應的**打樣 WorkOrder**（`WorkOrder.type = 打樣`，見 [work-order spec L825](../work-order/spec.md)）推進至「已完成」後，於該打樣 WorkOrder 詳情頁判定打樣結果。
+業務（owner of 訂單）SHALL 於**打樣印件**（與大貨印件同時建立，見 wiki [打樣流程](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/打樣流程.md)）對應的**打樣 WorkOrder**（`WorkOrder.type = 打樣`，見 [work-order spec L825](../work-order/spec.md)）推進至「已完成」後，於該打樣 WorkOrder 詳情頁判定打樣結果。
 
 **欄位定義**（PrintItem 新增）：
 - `sampleResult` enum（`待確認` / `OK` / `NG-製程問題` / `NG-稿件問題`）— 預設 `待確認`（新建印件初始值）；業務判定後寫入對應結果

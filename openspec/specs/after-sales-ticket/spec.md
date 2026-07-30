@@ -49,7 +49,7 @@
 
 本 spec 中所有 Requirement / Scenario 提及「業務」執行的售後 ticket 動作（建立 ticket、送出決議、修改 `case_category` / `resolution`、修改客訴內容 / 結案後客戶回饋、append `additional_complaint_log`、貼 Slack URL、結案等）SHALL 等價適用於「諮詢」角色。
 
-依 wiki [諮詢](../../../../memory/Sens_wiki/wiki/erp/03-roles/諮詢.md) 角色定義，諮詢角色 SHALL 具備與業務角色相同的模組權限。本 Requirement 在 after-sales-ticket spec 內顯式化此原則，避免讀者誤以為諮詢角色不在範圍。
+依 wiki [諮詢](../../../memory/Sens_wiki/wiki/erp/03-roles/諮詢.md) 角色定義，諮詢角色 SHALL 具備與業務角色相同的模組權限。本 Requirement 在 after-sales-ticket spec 內顯式化此原則，避免讀者誤以為諮詢角色不在範圍。
 
 **Priority**: P0
 
@@ -703,7 +703,7 @@ sidebar 入口 SHALL 持續顯示當前使用者未結案 ticket 數字徽章（
 - 使用者 SHALL 可透過 status select 篩選為「全部」或「已結案」查歷史
 - **無 owner filter**：列出全公司所有 ticket，使用者可透過「業務 / 諮詢負責人」filter 自行收斂
 
-next action 分組定義沿用 [after-sales-ticket spec § Requirement: 我的售後服務作業頁](../../../specs/after-sales-ticket/spec.md) 的四組（逾期 / 待填決議 / 待建關聯動作 / 待結案），互斥；逾期優先於其他三組。
+next action 分組定義沿用 本 spec § 我的售後服務作業頁 的四組（逾期 / 待填決議 / 待建關聯動作 / 待結案），互斥；逾期優先於其他三組。
 
 **預設排序**：`opened_at` 升序（最久未處理優先），與「我的售後服務」一致。
 

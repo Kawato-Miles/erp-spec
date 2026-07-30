@@ -172,7 +172,7 @@ pricing_selection 採混合帶入：目前由使用者手動選擇；拼版模�
 > 欄位正本（業務可見欄位表）在 wiki 實體卡；本段僅保留實作層計價結構與引用結構。
 >
 > - 裝訂方式欄位正本：[wiki 裝訂主檔實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/裝訂主檔.md) § 欄位（業務可見）
-> - 計價子分支組成與公式正本：[wiki BOM 結構卡](../../../memory/Sens_wiki/wiki/erp/04-business-logic/領域知識/BOM結構.md)
+> - 計價子分支組成與公式正本：[wiki BOM 結構卡](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md)
 
 以下為實作層計價設定與生產任務引用結構（技術層欄位，非業務欄位正本；wiki 裝訂主檔卡明文將計價軸項目與價格矩陣格列為實作規格）：
 

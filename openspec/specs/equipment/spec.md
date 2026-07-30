@@ -11,7 +11,7 @@
 
 系統 SHALL 提供設備主檔，維護工廠內所有設備的基本資料。每筆設備 MUST 包含：設備名稱、適用工序（能力標籤，選機匹配的依據）、所屬產線、啟用狀態、每日可用時數，以及印刷計價參數（開機費、階梯價、色數模式與特殊色倍率）與自身成本參數（折舊、固定開機損）。
 
-所屬產線 SHALL 為產線標籤（印件、BOM 部件配方工序段與設備三個掛點共用同一套標籤，正本見 wiki [產線](../../../../memory/Sens_wiki/wiki/erp/05-entities/產線.md)），SHALL NOT 為獨立於標籤之外的固定枚舉。設備主檔的維護責任為印務。欄位定義的正本見 wiki [設備](../../../../memory/Sens_wiki/wiki/erp/05-entities/設備.md)。
+所屬產線 SHALL 為產線標籤（印件、BOM 部件配方工序段與設備三個掛點共用同一套標籤，正本見 wiki [產線](../../../memory/Sens_wiki/wiki/erp/05-entities/產線.md)），SHALL NOT 為獨立於標籤之外的固定枚舉。設備主檔的維護責任為印務。欄位定義的正本見 wiki [設備](../../../memory/Sens_wiki/wiki/erp/05-entities/設備.md)。
 
 設備停用時，已排入其佇列的生產任務 SHALL 移回待排區並提示筆數；佇列與負荷的呈現歸 `production-overview`（M3），本 spec 不規範其版型。
 
