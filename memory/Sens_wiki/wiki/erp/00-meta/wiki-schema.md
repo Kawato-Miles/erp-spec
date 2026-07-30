@@ -334,7 +334,7 @@ ingested-to:                                           # status=ingested 時填
 | `00-meta/` | `meta` |
 | `01-products/` | `product-vision` / `phase` / `metric` |
 | `wiki/跨產品/`、`wiki/編輯器/`（vault 層，跨主題） | `glossary`（行業語言術語表）|
-| `03-roles/` | `role` / `meta`（`_alignment-report.md`／`規範 - 角色.md`）/ `example`（`範例 - 角色.md`）|
+| `03-roles/` | `role` / `meta`（`規範 - 角色.md`）/ `example`（`範例 - 角色.md`）|
 | `04-business-logic/` | `service-blueprint` / `business-rule` / `meta`（`規範 - 商業邏輯.md`）/ `example`（`範例 - 服務藍圖.md`／`範例 - 商業規則.md`）|
 | `05-entities/` | `entity` / `meta`（`規範 - 實體.md`）/ `example`（`範例 - 實體.md`）|
 | `06-state-machines/` | `state-machine` / `meta`（`規範 - 狀態機.md`）/ `example`（`範例 - 狀態機.md`）|

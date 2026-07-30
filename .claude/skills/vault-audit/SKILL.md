@@ -80,11 +80,13 @@ obsidian eval "Object.keys(app.metadataCache.unresolvedLinks).filter(k => Object
 
 **目的**：操作紀律（OQ 開檔、繁中語意化）靠巡檢守住。
 
-1. 無 inline `[!question]` callout、無「待確認／待釐清／需確認／尚未確認／待補」inline 措辭（OQ 須開獨立卡；引用既有 OQ 卡的 wiki link 不算違規）：
+1. 無 inline `[!question]` callout、無 inline OQ 措辭（OQ 須開獨立卡；引用既有 OQ 卡的 wiki link 不算違規）。
+
+**pattern 範圍限「待補／待釐清」，不掛「待確認／需確認／尚未確認」**：後三者在正本卡大量作為業務語意（狀態名「待補件」、打樣結果值「待確認」、訂單異動狀態「金額尚待確認」、業務事實「尚未確認可製作」），全掃會產生數十筆假陽性而淹掉真違規（2026-07-30 實測：放寬版 40+ 筆命中僅 2 筆真違規）。後三者改由稽核者讀卡時人工判讀，不進機械掃描。排除項：同行含 `[[`（引用了 OQ 卡）、`待補件`（訂單狀態名）、規範卡（描述禁令本身）。
 
 ```bash
 grep -rn "\[!question\]" memory/Sens_wiki/wiki/ --include="*.md" | grep -v "08-open-questions/"
-grep -rn "（待補\|（待釐清\|（待確認" memory/Sens_wiki/wiki/ --include="*.md" | grep -v "08-open-questions/" | grep -v "待 \[\["
+grep -rnE "待補|待釐清" memory/Sens_wiki/wiki/erp/0[34567]*/ --include="*.md" | grep -v "08-open-questions/" | grep -v "\[\[" | grep -v "待補件" | grep -v "規範 - "
 ```
 
 2. 命名繁中語意化：卡名與段落禁直譯、禁中英夾雜（rules § 五）；OQ 卡命名 `<前綴>-<NNN>-<簡述>`。
