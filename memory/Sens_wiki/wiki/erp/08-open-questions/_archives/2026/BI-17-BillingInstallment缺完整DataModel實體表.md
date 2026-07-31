@@ -18,8 +18,6 @@ related-change: unify-billing-installment-and-reconciliation-csv（遺留）
 expected-resolution-at: 另批補強
 answered-at: 2026-07-31
 answered-by: Miles
-tags:
-  - 領域/款項與發票
 ---
 
 # BI-17：BillingInstallment 缺完整 Data Model 實體表

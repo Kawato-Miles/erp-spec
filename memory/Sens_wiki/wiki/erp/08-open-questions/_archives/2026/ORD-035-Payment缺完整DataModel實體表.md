@@ -16,8 +16,6 @@ related-oq:
   - BI-17
 answered-at: 2026-07-31
 answered-by: Miles
-tags:
-  - 領域/款項與發票
 ---
 
 # ORD-035：Payment 缺完整 Data Model 實體表（阻 Notion schema 完整推送）

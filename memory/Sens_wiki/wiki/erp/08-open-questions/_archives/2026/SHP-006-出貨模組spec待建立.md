@@ -20,8 +20,6 @@ related-oq:
   - "[[SHP-005-分批出貨觸發節點]]"
   - "[[SHP-007-揀貨裝箱回報載體與出貨單狀態顆粒度]]"
 expected-resolution-at: 2026-Q3
-tags:
-  - 領域/履約與售後
 ---
 
 # SHP-006：何時建立出貨模組 spec（補 Data Model + 狀態機）

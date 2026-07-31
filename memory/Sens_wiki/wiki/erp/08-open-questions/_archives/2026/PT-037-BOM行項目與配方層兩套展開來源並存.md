@@ -3,8 +3,6 @@ type: open-question
 module:
   - 工單
   - 生產任務
-tags:
-  - 領域/生產執行
 oq-id: PT-037
 status: answered
 answered-at: 2026-07-30
