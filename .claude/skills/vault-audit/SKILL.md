@@ -1,10 +1,10 @@
 ---
 name: vault-audit
 description: >
-  ERP_Vault 自審稽核 skill：對 wiki 執行 13 維度健康檢查（Karpathy LLM Wiki lint + Sens 特化），產出對話報告並追加 wiki/log.md。
+  ERP_Vault 自審稽核 skill：對 wiki 執行 14 維度健康檢查（Karpathy LLM Wiki lint + Sens 特化），產出對話報告並追加 wiki/log.md。
   觸發：Miles 說「跑 vault audit」「Vault 健康檢查」「audit vault」；主動建議時機——≥ 5 個 Vault 卡異動、change archive 後、每 20+ commit、raw 累積 ≥ 10 張 status=raw。
   不適用：OpenSpec spec 稽核、Prototype 程式碼稽核（用 e2e 測試）。
-  範圍鐵則（只讀 wiki/＋raw/ 唯讀）與 13 維度定義見本文。
+  範圍鐵則（只讀 wiki/＋raw/ 唯讀）與 14 維度定義見本文。
 ---
 
 # vault-audit
@@ -23,13 +23,13 @@ ERP_Vault 的 lint：找出**矛盾／過時／孤島／死鏈／缺欄位／違
 
 | 模式 | 觸發句 | 用途 |
 |------|--------|------|
-| **A 全量** | 「跑 vault audit」「audit vault」「全量稽核」 | 13 維度全掃 |
+| **A 全量** | 「跑 vault audit」「audit vault」「全量稽核」 | 14 維度全掃 |
 | **B 單維度** | 「跑維度 N audit」「只查孤島」 | 針對性檢查 |
 | **C 修復** | 「audit 並修復」「audit + fix」 | 全掃＋可自動修復項經 Miles 確認後執行 |
 
-## 二、13 個稽核維度
+## 二、14 個稽核維度
 
-> 維度 1-6 為通用 lint（Karpathy），7-13 為 Sens 特化。每維度產出：命中清單＋判定（OK / Warning / Error；維度 10 為 Info）。
+> 維度 1-6 為通用 lint（Karpathy），7-14 為 Sens 特化。每維度產出：命中清單＋判定（OK / Warning / Error；維度 10 為 Info）。
 
 ### 維度 1：頁面間矛盾
 
@@ -182,6 +182,19 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 
 判定：OK＝0 實質重述；Warning＝1-2 處；Error＝≥ 3 處或出現同名不同物。**發現時依鐵則並排呈報、不自行調和**（哪張是正本由 Miles 裁決）。
 
+### 維度 14：欄位名跨卡一致（名詞定義以實體卡為準）
+
+**目的**：欄位名是純文字、改名不會連動，規則卡與情境卡抄一份名字就會漂——`訂單總額` 與 `應收總額` 曾在同一格並存兩個月無人發現（2026-07-31 修）。
+
+**鐵則**：名詞定義一律以 `05-entities/` 實體卡的欄位表為準。規則卡、狀態機卡、情境卡寫規則與應用時，**用字必須與實體卡欄位名逐字相同**；語意不清或找不到對應欄位時停下確認，附建議的同步方式，不自行改名、不自創同義詞。
+
+方法：
+1. 建立欄位名清單——掃 `05-entities/` 各卡「欄位（業務可見）」段表格第一欄，得 `<實體卡, 欄位名>` 全集。
+2. 反向掃 `03-roles` / `04-business-logic` / `06-state-machines` / `07-scenarios`：出現在正文的金額、日期、狀態類名詞若形似欄位（帶「金額」「日期」「狀態」「數量」「總額」「淨額」等尾詞），比對是否命中步 1 清單。
+3. 命中不到者逐項判讀：屬實體卡已改名而下游未跟上（Error）／屬自創同義詞（Error，處置為正名）／屬非欄位的業務語彙（不計）。
+
+判定：OK＝0 個未命中；Warning＝1-3 個；Error＝> 3 個或發現同一概念兩個名字並存。
+
 ## 三、執行流程
 
 1. **宣告範圍與模式**（全量／單維度 N／修復）。
@@ -210,7 +223,7 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 4. **追加 wiki/log.md 一筆**（動作=健檢、標籤=audit；最新在上）：
 
 ```markdown
-## [YYYY-MM-DD HH:MM] 健檢(audit) | 全量／單維度（N）／修復，13 維度 X 通過
+## [YYYY-MM-DD HH:MM] 健檢(audit) | 全量／單維度（N）／修復，14 維度 X 通過
 - 變更：稽核 ERP_Vault，<總體狀態>；只列非 OK 維度與筆數
 - 動機：免（健檢類）
 - 衝突：無（或列發現的矛盾＋已開 OQ）

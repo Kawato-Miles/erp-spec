@@ -3,7 +3,7 @@ type: open-question
 module:
   - 訂單管理
 oq-id: ORD-035
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-06-03
@@ -14,6 +14,8 @@ related-vault:
   - "[[付款發票邏輯]]"
 related-oq:
   - BI-17
+answered-at: 2026-07-31
+answered-by: Miles
 tags:
   - 領域/款項與發票
 ---
@@ -34,6 +36,10 @@ tags:
 
 ## 待解答
 
-- [ ] 是否另案補 Payment 完整 Data Model 實體表於 order-management（或 prototype-data-store）§ Data Model
-- [ ] 欄位來源：自 prototype store 型別 + 各 Requirement 彙整為單一權威表
-- [ ] 補齊後再對齊 Notion 資料欄位 DB 完整欄位（與 BI-17 一併處理）
+- [x] 是否另案補完整欄位表 → 已補，但落點不是 OpenSpec：欄位正本 2026-06-09 起歸 wiki 實體卡，[[帳務]] § 欄位（業務可見）的收款紀錄段即現行正本
+- [x] 欄位來源 → 同上，已彙整成單一權威表
+- [x] 對齊外部發布 → 以 wiki 欄位表為來源
+
+## 決議（2026-07-31，Miles）
+
+與 [[BI-17-BillingInstallment缺完整DataModel實體表]] 同批結案，同一理由：本卡前提（欄位表該補在 OpenSpec Data Model）已因分工變更失效，欄位正本歸 wiki 實體卡、OpenSpec 不再承載欄位表。

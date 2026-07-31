@@ -3,7 +3,7 @@ type: open-question
 module:
   - 訂單管理
 oq-id: BI-17
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-30
@@ -16,6 +16,8 @@ related-oq:
   - BI-7
 related-change: unify-billing-installment-and-reconciliation-csv（遺留）
 expected-resolution-at: 另批補強
+answered-at: 2026-07-31
+answered-by: Miles
 tags:
   - 領域/款項與發票
 ---
@@ -35,9 +37,13 @@ PlannedInvoice→BillingInstallment 全遷移（2026-05-30）後，order-managem
 
 ## 待解答
 
-- [ ] 是否補 BillingInstallment 完整 Data Model 實體表於 order-management（或 prototype-data-store）§ Data Model
-- [ ] 欄位來源：從 prototype `src/types/billingInstallment.ts` + unify-billing Requirements 彙整為單一權威表
-- [ ] 與 PaymentAllocation / BillingActivityEvent 子實體的 cross-link
+- [x] 是否補完整欄位表 → 已補，但落點不是 OpenSpec：欄位正本 2026-06-09 起歸 wiki 實體卡，[[帳務]] § 欄位（業務可見）的請款期次段已列 19 個欄位（含預計金額、預計收款日、原始預計收款日與原始預計開票日等凍結基準、已收與已退金額）
+- [x] 欄位來源 → 同上，已彙整成單一權威表
+- [x] 子實體 cross-link → 收款入帳明細與活動紀錄同列於 [[帳務]] 卡
+
+## 決議（2026-07-31，Miles）
+
+本卡的前提（欄位表該補在 OpenSpec Data Model）已因分工變更失效：欄位正本歸 wiki 實體卡、OpenSpec 不再承載欄位表。[[帳務]] 卡的請款期次欄位表即現行正本，缺口消失。[[請款期次規劃]] § 範圍外原本標「欄位正本待補」的措辭同批改掉。
 
 ## 候選方案
 

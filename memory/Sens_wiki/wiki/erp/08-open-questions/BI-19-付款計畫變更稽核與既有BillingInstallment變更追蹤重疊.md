@@ -25,7 +25,7 @@ related-oq:
 |------|---------------------|------------|
 | 實體 | BillingInstallment（請款期次）| 「PaymentPlan 期次」（疑為統一前舊命名）|
 | 凍結基準欄 | `originalDueDate` / `originalExpectedInvoiceDate` | `original_expected_date`（凍結 `scheduled_date`）|
-| 變更計數 | `changeCount`（金額 / 收款日 / 開票日任一變更 +1）| `change_count`（審核通過後 scheduled_date 變更 +1）|
+| 變更計數 | `changeCount`（金額 / 收款日 / 開發票日任一變更 +1）| `change_count`（審核通過後 scheduled_date 變更 +1）|
 | 凍結時點 | 業務主管審核通過當下（`approveOrderByManager`）| 審核通過後首次變更時寫入 original_expected_date |
 
 main order-management § Data Model 現同時存在兩套（既有 BillingInstallment.change_count 約 L3111 / 新增 L3971-3972 / L4311-4312），同一請款期次實體出現兩個 change_count 定義。
@@ -40,7 +40,7 @@ main order-management § Data Model 現同時存在兩套（既有 BillingInstal
 ## 待解答
 
 - [ ] align- 的「PaymentPlan 期次」是否即 BillingInstallment（統一後實體）？若是，新欄是否應收斂進既有 BillingInstallment.changeCount / originalDueDate 體系，不另立 `change_count` / `original_expected_date`？
-- [ ] 兩套計數的「變更」定義不同（BI-1 計金額/收款日/開票日；align- 計 scheduled_date）——是同一件事換名，還是真有兩個不同指標？
+- [ ] 兩套計數的「變更」定義不同（BI-1 計金額/收款日/開發票日；align- 計 scheduled_date）——是同一件事換名，還是真有兩個不同指標？
 - [ ] 若收斂為一套，main spec § Data Model 與「付款計畫變更分階段稽核」Requirement 需重寫對齊 BI-1，移除重複欄。
 
 ## 候選方案（若有）
