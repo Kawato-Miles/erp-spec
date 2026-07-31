@@ -10,7 +10,7 @@
 
 - [ ] 2.1 `qc` 依 delta 重寫（1 removed／6 added）
 - [ ] 2.2 新建 `shipment` main spec（7 條 Requirement）
-- [ ] 2.3 新建 `dispatch-order` main spec（9 條 Requirement）
+- [ ] 2.3 新建 `dispatch-order` main spec（10 條 Requirement）
 - [ ] 2.4 `order-management` 依 delta 改三處（QC 狀態徽章、向上傳遞鏈、印件棄用連動）
 - [ ] 2.5 `business-scenarios` 依 delta 改兩處（全流程驗證的 QC 單欄、製程審核與工單收回的任務層級欄）
 - [ ] 2.6 更新 `openspec/config.yaml` 的 main spec 數量（20 → 22）與模組敘述
