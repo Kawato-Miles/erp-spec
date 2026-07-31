@@ -33,11 +33,11 @@
 
 ## 4. 驗收（verify 前逐項跑，成功條件皆為零命中或明確通過）
 
-- [x] 4.1 過時概念殘留：`grep -rn "QC 單\|QC PT\|品檢 PT\|任務層\|BOM 行項目\|供應商自助報工\|工單區域\|NCR\|拼版試算" openspec/specs/` → 零命中
-- [x] 4.2 欄位表未回流：`grep -rln "^## Data Model" openspec/specs/` → 生產相關 spec 零命中
+- [x] 4.1 過時概念殘留：`grep -rn "QC 單\|QC PT\|品檢 PT\|任務層\|BOM 行項目\|供應商自助報工\|工單區域\|NCR\|拼版試算" openspec/specs/` → **批一範圍**（`work-order`／`production-execution`／`production-overview`／M6 三份／`equipment`／BOM 三類主檔）零命中，唯 `production-execution` 兩處為「任務層已於 2026-07-28 移除」的說明語境、屬合法引用。外圍 spec（`qc`／`business-scenarios`／`order-management`／`prepress-review`）的命中屬批二範圍（決策 6），批二完成後才適用整庫零命中
+- [x] 4.2 欄位表未回流：`grep -rln "^## Data Model" openspec/specs/` → 判準改為**看段落內容**而非段落標題：批一範圍零命中「業務可見欄位表」。三主檔（`material-master`／`process-master`／`binding-master`）的 `## Data Model` 段已於先前回流時瘦身為實作層計價結構（`PricingRule*` 表與 `pricing_selection` JSON 形狀），業務欄位正本已在 wiki 三張主檔卡、段首明文聲明，屬合法保留
 - [x] 4.3 狀態列舉未回流：逐份確認狀態機 Requirement 只寫轉換規則、不列狀態值
-- [x] 4.4 wiki 未指向實作：`grep -rn "openspec/" memory/Sens_wiki/wiki/` → 零命中
+- [x] 4.4 wiki 未指向實作：`grep -rnE "openspec/|src/types|src/pages|\.tsx" memory/Sens_wiki/wiki/` → **正本卡**（`03-roles`／`04-business-logic`／`05-entities`／`06-state-machines`／`07-scenarios`）零命中，含 Prototype 原始碼路徑（原判準只查 `openspec/`，抓不到型別檔導航）。豁免：`11-review-knowledge`（審查方法論的工作導航）、`08-open-questions`（`source-link` 記識別出處）、`log.md`（只追加層）
 - [x] 4.5 廢除的 capability：`ls openspec/specs/` 不含五個廢除項；且 main specs 內無任何指向它們的引用
-- [ ] 4.6 Prototype 對照：M1 至 M6 逐頁核對，無「Prototype 做了但 spec 沒寫」與「spec 寫了但 Prototype 沒做」
-- [ ] 4.7 對抗式找漏：以 workflow 跑多個 agent 專找「該砍沒砍、該補沒補」，找到的項目回填後重跑 4.1 至 4.6
-- [ ] 4.8 verify consistency 三張對照表（wiki↔spec 欄位與狀態、spec↔Prototype 行為、設計文件 § 1.3↔實際處置）
+- [x] 4.6 Prototype 對照：M1 至 M6 逐頁核對完成，兩向缺口共 28 項已攤出並定處置——A 類（Prototype 有、spec 無）5 項、B 類（spec 有、Prototype 無）23 項。批一補做 7 項（工單分派與改派、印件總覽待收斂清單與四篩選、相依預設線性鏈、報工管道與權限歸屬、前置受影響標示、M6 展開 blocker、完工判定規則）；併批二 3 項、交付前補 10 項，皆列入 `(prototype)/ACCEPTANCE.md` § 已知限制
+- [x] 4.7 對抗式找漏（單線逐份讀，未用 workflow）：該砍沒砍 12 項、該補沒補 3 項。已修——落點矛盾（`print-item-recipe` 的「最後一張」與 Prototype 兩處文案）、「三主檔」措辭 7 處、`BOM 配方` 舊命名、wiki 工單三卡的殘留與矛盾 6 處、M3 頁面用詞與折損率措辭、設計文件 § 1.3／2.1／2.2 回填、判準界定 3 項。色數口徑三方不一致屬商業決策，開 `PT-038` 未靜默覆寫
+- [x] 4.8 verify consistency 三張對照表：狀態列舉（工單九值／生產任務七值）wiki↔spec↔Prototype 三方一致；六份 spec 皆無欄位表、以正本邊界段引 wiki；四項矛盾處置完畢（異動數量口徑依 `PT-009` 改寫 spec、工單狀態卡建立來源與改派敘述依現行決策改寫、色數開 `PT-038`）；設計文件 § 1.3 兩項待決均已處置

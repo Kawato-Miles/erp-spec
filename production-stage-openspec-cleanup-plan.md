@@ -116,11 +116,14 @@ openspec spec 經長期迭代累積矛盾與過時內容，與 wiki 現況脫節
 
 ## 七、驗收判準
 
+> 判準的適用範圍以**當批**為界：批一＝`work-order`／`production-execution`／`production-overview`／M6 三份／`equipment`／BOM 三類主檔；外圍 spec 的過時概念屬批二（決策 6），批二完成後才適用整庫條件。
+
 | 檢查 | 指令 | 成功條件 |
 |---|---|---|
-| 過時概念殘留 | `grep -rn "QC 單\|QC PT\|品檢 PT\|任務層\|BOM 行項目\|供應商自助報工\|工單區域\|NCR\|拼版試算" openspec/specs/` | 零命中 |
-| 欄位表未回流 | `grep -rln "^## Data Model" openspec/specs/` | 生產相關 spec 零命中 |
+| 過時概念殘留 | `grep -rn "QC 單\|QC PT\|品檢 PT\|任務層\|BOM 行項目\|供應商自助報工\|工單區域\|NCR\|拼版試算" openspec/specs/` | 當批範圍零命中（「任務層已移除」的說明語境除外）|
+| 欄位表未回流 | `grep -rln "^## Data Model" openspec/specs/` | 當批範圍零命中 |
 | 狀態列舉未回流 | 逐份確認狀態機 Requirement 只寫轉換規則 | 零命中列舉 |
-| wiki 未指向 openspec | `grep -rn "openspec/" memory/Sens_wiki/wiki/` | 零命中 |
+| wiki 未指向實作 | `grep -rnE "openspec/\|src/types\|src/pages\|\.tsx" memory/Sens_wiki/wiki/` | 正本卡（03 至 07）零命中；豁免 `11-review-knowledge`、`08-open-questions`、`log.md` |
 | 廢除的 capability | `ls openspec/specs/` | 不含七個廢除項 |
-| Prototype 對照 | M1 至 M6 逐頁核對 | 無「Prototype 做了但 spec 沒寫」與反向缺口 |
+| Prototype 對照 | M1 至 M6 逐頁核對 | 兩向缺口逐項攤出並定處置（批一必補／併批二／交付前補）|
+| 三方對照表 | wiki↔spec 欄位與狀態、spec↔Prototype 行為、設計文件 § 1.3↔實際處置 | 矛盾項皆有裁決或已開 OQ |
