@@ -80,7 +80,7 @@ Miles，印刷業 PM，負責兩個產品：**ERP 系統**（生產排程 / 採�
 **5. 文件即規格**
 - 所有決策應記錄在相關檔案（商業流程 spec、各模組 spec Data Model、Notion 業務情境 DB）
 - 設計時應對照檔案檢查一致性（如本次發現 Notion 資料欄位 DB 缺欄位）
-- 每次修訂應註記版本與理由
+- 修訂理由寫進 `wiki/log.md`，正文不留迭代史
 
 **6. 角色驗證優於假設**
 - 流程中的每個動作都應明確指定執行角色（Who）
@@ -90,13 +90,11 @@ Miles，印刷業 PM，負責兩個產品：**ERP 系統**（生產排程 / 採�
 - 應用場景：設計訂單 / 工單 / 出貨 / QC 等涉及跨角色協作的流程時，必檢
 
 **7. 文件格式與呈現精簡**
-- 所有文件移除 emoji 或視覺符號（如 ✅、❌），保持內容精簡、易讀
 - 表格與流程圖應使用純文字或標準 Markdown 符號（如 `→`）表達邏輯
 - 避免過度視覺化，專注內容本身
 
 **8. 用語一致性與台灣在地化**
-- 所有文件使用**繁體中文**，確保用語符合台灣業界習慣
-- 避免國際英文直譯或外來詞，優先採用在地常用術語
+> 通則（繁體中文、禁中英夾雜、避免 PRC 用語、技術詞括號附註）正本在全域 `~/.claude/CLAUDE.md` § 語言與用語，本節只列 Sens 專屬對照。
 - 範例修正：
   - 「狀態快照」→ 改為「狀態說明」（台灣不使用 Snapshot 直譯）
   - 文件中的列表項目應使用「說明」或「描述」而非外來用詞
@@ -104,7 +102,7 @@ Miles，印刷業 PM，負責兩個產品：**ERP 系統**（生產排程 / 採�
   - 「Prototype 走查」→ 改為「Prototype 試用」（事後操作介面檢視，語意比「走查」精準）
   - 「dogfood / dogfooding」→ 改為「親身試用」或「自用試跑」（自己用自己的產品 / 流程；對話與描述用中文，僅 source enum 等技術 token 可保留 `prototype-dogfood`）
 - Spec 中的角色名稱、流程步驟應符合公司實際用語與台灣行業慣例
-- **業務情境卡內容禁中英夾雜**：欄位名 / 實體名一律用介面中文（payment → 付款紀錄、printItem → 印件、orderAdjustment → 訂單異動、quoteRequest → 需求單、workOrder → 工單、productionTask → 生產任務、reviewRound → 審稿輪次、paymentPlan → 付款計畫、afterSalesTicket → 售後服務單 等），詳見 [[wiki/erp/07-scenarios/規範 - 業務情境]]
+- **業務情境卡的欄位名 / 實體名對照**：一律用介面中文（payment → 付款紀錄、printItem → 印件、orderAdjustment → 訂單異動、quoteRequest → 需求單、workOrder → 工單、productionTask → 生產任務、reviewRound → 審稿輪次、paymentPlan → 付款計畫、afterSalesTicket → 售後服務單 等），詳見 [[wiki/erp/07-scenarios/規範 - 業務情境]]
 
 **9. ERP 系統術語統一規範（業務友善）**
 - 所有技術術語應轉化為業務容易理解的表達方式
@@ -306,12 +304,12 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 
 ## 偏好
 
-- 文件語言：**繁體中文**
+- 全域偏好（回覆風格、語言與用語、文件迭代分層）正本在 `~/.claude/CLAUDE.md`；sub-agent 不會自動拿到該檔，需要遵守時明讀
 - Spec 格式：**OpenSpec**（`openspec/specs/`）為工作版本（正本）；對開發的發布以 Linear 為唯一正本（經 `linear-delivery` skill 交付，內容自包含，不再使用 Notion 作為 BRD 發布版）。變更管理使用 OpenSpec change 工作流
 - **Prototype / 介面設計**：Prototype 實作在 GitHub Repo `sens-erp-prototype`（本地路徑 `/Users/b-f-03-029/sens-erp-prototype`），技術棧為 React + TypeScript + Tailwind + shadcn/ui。**搬移中（2026-07 起）**：Prototype 工作正逐步搬移至 `erp` repo（本地路徑 `/Users/b-f-03-029/erp`，統一 design system、前端直串，完成後取代 Lovable，改走開分支＋前端主管 PR 合併；工作模式見 memory `project_erp_repo_prototype_workflow`）。搬移完成前 sens-erp-prototype＋Lovable 仍為現行，本條為並存期間的狀態正本
 - **ERP 平台限制**（2026-07-21 修訂）：辦公角色（業務、印務、生管、會計等）僅支援電腦版（桌機瀏覽器）；**現場回報介面例外開放行動版**，範圍寫死於四個介面——師傅報工、品檢記錄、揀貨裝箱回報、出貨／送達確認（師傅、品檢人員、揀貨人員、出貨人員四角色用 ERP 手機版）；廠務轉交回報走 Slack 表單通道（正本在系統、通知帶單預填、保留補登路徑、身分對映四前提）。決策脈絡見 Vault OQ PT-001 決議（已封存）
-- 回應風格：重點優先，條列清楚，避免冗詞
 - 優先非同步溝通
+- 寫或改程式碼時載入 skill `andrej-karpathy-skills:karpathy-guidelines`
 
 ---
 
@@ -358,68 +356,3 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 - Notion URL 唯一正本：`memory/shared/notion-index.md`
 - OpenSpec 規格目錄：`openspec/specs/`（20 個模組，目錄結構即自描述）
 - Prototype repo：`/Users/b-f-03-029/sens-erp-prototype`（設計權威：`DESIGN.md`；實作進度：`README.md`）
-# CLAUDE.md
-
-Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
-
-**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
-
-## 1. Think Before Coding
-
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
-
-Before implementing:
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them - don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
-
-## 2. Simplicity First
-
-**Minimum code that solves the problem. Nothing speculative.**
-
-- No features beyond what was asked.
-- No abstractions for single-use code.
-- No "flexibility" or "configurability" that wasn't requested.
-- No error handling for impossible scenarios.
-- If you write 200 lines and it could be 50, rewrite it.
-
-Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
-
-## 3. Surgical Changes
-
-**Touch only what you must. Clean up only your own mess.**
-
-When editing existing code:
-- Don't "improve" adjacent code, comments, or formatting.
-- Don't refactor things that aren't broken.
-- Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it - don't delete it.
-
-When your changes create orphans:
-- Remove imports/variables/functions that YOUR changes made unused.
-- Don't remove pre-existing dead code unless asked.
-
-The test: Every changed line should trace directly to the user's request.
-
-## 4. Goal-Driven Execution
-
-**Define success criteria. Loop until verified.**
-
-Transform tasks into verifiable goals:
-- "Add validation" → "Write tests for invalid inputs, then make them pass"
-- "Fix the bug" → "Write a test that reproduces it, then make it pass"
-- "Refactor X" → "Ensure tests pass before and after"
-
-For multi-step tasks, state a brief plan:
-```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
-```
-
-Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
-
----
-
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.

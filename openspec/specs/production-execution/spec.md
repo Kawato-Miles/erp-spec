@@ -226,7 +226,7 @@
 
 ### Requirement: 生產任務狀態轉換
 
-生產任務狀態的列舉正本見 wiki [生產任務狀態](../../../memory/Sens_wiki/wiki/erp/06-state-machines/生產任務狀態.md)，本 spec 只規範轉換規則。
+生產任務狀態 SHALL 依下列規則推進，狀態列舉的正本見 wiki [生產任務狀態](../../../memory/Sens_wiki/wiki/erp/06-state-machines/生產任務狀態.md)，本 spec 只規範轉換規則、不複寫列舉。
 
 場內路徑由報工驅動（待處理 → 首次報工 → 製作中 → 累計達目標 → 已完成）。外發路徑的在途段（已送集運商／運送中）SHALL 由派單狀態**自動映射**，SHALL NOT 要求印務手動同步。外發任務 SHALL 在揀貨人員完成回廠點收確認時自動轉為已完成，並放行下游。
 
