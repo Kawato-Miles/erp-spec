@@ -3,7 +3,7 @@ type: open-question
 module:
   - 印前審稿
 oq-id: AR-15
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-07-02
@@ -15,6 +15,8 @@ related-vault:
 related-oq:
   - "[[CR-8-諮詢webhook建單失敗補救機制]]"
 expected-resolution-at: OpenSpec change 實作階段
+answered-at: 2026-08-01
+answered-by: Miles
 tags:
   - 領域/印前審稿
 ---
@@ -41,3 +43,9 @@ tags:
 ## 拍板紀錄
 
 （待 OpenSpec change 實作階段裁決）
+
+## 決議（2026-08-01，Miles）
+
+**結論**：現階段不另設補救機制——討論串是可選輔助、失敗不阻斷分派。補救方式併入**全系統統一做提醒機制**時一起設計。已寫入 [[審稿討論Slack串接約束]] 例外情境。
+
+**理由**：單獨為一個可選輔助設計失敗補救，會做出一套與其他通知不一致的機制；等統一設計提醒時一次做完。

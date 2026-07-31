@@ -3,7 +3,7 @@ type: open-question
 module:
   - 印前審稿
 oq-id: AR-9
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-21
@@ -12,6 +12,8 @@ source-link: US-AR-003 批 2 senior-pm 審查
 related-vault:
   - "[[維護審稿員能力等級]]"
 expected-resolution-at: 2026-Q3
+answered-at: 2026-08-01
+answered-by: Miles
 tags:
   - 領域/印前審稿
 ---
@@ -50,3 +52,9 @@ senior-pm 視角審查指出，缺乏初值規則導致：
 ## 待 Miles 確認
 
 實務上新審稿員到職時，能力等級是由誰、何時設定？
+
+## 決議（2026-08-01，Miles）
+
+**結論**：不設初值——審稿能力等級**可為空**，空值代表這個人不做審稿、不會進任何分派候選。要讓他接審稿，審稿主管評估後設值即可。欄位見 [[人員]]。
+
+**理由**：沒設值就不是審稿人員，這是最誠實的表達；預設一個數字反而讓「還沒評估的人」被當成能審最簡單件的人。

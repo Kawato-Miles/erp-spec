@@ -3,7 +3,7 @@ type: open-question
 module:
   - 印前審稿
 oq-id: AR-5
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-21
@@ -13,6 +13,8 @@ related-vault:
   - "[[印件審稿]]"
   - "[[審稿分配規則]]"
 expected-resolution-at: 2026-Q3
+answered-at: 2026-08-01
+answered-by: Miles
 tags:
   - 領域/印前審稿
 ---
@@ -58,3 +60,9 @@ US-AR-007 step 1 引此 OQ wiki link，待 Miles 解答後再補入排序與急�
 1. 預設排序採哪個選項（A/B/C/D/E 或其他）？
 2. 若採急單標記，由誰標記（業務 / 業務主管 / 系統自動）？
 3. 急單是否會繞過自動分派規則（直接指定審稿員）或仍走原分派 + 置頂顯示？
+
+## 決議（2026-08-01，Miles）
+
+**結論**：預設依交期近的先審（非先進先出）；急單沿用 [[訂單]] 既有的「是否急件」欄位標示，不另設審稿專屬的急單標記。
+
+**理由**：交期是審稿排序真正該服務的目標；另設一套審稿專屬急單標記會與訂單的急件欄位並存、兩邊可能不一致。

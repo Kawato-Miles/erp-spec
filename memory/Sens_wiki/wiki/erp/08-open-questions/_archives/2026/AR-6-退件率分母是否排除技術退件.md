@@ -3,7 +3,7 @@ type: open-question
 module:
   - 印前審稿
 oq-id: AR-6
-status: open
+status: answered
 priority: medium
 audience: external
 raised-at: 2026-05-21
@@ -12,6 +12,8 @@ source-link: US-AR-006 / US-AR-005 批 1 雙視角審查
 related-vault:
   - "[[印件審稿]]"
 expected-resolution-at: 2026-Q3
+answered-at: 2026-08-01
+answered-by: Miles
 tags:
   - 領域/印前審稿
 ---
@@ -52,3 +54,9 @@ erp-consultant + senior-pm 雙視角同步指出此 gap，影響 KPI 公式正�
 ## 待 Miles 確認
 
 選哪個方案？或補新方案？
+
+## 決議（2026-08-01，Miles）
+
+**結論**：退件率把全部不合格輪次都算進去，技術性退件**不排除**。原「技術性退件不計入不合格率分母」的寫法作廢（[[審稿輪次]] 已改）。
+
+**理由**：退件就是退件——客戶檔案損毀也要退回去重給，這件事本身就發生了。退件原因的 10 項分類只用來看原因分布，不拿來調整分母。

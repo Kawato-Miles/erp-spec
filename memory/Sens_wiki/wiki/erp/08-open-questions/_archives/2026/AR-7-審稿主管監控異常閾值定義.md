@@ -3,7 +3,7 @@ type: open-question
 module:
   - 印前審稿
 oq-id: AR-7
-status: open
+status: answered
 priority: low
 audience: internal
 raised-at: 2026-05-21
@@ -12,6 +12,8 @@ source-link: US-AR-005 / US-AR-006 批 1 雙視角審查
 related-vault:
   - "[[印件審稿]]"
 expected-resolution-at: 2026-Q4
+answered-at: 2026-08-01
+answered-by: Miles
 tags:
   - 領域/印前審稿
 ---
@@ -51,3 +53,9 @@ spec L632 明示「低樣本數不標異常」設計決策（系統不自動標�
 ## 待 Miles 確認
 
 選哪個方案？或補新方案？
+
+## 決議（2026-08-01，Miles）
+
+**結論**：不定死異常閾值。看板只呈現數字與部門對照，異常由主管自行判斷（[[審稿主管]] 現行寫法即此）。
+
+**理由**：現階段不做過多 KPI 管理指標；閾值寫死反而會製造假警報與被無視的提醒。
