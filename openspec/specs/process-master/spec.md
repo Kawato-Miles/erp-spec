@@ -18,6 +18,8 @@
 
 ---
 
+**範圍外（本輪掛點，不展開）**：多工單合併上機時的用量分攤屬拼版功能（本輪掛點，見 `production-stage-high-level-design.md` § 0.2）。時間計價的時間來源取 BOM 主檔的製作天數與工時、非排程演算法動態估算（排程為人腦決策＋負荷可視化，見 `production-overview`）。成品計價與工序面積的語意區分見 wiki [工序主檔](../../../memory/Sens_wiki/wiki/erp/05-entities/工序主檔.md)（成品計價＝產品總面積、滿版處理；工序面積＝工序處理面積、獨立輸入必填不回退成品尺寸）。工序廠商即外包承作方——生產任務的生產單位類別由該廠商決定並唯讀（見 `work-order` § 生產任務結構與帶入規則）。
+
 ## Requirements
 
 ### Requirement: 工序群組管理
@@ -294,18 +296,3 @@ pricing_selection 採混合帶入：目前由使用者手動選擇；拼版模�
 - 同 E2E-3，使用者預期會擴單，手動改為 `{ tier_id: "200-299" }`
 - **計算**：工序成本 = 3 × 150 = 450 NTD
 - 生產任務留存 pricing_selection_default = `{ tier_id: "100-199" }`、pricing_selection = `{ tier_id: "200-299" }`、pricing_selection_overridden = true
-
----
-
-## Open Questions
-
-1. **「成品面積」與「工序面積」的語意區分**：前者為產品總面積（滿版處理用），後者未見明確定義；何時該選何者？是否存在驗證規則避免管理員選錯？
-2. **多工單拼版下的用量換算**：排程模組上線後，印件拼版可能將多工單合併上機。原紙張數 / 原紙令數 / 上機印數等 tier_type 的「用量」如何在多工單間分攤至各生產任務？
-3. **時間計價的時間來源權威**：排程上線後，時間由印件 / 設備標準工時推算還是由排程演算法動態估算？誰是權威來源？
-4. **工序廠商（vendor）為外包語意還是制費語意**：FK → Supplier 指外包給該廠商施作，還是僅為制費參考廠商？影響後續外包單、應付帳款模組的整合
-
----
-
-## Version History
-
-- v0.1（2026-04-17）：初版，依 Figma 中台介面稿（node-id: 124-67074 / 2-2098 / 2-4142 / 2-3165）逆向建立；定義兩層結構、七種計價方式（3 巢狀 + 4 單一級距）、生產任務引用 pricing_selection 形狀與混合帶入模式；採統一 schema（ProcessPricingRange + ProcessPricingMatrix + ProcessPricingTier）

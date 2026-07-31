@@ -17,6 +17,8 @@
 
 ---
 
+**範圍外（本輪掛點，不展開）**：採購單位與銷售單位不一致時的換算（列表可見採購「噸」、銷售「噸／張／dm²」）屬採購與庫存模組，物料庫存量帳為本輪掛點（見 `production-stage-high-level-design.md` § 0.2）。材料規格的「自定義」命名約束與 `pricing_selection` 覆寫歷程屬實作參數。三種計價分支的計算公式正本見 wiki [BOM結構](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md)（按面積已收斂為「單獨面積」與「總面積」兩支，皆為單件或總面積 × 查表值 × 數量）。
+
 ## Requirements
 
 ### Requirement: 材料群組管理
@@ -310,19 +312,3 @@ pricing_selection 採混合帶入：目前由使用者手動選擇；拼版模�
 - 同 E2E-3，使用者預期擴單，手動改為 `{ qty_tier: "200-299" }`
 - **計算**：材料成本 = 3 × 150 = 450 元
 - 生產任務留存 pricing_selection_default = `{ qty_tier: "100-199" }`、pricing_selection = `{ qty_tier: "200-299" }`、pricing_selection_overridden = true
-
----
-
-## Open Questions
-
-1. **按面積用量單位**：PriceMatrix.price 對應的用量計算基準為「每 m²」還是「每區間固定價」？影響 E2E-2 的實際成本換算
-2. **綜容積 vs 單價面積的計算差異**：兩者資料結構相同，但業務結帳語意是否有別？
-3. **單張計「自定義」規格**：由使用者自由命名，是否需命名規則約束（避免重複或歧義）？
-4. **pricing_selection 覆寫稽核**：除留存 default / override 兩版外，是否需記錄覆寫歷程（who、when、why）？
-5. **採購單位 / 銷售單位不一致**：列表可見採購「噸」、銷售「噸」或「張」「dm²」等；換算邏輯在哪一層處理（材料主檔 vs 採購 / 庫存模組）？
-
----
-
-## Version History
-
-- v0.1（2026-04-17）：初版，依 Figma 中台介面稿（node-id: 122-29763 / 366-181798 / 366-182377 / 2-19344 / 366-187221 / 366-188456）逆向建立；定義三層結構、三種計價分支、生產任務引用 pricing_selection 形狀與混合帶入模式
