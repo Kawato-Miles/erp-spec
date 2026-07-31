@@ -8,7 +8,7 @@ priority: high
 audience: internal
 raised-at: 2026-05-28
 raised-by: senior-pm (Phase 1 釐清範疇，作為隱含假設標記)
-source-link: 付款期次與對帳 CSV 統一 change 設計討論
+source-link: 收款項目與對帳 CSV 統一 change 設計討論
 related-vault:
   - [[../04-business-logic/付款發票邏輯]]
 related-change: unify-billing-installment-and-reconciliation-csv
@@ -17,7 +17,7 @@ tags:
   - 領域/款項與發票
 ---
 
-# BI-2：折讓後期次 / 發票「已收訖」判定基準
+# BI-2：折讓後收款項目 / 發票「已收訖」判定基準
 
 ## 背景
 
@@ -27,7 +27,7 @@ senior-pm Phase 1 提出兩個方向，傾向 A（業界主流）。
 
 ## 問題
 
-折讓後期次/發票「已收訖」判定基準為何？
+折讓後收款項目/發票「已收訖」判定基準為何？
 
 範例：發票 100K 折讓 -10K，客戶付 90K
 
@@ -36,7 +36,7 @@ senior-pm Phase 1 提出兩個方向，傾向 A（業界主流）。
   - 對齊 NetSuite / SAP credit memo + invoice 收款判定
 - **B 方向：發票面額為準**
   - 客戶付 90K + 系統內部認列 10K 折讓才算收訖
-  - 期次永遠以面額為基準對照
+  - 收款項目永遠以面額為基準對照
 
 ## 影響範圍
 

@@ -54,7 +54,7 @@ last-case-added: 2026-05-29
   2. **規則**：開始審查前 **MUST** 寫設計理解摘要；若不確定機制，**MUST** 在摘要中以「不確定 X，假設 Y」標記
   3. **適用 agent**：所有三個 agent
 
-### 2026-05-08「期次待收金額」與「watchlist」命名誤審
+### 2026-05-08「收款項目待收金額」與「watchlist」命名誤審
 
 - **誤審 agent**：erp-consultant
 - **詳見**：[[erp-naming-misjudgements]]（ERP 顧問專屬，因涉及 5 秒測試規則）

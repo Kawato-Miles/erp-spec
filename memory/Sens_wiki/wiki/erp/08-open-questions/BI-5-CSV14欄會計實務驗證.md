@@ -8,7 +8,7 @@ priority: high
 audience: external
 raised-at: 2026-05-28
 raised-by: ceo-reviewer (Phase 2 Challenge 5)
-source-link: 付款期次與對帳 CSV 統一 change 設計討論
+source-link: 收款項目與對帳 CSV 統一 change 設計討論
 related-vault:
   - [[../03-roles/會計]]
 related-change: unify-billing-installment-and-reconciliation-csv
@@ -22,7 +22,7 @@ tags:
 ## 背景
 
 本 change 新增財務對帳 CSV 匯出功能，14 欄定稿（Miles 拍板）：
-1. 帳務公司 / 2. 發票號碼 / 3. 訂單編號 / 4. 案名 / 5. 開立日期 / 6. 應收日期（繼承來源期次）/ 7. 客戶名稱 / 8. 總金額(含稅) / 9. 備註 / 10. 收款日期 / 11. 收款狀態 / 12. 業務名稱 / 13. 開立日期月底 / 14. 天數（應收日−開立日，帳期）
+1. 帳務公司 / 2. 發票號碼 / 3. 訂單編號 / 4. 案名 / 5. 開立日期 / 6. 應收日期（繼承來源收款項目）/ 7. 客戶名稱 / 8. 總金額(含稅) / 9. 備註 / 10. 收款日期 / 11. 收款狀態 / 12. 業務名稱 / 13. 開立日期月底 / 14. 天數（應收日−開立日，帳期）
 
 ceo-reviewer Phase 2 Challenge 5 指出：14 欄是 Miles 設計的，但「會計實際操作流程」需要實證才能驗證符合月結對帳實務。
 

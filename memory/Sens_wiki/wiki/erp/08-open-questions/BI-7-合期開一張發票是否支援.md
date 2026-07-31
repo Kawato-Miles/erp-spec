@@ -8,7 +8,7 @@ priority: low
 audience: internal
 raised-at: 2026-05-28
 raised-by: senior-pm (Phase 1 PM 假設)
-source-link: 付款期次與對帳 CSV 統一 change 設計討論
+source-link: 收款項目與對帳 CSV 統一 change 設計討論
 related-vault:
   - [[../05-entities/訂單]]
 related-change: unify-billing-installment-and-reconciliation-csv
@@ -21,7 +21,7 @@ tags:
 
 ## 背景
 
-本 change 採「期次↔發票 1:1 嚴格約束」（Invoice.sourceBillingInstallmentId NOT NULL UNIQUE FK，Miles 拍板）。拆票 = 拆期是合理方向（拆票時連期次一起拆，獨立平輩期次）。
+本 change 採「收款項目↔發票 1:1 嚴格約束」（Invoice.sourceBillingInstallmentId NOT NULL UNIQUE FK，Miles 拍板）。拆票 = 拆期是合理方向（拆票時連收款項目一起拆，獨立平輩收款項目）。
 
 但**反向**情境「合期」（多期合併開一張發票）目前不支援：若業務想把訂金 + 中期款合併開一張票，現行模型必須先「合期」（將兩期合併成一期）再開發票。
 
@@ -31,14 +31,14 @@ senior-pm Phase 1 假設「1:1 模型下預設不支援合期」，待 Miles 拍
 
 候選方案：
 
-1. **A 預設不支援**（PM 傾向）：1:1 主軸保留，業務若想合期須先在期次列表手動「合併兩期」再開發票（提供合期 action）
-2. **B 支援例外合期**：一張發票對應 N 個期次（破壞 1:1 主軸但保留彈性）
+1. **A 預設不支援**（PM 傾向）：1:1 主軸保留，業務若想合期須先在收款項目列表手動「合併兩期」再開發票（提供合期 action）
+2. **B 支援例外合期**：一張發票對應 N 個收款項目（破壞 1:1 主軸但保留彈性）
 
 ## 影響範圍
 
 - 1:1 模型一致性
 - 業界邊緣情境覆蓋率（合期場景的真實頻率）
-- CSV 14 欄資料對齊（合期會讓「應收日」「備註」需從 N 個期次推導）
+- CSV 14 欄資料對齊（合期會讓「應收日」「備註」需從 N 個收款項目推導）
 
 ## 待釐清
 

@@ -31,11 +31,11 @@ expected-resolution-at: 2026-06-15
 |----|------------|
 | US-ORD-022-業務拆期保留稽核軌跡 | 「拆此期按鈕」「Dialog」 |
 | US-ORD-024-會計匯出14欄對帳CSV | 「匯出 CSV 按鈕」「預覽」 |
-| US-ORD-025-業務查看期次原始vs現況對照 | 「對照顯示」「視覺差異」「紅色標記」 |
+| US-ORD-025-業務查看收款項目原始vs現況對照 | 「對照顯示」「視覺差異」「紅色標記」 |
 | US-ORD-026-業務建補收OA免主管核可直接執行 | 「直接執行按鈕」「emerald 提示橫幅」「amber 警示」 |
 | US-ORD-027-業務主管核可退款訂單異動 | 「待主管審核列表」「Dialog」「sky 提示橫幅」 |
 | US-ORD-028-業務查看溢收預收未分配 | 「badge 標示」「對帳 UI」 |
-| US-ORD-031-期次規劃invariant警示與大額補收紅標 | 「警示橫幅」「amber 警示」「BellRing」 |
+| US-ORD-031-收款項目規劃invariant警示與大額補收紅標 | 「警示橫幅」「amber 警示」「BellRing」 |
 | US-ORD-032-製作後印件規格異動通知印務 | 「Side Panel」「Info Banner」「Toast」「disabled」 |
 
 ## 根因

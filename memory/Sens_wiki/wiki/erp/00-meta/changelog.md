@@ -1046,7 +1046,7 @@ Archive 位置：
 2. **Layer 2**（commit 587e4e3）— PlannedInvoice 業務 UI 完整移除 + 開立發票流程整合 + 一期多發票 Table 欄位
    - store / seedData：plannedInvoices state + addPlannedInvoice + 諮詢三情境雙寫移除（保留 BillingInstallment 寫入）
    - OrderInvoiceSection：PlannedInvoice CRUD 區段 ~200 行 + 預計發票列表渲染段 ~150 行 + PlannedInvoiceStatusBadge 整段移除
-   - 「開立發票」入口從期次 row 觸發（不切 Tab + Dialog 共用）+「手動開立」維持原名 + Dialog 內加「來源請款期次」必選下拉
+   - 「開立發票」入口從收款項目 row 觸發（不切 Tab + Dialog 共用）+「手動開立」維持原名 + Dialog 內加「來源收款項目」必選下拉
    - 修 React Fragment list key warning（invoices.map 內 `<>` 改 React.Fragment key）
    - BillingInstallmentListCard：「一鍵開票」改 icon 無文字 + 新增「歷史發票」Table 欄位（顯示「目前 X / 歷史 Y」）
    - OrderDetail：state lift + invoices TabsContent forceMount
@@ -1063,12 +1063,12 @@ Archive 位置：
 
 **Miles 紀律遵守**：
 - ✅ 減法設計：3 layer 累計刪除約 1000 行 dead code（-554 / +63 在 Layer 3 commit、加上 Layer 1 / 2 約 ~500 行）
-- ✅ 業務心智模型直觀：「沖銷期次」/「手動開立」/「逾期天數」直觀詞取代「分配核銷」/「臨時開立」
+- ✅ 業務心智模型直觀：「沖銷收款項目」/「手動開立」/「逾期天數」直觀詞取代「分配核銷」/「臨時開立」
 - ✅ 零自動引導：移除「補規劃這筆差額」CTA / 跨 Tab 自動跳轉等過度設計
 - ✅ 業務 UI 不再引用任何 PaymentPlan / PlannedInvoice / PaymentInvoice（mock + 型別保留作 buildBillingInstallmentsFromLegacy 內部 seed data）
 
 **餘留 follow-up**（plan 餘留項 R1 / R2 / R3）：
-- BillingInstallmentAllocationTable inline 元件 + addPaymentWithAllocations store action（收款新增 Dialog 內期次勾選表）
+- BillingInstallmentAllocationTable inline 元件 + addPaymentWithAllocations store action（收款新增 Dialog 內收款項目勾選表）
 - PaymentPlan / PlannedInvoice 型別檔與 mock 檔正式移除（重寫 backfill 為靜態 mockBillingInstallments.ts）
 - 既有 list key warning 修補（多處 `.map` 未補 key、非本 cutover 引入）
 
@@ -1163,18 +1163,18 @@ Archive 位置：
 
 ---
 
-## [2026-05-28 需求調整] 收款項目（原請款期次）6 項調整 + OQ-BI-A 拍板
+## [2026-05-28 需求調整] 收款項目（原收款項目）6 項調整 + OQ-BI-A 拍板
 
 **模式**：追加需求調整軌跡（不跑稽核）
 
-**觸發**：Miles 對「請款期次」區塊提 6 項調整需求（prototype commit b31d8b3）
+**觸發**：Miles 對「收款項目」區塊提 6 項調整需求（prototype commit b31d8b3）
 
 **完成內容**：
-1. **欄位 / 標題改名**：「請款期次」→「收款項目」；「期」→「序號」；「應收日」→「預計收款日」；「預計開票日」→「預計開立發票日」
+1. **欄位 / 標題改名**：「收款項目」→「收款項目」；「期」→「序號」；「應收日」→「預計收款日」；「預計開票日」→「預計開立發票日」
 2. **OQ-BI-A 拍板**（原始日期基準凍結時點）：採方案 2「業務主管審核訂單通過時凍結」
    - 業務脈絡：收款項目於訂單建立時填寫、業務主管審核訂單時審視收款計劃 → 審核通過 = 原始基準凍結點
    - approveOrderByManager 連動凍結該訂單所有未取消收款項目 original 值 + changeCount 歸零；審核前修改不計次
-   - 諮詢 / 系統自動建期次（不經審核）沿用「建立當下凍結」，解決「方案 2 對無審核節點訂單失效」風險
+   - 諮詢 / 系統自動建收款項目（不經審核）沿用「建立當下凍結」，解決「方案 2 對無審核節點訂單失效」風險
    - BI-1 OQ 卡已更新為 resolved
 3. **修改次數計數規則**：一次儲存若金額 / 預計收款日 / 預計開立發票日任一變更 → changeCount +1（不論改幾欄）；純改描述 / 備註不計次
 4. **已開立發票不可刪除**：invoicingStatus='已開立' 的收款項目刪除按鈕 disabled + 提示「請先作廢發票」
@@ -1267,7 +1267,7 @@ Archive 位置：
 CR-5 諮詢取消退款 OA 審核路徑 / CR-6 諮詢取消專屬待開發票是否廢除 / BI-15 對帳主軸改已開發票後未開票應收呈現。
 
 ### Step 5 閉環驗證（非 false completion）
-M=26 未轉 N（本次不修卡），但經分類確認 M 項「非既有 know-how 缺漏、是待定案設計 / 他議題漂移」，已由 OQ + plan + 本稽核報告承載 → 不算假完成。已答事項 14 項彙整供 propose 避免重複問（半額 CR-3 / 金流數字 / 取消理由 / 退款 SLA / 取消 Payment 回退 OA ORD-003 / 處理中 Payment 不入 GL ORD-019 / 期次凍結 BI-1 / top-down 連鎖 / 角色分工）。
+M=26 未轉 N（本次不修卡），但經分類確認 M 項「非既有 know-how 缺漏、是待定案設計 / 他議題漂移」，已由 OQ + plan + 本稽核報告承載 → 不算假完成。已答事項 14 項彙整供 propose 避免重複問（半額 CR-3 / 金流數字 / 取消理由 / 退款 SLA / 取消 Payment 回退 OA ORD-003 / 處理中 Payment 不入 GL ORD-019 / 收款項目凍結 BI-1 / top-down 連鎖 / 角色分工）。
 
 ### propose 須帶入 OQ
 直接 CR-5/CR-6/BI-15 + 對帳改主軸連動重審 BI-5（CSV14欄）/ BI-11（對帳警示）/ BI-10（作廢篩選）+ 退款 OA 連帶 BI-9 / ORD-004 / ORD-025。
@@ -1405,7 +1405,7 @@ M=26 未轉 N（本次不修卡），但經分類確認 M 項「非既有 know-h
 - `04-business-logic/訂單異動規則.md`（退款已執行認列 L82-89、應收公式 L92-96、補收退款不對稱、新增「明細時點分界」節）
 - `04-business-logic/對帳一致性.md`（新增應退差額 + 退款完成非循環錨點）
 - `04-business-logic/付款發票邏輯.md`（§5B 連帶表 L84-85 兩列作廢重寫）
-- `06-state-machines/訂單狀態.md`（L42 鎖定點改訂單完成）、`訂單異動狀態.md`（已執行語意）、`分期請款狀態.md`
+- `06-state-machines/訂單狀態.md`（L42 鎖定點改訂單完成）、`訂單異動狀態.md`（已執行語意）、`收款項目狀態.md`
 - `05-entities/訂單.md`、`印件.md`（明細金額編輯時點）
 - `07-scenarios/訂單異動流程.md`（旅程 A-D）
 - `13-user-stories/order-management/`：US-ORD-026/027/035；US-ORD-013/011（後二者本身為舊退款模型、順帶修正）
@@ -1450,8 +1450,8 @@ M=26 未轉 N（本次不修卡），但經分類確認 M 項「非既有 know-h
 - **2026-05-30**：諮詢取消退費異動單改為系統建已核可。
 - **2026-05-28**：建立補收/退款不對稱分權。
 
-### 分期請款狀態
-→ 正本卡：[[分期請款狀態]]
+### 收款項目狀態
+→ 正本卡：[[收款項目狀態]]
 
 - **2026-05-28**：BillingInstallment 合併取代 PaymentPlan + PlannedInvoice。
 

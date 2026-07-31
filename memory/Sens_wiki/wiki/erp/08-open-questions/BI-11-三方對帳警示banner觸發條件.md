@@ -8,7 +8,7 @@ priority: medium
 audience: internal
 raised-at: 2026-05-28
 raised-by: erp-consultant (Phase 3 C-PM-2 反向挑戰)
-source-link: 付款期次與對帳 CSV 統一 change 設計討論
+source-link: 收款項目與對帳 CSV 統一 change 設計討論
 related-vault:
   - [[../05-entities/訂單]]
 related-change: unify-billing-installment-and-reconciliation-csv
@@ -21,9 +21,9 @@ tags:
 
 ## 背景
 
-顧問 C-PM-2 採納：補收 OA 已執行（應收 +N 立即認列）+ 業務尚未建期次承載該補收金額時，OrderReconciliationPanel 應顯示警示 banner「OA 已執行 N 元、但未對應期次規劃」+ action button「建立期次」。
+顧問 C-PM-2 採納：補收 OA 已執行（應收 +N 立即認列）+ 業務尚未建收款項目承載該補收金額時，OrderReconciliationPanel 應顯示警示 banner「OA 已執行 N 元、但未對應收款項目規劃」+ action button「建立收款項目」。
 
-目前 OrderBillingInstallmentSection 已部分整合（顯示應收 vs 期次合計差額警示），但 OrderReconciliationPanel 跨 panel 一致性、警示時機、UX 文案需細化。
+目前 OrderBillingInstallmentSection 已部分整合（顯示應收 vs 收款項目合計差額警示），但 OrderReconciliationPanel 跨 panel 一致性、警示時機、UX 文案需細化。
 
 ## 問題
 
@@ -37,10 +37,10 @@ tags:
    - OrderReconciliationPanel 對帳檢視（task 4.8 未做）
    - 兩處同步顯示 vs 擇一
 3. **UX 文案**
-   - 「OA 已執行 N 元、但未對應期次規劃」（目前）
-   - 「應收較期次合計多 N 元，請補建期次承載」
+   - 「OA 已執行 N 元、但未對應收款項目規劃」（目前）
+   - 「應收較收款項目合計多 N 元，請補建收款項目承載」
 4. **action button**
-   - 「建立期次」一鍵開 BillingInstallmentEditDialog 預填差額（已做）
+   - 「建立收款項目」一鍵開 BillingInstallmentEditDialog 預填差額（已做）
    - 是否提供「忽略此差額」選項（目前無）
 
 ## 影響範圍
@@ -51,7 +51,7 @@ tags:
 ## 待釐清
 
 - 業務 dogfood 時警示出現頻率與接受度
-- 應收 vs 期次合計小數誤差處理（雙欄計價未稅 / 含稅換算）
+- 應收 vs 收款項目合計小數誤差處理（雙欄計價未稅 / 含稅換算）
 
 ## 來源
 
