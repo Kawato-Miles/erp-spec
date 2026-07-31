@@ -1520,7 +1520,7 @@ EC 專屬類型（`點數` EC 會員儲值、線上自定義來源等）於 EC �
 - **WHEN** 印務在印件詳情頁查看工單與生產任務區塊
 - **THEN** 印件層級 SHALL 顯示印件印製狀態（依本 spec § 印件印製維度狀態機）
 - **AND** 工單層級 SHALL 顯示工單狀態
-- **AND** 生產任務層級 SHALL 顯示生產任務狀態 + 預計 / 完成 / 入庫三欄數字 + QC 狀態徽章
+- **AND** 生產任務層級 SHALL 顯示生產任務狀態與數量欄（預計／完成）；印件的品質帳（入庫累計、不通過累計、可出貨額度）SHALL 呈現於印件層而非生產任務層，資料來源為印件層品檢紀錄（見 `qc`）
 - **AND** 系統 MUST NOT 顯示百分比或聚合完成度數字
 
 #### Scenario: 已完成生產任務的 QC 失敗顯示
@@ -2051,58 +2051,42 @@ UI 呈現（Dialog 對應、helper function、條件顯示）見 DESIGN.md §10.
 
 當下層實體狀態變更時，系統 SHALL 依以下傳遞鏈自動推進上層實體狀態：
 
-`type = production` 的生產任務（製作中）→ 任務 → 工單 → 印件 → 訂單
+生產任務（製作中）→ 工單 → 印件 → 訂單
 
-生管指派師傅（更新 assigned_operator）MUST NOT 觸發向上傳遞。僅 `type = production` 的生產任務進入「製作中」時 SHALL 觸發向上傳遞。
+生管指派師傅 MUST NOT 觸發向上傳遞（指派為欄位更新）。生產任務首次報工進入「製作中」時 SHALL 觸發。供應商（外發）觸發的狀態變更 SHALL 適用相同規則；外發在途段由派單狀態自動映射回生產任務，映射本身 SHALL NOT 另生一條傳遞鏈（見 `dispatch-order`）。
 
-供應商觸發的狀態變更 SHALL 與 ERP 內部觸發的狀態變更適用相同的向上傳遞規則。
-
-**QC PT 與 inspection PT 的狀態變更不走此鏈**：
-
-- `type = qc`、`scope = print_item` 的 PT：狀態變更直接影響其所屬印件層的 `pi_warehouse_qty` 計算；MUST NOT 觸發「PT → 任務」傳遞
-- `type = inspection`、`scope = work_order_task` 的 PT：狀態變更影響對應 production PT 的 `pt_effective_qty`；MUST NOT 觸發「PT → 任務」傳遞
+品檢 SHALL NOT 出現在本鏈：品檢紀錄是印件層的只增紀錄，通過數量累計直接影響印件的入庫數與可出貨額度（公式見 wiki [齊套邏輯](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)），不經任何狀態傳遞。
 
 **Priority**: P0
 
-**Rationale**: 向上傳遞鏈確保下層生產進度自動反映至訂單層級，避免人工手動更新上層狀態。
+**Rationale**: 向上傳遞鏈確保下層生產進度自動反映至訂單層級，避免人工手動更新上層狀態。任務層（同廠商生產任務分組實體）已於 2026-07-28 移除，鏈上少一層；QC PT 與 inspection PT 兩種任務型別已於 2026-07-21 廢除，原本為它們設的例外分支隨之作廢。品檢改成數量帳而非狀態鏈的一環，是因為它本來就不推進任何單據的狀態。
 
-#### Scenario: production 生產任務開始製作時觸發狀態向上傳遞
+#### Scenario: 生產任務開始製作時觸發狀態向上傳遞
 
-- **WHEN** 某 `type = production` 的生產任務狀態從「待處理」變為「製作中」
-- **THEN** 系統 SHALL 檢查其所屬任務下所有 production 生產任務狀態，若為該任務首個進入「製作中」的生產任務，則將任務狀態推進為「製作中」
-- **THEN** 系統 SHALL 依相同邏輯逐層向上傳遞至工單、印件、訂單
+- **WHEN** 某生產任務狀態從「待處理」變為「製作中」
+- **THEN** 系統 SHALL 將其所屬工單推進為「製作中」（若為該工單首個進入製作中的生產任務）
+- **AND** 依相同邏輯逐層向上傳遞至印件、訂單
 
 #### Scenario: 部分生產任務完成不影響上層狀態回退
 
-- **WHEN** 某任務下有 3 個 `type = production` 生產任務，其中 1 個已完成、2 個製作中
-- **THEN** 任務狀態 SHALL 維持「製作中」，不得因部分完成而回退或跳進
+- **WHEN** 某工單下有 3 個生產任務，其中 1 個已完成、2 個製作中
+- **THEN** 工單狀態 SHALL 維持「製作中」，不得因部分完成而回退或跳進
 
 #### Scenario: 指派師傅不觸發向上傳遞
 
-- **WHEN** 生管為某生產任務指派師傅（更新 assigned_operator 欄位）
-- **THEN** 系統 MUST NOT 向上傳遞狀態變更至任務、工單層
+- **WHEN** 生管為某生產任務指派師傅
+- **THEN** 系統 MUST NOT 向上傳遞狀態變更至工單層
 
-#### Scenario: 首次報工觸發向上傳遞
+#### Scenario: 外發在途映射不另生傳遞鏈
 
-- **WHEN** 某 `type = production` 生產任務首次報工使狀態從「待處理」變為「製作中」
-- **THEN** 系統 SHALL 依正常邏輯向上傳遞至任務、工單、印件、訂單
+- **WHEN** 派單推進至已送集運商，系統映射對應生產任務的外發段狀態
+- **THEN** 系統 SHALL NOT 因此映射再觸發一次「生產任務 → 工單 → 印件 → 訂單」的傳遞
 
-#### Scenario: 供應商報工觸發向上傳遞
+#### Scenario: 品檢不觸發傳遞
 
-- **WHEN** 供應商首次報工使 `type = production` 生產任務從「待處理」變為「製作中」
-- **THEN** 系統 SHALL 依傳遞鏈自動推進：任務 → 工單 → 印件 → 訂單
-
-#### Scenario: QC PT 狀態變更不走向上傳遞鏈
-
-- **WHEN** `type = qc`、`scope = print_item` 的 QC PT 狀態變更（如達標、cancelled）
-- **THEN** 系統 MUST NOT 觸發「PT → 任務 → 工單」傳遞鏈
-- **AND** 系統 SHALL 觸發其所屬印件的 `pi_warehouse_qty` 重算
-
-#### Scenario: inspection PT 狀態變更不走向上傳遞鏈
-
-- **WHEN** `type = inspection` 的 PT 狀態變更（如達標、cancelled）
-- **THEN** 系統 MUST NOT 觸發「PT → 任務 → 工單」傳遞鏈
-- **AND** 系統 SHALL 觸發對應 production PT 的 `pt_effective_qty` 重算
+- **WHEN** 品檢人員記錄一筆品檢紀錄（通過 500）
+- **THEN** 系統 SHALL 重算該印件的入庫數與可出貨額度
+- **AND** SHALL NOT 觸發任何狀態傳遞
 
 ### Requirement: 層級建立順序
 
@@ -2176,7 +2160,7 @@ UI 呈現（Dialog 對應、helper function、條件顯示）見 DESIGN.md §10.
 
 `等待中 → 工單已交付 → 部分工單製作中 → 製作中 → 製作完成 → 出貨中 → 已送達`
 
-另有終態「已棄用」：任一非終態 → 已棄用（觸發情境：訂單取消、單一印件取消製作、打樣後稿件問題棄用重建）。轉入時審稿維度保留原值作為稽核軌跡，並連動現場已報工的生產任務轉報廢以結算成本（工單／任務層連動行為待 PI-003 拍板）。
+另有終態「已棄用」：任一非終態 → 已棄用（觸發情境：訂單取消、單一印件取消製作、打樣後稿件問題棄用重建）。轉入時審稿維度保留原值作為稽核軌跡。旗下工單與生產任務的連動依 `work-order` § 工單取消連動執行：工單一律轉已取消，其生產任務依報工事實分流（尚無報工者作廢、已有報工者報廢以結算成本），工單 SHALL NOT 等待由下而上的收斂判定。
 
 印製維度狀態僅在審稿維度為「已確認可製作」後開始推進。狀態列舉正本見 wiki [印件狀態機卡](../../../memory/Sens_wiki/wiki/erp/06-state-machines/印件狀態.md)。
 

@@ -8,12 +8,12 @@
 
 ## 2. spec 落地（sync 至 main specs）
 
-- [ ] 2.1 `qc` 依 delta 重寫（1 removed／6 added）
-- [ ] 2.2 新建 `shipment` main spec（7 條 Requirement）
-- [ ] 2.3 新建 `dispatch-order` main spec（10 條 Requirement）
-- [ ] 2.4 `order-management` 依 delta 改三處（QC 狀態徽章、向上傳遞鏈、印件棄用連動）
-- [ ] 2.5 `business-scenarios` 依 delta 改兩處（全流程驗證的 QC 單欄、製程審核與工單收回的任務層級欄）
-- [ ] 2.6 更新 `openspec/config.yaml` 的 main spec 數量（20 → 22）與模組敘述
+- [x] 2.1 `qc` 依 delta 重寫（1 removed／6 added）
+- [x] 2.2 新建 `shipment` main spec（7 條 Requirement）
+- [x] 2.3 新建 `dispatch-order` main spec（10 條 Requirement）
+- [x] 2.4 `order-management` 依 delta 改三處（QC 狀態徽章、向上傳遞鏈、印件棄用連動）
+- [x] 2.5 `business-scenarios` 依 delta 改**四處**（全流程驗證的 QC 單欄與步驟 13-15、製程審核與工單收回的任務層級欄、「工單異動與任務層級管理」整條改寫為生產任務層異動、「QC 與出貨」整條改寫為品檢與出貨）
+- [x] 2.6 更新 `openspec/config.yaml` 的 main spec 數量（20 → 22）與模組敘述
 
 ## 3. Prototype 對照（`erp` repo，分支 `prototype/production-stage`）
 
@@ -26,7 +26,9 @@ M4 與 M5 頁面在批一期間已落地（`qc-shipping/inspection`、`qc-shippi
 
 ## 4. 驗收（verify 前逐項跑）
 
-- [ ] 4.1 過時概念殘留：`grep -rn "QC 單\|QC PT\|品檢 PT\|任務層\|BOM 行項目\|供應商自助報工\|工單區域\|NCR\|拼版試算" openspec/specs/` → **整庫零命中**（批一的當批例外於本批解除；`production-execution` 兩處「任務層已移除」的說明語境仍屬合法）
+- [ ] 4.1 過時概念殘留（判準精確化：原 pattern 的「任務層」會誤命中合法用詞「生產任務層」）：
+  - 硬性零命中：`grep -rn "QC 單\|品檢 PT\|BOM 行項目\|供應商自助報工\|工單區域\|NCR\|拼版試算" openspec/specs/`
+  - `QC PT` 與 `任務層`（排除「生產任務層」）：僅允許「已移除／已廢除」的說明語境，逐行確認；現況三處皆為說明語境（`order-management` 2062、`production-execution` 21、`business-scenarios` 190）
 - [ ] 4.2 欄位表與狀態列舉未回流：`qc`／`shipment`／`dispatch-order` 三份皆無業務欄位表與狀態列舉，只以正本邊界段引 wiki
 - [ ] 4.3 死鏈：三份新 spec 的 wiki 相對連結逐條確認檔案存在
 - [ ] 4.4 spec 數量：`ls openspec/specs/` 為 22 份，含 `shipment`、`dispatch-order`

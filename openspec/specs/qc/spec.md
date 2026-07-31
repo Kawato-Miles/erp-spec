@@ -1,31 +1,121 @@
-# qc Specification
-
 ## Purpose
-TBD - created by archiving change qc-spec-consolidation. Update Purpose after archive.
+
+品檢（M4）-- 印件入庫前的最終品檢：品檢人員對送抵品檢站的貨分次驗收，通過累計即入庫、形成可出貨額度；不通過累計成缺口，處置由印務決策。品檢不派工、不占生產任務，工序之間不設品檢節點。
+
+**範圍**：
+- 主要：待驗清單、分次驗收記錄、不通過原因、通過即入庫、缺口處置
+- 次要：打樣樣品與客戶評審的分界
+- 不含：出貨（`shipment`）、補做的工單接力（`work-order` § 補生產承接）、報工不良（`production-execution` § 報工）
+
+**正本邊界**：欄位表見 wiki [品檢紀錄](../../../memory/Sens_wiki/wiki/erp/05-entities/品檢紀錄.md)、[印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md)（§ 品檢缺口處置）；不通過原因的值域見 wiki [品檢紀錄](../../../memory/Sens_wiki/wiki/erp/05-entities/品檢紀錄.md) § 不通過原因選項；入庫與可出貨額度公式見 wiki [齊套邏輯](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)；角色權責見 wiki [品檢人員](../../../memory/Sens_wiki/wiki/erp/03-roles/品檢人員.md)；介面與互動見 Prototype。品檢紀錄為只增紀錄、無狀態機。本 spec 只承載系統行為。
+
+---
 ## Requirements
-### Requirement: QC 角色權限邊界
 
-QC 角色（兼任品檢執行）SHALL 執行 ProductionTask 中 type = `qc`（印件入庫檢查）或 `inspection`（工序中間品檢）的任務。完整的 QC 角色權限定義（工單模組 R/W 範圍、可編輯欄位）詳見 wiki [品檢人員](../../../memory/Sens_wiki/wiki/erp/03-roles/品檢人員.md)，本 spec 不重複定義。
+### Requirement: 待驗清單
 
-QC 角色於 QC PT 與 inspection PT 生命週期中的可執行動作：
+系統 SHALL 提供品檢人員的待驗清單，內容為品檢站的在站量：由轉交單明細按印件彙總得出，廠務把貨送到品檢站之後才出現。清單 SHALL 呈現印件、來源站點與待驗數量。品檢 SHALL 為印件入庫前的最終品檢，工序之間 SHALL NOT 設品檢節點。
 
-- MUST NOT 建立 QC PT（由系統自動建立，每個 PrintItem 1 個）
-- MUST NOT 建立 inspection PT（由印務在工單規劃時對特定 production PT 加入）
-- 開始執行 QC / inspection 任務（接派工 → 狀態轉「製作中」）
-- 提交 ProductionTaskWorkRecord（填寫 `reported_quantity` + `passed_quantity`，系統自動計算 `failed_quantity`）
-- 多次提交 WorkRecord 累計（支援分批驗收）
+**Priority**: P0
 
-#### Scenario: QC 人員接手 QC PT 並分批驗收
+**Rationale**: 品檢人員不需要知道工單怎麼排的，他要知道的是「現在有什麼貨在我這站等驗」。清單自轉交事實推導而非另建派工，是因為品檢不占生產任務、沒有被派工這回事（2026-07-21 拍板）。
 
-- **WHEN** QC 人員登入系統並查看被指派的 QC PT（type = `qc`、scope = `print_item`、target = 500）
-- **THEN** 系統 SHALL 允許 QC 人員開始驗收
-- **AND** QC 人員 SHALL 可依儀表板上的「上游通過數量」分批提交 WorkRecord（如：第 1 筆 reported=100/passed=100、第 2 筆 reported=400/passed=400）
-- **AND** QC 人員 MUST NOT 修改 PT 的 `pt_target_qty` 或 `assigned_operator`
+#### Scenario: 貨送到才出現待驗項
 
-#### Scenario: QC 人員接手 inspection PT
+- **GIVEN** 一件印件的裁切任務已報工完成、廠務尚未搬運
+- **WHEN** 品檢人員檢視待驗清單
+- **THEN** 該印件不出現在清單上
+- **AND** 廠務確認送達品檢站後（轉交單成立），清單出現該印件、待驗數量為實際送達量
 
-- **WHEN** QC 人員登入並查看被指派的 inspection PT（type = `inspection`、scope = `work_order_task`）
-- **THEN** 系統 SHALL 允許 QC 人員開始驗收
-- **AND** QC 人員 SHALL 提交 WorkRecord（reported_quantity + passed_quantity）
-- **AND** QC 人員 MUST NOT 修改 PT 的 `pt_target_qty` 或 `assigned_operator`
+### Requirement: 分次驗收記錄
 
+品檢人員 SHALL 對送抵品檢站的貨依到貨節奏分次驗收，一次驗收記一筆品檢紀錄，內容為通過數量、不通過數量與不通過原因。不通過數量大於 0 時原因 SHALL 必填。品檢紀錄 SHALL 為只增紀錄（無狀態機、不可修改），誤記 SHALL 走新增一筆更正紀錄。
+
+品檢紀錄 SHALL 僅由品檢人員回報產生，系統與其他角色 SHALL NOT 代寫。記錄介面 SHALL 為 ERP 行動版（現場回報四介面之一）。
+
+**Priority**: P0
+
+**Rationale**: 印件常多天陸續完成，驗收跟著到貨節奏走、每次獨立留痕，入庫帳才對得上現場。分批出貨因此不需要任何特例機制。品檢紀錄只由品檢人員回報，是因為它是「誰在什麼時候看到什麼」的事實，系統代寫會讓事實變成推論。
+
+#### Scenario: 分次驗收逐筆累計
+
+- **GIVEN** 印件「精裝筆記本」目標 1,000 本，第一批 600 本送抵品檢站
+- **WHEN** 品檢人員驗這批並記一筆（通過 580、不通過 20、原因為裝訂不良）
+- **THEN** 該印件入庫累計為 580、不通過累計為 20
+- **AND** 第二批 400 本送到後再記一筆，入庫與不通過各自累計，不覆蓋前一筆
+
+#### Scenario: 不通過未填原因擋下
+
+- **WHEN** 品檢人員填入不通過數量 20 但未選原因
+- **THEN** 系統擋下提交
+
+### Requirement: 不通過原因單選
+
+不通過原因 SHALL 為固定選項單選：一筆品檢紀錄記一個原因。同一批貨驗出多種不良時 SHALL 分批各記一筆，系統 SHALL NOT 在單筆內提供原因拆分計數。選項清單的值域正本見 wiki [品檢紀錄](../../../memory/Sens_wiki/wiki/erp/05-entities/品檢紀錄.md) § 不通過原因選項，本 spec 不複寫選項內容。
+
+**Priority**: P1
+
+**Rationale**: 品檢本來就是分次驗、一次一筆，分筆記錄符合現場動作；在單筆內再拆原因陣列等於多一層填寫負擔，現場不會填。分筆之後各原因的件數自然分得開，良率細分與外包品質管理拿得到分組維度（`QC-003` 拍板）。
+
+#### Scenario: 多種不良分筆記錄
+
+- **GIVEN** 一批 1,000 本驗出色差 20 本、刮傷 10 本
+- **WHEN** 品檢人員記錄
+- **THEN** 系統要求記兩筆（通過 970／不通過 20 色差、通過 0／不通過 10 刮傷），不提供單筆內拆分
+
+### Requirement: 通過即入庫
+
+品檢通過數量的累計 SHALL 即為印件的入庫數（現階段入庫數與完工良品數為同一個數），並 SHALL 隨每筆驗收逐批放大可出貨額度。不通過數量 SHALL NOT 計入入庫。計算公式的正本見 wiki [齊套邏輯](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md) § 數量帳與額度公式，本 spec 不複寫公式。
+
+驗畢的通過品 SHALL 由系統生成「品檢站 → 暫存區」的搬運待辦交廠務滾動轉出。
+
+**Priority**: P0
+
+**Rationale**: 隨驗隨入庫讓分批出貨變成常態而非特例；業務要先出一部分時，現場請品檢優先驗那一批即可，不需要在系統裡開特殊通道。
+
+#### Scenario: 入庫隨驗收放大
+
+- **GIVEN** 印件入庫累計 580、已出貨 0
+- **WHEN** 品檢人員再記一筆通過 400
+- **THEN** 入庫累計為 980、可出貨額度同步為 980
+- **AND** 系統生成該批的品檢站至暫存區搬運待辦
+
+### Requirement: 缺口處置
+
+不通過數量的累計 SHALL 形成印件的品質缺口。處置 SHALL 由印務決策，決策內容為兩個獨立軸的組合：缺口補不補（補做／不補由印務在印件層結案）× 瑕疵品去向（報廢／客戶照收）。處置紀錄 SHALL 掛印件層（一個印件可有多筆），SHALL NOT 寫入單筆品檢紀錄。系統 SHALL NOT 另建不符合報告單一類的獨立單據。
+
+品檢人員 SHALL NOT 做處置決策，介面 SHALL 不提供該操作。報廢處置的數量 SHALL 計入印件的報廢數（折損率分子的來源之一）。補做的接力見 `work-order` § 補生產承接。
+
+**Priority**: P0
+
+**Rationale**: 處置的對象是累計缺口、動作者是印務（工單主責、握有客戶脈絡）；品檢紀錄是品檢人員的回報，混入他人決策會讓那筆紀錄同時是事實與判斷。不另建單據，是因為要記的內容（決策、數量、決策者、時間）與品檢紀錄加印件層處置段完全重疊，多一個實體只多一處要維護與對帳（`QC-005` 拍板）。
+
+#### Scenario: 印務決定補做
+
+- **GIVEN** 印件不通過累計 50、未處置
+- **WHEN** 印務選擇補做並確認
+- **THEN** 系統在印件層寫入一筆處置紀錄（補做、50、決策者、時間），並依 `work-order` § 補生產承接在原工單經異動加開生產任務
+
+#### Scenario: 印務決定不補並報廢
+
+- **WHEN** 印務選擇不補 × 報廢
+- **THEN** 處置紀錄寫入該組合，報廢數計入印件報廢數；印件的短交結案由印務在印件層執行（購買數量與已出貨數量原樣保留，見 wiki [齊套邏輯](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md) § 短出收尾）
+
+#### Scenario: 品檢人員不得處置
+
+- **WHEN** 品檢人員檢視有缺口的印件
+- **THEN** 介面不提供處置操作；繞過介面呼叫時系統擋下
+
+### Requirement: 打樣樣品與品檢的關係
+
+打樣樣品 SHALL 走與大貨相同的最終品檢與入庫路徑（樣品經品檢入庫後才建出貨單寄客戶）。品檢驗的是樣品有沒有做壞；客戶對樣品的評審結果 SHALL NOT 寫入品檢紀錄，它由業務填在印件的打樣結果欄位（見 `prepress-review`）。
+
+**Priority**: P1
+
+**Rationale**: 兩件事的判定者、時點與判準都不同——品檢是我們自己驗有沒有做壞，打樣結果是客戶認不認這個效果。同一批樣品可能品檢通過而客戶仍判 NG，綁在同一載體會逼出「客戶說 NG 所以品檢補一筆不通過」這種假資料（`QC-005` 拍板）。
+
+#### Scenario: 樣品品檢通過但客戶判 NG
+
+- **GIVEN** 打樣印件的樣品經品檢全數通過、已出貨送達客戶
+- **WHEN** 客戶評審後業務填打樣結果為 NG-製程問題
+- **THEN** 品檢紀錄不變（該批確實沒做壞），系統依 `prepress-review` 自動建新打樣工單重打
