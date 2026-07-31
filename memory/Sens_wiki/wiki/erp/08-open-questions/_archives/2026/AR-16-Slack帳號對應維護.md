@@ -3,7 +3,7 @@ type: open-question
 module:
   - 印前審稿
 oq-id: AR-16
-status: open
+status: answered
 priority: low
 audience: internal
 raised-at: 2026-07-02
@@ -13,6 +13,8 @@ related-vault:
   - "[[審稿討論Slack串接約束]]"
   - "[[訂單管理人]]"
 expected-resolution-at: OpenSpec change 實作階段
+answered-at: 2026-08-01
+answered-by: Miles
 tags:
   - 領域/印前審稿
 ---
@@ -37,4 +39,6 @@ tags:
 
 ## 拍板紀錄
 
-（待 OpenSpec change 實作階段裁決）
+**決議（2026-08-01，Miles）**：採選項 A，且後端已實作。`sens-print-core` 的人員資料有 `slack_user_id` 欄位（註解「Slack User ID（例：U0123456789），供 mention 使用」），由管理者維護。
+
+**落地**：欄位正本已寫入 [[人員]] 卡的「Slack 帳號」欄（來源：主管設定）。成員異動時改該人員的 Slack 帳號即可；離職走停用、不刪帳號。
