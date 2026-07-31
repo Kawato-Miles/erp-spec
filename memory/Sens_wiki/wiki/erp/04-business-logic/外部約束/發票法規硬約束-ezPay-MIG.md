@@ -145,12 +145,12 @@ ezPay **全 API 金額一律正整數**（發票 TotalAmt、折讓 TotalAmt / Al
 | **SalesAllowance 確認** | `Invoice`（折讓金額）| 折讓只掛 Invoice（不關聯退款 Payment，反查走訂單活動紀錄）|
 | **Payment 退款（負值）** | `OrderAdjustment.adjustment_type=退款`（確認金額時認列）/ `SalesAllowance`（金額總額對齊，不建 FK）/ `Invoice`（作廢或折讓）| 退款款項核銷對帳的收款差額（不推進 OA）+ 折讓與退款金額在對帳總額層對齊 |
 | **OrderAdjustment 確認可執行** | `Payment`（退款款項核銷對帳的收款差額）/ `Invoice`（作廢或折讓）/ `SalesAllowance`（建立）| 確認金額時認列（確認可執行不綁退款款項累計推進、不回退）|
-| **BillingInstallment 自動建**（取代 PlannedInvoice）| `Order`（諮詢訂單收尾）/ `Invoice`（一鍵開發票繼承 items[]）| 鏈式預填 + 不自動開立發票 |
+| **BillingInstallment 自動建** | `Order`（諮詢訂單收尾）/ `Invoice`（一鍵開發票繼承 items[]）| 鏈式預填 + 不自動開立發票 |
 | **AfterSalesTicket 退款** | OA (responsibility=公司認賠 / 補退) / Payment / SalesAllowance | 跨售後 ticket 容器 |
 
 **七實體連帶圖**：
-- Payment ↔ OA / PaymentPlan / Invoice / SalesAllowance
-- Invoice ↔ BillingInstallment（取代 PlannedInvoice）/ PaymentAllocation（取代 PaymentInvoice junction）/ ezPay 約束 / SalesAllowance
+- Payment ↔ OA / BillingInstallment / Invoice / SalesAllowance
+- Invoice ↔ BillingInstallment / PaymentAllocation / ezPay 約束 / SalesAllowance
 - OA ↔ Payment / 補收 / 折讓 / 售後 / 訂單異動
 - SalesAllowance ↔ Invoice / Payment（refund）
 - AfterSalesTicket ↔ OA / PrintItem / Payment / Invoice
