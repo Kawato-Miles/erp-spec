@@ -1,28 +1,22 @@
 ---
-type: insight
+type: raw
+status: raw
+created-at: 2026-05-20
+source: miles-dialogue
+captured-by: claude-on-task
 module:
   - 售後服務
   - 訂單管理
-  - 跨模組
-status: open
-priority: high
-raised-at: 2026-05-20
-raised-by: vault-insight skill
-triggered-by: audit-接續 + change-archive（refine-after-sales-refund-and-add-supplementary-print + refine-supplementary-print-skip-review 連續歸檔）
+  - cross-module
+topic-tag:
+  - 售後服務
+  - 端到端推演
+  - 稽核發現
 related-vault:
   - "[[售後服務]]"
   - "[[訂單]]"
   - "[[印件]]"
-related-oq:
-  - AFT-1
-  - AFT-2
-  - AFT-3
-  - AFT-4
-  - AFT-5
-  - XM-001
-  - XM-004
-  - XM-005
-expected-action-at: 2026-06-15
+raw-source-link: 原位置 wiki/erp/12-insights/2026-05-20-售後ticket-reactive-補丁循環.md（2026-07-31 該層退場，全數移入 raw）
 ---
 
 # 2026-05-20：售後 ticket 模組的 reactive 補丁循環 — 需端到端推演

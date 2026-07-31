@@ -26,7 +26,6 @@ last-reviewed: 2026-07-29
 | `scenario` | 業務情境（目標完成過程；接力型／能力型／排程型） | `07-scenarios/` |
 | `open-question` | OQ 卡 | `08-open-questions/` |
 | `canvas-ref` | Canvas 對應的 markdown 描述 | `09-canvases/` |
-| `insight` | **已退場，停止新增**（診斷與建議歸 `vault-audit` 報告、待裁決歸 OQ、工作流待辦歸 `memory/` project 卡）。存量 6 張隨各領域清整歸位至正本卡後，本列與 `12-insights/` 一併移除 | `12-insights/` |
 | `raw` | Raw 素材（已驗證的觀察 / 反饋 / 研究筆記，未精練）| `raw/` |
 
 **分層與 type 的對應**（對齊 [[erp_index]] § 一架構概述）：
@@ -79,8 +78,6 @@ tags:
 | `open` | OQ 開啟未解 |
 | `answered` | OQ 已解答 |
 | `cancelled` | OQ 取消（已不適用）|
-| `in-progress` | insight 進行中（隨 insight 退場中） |
-| `resolved` | insight 已落實（隨 insight 退場中） |
 | `raw` | raw 卡剛寫入，待精練 |
 | `reviewed` | raw 卡已分析，等待 Miles 確認 |
 | `ingested` | raw 卡內容已寫入既有 vault 卡 / 升級為 OQ |
@@ -284,31 +281,6 @@ notion-url: <external 推送 Notion 後回填>
 ---
 ```
 
-### type=insight（已退場，停止新增；欄位定義留供存量 6 張歸位前的 lint）
-
-```yaml
----
-type: insight
-module:
-  - <模組>
-tags:
-  - 領域/<領域名>   # 必填，可多值；判定依 [[business-domain-taxonomy]]（原「屬正本卡被載入決策引用時必標」的條件判準無法機械判定，2026-07-30 改無條件必填）
-status: open | in-progress | resolved | cancelled
-priority: high | medium | low
-raised-at: YYYY-MM-DD
-raised-by: <誰提出>
-triggered-by: manual | oq-accumulation | phase | change-archive | audit | raw
-related-vault:
-  - <wiki link>
-related-oq:
-  - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名
-related-raw:                  # 從 raw 素材累積識別 pattern 時填
-  - "[[raw/<檔名>]]"          # MUST 是 status=ingested 或 reviewed 的卡（vault-ingest 防線 4）
-expected-action-at: YYYY-MM-DD
-resolved-at: YYYY-MM-DD  # status=resolved 時填
----
-```
-
 ### type=raw
 
 ```yaml
@@ -354,7 +326,6 @@ ingested-to:                                           # status=ingested 時填
 | `07-scenarios/` | `scenario`（業務情境）/ `meta`（`規範 - 業務情境.md` 等）/ `example`（`範例 - 業務情境.md`）|
 | `08-open-questions/` | `open-question` / `meta`（`OQ運作總覽.md`／`規範 - OQ.md`）/ `example`（`範例 - OQ.md`）|
 | `09-canvases/` | `.canvas` 檔（無 frontmatter）/ `canvas-ref` |
-| `12-insights/` | `insight` / `meta`（`insight定位說明.md`）/ `example`（`範例 - Insight.md`）|
 | `raw/` | `raw` / `meta`（`README.md`）|
 | `raw/_attachments/` | 任意檔（PDF / 圖 / docx / 訪談錄音轉文字等）；不需 frontmatter |
 
