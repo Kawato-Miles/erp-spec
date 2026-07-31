@@ -30,7 +30,9 @@ OQ 是**待裁決佇列**：每張卡一個待確認的問題，拍板後決議�
 
 ### Mode A：查詢（討論前帶入）
 
-輸入：領域或主題。步驟：依 [[business-domain-taxonomy]] 檢索規約判定領域（語意不確定先與 Miles 確認）→ 查平層 `status: open` 且領域 tag（`領域/<領域名>`）命中的卡，先出卡名清單再讀內容。輸出：`<oq-id>：<簡述>（priority, audience, raised-at）` 清單，external 另列（提醒待外部確認項）。
+輸入：領域或主題。步驟：依 [[business-domain-taxonomy]] § 領域定義判定領域（語意不確定先與 Miles 確認）→ 查平層 `status: open` 且領域 tag（`領域/<領域名>`）命中的卡，先出卡名清單再讀內容。輸出：`<oq-id>：<簡述>（priority, audience, raised-at）` 清單，external 另列（提醒待外部確認項）。
+
+**本 mode 是檢索規約排除 `08-open-questions/` 的唯一例外**（見 [[business-domain-taxonomy]] § 檢索規約）：撈出的是未拍板待辦、不是事實正本。帶入討論時 MUST 明示「以下為未決選項，不得當現況依據、不得拿來與 wiki 或 spec 比對矛盾」。
 
 ### Mode B：新增（強制去重，禁跳步）
 
