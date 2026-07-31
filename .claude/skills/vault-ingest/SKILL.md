@@ -28,7 +28,7 @@ description: >
 | Mode | 輸入 | 輸出 |
 |------|------|------|
 | **A 寫入 raw** | 一段素材＋source／captured-by | raw 卡一張＋log 條目（ingest-A）＋下次精練建議 |
-| **B 精練 raw → wiki** | 指定的 raw 卡 | cards diff 提案 →（Miles 批准後）既有卡更新＋raw 卡 status=ingested＋log 條目（ingest-B） |
+| **B 精練 raw → wiki** | 指定的 raw 卡 | cards diff 提案 →（Miles 批准後）正本卡寫入轉介 `wiki-amend`＋raw 卡 status=ingested＋log 條目（ingest-B） |
 | **C 批次掃描** | raw/ 全目錄 | 三狀態報告（待處理／處理中／已 ingest）＋同主題累積警示＋過期警告＋log 條目（ingest-C）；**不動檔** |
 
 ### Mode A：寫入 raw（五步）
@@ -45,7 +45,7 @@ description: >
 2. 對照 `00-meta/scope-boundary.md` 判升級路徑：04 規則／05 實體／06 狀態機／07 情境／11 審查與協作知識（審查方法、agent 協作協議類素材）／OQ（轉 oq-manage）／不進 vault（status=cancelled 附理由）。同主題累積 ≥ 3 張時一併判「這批合起來是否該寫進某張正本卡」，先把素材卡升 status=reviewed。
 3. **提議 cards diff**（每張卡列 diff 預覽＋不適用部分附去處），等 Miles 逐項批准（防線 3）。Miles 說「再看看」→ status=reviewed；說「重新分析」→ 維持 raw 重跑。
 4. OQ 候選 → 觸發 oq-manage mode B（去重）。
-6. **Miles 說 OK 後**執行寫入：更新既有卡、raw 卡 status=ingested＋ingested-at＋ingested-to、卡末「精練去處」填 wiki link、log 一筆（ingest-B，逐卡 `[[卡名]]`）。
+6. **Miles 說 OK 後**執行寫入：正本卡（03／04／05／06／07）的寫入動作 **MUST 轉介 `wiki-amend`**，依它的 § 〇 載入清單走六步，本 skill 不自行決定卡怎麼寫；本 skill 只負責 raw 卡 status=ingested＋ingested-at＋ingested-to、卡末「精練去處」填 wiki link、log 一筆（ingest-B，逐卡 `[[卡名]]`）。
 
 ### Mode C：批次掃描（純報告）
 
@@ -83,6 +83,7 @@ description: >
 
 | 銜接 | 怎麼做 |
 |------|--------|
+| wiki-amend | mode B 步 6 的正本卡寫入一律轉介；本 skill 不自行動 03／04／05／06／07 任何一張卡 |
 | oq-manage | mode A 步 2／mode B 步 4 的明確問題轉出；oq-manage 自記 log（oq 標） |
 | vault-audit | raw 健康（超期／防線違反／累積警示）由 audit 維度 9 巡檢，發現堆積建議跑 mode C |
 | misjudgement-record | 完全不交叉：誤審不存 raw |

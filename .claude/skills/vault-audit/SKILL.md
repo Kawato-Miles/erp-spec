@@ -26,6 +26,7 @@ ERP_Vault 的 lint：找出**矛盾／過時／孤島／死鏈／缺欄位／違
 | **A 全量** | 「跑 vault audit」「audit vault」「全量稽核」 | 14 維度全掃 |
 | **B 單維度** | 「跑維度 N audit」「只查孤島」 | 針對性檢查 |
 | **C 修復** | 「audit 並修復」「audit + fix」 | 全掃＋可自動修復項經 Miles 確認後執行 |
+| **D 指名批次** | 「稽核我剛 commit 的那批」「稽核 <功能名> 那批卡」 | 範圍＝該批的檔案清單（取法見維度 10 註解），跑 14 維度中與該批相關者；該批跨多個 commit 時先確認邊界再跑 |
 
 ## 二、14 個稽核維度
 
@@ -53,10 +54,7 @@ threshold=$(date -v-90d +%Y-%m-%d 2>/dev/null || date -d "90 days ago" +%Y-%m-%d
 
 **目的**：沒有任何卡連到的卡等於不存在（禁孤島是共用標準）。
 
-```bash
-# 優先用 obsidian-cli（解析 vault 索引，grep 看不懂 wiki link）
-obsidian deadends   # 或 obsidian eval 查 metadataCache 反向連結為 0 的卡
-```
+方法：載入 skill `obsidian-cli`，查**入鏈為 0** 的檔（該 CLI 有專屬指令）。**孤島＝入鏈為 0，不是出鏈為 0**——查錯方向會得到一組毫無關係的檔案（2026-08-01 實測：入鏈為 0 有 28 筆、出鏈為 0 有 57 筆）。指令名與參數語法以該 skill 為準，本檔不列例子。
 
 判定：OK＝0 孤島（README／index／`wiki/範本/` 骨架檔／各資料夾「範例 - 」卡除外——三層結構豁免見 [[卡片撰寫共用規範]] § 一鐵則 4）；Warning＝1-3；Error＝> 3。
 
@@ -64,9 +62,7 @@ obsidian deadends   # 或 obsidian eval 查 metadataCache 反向連結為 0 的�
 
 **目的**：`[[連結]]` 指到不存在的卡，讀者點了撲空。
 
-```bash
-obsidian eval "Object.keys(app.metadataCache.unresolvedLinks).filter(k => Object.keys(app.metadataCache.unresolvedLinks[k]).length)"
-```
+方法：載入 skill `obsidian-cli`，用它執行 JavaScript 讀 `app.metadataCache.unresolvedLinks`，取含未解析連結的檔清單。參數語法以該 skill 為準，本檔不列例子（2026-08-01 實測：語法寫錯會直接報 `Missing required parameter`，這一維度長期沒跑成功過；正確查出來是 75 筆）。
 
 判定：OK＝0；Warning＝1-5（占位連結用角括號形式不計）；Error＝> 5。
 
@@ -90,9 +86,9 @@ grep -rn "\[!question\]" memory/Sens_wiki/wiki/ --include="*.md" | grep -v "08-o
 grep -rnE "待補|待釐清" memory/Sens_wiki/wiki/erp/0[34567]*/ --include="*.md" | grep -v "08-open-questions/" | grep -v "\[\[" | grep -v "待補件" | grep -v "規範 - "
 ```
 
-2. 命名繁中語意化：卡名與段落禁直譯、禁中英夾雜（rules § 五）；OQ 卡命名 `<前綴>-<NNN>-<簡述>`。
+2. 命名繁中語意化：卡名與段落禁直譯、禁中英夾雜（`memory/Sens_wiki/CLAUDE.md` § 一）；OQ 卡命名 `<前綴>-<NNN>-<簡述>`。
 3. 正文禁迭代史堆疊（「A 已棄用 → 改 B」並陳）。
-4. wiki link 禁別名（rules § 三）：`grep -rn "\[\[[^]]*|" memory/Sens_wiki/wiki/ --include="*.md"`，排除 log.md／changelog.md／`_archives/`（歷史層）。
+4. wiki link 禁別名（`memory/Sens_wiki/CLAUDE.md` § 三）：`grep -rn "\[\[[^]]*|" memory/Sens_wiki/wiki/ --include="*.md"`，排除 log.md／changelog.md／`_archives/`（歷史層）。
 
 判定：OK＝0 違規；Warning＝1-3；Error＝> 3（觸發建議 `oq-manage` mode D 遷出）。
 
@@ -142,9 +138,11 @@ grep -rn "openspec/\|sens-erp-prototype/\|/erp/apps/" memory/Sens_wiki/wiki/erp/
 **目的**：`source` 或正文連結綁 `#Requirement: <標題>` 錨點，Requirement 改名即斷鏈（ORD-027 教訓）。存量卡不回頭批量改，只提示本輪異動卡。
 
 ```bash
-base=$(git merge-base HEAD origin/main 2>/dev/null || echo HEAD~1)
+base=$(git merge-base HEAD origin/master 2>/dev/null || git merge-base HEAD origin/main 2>/dev/null || echo HEAD~1)   # 本 repo 預設分支是 master，寫死 origin/main 會 fatal 後靜默退到 HEAD~1
 changed=$( { git -c core.quotepath=false diff --name-only "$base" HEAD -- 'memory/Sens_wiki/wiki/'; git -c core.quotepath=false diff --name-only -- 'memory/Sens_wiki/wiki/'; } | sort -u )   # quotepath=false 必加：中文路徑否則被轉義漏算
 for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && echo "INFO: $f 含標題錨點，建議改指 spec 檔層"; done
+# mode D 指名批次：不套上面的公式，改用該批 commit 的檔案清單
+# changed=$(git -c core.quotepath=false show --name-only --format="" <sha> | grep 'memory/Sens_wiki/wiki/')
 ```
 
 ### 維度 11：log 條目完整性（只查本輪異動的正本卡）
@@ -159,7 +157,7 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 **目的**：把各單元規範的「稽核維度」表真正接進 lint——寫卡宣稱合規不算數，稽核者逐項勾才算（執行者／稽核者分離，[[卡片撰寫共用規範]] § 二）。
 
 檢查兩部分：
-1. **本輪異動的正本卡**（範圍取法同維度 10）：稽核維度分三層，**L1＋L2＋L3 全通過才算完成**。先載入 L1 共用維度八條（`00-meta/卡片撰寫共用規範` § 四之二，所有卡型一體適用），再依卡的 type 載入該單元的 L2／L3——entity → `規範 - 實體` § 十、role → `規範 - 角色` § 十、state-machine → `規範 - 狀態機` § 十、scenario → `規範 - 業務情境` § 十二、service-blueprint／business-rule → `規範 - 商業邏輯` § 十三（含依 `mutability` 加勾的 L3 分型維度）、open-question → `規範 - OQ` § 九；以該單元「範例 - 」卡為通過樣本對照。存量未異動卡不掃（避免噪音，隨異動逐步覆蓋）。
+1. **本輪異動的正本卡**（範圍取法同維度 10）：稽核維度分三層，**L1＋L2＋L3 全通過才算完成**。先載入 L1 共用維度八條（`00-meta/卡片撰寫共用規範` § 四之二，所有卡型一體適用），再依卡的 type 載入該單元的 L2／L3——entity → `規範 - 實體` § 十、role → `規範 - 角色` § 十、state-machine → `規範 - 狀態機` § 十、scenario → `規範 - 業務情境` § 十二、service-blueprint／business-rule → `規範 - 商業邏輯` § 十三（含依 `mutability` 加勾的 L3 分型維度）、open-question → `規範 - OQ` § 九；以該單元「範例 - 」卡為通過樣本對照。存量未異動卡不掃（避免噪音，隨異動逐步覆蓋）。L1-9 用詞正本的機械取證走維度 14；本輪若有 Miles 核對過的落點表（[[卡片撰寫共用規範]] § 二之二），逐條驗「一條內容只有一個落點」是否成立。
 2. **全部「範例 - 」卡**：`synced-with-template` 不得早於對應規範檔的最後實質修改（`git log -1 --format=%ad --date=short -- <規範檔>` 比對）；範例卡正文須與快照來源卡在最後同步時點一致性抽查（至少驗段落結構同構）。
 
 判定：OK＝異動卡全數通過該型維度且範例卡同步日有效；Warning＝1-3 項未過；Error＝範例卡同步日早於規範修改（三層同 commit 鐵則被破壞）。
@@ -172,7 +170,7 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 
 **方法**（機械取證＋人工判讀，不可只靠 grep）：
 1. 從異動卡逐條抽出它陳述的規則句（含數值、閾值、角色、狀態值、觸發條件）。
-2. 每句取 2 至 3 個關鍵詞組合全庫搜（`obsidian search`，非 grep），排除歷史層與 OQ。
+2. 每句取 2 至 3 個關鍵詞，用 skill `obsidian-cli` 的全庫搜尋（非 grep），排除歷史層與 OQ。
 3. 命中第二處時判斷屬哪一類：
    - **實質重述**（兩處都在定義同一條規則）→ Error。處置：判定哪張是正本（依 [[scope-boundary]] 與各單元規範的正本歸屬），另一處改為 `[[卡名]]` 引用，只留該卡語境需要的一句話銜接。
    - **引用**（一處定義、另一處以 `[[卡名]]` 指過去）→ OK，不計違規。
@@ -186,7 +184,7 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 
 **目的**：欄位名是純文字、改名不會連動，規則卡與情境卡抄一份名字就會漂——`訂單總額` 與 `應收總額` 曾在同一格並存兩個月無人發現（2026-07-31 修）。
 
-**鐵則**：名詞定義一律以 `05-entities/` 實體卡的欄位表為準。規則卡、狀態機卡、情境卡寫規則與應用時，**用字必須與實體卡欄位名逐字相同**；語意不清或找不到對應欄位時停下確認，附建議的同步方式，不自行改名、不自創同義詞。
+**鐵則正本＝[[卡片撰寫共用規範]] § 四之二 L1-9**（名詞逐字等同實體卡欄位表、不簡寫、不自創同義詞，找不到對應欄位或同詞兩義時停下）。本維度是它的稽核端，只做機械取證與判讀、不複寫規則本體；發現不一致依鐵則並排呈報，正名方向由 Miles 裁決。
 
 方法：
 1. 建立欄位名清單——掃 `05-entities/` 各卡「欄位（業務可見）」段表格第一欄，得 `<實體卡, 欄位名>` 全集。
@@ -205,7 +203,7 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 # Vault Audit 報告（YYYY-MM-DD HH:MM）
 
 ## 摘要
-- 模式 / 總體狀態（OK / Warning / Error）/ 維度通過 X / 12
+- 模式 / 總體狀態（OK / Warning / Error）/ 維度通過 X / 14
 
 ## 維度結果
 ### 維度 N <名稱>：<判定>
@@ -240,7 +238,7 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 | 為孤島卡建議連入位置 | source 方向錯誤的改向（涉及依據判斷） |
 | 死鏈改向或建 stub（stub 須 status: draft、檔名即標題、不寫 H1） | 內容性缺口補寫 |
 
-步驟：全量稽核 → 列可修復清單給 Miles 確認 → 執行 → log 記一筆（變更行註記修復項）。
+步驟：全量稽核 → 列可修復清單給 Miles 確認 → 執行；**正本卡的內容修復 MUST 轉介 `wiki-amend`**，frontmatter 補欄位、死鏈改向、建 stub 這類機械修復本 skill 可直接做 → log 記一筆（變更行註記修復項）。
 
 ## 五、Anti-Pattern（禁止行為）
 
@@ -256,5 +254,6 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 
 | Skill | 協作 |
 |-------|------|
+| `wiki-amend` | mode C 的正本卡內容修復一律轉介；本 skill 唯讀，只在機械修復範圍內動檔 |
 | `oq-manage` | 維度 1／6／8 發現矛盾、inline OQ、過期 OQ → 建議 mode B／C／D |
 | `vault-ingest` | 維度 9 raw 超期／累積 → 建議 mode B／C |

@@ -1,15 +1,12 @@
----
-paths:
-  - memory/Sens_wiki/**
----
-
 # Sens 知識庫操作模式
+
+本檔管這個知識庫（`memory/Sens_wiki/`）的操作與格式：角色、目錄權限、連結、命名、log 與 index 維護、工作流入口。讀寫本目錄樹下任何檔案時自動生效。內容原則（收什麼、怎麼寫）見 [wiki/index.md](wiki/index.md) § Wiki 憲章與 [[卡片撰寫共用規範]]。
 
 ## 一、角色與語言
 
 - **角色**：你正在維護一個 LLM Wiki（根據 [Karpathy的規範](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)），你的任務是把零散資訊編譯成結構化、互相連結的卡片，編譯成高度相互鏈接的知識庫；每次納入新素材都要更新相關卡、維護目錄與操作史、標記矛盾。
-- **語言鐵則（後續所有產出的評分標準）**：卡名、段落、欄位描述一律**繁體中文**，依**語意**翻譯，**禁直譯、禁中英夾雜**。
-  - 範例：business process → 業務流程、work order → 工單、payment → 付款紀錄、print item → 印件。
+- **語言鐵則**：卡名、段落、欄位描述一律**繁體中文**，依**語意**翻譯，**禁直譯、禁中英夾雜**。完整語言維度見 [[卡片撰寫共用規範]] § 四之二 L1-3。
+  - 詞彙對照：business process → 業務流程、work order → 工單、payment → 付款紀錄、print item → 印件。
   - 技術 token 例外：skill 名（`vault-ingest`）、frontmatter 欄位名（`type` / `status`）保留原樣，但說明文字用繁中。
 
 ## 二、目錄與權限（底線）
@@ -63,8 +60,9 @@ paths:
 | 納入（ingest）| 素材 `raw/` → 精練進 `wiki/` | `vault-ingest` skill |
 | 查詢（query）| 依 `business-domain-taxonomy` § 檢索規約（判領域，語意不確定先問 Miles → tag 查卡名清單 → 呈現 → 載入）→ 讀卡 → 附 `[[引用]]` 作答 → 高價值答案固化成對應正本卡（04 規則／05 實體／06 狀態機／07 情境），不讓探索價值只留對話 | 日常對話 |
 | 健檢（lint）| 巡檢：矛盾 / 死鏈 / 孤兒 / 過時 / 缺欄位 / **命名違反繁中語意化（直譯 / 中英夾雜）**；並產出建議——值得調查的新問題、該補的素材 | `vault-audit` skill |
+| 寫卡（write）| 03／04／05／06／07 正本卡的新增與修改 | `wiki-amend` skill（唯一寫入入口，其他 skill 一律轉介） |
 
-- **Obsidian 稽核 / 查詢一律優先用 `obsidian-cli`**：搜尋（`obsidian search`）、讀卡（`obsidian read`）、反向連結 / 死鏈 / 孤兒（`obsidian backlinks` / `deadends`，或 `obsidian eval` 查 `metadataCache.unresolvedLinks`）一律走 CLI，**不以 grep 當 vault 稽核手段**（grep 只看純文字，無法解析 wiki link 與 vault 索引）。
+- **操作 vault MUST 先載入 skill `obsidian-cli`**：搜尋、讀卡、反向連結、孤島（入鏈為 0）、死鏈（未解析連結）一律走 CLI，**不以 grep 當 vault 稽核手段**（grep 只看純文字，無法解析 wiki link 與 vault 索引）。**指令名與參數語法一律以該 skill 為準，本檔與各 skill 都不列例子**——省略參數時 CLI 會靜默改查目前開啟的檔案，回一份看似合理的錯答案（2026-08-01 實測：backlinks 少報 8 倍）。
 - **矛盾不靜默覆寫**：發現矛盾立即開 OQ 卡（`oq-manage` skill），原處改連結引用，不直接蓋掉舊說法。
 
 ## 六、新增主題（recipe）
@@ -76,5 +74,5 @@ paths:
 
 ## 七、各主題專屬規則入口
 
-- **ERP**（產品，wiki 與 OpenSpec 的 BRD / PRD 分工見 [CLAUDE.md](../../CLAUDE.md) § wiki 與 OpenSpec 分工）：導航入口 `wiki/erp/00-meta/`（[[wiki-schema]] / [[erp_index]] / [[scope-boundary]] / [[business-domain-taxonomy]] 等）；全知識庫內容原則正本見 [wiki/index.md](../../memory/Sens_wiki/wiki/index.md) § Wiki 憲章。
+- **ERP**（產品，wiki 與 OpenSpec 的 BRD / PRD 分工見 [CLAUDE.md](../../CLAUDE.md) § wiki 與 OpenSpec 分工）：導航入口 `wiki/erp/00-meta/`（[[wiki-schema]] / [[erp_index]] / [[scope-boundary]] / [[business-domain-taxonomy]] 等）；全知識庫內容原則正本見 [wiki/index.md](wiki/index.md) § Wiki 憲章。
 - **編輯器 canvas**（產品）：`wiki/canvas/`，內部結構待依需求定義。

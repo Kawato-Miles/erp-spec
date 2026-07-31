@@ -9,9 +9,15 @@ last-reviewed: 2026-06-02
 **全知識庫唯一只追加層**（ERP 舊 changelog 已於 2026-06-10 凍結封存）。每次動 `wiki/` 後記一筆，最新在上（新筆置於本說明列下方、既有條目最上方）；既有條目只增、不改、不刪。
 格式：`## [YYYY-MM-DD HH:MM] <動作>(<標籤>) | <一句話簡述>`，動作 = 納入 / 查詢 / 健檢 / 同步；標籤 = ingest-A/B/C、amend、audit、pre-check、insight、oq、misjudgement。
 下記三行：「變更」（MUST 逐卡 `[[卡名]]` + 一句話，禁粗寫）、「動機」（實質異動正本卡必填，業務理由當下自足，得連 [[OQ卡]]；健檢 / 納入類免）、「衝突」。
-完整規約見 `.claude/rules/sens-wiki.md` § 四。卡的歷史 = 搜 `[[卡名]]` 命中本檔條目 + git 歷史；決策脈絡見 OQ 卡。
+完整規約見 vault 根 `CLAUDE.md` § 四。卡的歷史 = 搜 `[[卡名]]` 命中本檔條目 + git 歷史；決策脈絡見 OQ 卡。
 
 ---
+
+## [2026-08-01 03:49] 同步(amend) | 知識庫操作模式搬回 vault 根 CLAUDE.md，obsidian 指令改由 skill 承載
+
+- 變更：`memory/Sens_wiki/CLAUDE.md` 重建（取代 `.claude/rules/sens-wiki.md`，該檔與 `.claude/rules/` 目錄已刪）——語言鐵則收成一句並指 [[卡片撰寫共用規範]] § 四之二 L1-3、工作流表新增「寫卡」列指 `wiki-amend` 為唯一寫入入口、obsidian 段改為「MUST 先載入 skill `obsidian-cli`，指令名與參數語法一律以該 skill 為準，本檔與各 skill 都不列例子」；[[index]] 兩處與 [[卡片撰寫共用規範]] 一處的分工引用改指 vault 根 `CLAUDE.md`；本檔檔頭說明列同步改路徑
+- 動機：Miles 拍板改回 CLAUDE.md 分層形式（全域／專案／知識庫，越下層管轄範圍越小）。實測確認兩機制注入行為等價，都是讀到該目錄樹下的檔才注入全文、一 session 一次、對 sub-agent 生效；2026-06-10 當時上移的理由「啟動可靠載入、進版控」不成立，`memory/Sens_wiki/` 一樣在版控內。obsidian 指令不再寫進任何文件的理由：省略參數時 CLI 會靜默改查目前開啟的檔案並回一份看似合理的錯答案，實測 backlinks 少報 8 倍，而正確語法只有 skill 檔會隨 CLI 改版更新
+- 衝突：無。本檔既有條目提到舊路徑者屬歷史層，依只追加鐵則不改
 
 ## [2026-08-01 03:01] 納入(amend) | 用詞正本歸實體卡（L1-9）＋歸位步強制產落點表＋範例卡鎖定範圍對齊正本
 

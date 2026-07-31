@@ -127,7 +127,7 @@ Miles，印刷業 PM，負責兩個產品：**ERP 系統**（生產排程 / 採�
   3. 更新對應 OpenSpec spec / Vault 卡（若有內容異動）
   4. 確認 CLAUDE.md § Spec 規格檔清單是否需補充
   5. 確認 memory/ 相關檔案是否需更新
-  6. **若本次有 ≥ 5 個 Vault 卡異動 → 主動建議 Miles 跑 `vault-audit`**（10 維度自審）
+  6. **若本次有 ≥ 5 個 Vault 卡異動 → 主動建議 Miles 跑 `vault-audit`**（14 維度自審）
   8. **若本次對話累積 ≥ 1 條可寫入 raw 的素材（Prototype 試用反饋 / Miles 觀察 / 研究筆記 / 對話 highlight）→ 觸發 `vault-ingest` mode A**（claude-self-capture 須 Miles 確認、claude-research 須附真實 raw-source-link）
   9. **若本次對話結束時累積 status=raw ≥ 10 張 → 主動建議 Miles 跑 `vault-ingest` mode C**（批次掃描 raw 待處理清單）
   10. **設計確認後、進入 `/opsx:propose` 前 MUST 先更新 wiki 商業邏輯卡**（依 `erp-planning-pre-check` 產出的「propose 前須先更新的 wiki 卡清單」執行），確保 ERP_Vault 商業邏輯正本（04-business-logic / 05-entities / 06-state-machines / 07-scenarios）先於 OpenSpec 定案。wiki 是 BRD（商業邏輯正本），OpenSpec 是 PRD（實作規格），正確順序是先定 BRD 再寫 PRD（review-return-and-confirm-production 教訓：wiki 回補放 archive 後導致 spec 混入狀態列舉、重複維護）
@@ -147,14 +147,14 @@ Miles，印刷業 PM，負責兩個產品：**ERP 系統**（生產排程 / 採�
 | 規格撰寫 / 變更 | 「寫 spec」「新增功能」「修改 XX 規格」「規劃文件」 | `/opsx:propose` → 序列協作 Phase 1-4 完整流程（含 OQ 查詢 + PM 釐清 + Phase 2 PM↔CEO 來回上限 2 + Phase 3 PM↔ERP 顧問來回上限 2 + Phase 4 PM 匯報含 verify consistency 三張對照表，依 [[sequential-design-collaboration]] + [[dispatch-prompt-template]]）|
 | 規格草稿驗收前審查 | `/opsx:verify` 前需最終確認 | 不啟動 agent，由 sequential Phase 4 verify consistency（三張對照表）涵蓋 |
 | 系統一致性 / 狀態機確認 | 「會不會跟 XX 衝突」「這個狀態怎麼設計」「資料怎麼連」 | `erp-consultant` 單 agent 輕量審查（依 [[lightweight-review-mode]]）+ 讀取 wiki `06-state-machines/` 各狀態機卡 + 各模組 spec 內嵌狀態機 Requirement |
-| **規劃 ERP 功能 know-how 稽核（任何模組討論前）** | 「規劃」「設計」「修改 X 邏輯」+ 業務領域觸發詞（諮詢 / 報價 / 訂單 / 工單 / 審稿 / QC / 出貨 / 售後 / 款項 / 發票 / 收款 / 對帳 / OA / Payment / Invoice / PlannedInvoice / 退款 / 補收 / 折讓 / 期次 / 老化 等）| **第一句 MUST 跑 `erp-planning-pre-check` skill**（依 [[business-domain-taxonomy]] 檢索規約判領域——語意不確定先問 Miles——查領域 tag + `領域/全域` 出卡名清單、呈現後載入 → 雙軸量化稽核 6 領域 × 6 卡類型）+ ack 量化矩陣結果（每格 N/M/K 三數字，禁「大致 OK」非量化結論）+ **MUST 列 BI-/ORD- 雙系列 open OQ 清單** + **MUST 依連帶矩陣列出本次變動的連帶影響範圍**（七實體）+ 修補既有卡（**禁新建抽象卡**）+ Step 5 閉環驗證 + 反模式追蹤；執行者與稽核者分離（sub-agent 跑稽核 + 主對話 agent 跑修補）|
+| **規劃 ERP 功能 know-how 稽核（任何模組討論前）** | 「規劃」「設計」「修改 X 邏輯」+ 業務領域觸發詞（諮詢 / 報價 / 訂單 / 工單 / 審稿 / QC / 出貨 / 售後 / 款項 / 發票 / 收款 / 對帳 / OA / Payment / Invoice / PlannedInvoice / 退款 / 補收 / 折讓 / 期次 / 老化 等）| **第一句 MUST 跑 `erp-planning-pre-check` skill**（依 [[business-domain-taxonomy]] 檢索規約判領域——語意不確定先問 Miles——查領域 tag + `領域/全域` 出卡名清單、呈現後載入 → 雙軸量化稽核 6 領域 × 6 卡類型）+ ack 量化矩陣結果（每格 N/M/K 三數字，禁「大致 OK」非量化結論）+ **MUST 列 BI-/ORD- 雙系列 open OQ 清單** + **MUST 依連帶矩陣列出本次變動的連帶影響範圍**（七實體）+ 修補既有卡（**禁新建抽象卡**，動筆步轉介 `wiki-amend`）+ Step 5 閉環驗證 + 反模式追蹤；執行者與稽核者分離（sub-agent 跑稽核 + 主對話 agent 跑修補）|
 | **識別到不確定項（任何時機）** | 「這個需確認」「先列 OQ」「待釐清」「待補」「[!question]」 | **立即觸發 `oq-manage` mode B 開獨立檔**（含去重流程），原處改 wiki link 引用；**不可只 inline 標注或用 callout** |
 | **識別到 agent 誤審（任何時機）** | 「審錯了」「方向錯了」「規則太學術」「以後別這樣審」「記下來」「這是誤審」| **立即觸發 `misjudgement-record` mode B 寫入對應誤審卡**（自動分類至跨 agent 通用 / ERP 命名 / CEO 誤區 + 去重 + 四要素提取）；**不可只口頭說「下次注意」** |
-| **Vault 健康檢查 / audit** | 「跑 vault audit」「audit vault」「Vault 健康」/ 主動：≥ 5 Vault 卡異動 / change archive 後 / 每 20+ commit | 觸發 `vault-audit` skill（13 維度，範圍只讀 wiki/＋raw/ 唯讀），產對話報告含「建議調查的新問題／該補的素材」段 + 追加 wiki/log.md（健檢(audit)） |
+| **Vault 健康檢查 / audit** | 「跑 vault audit」「audit vault」「Vault 健康」/ 主動：≥ 5 Vault 卡異動 / change archive 後 / 每 20+ commit | 觸發 `vault-audit` skill（14 維度，範圍只讀 wiki/＋raw/ 唯讀；要改正本卡轉介 `wiki-amend`），產對話報告含「建議調查的新問題／該補的素材」段 + 追加 wiki/log.md（健檢(audit)） |
 | **Raw 素材收集 / 研究筆記** | 「存進 raw」「我要記」「先收集」「研究一下 X」「這份檔案存 raw」「把這個 PDF / 訪談 / 截圖收進來」/ Claude 完成 WebFetch 研究後 / Claude 主動識別「值得記」 | 觸發 `vault-ingest` mode A 寫入 `raw/<YYYY-MM-DD>-<source>-<topic>.md`（claude-self-capture **須 Miles 確認**，claude-research **須附真實 raw-source-link**，miles-upload **須原檔搬 `_attachments/` + 出處**）|
 | **批次掃描 raw** | 「看 raw」「掃 raw」「raw 待處理」/ 主動：累積 ≥ 10 張 status=raw | 觸發 `vault-ingest` mode C，產三狀態清單 + 同主題累積警示 + 過期警告 |
-| **精練 raw 卡** | 「精練 [檔名]」「ingest 這張」「拆解 raw」 | 觸發 `vault-ingest` mode B（含 oq-manage mode B 協同觸發判斷；cards diff **須 Miles 確認** 才動既有卡）|
-| **新增 / 修改業務情境** | 「寫業務情境」「補情境卡」「寫 [模組] 情境」/ 識別到 spec 需求須具體化為業務情境 | 依三層撰寫：從骨架 [[wiki/範本/範本 - 業務情境]] 複製起手 → 規則與 13 維度自審依規範 [[wiki/erp/07-scenarios/規範 - 業務情境]] → 合規樣貌對照 [[wiki/erp/07-scenarios/範例 - 業務情境]]（共用治理見 [[wiki/erp/00-meta/卡片撰寫共用規範]]），不經 skill；產 `07-scenarios/<簡述>.md` |
+| **精練 raw 卡** | 「精練 [檔名]」「ingest 這張」「拆解 raw」 | 觸發 `vault-ingest` mode B（含 oq-manage mode B 協同觸發判斷；cards diff **須 Miles 確認**，正本卡寫入轉介 `wiki-amend`）|
+| **寫或改 wiki 正本卡（唯一入口）** | 「寫進 wiki」「更新 wiki」「對齊 wiki」「補一張情境卡」「寫業務情境」「補 [模組] 情境」/ 日常查詢的高價值答案要固化成正本卡 / 其他 skill 判完落點要動 03／04／05／06／07 任一張卡 | 觸發 `wiki-amend`：先過它的 § 〇 硬性載入清單（[[wiki/erp/00-meta/卡片撰寫共用規範]] § 二／§ 三／§ 四／§ 四之二 ＋ 該卡型 `規範 - <單元名>` ＋ 對應骨架 ＋ 範例卡），再判落點、撰寫、稽核、追加 wiki/log.md。**不再有繞過 skill 直接寫正本卡的路徑** |
 | **對外發布 / 迭代同步**（依這次更新同步 Notion / Linear）| 「依這次更新同步」「推迭代差異」「同步發布」「更新外部資料」「推 X 到 Notion / Linear」 | 算 delta（只取 archived change、active 不外露）→ 內部正本先到位 → 路由（業務情境卡對外推送若需要另做 skill（外部對接 wiki）；Linear → `linear-delivery`，中台 vs 業務平台 project 分流）→ 每面寫入前列清單給 Miles → 強制回填追蹤 |
 | **使用工程紀律框架（mattpocock）** | 「brainstorm / 對齊」「跑 TDD」「除錯」「code review」（限 prototype / erp repo 實作階段） | 實作前 MUST 先 `grilling` 對齊需求（軟強制，補回原 Superpowers SessionStart 消失的強制段；PM 規格階段對齊仍走 `senior-pm` / `/opsx`，不重複）；再依動作調用 mattpocock skill——TDD→`tdd`、除錯→`diagnosing-bugs`、程式碼審查→`code-review`。工程紀律優先於速度 |
 
@@ -187,6 +187,7 @@ Miles，印刷業 PM，負責兩個產品：**ERP 系統**（生產排程 / 採�
 - 已在執行 OpenSpec change 工作流時，agent 呼叫遵循 config.yaml rules，不重複觸發
 - 序列協作 Phase 4 由 PM 匯報七段：商業需求對齊檢核 / 採納清單 / 砍掉的功能清單 / 逐條回應 challenge / **verify consistency 三張對照表（2026-05-28 新增、2026-05-30 擴為三張，紀律 5）** / 未解爭議 OQ / 整體設計方案，**MUST NOT** 由 Claude 協調者自行彙整
 - 規格撰寫統一透過 OpenSpec change 工作流
+- `erp-planning-pre-check` 與寫卡入口的消歧判準：問「這次是要規劃還沒定案的東西，還是把已定案的內容落卡」。前者跑 pre-check（規劃前盤點影響範圍與 know-how 缺口），後者直接走 `wiki-amend`；一段討論先規劃後落卡時兩個都跑，pre-check 在前
 
 ---
 
