@@ -4,7 +4,7 @@ module:
   - 售後服務
   - 訂單管理
 oq-id: AFT-3
-status: open
+status: answered
 priority: low
 audience: internal
 raised-at: 2026-05-20
@@ -17,6 +17,8 @@ related-oq:
   - ORD-002
 related-change: refine-after-sales-refund-and-add-supplementary-print
 expected-resolution-at: 2026-Q3
+answered-at: 2026-08-01
+answered-by: Miles
 tags:
   - 領域/訂單管理
   - 領域/履約與售後
@@ -57,3 +59,9 @@ OA 已核可後業務修改金額（不重審），系統是否要主動推播�
 
 - senior-pm 前期介入 第 4 段風險 A
 - change `refine-after-sales-refund-and-add-supplementary-print` design.md § 決策 1 + OQ-1
+
+## 決議（2026-08-01，Miles）
+
+**結論**：不通知主管，也不設金額閾值重審。核可金額快照與稽核記錄已留痕（[[訂單異動規則]] § 金額編輯閘門）。
+
+**理由**：主管核可的是「該不該退」，改後的數字是業務跟客戶談出來的；每次推播會變成主管的雜訊。

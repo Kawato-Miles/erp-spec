@@ -2,10 +2,12 @@
 type: open-question
 module:
   - 訂單管理
+answered-at: 2026-08-01
+answered-by: Miles
 tags:
   - 領域/履約與售後
 oq-id: ORD-040
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-06-01
@@ -50,3 +52,9 @@ source-link: 諮詢涵蓋缺口對齊 change（2026-06-01，已歸檔）
 ## 處理決定（Miles 2026-06-01）
 
 留待**以後的 change** 收斂（不在 align- archive 當下改正本）。本 OQ 維持 open，待後續 change 決定 pi_shipped_qty / shipment_quantity 二擇一與印件出貨三態綁定欄位。
+
+## 決議（2026-08-01，Miles）
+
+**結論**：兩個欄位都拿掉。印件層不存累計已出貨數量，要用就從出貨明細行加總即時算出（[[印件]] 已改為衍生欄位）。
+
+**理由**：已出貨數的唯一正本是出貨明細（[[齊套邏輯]] 公式正本），印件層再存一份就會有兩本帳要對；衍生計算不會不同步。

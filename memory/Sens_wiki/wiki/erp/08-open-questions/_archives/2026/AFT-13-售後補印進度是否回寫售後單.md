@@ -3,7 +3,7 @@ type: open-question
 module:
   - 售後服務
 oq-id: AFT-13
-status: open
+status: answered
 priority: low
 audience: internal
 raised-at: 2026-07-27
@@ -14,6 +14,8 @@ related-vault:
   - "[[售後服務規則]]"
   - "[[印件]]"
 expected-resolution-at: 2026-08-29
+answered-at: 2026-08-01
+answered-by: Miles
 tags:
   - 領域/履約與售後
 ---
@@ -28,3 +30,9 @@ tags:
 
 - [ ] 售後單是否顯示補印印件的生產與出貨進度（唯讀彙總）
 - [ ] 補印送達時是否提示業務可結案
+
+## 決議（2026-08-01，Miles）
+
+**結論**：不在售後單特別顯示補印進度。售後單要補印就會關聯到印件，正常流程是業務回訂單看印件進度，處理完再回來關掉售後單。
+
+**理由**：關聯已經在，另做一份唯讀彙總是重複資訊；業務的實際動線本來就是回訂單看印件。

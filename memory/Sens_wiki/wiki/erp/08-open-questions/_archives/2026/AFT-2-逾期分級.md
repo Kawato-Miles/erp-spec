@@ -3,13 +3,15 @@ type: open-question
 module:
   - 售後服務
 oq-id: AFT-2
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-19
 raised-by: Miles
 expected-resolution-at: 2026-Q3
 related-change: add-my-after-sales-action-page-and-remove-owner-transfer
+answered-at: 2026-08-01
+answered-by: Miles
 tags:
   - 領域/履約與售後
 ---
@@ -48,3 +50,9 @@ tags:
 - change `add-my-after-sales-action-page-and-remove-owner-transfer` plan § 5 個待 propose 階段細決議項目
 - 既有實作規格已定義訂單列表的售後狀態欄位與篩選器（實作規格層）（DEFAULT_RED_LIGHT_DAYS = 7）
 - 業界對照：客服 ticket 系統普遍採 SLA 分級
+
+## 決議（2026-08-01，Miles）
+
+**結論**：不分級，逾期分級整個拿掉——不設 7／14／30 三級，也不依事件分類分閾值。
+
+**理由**：現階段不做過多分級管理；三級分級要有人依級別採取不同行動才有意義，否則只是換顏色。

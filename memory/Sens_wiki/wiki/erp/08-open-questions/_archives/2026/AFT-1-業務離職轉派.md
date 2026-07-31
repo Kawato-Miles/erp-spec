@@ -3,7 +3,7 @@ type: open-question
 module:
   - 售後服務
 oq-id: AFT-1
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-05-19
@@ -14,6 +14,8 @@ related-change:
   - add-sales-manager-reassign-owner
 related-oq:
   - XM-008
+answered-at: 2026-08-01
+answered-by: Miles
 tags:
   - 領域/履約與售後
 ---
@@ -64,3 +66,9 @@ tags:
 - **本 OQ 仍 open 的部分**：**售後服務 ticket** 的離職接手（Miles 限定本次只做三前段單據，售後 ticket 暫不納入）。售後 ticket 的 `openedBy` 接手機制仍待釐清（候選做法見上）。
 
 故本 OQ status 維持 open，待售後 ticket 接手機制後續決議。
+
+## 決議（2026-08-01，Miles）
+
+**結論**：由 [[業務主管]] 改派負責業務——售後服務單已納入業務主管的改派清單（與諮詢單／需求單／訂單同一個動作）。不需要 SQL 手動改、也不需要接手業務另建新單補述。
+
+**理由**：轉派這件事本來就存在於其他單據，售後單沒有理由自成一格；`add-my-after-sales-action-page-and-remove-owner-transfer` 移除的是「業務自行轉派」，主管改派不受影響。
