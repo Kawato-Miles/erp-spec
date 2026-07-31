@@ -4,7 +4,7 @@
 
 **Reason**: 2026-07-21 拍板廢除 QC 單與品檢型生產任務，品質帳改由印件層品檢紀錄承載（分次驗、隨驗隨入庫、一次一筆）。工單只管製作帳，兩帳脫鉤。
 
-**Migration**: 品檢行為的 spec 歸批二的 `qc` capability；商業正本見 wiki [品檢紀錄](../../../../memory/Sens_wiki/wiki/erp/05-entities/品檢紀錄.md)。
+**Migration**: 品檢行為的 spec 歸批二的 `qc` capability；商業正本見 wiki [品檢紀錄](../../../../../memory/Sens_wiki/wiki/erp/05-entities/品檢紀錄.md)。
 
 ### Requirement: QC 執行與結果記錄
 
@@ -16,7 +16,7 @@
 
 **Reason**: 工單不依工廠性質拆單（對齊業界主流），區域（台灣／中國）欄已棄用；內外之分下沉到生產任務的生產單位類別，由 BOM 三類主檔各自的承作廠商決定。
 
-**Migration**: 生產單位類別見 wiki [生產任務](../../../../memory/Sens_wiki/wiki/erp/05-entities/生產任務.md) 欄位表；跨廠銜接沿用跨工單前置。
+**Migration**: 生產單位類別見 wiki [生產任務](../../../../../memory/Sens_wiki/wiki/erp/05-entities/生產任務.md) 欄位表；跨廠銜接沿用跨工單前置。
 
 ### Requirement: BOM 行項目管理
 
@@ -88,7 +88,7 @@
 
 **Reason**: 2026-07-28 拍板移除任務層（同生產單位分組實體）。異動鏈改為直接生產任務 → 工單鏡像，不再有任務層的異動狀態。
 
-**Migration**: 見本 spec § 工單異動流程；狀態列舉見 wiki [工單狀態](../../../../memory/Sens_wiki/wiki/erp/06-state-machines/工單狀態.md)、[生產任務狀態](../../../../memory/Sens_wiki/wiki/erp/06-state-machines/生產任務狀態.md)。
+**Migration**: 見本 spec § 工單異動流程；狀態列舉見 wiki [工單狀態](../../../../../memory/Sens_wiki/wiki/erp/06-state-machines/工單狀態.md)、[生產任務狀態](../../../../../memory/Sens_wiki/wiki/erp/06-state-machines/生產任務狀態.md)。
 
 ### Requirement: 任務狀態機
 
@@ -104,7 +104,7 @@
 
 ### Requirement: 完成度計算（齊套性邏輯 Kitting Logic）
 
-**Reason**: 併入本 spec § 工單完工判定（完工判定與完成度計算是同一件事的兩面，拆兩條會讓齊套規則的引用重複）。齊套性邏輯的規則正本在 wiki [齊套邏輯](../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)，spec 不複寫。
+**Reason**: 併入本 spec § 工單完工判定（完工判定與完成度計算是同一件事的兩面，拆兩條會讓齊套規則的引用重複）。齊套性邏輯的規則正本在 wiki [齊套邏輯](../../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)，spec 不複寫。
 
 **Migration**: 見本 spec § 工單完工判定。
 
@@ -115,7 +115,7 @@
 
 ### Requirement: 工單草稿建立
 
-系統 SHALL 依 wiki [工單](../../../../memory/Sens_wiki/wiki/erp/05-entities/工單.md) § 建立來源 的五建一不建分流建立工單，本 spec 不複寫該分流。工單號格式：`W-[YYYYMMDD]-[NN]`。
+系統 SHALL 依 wiki [工單](../../../../../memory/Sens_wiki/wiki/erp/05-entities/工單.md) § 建立來源 的五建一不建分流建立工單，本 spec 不複寫該分流。工單號格式：`W-[YYYYMMDD]-[NN]`。
 
 線下單路徑：訂單管理人確認印件的製作細節無誤、印件印製維度推進至「製程已確認」時，系統 SHALL 自動建立第一張空工單草稿；印務主管檢視草稿時 MAY 引用印件配方展開（展開行為見 `recipe-expansion`）或直接分派，亦 MAY 自行增開工單。線上單路徑：印件審稿通過後系統 SHALL 依印件帶入的部件與 BOM 組成自動建立工單並帶入生產任務，不經訂單管理人確認。
 
@@ -190,7 +190,7 @@
 
 外發（外包廠與中國廠商）生產任務的生產數量 SHALL 取回廠點收數量，SHALL NOT 取廠商回報數；點收確認即該任務完成，走與場內任務相同的完成路徑，SHALL NOT 另設外發專屬的數量判定規則。台灣線與中國線的外發一律走派單與貨運單機制，點收數量 SHALL 記在生產任務上（派單明細本就掛生產任務），SHALL NOT 另立單據。
 
-欄位定義的正本見 wiki [生產任務](../../../../memory/Sens_wiki/wiki/erp/05-entities/生產任務.md)，本 spec 不複寫欄位表。
+欄位定義的正本見 wiki [生產任務](../../../../../memory/Sens_wiki/wiki/erp/05-entities/生產任務.md)，本 spec 不複寫欄位表。
 
 **Priority**: P0
 
@@ -210,7 +210,7 @@
 
 ### Requirement: 工單狀態機
 
-工單狀態的列舉正本見 wiki [工單狀態](../../../../memory/Sens_wiki/wiki/erp/06-state-machines/工單狀態.md)，本 spec 只規範轉換規則與守衛。
+工單狀態的列舉正本見 wiki [工單狀態](../../../../../memory/Sens_wiki/wiki/erp/06-state-machines/工單狀態.md)，本 spec 只規範轉換規則與守衛。
 
 規劃與審核段由人推進：印務送審（草稿或重新確認製程 → 製程確認中）、印務主管核可（→ 製程審核完成）或退回並附原因（→ 重新確認製程）、印務收回（製程確認中或製程審核完成 → 草稿，守衛見 § 工單收回機制）。製作段由底層事實推進：全部生產任務交付後 → 工單已交付（取最落後）、任一生產任務首次報工 → 製作中、旗下生產任務全部完成 → 已完成。異動為生產任務層驅動的鏡像狀態，全部異動處理完 SHALL 自動回到進入前的原狀態。訂單取消 SHALL 由上而下連鎖轉入已取消。
 
@@ -317,7 +317,7 @@
 
 ### Requirement: 工單異動流程
 
-訂單成立後客戶改需求時，異動 SHALL 由生產任務層發起、往上帶動工單鏡像顯示異動狀態。異動期間完成度照算、生產不中斷。異動處理完畢後工單 SHALL 自動回到進入異動前的原狀態。異動的商業規則正本見 wiki [訂單異動規則](../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/訂單異動規則.md)。
+訂單成立後客戶改需求時，異動 SHALL 由生產任務層發起、往上帶動工單鏡像顯示異動狀態。異動期間完成度照算、生產不中斷。異動處理完畢後工單 SHALL 自動回到進入異動前的原狀態。異動的商業規則正本見 wiki [訂單異動規則](../../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/訂單異動規則.md)。
 
 **Priority**: P0
 
@@ -344,7 +344,7 @@
 
 ### Requirement: 工單完工判定
 
-工單 SHALL 在旗下全部生產任務完成時自動判定為已完成。製作帳與品質帳 SHALL 脫鉤——品檢缺口不擋工單收尾，缺口由印件層品檢紀錄承接。完成度的計算規則（基於 BOM 結構的齊套性邏輯）正本見 wiki [齊套邏輯](../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)。
+工單 SHALL 在旗下全部生產任務完成時自動判定為已完成。製作帳與品質帳 SHALL 脫鉤——品檢缺口不擋工單收尾，缺口由印件層品檢紀錄承接。完成度的計算規則（基於 BOM 結構的齊套性邏輯）正本見 wiki [齊套邏輯](../../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)。
 
 **Priority**: P0
 
@@ -383,7 +383,7 @@
 
 ### Requirement: 數量計算邊界防呆
 
-生產任務的目標數量推算 SHALL 採下行無條件進位。系統 SHALL 擋下目標數量為零或負值的任務。換算規則正本見 wiki [數量換算規則](../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/數量換算規則.md)。
+生產任務的目標數量推算 SHALL 採下行無條件進位。系統 SHALL 擋下目標數量為零或負值的任務。換算規則正本見 wiki [數量換算規則](../../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/數量換算規則.md)。
 
 **Priority**: P1
 
@@ -433,7 +433,7 @@
 
 ### Requirement: 印務主管印件總覽（防掉單）
 
-系統 SHALL 提供印務主管的印件總覽，呈現每件印件的工單分派狀態，並 SHALL 支援依印件類型（打樣印件／大貨印件／補印印件，三值列舉正本見 wiki [印件](../../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) 欄位表）、負責印務、交期與工單狀態篩選。印務主管的工作目標 SHALL 定義為「把清單上每件印件推到所有工單皆已指派印務的狀態」。
+系統 SHALL 提供印務主管的印件總覽，呈現每件印件的工單分派狀態，並 SHALL 支援依印件類型（打樣印件／大貨印件／補印印件，三值列舉正本見 wiki [印件](../../../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) 欄位表）、負責印務、交期與工單狀態篩選。印務主管的工作目標 SHALL 定義為「把清單上每件印件推到所有工單皆已指派印務的狀態」。
 
 **Priority**: P0
 
@@ -464,7 +464,7 @@
 
 製程規劃時系統 SHALL 依工單的預計交期（業務承諾客戶的交付日，自印件帶入）、依 BOM 主檔的製作天數，沿工序相依鏈自最後一筆生產任務逆推，預填各任務的建議開工日；印務 MAY 修改。相依鏈跨工單時倒推 SHALL 跨工單走。系統 SHALL NOT 依倒推結果自動調整排程或阻擋操作。
 
-工單 SHALL 以三個日期控管排程：預計交期（承諾值）、推算完工日（系統依旗下生產任務的建議開工日與主檔工期順推，唯讀、任務日期一改即重算）、實際完工日（工單完工判定時寫入）。欄位定義的正本見 wiki [工單](../../../../memory/Sens_wiki/wiki/erp/05-entities/工單.md) 欄位表。
+工單 SHALL 以三個日期控管排程：預計交期（承諾值）、推算完工日（系統依旗下生產任務的建議開工日與主檔工期順推，唯讀、任務日期一改即重算）、實際完工日（工單完工判定時寫入）。欄位定義的正本見 wiki [工單](../../../../../memory/Sens_wiki/wiki/erp/05-entities/工單.md) 欄位表。
 
 **Priority**: P0
 
@@ -495,7 +495,7 @@
 
 ### Requirement: 生產任務相依性
 
-印務 SHALL 可為生產任務設定前置任務清單。系統 SHALL 預設依規劃排序自動帶「上一道為前置」的線性鏈；並行匯流由印務手動設定多個前置。前置 SHALL 允許指向別張工單的生產任務（跨工單前置）。前置判定為數量級：需轉交的前置看已送達量、不需轉交的看已報工量，多個前置時可做量取各前置到料量的最小值。規則正本見 wiki [工序相依性規則](../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/工序相依性規則.md)。
+印務 SHALL 可為生產任務設定前置任務清單。系統 SHALL 預設依規劃排序自動帶「上一道為前置」的線性鏈；並行匯流由印務手動設定多個前置。前置 SHALL 允許指向別張工單的生產任務（跨工單前置）。前置判定為數量級：需轉交的前置看已送達量、不需轉交的看已報工量，多個前置時可做量取各前置到料量的最小值。規則正本見 wiki [工序相依性規則](../../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/工序相依性規則.md)。
 
 **Priority**: P0
 
