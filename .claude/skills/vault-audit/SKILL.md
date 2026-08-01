@@ -56,7 +56,7 @@ threshold=$(date -v-90d +%Y-%m-%d 2>/dev/null || date -d "90 days ago" +%Y-%m-%d
 
 方法：載入 skill `obsidian-cli`，查**入鏈為 0** 的檔（該 CLI 有專屬指令）。**孤島＝入鏈為 0，不是出鏈為 0**——查錯方向會得到一組毫無關係的檔案（2026-08-01 實測：入鏈為 0 有 28 筆、出鏈為 0 有 57 筆）。指令名與參數語法以該 skill 為準，本檔不列例子。
 
-判定：OK＝0 孤島（README／index／`wiki/範本/` 骨架檔／各資料夾「範例 - 」卡除外——三層結構豁免見 [[卡片撰寫共用規範]] § 一鐵則 4）；Warning＝1-3；Error＝> 3。
+判定（**先扣豁免再計數**）：豁免六類——README 與 index／`wiki/範本/` 骨架檔／各資料夾「範例 - 」與「規範 - 」卡（三層結構豁免見 [[卡片撰寫共用規範]] § 一鐵則 4、5）／`raw/` 全層（不進檢索，由 `vault-ingest` 管）／`09-canvases/`（視覺化產物，本來就沒有卡會連它）／`08-open-questions/_archives/`（封存卡靠目錄歸檔，不靠入鏈）。扣完後 OK＝0；Warning＝1-3；Error＝> 3。2026-08-01 實測：原始 28 筆，扣完豁免為 0。
 
 ### 維度 4：死鏈（未解析連結）
 
@@ -64,7 +64,11 @@ threshold=$(date -v-90d +%Y-%m-%d 2>/dev/null || date -d "90 days ago" +%Y-%m-%d
 
 方法：載入 skill `obsidian-cli`，用它執行 JavaScript 讀 `app.metadataCache.unresolvedLinks`，取含未解析連結的檔清單。參數語法以該 skill 為準，本檔不列例子（2026-08-01 實測：語法寫錯會直接報 `Missing required parameter`，這一維度長期沒跑成功過；正確查出來是 75 筆）。
 
-判定：OK＝0；Warning＝1-5（占位連結用角括號形式不計）；Error＝> 5。
+**範圍**：只計 03／04／05／06／07 正本卡與 `00-meta/`。排除四類——`raw/` 唯讀層、`08-open-questions/_archives/` 與 `log.md`／`changelog.md` 等只追加層（依規約不得改，報了也修不了）、`09-canvases/`（目錄改版後節點路徑過時，屬另案重建）、`wiki/範本/` 骨架（佔位連結一律寫成角括號形式，不計）。
+
+**合規的假陽性不計**：指向 vault 外的相對路徑 markdown link（如 `.claude/agents/`）Obsidian 一律算未解析，但那是 § 三明訂的外部連結寫法。指向 OpenSpec 或 Prototype 的則相反，計 Error（違反 § 三 禁指實作文件）。
+
+判定：OK＝0；Warning＝1-5；Error＝> 5。2026-08-01 實測：全庫原始 75 檔，扣掉不可改層與假陽性後，活躍正本卡為 0。
 
 ### 維度 5：frontmatter 完整性
 

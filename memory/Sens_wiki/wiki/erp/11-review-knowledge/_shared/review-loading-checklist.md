@@ -76,7 +76,7 @@ last-case-added: 2026-05-29
   3. 「業務優先級提示」「分組導航」這類 UX 需求在列表頁應該透過 table 欄位 / filter / sortable / status badge 解決，而不是把資料拆成多張卡片
   4. **規則**：規劃任何新列表頁時，erp-consultant agent MUST 先讀 DESIGN.md § 6.1 + 對照三個 canonical reference（QuoteListPage / OrderList / ConsultationRequestList），確認新頁的「資料層結構」是否對齊 ErpTableCard + table + ErpPagination 三件套，再展開設計
 - **適用 agent**：senior-pm（前期介入）+ erp-consultant（設計審查）
-- **相關 change**：[add-my-after-sales-action-page-and-remove-owner-transfer](../../../../../openspec/changes/archive/2026-05-19-add-my-after-sales-action-page-and-remove-owner-transfer/)（2026-05-19 歸檔 v0.2）；修正 change：refactor-my-after-sales-to-standard-list-pattern（後續開立）
+- **相關 change**：add-my-after-sales-action-page-and-remove-owner-transfer（2026-05-19 歸檔 v0.2）；修正 change：refactor-my-after-sales-to-standard-list-pattern（後續開立）。change 名留純文字，不連結——實作對應屬 PRD 層，且 change 會 archive 或作廢、路徑必然失效
 
 ### 2026-05-21「frontmatter 缺 module」誤審
 

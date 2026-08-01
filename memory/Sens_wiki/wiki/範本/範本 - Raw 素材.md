@@ -9,7 +9,7 @@ module:
 topic-tag:
   - <自由標籤>
 related-vault:
-  - "[[候選相關卡]]"
+  - "[[<候選相關卡>]]"
 raw-source-link: <對話片段 / WebFetch URL / Slack URL / 原始檔出處>
 attached-files:  # source=miles-upload 必填；其他可選；不需要時刪除整個欄位
   - "_attachments/<檔名>"
@@ -27,7 +27,7 @@ ingested-to:               # status=ingested 時填，列寫入的既有卡
 ## 第一輪初步分析（Claude 寫）
 
 - 觀察：<1-3 條與既有 vault 的關聯>
-- 候選相關卡：[[X]] / [[Y]]
+- 候選相關卡：[[<卡名>]] / [[<卡名>]]
 - 候選 OQ 候補：<若有，或標「無」>
 - 候選升級路徑：business-logic / scenario / OQ / 不升級
 
