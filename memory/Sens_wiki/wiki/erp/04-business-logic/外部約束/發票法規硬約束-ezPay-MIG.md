@@ -6,7 +6,7 @@ source:
   - "財政部電子發票整合服務平台 Message Implementation Guideline（MIG）"
   - "[[2026-05-26-miles-upload-ezpay-invoice-api-spec]]"
 status: active
-last-reviewed: 2026-06-09
+last-reviewed: 2026-08-03
 tags:
   - 領域/款項與發票
 ---
@@ -106,9 +106,9 @@ ezPay **全 API 金額一律正整數**（發票 TotalAmt、折讓 TotalAmt / Al
 
 | 實體 | 送 ezPay？ | sign 慣例 | 方向怎麼表示 | 為什麼 |
 |------|-----------|----------|------------|--------|
-| 訂單異動（OrderAdjustment）| 否（純內部應收調整載具）| 可正可負 | 用 sign（補收 + / 退款 −）| 內部數字，sign 最直接 |
-| 收款紀錄（Payment）| 否（內部金流紀錄）| **一律正值** | 用款項類型（收款 / 退款）| 內部金流，類型表方向 |
-| 折讓單（SalesAllowance）| **是**（`allowance_issue`）| **一律正值** | 不需方向（恆為發票減項）| **ezPay 規定正值、不收負額** |
+| 訂單異動 | 否（純內部應收調整載具）| 可正可負 | 用 sign（補收 + / 退款 −）| 內部數字，sign 最直接 |
+| 款項紀錄 | 否（內部金流紀錄）| **一律正值** | 用款項類型（收款 / 退款）| 內部金流，類型表方向 |
+| 折讓單 | **是**（`allowance_issue`）| **一律正值** | 不需方向（恆為發票減項）| **ezPay 規定正值、不收負額** |
 
 > 任何碰退款 / 折讓 spec 的人 MUST 先看本表：折讓金額與退款款項金額一律正值，只有訂單異動用負數。寫成「折讓金額為負數」「退款款項金額為負數」即違反 ezPay 契約與內部模型。
 
@@ -156,8 +156,10 @@ ezPay **全 API 金額一律正整數**（發票 TotalAmt、折讓 TotalAmt / Al
 ## 十、相關卡
 
 - [[付款發票邏輯]]（13 業務情境索引）
-- [[訂單]]（訂單實體 / Payment / Invoice / OrderAdjustment / SalesAllowance / BillingInstallment（取代 PlannedInvoice）段）
-- [[售後服務]]（OA-Payment 段）
+- [[訂單]]（§ 金額組成：應收總額 / 發票淨額 / 收款淨額）
+- [[帳務]]（發票 / 發票品項 / 折讓單 / 款項紀錄 / 收款項目 / 收款核銷分配 的欄位表）
+- [[訂單異動]]（異動金額的正負號慣例）
+- [[售後服務]]（售後退款與補收的容器）
 - [[會計]]（對帳 / 發票開立角色）
 - [[業務]]（款項追款）
 - [[business-domain-taxonomy]] § L1.6 Billing & Cash

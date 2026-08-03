@@ -102,7 +102,7 @@ Miles，印刷業 PM，負責兩個產品：**ERP 系統**（生產排程 / 採�
   - 「Prototype 走查」→ 改為「Prototype 試用」（事後操作介面檢視，語意比「走查」精準）
   - 「dogfood / dogfooding」→ 改為「親身試用」或「自用試跑」（自己用自己的產品 / 流程；對話與描述用中文，僅 source enum 等技術 token 可保留 `prototype-dogfood`）
 - Spec 中的角色名稱、流程步驟應符合公司實際用語與台灣行業慣例
-- **業務情境卡的欄位名 / 實體名對照**：一律用介面中文（payment → 付款紀錄、printItem → 印件、orderAdjustment → 訂單異動、quoteRequest → 需求單、workOrder → 工單、productionTask → 生產任務、reviewRound → 審稿輪次、paymentPlan → 付款計畫、afterSalesTicket → 售後服務單 等），詳見 [[wiki/erp/07-scenarios/規範 - 業務情境]]
+- **業務情境卡的欄位名 / 實體名對照**：一律用介面中文（payment → 款項紀錄、printItem → 印件、orderAdjustment → 訂單異動、quoteRequest → 需求單、workOrder → 工單、productionTask → 生產任務、reviewRound → 審稿輪次、paymentPlan → 付款計畫、afterSalesTicket → 售後服務單 等），詳見 [[wiki/erp/07-scenarios/規範 - 業務情境]]
 
 **9. ERP 系統術語統一規範（業務友善）**
 - 所有技術術語應轉化為業務容易理解的表達方式
