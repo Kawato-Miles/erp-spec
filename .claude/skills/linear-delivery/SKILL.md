@@ -208,7 +208,7 @@ description: >
 | **save_project 觸發狀態跳轉** | 更新 project 描述時 Linear 自動化會把 status 從 Backlog 帶到「Kick off」。`save_project` MUST 同時帶 `state: "Backlog"`（或交付前的原狀態）抑制，避免擅自推進看板 |
 | **欄位保留紀律** | `save_issue` 只傳 `id` + `description`；estimate / assignee / cycle / priority / milestone / labels 不傳即不動。交付只改「需求內容」，不碰排程與分派 |
 | **issue 互指自動關聯** | 描述內寫 issue 識別碼（如 FE-260 / BE-169）Linear 會自動轉成可點擊 cross-reference；提及某 issue 可能 touch 其 `updatedAt`（內容不變，屬良性 backlink）|
-| **引用 project MUST 用原生提及，禁純文字與 markdown 連結** | issue 內文引用 project 時 MUST 產生 Linear 原生提及（渲染為 @project 名 的卡片）。寫法：description 內直接寫 `<project id="<project UUID>" href="<project URL>/overview">中台 - 訂單管理</project>` 元素（2026-08-03 FE-377 實測可直接寫入並正常渲染）；「本 project」純文字與 markdown `[名稱](URL)` 皆禁止（markdown 連結不會轉成原生提及，曾被 Miles 退回）|
+| **引用 project MUST 用原生提及，禁純文字與 markdown 連結** | issue 內文引用 project 時 MUST 產生 Linear 原生提及（渲染為 @project 名 的卡片）。寫法：description 內直接寫 `<project id="<project UUID>" href="<project URL>/overview">中台 - 訂單管理</project>` 元素（2026-08-03 FE-377 實測可直接寫入並正常渲染）；「本 project」純文字與 markdown `[名稱](URL)` 皆禁止（markdown 連結不會轉成原生提及，曾被 Miles 退回）。此規則僅限 Linear 內部資源（project / issue）；wiki 卡在票內維持純文字引用、不外連 GitHub（2026-08-03 誤連被要求 rollback）|
 | **進行中 issue 不覆寫** | 已有內容且 In Progress 的 issue（含 v1.x 時期的設計票遺產）不覆寫，只由 project 描述引用 |
 | **mermaid 渲染需眼見確認** | 狀態機用 ` ```mermaid ` `stateDiagram`；Linear 應渲染成圖，但 MUST 請 Miles 開頁面確認；若顯示為程式碼則改其他形式 |
 | **大型描述覆寫** | `save_project` description 是整段覆寫（非 append）；更新某段時 MUST 重傳完整描述，避免回退既有內容 |
