@@ -3,7 +3,9 @@ type: open-question
 module:
   - 訂單管理
 oq-id: BI-011
-status: open
+status: cancelled
+answered-at: 2026-08-03
+answered-by: Miles
 priority: medium
 audience: internal
 raised-at: 2026-05-28
@@ -58,3 +60,9 @@ tags:
 - erp-consultant Phase 3 C-PM-2 反向挑戰（unify-billing-installment-and-reconciliation-csv change）
 - design.md § Open Questions OQ-BI-H
 - 衍生：apply 階段 task 4.8 整合 OrderReconciliationPanel 時細化
+
+## 決議
+
+取消（cancelled）：四個子議題皆屬介面細節，依 2026-07-15 分層（Prototype＝介面與互動正本）不歸 wiki OQ 管轄；警示存在本身已是正本事實（[[帳務]] 預計金額欄明文「差異由三方對帳警示兜底」）。方向性拍板一併記錄：不設小額容差、不加「忽略此差額」按鈕（依「先不做」偏好）。拍板：2026-08-03，Miles。
+
+落地去處：無需落地。

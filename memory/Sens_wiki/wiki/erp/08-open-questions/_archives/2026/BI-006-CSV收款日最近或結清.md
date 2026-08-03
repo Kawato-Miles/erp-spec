@@ -3,7 +3,9 @@ type: open-question
 module:
   - 訂單管理
 oq-id: BI-006
-status: open
+status: answered
+answered-at: 2026-08-03
+answered-by: Miles
 priority: low
 audience: internal
 raised-at: 2026-05-28
@@ -49,3 +51,9 @@ tags:
 
 - senior-pm Phase 4 PM 匯報（unify-billing-installment-and-reconciliation-csv change）
 - design.md § Open Questions OQ-BI-D
+
+## 決議
+
+對帳明細的收款日期取「最近一筆已完成收款的日期」，與現行實作一致、零改動；部分收款是否結清由金額欄比對。否決結清日（空值多、月份歸屬拉不出）與最早收款日（與對帳直覺相反）。拍板：2026-08-03，Miles。
+
+落地去處：無需落地（取值細節屬實作規格）。

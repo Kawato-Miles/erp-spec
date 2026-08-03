@@ -3,7 +3,9 @@ type: open-question
 module:
   - 訂單管理
 oq-id: ORD-038
-status: open
+status: cancelled
+answered-at: 2026-08-03
+answered-by: Miles
 priority: medium
 audience: internal
 raised-at: 2026-06-03
@@ -39,10 +41,10 @@ tags:
 
 ## 待解答
 
-- [ ] Customer 實體權威定義要放哪個 OpenSpec spec（新建 crm spec / 掛 order-management / prototype-data-store）
-- [ ] 欄位來源：從已刪除 data-model.md git 歷史 + Prototype 客戶資訊區彙整為單一權威表
-- [ ] Customer 與 BillingCompany 的關係（FK 方向、一對多 / 多對多、發票主體歸屬）
-- [ ] `invoice_type`（電子 / 紙本 / 免開）與 Invoice § ezPay 模型（已移除 print_flag）是否一致，是否仍需保留客戶層發票偏好
+- [x] Customer 實體權威定義要放哪個 OpenSpec spec（新建 crm spec / 掛 order-management / prototype-data-store） → 見決議
+- [x] 欄位來源：從已刪除 data-model.md git 歷史 + Prototype 客戶資訊區彙整為單一權威表 → 見決議
+- [x] Customer 與 BillingCompany 的關係（FK 方向、一對多 / 多對多、發票主體歸屬） → 見決議
+- [x] `invoice_type`（電子 / 紙本 / 免開）與 Invoice § ezPay 模型（已移除 print_flag）是否一致，是否仍需保留客戶層發票偏好 → 見決議
 
 ## 候選方案
 
@@ -53,3 +55,9 @@ tags:
 ### 方案 B：短期先在 order-management 或 prototype-data-store 補最小 Customer 參照欄位表
 - 優點：解後端當前訂單發票資料模型設計的上游缺口
 - 缺點：CRM 正本歸屬未定，可能日後搬遷
+
+## 決議
+
+取消（cancelled）：問題問錯層——2026-06-09 單一正本鐵則後欄位正本歸 wiki 實體卡，本卡三個候選（放哪個 OpenSpec spec）在現制下無正解。缺口本身為真（05-entities 無客戶卡、無聯絡人卡），換題重開 [[XM-010-客戶與聯絡人是否立實體卡]] 承接。拍板：2026-08-03，Miles。
+
+落地去處：缺口移交 [[XM-010-客戶與聯絡人是否立實體卡]]。

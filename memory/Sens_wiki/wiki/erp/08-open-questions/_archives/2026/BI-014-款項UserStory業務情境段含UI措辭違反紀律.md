@@ -5,7 +5,9 @@ module:
 tags:
   - 領域/款項與發票
 oq-id: BI-014
-status: open
+status: cancelled
+answered-at: 2026-08-03
+answered-by: Miles
 priority: medium
 audience: internal
 raised-at: 2026-05-28
@@ -67,3 +69,9 @@ expected-resolution-at: 2026-06-15
 - 識別於：2026-05-28 Billing & Cash 第一輪稽核 backfill 階段
 - audit-failure-patterns 反模式：Scope creep
 - erp-user-story skill 紀律：業務情境段禁 UI 措辭
+
+## 決議
+
+取消（cancelled）：載體整批下架——13-user-stories 單元已移除、清單上 8 張卡全部不存在，無卡可修；比照 BI-12 前例以「載體消失即結案」處理。拍板：2026-08-03，Miles。
+
+落地去處：無需落地。

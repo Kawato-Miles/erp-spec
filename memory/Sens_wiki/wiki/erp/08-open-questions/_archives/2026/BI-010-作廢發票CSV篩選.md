@@ -3,7 +3,9 @@ type: open-question
 module:
   - 訂單管理
 oq-id: BI-010
-status: open
+status: answered
+answered-at: 2026-08-03
+answered-by: Miles
 priority: low
 audience: internal
 raised-at: 2026-05-28
@@ -55,3 +57,9 @@ Miles 拍板 5：CSV 第 8 欄「總金額(含稅)」採發票面額（不扣折
 - senior-pm Phase 4 PM 匯報（unify-billing-installment-and-reconciliation-csv change）
 - Miles 拍板 5 衍生
 - design.md § Open Questions OQ-BI-G
+
+## 決議
+
+維持現況：對帳明細保留「含作廢發票」篩選選項、預設關閉。否決另設作廢查詢頁（多做頁面）與預設開啟（清單混入無效列）。拍板：2026-08-03，Miles。
+
+落地去處：無需落地（14 欄取值細節屬實作規格，[[對帳與催收]] 已明文）。

@@ -3,7 +3,9 @@ type: open-question
 module:
   - 訂單管理
 oq-id: ORD-004
-status: open
+status: answered
+answered-at: 2026-08-03
+answered-by: Miles
 priority: medium
 audience: internal
 raised-at: 2026-05-20
@@ -68,3 +70,9 @@ Spec / Scenario 對應：
 - 原 business-processes spec § 處理中 Payment 期間 SalesAllowance 行為（已廢除 2026-06-09，內容遷至 order-management spec）
 - 既有實作規格的訂單異動執行條文（實作規格層）
 
+
+## 決議
+
+折讓單不自動建立、不另設提示：業務自行開立，漏開由對帳的發票差額兜底。依據＝折讓與退款分離原則已是正本（[[付款發票邏輯]] § 五C：折讓單僅關聯發票、對帳總額層對齊即可），處理中款項不開折讓亦已入正本（§ 五D）。否決自動建（法定憑證金額由系統推定、未稅換算與部分退款比例出錯代價高）與弱提示（疊提醒）。拍板：2026-08-03，Miles。
+
+落地去處：無需落地（現況即定案）。

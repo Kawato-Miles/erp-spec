@@ -5,7 +5,9 @@ module:
 tags:
   - 領域/款項與發票
 oq-id: BI-019
-status: open
+status: cancelled
+answered-at: 2026-08-03
+answered-by: Miles
 priority: high
 audience: internal
 raised-at: 2026-06-01
@@ -39,9 +41,9 @@ main order-management § Data Model 現同時存在兩套（既有 BillingInstal
 
 ## 待解答
 
-- [ ] align- 的「PaymentPlan 收款項目」是否即 BillingInstallment（統一後實體）？若是，新欄是否應收斂進既有 BillingInstallment.changeCount / originalDueDate 體系，不另立 `change_count` / `original_expected_date`？
-- [ ] 兩套計數的「變更」定義不同（BI-1 計金額/收款日/開發票日；align- 計 scheduled_date）——是同一件事換名，還是真有兩個不同指標？
-- [ ] 若收斂為一套，main spec § Data Model 與「付款計畫變更分階段稽核」Requirement 需重寫對齊 BI-1，移除重複欄。
+- [x] align- 的「PaymentPlan 收款項目」是否即 BillingInstallment（統一後實體）？若是，新欄是否應收斂進既有 BillingInstallment.changeCount / originalDueDate 體系，不另立 `change_count` / `original_expected_date`？ → 見決議
+- [x] 兩套計數的「變更」定義不同（BI-1 計金額/收款日/開發票日；align- 計 scheduled_date）——是同一件事換名，還是真有兩個不同指標？ → 見決議
+- [x] 若收斂為一套，main spec § Data Model 與「付款計畫變更分階段稽核」Requirement 需重寫對齊 BI-1，移除重複欄。 → 見決議
 
 ## 候選方案（若有）
 
@@ -57,3 +59,9 @@ main order-management § Data Model 現同時存在兩套（既有 BillingInstal
 ## 處理決定（Miles 2026-06-01）
 
 留待**以後的 change** 收斂（不在 align- archive 當下改正本）。本 OQ 維持 open，待後續聚焦 change 處理 change_count / original 系列欄位的單一正本化（對齊 BI-1 既有 BillingInstallment 機制）。
+
+## 決議
+
+取消（cancelled）：雙套重疊已不存在——[[帳務]] § 收款項目現行為單一套（變更次數累計＋原始預計收款日／原始預計開發票日首次儲存凍結），要收斂的重複欄位已無所指。拍板：2026-08-03，Miles。
+
+落地去處：無需落地。取代來源：[[帳務]] § 收款項目。

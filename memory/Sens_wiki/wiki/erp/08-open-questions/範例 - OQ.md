@@ -2,16 +2,17 @@
 type: example
 example-of: open-question
 snapshot-source: "[[PT-028-工單已交付觸發條件正本矛盾]]"
-synced-with-template: 2026-07-30
+synced-with-template: 2026-08-03
 status: active
-last-reviewed: 2026-07-29
+last-reviewed: 2026-08-03
 ---
 
 # 範例 - OQ
 
 > [!info] 本卡為撰寫範例的凍結快照，不是該 OQ 的正本
-> 內容取自 [[PT-028-工單已交付觸發條件正本矛盾]] 卡 2026-07-28 時點的完整快照（含 frontmatter），供開 OQ 卡時對照合規樣貌、稽核時當通過樣本。該 OQ 的現行內容一律以封存區的原卡為準。本卡只在撰寫方式變化時與 [[規範 - OQ]]（規範）、[[範本 - OQ]]（骨架）同 commit 更新，維護規則見 [[卡片撰寫共用規範]] § 一。
-> 本卡 type 為 example，不屬於平層 open 佇列，OQ 查詢不會命中。快照來源早於「OQ 卡 tags 必填」規則，frontmatter 無 tags——寫新卡依 [[範本 - OQ]] 骨架補領域 tag。
+> 內容取自 [[PT-028-工單已交付觸發條件正本矛盾]] 卡 2026-08-03 時點的完整快照（含 frontmatter），供開 OQ 卡時對照合規樣貌、稽核時當通過樣本。該 OQ 的現行內容一律以封存區的原卡為準。本卡只在撰寫方式變化時與 [[規範 - OQ]]（規範）、[[範本 - OQ]]（骨架）同 commit 更新，維護規則見 [[卡片撰寫共用規範]] § 一。
+> 本卡 type 為 example，不屬於平層 open 佇列，OQ 查詢不會命中。
+> 對照重點在段落結構與各段內容的寫法深度（矛盾型並列兩方出處、候選方案逐案附代價、決議寫採哪案與理由並指落地去處）。快照忠實保留來源封存卡（只增不改）的四處舊寫法，**寫新卡不照抄**：frontmatter 無領域 tags、`related-oq` 留空 list、`expected-resolution-at` 寫成文字而非日期、待解答打勾後未在同行接結論句。寫新卡時依 [[範本 - OQ]] 骨架補領域 tag、無值欄位整行刪除、期限填日期（值域見 [[wiki-schema]] § 四）、打勾同行接結論一句或「見決議」（見 [[規範 - OQ]]）。
 
 ## frontmatter（快照）
 
