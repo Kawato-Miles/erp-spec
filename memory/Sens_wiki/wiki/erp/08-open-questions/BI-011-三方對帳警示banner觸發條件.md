@@ -2,7 +2,7 @@
 type: open-question
 module:
   - 訂單管理
-oq-id: BI-11
+oq-id: BI-011
 status: open
 priority: medium
 audience: internal
@@ -17,7 +17,7 @@ tags:
   - 領域/款項與發票
 ---
 
-# BI-11：三方對帳警示 banner 觸發條件細化
+# BI-011：三方對帳警示 banner 觸發條件細化
 
 ## 背景
 

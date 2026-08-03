@@ -2,7 +2,7 @@
 type: open-question
 module:
   - 訂單管理
-oq-id: BI-10
+oq-id: BI-010
 status: open
 priority: low
 audience: internal
@@ -19,7 +19,7 @@ tags:
   - 領域/款項與發票
 ---
 
-# BI-10：作廢發票是否提供篩選選項列入 CSV
+# BI-010：作廢發票是否提供篩選選項列入 CSV
 
 ## 背景
 

@@ -94,7 +94,7 @@ last-reviewed: 2026-05-28
 **卡類型**：1. 角色
 **修正方式**：edit `03-roles/會計.md` 補「月結對帳節奏」段 + 修正參與階段欄位（已開 [[ORD-001-會計階段標記是否錯誤]]（已封存） 等 Miles 拍板）
 **根因**：角色卡頭部 metadata「參與階段」未追上業務範疇擴張（refine-after-sales / billing-installment 累積後職責變寬但卡未更新）
-**衍生 OQ**：[[BI-13-第一輪稽核識別的領域缺漏項]]
+**衍生 OQ**：[[BI-013-第一輪稽核識別的領域缺漏項]]
 
 ### 2026-05-28 反模式：False completion（User Story related-test-cases 全空陣列）
 

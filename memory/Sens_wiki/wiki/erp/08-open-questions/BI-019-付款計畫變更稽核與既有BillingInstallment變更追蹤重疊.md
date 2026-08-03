@@ -4,7 +4,7 @@ module:
   - 訂單管理
 tags:
   - 領域/款項與發票
-oq-id: BI-19
+oq-id: BI-019
 status: open
 priority: high
 audience: internal
@@ -15,7 +15,7 @@ related-oq:
   - BI-1
 ---
 
-# BI-19：付款計畫變更分階段稽核 與 既有 BillingInstallment 變更追蹤（BI-1 已解）重疊
+# BI-019：付款計畫變更分階段稽核 與 既有 BillingInstallment 變更追蹤（BI-1 已解）重疊
 
 ## 問題描述
 

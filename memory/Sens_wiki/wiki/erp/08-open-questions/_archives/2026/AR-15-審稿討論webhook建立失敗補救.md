@@ -13,7 +13,7 @@ related-vault:
   - "[[審稿討論Slack串接約束]]"
   - "[[審稿分配規則]]"
 related-oq:
-  - "[[CR-8-諮詢webhook建單失敗補救機制]]"
+  - "[[CR-008-諮詢webhook建單失敗補救機制]]"
 expected-resolution-at: OpenSpec change 實作階段
 answered-at: 2026-08-01
 answered-by: Miles
@@ -30,7 +30,7 @@ tags:
 ## 影響
 
 - 討論串是可選輔助，失敗不阻斷分派主流程，但業務若以為討論已建立而實際沒有，優先順序資訊會漏傳
-- 與 [[CR-8-諮詢webhook建單失敗補救機制]] 同屬 webhook 失敗補救，方向相反（CR-8 為入向、本卡為出向），裁決時可一併考量統一的失敗處置模式
+- 與 [[CR-008-諮詢webhook建單失敗補救機制]] 同屬 webhook 失敗補救，方向相反（CR-8 為入向、本卡為出向），裁決時可一併考量統一的失敗處置模式
 
 ## 選項
 

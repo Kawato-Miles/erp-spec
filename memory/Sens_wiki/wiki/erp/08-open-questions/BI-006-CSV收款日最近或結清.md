@@ -2,7 +2,7 @@
 type: open-question
 module:
   - 訂單管理
-oq-id: BI-6
+oq-id: BI-006
 status: open
 priority: low
 audience: internal
@@ -19,7 +19,7 @@ tags:
   - 領域/款項與發票
 ---
 
-# BI-6：對帳 CSV 第 10 欄「收款日期」取值
+# BI-006：對帳 CSV 第 10 欄「收款日期」取值
 
 ## 背景
 

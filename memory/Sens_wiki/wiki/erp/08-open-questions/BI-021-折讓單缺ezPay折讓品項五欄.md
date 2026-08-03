@@ -2,7 +2,7 @@
 type: open-question
 module:
   - 訂單管理
-oq-id: BI-21
+oq-id: BI-021
 status: open
 priority: medium
 audience: internal
@@ -16,7 +16,7 @@ tags:
   - 領域/款項與發票
 ---
 
-# BI-21：折讓單（SalesAllowance）缺 ezPay 折讓商品五欄
+# BI-021：折讓單（SalesAllowance）缺 ezPay 折讓商品五欄
 
 ## 問題描述
 

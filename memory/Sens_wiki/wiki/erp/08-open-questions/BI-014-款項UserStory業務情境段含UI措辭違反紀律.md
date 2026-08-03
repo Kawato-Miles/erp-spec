@@ -4,7 +4,7 @@ module:
   - 訂單管理
 tags:
   - 領域/款項與發票
-oq-id: BI-14
+oq-id: BI-014
 status: open
 priority: medium
 audience: internal
@@ -19,7 +19,7 @@ related-oq:
 expected-resolution-at: 2026-06-15
 ---
 
-# BI-14 款項 User Story 業務情境段含 UI 措辭違反紀律（8 張）
+# BI-014 款項 User Story 業務情境段含 UI 措辭違反紀律（8 張）
 
 ## 議題
 
