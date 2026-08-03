@@ -106,7 +106,7 @@ stateDiagram-v2
 ```markdown
 ## 概述
 
-1. 範圍可參考本 project「Key Feature：<功能名>」章（多功能票列多章）
+1. 範圍可參考 <project 原生提及>「Key Feature：<功能名>」章（多功能票列多章）
 2. 本 issue 負責 <一句範圍>
 
 ## 實作細節
@@ -131,7 +131,7 @@ stateDiagram-v2
 ### Task issue 填寫要點
 
 - 票名與 Function 用功能本名，不帶設計過程的對比修飾。
-- **概述**：指回 Project「Key Feature：<功能名>」章＋一句負責範圍。不重複 Project 已寫的商業邏輯。
+- **概述**：指回 Project「Key Feature：<功能名>」章＋一句負責範圍。不重複 Project 已寫的商業邏輯。引用 project 一律用 Linear 原生提及（寫法見 SKILL.md 操作 know-how），禁純文字「本 project」與 markdown 連結。
 - **切票軸線**：按功能範圍切、不按職能分模板；職能由開票時指派的 Linear team 承載（依規先開 PM team 再轉對應 team，見 SKILL.md 操作 know-how）。
 - **實作細節**：該票範圍的 How checklist，含自 Project 下放的實作規格；**不可只剩「指回 project」一句而無實作要點**。操作動線與介面呈現不寫進票——以 Prototype 為準（介面與互動正本）。
 - **驗收測試**：3-5 條、每條可獨立驗證；每條標明受測介面（必須在 Project「測試決策」章已議定的清單內）。測試先行（先紅後綠）與期望值來源的說明只寫在 Project「測試決策」章一處，票內不重複引言、直接列清單。
@@ -168,6 +168,7 @@ stateDiagram-v2
 | v1.3 | 2026-07-06 | 資料欄位段整段移除：開發直接自 wiki 實體卡取得欄位正本 |
 | v1.4 | 2026-07-07 | Key Feature 取消固定 Phase 1/2 結構；「不在本批」改獨立清單標歸屬 |
 | v1.5 | 2026-07-07 | 範圍術語統一為 Scope / Out of Scope |
+| v1.6 | 2026-08-03 | Task 票概述引用 project 改用 Linear 原生提及，禁純文字與 markdown 連結（寫法見 SKILL.md 操作 know-how）|
 | v1.6 | 2026-07-07 | Scope 不拆分組，主流程／副流程項目層括註 |
 | v1.7 | 2026-07-07 | Scope 維度定義（功能非模組）＋巢狀呈現 |
 | v1.8 | 2026-07-07 | Scope 功能名為全篇錨（功能邏輯分小節、驗收組名同名、動線前綴、FE/BE 票號對照） |
