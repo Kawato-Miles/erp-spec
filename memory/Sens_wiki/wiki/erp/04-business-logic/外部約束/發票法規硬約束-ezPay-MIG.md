@@ -141,7 +141,7 @@ ezPay **全 API 金額一律正整數**（發票 TotalAmt、折讓 TotalAmt / Al
 | 主動實體 | 連帶實體 | 影響規則 |
 |---------|---------|---------|
 | **Invoice 開立** | `InvoiceItem`（五欄）/ `PaymentAllocation`（核銷分配）/ `BillingInstallment`（鏈式預填、取代 PlannedInvoice）| 五欄硬約束 + 鏈式預填規則 |
-| **Invoice 作廢** | `SalesAllowance`（超過時限改折讓）/ `Payment`（退款 Payment 反向）| 作廢期限 14 天 + 超期走折讓 |
+| **Invoice 作廢** | `SalesAllowance`（超過時限改折讓）/ `Payment`（退款 Payment 反向）| 作廢期限依齊報稅期（每期前 14 天，見 § 4.1）＋ 超期走折讓 |
 | **SalesAllowance 確認** | `Invoice`（折讓金額）| 折讓只掛 Invoice（不關聯退款 Payment，反查走訂單活動紀錄）|
 | **Payment 退款（款項類型＝退款、正值）** | `OrderAdjustment.adjustment_type=退款`（確認生效時認列，退款款項不推進訂單異動）/ `SalesAllowance`（金額總額對齊，不建 FK）/ `Invoice`（作廢或折讓）| 退款款項核銷對帳的收款差額 + 折讓與退款金額在對帳總額層對齊 |
 | **OrderAdjustment 確認可執行** | `Payment`（退款款項核銷對帳的收款差額）/ `Invoice`（作廢或折讓）/ `SalesAllowance`（建立）| 確認生效時認列（確認可執行不綁退款款項累計推進，也不倒回前一個狀態）|
