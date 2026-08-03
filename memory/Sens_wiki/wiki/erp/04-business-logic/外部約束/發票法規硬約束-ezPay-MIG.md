@@ -134,26 +134,9 @@ ezPay **全 API 金額一律正整數**（發票 TotalAmt、折讓 TotalAmt / Al
 | **單位字數** | 限中文 2 字 / 英數 6 字 | 「組合包裝」「特殊規格」太長 | 限 dropdown 強制合規（共用單位選單（實作規格層） § 共用單位 LOV）|
 | **退款方向** | 作廢 / 折讓兩種，不可「負額發票」（金額一律正值，見 §4.6）| 想直接負額紀錄 | MUST 走折讓流程；退款金流另以內部退款款項處理（款項類型=退款、正值）|
 
-## 七、連帶實體關聯（連帶矩陣）
+## 七、連帶實體關聯
 
-> 任何「開發票 / 退款 / 補收 / 折讓 / OA」異動 MUST 連帶檢查下列實體。
-
-| 主動實體 | 連帶實體 | 影響規則 |
-|---------|---------|---------|
-| **Invoice 開立** | `InvoiceItem`（五欄）/ `PaymentAllocation`（核銷分配）/ `BillingInstallment`（鏈式預填、取代 PlannedInvoice）| 五欄硬約束 + 鏈式預填規則 |
-| **Invoice 作廢** | `SalesAllowance`（超過時限改折讓）/ `Payment`（退款 Payment 反向）| 作廢期限依齊報稅期（每期前 14 天，見 § 4.1）＋ 超期走折讓 |
-| **SalesAllowance 確認** | `Invoice`（折讓金額）| 折讓只掛 Invoice（不關聯退款 Payment，反查走訂單活動紀錄）|
-| **Payment 退款（款項類型＝退款、正值）** | `OrderAdjustment.adjustment_type=退款`（確認生效時認列，退款款項不推進訂單異動）/ `SalesAllowance`（金額總額對齊，不建 FK）/ `Invoice`（作廢或折讓）| 退款款項核銷對帳的收款差額 + 折讓與退款金額在對帳總額層對齊 |
-| **OrderAdjustment 確認可執行** | `Payment`（退款款項核銷對帳的收款差額）/ `Invoice`（作廢或折讓）/ `SalesAllowance`（建立）| 確認生效時認列（確認可執行不綁退款款項累計推進，也不倒回前一個狀態）|
-| **BillingInstallment 自動建** | `Order`（諮詢訂單收尾）/ `Invoice`（一鍵開發票繼承 items[]）| 鏈式預填 + 不自動開立發票 |
-| **AfterSalesTicket 退款** | OA (responsibility=公司認賠 / 補退) / Payment / SalesAllowance | 跨售後 ticket 容器 |
-
-**七實體連帶圖**：
-- Payment ↔ OA / BillingInstallment / Invoice / SalesAllowance
-- Invoice ↔ BillingInstallment / PaymentAllocation / ezPay 約束 / SalesAllowance
-- OA ↔ Payment / 補收 / 折讓 / 售後 / 訂單異動
-- SalesAllowance ↔ Invoice / Payment（refund）
-- AfterSalesTicket ↔ OA / PrintItem / Payment / Invoice
+> 任何「開發票 / 退款 / 補收 / 折讓 / 訂單異動」異動 MUST 連帶檢查其他實體；跨實體連帶影響矩陣的唯一正本見 [[付款發票邏輯]] § 5B，本卡不另持副本。本卡只承載 ezPay／MIG 外部約束本體：發票品項五欄見 § 三、作廢與折讓時限見 § 四、金額 sign 鐵則見 § 4.6。
 
 ## 八、加密與安全（補充）
 
