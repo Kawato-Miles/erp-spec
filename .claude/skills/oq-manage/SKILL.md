@@ -61,7 +61,7 @@ OQ 是**待裁決佇列**：每張卡一個待確認的問題，拍板後決議�
 1. **狀態違規**：status 非三值、行內註解污染 → 列映射提案（resolved→answered 等），確認後修
 2. **可封存**：平層上 status=answered／cancelled 的卡 → 確認後批次移檔
 3. **external 待推送**：audience=external 且未填 notion-url → 提醒 Miles 是否觸發推送
-另列：open 超過 30 天無進度、priority high 長期擱置、缺 expected-resolution-at 的 external 卡、違反規範 - OQ 稽核維度的卡（一卡多議題、互引複述）。
+另列：open 超過 30 天無進度、priority high 長期擱置、違反規範 - OQ 稽核維度的卡（一卡多議題、互引複述）。
 
 ## 二、紅旗清單（操作面；撰寫面違規由規範 - OQ § 九稽核維度抓）
 

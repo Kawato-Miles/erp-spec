@@ -17,7 +17,7 @@ related-oq:
   - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名（別名的 | 會截斷表格且易斷鏈）
 related-change:
   - <change 名>              # 承接此問題的 OpenSpec change；不需要時刪除整個欄位
-expected-resolution-at: YYYY-MM-DD   # external 必填（預期確認時點）；internal 建議填
+expected-resolution-at: YYYY-MM-DD   # 選填；何時確認由 Miles 排程，開卡時不代填
 answered-at: YYYY-MM-DD              # 拍板時填
 answered-by: <拍板者>                 # 拍板時填
 notion-url: <推送後回填>             # audience=external 推送 Notion 後填

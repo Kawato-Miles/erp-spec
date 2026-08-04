@@ -121,7 +121,7 @@ grep -rn "openspec/\|sens-erp-prototype/\|/erp/apps/" memory/Sens_wiki/wiki/erp/
 1. status 非嚴格三值（resolved／closed／active 等違規寫法）或行內註解污染
 2. 平層上 status=answered／cancelled 未封存（該移 `_archives/<年>/`）
 3. open 且 raised-at > 30 天無進度；priority high 長期擱置
-4. audience=external 缺 `expected-resolution-at`（external 必填）；缺 `source-link`
+4. 缺 `source-link`
 
 判定：OK＝全健康；Warning＝1-3 需跟催；Error＝> 3 或任何狀態違規／未封存（建議跑 `oq-manage` mode E 整理；open 量大時於建議段點出該收割的 OQ 群）。
 

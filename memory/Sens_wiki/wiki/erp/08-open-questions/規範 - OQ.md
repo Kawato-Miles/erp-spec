@@ -78,7 +78,7 @@ last-reviewed: 2026-07-29
 
 ### 3.5 frontmatter
 
-欄位定義與值域正本在 [[wiki-schema]] § 四（status 嚴格三值禁行內註解、audience 判斷問句、`related-oq`／`related-vault` 一律完整檔名禁別名禁短名、external 必填 `expected-resolution-at`）。本卡不複寫，動筆時照骨架填、對 schema 查。
+欄位定義與值域正本在 [[wiki-schema]] § 四（status 嚴格三值禁行內註解、audience 判斷問句、`related-oq`／`related-vault` 一律完整檔名禁別名禁短名、`expected-resolution-at` 一律選填、開卡不代填時點）。本卡不複寫，動筆時照骨架填、對 schema 查。
 
 ### 3.6 段落紀律
 
