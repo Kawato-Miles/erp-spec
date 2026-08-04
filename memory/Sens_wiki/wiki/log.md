@@ -1780,3 +1780,8 @@ last-reviewed: 2026-06-02
 - 變更：[[規劃品質評分準則]] 生效狀態改現行並補紀律（命名依共用規範、禁 prototype 階段不存在因素）；新增 [[稽核誤判記錄]]（承接舊三張誤審卡採礦：CEO 六誤區、命名兩案例、效益不高禁令）；[[審查知識路由]] 全卡改寫為新結構（rubric 卡＋誤判卡＋_shared 三卡）；刪除 protocols 四卡（sequential-design-collaboration／dispatch-prompt-template／lightweight-review-mode／senior-pm-write-mode）、pm／ceo／erp 三目錄框架與誤審卡、_shared 五張 agent 載入卡（cross-agent-checklist／insight-discipline／language-conventions／prototype-stage-context／review-loading-checklist）。
 - 動機：Miles 拍板全面切換（2026-08-05）。切換證據：回顧性重評雙向比對——諮詢取消與帳務期次兩 change 合計 26 條新抓舊漏（約 17 條被後續返工 change 證實）、工單管理設計對照驗證 11 條淨增量；舊流程 26 條貢獻中純形式 3 條（PM Phase 4 verify consistency 三張表從未實際產出）、真損失僅 2 條（新恆定約束生成、多立場張力），已以守恆段與雙盲立場鏡頭補償。廢件直刪不封存為 Miles 既定原則，決策脈絡以本條與 2026-08-04 條為準。
 - 衝突：無（舊協議引用點已同步改寫：CLAUDE.md 路由、openspec config.yaml、misjudgement-record／wiki-amend／linear-delivery skill）。
+
+## [2026-08-05] 同步(misjudgement) | 派單對映誤判建檔、稽核紀律擴為六類卡讀全文
+- 變更：[[稽核誤判記錄]] § 二新增派單對映誤判案例（N3 判缺漏實為 as-is 已宣告延後）；[[規劃品質評分準則]] § 七紀律擴充——判衝突前 MUST 讀齊六類正本卡全文（產品／角色／商業規則／實體／狀態機／情境）。
+- 動機：Miles 指正（2026-08-05）：派單為現況 ERP 已實作的獨立單據、與工單兩套狀態；並拍板稽核必讀範圍不只實體卡，六類卡都要看，需求與現況基於事實才能設計。
+- 衝突：無。
