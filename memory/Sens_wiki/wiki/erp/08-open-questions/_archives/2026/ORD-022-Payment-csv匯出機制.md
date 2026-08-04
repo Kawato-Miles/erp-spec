@@ -3,7 +3,9 @@ type: open-question
 module:
   - 訂單管理
 oq-id: ORD-022
-status: open
+status: cancelled
+answered-at: 2026-08-04
+answered-by: Miles
 priority: medium
 audience: internal
 raised-at: 2026-05-26
@@ -92,3 +94,9 @@ Payment csv 匯出機制如何設計？分為三條子問題：
 
 - `remove-aging-payment-supervisor-dashboard` change（2026-05-26）拆主管看板後留下的後續課題
 - 對應 [[ORD-021-處理中Payment老化追蹤機制]]（已封存） § 答覆 § 第二階段決策
+
+## 決議
+
+取消（cancelled）：問題被兩張已確定的報表實質取代——主管要追的兩種拖延各有正式的家：收款側拖延（開發票但未收款）由**應收帳款報表**承接（會計用於追業務款）、退款側拖延（預計需退款）由**待退款報表**承接（業務用來請會計執行退款），兩張報表有對應模組、後端實作中。csv 匯出替代看板的前提（主管無工具可追）已不成立；未來若真需 raw data 匯出再開新卡。拍板：2026-08-04，Miles。
+
+落地去處：[[對帳與催收]] 催收清單補介面名「應收帳款報表」、[[待出金退款清單組成]] 補介面名「待退款報表」。
