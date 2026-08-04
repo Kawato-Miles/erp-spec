@@ -3,7 +3,9 @@ type: open-question
 module:
   - 訂單管理
 oq-id: ORD-002
-status: open
+status: cancelled
+answered-at: 2026-08-04
+answered-by: Miles
 priority: low
 audience: internal
 raised-at: 2026-05-20
@@ -66,3 +68,9 @@ senior-pm 前期介入指出：業界（Ordway 等 SaaS 退款管理系統）主
 - senior-pm 前期介入 第 4 段風險 A
 - change `refine-after-sales-refund-and-add-supplementary-print` design.md § 決策 1 + OQ-2
 - 業界參考：[Ordway - Automate SaaS Refunds Best Practices](https://ordwaylabs.com/resources/faqs/automate-saas-refunds-canceled-subscriptions/)
+
+## 決議
+
+取消（cancelled）：同一議題已隨 [[AFT-3-OA已核可改金額是否通知主管]] 拍板為「已核可改金額不通知主管、也不設金額門檻重審」（核可金額快照與稽核記錄已留痕），並已寫入 [[訂單異動規則]] 各狀態可以改什麼的營運動機正本；本卡無殘留問題。日後若有業務濫用實證要加閾值，屬新事實、另開新卡。拍板：2026-08-04，Miles。
+
+落地去處：無需落地（正本已定）。取代來源：[[AFT-3-OA已核可改金額是否通知主管]]、[[訂單異動規則]]。
