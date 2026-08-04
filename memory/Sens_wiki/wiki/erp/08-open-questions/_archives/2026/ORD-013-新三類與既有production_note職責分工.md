@@ -3,11 +3,13 @@ type: open-question
 module:
   - 訂單管理
 oq-id: ORD-013
-status: open
+status: answered
 priority: high
 audience: internal
 raised-at: 2026-05-20
 raised-by: erp-consultant (三視角審查 round 1)
+answered-at: 2026-08-04
+answered-by: Miles
 source-link: 訂單備註區與範本工具 change 提案討論
 related-vault:
   - [[../05-entities/訂單]]
@@ -84,3 +86,9 @@ Miles 拍板：保留既有 + 新增三類並存（不取代既有欄位）。�
 - erp-consultant 三視角審查 round 1（「同一個訂單上會存在兩套並行三類分欄、共 8 個 textarea」）
 - Miles 回應：保留既有 + 新增三類並存
 - change `add-order-note-section-with-template-tool` proposal.md
+
+## 決議
+
+- **結論**：分工原則採**受眾軸**＋明文對照——既有欄位（客戶備註／內部備註／製作備註）＝內部作業組，寫給自己人看；新三類（訂單須知／交貨備註／付款備註）＝客戶條款組，寫給客戶看的標準化條款。填寫口訣：「這段話要不要讓客戶看到」。
+- **理由**：一句話原則好記、逐欄對照表解爭議；比逐欄各自定義更能涵蓋日後新增欄位。
+- **落地去處**：[[訂單]] § 備註（原則、口訣與兩組欄位表）。

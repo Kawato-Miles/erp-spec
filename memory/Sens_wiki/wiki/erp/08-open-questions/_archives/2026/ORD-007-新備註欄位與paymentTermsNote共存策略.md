@@ -3,11 +3,13 @@ type: open-question
 module:
   - 訂單管理
 oq-id: ORD-007
-status: open
+status: answered
 priority: high
 audience: internal
 raised-at: 2026-05-20
 raised-by: senior-pm (前期介入)
+answered-at: 2026-08-04
+answered-by: Miles
 source-link: 訂單備註區與範本工具 change 提案討論
 related-vault:
   - [[../05-entities/訂單]]
@@ -60,3 +62,9 @@ tags:
 - senior-pm 前期介入
 - erp-consultant 結構審查（避免資料冗餘）
 - change `add-order-note-section-with-template-tool` proposal.md
+
+## 決議
+
+- **結論**：版面分區呈現——收款條件備註屬報價定案，收於唯讀的定案資訊區；付款備註屬訂單階段對客戶的補充，放備註編輯區，補充不取代定案。
+- **理由**：後端現況查證（需求單轉訂單建單服務）——轉訂單只帶入收款條件備註且主管核准後鎖定、另存核准當下快照；付款備註為訂單階段獨立欄位。兩欄生命週期在後端本已分離，介面分區是既有設計的自然呈現。
+- **落地去處**：[[訂單]] § 備註（定案與補充的分工句）；版面歸 Prototype 承載。
