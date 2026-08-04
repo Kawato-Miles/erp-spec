@@ -274,7 +274,7 @@ related-oq:
   - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名
 related-change:                     # 承接此問題的 OpenSpec change 名（可多值）；無則刪整個欄位
   - <change 名>
-expected-resolution-at: YYYY-MM-DD  # external 必填；internal 建議填
+expected-resolution-at: YYYY-MM-DD 或里程碑文字（如「上線前」「MES 設計階段」）  # external 必填；internal 建議填；無明確時點時用里程碑，不硬填假日期
 answered-at: YYYY-MM-DD  # 拍板時填
 answered-by: <拍板者>
 notion-url: <external 推送 Notion 後回填>

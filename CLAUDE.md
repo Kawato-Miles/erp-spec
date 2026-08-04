@@ -195,7 +195,7 @@ Miles，印刷業 PM，負責兩個產品：**ERP 系統**（生產排程 / 採�
 
 ### OQ 工作流（Vault 為內部正本，2026-05-19 v2）
 
-> **正本**：Vault `memory/Sens_wiki/wiki/erp/08-open-questions/`——平層只放 status=open（待裁決佇列），拍板即封存 `_archives/<年>/`（v3，2026-06-11）。狀態嚴格三值（open / answered / cancelled）。audience 開卡必判：internal＝開發迭代待確認議題；external＝要與業務單位確認的商業層面未知內容（彙整推送 Notion Follow-up DB 對外確認版）。
+> **正本**：Vault `memory/Sens_wiki/wiki/erp/08-open-questions/`——平層只放 status=open（待裁決佇列），拍板即封存 `_archives/<年>/`（v3，2026-06-11）。狀態嚴格三值（open / answered / cancelled）。audience 開卡必判：internal＝開發迭代待確認議題；external＝要與業務單位確認的商業層面未知內容。**現階段（2026-08-04 起）一律以 internal 處理、暫停 Notion Follow-up DB 對外推送**，恢復對外流程由 Miles 另行指示。
 > 所有 OQ 操作（查詢 / 新增 / 解答封存 / 遷出 / 批次整理五 mode）統一觸發 `oq-manage` skill 執行。
 
 **三個固定動作，每次討論需求 / 寫 Spec 時自動執行：**
