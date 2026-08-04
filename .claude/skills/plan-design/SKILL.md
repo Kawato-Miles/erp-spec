@@ -4,7 +4,7 @@ description: >
   ERP／MES 規劃設計的收件模板 skill：主對話撰寫商業層設計方案（BRD 層）時載入，依「規劃品質評分準則」（wiki 11-review-knowledge，唯一正本）產出含四必含段的設計，送 plan-audit 稽核。
   觸發：grill 需求對齊完成、進入設計撰寫時；Miles 說「開始設計」「照新流程做設計」。
   不適用：稽核（用 plan-audit）、規劃前 know-how 盤點（用 erp-planning-pre-check）、需求對齊（用 grilling）、wiki 落卡（用 wiki-amend）。
-  試行狀態：回顧性重評通過前，舊序列協作仍為現行，本 skill 僅在 Miles 明示走新流程時使用。
+  狀態：現行（2026-08-05 起為 ERP 規劃設計的標準流程，舊序列協作已除役）。
 ---
 
 # plan-design

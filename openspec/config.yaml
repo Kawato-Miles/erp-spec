@@ -51,14 +51,14 @@ context: |
 
   變更管理工作流：
   - 建立 change 前：查詢 Vault 08-open-questions/ 列出相關未解 OQ（oq-manage skill）
-  - 建立 proposal 前：觸發 senior-pm agent（前期介入模式），確認問題框架
-  - specs/design 階段：依變動性質五級分級走序列協作（Phase 4 verify consistency 三張對照表；分級表見 CLAUDE.md § ERP 討論主動路由）
+  - 建立 proposal 前：設計須先過 plan-design（五必含段）與 plan-audit（rubric 稽核）並經 Miles 拍板；量尺正本 wiki 11-review-knowledge/規劃品質評分準則.md
+  - specs/design 階段：依變動性質兩級分級（局部變動＝單稽核者 rubric；結構性變更＝加雙盲對抗推演；分級表見 CLAUDE.md § ERP 討論主動路由）
   - Linear 交付：累積數個 archived change 後由 Miles 觸發 linear-delivery skill
 
 rules:
   explore:
-    - "[2026-05-30] explore 開新需求時 MUST 跑輕量商業邏輯衝突檢查（依 lightweight-review-mode § 九 explore 變體）：讀對應領域 Vault 04-business-logic/ 卡 + 查相關 08-open-questions/ OQ，給「此方向與既有商業規則有無衝突」早期警示（附檔:行 + OQ 編號），不跑完整序列協作 Phase 1"
-    - "[2026-05-30] explore 衝突檢查產「衝突筆記」交 propose Phase 1 承接深化（PM 不重掃已發現衝突）；發現衝突時攤三選項（A 繞過用既有機制 / B 推翻改既有規則 / C 待釐清開 OQ），決策權在 Miles，agent MUST NOT 替 Miles 決定方向"
+    - "[2026-08-05 改版] explore 開新需求時 MUST 跑輕量商業邏輯衝突檢查：讀對應領域 Vault 04-business-logic/ 卡 + 查相關 08-open-questions/ OQ，給「此方向與既有商業規則有無衝突」早期警示（附檔:行 + OQ 編號）"
+    - "[2026-08-05 改版] explore 衝突檢查產「衝突筆記」交後續 grill 需求對齊與 plan-design 承接（不重掃已發現衝突）；發現衝突時攤三選項（A 繞過用既有機制 / B 推翻改既有規則 / C 待釐清開 OQ），決策權在 Miles，MUST NOT 替 Miles 決定方向"
     - "[2026-07-15] 訪談三紀律：對 Miles 的釐清提問，決策類問題一次只問一題、每題附建議答案（讓 Miles 可一字拍板），該題有結論才問下一題；可自環境查得的事實（wiki / spec / Notion / git）MUST 自查、MUST NOT 拿來問 Miles——只有決策才問人"
   proposal:
     - 使用繁體中文撰寫
@@ -66,7 +66,7 @@ rules:
     - 引用 Notion 頁面時使用 [可讀名稱](URL) 格式
     - "[2026-05-19] 商業背景必須引用 ERP_Vault 對應節點：建立 proposal 時必須在 ## Why 或 ## Background 段以相對路徑 link 引用 memory/Sens_wiki/wiki/erp/ 下對應的卡（如 04-business-logic/、05-entities/、03-roles/）"
     - "[2026-05-19] OQ 操作正本變更為 Vault：建立前先查詢 memory/Sens_wiki/wiki/erp/08-open-questions/（oq-manage skill 已改寫），列出相關未解 OQ"
-    - 觸發 senior-pm agent（前期介入模式），確認問題框架後再撰寫
+    - "[2026-08-05] proposal 撰寫前置：設計已過 plan-design 五必含段 + plan-audit 稽核全過 + Miles 拍板；proposal 直接承接拍板後的設計方案，不重跑釐清"
     - "[2026-07-15] 問寫分離：釐清（Phase 1）完成、進入 artifact 產出後 MUST NOT 回頭追問 Miles；產出中冒出的不確定項一律觸發 oq-manage mode B 開 OQ 卡並於 artifact 內標註「另案處理」，產出不中斷、Miles 事後一次裁決"
   specs:
     - 需求描述使用 SHALL/MUST 規範用語

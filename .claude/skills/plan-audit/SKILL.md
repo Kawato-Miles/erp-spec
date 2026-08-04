@@ -4,7 +4,7 @@ description: >
   ERP／MES 規劃設計的稽核 skill：對 plan-design 產出的設計方案依「規劃品質評分準則」（wiki 11-review-knowledge，唯一正本）逐項三值判定＋強制證據，產出評分表；結構性變更加跑對抗式情境推演。執行者與稽核者分離：設計在主對話、稽核派獨立 sub-agent（Opus 5）。
   觸發：plan-design 產出完成送審時；Miles 說「稽核這份設計」「跑 plan-audit」；復審（修正後重驗）。
   不適用：設計撰寫（用 plan-design）、規劃前 know-how 盤點（用 erp-planning-pre-check）、Vault 整體健康稽核（用 vault-audit）、交付文件稽核（用 linear-delivery）。
-  試行狀態：回顧性重評通過前，舊序列協作仍為現行，本 skill 僅在 Miles 明示走新流程時使用。
+  狀態：現行（2026-08-05 起為 ERP 規劃設計的標準稽核，舊序列協作已除役）。
 ---
 
 # plan-audit

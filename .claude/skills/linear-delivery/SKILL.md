@@ -75,10 +75,10 @@ description: >
 # /goal：交付「業務平台 - 訂單管理」到 Linear（project af83dbd3）
 
 ## Outcome（完工標準）
-業務平台 - 訂單管理的 project 描述（模組層 What）+ FE-259（訂單列表與詳情）/ BE-168（訂單 API）/ FE-258（售後頁）/ BE-167（售後 API）四個 Task issue 齊備；業務平台為視圖層、沿用中台訂單管理狀態機不另繪；經 senior-pm 評審判 references/rubric.md 4 維度全「通過」。實作者不得自判完成。
+業務平台 - 訂單管理的 project 描述（模組層 What）+ FE-259（訂單列表與詳情）/ BE-168（訂單 API）/ FE-258（售後頁）/ BE-167（售後 API）四個 Task issue 齊備；業務平台為視圖層、沿用中台訂單管理狀態機不另繪；經評分 sub-agent 判 references/rubric.md 4 維度全「通過」。實作者不得自判完成。
 
 ## Verification（驗證方式）
-由 senior-pm（PM agent）跑 references/rubric.md：逐維度給通過 / 部分 / 未通過 + evidence-anchored（實際 Read sales-platform / order-management / after-sales-ticket spec 查證每條規則來源）+ 違反禁令 + 修正方向。D4 真實性一票否決。
+由評分 sub-agent 跑 references/rubric.md：逐維度給通過 / 部分 / 未通過 + evidence-anchored（實際 Read sales-platform / order-management / after-sales-ticket spec 查證每條規則來源）+ 違反禁令 + 修正方向。D4 真實性一票否決。
 
 ## Constraint（限制條件）
 - 交付內容自包含、跨單據只以 Linear 識別碼互指；不外露 openspec 路徑（案發當時規則為 Notion / Linear 雙正本，2026-07-06 起 Notion 停用為 BRD）
@@ -87,13 +87,13 @@ description: >
 - 業務平台為視圖層，沿用中台訂單 / 印件 / 售後服務單狀態機、不另繪
 
 ## Iteration Policy（迭代策略）
-評審未通過 → 修正 → 重新跑 senior-pm 評審（餵完整修正後草稿、不暗示改了什麼）→ 直到 4 維度全通過。
+評審未通過 → 修正 → 重新跑評分 sub-agent 評審（餵完整修正後草稿、不暗示改了什麼）→ 直到 4 維度全通過。
 （實跑紀錄）第 1 輪 senior-pm 判 D1 通過 / D2 部分 / D3 部分 / D4 通過：FE-258 漏 next action 第四組「待建關聯動作」、摘要卡 3 張 vs next action 欄 4 值顆粒度混淆、BE-167/168 依賴段重述 project 已宣告內容 → 修正三項 → 第 2 輪全新 senior-pm 獨立重評 → 4 維度全通過 → 寫入。
 
 ## Error Handling（錯誤處理）
 訂單詳情頁 Tab 閹割範圍 sales-platform spec 未定義（只定義印件詳情頁閹割）→ 記 oq-manage mode B（ORD-028）+ 交付文件標「另案處理」（D4 不扣分、不捏造閹割清單）。
 
-在 senior-pm 判 4 維度全「通過」之前持續迭代不要停 —— 本案第 2 輪達標才寫入。
+在評分 sub-agent 判 4 維度全「通過」之前持續迭代不要停 —— 本案第 2 輪達標才寫入。
 ```
 
 ---

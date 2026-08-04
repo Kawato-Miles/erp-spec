@@ -30,7 +30,7 @@ description: >
 
 ### 這個 skill 管什麼
 
-**所有正本卡的寫入都經這裡**：`03-roles/`、`04-business-logic/`、`05-entities/`、`06-state-machines/`、`07-scenarios/`。觸發點是「確定要寫 wiki 卡」，上游用什麼手段收斂需求不影響本 skill，對話討論、`senior-pm`、`/opsx:explore` 都算。
+**所有正本卡的寫入都經這裡**：`03-roles/`、`04-business-logic/`、`05-entities/`、`06-state-machines/`、`07-scenarios/`。觸發點是「確定要寫 wiki 卡」，上游用什麼手段收斂需求不影響本 skill，對話討論、plan-audit 稽核通過後落卡、`/opsx:explore` 都算。
 
 流程：判落點（哪張卡的哪一段）→ 依骨架與規範撰寫 → 稽核 → 標明異動卡 ＋ 追加 wiki/log.md。
 
