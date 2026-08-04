@@ -6,13 +6,19 @@ source:
   - "計價設定現況查證：sens-print-core dev 分支全套計價 model ＋ options 發布管線 ＋ 報價 quote_item（2026-07-23）"
   - "計價公式現況對證：sensation-api dev 分支計價引擎 `product/pricing/`（engine／markup／imposition／mother_sheet 與 material M1-M5／process P1-P8／binding B1-B3／equipment E1-E3 各 spec 模組）（2026-07-23）"
 status: active
-last-reviewed: 2026-07-23
+last-reviewed: 2026-08-04
 tags:
   - 領域/生產執行
   - 領域/售前
 ---
 
-> 本卡是公司三個計價主檔的組織方式與計價引擎的正本。成本為什麼這樣拆、各計價單位的產業由來見 [[印刷成本結構]]（領域知識），本卡只寫我們怎麼做。
+讀完這張卡，你會知道：
+
+- 說出公司把計價知識整理成哪三個主檔、各自怎麼分層、有哪些計價方式
+- 知道報價估算、線上商品定價與工單展開為什麼共用同一份主檔
+- 算出一個部件的成本怎麼加總成商品總成本，再經加成與急件變成最終售價
+- 說出材料、工序、裝訂與設備各自的計價方法有哪幾種、各查什麼
+- 分辨計價參數的維護與計價的計算分別發生在哪裡
 
 ## 現況
 

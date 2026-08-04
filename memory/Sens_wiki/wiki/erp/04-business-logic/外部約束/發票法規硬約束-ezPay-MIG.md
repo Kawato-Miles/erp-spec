@@ -6,17 +6,20 @@ source:
   - "財政部電子發票整合服務平台 Message Implementation Guideline（MIG）"
   - "[[2026-05-26-miles-upload-ezpay-invoice-api-spec]]"
 status: active
-last-reviewed: 2026-08-03
+last-reviewed: 2026-08-04
 tags:
   - 領域/款項與發票
 ---
 
-# 發票法規硬約束（ezPay + 財政部 MIG）
+讀完這張卡，你會知道：
 
-> 跨模組「錢」相關背景知識：ezPay 電子發票 API + 財政部 MIG 法規硬約束。
-> **必讀條件**：任何模組討論「開發票 / 作廢 / 折讓 / 退款 / 對帳」MUST 先讀本卡。
-> 來源：[[2026-05-26-miles-upload-ezpay-invoice-api-spec]]（已 ingested，本卡為精練版）。
-> 設計動機：原精練埋在 `order-management/spec.md` L2969+ 屬「單模組規格拍板」，但 ezPay / MIG 是跨模組外部硬約束（業務 / 諮詢 / 售後 / 會計都受影響），須獨立成 Vault know-how 卡。
+- 認出開一張發票時哪五個品項欄位必填、電子發票平台自動檢核哪兩條算式
+- 分辨買受人是營業人還是個人時，單價填的是未稅還是含稅金額
+- 判斷發票金額要更正時該走作廢還是折讓、時限怎麼算
+- 說出訂單異動、款項紀錄、折讓單三者的金額正負號慣例為什麼不同
+- 知道印刷業計價實務與電子發票規格衝突在哪幾點、公司怎麼處理
+
+> 必讀條件：任何模組討論開發票、作廢、折讓、退款、對帳 MUST 先讀本卡。
 
 ## 一、外部硬約束來源
 
