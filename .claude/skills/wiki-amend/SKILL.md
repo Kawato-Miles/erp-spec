@@ -120,7 +120,7 @@ description: >
 | 共用規則 / 業務規則（business-logic）| 規則正本卡對應 section / 規則條 | 改「規則 / 營運動機」欄；單一正本——同規則只此處改，他處 wiki link 自動反映 |
 | 狀態（state-machine）| 狀態清單 / 轉換 section | 只改狀態 / 轉換 / 觸發；規則動機指 business-logic 正本，不重述規則本體 |
 | 業務情境（scenario）| 一卡一目標完成過程（對應情境 section）| 變體判定與段落格式依 [[規範 - 業務情境]]；改角色傳遞 / 狀態鏈，每步規則 wiki link 指 business-logic，不複寫 |
-| 資料（entity）| 核心欄位 / 關聯 section | 改欄位 / 關聯；行為規則指 business-logic |
+| 資料（entity）| 核心欄位 / 關聯 section | 改欄位；**關聯（含基數）的正本在該領域資料結構總覽卡**（如 [[生產領域資料結構總覽]]）——動關聯先改總覽卡、實體卡「關鍵關聯」段只改視角摘要（落點表強制檢查此條）；行為規則指 business-logic |
 | 角色（role）| 職責 / 邊界 section | 改職責動作；分權判準指 business-logic |
 
 ### Step 4：追加 wiki/log.md
