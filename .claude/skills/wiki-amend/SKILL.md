@@ -125,7 +125,7 @@ description: >
 
 ### Step 4：追加 wiki/log.md
 
-在 `memory/Sens_wiki/wiki/log.md` 追加一筆（最新在上），格式如下（動作=納入、標籤=amend）：
+在 `memory/Sens_wiki/wiki/log.md` 追加一筆——**新條目 MUST 插在檔首說明列下方（最新在上），禁用 `cat >>` 等檔尾追加指令**（2026-08-05 教訓：08-01 起六筆全被追加到檔尾、排序破損，經 Miles 授權一次性搬正）。格式如下（動作=納入、標籤=amend）：
 
 ```
 ## [YYYY-MM-DD HH:MM] 納入(amend) | <一句話簡述>

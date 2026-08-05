@@ -22,10 +22,13 @@ last-reviewed: 2026-07-29
 | `service-blueprint` | 服務藍圖（公司提供什麼服務、商業行為的邊界） | `04-business-logic/服務藍圖/` |
 | `business-rule` | 商業規則（決策邏輯、領域知識、外部約束） | `04-business-logic/` 各子目錄 |
 | `entity` | 資料模型實體 | `05-entities/` |
+| `structure-overview` | 領域資料結構總覽（關聯與資料流唯一正本：ER 圖＋單據流＋資料流＋關聯明細表；一領域一張） | `05-entities/`（與該領域實體卡同層） |
 | `state-machine` | 狀態機 | `06-state-machines/` |
 | `scenario` | 業務情境（目標完成過程；接力型／能力型／排程型） | `07-scenarios/` |
 | `open-question` | OQ 卡 | `08-open-questions/` |
 | `canvas-ref` | Canvas 對應的 markdown 描述 | `09-canvases/` |
+| `review-knowledge` | 規劃品質量尺與稽核方法論 | `11-review-knowledge/` |
+| `misjudgement-record` | 稽核誤判案例庫 | `11-review-knowledge/` |
 | `raw` | Raw 素材（已驗證的觀察 / 反饋 / 研究筆記，未精練）| `raw/` |
 
 **分層與 type 的對應**（對齊 [[erp_index]] § 一架構概述）：
