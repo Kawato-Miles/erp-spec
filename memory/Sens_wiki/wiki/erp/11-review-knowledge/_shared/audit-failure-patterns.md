@@ -160,14 +160,13 @@ last-reviewed: 2026-05-28
 
 - 識別到反模式 MUST 追加本卡（不只口頭說「下次注意」）
 - 與 `misjudgement-record` 配合：稽核反模式 vs 審查誤判 分別記錄
-- 與 [[erp-design-patterns]] 互補：本卡記反模式 / erp-design-patterns 記正模式
+- 本卡記稽核反模式；正模式的比對基準見 [[規劃品質評分準則]] 5-4 業界範式對照（原設計模式卡已於 2026-08-05 隨舊審查體系刪除）
 
 ## 四、相關卡
 
 - （見 erp-planning-pre-check skill 附件） — 稽核框架正本
 - [[business-domain-taxonomy]] — 6 領域分類
 - `misjudgement-record` — 三視角審查 agent 誤審記錄
-- [[erp-design-patterns]] — 5 ERP 設計範式（正模式）
 
 ## 五、來源
 

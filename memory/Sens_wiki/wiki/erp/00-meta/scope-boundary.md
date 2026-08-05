@@ -74,7 +74,7 @@ ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」�
 |------|------|
 | 表格密度 / 批次操作 / 響應式 | `memory/shared/ui-business-rules.md` |
 | 跨產品通用工作原則（Spec 撰寫 / OQ 管理 / PM 視角 / 迭代工作流） | `memory/shared/principles.md` § 一~五 |
-| ERP 資料模型設計模式（指針模式 / 狀態碼結構化 / 合格終態 / B2C-B2B 分流 / 稽核鉤子）| **已遷入 Vault**：[[erp-design-patterns]]（2026-05-19）|
+| ERP 資料模型設計模式（指針模式 / 狀態碼結構化 / 合格終態 / B2C-B2B 分流 / 稽核鉤子）| 原承載卡已隨舊三 agent 審查體系刪除（2026-08-05）；設計比對基準由 [[規劃品質評分準則]] 5-4 業界範式對照承接 |
 | 禁 Emoji / 詳情頁 Tab 順序 / Info Banner | `sens-erp-prototype/DESIGN.md` §0 |
 
 ### 演算法 / 實作細節
