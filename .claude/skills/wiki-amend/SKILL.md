@@ -2,7 +2,7 @@
 name: wiki-amend
 status: active
 description: >
-  wiki 正本卡（03-roles／04-business-logic／05-entities／06-state-machines／07-scenarios）的唯一寫入入口：判落點、依 wiki 骨架與規範撰寫、追加 log.md。
+  wiki 正本卡（03-roles／04-business-logic／05-entities 含資料結構總覽 structure-overview／06-state-machines／07-scenarios）的唯一寫入入口：判落點、依 wiki 骨架與規範撰寫、追加 log.md。
   觸發：確定要寫或改 wiki 卡時，不限上游用什麼手段收斂需求；Miles 說「更新 wiki」「對齊 wiki」「寫進 wiki」「補一張情境卡」；其他 skill 要動正本卡時一律轉介進來（vault-ingest mode B、erp-planning-pre-check Step 4、vault-audit mode C、oq-manage 決議落地）。
   不適用：OQ 卡本身（用 oq-manage）、raw 素材層（用 vault-ingest）、規劃前盤點（用 erp-planning-pre-check）、整體健康稽核（用 vault-audit）、純查詢。
   硬性載入清單、落點判定、輸出格式（三件套 + log.md）見本文。
@@ -42,6 +42,7 @@ description: >
 |-----------|------|-----------|
 | 業務規則、計算口徑、領域知識、外部約束 | business-logic | 是 |
 | 實體的業務可見欄位、關聯 | entity | 是 |
+| 領域的實體關聯、單據流、資料流總覽 | structure-overview | 是 |
 | 狀態列舉、轉換的營運動機 | state-machine | 是 |
 | 一個目標的完成過程 | scenario | 是 |
 | 角色職責與邊界 | role | 是 |
@@ -229,6 +230,7 @@ description: >
 |------|------|------|------|
 | business-logic | [[規範 - 商業邏輯]] | [[範本 - 服務藍圖]]、[[範本 - 商業規則]] | [[範例 - 服務藍圖]]、[[範例 - 商業規則]] |
 | entity | [[規範 - 實體]] | [[範本 - 實體]] | [[範例 - 實體]] |
+| structure-overview | [[規範 - 資料結構總覽]] | [[範本 - 資料結構總覽]] | [[範例 - 資料結構總覽]] |
 | state-machine | [[規範 - 狀態機]] | [[範本 - 狀態機]] | [[範例 - 狀態機]] |
 | scenario | [[規範 - 業務情境]] | [[範本 - 業務情境]] | [[範例 - 業務情境]] |
 | role | [[規範 - 角色]] | [[範本 - 角色]] | [[範例 - 角色]] |

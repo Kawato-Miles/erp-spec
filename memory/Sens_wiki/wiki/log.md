@@ -13,6 +13,11 @@ last-reviewed: 2026-06-02
 
 ---
 
+## [2026-08-05 23:45] 納入(amend) | 資料結構總覽升格為正式卡別——三層檔齊備＋無總覽領域前置建卡規則
+- 變更：新增 [[範本 - 資料結構總覽]]（骨架，佔位符起手）、[[規範 - 資料結構總覽]]（定位／判斷表含「結構性變更遇無總覽先建卡」前置規則／三源抽取前提／撰寫規則／不收清單／八項稽核維度評分標準）、[[範例 - 資料結構總覽]]（凍結快照節錄外發子集，不隨正本異動）；[[wiki-schema]] 補 type=structure-overview 的 frontmatter 規格節；[[規劃品質評分準則]] 5-2 補無總覽時的兩級處置（結構性退回建卡、局部明標降級）。skill 同步（非 wiki）：wiki-amend 觸發判斷表與格式表補 structure-overview 列、erp-planning-pre-check 補前置建卡規則、plan-audit 補無總覽處置。
+- 動機：Miles 拍板（2026-08-05）——總覽卡比照其他單元以三層維護（範例採凍結快照、避免指向活卡造成參考錯誤）；並回應「無總覽領域的需求評估會發生什麼」的反問：原設計只有警示標籤無保護，改為結構性變更時建卡為設計前置步驟、局部變動由稽核明標覆蓋降級。
+- 衝突：無。
+
 ## [2026-08-05 23:10] 納入(amend) | log 搬正授權執行＋schema 補三 type＋taxonomy 補編輯器值與總覽必查
 - 變更：本檔（log.md）依 Miles 授權一次性搬正為最新在上（339 條全序，2026-08-01 起被追加至檔尾的條目歸位；缺 HH:MM 的歷史條目保留原樣不補造時間）；[[wiki-schema]] type enum 補三值——structure-overview（領域資料結構總覽，落點 05-entities 與實體同層）、review-knowledge、misjudgement-record（11-review-knowledge 實際在用、原 enum 未收）；[[business-domain-taxonomy]] 檢索規約第 2 步補「命中清單 MUST 檢查含該領域資料結構總覽卡、無則明標」＋ tag enum 補跨產品值「領域/編輯器」；[[生產領域資料結構總覽]] frontmatter type 改 structure-overview。
 - 動機：vault-audit（2026-08-05）三項治理缺口的 Miles 裁決落地——log 排序破損授權搬正（根因為檔尾追加指令，wiki-amend skill 已補禁令）、總覽卡 type 落點採新增 type 並由檢索規約保證不漏載、兩項 enum 缺口直接補齊不開 OQ。

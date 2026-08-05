@@ -221,6 +221,22 @@ last-reviewed: YYYY-MM-DD
 ---
 ```
 
+### type=structure-overview
+
+```yaml
+---
+type: structure-overview
+tags:
+  - 領域/<領域名>   # 單值；一領域一張，跨領域內容進「跨領域接口」段
+source:                          # 三源抽取＋Miles 矛盾裁決紀錄（wiki/log.md 條目）
+  - "<三源互盲抽取交叉比對＋裁決紀錄日期>"
+status: active
+last-reviewed: YYYY-MM-DD
+---
+```
+
+撰寫規範見 [[規範 - 資料結構總覽]]、骨架 [[範本 - 資料結構總覽]]、範例 [[範例 - 資料結構總覽]]。
+
 ### type=state-machine
 
 ```yaml
