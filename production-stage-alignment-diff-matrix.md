@@ -166,6 +166,17 @@ PT-036（交辦前內容檢查留痕——B9 定案後前提可能失效，需�
 
 ---
 
+## 實作階段追加發現（段 1 批 1-2 稽核，2026-08-06）
+
+| # | 發現 | 位置 | 處置 |
+|---|------|------|------|
+| A1 | 同一印件跨模組編號兩制（訂單模組 `ORD-…_NNN`、印件總覽 `PI-…`），連動只能靠名稱字串比對 | erp prototype orders／print-items 模擬資料 | 段 1 批 9（tasks 9.5） |
+| A2 | 工單編號兩制（`W-YYYYMMDD-NN` 為 spec 格式、既有 `WO-2026-0NNN`） | 同上 work-orders／recipes | 段 1 批 9（tasks 9.5） |
+| A3 | 工單事實由工單模組與印件總覽兩處持有，副本無同步機制 | print-items store | 段 1 批 9（tasks 9.6） |
+| A4 | 訂單類型出現 wiki 值域外的「客製單」（wiki 訂單卡為線下／線上／諮詢） | orders 模擬資料 | 段 1 批 9（tasks 9.7） |
+
+---
+
 # 段 2：報工、轉交
 
 （路徑前綴：W＝wiki/erp/、O＝openspec/specs/、P＝erp prototype 目錄）
