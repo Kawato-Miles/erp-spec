@@ -9,6 +9,13 @@
       "autoPort": false
     },
     {
+      "name": "erp-verify",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "/Users/b-f-03-029/erp/apps/erp", "run", "dev", "--", "--port", "3020"],
+      "port": 3020,
+      "autoPort": false
+    },
+    {
       "name": "sens-erp-prototype",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "/Users/b-f-03-029/sens-erp-prototype"],
