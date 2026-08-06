@@ -5,13 +5,15 @@
       "name": "erp",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "/Users/b-f-03-029/erp/apps/erp"],
-      "port": 3000
+      "port": 3000,
+      "autoPort": false
     },
     {
       "name": "sens-erp-prototype",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "/Users/b-f-03-029/sens-erp-prototype"],
-      "port": 8080
+      "port": 8080,
+      "autoPort": false
     }
   ]
 }
