@@ -7,7 +7,7 @@
    角色標記色＝七個印版色標，只用於色條，不做滿版底色
    ═══════════════════════════════════════════════════════════ */
 :root{
-  color-scheme:light dark;
+  color-scheme:light;
 
   --paper:#FAF9F6;
   --ink:#16161A;
@@ -35,57 +35,6 @@
 
   --head-h:112px;
   --rail-w:266px;
-}
-
-@media (prefers-color-scheme: dark){
-  :root{
-    --paper:#14141A;
-    --ink:#ECEAE5;
-    --ink-soft:#9A968E;
-    --rule:#2B2B33;
-    --accent:#5B9CFF;
-    --flag:#FF6B9D;
-
-    --surface:#1A1A21;
-    --zebra:#1C1C24;
-    --sunk:#1E1E27;
-    --accent-wash:#1B2434;
-    --shade:rgba(0,0,0,.45);
-
-    --plate-print_officer:#ECEAE5;
-  }
-}
-:root[data-theme="dark"]{
-  --paper:#14141A;
-  --ink:#ECEAE5;
-  --ink-soft:#9A968E;
-  --rule:#2B2B33;
-  --accent:#5B9CFF;
-  --flag:#FF6B9D;
-
-  --surface:#1A1A21;
-  --zebra:#1C1C24;
-  --sunk:#1E1E27;
-  --accent-wash:#1B2434;
-  --shade:rgba(0,0,0,.45);
-
-  --plate-print_officer:#ECEAE5;
-}
-:root[data-theme="light"]{
-  --paper:#FAF9F6;
-  --ink:#16161A;
-  --ink-soft:#5C5A57;
-  --rule:#E2DFD9;
-  --accent:#0B5FD9;
-  --flag:#C2185B;
-
-  --surface:#FFFFFF;
-  --zebra:#F2F0EA;
-  --sunk:#F1EFE8;
-  --accent-wash:#ECF2FD;
-  --shade:rgba(22,22,26,.10);
-
-  --plate-print_officer:#16161A;
 }
 
 /* 角色 → 印版色標 */
@@ -118,7 +67,7 @@ a{color:var(--accent);text-underline-offset:2px}
   font-size:.92em;
   letter-spacing:-.01em;
 }
-a.path{overflow-wrap:anywhere}
+.path{overflow-wrap:anywhere}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .hidden{display:none !important}
 
@@ -144,6 +93,7 @@ a.path{overflow-wrap:anywhere}
 }
 .mast-sub{margin:0;font-size:12px;color:var(--ink-soft);line-height:1.5}
 .mast-tools{display:flex;align-items:center;gap:8px}
+.mast-sep{margin:0 7px;opacity:.5}
 
 #search{
   width:216px;max-width:42vw;
@@ -156,38 +106,6 @@ a.path{overflow-wrap:anywhere}
 }
 #search::placeholder{color:var(--ink-soft)}
 #search:focus-visible{border-color:var(--accent)}
-.btn{
-  padding:6px 11px;
-  border:1px solid var(--rule);
-  border-radius:2px;
-  background:var(--surface);
-  color:var(--ink-soft);
-  font-family:inherit;font-size:12.5px;
-  cursor:pointer;
-  transition:color .15s ease,border-color .15s ease;
-}
-.btn:hover{color:var(--accent);border-color:var(--accent)}
-
-/* ═══ 濃度條：本頁唯一的視覺主張 ═══ */
-.tone{
-  grid-column:1 / -1;
-  display:flex;align-items:center;flex-wrap:wrap;
-  gap:6px 14px;
-}
-.tone-strip{display:flex;flex-wrap:wrap;gap:4px 11px}
-.tone-group{display:flex;gap:3px}
-.tone-cell{
-  width:9px;height:17px;
-  border:1px solid var(--rule);
-  background:transparent;
-  transition:background-color .18s ease,border-color .18s ease;
-}
-.tone-cell.on{
-  background:var(--plate);
-  border-color:var(--plate);
-}
-.tone-label{font-size:12px;color:var(--ink-soft);white-space:nowrap}
-
 /* ═══ 版面 ═══ */
 .layout{
   display:grid;
@@ -256,25 +174,6 @@ a.path{overflow-wrap:anywhere}
   background:var(--sunk);color:var(--ink);font-weight:600;
   border-left:2px solid var(--plate);padding-left:9px;
 }
-.scn-btn .mark{
-  flex:0 0 auto;width:7px;height:7px;margin-top:7px;
-  border:1px solid var(--rule);
-}
-.scn-btn.done .mark{background:var(--plate);border-color:var(--plate)}
-
-.sb-foot{
-  flex:0 0 auto;
-  display:grid;gap:5px;
-  padding:11px 9px 13px;
-  border-top:1px solid var(--rule);
-  background:var(--paper);
-}
-.foot-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-.foot-label{font-size:11px;letter-spacing:.08em;color:var(--ink-soft)}
-.foot-num{font-size:12px;color:var(--ink)}
-.foot-track{height:3px;background:var(--rule)}
-.foot-fill{height:100%;width:0;background:var(--accent);transition:width .25s ease}
-
 /* ═══ 內容區 ═══ */
 .content{min-width:0;padding:28px 30px 96px;max-width:1060px}
 
@@ -307,16 +206,6 @@ a.path{overflow-wrap:anywhere}
   padding:2px 8px;
 }
 .switch-note{margin:0;font-size:12.5px;color:var(--ink-soft);line-height:1.65}
-.verify{
-  display:flex;align-items:center;gap:9px;flex-wrap:wrap;
-  margin-top:3px;padding:9px 12px;
-  border:1px solid var(--rule);border-radius:2px;
-  background:var(--surface);
-  font-size:13.5px;font-weight:600;
-  cursor:pointer;width:fit-content;max-width:100%;
-}
-.verify input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
-.verify .memo{font-size:12px;font-weight:400;color:var(--ink-soft)}
 
 .sec{display:grid;gap:11px}
 .sec > h3{
@@ -420,7 +309,7 @@ footer{
     overflow:visible;
   }
   .sb-scroll{display:block;overflow:visible}
-  .sb-hint,.sb-foot,.sb-home{display:none}
+  .sb-hint,.sb-home{display:none}
   #nav{
     flex-direction:row;flex-wrap:nowrap;gap:6px;
     overflow-x:auto;overflow-y:hidden;
@@ -462,17 +351,12 @@ footer{
 
   <header class="masthead">
     <div class="mast-id">
-      <h1>生產階段 段 1 Prototype 驗證操作手冊</h1>
-      <p class="mast-sub">分支 <span class="num">prototype/production-stage</span></p>
+      <h1>生產階段 段 1 Prototype 操作手冊</h1>
+      <p class="mast-sub">印刷業 ERP 生產階段 段 1<span class="mast-sep" aria-hidden="true">・</span>7 個角色<span class="mast-sep" aria-hidden="true">・</span>24 個情境</p>
     </div>
     <div class="mast-tools">
       <label class="sr-only" for="search">搜尋情境</label>
       <input id="search" type="search" placeholder="搜尋情境標題與重點" autocomplete="off">
-      <button class="btn" id="resetBtn" type="button">清除進度</button>
-    </div>
-    <div class="tone">
-      <div class="tone-strip" id="toneStrip" role="img" aria-label="驗證進度濃度條，一格一情境，依角色分組"></div>
-      <span class="tone-label num" id="ptext">已驗證 0 / 全部 0</span>
     </div>
   </header>
 
@@ -482,13 +366,6 @@ footer{
         <p class="sb-hint">主層級是角色，次層級是情境。點角色展開，點情境看內容。<br>操作前務必先在 prototype 右上角切換模擬角色。</p>
         <button class="sb-home" id="homeBtn" type="button">回總覽</button>
         <div id="nav"></div>
-      </div>
-      <div class="sb-foot">
-        <div class="foot-row">
-          <span class="foot-label">總進度</span>
-          <span class="foot-num num" id="pfoot">0 / 0</span>
-        </div>
-        <div class="foot-track"><div class="foot-fill" id="pfill"></div></div>
       </div>
     </nav>
 
@@ -1068,11 +945,6 @@ const DATA = [
 /* ─────────────────────────────────────────────
    渲染
    ───────────────────────────────────────────── */
-const BASE='http://localhost:3000';
-const STORE_KEY='seg1-manual-progress-v1';
-let progress={};
-try{progress=JSON.parse(localStorage.getItem(STORE_KEY))||{}}catch(e){progress={}}
-
 const ALL=[];
 DATA.forEach(g=>g.scenarios.forEach(s=>ALL.push({...s,roleKey:g.key,role:g.role,user:g.user})));
 const byId=id=>ALL.find(s=>s.id===id);
@@ -1080,10 +952,10 @@ const byId=id=>ALL.find(s=>s.id===id);
 const noMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isNarrow=()=>window.innerWidth<=900;
 
-/* 把 [[/path]] 轉成完整可點連結 */
+/* 把 [[/path]] 轉成等寬字路徑（純文字，非連結） */
 function linkify(t){
   return String(t).replace(/\[\[(\/[^\]]*)\]\]/g,(m,p)=>
-    '<a class="num path" href="'+BASE+p+'" target="_blank" rel="noopener">'+BASE+p+'</a>');
+    '<span class="num path">'+p+'</span>');
 }
 /* 業務編號以等寬字呈現：只動標籤外的文字節點，不碰屬性值 */
 const CODE_RE=/\b((?:PI|WO|DO|ORD|PS|BR|SO|QR|AFT|PO)-\d{4}-[0-9A-Z]{2,6})\b/g;
@@ -1097,7 +969,6 @@ const rich=t=>markCodes(linkify(t));
 const navEl=document.getElementById('nav');
 const contentEl=document.getElementById('content');
 const sidebarEl=document.getElementById('sidebar');
-const toneEl=document.getElementById('toneStrip');
 
 /* ── 側欄目錄 ── */
 function buildNav(){
@@ -1111,29 +982,9 @@ function buildNav(){
       '</button>'+
       '<ul class="scn-list">'+g.scenarios.map(s=>
         '<li><button class="scn-btn" type="button" data-scn="'+s.id+'">'+
-        '<span class="mark" aria-hidden="true"></span><span class="txt">'+s.title+'</span></button></li>').join('')+
+        '<span class="txt">'+s.title+'</span></button></li>').join('')+
       '</ul>'+
     '</div>').join('');
-}
-
-/* ── 濃度條：一格一情境，依角色分組 ── */
-function buildTone(){
-  toneEl.innerHTML=DATA.map(g=>
-    '<span class="tone-group" data-plate="'+g.key+'">'+
-      g.scenarios.map(s=>
-        '<span class="tone-cell" data-cell="'+s.id+'" title="'+g.role+'：'+s.title+'"></span>').join('')+
-    '</span>').join('');
-}
-
-function renderProgress(){
-  const done=ALL.filter(s=>progress[s.id]).length;
-  document.getElementById('ptext').textContent='已驗證 '+done+' / 全部 '+ALL.length;
-  document.getElementById('pfoot').textContent=done+' / '+ALL.length;
-  document.getElementById('pfill').style.width=(ALL.length?(done/ALL.length*100):0)+'%';
-  document.querySelectorAll('.tone-cell').forEach(c=>
-    c.classList.toggle('on',!!progress[c.dataset.cell]));
-  document.querySelectorAll('.scn-btn').forEach(b=>
-    b.classList.toggle('done',!!progress[b.dataset.scn]));
 }
 
 function openRoleOf(id){
@@ -1170,8 +1021,6 @@ function renderScenario(id,flash){
           (s.supp?'<span class="tag-supp">依設計補寫，ACCEPTANCE 未列</span>':'')+
         '</div>'+
         '<p class="switch-note">在 prototype 右上角切換模擬角色；模擬資料存在記憶體，重新整理頁面即重置，單一情境請一氣呵成。</p>'+
-        '<label class="verify"><input type="checkbox" id="chk" '+(progress[s.id]?'checked':'')+'>已驗證'+
-          '<span class="memo">勾選狀態存在瀏覽器，重開仍在</span></label>'+
       '</header>'+
       '<section class="sec"><h3>這個情境在做什麼</h3><p class="lede">'+markCodes(s.intro)+'</p></section>'+
       '<section class="sec"><h3>重點</h3><ul class="points">'+
@@ -1182,18 +1031,12 @@ function renderScenario(id,flash){
         '<tbody>'+rows+'</tbody></table></div></section>'+
     '</article>';
 
-  document.getElementById('chk').addEventListener('change',e=>{
-    if(e.target.checked) progress[s.id]=true; else delete progress[s.id];
-    localStorage.setItem(STORE_KEY,JSON.stringify(progress));
-    renderProgress();
-  });
   contentEl.querySelectorAll('[data-goto]').forEach(b=>
     b.addEventListener('click',()=>select(b.dataset.goto,true)));
 
   document.querySelectorAll('.scn-btn').forEach(b=>
     b.classList.toggle('active',b.dataset.scn===id));
   openRoleOf(id);
-  renderProgress();
 
   window.scrollTo({top:0,behavior:(flash && !noMotion)?'smooth':'auto'});
   if(flash && !noMotion){
@@ -1208,18 +1051,18 @@ function renderHome(){
   contentEl.innerHTML=
    '<div class="home">'+
    '<header class="home-head">'+
-     '<p class="eyebrow">段 1 驗證</p>'+
-     '<h2>生產階段 段 1 Prototype 驗證操作手冊</h2>'+
+     '<p class="eyebrow">段 1 操作手冊</p>'+
+     '<h2>生產階段 段 1 Prototype 操作手冊</h2>'+
    '</header>'+
    '<section class="sec"><h3>這份手冊怎麼用</h3>'+
    '<ol class="steps">'+
-   '<li>啟動 prototype：在 erp repo 執行 <span class="num">pnpm dev:erp</span>，開 <a class="num path" href="'+BASE+'" target="_blank" rel="noopener">'+BASE+'</a> 並登入。</li>'+
+   '<li>啟動 prototype：在 erp repo 執行 <span class="num">pnpm dev:erp</span>，在瀏覽器開起來的 ERP 原型並登入。</li>'+
    '<li>左側選角色、再選情境。每個情境固定四段：這個情境在做什麼、重點、前置情境、怎麼操作。</li>'+
    '<li>每一步都標了要切到哪個模擬角色，切換器在 prototype 右上角。</li>'+
-   '<li>驗證完一個情境就勾「已驗證」，進度存在瀏覽器，重開仍在，頂部顯示總進度。</li>'+
+   '<li>步驟表「在哪個畫面」欄位的斜線路徑，對應 ERP 原型的頁面位置。</li>'+
    '<li>搜尋框會同時過濾情境標題與重點文字。</li>'+
    '</ol></section>'+
-   '<section class="sec"><h3>驗證前要知道的三件事</h3>'+
+   '<section class="sec"><h3>操作前要知道的三件事</h3>'+
    '<ul class="points">'+
    '<li>模擬資料存在記憶體，重新整理頁面即重置，單一情境請一氣呵成走完。</li>'+
    '<li>各模組自帶模擬資料，但編號是同一套（印件 PI-[年]-[四碼]、工單 WO-[年]-[四碼]、配方 PS- / BR-），跨模組一律以編號認人。</li>'+
@@ -1237,7 +1080,6 @@ function renderHome(){
    '<footer>資料來源：erp repo 的 ACCEPTANCE.md（86 項驗收操作）、生產階段校正 段 1 商業層設計、wiki 角色卡與情境卡。</footer>'+
    '</div>';
   document.querySelectorAll('.scn-btn').forEach(b=>b.classList.remove('active'));
-  renderProgress();
 }
 
 function select(id,flash){
@@ -1247,7 +1089,6 @@ function select(id,flash){
 
 /* ─── 事件 ─── */
 buildNav();
-buildTone();
 
 navEl.addEventListener('click',e=>{
   const head=e.target.closest('.role-head');
@@ -1289,11 +1130,6 @@ document.getElementById('search').addEventListener('input',e=>{
   });
 });
 
-document.getElementById('resetBtn').addEventListener('click',()=>{
-  progress={}; localStorage.removeItem(STORE_KEY); renderProgress();
-  const c=document.getElementById('chk'); if(c) c.checked=false;
-});
-
 /* 報頭高度回寫，供側欄吸附定位 */
 const mastEl=document.querySelector('.masthead');
 function syncHead(){
@@ -1306,5 +1142,4 @@ window.addEventListener('resize',syncHead);
 /* 寬版預設展開第一個角色；窄版角色列為橫向捲動，不預先落下情境面板 */
 if(!isNarrow()) document.querySelector('.role-group').classList.add('open');
 renderHome();
-renderProgress();
 </script>
