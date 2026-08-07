@@ -1,0 +1,1310 @@
+<title>生產階段段 1 驗證操作手冊</title>
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   色票：印刷校樣語彙
+   紙白 / 墨黑 / 版線 / 青版藍（主動作）/ 洋紅版（警示）
+   角色標記色＝七個印版色標，只用於色條，不做滿版底色
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  color-scheme:light dark;
+
+  --paper:#FAF9F6;
+  --ink:#16161A;
+  --ink-soft:#5C5A57;
+  --rule:#E2DFD9;
+  --accent:#0B5FD9;
+  --flag:#C2185B;
+
+  --surface:#FFFFFF;
+  --zebra:#F2F0EA;
+  --sunk:#F1EFE8;
+  --accent-wash:#ECF2FD;
+  --shade:rgba(22,22,26,.10);
+
+  --plate-sales:#0B99D6;
+  --plate-order_manager:#D6006E;
+  --plate-print_manager:#E8A400;
+  --plate-print_officer:#16161A;
+  --plate-production_planner:#E2571E;
+  --plate-picker:#0E8C6A;
+  --plate-cross:#6B4FBB;
+
+  --font-ui:-apple-system,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --font-mono:ui-monospace,"SF Mono",Menlo,monospace;
+
+  --head-h:112px;
+  --rail-w:266px;
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#14141A;
+    --ink:#ECEAE5;
+    --ink-soft:#9A968E;
+    --rule:#2B2B33;
+    --accent:#5B9CFF;
+    --flag:#FF6B9D;
+
+    --surface:#1A1A21;
+    --zebra:#1C1C24;
+    --sunk:#1E1E27;
+    --accent-wash:#1B2434;
+    --shade:rgba(0,0,0,.45);
+
+    --plate-print_officer:#ECEAE5;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14141A;
+  --ink:#ECEAE5;
+  --ink-soft:#9A968E;
+  --rule:#2B2B33;
+  --accent:#5B9CFF;
+  --flag:#FF6B9D;
+
+  --surface:#1A1A21;
+  --zebra:#1C1C24;
+  --sunk:#1E1E27;
+  --accent-wash:#1B2434;
+  --shade:rgba(0,0,0,.45);
+
+  --plate-print_officer:#ECEAE5;
+}
+:root[data-theme="light"]{
+  --paper:#FAF9F6;
+  --ink:#16161A;
+  --ink-soft:#5C5A57;
+  --rule:#E2DFD9;
+  --accent:#0B5FD9;
+  --flag:#C2185B;
+
+  --surface:#FFFFFF;
+  --zebra:#F2F0EA;
+  --sunk:#F1EFE8;
+  --accent-wash:#ECF2FD;
+  --shade:rgba(22,22,26,.10);
+
+  --plate-print_officer:#16161A;
+}
+
+/* 角色 → 印版色標 */
+[data-plate="sales"]{--plate:var(--plate-sales)}
+[data-plate="order_manager"]{--plate:var(--plate-order_manager)}
+[data-plate="print_manager"]{--plate:var(--plate-print_manager)}
+[data-plate="print_officer"]{--plate:var(--plate-print_officer)}
+[data-plate="production_planner"]{--plate:var(--plate-production_planner)}
+[data-plate="picker"]{--plate:var(--plate-picker)}
+[data-plate="cross"]{--plate:var(--plate-cross)}
+
+/* ═══ 基礎 ═══ */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-ui);
+  font-size:15.5px;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+a{color:var(--accent);text-underline-offset:2px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+
+.num{
+  font-family:var(--font-mono);
+  font-variant-numeric:tabular-nums;
+  font-size:.92em;
+  letter-spacing:-.01em;
+}
+a.path{overflow-wrap:anywhere}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hidden{display:none !important}
+
+/* ═══ 報頭 ═══ */
+.masthead{
+  position:sticky;top:0;z-index:30;
+  background:var(--paper);
+  border-bottom:1px solid var(--rule);
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:end;
+  gap:10px 24px;
+  padding:13px 24px 11px;
+}
+.mast-id{display:grid;gap:2px;min-width:0}
+.mast-id h1{
+  margin:0;
+  font-size:clamp(15px,1.5vw,17px);
+  font-weight:700;
+  letter-spacing:.01em;
+  line-height:1.35;
+  text-wrap:balance;
+}
+.mast-sub{margin:0;font-size:12px;color:var(--ink-soft);line-height:1.5}
+.mast-tools{display:flex;align-items:center;gap:8px}
+
+#search{
+  width:216px;max-width:42vw;
+  padding:6px 10px;
+  border:1px solid var(--rule);
+  border-radius:2px;
+  background:var(--surface);
+  color:var(--ink);
+  font-family:inherit;font-size:13px;
+}
+#search::placeholder{color:var(--ink-soft)}
+#search:focus-visible{border-color:var(--accent)}
+.btn{
+  padding:6px 11px;
+  border:1px solid var(--rule);
+  border-radius:2px;
+  background:var(--surface);
+  color:var(--ink-soft);
+  font-family:inherit;font-size:12.5px;
+  cursor:pointer;
+  transition:color .15s ease,border-color .15s ease;
+}
+.btn:hover{color:var(--accent);border-color:var(--accent)}
+
+/* ═══ 濃度條：本頁唯一的視覺主張 ═══ */
+.tone{
+  grid-column:1 / -1;
+  display:flex;align-items:center;flex-wrap:wrap;
+  gap:6px 14px;
+}
+.tone-strip{display:flex;flex-wrap:wrap;gap:4px 11px}
+.tone-group{display:flex;gap:3px}
+.tone-cell{
+  width:9px;height:17px;
+  border:1px solid var(--rule);
+  background:transparent;
+  transition:background-color .18s ease,border-color .18s ease;
+}
+.tone-cell.on{
+  background:var(--plate);
+  border-color:var(--plate);
+}
+.tone-label{font-size:12px;color:var(--ink-soft);white-space:nowrap}
+
+/* ═══ 版面 ═══ */
+.layout{
+  display:grid;
+  grid-template-columns:var(--rail-w) minmax(0,1fr);
+  align-items:start;
+}
+
+/* ═══ 側欄：角色 → 情境 ═══ */
+.sidebar{
+  position:sticky;top:var(--head-h);
+  height:calc(100vh - var(--head-h));
+  display:flex;flex-direction:column;
+  border-right:1px solid var(--rule);
+  padding:12px 10px 0;
+  overflow:hidden;
+}
+.sb-scroll{flex:1 1 auto;overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:10px}
+.sb-hint{margin:0;padding:0 8px;font-size:11.5px;line-height:1.65;color:var(--ink-soft)}
+.sb-home{
+  display:flex;align-items:center;gap:8px;
+  width:100%;padding:7px 9px;
+  border:0;border-radius:3px;
+  background:transparent;color:var(--ink-soft);
+  font-family:inherit;font-size:12.8px;font-weight:600;
+  text-align:left;cursor:pointer;
+}
+.sb-home:hover{color:var(--accent)}
+.sb-home::before{content:"";width:3px;height:13px;background:var(--rule);flex:0 0 auto}
+.sb-home:hover::before{background:var(--accent)}
+
+#nav{display:flex;flex-direction:column;gap:1px}
+.role-group{min-width:0}
+.role-head{
+  display:flex;align-items:center;gap:8px;
+  width:100%;padding:7px 9px;
+  border:0;border-radius:3px;
+  background:transparent;color:var(--ink);
+  font-family:inherit;font-size:13.5px;font-weight:600;
+  text-align:left;cursor:pointer;
+}
+.role-head:hover{background:var(--sunk)}
+.plate-bar{flex:0 0 auto;width:3px;height:14px;background:var(--plate,var(--ink-soft))}
+.role-head .caret{
+  flex:0 0 auto;width:9px;
+  font-size:9px;color:var(--ink-soft);
+  transition:transform .15s ease;
+}
+.role-group.open .role-head .caret{transform:rotate(90deg)}
+.role-head .count{
+  margin-left:auto;
+  font-family:var(--font-mono);font-variant-numeric:tabular-nums;
+  font-size:11px;color:var(--ink-soft);
+}
+.scn-list{display:none;margin:0;padding:1px 0 7px 12px;list-style:none}
+.role-group.open .scn-list{display:block}
+.scn-btn{
+  display:flex;align-items:flex-start;gap:8px;
+  width:100%;padding:6px 8px 6px 10px;
+  border:0;border-left:1px solid var(--rule);border-radius:0 3px 3px 0;
+  background:transparent;color:var(--ink-soft);
+  font-family:inherit;font-size:12.8px;line-height:1.5;
+  text-align:left;cursor:pointer;
+}
+.scn-btn:hover{background:var(--sunk);color:var(--ink)}
+.scn-btn.active{
+  background:var(--sunk);color:var(--ink);font-weight:600;
+  border-left:2px solid var(--plate);padding-left:9px;
+}
+.scn-btn .mark{
+  flex:0 0 auto;width:7px;height:7px;margin-top:7px;
+  border:1px solid var(--rule);
+}
+.scn-btn.done .mark{background:var(--plate);border-color:var(--plate)}
+
+.sb-foot{
+  flex:0 0 auto;
+  display:grid;gap:5px;
+  padding:11px 9px 13px;
+  border-top:1px solid var(--rule);
+  background:var(--paper);
+}
+.foot-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.foot-label{font-size:11px;letter-spacing:.08em;color:var(--ink-soft)}
+.foot-num{font-size:12px;color:var(--ink)}
+.foot-track{height:3px;background:var(--rule)}
+.foot-fill{height:100%;width:0;background:var(--accent);transition:width .25s ease}
+
+/* ═══ 內容區 ═══ */
+.content{min-width:0;padding:28px 30px 96px;max-width:1060px}
+
+.scn{
+  display:grid;gap:26px;
+  border-left:3px solid var(--plate,var(--rule));
+  padding-left:22px;
+}
+.scn-head{display:grid;gap:9px}
+.crumb{margin:0;font-size:12px;color:var(--ink-soft)}
+.scn-head h2{
+  margin:0;
+  font-size:clamp(20px,2.3vw,25px);
+  font-weight:700;line-height:1.35;letter-spacing:.01em;
+  text-wrap:balance;
+}
+.scn-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.badge-role{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:12px;color:var(--ink);
+  border:1px solid var(--rule);border-radius:2px;
+  padding:3px 9px;
+}
+.badge-role .chip{width:8px;height:8px;background:var(--plate,var(--ink-soft))}
+.badge-role .who{color:var(--ink-soft)}
+.tag-supp{
+  display:inline-block;
+  font-size:11.5px;color:var(--flag);
+  border:1px solid var(--flag);border-radius:2px;
+  padding:2px 8px;
+}
+.switch-note{margin:0;font-size:12.5px;color:var(--ink-soft);line-height:1.65}
+.verify{
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+  margin-top:3px;padding:9px 12px;
+  border:1px solid var(--rule);border-radius:2px;
+  background:var(--surface);
+  font-size:13.5px;font-weight:600;
+  cursor:pointer;width:fit-content;max-width:100%;
+}
+.verify input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+.verify .memo{font-size:12px;font-weight:400;color:var(--ink-soft)}
+
+.sec{display:grid;gap:11px}
+.sec > h3{
+  margin:0;
+  font-size:12px;font-weight:700;
+  letter-spacing:.09em;color:var(--ink-soft);
+}
+.sec p{margin:0;max-width:66ch}
+.sec .lede{max-width:64ch}
+
+ul.points{display:grid;gap:7px;margin:0;padding:0;list-style:none;max-width:70ch}
+ul.points li{position:relative;padding-left:17px}
+ul.points li::before{
+  content:"";position:absolute;left:1px;top:.68em;
+  width:5px;height:5px;border:1px solid var(--ink-soft);
+}
+ul.prereq{display:grid;gap:7px;margin:0;padding:0;list-style:none;max-width:70ch}
+ul.prereq li{position:relative;padding-left:17px}
+ul.prereq li::before{
+  content:"";position:absolute;left:1px;top:.62em;
+  width:6px;height:6px;border:1px solid var(--accent);border-radius:50%;
+}
+.xlink{
+  padding:0;border:0;background:transparent;
+  color:var(--accent);font-family:inherit;font-size:inherit;line-height:inherit;
+  text-align:left;text-decoration:underline;text-underline-offset:2px;
+  cursor:pointer;
+}
+.xlink:hover{text-decoration-thickness:2px}
+
+/* ═══ 步驟表 ═══ */
+.table-wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:2px}
+table{border-collapse:collapse;width:100%;min-width:780px;font-size:14px}
+thead th{
+  padding:9px 12px;
+  background:var(--sunk);
+  border-bottom:1px solid var(--rule);
+  font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--ink-soft);
+  text-align:left;white-space:nowrap;
+}
+tbody td{padding:10px 12px;border-top:1px solid var(--rule);vertical-align:top;line-height:1.62}
+tbody tr:nth-child(even){background:var(--zebra)}
+td.col-no{
+  width:46px;text-align:center;color:var(--ink-soft);
+  font-family:var(--font-mono);font-variant-numeric:tabular-nums;
+}
+td.col-where{width:196px;overflow-wrap:anywhere}
+td.col-do{width:274px}
+
+/* ═══ 總覽頁 ═══ */
+.home{display:grid;gap:26px;max-width:860px}
+.home-head{display:grid;gap:8px}
+.home-head h2{
+  margin:0;font-size:clamp(21px,2.6vw,27px);
+  font-weight:700;line-height:1.3;letter-spacing:.01em;text-wrap:balance;
+}
+.home-head .eyebrow{margin:0;font-size:12px;letter-spacing:.09em;color:var(--ink-soft)}
+ol.steps{display:grid;gap:7px;margin:0;padding:0;list-style:none;counter-reset:s;max-width:70ch}
+ol.steps li{position:relative;padding-left:26px;counter-increment:s}
+ol.steps li::before{
+  content:counter(s,decimal-leading-zero);
+  position:absolute;left:0;top:.06em;
+  font-family:var(--font-mono);font-size:11.5px;color:var(--ink-soft);
+}
+.home .table-wrap table{min-width:640px}
+.cell-role{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.cell-role .chip{width:3px;height:13px;background:var(--plate,var(--ink-soft));flex:0 0 auto}
+td.col-num{
+  font-family:var(--font-mono);font-variant-numeric:tabular-nums;
+  text-align:right;width:64px;
+}
+footer{
+  margin:0;padding-top:16px;
+  border-top:1px solid var(--rule);
+  font-size:12px;color:var(--ink-soft);line-height:1.65;
+}
+
+/* ═══ 跳轉高亮 ═══ */
+@keyframes flash-in{
+  0%{background:var(--accent-wash)}
+  100%{background:transparent}
+}
+.scn.flash{animation:flash-in 1.5s ease-out}
+
+/* ═══ 窄視窗：側欄收為頂部橫向角色列 ═══ */
+@media (min-width:901px){
+  .sidebar.filtered .role-group .scn-list{display:block}
+}
+@media (max-width:900px){
+  .masthead{grid-template-columns:minmax(0,1fr);padding:11px 14px 10px}
+  .mast-tools{flex-wrap:wrap}
+  #search{width:100%;max-width:none;flex:1 1 160px}
+  .layout{display:block}
+  .sidebar{
+    position:sticky;top:var(--head-h);z-index:20;
+    height:auto;
+    display:block;
+    background:var(--paper);
+    border-right:0;border-bottom:1px solid var(--rule);
+    padding:8px 14px 9px;
+    overflow:visible;
+  }
+  .sb-scroll{display:block;overflow:visible}
+  .sb-hint,.sb-foot,.sb-home{display:none}
+  #nav{
+    flex-direction:row;flex-wrap:nowrap;gap:6px;
+    overflow-x:auto;overflow-y:hidden;
+    padding-bottom:2px;
+  }
+  .role-group{flex:0 0 auto}
+  .role-head{
+    border:1px solid var(--rule);border-radius:99px;
+    padding:6px 12px;white-space:nowrap;font-size:13px;
+  }
+  .role-group.open .role-head{border-color:var(--plate)}
+  .role-head .caret{display:none}
+  .scn-list{
+    position:absolute;left:14px;right:14px;top:calc(100% - 5px);z-index:25;
+    max-height:56vh;overflow-y:auto;
+    padding:6px;
+    background:var(--surface);
+    border:1px solid var(--rule);border-radius:3px;
+    box-shadow:0 10px 26px var(--shade);
+  }
+  .content{padding:20px 14px 72px}
+  .scn{padding-left:14px;gap:22px}
+  table{min-width:660px}
+  td.col-where{width:170px}
+  td.col-do{width:230px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    transition-duration:.001ms !important;
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    scroll-behavior:auto !important;
+  }
+}
+</style>
+
+<div class="manual">
+
+  <header class="masthead">
+    <div class="mast-id">
+      <h1>生產階段 段 1 Prototype 驗證操作手冊</h1>
+      <p class="mast-sub">分支 <span class="num">prototype/production-stage</span></p>
+    </div>
+    <div class="mast-tools">
+      <label class="sr-only" for="search">搜尋情境</label>
+      <input id="search" type="search" placeholder="搜尋情境標題與重點" autocomplete="off">
+      <button class="btn" id="resetBtn" type="button">清除進度</button>
+    </div>
+    <div class="tone">
+      <div class="tone-strip" id="toneStrip" role="img" aria-label="驗證進度濃度條，一格一情境，依角色分組"></div>
+      <span class="tone-label num" id="ptext">已驗證 0 / 全部 0</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="sidebar" id="sidebar" aria-label="情境目錄">
+      <div class="sb-scroll">
+        <p class="sb-hint">主層級是角色，次層級是情境。點角色展開，點情境看內容。<br>操作前務必先在 prototype 右上角切換模擬角色。</p>
+        <button class="sb-home" id="homeBtn" type="button">回總覽</button>
+        <div id="nav"></div>
+      </div>
+      <div class="sb-foot">
+        <div class="foot-row">
+          <span class="foot-label">總進度</span>
+          <span class="foot-num num" id="pfoot">0 / 0</span>
+        </div>
+        <div class="foot-track"><div class="foot-fill" id="pfill"></div></div>
+      </div>
+    </nav>
+
+    <main class="content" id="content"></main>
+  </div>
+
+</div>
+
+<script>
+/* ─────────────────────────────────────────────
+   資料：角色 → 情境
+   來源：ACCEPTANCE.md（86 項驗收）、段 1 商業層設計、wiki 角色卡與情境卡
+   ───────────────────────────────────────────── */
+const DATA = [
+{
+  key:'sales', role:'業務', user:'洪嘉駿',
+  pos:'公司接單與收款的第一線，從接到客戶需求一路跟到收款與售後。',
+  duty:'可建可改需求單、訂單（含印件與稿件上傳）、訂單異動、收款與發票、售後服務單、出貨單；工單進度與品檢紀錄只查閱、不能動；不接觸生產排程、派工與報工。',
+  scenarios:[
+  {
+    id:'sales-thread', title:'如何建立製作討論串', supp:true,
+    intro:'印件審稿通過後，訂單管理人核對製作細節時可能對規格備註、數量、單位有疑義。業務先在訂單詳情頁替這些印件開好 Slack 製作討論串，讓疑義有地方談。討論串是可選輔助，不是必經前置。',
+    points:[
+      '分辨製作討論串與審稿討論串：前者一印件一串、談這件的規格內容；後者一串多印件、談審核先後順序',
+      '知道勾選是批次、產出是逐件——勾三件建三串',
+      '知道已有討論串的印件會被略過，不重複建立，也不提供重建動作',
+      '知道建串會 mention 訂單管理人黃聖雯與 #印務部 頻道',
+      '知道連結會回寫到印件，出現在訂單詳情印件列、待確認製作細節佇列、印件詳情頁三處',
+      '知道 Prototype 不真實呼叫 Slack，只產生模擬連結'
+    ],
+    prereq:null,
+    steps:[
+      ['1','[[/orders]]','右上模擬角色切「業務」，在列表點單號 ORD-2026-0512（禾風文創股份有限公司）','進入訂單詳情，訂單狀態為「等待審稿」、訂單類型為「線下單」'],
+      ['2','訂單詳情 → 訂單項目頁籤','檢視印件列','五件印件：春季商品型錄（PI-2026-0412）、企業識別名片（PI-2026-0222）、開幕主視覺海報 B1（PI-2026-0223）、系列宣傳海報 B2（PI-2026-0224）、櫥窗海報 A1（PI-2026-0225）；「製作討論串」欄目前皆為空'],
+      ['3','訂單項目頁籤','勾選「春季商品型錄」與「企業識別名片」兩列，點右上「建立製作討論串（2）」','訊息：「已建立 2 條製作討論串（春季商品型錄、企業識別名片），已通知訂單管理人 黃聖雯 與 #印務部 頻道」'],
+      ['4','訂單項目頁籤','捲到表格下方的「製作討論串」區塊','一列一印件共兩列；上方的「審稿討論串」區塊維持一列一串（列出涵蓋的多件印件），兩者分列呈現'],
+      ['5','訂單項目頁籤','看剛才那兩件印件的操作欄','多出「檢視討論串」按鈕，點擊另開模擬連結'],
+      ['6','訂單項目頁籤','再勾「春季商品型錄」＋「開幕主視覺海報 B1」，點「建立製作討論串（2）」','訊息：「已建立 1 條製作討論串（開幕主視覺海報 B1）…；春季商品型錄 已有討論串，未重複建立」'],
+      ['7','訂單項目頁籤','只勾已有討論串的印件再按一次','警告訊息：「勾選的印件皆已有製作討論串（…）」，不建立任何新串'],
+      ['8','訂單項目頁籤','把勾選全部取消','「建立製作討論串」按鈕轉為停用態']
+    ]
+  },
+  {
+    id:'sales-producible', title:'如何確認可製作', supp:true,
+    intro:'印件審稿判定合格之後，由業務對客戶做最後承諾——客戶不會再改稿。按下「確認可製作」後審稿維度鎖定為「已確認可製作」，這件印件才會進到訂單管理人的待確認製作細節佇列。',
+    points:[
+      '分辨「確認可製作」（業務、動的是審稿維度）與「確認製作細節」（訂單管理人、動的是印製維度）是兩個不同動作',
+      '知道按鈕只在審稿狀態為「合格」且訂單來源為 B2B 的印件列上出現',
+      '知道只有業務角色看得到這顆按鈕，其他角色不顯示',
+      '知道確認後審稿狀態鎖定、按鈕消失，這一步沒有回退路徑',
+      '知道確認完成才是待確認製作細節佇列的入場條件之一'
+    ],
+    prereq:null,
+    steps:[
+      ['1','[[/orders]]','右上模擬角色切「業務」，點單號 ORD-2026-0090（山城文化事業有限公司）','進入訂單詳情，訂單狀態「等待審稿」、線下單'],
+      ['2','訂單詳情 → 訂單項目頁籤','找「園區形象海報」（PI-2026-0215，審稿狀態＝合格）','該列操作欄出現藍底的「確認可製作」按鈕；審稿狀態為「待改稿」「不合格」「稿件未上傳」的其他印件沒有這顆按鈕'],
+      ['3','訂單項目頁籤','點「確認可製作」','跳出確認框，標題「確認此印件可進入製作？」，內容「確認後審稿狀態將鎖定為「已確認可製作」。」'],
+      ['4','確認框','點「確定」','訊息：「已確認可製作」；該印件審稿狀態轉「已確認可製作」，按鈕消失'],
+      ['5','訂單項目頁籤','把模擬角色切成「訂單管理人」再看同一頁','「確認可製作」按鈕在其他印件上也不再出現（只有業務可執行）'],
+      ['6','[[/orders/production-detail-queue]]','以訂單管理人開待確認製作細節佇列','園區形象海報（PI-2026-0215）已出現在佇列上']
+    ]
+  }
+  ]
+},
+{
+  key:'order_manager', role:'訂單管理人', user:'黃聖雯',
+  pos:'訂單層的進度調度者，追蹤全公司訂單進度、承接業務發起的審稿討論、為線下單分派審稿人員，並在工單產生前確認印件的製作細節。',
+  duty:'可建可改印件的審稿人員分派與印件製作細節確認；全公司訂單與印件進度看得到但不能動；不接觸訂單金額與帳務、審稿結果判定、確認可製作、工單的製程規劃與生產排程。',
+  scenarios:[
+  {
+    id:'om-confirm', title:'如何確認製作細節',
+    intro:'線下單印件審稿確認可製作之後，訂單管理人在待確認製作細節佇列逐件核對印件上寫的購買數量、單位、規格備註。確認通過印件印製狀態自「等待中」轉「製程已確認」，系統同時建立一張空工單草稿，這張印件就交棒給印務主管分派。',
+    points:[
+      '知道佇列的四個條件同時成立才進來：審稿已確認可製作、印製等待中、訂單類型線下單、印件類型非補印',
+      '知道佇列不以訂單狀態過濾——同張訂單其他印件還在補件，不影響已審完的先確認',
+      '知道確認是逐件的內容核對，刻意不提供批次勾選',
+      '知道一次確認連動三件事：印製狀態推進、建一張空工單草稿、該印件離開佇列進待分派清單',
+      '知道有製作討論串不擋確認，系統不追蹤討論串有沒有結束',
+      '知道只有訂單管理人能按，其他角色進得來、看得到，但按鈕停用'
+    ],
+    prereq:[['sales-producible','業務 → 如何確認可製作（該印件審稿維度要先到「已確認可製作」）'],
+            ['sales-thread','業務 → 如何建立製作討論串（僅在有疑義時才需要）']],
+    steps:[
+      ['1','[[/orders/production-detail-queue]]','右上模擬角色切「訂單管理人」，開待確認製作細節佇列','頁首說明條寫明這是訂單管理人的待辦佇列；清單含「春季商品型錄 PI-2026-0412」與「企業識別名片 PI-2026-0222」（皆屬 ORD-2026-0512）'],
+      ['2','佇列頁','檢視表頭欄位與排序','欄位為印件／所屬訂單與客戶／印件類型／購買數量／規格備註／預計交期／製作討論串／印件配方；預計交期近者在前；無逾期警示欄、無停留天數欄'],
+      ['3','佇列頁','確認 ORD-2026-0512 的三件海報不在清單上','那三件審稿狀態為不合格／待改稿／已補件，尚未到「已確認可製作」；ORD-2026-0512 訂單狀態仍為「等待審稿」，型錄與名片照樣可以先確認'],
+      ['4','佇列頁','使用篩選：客戶、交期區間、是否有製作討論串','三個篩選為交集；清除篩選後回到完整清單'],
+      ['5','佇列頁','對「春季商品型錄」點「確認製作細節」','確認框標題「確認「春季商品型錄」的製作細節無誤？」；內容顯示「購買數量：2,000 本」「規格備註：雪銅 150g 全彩雙面，騎馬釘 24 頁，成品 A4。」與「確認後系統將建立一張空工單草稿，該印件離開本佇列。」'],
+      ['6','確認框','點「確認製作細節」','訊息：「已確認製作細節：春季商品型錄 轉為「製程已確認」，並建立工單草稿 WO-2026-04NN（尚未指派印務）」；該列自佇列消失'],
+      ['7','[[/print-items]]','切模擬角色為「印務主管」，開印件總覽','春季商品型錄已登記在總覽上，工單分派欄標「缺 1 張未指派（共 1 張）」，排在清單最前'],
+      ['8','佇列頁','切回「業務」或其他角色檢視同一頁','頁面看得到、內容照常，但「確認製作細節」按鈕停用，滑鼠停留顯示「僅訂單管理人可執行確認製作細節」']
+    ]
+  },
+  {
+    id:'om-no-second-check', title:'確認派單交辦前不設第二道確認',
+    intro:'工單內容的正確性已經在製作細節確認那一關把過，外發交辦給廠商前不再讓訂單管理人做第二次確認。這個情境驗證的是「畫面上不該有的東西」。',
+    points:[
+      '知道派單詳情第一頁籤不出現「訂單管理人確認工單內容」這個動作',
+      '知道訂單管理人在派單頁沒有任何可執行的操作',
+      '知道印務在同一頁看到的是大陸處理狀態下拉（13 值）',
+      '知道下拉仍保留「已交付工單」這個值，它只是現況平台事實、不是必經站',
+      '知道內容把關集中在工單建立前那一關，不重複設站'
+    ],
+    prereq:[['om-confirm','訂單管理人 → 如何確認製作細節（理解內容把關已在該關完成）']],
+    steps:[
+      ['1','[[/dispatch-orders]]','右上模擬角色切「訂單管理人」，點 DO-2026-0090','進入派單詳情'],
+      ['2','派單詳情 → 基本資訊與進程','檢視整頁的操作區','頁上無任何操作按鈕；找不到「訂單管理人確認工單內容」'],
+      ['3','同一頁','把模擬角色切成「印務」','出現大陸處理狀態下拉，共 13 值，其中含「已交付工單」；仍然沒有「訂單管理人確認工單內容」動作'],
+      ['4','[[/dispatch-orders]]','點 DO-2026-0079 檢視四個頁籤','基本資訊與進程／明細與報價核價／運費與回廠點收／進程時間軸；委外總成本＝報價＋分攤運費＋固定運費＋分攤關稅；運費紀錄人民幣依鎖定匯率顯示；頁面無進度條']
+    ]
+  }
+  ]
+},
+{
+  key:'print_manager', role:'印務主管', user:'吳國豪',
+  pos:'生產規劃的調度與把關者，負責售前估成本、決定每張印件要開幾張工單並分派給印務、審核印務填的製程、維護 BOM 主檔。',
+  duty:'可建可改工單的加開、刪除空草稿與分派、工單製程審核、需求單成本評估、BOM 主檔；全公司工單進度看得到但不能動；不接觸訂單金額與帳務、收款與發票。',
+  scenarios:[
+  {
+    id:'pm-add-wo', title:'如何加開工單',
+    intro:'一件印件的本體與配件要分兩條產線做時，系統自動建的那一張工單不夠用，由印務主管加開第二張。印件已經收尾（印製狀態到終態）的則擋下，改走售後服務補印。',
+    points:[
+      '知道加開工單只有印務主管能做，印務不可用',
+      '知道加開的產出是一張草稿工單、尚未指派印務',
+      '知道新工單的參考完稿圖自印件當前合格輪次的審稿後檔案帶入，不用也不能另行上傳',
+      '知道守衛條件是印件印製狀態未到終態（已送達／已棄用）',
+      '知道印件層完成度取旗下工單的最落後者，多開一張不會讓印件提前算完成',
+      '知道加開動作會在訂單活動紀錄留一筆'
+    ],
+    prereq:[['om-confirm','訂單管理人 → 如何確認製作細節（印件要先有第一張工單、印製狀態為「製程已確認」）']],
+    steps:[
+      ['1','[[/print-items]]','右上模擬角色切「印務主管」，找「春季商品型錄」，點印件名稱','導向統一印件詳情頁 /print-items/detail'],
+      ['2','印件詳情頁 → 工單與生產任務 Tab','點區塊右上「加開工單」','訊息：「已加開工單 WO-2026-04NN（草稿、尚未指派印務）」；工單列即時多一張草稿工單'],
+      ['3','工單與生產任務 Tab','點新工單編號進工單詳情 → 製程規劃 → 基本資料','參考完稿圖已帶入檔名，並顯示「已鎖定不隨改稿更動」；基本資料顯示「尚未分派／尚未指定」'],
+      ['4','訂單詳情 → 活動紀錄','回該印件所屬訂單看活動紀錄','留有「加開工單」一筆'],
+      ['5','[[/print-items/detail?id=PI-2026-0209]]','直接開這件印製狀態為「已送達」的印件，停在「加開工單」上','按鈕為停用態（不隱藏）；提示「印件印製狀態已為「已送達」，不可再加開工單；需要重做請走售後服務補印」'],
+      ['6','[[/print-items]]','切模擬角色為「印務」再看同一區塊','看不到「加開工單」按鈕（加開限印務主管）']
+    ]
+  },
+  {
+    id:'pm-del-draft', title:'如何刪除空草稿工單',
+    intro:'訂單管理人誤把還在補件的印件確認了製作細節，或印務主管誤加開一張工單，結果是一張沒人要的空草稿掛在待分派清單上變成假待辦。救濟方式是把這張空草稿刪掉；印件印製狀態刻意不回退。',
+    points:[
+      '知道可刪範圍限於「草稿」且尚未送審、旗下無生產任務的空草稿',
+      '知道已送審、已核可、已有生產任務的工單一律不可刪，只能走退回、收回或異動',
+      '知道刪除只有印務主管能做，與加開是同一個角色的兩個方向',
+      '知道印件印製狀態停在「製程已確認」不回退，狀態機不開逆向弧',
+      '知道刪光旗下工單的印件會自待分派清單移除，需要時由印務主管重新加開',
+      '知道印件總覽的展開列讀的是工單模組的即時事實，總覽不另存一份'
+    ],
+    prereq:[['om-confirm','訂單管理人 → 如何確認製作細節'],['pm-add-wo','印務主管 → 如何加開工單（要有可刪的空草稿）']],
+    steps:[
+      ['1','[[/orders/production-detail-queue]]','以「訂單管理人」確認「春季商品型錄」的製作細節','建立一張空草稿工單'],
+      ['2','[[/print-items]]','切模擬角色為「印務主管」，展開該印件的工單列','展開列即時多一張草稿工單，資料讀自工單模組'],
+      ['3','展開列','對草稿工單按「刪除」','確認框標題「刪除空草稿工單」，內容「確定刪除空草稿工單「WO-2026-04NN」？需要重新投產時由印務主管再加開。」'],
+      ['4','確認框','點確認','訊息：「已刪除 WO-2026-04NN；印件印製狀態不回退，該印件自待分派清單移除」；展開列即時少一張、工單分派欄轉「尚無工單」'],
+      ['5','[[/print-items]]','以分派狀態＝待分派篩選','該印件不出現在結果內'],
+      ['6','印件詳情頁','點該印件名稱看頁首','印製狀態仍為「製程已確認」（不回退）'],
+      ['7','[[/print-items]]','展開 PI-2026-0418，停在非草稿工單的「刪除」上','按鈕停用；提示為「僅草稿且尚未送審的工單可刪除，請走退回或收回路徑」或「此工單已有生產任務，請先清空製程或改走工單異動」']
+    ]
+  },
+  {
+    id:'pm-assign', title:'如何分派與改派工單',
+    intro:'一張工單一位主責印務。系統建出來的草稿工單尚未指派，印務主管分派後主責即移交印務。印務離職或休假是常態，改派不鎖狀態、製作中的工單同樣可改派，但要留痕。',
+    points:[
+      '知道未分派的工單頁首有黃色提示、基本資料顯示「尚未分派／尚未指定」',
+      '知道分派時要同時指定負責印務與審核主管，兩者都是必填',
+      '知道分派完成後按鈕轉為「改派」',
+      '知道改派不受工單狀態限制，製作中的工單也能換人',
+      '知道每次改派會在異動紀錄留一筆，含原負責人、新負責人與操作人',
+      '知道其他角色看不到分派按鈕'
+    ],
+    prereq:[['om-confirm','訂單管理人 → 如何確認製作細節（要有一張未分派的草稿工單）']],
+    steps:[
+      ['1','[[/orders/production-detail-queue]]','以「訂單管理人」確認「春季商品型錄」建立草稿工單','工單建立、尚未指派印務'],
+      ['2','[[/print-items]]','切「印務主管」，展開該印件，點工單編號進工單詳情','頁首出現黃色未分派提示；基本資料顯示「尚未分派／尚未指定」'],
+      ['3','工單詳情','點「分派」，選負責印務「周建宏」與審核主管「吳國豪」，按分派','訊息：「已分派給 周建宏，審核主管 吳國豪」；按鈕變「改派」'],
+      ['4','分派對話框','只選其中一個欄位就送出','擋下，提示「請選擇負責印務與審核主管」'],
+      ['5','[[/work-orders]]','開已分派的非終態工單（例如製作中的 WO-2026-0311），點「改派」換人後確認','訊息：「已改派給 XXX，異動紀錄已留痕」；製作中的工單同樣可改派'],
+      ['6','工單詳情 → 異動紀錄頁籤','檢視最新一筆','新增一筆「主責印務改派」，含原負責人、新負責人與操作人'],
+      ['7','工單詳情','把模擬角色切成印務或生管','看不到分派／改派按鈕']
+    ]
+  },
+  {
+    id:'pm-review', title:'如何做製程審核（核可與退回）',
+    intro:'印務把製程填完送審後，球在印務主管手上。主管在專屬待辦佇列一頁看完待審工單，點進去看製程內容再決定核可或退回。核可當下系統會替外包與中國廠商的生產任務自動產生派單。',
+    points:[
+      '知道審核待辦佇列只列狀態為「製程確認中」的工單，交期近者在前',
+      '知道核可與退回都在工單詳情執行，不在佇列頁直接核可（要先看製程內容）',
+      '知道核可後工單轉「製程審核完成」，外包任務同時自動產生派單、初始態為未送',
+      '知道退回原因必填，退回後工單轉「重新確認製程」、詳情頂部顯示紅色 Alert',
+      '知道退回不是作廢，印務改完可再提交',
+      '知道非印務主管開佇列頁會看到 403'
+    ],
+    prereq:[['po-submit','印務 → 如何送審與收回工單（要有處於「製程確認中」的工單）']],
+    steps:[
+      ['1','[[/work-orders/review-queue]]','右上模擬角色切「印務主管」，開製程審核待辦佇列','只列狀態為「製程確認中」的工單，交期近者在前；欄位含工單編號、所屬印件／訂單、送審印務、送審時間、印件預計交期、生產任務筆數'],
+      ['2','佇列頁','點入 WO-2026-0302','進入工單詳情，狀態標籤為「製程確認中」'],
+      ['3','工單詳情','點「核可製程」','狀態轉「製程審核完成」；訊息「製程已核可；外包任務已自動產生派單（初始未送）：DO-…」（該工單無外包任務時只顯示「製程已核可」）'],
+      ['4','[[/work-orders]]','開 WO-2026-0312（製程確認中），點「退回」，原因留空直接送出','擋下，提示「請填寫退回原因」'],
+      ['5','退回對話框','填退回原因後確認','訊息「已退回，工單轉「重新確認製程」」；狀態轉「重新確認製程」；詳情頂部紅色 Alert 顯示退回原因'],
+      ['6','工單詳情','切模擬角色為「印務」','可再點「提交審核」重新送審'],
+      ['7','[[/work-orders/review-queue]]','切成印務、生管或業務等非印務主管角色開佇列頁','顯示 403 頁「無權檢視製程審核待辦」']
+    ]
+  },
+  {
+    id:'pm-overview', title:'如何用印件總覽防掉單',
+    intro:'印件總覽是印務主管的待收斂清單：一眼看出哪幾件印件還沒人接、哪幾件根本還沒有工單。工單事實只存在工單模組，總覽與詳情頁都是讀它，不另存一份。',
+    points:[
+      '知道待分派的印件排最前，標「缺 N 張未指派（共 M 張）」',
+      '知道未確認製作細節的印件標「尚無工單」',
+      '知道已分派齊的印件標綠並列出負責印務',
+      '知道分派狀態／印件類型／負責印務／工單狀態四個篩選為交集',
+      '知道一件印件可以掛多張工單（PI-2026-0418 同時掛大貨與打樣兩張）',
+      '知道列點擊是導向統一印件詳情頁，不再開抽屜'
+    ],
+    prereq:[['om-confirm','訂單管理人 → 如何確認製作細節（要有剛放行、尚未分派的印件）']],
+    steps:[
+      ['1','[[/orders/production-detail-queue]]','以「訂單管理人」確認「春季商品型錄」','印件進入印件總覽的待分派狀態'],
+      ['2','[[/print-items]]','切「印務主管」，看「工單分派」欄與排序','待分派的印件排最前、標「缺 N 張未指派（共 M 張）」；未確認製作細節的印件標「尚無工單」；已分派齊者標綠並列出負責印務'],
+      ['3','[[/print-items]]','以分派狀態＝待分派篩選，再加印件類型／負責印務／工單狀態','四個篩選為交集'],
+      ['4','[[/print-items]]','展開 PI-2026-0418（精油禮盒彩盒）','主列含入庫累計／不通過累計／可出貨額度；展開見兩張工單（大貨＋打樣），示範一印件多工單'],
+      ['5','[[/print-items]]','點印件名稱進詳情頁 → 工單與生產任務 Tab','工單列預設全展開，不必逐張手動點開；列含工單編號／類型／狀態／負責印務／預計交期／推算完工日／生產進度'],
+      ['6','工單與生產任務 Tab','檢視 WO-2026-0302 的生產任務子表','七欄：工序／生產單位類別／計畫設備／預計開工日／目標數量／產出數量／生產任務狀態；無「順序」欄'],
+      ['7','[[/print-items]]','對某印件加開工單後再刪除，觀察展開列與篩選','展開列即時增減；工單分派欄同步重算；以負責印務或工單狀態篩選時，命中依據同樣是工單模組的即時狀態']
+    ]
+  }
+  ]
+},
+{
+  key:'print_officer', role:'印務', user:'周建宏',
+  pos:'工單的主責者。工單由印務主管分派下來後，從規劃製程、排程、交付產線一路負責到追蹤生產狀況與處理異動。',
+  duty:'可建可改被分派工單的製程規劃、派工排程（設備、預計開工日）、任務交付產線、工單收回、異動發起；印件規格只查閱；不接觸工單的加開與分派、客戶資料異動、訂單金額與帳務。',
+  scenarios:[
+  {
+    id:'po-process', title:'如何規劃製程（三段區塊）',
+    intro:'BOM 是材料、工序、裝訂三類互斥結構，三類要填的欄位本來就不同。製程規劃改成同頁三段區塊、各段一張表，序號欄移除、段內用拖曳排序，什麼時候能開工由前置相依與到料量決定，不由序號決定。',
+    points:[
+      '知道材料／工序／裝訂三段各一張表、各有自己的新增按鈕',
+      '知道表上沒有「順序」欄與「類別」欄，材料段也不出現「計畫設備」欄',
+      '知道段內拖曳只改顯示順序，不改任何前置相依內容',
+      '知道新增任務的前置相依一律留空，系統不猜「上一道」',
+      '知道 BOM 下拉不顯示任何價格，金額只在「預估成本分項」段看',
+      '知道參考完稿圖唯讀、沒有上傳完稿檔的入口',
+      '知道日期欄名一律「預計開工日」，旁邊成對呈現唯讀的「實際開工日」'
+    ],
+    prereq:[['pm-assign','印務主管 → 如何分派與改派工單（工單要先有主責印務）']],
+    steps:[
+      ['1','[[/work-orders]]','右上模擬角色切「印務」，點 WO-2026-0303（重新確認製程）→ 製程規劃頁籤','看到基本資料，以及材料／工序／裝訂三段各一張表、各有自己的新增按鈕；無「順序」欄、無「類別」欄；材料段不出現「計畫設備」欄'],
+      ['2','製程規劃 → 基本資料','檢視參考完稿圖，並點「編輯製程說明與品檢需求」','參考完稿圖顯示檔名與「已鎖定不隨改稿更動」；編輯對話框只有製程說明與品檢需求兩段，無上傳完稿檔入口'],
+      ['3','製程規劃','點「新增工序任務」','BOM 段只出現工序群組與工序名稱；無「順序（同序號可平行）」欄位；日期欄名為「預計開工日」，旁邊為唯讀的「實際開工日」；「前置相依」預設為空'],
+      ['4','新增任務對話框','再新增一筆材料任務，看「前置相依」欄','同樣預設為空，系統不自動帶入任何任務；候選清單分「本工單內」與「同印件其他工單」兩組，可自行多選'],
+      ['5','新增任務對話框','展開材料規格下拉與裝訂方式下拉','兩個下拉都無金額字樣（材料無每張單價、裝訂無起跳金額）'],
+      ['6','製程規劃 → 預估成本分項段','檢視金額','四分項金額照常呈現；新增任務後訊息「已新增生產任務（預估成本分項同步凍結）」'],
+      ['7','製程規劃 → 工序任務段','拖曳「圓角軋型」到「標籤印刷（CMYK）」上方','兩列位置對調；兩列的前置相依內容完全不變（圓角軋型仍以標籤印刷為前置）'],
+      ['8','工單詳情','逐一切換製程規劃／預估成本分項／成本對照／異動紀錄，觀察網址','網址 ?tab= 隨切換變化；無 Steps 進度條，狀態只在頁首標籤；成本對照顯示預估｜實際｜差額｜升降']
+    ]
+  },
+  {
+    id:'po-submit', title:'如何送審與收回工單',
+    intro:'製程填完由印務送審，球交到主管手上。送審後發現自己填錯可以收回重做，但收回要填原因；而且工單旗下一旦已有派單，收回這條路就不適用——派單已經在外面被看見，只拉回工單會出現兩個真相。',
+    points:[
+      '知道送審後工單轉「製程確認中」、提交鈕消失',
+      '知道收回原因必填，留空會被擋下',
+      '知道收回後工單回「草稿」，製程內容全部保留、只有狀態改變',
+      '知道收回原因會在詳情頂部以 Alert 留痕',
+      '知道不可收回時按鈕改為停用並附理由，不隱藏',
+      '知道兩種擋下的理由：任務已交付產線，或旗下已有派單'
+    ],
+    prereq:[['po-process','印務 → 如何規劃製程（三段區塊）']],
+    steps:[
+      ['1','[[/work-orders]]','切「印務」，開 WO-2026-0303（重新確認製程）詳情，點頁首「提交審核」','訊息「已提交印務主管審核」；狀態轉「製程確認中」；動作列的提交鈕消失'],
+      ['2','[[/work-orders]]','開 WO-2026-0302（製程確認中）詳情，點「收回」，原因留空直接按「收回」','擋下並提示「請填寫收回原因」'],
+      ['3','收回對話框','填「材料規格填錯，需重填」後送出','訊息「已收回，工單回到草稿；收回原因已留痕」；狀態回「草稿」'],
+      ['4','工單詳情','看頁面頂部','Alert 顯示「本工單曾由印務收回，收回原因：材料規格填錯，需重填」；製程內容原樣保留'],
+      ['5','[[/work-orders]]','開 WO-2026-0304（製程審核完成、任務未交付），停在頁首「收回」按鈕上','按鈕為停用態、不隱藏；提示「旗下已有派單（DO-2026-0087），不可收回；請改走工單異動一併處理對外那張單」']
+    ]
+  },
+  {
+    id:'po-deliver', title:'如何交付產線',
+    intro:'交付產線是印務把生產任務放行給製作方的責任轉移：自有工廠的任務通知生管接收，外包與中國廠商的任務交付就等於派單發送。可以逐任務交付，也可以從工單層批次交付；全部交付才會把工單推到「工單已交付」。',
+    points:[
+      '知道部分交付時任務標「已交付」、工單狀態不變',
+      '知道全部交付才推工單轉「工單已交付」（取最落後者）',
+      '知道自有工廠任務交付後會進生管待派清單',
+      '知道外包任務交付＝派單發送，訊息會列出派單編號',
+      '知道工單交付會往上推印件印製狀態，訂單則取最落後者、不一定推進',
+      '知道製程審核完成之後才能列印紙本工單'
+    ],
+    prereq:[['pm-review','印務主管 → 如何做製程審核（核可與退回）']],
+    steps:[
+      ['1','[[/work-orders]]','切「印務」，開 WO-2026-0304 詳情 → 製程規劃','生產任務列上有「交付產線」欄，值為「已交付／未交付」'],
+      ['2','製程規劃','勾選部分任務，點「交付產線（N）」','訊息「已交付產線 N 個生產任務；…」；被勾的任務標「已交付」；工單狀態不變'],
+      ['3','製程規劃','再勾其餘任務全部交付','工單自動轉「工單已交付」；訊息含「派單發送：DO-…」與「N 筆進生管待派清單」'],
+      ['4','製程規劃','看第二則提示','說明印件印製狀態轉「工單已交付」；訂單若仍有其他印件未到齊，提示「狀態取最落後者不推進」，否則訂單隨之轉「工單已交付」'],
+      ['5','[[/production-floor/dispatch]]','切「生管」看待派清單','剛交付的自有工廠任務已出現，帶印件編號與印件預計交期'],
+      ['6','工單詳情','切回印務，在製程審核完成之後的任一工單詳情點「列印紙本工單」','訊息「已產生可列印紙本工單（含材料清單、工序與參考完稿圖）」；Prototype 不實作實際輸出']
+    ]
+  },
+  {
+    id:'po-outsource-close', title:'外發回廠後如何切終態與報工',
+    intro:'外發的收尾拆成兩本帳：切「台灣已入庫」管的是對外進程的收尾，報工管的是內部製作帳。兩個動作都由印務執行、順序不強制。段 1 的外發報工採最小填寫，只要讓外發任務收得了尾。',
+    points:[
+      '知道派單終態「台灣已入庫」只有印務能切，揀貨人員不切狀態',
+      '知道切終態後貨登記暫存區並掛回工單、下游到料放行',
+      '知道外發報工的良品數預帶「點收累計 − 已報產出」、可改',
+      '知道報工得超過目標數量，超收的量計入產出、不阻擋',
+      '知道報工累計達目標才把生產任務推到「已完成」',
+      '知道報價可在派單終態前調整，核價確認後成為外包實際成本來源',
+      '知道終態派單不出現狀態下拉、改顯示鎖定 Alert'
+    ],
+    prereq:[['picker-claim','揀貨人員 → 如何認列工單與登記點收（要先有點收累計）']],
+    steps:[
+      ['1','[[/dispatch-orders]]','切「印務」，開 DO-2026-0083 → 運費與回廠點收','摘要表顯示點收累計與對明細差異；點收紀錄逐批一列'],
+      ['2','運費與回廠點收','核對無誤後點切「台灣已入庫」','訊息「已切「台灣已入庫」；貨登記暫存區並掛回工單、下游到料放行」'],
+      ['3','[[/dispatch-orders]]','開已到終態的 DO-2026-0065 的第一頁籤','不出現大陸處理狀態下拉，改顯示鎖定 Alert'],
+      ['4','[[/dispatch-orders]]','開 DO-2026-0092 → 運費與回廠點收 →「外發報工」段（該派單已由揀貨人員清點 1,600、明細為 1,500）','良品數預帶 1,600；「本次產出（良品＋不良品）」欄顯示「1,600（累計 1,600，超過目標）」且不阻擋'],
+      ['5','外發報工段','良品與不良品全部留 0 直接送出','擋下，提示「請至少填寫一筆生產任務的良品數或不良品數」'],
+      ['6','外發報工段','照預設值直接送出報工','訊息「已報工；… 產出累計達目標，工單模組的生產任務轉「已完成」，下游到料放行」；摘要表「報工產出累計」為 1,600'],
+      ['7','[[/dispatch-orders]]','開 DO-2026-0087（待報價）→ 明細與報價核價，於報價區「模擬廠商回寫報價」填金額送出','訊息「已模擬廠商回寫報價（實際由供應商端操作）」；報價狀態待報價→已報價；時間軸追加一筆'],
+      ['8','明細與報價核價','點「核價確認」（或改點「退回報價」填理由）','訊息「核價完成；核定報價＝外包實際成本來源」，狀態轉已確認；走退回時訊息「已退回報價」並顯示理由 Alert'],
+      ['9','[[/dispatch-orders]]','開非終態派單第一頁籤，下拉切換狀態（例如已發稿→製作中（整批））','提示生產任務映射結果（如→製作中）；進程時間軸追加一筆']
+    ]
+  }
+  ]
+},
+{
+  key:'production_planner', role:'生管', user:'許文傑',
+  pos:'自有工廠端的執行協調者，接收印務交付的任務、把生產任務分派給師傅、與機台師傅溝通、確認異動安排。',
+  duty:'可建可改任務的接收確認、工作包（合批打包、指派師傅、上機日、備註）、生產任務的師傅指派、異動安排確認、進度回報；任務內容與各工序工作量看得到但不能動；不接觸任務內容修改、設備與預計開工日的決定、訂單與帳務。',
+  scenarios:[
+  {
+    id:'pp-receive', title:'如何確認接收',
+    intro:'印務交付產線之後，任務落到生管的待派清單。確認接收是留痕不是把關——留下誰在什麼時候接的，交付才算真的有人接。它不會擋住後面的合批打包。',
+    points:[
+      '知道確認接收可單筆也可批次',
+      '知道留痕內容是人員加時間，寫在生產任務的「接收確認」欄',
+      '知道已留痕的任務顯示綠標「已確認接收」與確認人、時間',
+      '知道全數已確認時再按一次會得到提示、不重複寫入',
+      '知道非生管看不到確認接收按鈕，未確認者顯示「尚未確認」',
+      '知道接收確認不是打包的前置條件'
+    ],
+    prereq:[['po-deliver','印務 → 如何交付產線（待派清單要先有任務）']],
+    steps:[
+      ['1','[[/production-floor/dispatch]]','右上模擬角色切「生管」，看「接收確認」欄','僅顯示未入工作包的任務；已留痕者顯示綠標「已確認接收」＋確認人與時間（例如軋盒／許文傑）'],
+      ['2','待派清單','對「一級卡 300g 備料」點「確認接收」','訊息「已確認接收 1 筆生產任務（接收確認欄已留痕）」；該列即時轉綠標，記為許文傑'],
+      ['3','待派清單','勾選其餘未確認任務，點右上「確認接收（N）」','訊息「已確認接收 N 筆生產任務（接收確認欄已留痕）」'],
+      ['4','待派清單','對全數已確認的任務再按一次批次確認','訊息「選取的任務都已確認接收」，不重複寫入'],
+      ['5','待派清單','把模擬角色切成「師傅」','看不到確認接收按鈕；未確認者顯示「尚未確認」']
+    ]
+  },
+  {
+    id:'pp-pack', title:'如何合批打包成工作包',
+    intro:'可以一起上機的活合成一批派給師傅，這就是工作包。一個工作包等於一次上機、單一設備，混設備要拆包。打包對話框上半部先列出這批要領什麼料、領多少，派工前就看得到。',
+    points:[
+      '知道一包一設備，選到不同計畫設備會被擋下且不開窗',
+      '知道對話框頂部顯示沿用的計畫設備，師傅與上機日為必填',
+      '知道對話框上半部是「本批材料型任務彙總（派工前的備料清單）」，整批無材料型任務時彙總表不出現',
+      '知道未確認接收不擋打包，成功訊息會附「一併補寫接收留痕」',
+      '知道建立後被打包的任務自待派清單消失、工作包頁多一筆',
+      '知道工作包沒有狀態欄，上機與否由旗下任務的報工事實呈現'
+    ],
+    prereq:[['pp-receive','生管 → 如何確認接收（非必要前置，接收是留痕不是把關）']],
+    steps:[
+      ['1','[[/production-floor/dispatch]]','切「生管」，不做任何接收確認，直接勾「一級卡 300g 備料」＋「名片印刷（CMYK 雙面）」，點「合批打包」','正常開窗、未確認接收不擋打包；對話框頂部顯示沿用的計畫設備'],
+      ['2','打包對話框','看上半部','「本批材料型任務彙總（派工前的備料清單）」表列出材料主檔項目「一級卡 300g 菊全」、目標數量 5,300'],
+      ['3','打包對話框','不選師傅直接按建立','必填未填會擋下，欄位顯示錯誤'],
+      ['4','打包對話框','填聚合條件、選師傅、選上機日後建立','訊息「已建立工作包 WP-…，指派 XXX；2 筆未確認接收的任務已一併補寫接收留痕」；兩任務自待派清單消失'],
+      ['5','[[/production-floor/work-packages]]','到工作包頁確認','多一筆工作包；列表無「狀態」欄與狀態篩選；可以師傅／設備／上機日篩選'],
+      ['6','[[/production-floor/dispatch]]','改為只勾「名片印刷（CMYK 雙面）」再開一次對話框','整批無材料型任務，彙總表不出現'],
+      ['7','[[/production-floor/dispatch]]','勾兩個計畫設備不同的工序任務，點「合批打包」','擋下並不開窗，警示「一個工作包＝一次上機＝單一設備；選取任務的計畫設備不一致，請拆成多個工作包」'],
+      ['8','[[/production-floor/work-packages]]','點工作包編號 WP-2026-0031 開 side panel','面板含包資訊（分攤基礎／開機費）＋包內任務＋報工紀錄（含生產數量／放損欄）']
+    ]
+  },
+  {
+    id:'pp-schedule', title:'如何看待排區與排程',
+    intro:'待排區是已經交付產線、還沒併入工作包的任務。缺印件交期就無法判斷先排哪一批，所以待排區把印件預計交期補上；同一個日期在製程規劃、待派清單、排程三個頁面必須叫同一個名字。',
+    points:[
+      '知道待排區欄位序與「印件預計交期」的位置，無資料時顯示「—」',
+      '知道三視角（師傅／產線／設備）的負荷計算方式：剩餘估工時除以 8 小時',
+      '知道超載只顯示提示、不阻擋',
+      '知道日期欄名三處統一為「預計開工日」，不再出現「建議開工日／建議日期」',
+      '知道「前置受影響」與「前置未到料」是兩種標示、不混用',
+      '知道待派清單只顯示未入工作包的任務'
+    ],
+    prereq:[['po-deliver','印務 → 如何交付產線（待排區的來源是已交付未入包的任務）']],
+    steps:[
+      ['1','[[/production-floor/schedule]]','切「生管」，看底部待排區表頭','欄位序為工單編號／印件／任務名稱／類別／計畫設備／預計開工日／印件預計交期／估工時；無交期資料的列顯示「—」'],
+      ['2','排程頁','切師傅／產線／設備三視角，看劉阿海的負荷條','負荷＝剩餘估工時／8 小時；超過 100% 顯示「超載提示」但不阻擋操作'],
+      ['3','[[/production-floor/dispatch]]','以任務類別／計畫設備／預計開工日篩選','僅顯示未入工作包的任務，清單為單一維度、無展開列'],
+      ['4','[[/production-floor/dispatch]]','看「回廠貼標（外包回場後段）」列的前置狀態欄','標「前置受影響」並明示 WO-2026-0307／書盒本體壓紋（人工標記延遲）｜已通知主責印務蔡明修；與「前置未到料」分兩種標示、不混用'],
+      ['5','三個頁面','逐頁檢視日期欄名：製程規劃、待派清單、排程頁','三處皆為「預計開工日」；製程規劃的表與對話框另有唯讀「實際開工日」成對呈現'],
+      ['6','[[/production-floor/metrics]]','看五指標，到工作包頁送一筆報工後再回來比對','稼動率／良率／折損率隨報工變動；卡點在站量（待做／待搬）同步變化']
+    ]
+  }
+  ]
+},
+{
+  key:'picker', role:'揀貨人員', user:'范姜宏',
+  pos:'暫存區的進出內容確認者，負責外發回貨的回廠點收，以及依出貨單把入庫成品打包裝箱。',
+  duty:'可回報出貨單的揀貨段、貨運單的台灣端點收段、台灣外包生產任務的點收數量欄；出貨單與印件完工良品數看得到但不能動；不接觸出貨單的建立與作廢、生產排程、品檢判定。',
+  scenarios:[
+  {
+    id:'picker-claim', title:'如何認列工單與登記點收',
+    intro:'外發的貨回到暫存區，揀貨人員先認列工單讓派單轉「已到貨品檢」，再逐筆明細清點數量與秤重。點收只登記事實：不切派單狀態、也不完成生產任務。分批回台就每批各記一筆，系統自己累計。',
+    points:[
+      '知道認列工單是派單轉「已到貨品檢」的唯一觸發',
+      '知道點收登記只寫生產任務的「點收數量」，派單狀態不變、生產任務不完成',
+      '知道分批回台每批一筆紀錄，標題會顯示批數',
+      '知道累計少於明細時會提示回報印務（補件或折價）',
+      '知道整批清點數量皆為 0 會被擋下',
+      '知道切「台灣已入庫」與外發報工限印務執行，不在揀貨人員手上'
+    ],
+    prereq:[['po-deliver','印務 → 如何交付產線（外包任務交付＝派單發送，派單才會往下走到回台）']],
+    steps:[
+      ['1','[[/dispatch-orders]]','右上模擬角色切「揀貨人員」，開 DO-2026-0083 → 運費與回廠點收','明細掛「書盒本體壓紋」1,500 個；點收紀錄標題顯示（0 批）'],
+      ['2','運費與回廠點收','點「認列工單」','訊息「已認列工單，派單轉「已到貨品檢」；接著在暫存區逐筆明細清點與秤重」；派單狀態轉「已到貨品檢」'],
+      ['3','點收登記','第一批填清點數量 900 與秤重，點「登記點收」','訊息「已登記第 1 批點收；已寫入生產任務「點收數量」，派單狀態不變、生產任務待印務報工收斂」'],
+      ['4','點收登記','看第二則警告與摘要表','警告「書盒本體壓紋 累計仍少於派單明細數量，請回報印務處理（補件或折價）」；摘要表點收累計 900、對明細差異「短少 600」；點收紀錄標題轉（1 批）'],
+      ['5','點收登記','第二批填清點數量 600，點「登記點收」','標題轉（2 批），每批一列含清點數量／秤重／點收人員／時間；摘要表點收累計 1,500、對明細差異轉「—」；派單仍停在「已到貨品檢」，不自動切終態'],
+      ['6','點收登記','整批清點數量皆填 0 後送出','擋下並提示「請至少填寫一筆生產任務的清點數量；整批皆為 0 無法登記點收」'],
+      ['7','運費與回廠點收','檢視頁面上有沒有切「台灣已入庫」與外發報工的入口','兩者限印務執行，揀貨人員不可用']
+    ]
+  },
+  {
+    id:'picker-variance', title:'點收超收與短少怎麼處理',
+    intro:'廠商多做一點湊放損是外發常態，貨已經在暫存區了，擋下超收只會讓實物與系統帳對不起來。所以點收登記不設數量上限、照實登記；短少則不切終態、留痕並回報印務走補件或折價。付多少錢由報價那條路決定。',
+    points:[
+      '知道點收登記不設數量上限校驗，實收多於明細照實登記',
+      '知道摘要表的「對明細差異」會顯示「超收 N」或「短少 N」',
+      '知道超收的量會被印務計入產出數量，不在帳上蒸發',
+      '知道短少時派單不切「台灣已入庫」、停在「已到貨品檢」等補件',
+      '知道點收留痕記應收／實收／差異，時間軸註明已回報印務追補',
+      '知道與廠商追補的實際溝通在系統外（口頭或通訊軟體），由印務主責'
+    ],
+    prereq:[['picker-claim','揀貨人員 → 如何認列工單與登記點收']],
+    steps:[
+      ['1','[[/dispatch-orders]]','切「揀貨人員」，開 DO-2026-0092 → 運費與回廠點收','明細數量為 1,500'],
+      ['2','點收登記','填清點數量 1,600 與秤重，點「登記點收」','1,600 不被擋下；訊息「已登記第 1 批點收…派單狀態不變、生產任務待印務報工收斂」'],
+      ['3','點收摘要表','看「對明細差異」欄','顯示「超收 100」'],
+      ['4','[[/dispatch-orders]]','切「印務」，在同一頁的「外發報工」段看良品數預設值','良品數預帶 1,600（＝點收累計 − 已報產出）；產出欄顯示「1,600（累計 1,600，超過目標）」且不阻擋'],
+      ['5','[[/dispatch-orders]]','切回「揀貨人員」，在另一張派單填清點數量少於應收數量後送出','派單不切「台灣已入庫」；點收留痕記應收／實收／差異，時間軸註明已回報印務追補'],
+      ['6','運費與回廠點收','切「印務」執行短少處置，選折價路徑並填調整後報價','訊息「已留痕：折價路徑；調整後報價已送回報價核價流程，請在「明細與報價核價」分頁核價確認」；選補件路徑時訊息為「已留痕：補件路徑」']
+    ]
+  }
+  ]
+},
+{
+  key:'cross', role:'跨角色', user:'需依步驟切換',
+  pos:'需要在同一頁面比較不同角色看到什麼，或需要多個角色接力才走得完的情境。',
+  duty:'每個步驟都標明要切到哪個模擬角色；切錯角色會看到不同的畫面或 403。',
+  scenarios:[
+  {
+    id:'x-e2e', title:'段 1 全流程貫通（六站接力）',
+    intro:'一件印件從訂單管理人放行，一路走到生管把它打包上產線，全程不需要有人手動改模擬資料。這是段 1 最重要的一條驗收主線，六個頁面接力、四個角色輪流上場。',
+    points:[
+      '確認每一步的下一站都自動出現該筆資料，全程不必人工修改模擬資料',
+      '確認新工單編號為 WO-2026-04NN，與既有工單同一格式',
+      '確認交付產線後出現兩則提示：任務進生管待派清單、印件印製狀態轉「工單已交付」',
+      '確認待派清單那筆帶印件編號 PI-2026-0412 與印件預計交期 2026-08-28',
+      '確認打包對話框的材料彙總列出「雪銅紙 150g 菊全 2,200」',
+      '記得模擬資料存在記憶體，重新整理頁面即重置，這條線要一氣呵成'
+    ],
+    prereq:null,
+    steps:[
+      ['1','[[/orders/production-detail-queue]]','切「訂單管理人」，確認「春季商品型錄」的製作細節','訊息含新工單編號 WO-2026-04NN（尚未指派印務）；該列離開佇列'],
+      ['2','[[/print-items]]','切「印務主管」，展開該印件，點工單編號進詳情頁按「分派」','分派負責印務與審核主管後，訊息帶兩人名、按鈕變「改派」'],
+      ['3','工單詳情 → 製程規劃','切「印務」，新增一筆材料任務與一筆工序任務，點「提交審核」','兩筆任務入表、前置相依皆為空；狀態轉「製程確認中」'],
+      ['4','[[/work-orders/review-queue]]','切「印務主管」，點入該工單，按「核可製程」','狀態轉「製程審核完成」；訊息說明外包任務的派單產生情形'],
+      ['5','工單詳情 → 製程規劃','切「印務」，全選任務點「交付產線」','工單轉「工單已交付」；兩則提示：任務進生管待派清單、印件印製狀態轉「工單已交付」且訂單取最落後者不推進'],
+      ['6','[[/production-floor/dispatch]]','切「生管」，對備料任務點「確認接收」，勾選後點「合批打包」','待派清單該筆帶印件編號 PI-2026-0412 與印件預計交期 2026-08-28；打包對話框的材料彙總列出「雪銅紙 150g 菊全 2,200」']
+    ]
+  },
+  {
+    id:'x-two-entries', title:'印件詳情頁：兩個入口到同一頁',
+    intro:'印件只有一種全貌，不再有審稿版與生產版兩種看法。審稿清單與印件總覽點進去都到同一頁，舊網址自動導向、不斷既有連結。',
+    points:[
+      '知道正式路由是 /print-items/detail，舊路由 /prepress-review/detail 保留為導向',
+      '知道印件總覽的印件檢視抽屜已廢除、內容併入本頁',
+      '知道審稿紀錄（十二欄輪次表）與活動紀錄兩個 Tab 內容完整',
+      '知道 Tab 之上有四個固定區塊：頁首、印件基本資訊、印件檔案、數量與進度',
+      '知道三個入口（印件總覽、審稿清單、訂單詳情印件列）都到同一頁'
+    ],
+    prereq:null,
+    steps:[
+      ['1','[[/prepress-review]]','切「審稿人員」，在待審訂單點「春季商品型錄」','導向 /print-items/detail'],
+      ['2','[[/print-items]]','切「印務主管」，點同一件印件','同樣導向 /print-items/detail，內容一致'],
+      ['3','[[/prepress-review/detail?id=PI-2026-0412]]','直接開舊網址','自動導向新頁，不出現 404'],
+      ['4','印件詳情頁','切「審稿紀錄」與「活動紀錄」兩個 Tab','審稿紀錄為十二欄輪次表、活動紀錄為時間軸，兩者內容完整'],
+      ['5','印件詳情頁','檢視 Tab 之上的固定區塊','頁首（印件編號＋名稱、審稿狀態、印製狀態）／印件基本資訊（含製作討論串連結、印件配方）／印件檔案／數量與進度']
+    ]
+  },
+  {
+    id:'x-cost', title:'印件詳情頁：成本區塊誰看得到',
+    intro:'成本是印務的決策資訊，其他角色看到只會引發追問。不可見的角色是整個區塊不出現，不是顯示空值也不是遮罩——顯示一個空欄位等於告訴使用者「這裡有數字但不給你看」。',
+    points:[
+      '知道審稿人員完全看不到成本區塊（不是空值、不是遮罩）',
+      '知道印務見預計成本與實際成本、不見毛利率',
+      '知道印務主管與主管另見毛利率',
+      '知道業務、業務主管、會計都不顯示成本區塊',
+      '知道有報工的印件才顯示實際成本金額，段 1 動線新產出的印件顯示尚無資料',
+      '知道 PI-2026-0388 是成本驗收的樣本：預計成本、實際成本、毛利率三個數字都齊'
+    ],
+    prereq:[['x-two-entries','跨角色 → 印件詳情頁：兩個入口到同一頁']],
+    steps:[
+      ['1','[[/print-items/detail?id=PI-2026-0388]]','切「審稿人員」檢視','完全看不到成本區塊，整塊不出現'],
+      ['2','同一頁','切「印務」','見預計成本與實際成本，無毛利率'],
+      ['3','同一頁','切「印務主管」','另見毛利率'],
+      ['4','同一頁','切「主管」','同印務主管，三項齊全'],
+      ['5','同一頁','記下三個數字','預計成本 NT$ 117,400、實際成本 NT$ 120,700、毛利率 36.5%（售價取自 ORD-2026-0488）'],
+      ['6','同一頁 → 數量與進度區塊','檢視出貨相關數字','累計已出貨數量 8,000、累計送達數 6,000（只認單頭狀態為已送達的 SH-2026-0101，運送中的 SH-2026-0102 那 2,000 不計）'],
+      ['7','[[/print-items/detail?id=PI-2026-0418]]','以印務主管檢視實際成本','顯示 NT$ 3,900（旗下工單已有報工）；段 1 動線新產出、尚無報工的印件則顯示尚無資料']
+    ]
+  },
+  {
+    id:'x-wo-tab', title:'印件詳情頁：工單與生產任務 Tab',
+    intro:'一件印件看得出它底下幾張工單各做到哪。這個 Tab 的資料全部讀自工單模組，印件總覽與詳情頁都不另存一份工單狀態。',
+    points:[
+      '知道工單列預設全展開，不必逐張手動點開',
+      '知道工單列七個欄位：工單編號／類型／狀態／負責印務／預計交期／推算完工日／生產進度',
+      '知道生產任務子表七欄，且沒有「順序」欄',
+      '知道印務主管可在此區塊加開工單、刪除空草稿',
+      '知道 PI-2026-0418 底下同時掛大貨與打樣兩張工單，示範一印件多工單'
+    ],
+    prereq:[['x-two-entries','跨角色 → 印件詳情頁：兩個入口到同一頁']],
+    steps:[
+      ['1','[[/print-items]]','切「印務主管」，點 PI-2026-0418 進詳情頁 → 工單與生產任務 Tab','工單列兩張（大貨＋打樣），預設已展開'],
+      ['2','工單列','檢視欄位','工單編號／類型／狀態／負責印務／預計交期／推算完工日／生產進度'],
+      ['3','工單列','檢視 WO-2026-0302 的生產任務子表','七欄：工序／生產單位類別／計畫設備／預計開工日／目標數量／產出數量／生產任務狀態；無「順序」欄'],
+      ['4','[[/print-items/detail?id=PI-2026-0388]]','切到「品檢紀錄與缺口處置」Tab','Tab 存在且有內容（歷次品檢紀錄與缺口處置留痕）；段 1 只確認 Tab 骨架與可進入，完整內容歸段 3']
+    ]
+  },
+  {
+    id:'x-sales-view', title:'印件詳情頁：業務視角的 Tab 閹割',
+    intro:'業務要答得出客戶問「我的東西做到哪了」，但不介入印務排程。所以同一頁在業務眼中只剩兩個 Tab，生產面與品質面的 Tab 直接隱藏。',
+    points:[
+      '知道業務只見審稿紀錄與活動紀錄兩個 Tab',
+      '知道工單與生產任務、品檢紀錄與缺口處置兩個 Tab 對業務隱藏',
+      '知道成本區塊對業務不出現',
+      '知道其餘四個固定區塊（頁首、印件基本資訊、印件檔案、數量與進度）正常顯示',
+      '知道隱藏是整塊不出現，不是顯示為空'
+    ],
+    prereq:[['x-two-entries','跨角色 → 印件詳情頁：兩個入口到同一頁']],
+    steps:[
+      ['1','[[/print-items/detail?id=PI-2026-0388]]','切「業務」檢視','只見審稿紀錄／活動紀錄兩個 Tab'],
+      ['2','同一頁','找工單與生產任務、品檢紀錄與缺口處置兩個 Tab','兩者隱藏、不存在'],
+      ['3','同一頁','找成本區塊','不出現'],
+      ['4','同一頁','檢視四個固定區塊','頁首、印件基本資訊、印件檔案、數量與進度正常顯示'],
+      ['5','同一頁','切「印務主管」再看一次','四個 Tab 全部出現，成本區塊含毛利率']
+    ]
+  },
+  {
+    id:'x-enums', title:'狀態列舉與編號格式的一致性',
+    intro:'畫面顯示的狀態集合要與狀態機一致、同一件東西在每個頁面要叫同一個名字。這個情境純檢視，不做任何寫入動作。',
+    points:[
+      '知道印件印製狀態是九值，不再出現「待生產／生產中／已完成」',
+      '知道訂單類型只有三值：線下單／線上單／諮詢訂單',
+      '知道印件編號一律 PI-[年]-[四碼]、工單編號一律 WO-[年]-[四碼]',
+      '知道配方以 PS- / BR- 編號認人，名稱只作顯示',
+      '知道派單狀態為 13 值、委外製作情境為六值',
+      '知道出貨單為七態'
+    ],
+    prereq:null,
+    steps:[
+      ['1','[[/orders]]','任一角色，開多張訂單詳情看印件列的印製狀態','值為等待中／製程已確認／工單已交付／部分工單製作中／製作中／製作完成／出貨中／已送達／已棄用共九值；不再出現「待生產／生產中／已完成」'],
+      ['2','[[/orders]]','展開訂單類型篩選並看列表的類型欄','只有線下單／線上單／諮詢訂單三值，不再出現「客製單」「線上單EC」'],
+      ['3','[[/print-items]] 與 [[/work-orders]]','看同一件印件在三個模組的編號','印件編號一律 PI-[年]-[四碼]（不出現 ORD-…_00N）；工單編號一律 WO-[年]-[四碼]（不出現 W-[日期]-[兩碼]）'],
+      ['4','[[/production-floor/metrics]]','看第 3 區「類似品估算參考」，分別搜「騎馬釘」與「BR-2026-0001」','兩種搜法命中同一筆歷史工單；印件配方／部件配方欄同時顯示名稱與編號'],
+      ['5','[[/dispatch-orders]]','以大陸處理狀態／廠商／報價狀態篩選','狀態 13 值、委外製作情境六值、清單無展開列'],
+      ['6','[[/qc-shipping/shipments]]','以狀態／出貨方式篩選，點單號開 side panel','七態齊（未處理→已送達＋異常／已作廢）；面板六段：明細／收件／裝箱／出貨確認／送達確認／原因']
+    ]
+  }
+  ]
+}
+];
+
+/* ─────────────────────────────────────────────
+   渲染
+   ───────────────────────────────────────────── */
+const BASE='http://localhost:3000';
+const STORE_KEY='seg1-manual-progress-v1';
+let progress={};
+try{progress=JSON.parse(localStorage.getItem(STORE_KEY))||{}}catch(e){progress={}}
+
+const ALL=[];
+DATA.forEach(g=>g.scenarios.forEach(s=>ALL.push({...s,roleKey:g.key,role:g.role,user:g.user})));
+const byId=id=>ALL.find(s=>s.id===id);
+
+const noMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isNarrow=()=>window.innerWidth<=900;
+
+/* 把 [[/path]] 轉成完整可點連結 */
+function linkify(t){
+  return String(t).replace(/\[\[(\/[^\]]*)\]\]/g,(m,p)=>
+    '<a class="num path" href="'+BASE+p+'" target="_blank" rel="noopener">'+BASE+p+'</a>');
+}
+/* 業務編號以等寬字呈現：只動標籤外的文字節點，不碰屬性值 */
+const CODE_RE=/\b((?:PI|WO|DO|ORD|PS|BR|SO|QR|AFT|PO)-\d{4}-[0-9A-Z]{2,6})\b/g;
+function markCodes(html){
+  return html.split(/(<[^>]*>)/).map(part=>
+    part.charAt(0)==='<' ? part : part.replace(CODE_RE,'<span class="num">$1</span>')
+  ).join('');
+}
+const rich=t=>markCodes(linkify(t));
+
+const navEl=document.getElementById('nav');
+const contentEl=document.getElementById('content');
+const sidebarEl=document.getElementById('sidebar');
+const toneEl=document.getElementById('toneStrip');
+
+/* ── 側欄目錄 ── */
+function buildNav(){
+  navEl.innerHTML=DATA.map(g=>
+    '<div class="role-group" data-role="'+g.key+'" data-plate="'+g.key+'">'+
+      '<button class="role-head" type="button">'+
+        '<i class="plate-bar" aria-hidden="true"></i>'+
+        '<span class="caret" aria-hidden="true">&#9656;</span>'+
+        '<span>'+g.role+'</span>'+
+        '<span class="count">'+g.scenarios.length+'</span>'+
+      '</button>'+
+      '<ul class="scn-list">'+g.scenarios.map(s=>
+        '<li><button class="scn-btn" type="button" data-scn="'+s.id+'">'+
+        '<span class="mark" aria-hidden="true"></span><span class="txt">'+s.title+'</span></button></li>').join('')+
+      '</ul>'+
+    '</div>').join('');
+}
+
+/* ── 濃度條：一格一情境，依角色分組 ── */
+function buildTone(){
+  toneEl.innerHTML=DATA.map(g=>
+    '<span class="tone-group" data-plate="'+g.key+'">'+
+      g.scenarios.map(s=>
+        '<span class="tone-cell" data-cell="'+s.id+'" title="'+g.role+'：'+s.title+'"></span>').join('')+
+    '</span>').join('');
+}
+
+function renderProgress(){
+  const done=ALL.filter(s=>progress[s.id]).length;
+  document.getElementById('ptext').textContent='已驗證 '+done+' / 全部 '+ALL.length;
+  document.getElementById('pfoot').textContent=done+' / '+ALL.length;
+  document.getElementById('pfill').style.width=(ALL.length?(done/ALL.length*100):0)+'%';
+  document.querySelectorAll('.tone-cell').forEach(c=>
+    c.classList.toggle('on',!!progress[c.dataset.cell]));
+  document.querySelectorAll('.scn-btn').forEach(b=>
+    b.classList.toggle('done',!!progress[b.dataset.scn]));
+}
+
+function openRoleOf(id){
+  const s=byId(id);
+  document.querySelectorAll('.role-group').forEach(g=>{
+    if(g.dataset.role===s.roleKey) g.classList.add('open');
+    else if(isNarrow()) g.classList.remove('open');
+  });
+}
+
+/* ── 情境內容 ── */
+function renderScenario(id,flash){
+  const s=byId(id);
+  if(!s){renderHome();return;}
+  const prereqHtml = s.prereq && s.prereq.length
+    ? '<ul class="prereq">'+s.prereq.map(p=>
+        '<li><button class="xlink" type="button" data-goto="'+p[0]+'">'+markCodes(p[1])+'</button></li>').join('')+'</ul>'
+    : '<p>無，這是起點。</p>';
+
+  const rows=s.steps.map(st=>
+    '<tr><td class="col-no">'+st[0]+'</td>'+
+    '<td class="col-where">'+rich(st[1])+'</td>'+
+    '<td class="col-do">'+rich(st[2])+'</td>'+
+    '<td>'+rich(st[3])+'</td></tr>').join('');
+
+  contentEl.innerHTML=
+    '<article class="scn" id="scnDoc" data-plate="'+s.roleKey+'">'+
+      '<header class="scn-head">'+
+        '<p class="crumb">'+s.role+' &rsaquo; '+s.title+'</p>'+
+        '<h2>'+s.title+'</h2>'+
+        '<div class="scn-meta">'+
+          '<span class="badge-role"><i class="chip" aria-hidden="true"></i>登入角色：'+s.role+
+            '<span class="who">'+(s.user?'（'+s.user+'）':'')+'</span></span>'+
+          (s.supp?'<span class="tag-supp">依設計補寫，ACCEPTANCE 未列</span>':'')+
+        '</div>'+
+        '<p class="switch-note">在 prototype 右上角切換模擬角色；模擬資料存在記憶體，重新整理頁面即重置，單一情境請一氣呵成。</p>'+
+        '<label class="verify"><input type="checkbox" id="chk" '+(progress[s.id]?'checked':'')+'>已驗證'+
+          '<span class="memo">勾選狀態存在瀏覽器，重開仍在</span></label>'+
+      '</header>'+
+      '<section class="sec"><h3>這個情境在做什麼</h3><p class="lede">'+markCodes(s.intro)+'</p></section>'+
+      '<section class="sec"><h3>重點</h3><ul class="points">'+
+        s.points.map(p=>'<li>'+markCodes(p)+'</li>').join('')+'</ul></section>'+
+      '<section class="sec"><h3>前置情境</h3>'+prereqHtml+'</section>'+
+      '<section class="sec"><h3>怎麼操作</h3><div class="table-wrap"><table>'+
+        '<thead><tr><th>步驟</th><th>在哪個畫面</th><th>做什麼</th><th>預期看到什麼</th></tr></thead>'+
+        '<tbody>'+rows+'</tbody></table></div></section>'+
+    '</article>';
+
+  document.getElementById('chk').addEventListener('change',e=>{
+    if(e.target.checked) progress[s.id]=true; else delete progress[s.id];
+    localStorage.setItem(STORE_KEY,JSON.stringify(progress));
+    renderProgress();
+  });
+  contentEl.querySelectorAll('[data-goto]').forEach(b=>
+    b.addEventListener('click',()=>select(b.dataset.goto,true)));
+
+  document.querySelectorAll('.scn-btn').forEach(b=>
+    b.classList.toggle('active',b.dataset.scn===id));
+  openRoleOf(id);
+  renderProgress();
+
+  window.scrollTo({top:0,behavior:(flash && !noMotion)?'smooth':'auto'});
+  if(flash && !noMotion){
+    const doc=document.getElementById('scnDoc');
+    doc.classList.add('flash');
+    setTimeout(()=>doc.classList.remove('flash'),1600);
+  }
+}
+
+/* ── 總覽 ── */
+function renderHome(){
+  contentEl.innerHTML=
+   '<div class="home">'+
+   '<header class="home-head">'+
+     '<p class="eyebrow">段 1 驗證</p>'+
+     '<h2>生產階段 段 1 Prototype 驗證操作手冊</h2>'+
+   '</header>'+
+   '<section class="sec"><h3>這份手冊怎麼用</h3>'+
+   '<ol class="steps">'+
+   '<li>啟動 prototype：在 erp repo 執行 <span class="num">pnpm dev:erp</span>，開 <a class="num path" href="'+BASE+'" target="_blank" rel="noopener">'+BASE+'</a> 並登入。</li>'+
+   '<li>左側選角色、再選情境。每個情境固定四段：這個情境在做什麼、重點、前置情境、怎麼操作。</li>'+
+   '<li>每一步都標了要切到哪個模擬角色，切換器在 prototype 右上角。</li>'+
+   '<li>驗證完一個情境就勾「已驗證」，進度存在瀏覽器，重開仍在，頂部顯示總進度。</li>'+
+   '<li>搜尋框會同時過濾情境標題與重點文字。</li>'+
+   '</ol></section>'+
+   '<section class="sec"><h3>驗證前要知道的三件事</h3>'+
+   '<ul class="points">'+
+   '<li>模擬資料存在記憶體，重新整理頁面即重置，單一情境請一氣呵成走完。</li>'+
+   '<li>各模組自帶模擬資料，但編號是同一套（印件 PI-[年]-[四碼]、工單 WO-[年]-[四碼]、配方 PS- / BR-），跨模組一律以編號認人。</li>'+
+   '<li>已連動的是段 1 主線：訂單 → 工單 → 印件總覽 → 生管待派 → 派單點收。品檢入庫累計反映在出貨管理的額度、不反映在印件總覽，這是已知的模擬資料邊界、不是缺陷。</li>'+
+   '</ul></section>'+
+   '<section class="sec"><h3>涵蓋範圍</h3>'+
+   '<div class="table-wrap"><table>'+
+   '<thead><tr><th>角色</th><th>模擬使用者</th><th>情境數</th><th>一句話定位</th></tr></thead><tbody>'+
+   DATA.map(g=>'<tr>'+
+     '<td><span class="cell-role" data-plate="'+g.key+'"><i class="chip" aria-hidden="true"></i>'+g.role+'</span></td>'+
+     '<td>'+g.user+'</td>'+
+     '<td class="col-num">'+g.scenarios.length+'</td>'+
+     '<td>'+g.pos+'</td></tr>').join('')+
+   '</tbody></table></div></section>'+
+   '<footer>資料來源：erp repo 的 ACCEPTANCE.md（86 項驗收操作）、生產階段校正 段 1 商業層設計、wiki 角色卡與情境卡。</footer>'+
+   '</div>';
+  document.querySelectorAll('.scn-btn').forEach(b=>b.classList.remove('active'));
+  renderProgress();
+}
+
+function select(id,flash){
+  renderScenario(id,flash);
+  if(isNarrow()) document.querySelectorAll('.role-group').forEach(g=>g.classList.remove('open'));
+}
+
+/* ─── 事件 ─── */
+buildNav();
+buildTone();
+
+navEl.addEventListener('click',e=>{
+  const head=e.target.closest('.role-head');
+  if(head){
+    const group=head.parentElement;
+    const willOpen=!group.classList.contains('open');
+    if(isNarrow()) document.querySelectorAll('.role-group').forEach(g=>g.classList.remove('open'));
+    group.classList.toggle('open',willOpen);
+    return;
+  }
+  const btn=e.target.closest('.scn-btn');
+  if(btn) select(btn.dataset.scn,false);
+});
+
+document.getElementById('homeBtn').addEventListener('click',()=>{
+  renderHome();
+  window.scrollTo({top:0,behavior:noMotion?'auto':'smooth'});
+});
+
+document.getElementById('search').addEventListener('input',e=>{
+  const q=e.target.value.trim().toLowerCase();
+  if(!q){
+    sidebarEl.classList.remove('filtered');
+    document.querySelectorAll('.scn-btn').forEach(b=>b.parentElement.classList.remove('hidden'));
+    document.querySelectorAll('.role-group').forEach(g=>g.classList.remove('hidden'));
+    return;
+  }
+  sidebarEl.classList.add('filtered');
+  DATA.forEach(g=>{
+    let hit=0;
+    g.scenarios.forEach(s=>{
+      const hay=(s.title+' '+s.points.join(' ')+' '+s.intro+' '+g.role).toLowerCase();
+      const li=document.querySelector('.scn-btn[data-scn="'+s.id+'"]').parentElement;
+      const match=hay.indexOf(q)>=0;
+      li.classList.toggle('hidden',!match);
+      if(match) hit++;
+    });
+    document.querySelector('.role-group[data-role="'+g.key+'"]').classList.toggle('hidden',hit===0);
+  });
+});
+
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  progress={}; localStorage.removeItem(STORE_KEY); renderProgress();
+  const c=document.getElementById('chk'); if(c) c.checked=false;
+});
+
+/* 報頭高度回寫，供側欄吸附定位 */
+const mastEl=document.querySelector('.masthead');
+function syncHead(){
+  document.documentElement.style.setProperty('--head-h',Math.round(mastEl.getBoundingClientRect().height)+'px');
+}
+syncHead();
+if(window.ResizeObserver) new ResizeObserver(syncHead).observe(mastEl);
+window.addEventListener('resize',syncHead);
+
+/* 寬版預設展開第一個角色；窄版角色列為橫向捲動，不預先落下情境面板 */
+if(!isNarrow()) document.querySelector('.role-group').classList.add('open');
+renderHome();
+renderProgress();
+</script>
