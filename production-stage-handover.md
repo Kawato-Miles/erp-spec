@@ -12,7 +12,7 @@
 |----|------|------|
 | 1 | 製作細節確認 → 工單建立與分派 → 製程規劃 → 製程審核 → 交付產線 → 生管派工 → 外發派單 | **完成並 archive**（`2026-08-06-correct-production-stage-seg1`） |
 | 2 | 報工、場內轉交 | 待開 |
-| 3 | 品檢、齊套與完工判定、出貨、送達、訂單完成 | 待開 |
+| 3 | 品檢、齊套與完工判定、出貨、送達、訂單完成＋五項附屬（SHP-017、A8、A9、A10、認列工單遷回貨運單） | **商業層定案＋wiki 落卡完成（2026-08-11，commit ada40e0）**：三輪 plan-audit 收斂、21 卡修改＋新情境卡品檢通過入庫、SHP-017 甲案結案、PT-011 前提修正註記。設計正本 `production-stage-seg3-design.md`、拍板紀錄 `production-stage-seg3-grill.md`、派單運單 as-is `production-stage-dispatch-waybill-asis.md`（ERP 後端正本＝`sens-print-core`）。**凍結中：等段 2 sync／archive 後才進 `/opsx:propose`**（delta 要疊在段 2 收斂後的 main spec 上；erp repo 分支也讓段 2 先用） |
 | 4 | 副流程：售後補印、訂單取消連鎖、工單異動、訂單異動、打樣決策與重打、加印 | 待開 |
 
 ## 二、工作方法（沿用，不要另創）
