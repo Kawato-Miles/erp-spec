@@ -8,7 +8,7 @@
 
 外發（外包廠與中國廠商）生產任務的產出數量 SHALL 取印務的報工累計，SHALL NOT 取廠商回報數。回廠點收數量 SHALL 記在生產任務上（派單明細本就掛生產任務）、作為印務報工的對照憑據，SHALL NOT 直接充當產出數量、SHALL NOT 單獨令該任務完成。外發任務的完成判定 SHALL 與場內任務相同——報工累計達目標數量即完成，SHALL NOT 另設外發專屬的完成規則。台灣線與中國線的外發一律走派單與貨運單機制，SHALL NOT 另立單據。
 
-欄位定義的正本見 wiki [生產任務](../../../memory/Sens_wiki/wiki/erp/05-entities/生產任務.md)，本 spec 不複寫欄位表。
+欄位定義的正本見 wiki [生產任務](../../../../../memory/Sens_wiki/wiki/erp/05-entities/生產任務.md)，本 spec 不複寫欄位表。
 
 **Priority**: P0
 
@@ -45,7 +45,7 @@
 
 ### Requirement: 生產任務相依性
 
-印務 SHALL 可為生產任務設定前置任務清單。系統 SHALL 預設依規劃排序自動帶「上一道為前置」的線性鏈；並行匯流由印務手動設定多個前置。前置 SHALL 允許指向別張工單的生產任務（跨工單前置）。前置判定為數量級：需轉交的前置看**已點收量**（SHALL NOT 看已送達量）、不需轉交的看已報工量，多個前置時可做量取各前置到料量的最小值。規則正本見 wiki [工序相依性規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/工序相依性規則.md)，取數與放行行為見 [production-execution spec § 派工前置檢查](../production-execution/spec.md)。
+印務 SHALL 可為生產任務設定前置任務清單。系統 SHALL 預設依規劃排序自動帶「上一道為前置」的線性鏈；並行匯流由印務手動設定多個前置。前置 SHALL 允許指向別張工單的生產任務（跨工單前置）。前置判定為數量級：需轉交的前置看**已點收量**（SHALL NOT 看已送達量）、不需轉交的看已報工量，多個前置時可做量取各前置到料量的最小值。規則正本見 wiki [工序相依性規則](../../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/工序相依性規則.md)，取數與放行行為見 [production-execution spec § 派工前置檢查](../production-execution/spec.md)。
 
 **Priority**: P0
 
@@ -113,7 +113,7 @@
 
 ### Requirement: 工單狀態機
 
-工單狀態 SHALL 依下列規則推進，狀態列舉的正本見 wiki [工單狀態](../../../memory/Sens_wiki/wiki/erp/06-state-machines/工單狀態.md)，本 spec 只規範轉換規則與守衛、不複寫列舉。
+工單狀態 SHALL 依下列規則推進，狀態列舉的正本見 wiki [工單狀態](../../../../../memory/Sens_wiki/wiki/erp/06-state-machines/工單狀態.md)，本 spec 只規範轉換規則與守衛、不複寫列舉。
 
 規劃與審核段由人推進：印務送審（草稿或重新確認製程 → 製程確認中）、印務主管核可（→ 製程審核完成）或退回並附原因（→ 重新確認製程）、印務收回（製程確認中或製程審核完成 → 草稿，守衛見 § 工單收回機制）。製作段由底層事實推進：全部生產任務交付產線後 → 工單已交付（取最落後）、任一生產任務首次報工 → 製作中、旗下生產任務全部完成 → 已完成。異動為生產任務層驅動的鏡像狀態，全部異動處理完 SHALL 自動回到進入前的原狀態。訂單取消 SHALL 由上而下連鎖轉入已取消。
 

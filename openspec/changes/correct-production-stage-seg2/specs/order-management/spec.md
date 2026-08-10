@@ -2,11 +2,11 @@
 
 ### Requirement: 印件進度兩本帳呈現
 
-印件的進度 SHALL 以**齊套完成數／購買數量**為唯一主數字，落點為訂單詳情頁的印件列與印件詳情頁的數量與進度區塊。齊套完成數 SHALL 取各計入完成度工序的產出數量之**最慢者**，SHALL NOT 跨工序或跨工單加總（本體工單做 300、配件工單做 100 時，印件進度 SHALL NOT 顯示 400）。公式正本見 wiki [齊套邏輯](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)。
+印件的進度 SHALL 以**齊套完成數／購買數量**為唯一主數字，落點為訂單詳情頁的印件列與印件詳情頁的數量與進度區塊。齊套完成數 SHALL 取各計入完成度工序的產出數量之**最慢者**，SHALL NOT 跨工序或跨工單加總（本體工單做 300、配件工單做 100 時，印件進度 SHALL NOT 顯示 400）。公式正本見 wiki [齊套邏輯](../../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)。
 
 補做使齊套完成數超過購買數量時 SHALL 照實顯示，系統 SHALL NOT 蓋帽為 100%——多做的量是實際發生的事實，壓到 100% 等於把補做藏起來。
 
-系統 SHALL 於主數字旁**並排呈現品質帳**：完工良品數與缺口（＝購買數量 − 完工良品數）。兩本帳的分工 SHALL 為——製作進度回答現場還要不要繼續做，品質帳回答業務能不能安排出貨。欄位定義的正本見 wiki [印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md)，本 spec 不複寫欄位表。
+系統 SHALL 於主數字旁**並排呈現品質帳**：完工良品數與缺口（＝購買數量 − 完工良品數）。兩本帳的分工 SHALL 為——製作進度回答現場還要不要繼續做，品質帳回答業務能不能安排出貨。欄位定義的正本見 wiki [印件](../../../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md)，本 spec 不複寫欄位表。
 
 **Priority**: P1
 
@@ -41,14 +41,14 @@
 - 依工單分組（預設展開）：每組 SHALL 顯示工單編號、工單類型、工單狀態、負責印務、預計交期、推算完工日
 - 工單下 SHALL 列出所屬生產任務，每筆顯示工序、生產單位類別、計畫設備、預計開工日、目標數量、產出數量、生產任務狀態（轉換規則見 [production-execution spec § 生產任務狀態轉換](../production-execution/spec.md)）
 - 產出數量 SHALL 逐張工單各自呈現，SHALL NOT 跨工單加總成一個印件層數字——印件層的進度主數字為齊套完成數（見 § 印件進度兩本帳呈現）
-- 印件層的品質與可出貨帳 SHALL 呈現於印件詳情頁的數量與進度區塊，SHALL NOT 逐生產任務呈現；完工良品數唯一的家在印件層，欄位與公式的正本見 wiki [印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) 與 [齊套邏輯](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)，本 spec SHALL NOT 複寫欄位清單
+- 印件層的品質與可出貨帳 SHALL 呈現於印件詳情頁的數量與進度區塊，SHALL NOT 逐生產任務呈現；完工良品數唯一的家在印件層，欄位與公式的正本見 wiki [印件](../../../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) 與 [齊套邏輯](../../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)，本 spec SHALL NOT 複寫欄位清單
 - 系統 SHALL NOT 於生產任務列呈現入庫數量或品檢結果徽章
 - **實際成本段**：區塊 SHALL 呈現該印件累積的實際成本四分項（材料／工時／設備／外包），材料分項取材料型生產任務報工的領用量 × 材料單價、工時分項取報工的實際工時 × 費率、設備分項取工作包開機費依分攤基礎攤回加折舊、外包分項取派單核定報價加貨運單攤回；實際成本 SHALL 由報工事實累積，SHALL NOT 讀取靜態欄位
 - 跨工單可見性：印件下所有工單與生產任務資訊 SHALL 對開啟此頁的印務 / 印務主管完整可見，不因工單負責人不同而隱藏
 - 進度呈現方式：生產任務與工單層採用狀態詞（本 spec § 印件印製維度狀態機 / [work-order spec § 工單狀態機](../work-order/spec.md) / [production-execution spec § 生產任務狀態轉換](../production-execution/spec.md) 所定義），SHALL NOT 於本區塊另計算百分比或總任務完成數
 - 印務主管 SHALL 可於本區塊加開工單，以及刪除尚未送審且旗下無生產任務的空草稿工單（見 [work-order spec § 空草稿工單刪除](../work-order/spec.md)）
 
-欄位定義的正本見 wiki [印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) 與 [生產任務](../../../memory/Sens_wiki/wiki/erp/05-entities/生產任務.md)，本 spec 不複寫欄位表。搭配狀態向上傳遞規則（本 spec § 跨實體狀態向上傳遞鏈），印務 SHALL 可判讀印件層的齊套性與瓶頸所在。
+欄位定義的正本見 wiki [印件](../../../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) 與 [生產任務](../../../../../memory/Sens_wiki/wiki/erp/05-entities/生產任務.md)，本 spec 不複寫欄位表。搭配狀態向上傳遞規則（本 spec § 跨實體狀態向上傳遞鏈），印務 SHALL 可判讀印件層的齊套性與瓶頸所在。
 
 **Priority**: P1
 

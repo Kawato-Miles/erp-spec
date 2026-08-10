@@ -31,7 +31,7 @@
 
 ### Requirement: 通過即入庫
 
-品檢通過數量的累計 SHALL 即為印件的入庫數（現階段入庫數與完工良品數為同一個數），並 SHALL 隨每筆驗收逐批放大可出貨額度。不通過數量 SHALL NOT 計入入庫。計算公式的正本見 wiki [齊套邏輯](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md) § 數量帳與額度公式，本 spec 不複寫公式。
+品檢通過數量的累計 SHALL 即為印件的入庫數（現階段入庫數與完工良品數為同一個數），並 SHALL 隨每筆驗收逐批放大可出貨額度。不通過數量 SHALL NOT 計入入庫。計算公式的正本見 wiki [齊套邏輯](../../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md) § 數量帳與額度公式，本 spec 不複寫公式。
 
 驗畢的通過量 SHALL 浮上生管的待搬視圖成為可搬的量，系統 SHALL NOT 自動生成搬運待辦或轉交單——轉交單一律由生管建立（見 [production-execution spec § 場內轉交](../production-execution/spec.md)）。品檢站 → 暫存區的轉交路徑不在現階段規格範圍內，與品檢驗收後的成品入庫一併另行設計。
 
@@ -71,7 +71,7 @@
 #### Scenario: 印務決定不補並報廢
 
 - **WHEN** 印務選擇不補 × 報廢
-- **THEN** 處置紀錄寫入該組合，報廢數計入印件報廢數；印件的短交結案由印務在印件層執行（購買數量與已出貨數量原樣保留，見 wiki [齊套邏輯](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md) § 短出收尾）
+- **THEN** 處置紀錄寫入該組合，報廢數計入印件報廢數；印件的短交結案由印務在印件層執行（購買數量與已出貨數量原樣保留，見 wiki [齊套邏輯](../../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md) § 短出收尾）
 
 #### Scenario: 報廢數不進折損率分子
 

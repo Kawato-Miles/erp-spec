@@ -2,7 +2,7 @@
 
 ### Requirement: 六指標
 
-系統 SHALL 提供六個生產績效指標，全部由報工事實即時衍生，SHALL NOT 另存指標欄位或快照。公式與取數口徑的正本見 wiki [生產績效指標](../../../memory/Sens_wiki/wiki/erp/04-business-logic/領域知識/生產績效指標.md)：
+系統 SHALL 提供六個生產績效指標，全部由報工事實即時衍生，SHALL NOT 另存指標欄位或快照。公式與取數口徑的正本見 wiki [生產績效指標](../../../../../memory/Sens_wiki/wiki/erp/04-business-logic/領域知識/生產績效指標.md)：
 
 | 指標 | 公式 | 資料來源 |
 |---|---|---|
@@ -90,6 +90,6 @@
 
 ### Requirement: 五指標
 
-**Reason**: 生產績效指標自五項擴為六項（補漏單率，見 wiki [生產績效指標](../../../memory/Sens_wiki/wiki/erp/04-business-logic/領域知識/生產績效指標.md)），且稼動率的分子分母、折損率的分子單位與良率的分母口徑同時改寫；Requirement 名稱隨項數改為「六指標」，原名已與內容不符。原 Requirement 的「停機時數以工作包歸集後計入稼動率」Scenario 亦一併廢止——停機時數與停機原因兩欄已自報工移除（見 [production-execution spec § 報工](../production-execution/spec.md)），該情境沒有資料來源。
+**Reason**: 生產績效指標自五項擴為六項（補漏單率，見 wiki [生產績效指標](../../../../../memory/Sens_wiki/wiki/erp/04-business-logic/領域知識/生產績效指標.md)），且稼動率的分子分母、折損率的分子單位與良率的分母口徑同時改寫；Requirement 名稱隨項數改為「六指標」，原名已與內容不符。原 Requirement 的「停機時數以工作包歸集後計入稼動率」Scenario 亦一併廢止——停機時數與停機原因兩欄已自報工移除（見 [production-execution spec § 報工](../production-execution/spec.md)），該情境沒有資料來源。
 
 **Migration**: 讀者改讀本 change 的 § 六指標。停機歸集的稼動率取數改由「各生產任務分開填自己耗用的工時、分子取加總」承接，工作包只是彙整鍵、SHALL NOT 做跨報工的工時去重。
