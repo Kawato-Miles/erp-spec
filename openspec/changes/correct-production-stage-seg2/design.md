@@ -64,4 +64,4 @@ Prototype 校正無部署議題。批次順序：報工欄位與檢核 → 轉�
 |---|------|------|-----------|
 | A1 | `production-overview` § 三視角負荷（設備視角的「停機狀態」）與 § 設備運作總覽（「是否停機（含停機原因）」）在停機兩欄自報工移除之後失去資料來源 | `openspec/specs/production-overview/spec.md` | 段 2 只拍板「報工不收停機兩欄、稼動率分子不扣停機」；設備層要不要另設停機狀態的來源（設備主檔或另一種回報）未經拍板，屬新設計而非規格對齊 |
 | A2 | `openspec` 各 spec 的 `## Purpose` 與 `**範圍**`／`**設計原則**` 段落無法由 delta 表達——production-execution Purpose 的「已交付的生產任務」（應為「已交付產線」）、production-overview Purpose 與設計原則的「五指標（時間稼動率／良率／折損率／毛利率／成本達成率）」（應為六指標） | 兩份 main spec 的檔頭 | delta 只承載 Requirement；檔頭需於 `/opsx:archive` 合併時一併手改 |
-| A3 | 「bubble-up」用詞殘留於 `order-management` § 訂單審稿段 Bubble-up 派生（含 Requirement 名稱）、§ 訂單確認觸發，以及 `prepress-review` § 狀態同步的 Rationale | 審稿段規格 | 段 2 涉及的 § 印件詳情頁工單與生產任務區塊 已於段 1 收斂為「狀態向上傳遞」；剩餘殘留全在審稿段與 prepress-review，屬全庫用詞清整，一次做完比夾在生產段 change 裡做乾淨 |
+| A3 | 「bubble-up」用詞殘留於 `order-management` § 訂單審稿段 Bubble-up 派生（含 Requirement 名稱）、§ 訂單確認觸發，以及 `prepress-review` § 狀態同步的 Rationale，另 `order-adjustment/spec.md` L118 一處（verify 補列） | 審稿段規格 | 段 2 涉及的 § 印件詳情頁工單與生產任務區塊 已於段 1 收斂為「狀態向上傳遞」；剩餘殘留全在審稿段與 prepress-review，屬全庫用詞清整，一次做完比夾在生產段 change 裡做乾淨 |
