@@ -495,3 +495,11 @@ PT-041（作廢／報廢數量帳收斂，直接卡完成度重算條文）、PT
 - **#13**：成本可見性分權的拍板內容須先溯源（wiki/log.md 段 1 條目或段 1 設計文件），追到才寫進設計；追不到列裁決項問 Miles，不得自行發明。
 - **順帶發現 1**：不另開 OQ——「品檢站 → 暫存區」搬運機制正是段 3 設計要定案的內容（新情境卡搬運段），開卡即刻又關；揀貨人員 L49 列入段 3 落卡批次一併修正。
 - **順帶發現 2**：出貨與送達 L36 措辭列入段 3 落卡批次。
+
+---
+
+# 段 3 openspec 側重驗（2026-08-11，段 2 archive 後基準；append-only）
+
+> 進 change 前由 Sonnet 以段 2 收斂後的 main specs 重驗。摘要：設計 § 七 G1–G23 中，G4 已被段 2 收斂（自 change 移除）、G8 與 G10 縮小（order-management 側已修，餘 business-scenarios 跳態與「出貨中 → 訂單完成」缺口；打樣 OK 守衛已在 prepress-review L1015）、G15 落點改 prepress-review（主對話裁決）、其餘均「待改」並取得現行行號。
+> 矩陣段 3 openspec 欄更新：#10、#12、#13、#31 已修；#20、#21、#23 部分已修；其餘仍成立（新行號見重驗報告，關鍵：qc L84 搬運留段 3 句、qc L105 缺口口徑、work-order L551 補做預帶、work-order L478-482 短出下修、order-management L2000-2004 獨立欄位與三值列舉、order-management L607-638/L2195-2236 出貨重疊段、shipment L100 收尾判定、dispatch-order L33 vs L65 發稿觸發互斥（段 1 遺留））。
+> 段 2 合併引入的相斥點四處（S1 qc L84 待搬視圖預設、S2 qc L105 vs order-management L1493 缺口口徑互斥、S3 qc L117 全額處置 Scenario、S4 production-execution L336 轉交白名單），均由段 3 既有拍板涵蓋（D1／G1 甲／可分次處置），入 change 對應 G 項處理。
