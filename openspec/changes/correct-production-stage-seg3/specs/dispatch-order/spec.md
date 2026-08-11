@@ -83,7 +83,7 @@ ERP 端的狀態下拉 SHALL NOT 設順序限制（可人工修正），SHALL �
 
 實收少於明細時系統 SHALL 留痕並通知印務、SHALL NOT 自動切終態，並有兩條處置路徑：補件路徑——派單停留「已到貨品檢」等下批貨到，回步驟 2 以累計點收數收斂；折價路徑——印務依實收數調整供應商報價（終態前可調），折價理由記於工單異動的異動原因。殘餘缺口的補做或短交結案不在本 Requirement 範圍（見 `qc` 與 [work-order spec § 短出結案](../work-order/spec.md)）。
 
-**重量差異 SHALL 只提示不留存**：申報重與台灣實秤的差額 SHALL 為畫面上的即時提示，SHALL NOT 寫回、SHALL NOT 設差異原因欄、SHALL NOT 阻擋送出。
+**重量差異 SHALL 只提示不留存**：申報重與台灣實秤的差額 SHALL 為畫面上的即時提示，SHALL NOT 寫回、SHALL NOT 設差異原因欄、SHALL NOT 阻擋送出。差額 SHALL NOT 設欄位、SHALL NOT 阻擋認列；認列確認時 MAY 於時間軸留痕文字記錄差額。
 
 點收 SHALL 為數量與到貨確認、SHALL NOT 為品質驗收（品質把關仍在印件入庫前的最終品檢）。
 
@@ -112,7 +112,8 @@ ERP 端的狀態下拉 SHALL NOT 設順序限制（可人工修正），SHALL �
 - **GIVEN** 大陸申報重 520 公斤、台灣實秤合計 505 公斤
 - **WHEN** 揀貨人員完成秤重登記
 - **THEN** 畫面 SHALL 即時提示差額 15 公斤
-- **AND** 系統 SHALL NOT 寫回差異、SHALL NOT 要求填差異原因、SHALL NOT 阻擋送出
+- **AND** 系統 SHALL NOT 設差異欄位、SHALL NOT 要求填差異原因、SHALL NOT 阻擋認列
+- **AND** 認列確認時 MAY 於貨運單時間軸以文字記下該差額
 
 #### Scenario: 認列後可再次送出並整批取代
 
