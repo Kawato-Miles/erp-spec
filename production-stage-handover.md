@@ -11,7 +11,7 @@
 | 段 | 範圍 | 狀態 |
 |----|------|------|
 | 1 | 製作細節確認 → 工單建立與分派 → 製程規劃 → 製程審核 → 交付產線 → 生管派工 → 外發派單 | **完成並 archive**（`2026-08-06-correct-production-stage-seg1`） |
-| 2 | 報工、場內轉交 | 待開 |
+| 2 | 報工、場內轉交 | **完成並 archive**（`2026-08-11-correct-production-stage-seg2`）：五批實作＋每批稽核修正＋verify 修正輪，main specs 已合併（含 A2 檔頭）；拍板紀錄 `production-stage-seg2-alignment.md`（十節）；轉交範圍收回為產線 → 產線、產線 → 品檢站兩類（暫存區三類留段 3，見 § 八 B2）；另案 A1（設備停機來源）、A3（bubble-up 全庫清整）與 warehouse_qty 死欄位留後續 |
 | 3 | 品檢、齊套與完工判定、出貨、送達、訂單完成＋五項附屬（SHP-017、A8、A9、A10、認列工單遷回貨運單） | **商業層定案＋wiki 落卡完成（2026-08-11，commit ada40e0）**：三輪 plan-audit 收斂、21 卡修改＋新情境卡品檢通過入庫、SHP-017 甲案結案、PT-011 前提修正註記。設計正本 `production-stage-seg3-design.md`、拍板紀錄 `production-stage-seg3-grill.md`、派單運單 as-is `production-stage-dispatch-waybill-asis.md`（ERP 後端正本＝`sens-print-core`）。**凍結中：等段 2 sync／archive 後才進 `/opsx:propose`**（delta 要疊在段 2 收斂後的 main spec 上；erp repo 分支也讓段 2 先用） |
 | 4 | 副流程：售後補印、訂單取消連鎖、工單異動、訂單異動、打樣決策與重打、加印 | 待開 |
 
@@ -108,9 +108,10 @@
 5. **wiki 兩卡相斥時不要自行調和**：開 OQ（如 SHP-017），在程式註解裡擱置不算處置。
 6. **erp repo 有多方同時在動**：工作區可能有其他對話的改動（段 1 期間有 `AdjustmentsTab.js`），commit 前確認範圍；曾有外部程序跑 `git reset --hard` 清掉未提交的工作。
 
-## 七、現況快照
+## 七、現況快照（2026-08-11 段 2 archive 後）
 
-- Sens repo master：最新 commit 為段 1 archive
-- erp repo `prototype/production-stage`：領先 main 約 38 個 commit，未合併、未開 PR
-- OQ 平層：18 張（新增 SHP-017）
-- dev server：localhost:3000 可用，prototype 區不需登入
+- Sens repo master：最新為段 2 archive（main specs 已合併，validate 22 過 0 敗）
+- erp repo `prototype/production-stage`：段 2 疊 14 個 commit（`53c0b05`…`9f5e09e`＋免登入白名單 `84414c6`），未合併、未開 PR；工作區另有平行對話在 `print-items/*` 與 `qc-shipping/_lib/store.js` 的未提交變更（勿誤 stage）
+- OQ 平層：4 張（PT-004／PT-026／PT-027 之外，段 2 新開 PT-042 拼版模數、PT-043 設備費率欄位歸屬；PT-013／023／040／041 已結案封存）
+- dev server：3000 可能被其他對話佔用，本 session 用 launch.json 的 `erp-verify`（port 3020）；prototype 區免登入白名單已補齊段 1／2 路由群
+- 段 3 解凍條件已達成：main specs 已收斂，`/opsx:propose` 可開（erp repo 分支段 2 已用畢）
