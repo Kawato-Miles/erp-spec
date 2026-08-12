@@ -82,7 +82,7 @@ Claude 在 archive 階段未把「tasks.md 全部勾選」當 hard gate。判斷
 
 ## 後續行動
 
-- [[../../08-open-questions/]] 新增 OQ「OpenSpec archive workflow 加 hard gate 檢查」追蹤工具改善
+- 追蹤工具改善：OpenSpec archive 工作流加一道把關檢查（archive 前檢查 tasks 勾選率與端對端測試結果）
 - `/opsx:archive` skill 增強：archive 前自動跑 tasks.md 勾選率檢查 + e2e 結果檢查、未滿足條件直接 abort
 - 各 agent 規範文件補「事後 archive 審視」職責（依本誤審案例提醒）
 
