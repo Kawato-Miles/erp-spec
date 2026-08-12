@@ -12,9 +12,9 @@ recorded-at: 2026-05-26
 recorded-by: Miles + Claude
 related-change: complete-payment-status-ui-and-followups
 related-vault:
-  - [[ORD-021-處理中Payment老化追蹤機制]]
-  - [[ORD-019-會計處理中Payment應收應付處理]]
-  - [[ORD-020-取消已完成Payment邏輯刪除vs物理刪除]]
+  - "[[ORD-021-處理中Payment老化追蹤機制]]"
+  - "[[ORD-019-會計處理中Payment應收應付處理]]"
+  - "[[ORD-020-取消已完成Payment邏輯刪除vs物理刪除]]"
 module: 跨模組
 ---
 
