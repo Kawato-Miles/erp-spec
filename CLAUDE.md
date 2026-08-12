@@ -301,7 +301,7 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 
 - 全域偏好（回覆風格、語言與用語、文件迭代分層）正本在 `~/.claude/CLAUDE.md`；sub-agent 不會自動拿到該檔，需要遵守時明讀
 - Spec 格式：**OpenSpec**（`openspec/specs/`）為工作版本（正本）；對開發的發布以 Linear 為唯一正本（經 `linear-delivery` skill 交付，內容自包含，不再使用 Notion 作為 BRD 發布版）。變更管理使用 OpenSpec change 工作流
-- **Prototype / 介面設計**：Prototype 實作在 GitHub Repo `sens-erp-prototype`（本地路徑 `/Users/b-f-03-029/sens-erp-prototype`），技術棧為 React + TypeScript + Tailwind + shadcn/ui。**搬移中（2026-07 起）**：Prototype 工作正逐步搬移至 `erp` repo（本地路徑 `/Users/b-f-03-029/erp`，統一 design system、前端直串，完成後取代 Lovable，改走開分支＋前端主管 PR 合併；工作模式見 memory `project_erp_repo_prototype_workflow`）。搬移完成前 sens-erp-prototype＋Lovable 仍為現行，本條為並存期間的狀態正本
+- **Prototype / 介面設計**：Prototype 一律在 `erp` repo（本地路徑 `/Users/b-f-03-029/erp`，統一 design system、前端直串，開分支＋前端主管 PR 合併；工作模式見 memory `project_erp_repo_prototype_workflow`，實作 MUST 經 repo 內 skill `prototype-from-prompt`）。舊 repo `sens-erp-prototype` 與 Lovable 已於 2026-08-12 拍板**全面棄用**，不再考慮、不再對齊
 - **ERP 平台限制**（2026-07-21 修訂）：辦公角色（業務、印務、生管、會計等）僅支援電腦版（桌機瀏覽器）；**現場回報介面例外開放行動版**，範圍寫死於四個介面——師傅報工、品檢記錄、揀貨裝箱回報、出貨／送達確認（師傅、品檢人員、揀貨人員、出貨人員四角色用 ERP 手機版）；廠務轉交回報走 Slack 表單通道（正本在系統、通知帶單預填、保留補登路徑、身分對映四前提）。決策脈絡見 Vault OQ PT-001 決議（已封存）
 - 優先非同步溝通
 - 寫或改程式碼時載入 skill `andrej-karpathy-skills:karpathy-guidelines`
@@ -342,12 +342,12 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 | 確認 / 解答 Open Question | Vault `08-open-questions/`（**內部正本，2026-05-19 改寫**）+ 觸發 `oq-manage` skill | Notion OQ DB（對外確認版，見 § OQ 工作流）|
 | 業務情境 | Vault `07-scenarios/`（業務情境卡；三層：骨架 `wiki/範本/範本 - 業務情境`／規範 `規範 - 業務情境`／範例 `範例 - 業務情境`）| 各模組 spec § Scenarios（Acceptance Scenarios，Given/When/Then 工程驗收）、Vault `03-roles/` |
 | **審查方法論 / 框架查詢** | Vault `11-review-knowledge/`（入口 [審查知識路由](memory/Sens_wiki/wiki/erp/11-review-knowledge/審查知識路由.md)）| `plan-design`／`plan-audit` skill |
-| **Prototype 製作** | `/Users/b-f-03-029/sens-erp-prototype/DESIGN.md`（設計規範唯一權威）+ 對應 Spec + 狀態機 spec | Notion 測試案例 DB：https://www.notion.so/2b93886511fa817fbd65e7608726f036 |
-| Prototype 驗證 / 反饋 | `/Users/b-f-03-029/sens-erp-prototype/src/` 對應模組 + `/Users/b-f-03-029/sens-erp-prototype/DESIGN.md` | — |
+| **Prototype 製作** | erp repo 內 skill `/Users/b-f-03-029/erp/.claude/skills/prototype-from-prompt/SKILL.md`（設計規範唯一入口）+ 對應 Spec + 狀態機 spec | Notion 測試案例 DB：https://www.notion.so/2b93886511fa817fbd65e7608726f036 |
+| Prototype 驗證 / 反饋 | `/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/` 對應模組 + 同 repo `ACCEPTANCE.md` | — |
 
 ### 資源導航
 
 - wiki 總入口（商業需求 KM 中樞）：[wiki/index.md](memory/Sens_wiki/wiki/index.md)
 - Notion URL 唯一正本：`memory/shared/notion-index.md`
 - OpenSpec 規格目錄：`openspec/specs/`（20 個模組，目錄結構即自描述）
-- Prototype repo：`/Users/b-f-03-029/sens-erp-prototype`（設計權威：`DESIGN.md`；實作進度：`README.md`）
+- Prototype repo：`/Users/b-f-03-029/erp`（實作入口：`.claude/skills/prototype-from-prompt/SKILL.md`；驗收：`apps/erp/src/app/(prototype)/ACCEPTANCE.md`）
