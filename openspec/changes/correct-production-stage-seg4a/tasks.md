@@ -53,5 +53,5 @@
 
 - [x] 7.1 bubble-up 用詞清整：order-management 訂單狀態機推進條件處、order-adjustment 一處（依 delta）——驗證：兩檔 grep 無 bubble-up（審稿段 6 處歸 4B 除外）
 - [x] 7.2 ACCEPTANCE.md 續補本 change 驗收操作項（每個任務群組至少一條端到端操作）——驗證：驗收項可照步驟走通
-- [ ] 7.3 跨模組資料流稽核（Opus）：取消五層連鎖、售後補做全鏈（決議→發起→生產→驗過→額度→出貨）、派單作廢成本鏈逐條追寫入——驗證：稽核報告零斷鏈
+- [x] 7.3 跨模組資料流稽核（Opus）：取消五層連鎖、售後補做全鏈（決議→發起→生產→驗過→額度→出貨）、派單作廢成本鏈逐條追寫入——驗證：稽核報告零斷鏈（三鏈 53 步，唯一斷鏈「派單作廢後完工判定未重跑」已修於 erp 701eaa5 並實測收斂）
 - [x] 7.4 `openspec validate correct-production-stage-seg4a --strict` 通過＋prototype 頁面免登入白名單補齊本批路由——驗證：validate 通過、3020 可直開各頁
