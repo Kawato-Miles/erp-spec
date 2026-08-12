@@ -999,3 +999,246 @@ printItemStatus = 待生產 / producedQty = 0 / warehouseQty = 0 / shippedQty = 
 | D2 | 報工全數作廢致任務退回「待處理」 | 段 2 已補規格，無情境卡承載 |
 | D3 | 空草稿工單刪除 | 段 1 已補規格，無情境卡承載 |
 | D4 | 三處取消連鎖（印件已棄用、工單已取消、生產任務作廢／報廢的「訂單取消」那一支） | 無情境卡承載，歸段 4「訂單取消連鎖」，尚未執行 |
+
+---
+
+# 審稿段三方差異矩陣（wiki 基準 × openspec × prototype）
+
+> 產出：2026-08-12，機械式盤點，只陳述事實、不給設計建議、發現矛盾只陳述不調和。
+> 基準：wiki `memory/Sens_wiki/wiki/erp/`（商業正本）；openspec `openspec/specs/`（行為規格）；prototype 兩 repo 並存期。
+> 編號延續既有矩陣段 4（其最大列號 42），本段自 **#43** 起編。
+> 上游背景：審稿段最後一次 change 為 `2026-07-06-offline-review-assignment`，之後 wiki 又於 2026-08-01（AR/PI 系列 OQ 批次拍板）、2026-08-04、2026-08-12 更新過，三方一致性至此未驗。
+
+## prototype 欄的 repo 標記
+
+審稿段在**兩個 repo 都有實作、且職能分裂**，每列標明驗的是哪一個：
+
+| 標記 | repo | 分支／HEAD | 審稿段涵蓋 |
+|---|---|---|---|
+| **新** | `/Users/b-f-03-029/erp` | `prototype/production-stage`／`b7837c2` | `apps/erp/src/app/(prototype)/prepress-review/`＋`orders/`＋`print-items/detail/`；狀態列舉與分派動線已對齊 wiki；**主管工作台／KPI、退回重審、免審輪次、能力等級維護、訂單向上歸納皆不在其中**（`prepress-review/README.md:3-5` 自承儀表板不在範圍） |
+| **舊** | `/Users/b-f-03-029/sens-erp-prototype` | `main`／`57ebc9e` | `src/pages/prepress/`（SupervisorDashboard 744 行）、`src/store/useErpStore.ts`；上述新 repo 缺的五項在此有，但欄位／列舉大量過時 |
+
+路徑以下皆相對各 repo 根目錄（新 repo 省略 `apps/erp/src/app/(prototype)/` 前綴時會標明）。
+
+---
+
+## 小計
+
+| 項目 | 數量 |
+|---|---|
+| 差異項 | **48**（#43-#51、#55-#61、#63、#64、#66、#68、#69、#71、#72、#75、#77-#100） |
+| 對齊項 | **10**（#52、#53、#54、#62、#65、#67、#70、#73、#74、#76） |
+| wiki 內部疑義 | **9** |
+
+差異項按性質分布（同一列可帶多個性質，故合計大於 48）：
+
+| 性質 | 列數 | 列號 |
+|---|---|---|
+| openspec 衝突（含 openspec 內部相斥） | 21 | #43、#45、#46、#59、#60、#63、#68、#69、#71、#75、#79、#81、#82、#83、#84、#85、#86、#87、#89、#91、#96 |
+| openspec 缺 | 7 | #44、#48、#49、#58、#80、#85、#90 |
+| prototype 衝突 | 18 | #44、#45、#46、#47、#48、#55、#56、#57、#63、#71、#77、#78、#79、#82、#83、#86、#89、#96 |
+| prototype 缺 | 16 | #43、#50、#51、#58、#61、#64、#66、#72、#78、#80、#84、#88、#90、#92、#93、#94 |
+| 措辭過時／引用勘誤 | 6 | #51、#77、#95、#97、#98、#99 |
+| 術語撞名（只陳述） | 1 | #100 |
+
+差異最集中的三個主題：
+
+| 主題 | 涉及列 | 一句話 |
+|---|---|---|
+| 2026-08-01 那批 AR／PI 系列 OQ 拍板後 openspec 未回寫 | #43、#48、#49、#63、#96 | 能力等級可為空、待審清單依交期排序、不設停滯提醒、技術性退件不排除退件率、審稿關卡逾期指標不做——五條拍板 openspec 全未同步，其中兩條（#63、#96）是 openspec 寫著與拍板相反的內容 |
+| 「待分派」這個 2026-07-06 change 新增的初始態沒有貫穿三方 | #82、#90、#92、T1-T3、O1-O4 | clone reset 寫成「稿件未上傳」（openspec 3 處＋業務情境 1 處＋舊 repo 2 欄）、訂單層派生五規則完全無此分支（openspec 與舊 repo 同缺）、新 repo 訂單層無歸納邏輯 |
+| 段 3 新增四 Requirement 未與審稿段既有條文對接 | #82-#87、#75 | 前提狀態（合格 vs 已確認可製作）、原子性（自動 vs 手動兩步）、重打後是否推進製程已確認、新印件走手動或自動分派、以及「合格為終態不回退」這句已被退回重審推翻的主張仍在 business-scenarios 與 prepress-review 兩處 |
+
+---
+
+# 差異矩陣（審稿段）
+
+## A. 分派、換人與能力管理
+
+| # | 流程點／規則 | wiki 正本（卡名＋行號） | openspec 現況與差異（檔＋行號） | prototype 現況與差異（repo＋檔＋行號） | 性質 |
+|---|---|---|---|---|---|
+| 43 | 審稿人員能力等級**可為空**（空值＝這個人不做審稿、不進任何分派候選） | `05-entities/人員.md`:39；`07-scenarios/維護審稿人員能力等級.md`:39；`04-business-logic/營運規則/訂單到交付/審稿分配規則.md`:34。AR-9 已封存拍板「不設初值、可為空」 | 相斥：prepress-review/spec.md:8-13「SHALL 具備 `max_difficulty_level`，值域 1 至 10 之整數」＋Scenario「能力值必填：未填寫不可儲存」。無空值語意 | 新：無維護入口，`_lib/prepressReview.js:7-10` 為硬編碼兩人常數（魏彣軒 5、范湘瑜 10），無空值路徑。舊：`src/store/useErpStore.ts:3611-3613` `addReviewer` 強制 1-10，亦無可為空路徑 | openspec 衝突／prototype 缺 |
+| 44 | 自動分派候選**三要件**：啟用中＋能力等級有值＋能力等級 ≥ 印件難易度 | `審稿分配規則.md`:34 | prepress-review/spec.md:34 候選集只寫「所有 `max_difficulty_level ≥ 印件 difficulty_level`」，缺「啟用中」與「能力等級有值」兩件 | 新：`_lib/prepressReview.js:76-118` 候選＝`active && 在崗 && 能力≥難易度`——多一個 wiki 沒有的「在崗」（見 #45）、缺「能力等級有值」（主檔兩人皆有值故不顯現） | openspec 缺／prototype 衝突 |
+| 45 | 「在崗／不在崗」**不是 wiki 的系統狀態**；請假屬系統外事實 | `05-entities/人員.md`:35 只有「是否啟用」（離職即停用）；`07-scenarios/覆寫審稿分派.md`:22 明寫「小林請假期間仍是啟用中，故仍會出現在清單上，由執行者判斷不要選他」 | prepress-review/spec.md:1361、1386-1391、1502、530；business-scenarios/spec.md:318-324 把「可用狀態＝在崗／不在崗」寫成系統可判定條件，並據此把印件送入「審稿主管覆寫待辦清單」 | 新：`_lib/prepressReview.js:76-118` 候選過濾含「在崗」。舊：`src/store/useErpStore.ts:3601-3607` 有 `setReviewerAvailableStatus`（實作了 wiki 無的欄位） | openspec 衝突／prototype 衝突 |
+| 46 | 首次分派與換人**統一為單一功能「分派審稿人員」**，不存在第二條「覆寫」路徑 | `審稿分配規則.md`:49-53；`07-scenarios/覆寫審稿分派.md`:42 | openspec 內部相斥：prepress-review/spec.md:105 明文「MUST NOT 將首次分派與換人拆為兩個操作」，但同檔 525-530、596、617-620 另立「覆寫分配」（`overridePrintItemAssignment`）、1390 另立「覆寫待辦清單」；business-scenarios/spec.md:323 亦用「覆寫待辦清單」 | 新：已統一——`orders/_lib/store.js:472-524` 單一 `assignReviewer`，依印件當下有無負責人分支（478-487 改派／488-512 首次）。舊：`src/store/useErpStore.ts:514-523` `overridePrintItemAssignment`（註解「原因必填」）與 525-533 `assignPrintItemReviewer`（註解「原因一律選填」）兩支並存、規則相反 | openspec 內部相斥／prototype 衝突（舊 repo） |
+| 47 | 線下單 MUST NOT 觸發自動分派 | `審稿分配規則.md`:39-47；`04-business-logic/服務藍圖/線下訂單流程.md`:50 | prepress-review/spec.md:57-62 有明文 Scenario「線下單不觸發自動分配」 | 新：相斥——`orders/_lib/store.js:302-326` `uploadArtwork` 只判 `review_status === '待分派'` 就跑 `runAutoAssign`，未查 `order_type`／`order_source`；線下單上傳稿件同樣被系統自動派人 | prototype 衝突 |
+| 48 | 待審清單**預設依交期近的先審**（非先進先出）；急單沿用 [[訂單]] 既有「是否急件」欄，不另設審稿專屬急單標記 | `07-scenarios/印件審稿.md`:107（AR-5 2026-08-01 拍板） | 全無此排序要求。prepress-review/spec.md:730 審稿總覽只規定時間區間預設「今日」；1244 訂單母列欄位含「距交期天數」但未定排序 | 新：相斥——`prepress-review/_components/ReviewOrderList.js:104-116` 註解明寫「排序：建立日期由新到舊（對齊 orders 列表頁）」，`sort((a,b)=>b.created_date.localeCompare(a.created_date))`；交期已算出（`prepress-review/_lib/selectors.js:52-74`）但未用於排序。舊：`src/pages/prepress/OrderReviewView.tsx` 無任何 `.sort(` | openspec 缺／prototype 衝突 |
+| 49 | 不設待分派停滯提醒；補件不設輪次上限、不設停滯提醒 | `審稿分配規則.md`:86（AR-17）；`印件審稿.md`:94（AR-11） | 無明文 MUST NOT（僅 prepress-review/spec.md:112 有「稿件已上傳而尚無負責審稿人員時 SHALL 通知訂單管理人」的正向規則） | 兩 repo 皆無提醒或上限機制（現況即符合，但無條文背書） | openspec 缺（negative 規則未落 spec） |
+| 50 | 能力等級維護三步（檢視全部門當前等級 → 評定 1-10 整數 → 留活動紀錄含時間／操作者／舊值／新值），變更只作用於變更後的分派 | `07-scenarios/維護審稿人員能力等級.md`:25-29、33 | prepress-review/spec.md:6-24、595 一致（含「變更僅影響未來的自動分配」） | 新：缺——無檢視／調整入口，無變更紀錄。舊：有——`src/store/useErpStore.ts:3573-3599` `updateReviewerCapability` 寫 `reviewerCapabilityLogs`（timestamp／actor／from／to），UI `src/components/prepress-review/EditReviewerCapabilityDialog.js`（84 行）、`src/pages/prepress/SupervisorDashboard.tsx:39` | prototype 缺（新 repo） |
+| 51 | 候選清單為空時的處置（提示無可選人員、本次換人不成立、印件維持原歸屬） | `覆寫審稿分派.md`:32（措辭為「所有審稿人員皆停用或無人可選」） | prepress-review/spec.md:176-181 有對應 Scenario，但條件措辭為「全員不在崗」（見 #45） | 新：`prepress-review/_components/AssignReviewerDialog.js:54-64` 候選＝`PREPRESS_REVIEWERS.filter(r=>r.active)`，未處理空集合的提示 | 措辭過時／prototype 缺 |
+| 52 | 候選清單不過濾、難易度與能力等級僅參考標示不阻擋 | `審稿分配規則.md`:44、53；`覆寫審稿分派.md`:26 | prepress-review/spec.md:109、130-136 一致 | 新：`AssignReviewerDialog.js:66-69`、`185-191` 能力不足只加尾註與 Alert、不阻擋 | 對齊 |
+| 53 | 換人不改審稿維度狀態、未完成輪次移交新審稿人員、活動紀錄留原／新／時間／原因（原因選填） | `覆寫審稿分派.md`:28、36；`審稿分配規則.md`:53 | prepress-review/spec.md:110、114、164-166、694 一致 | 新：`orders/_lib/store.js:478-487`（狀態不動）、`514-516`（未完成輪次 `reviewer_id` 同步換人）、`75-81`（事件補 timestamp）；`AssignReviewerDialog.js:193` label 為「原因（選填）」無 rules | 對齊 |
+| 54 | 混合批次分派（一次勾選待分派＋已分派印件指給同一人） | `審稿分配規則.md`:51 | prepress-review/spec.md:113、168-174 一致 | 新：`orders/_lib/store.js:472-473` `entries.forEach`；`prepress-review/_lib/selectors.js:82-83` `canAssignItem` 只看狀態不看有無負責人。註：新 repo 允許跨訂單一次分派（`AssignReviewerDialog.js:35-39` 逐列查所屬訂單），wiki 只寫「同訂單內多個印件」 | 對齊 |
+| 55 | Slack 審稿討論串：ERP 發起、帶入訂單與所選印件識別資訊、**mention 訂單管理人**、連結留存於訂單、可選輔助非前置 | `04-business-logic/外部約束/審稿討論Slack串接約束.md`:27-32 | prepress-review/spec.md:185-210 一致（含 mock webhook 要求） | 新：有——`orders/_lib/store.js:543-563`（mock webhook 產 `https://slack.example.com/archives/C-PREPRESS/...`）、`orders/_components/detail/ItemsTab.js:246-260`、`646-648`、`680-690`；門控為線下單＋已回簽＋非唯讀。**衝突**：`store.js:555` `mentioned_user: '黃聖雯'` 為硬寫字面值，非取訂單的訂單管理人；同一人名在製作討論串另以常數 `orders/mock-data.js:120` 再寫一次 | prototype 衝突（mention 對象未綁欄位） |
+| 56 | 分派與換人的執行者：訂單管理人與審稿主管**同權** | `03-roles/訂單管理人.md`:27、29；`03-roles/審稿主管.md`:27 | prepress-review/spec.md:103 一致 | 新：門控自相矛盾——`prepress-review/_lib/selectors.js:77-78` `canAssignReviewer` 允許 `order_manager` 與 `reviewer_supervisor`，但 `prepress-review/pending-assign/page.js:10-12` 對 `reviewer_supervisor` 直接回 403 | prototype 衝突 |
+| 57 | 能力等級掛人（不掛角色）、停用即從所有分派候選消失 | `05-entities/人員.md`:23、35、39 | prepress-review/spec.md:6-8 掛「User 角色為審稿」 | 新：`_lib/prepressReview.js:7-10` 審稿人員主檔僅硬編碼兩人；`_lib/sessionStore.js:16,18` `reviewer` 與 `reviewer_supervisor` 兩角色共用同一 `user_name: '魏彣軒'`，主管情境下 `reviewerIdByName` 解出審稿人員本人 id | prototype 衝突（mock 身分對映） |
+
+## B. 稿件上傳、審稿輪次與判定
+
+| # | 流程點／規則 | wiki 正本 | openspec 現況與差異 | prototype 現況與差異 | 性質 |
+|---|---|---|---|---|---|
+| 58 | 印件「稿件上傳開放」欄位（是否開放客戶上傳稿件） | `05-entities/印件.md`:66 | 全庫無承載——三份 spec 僅 business-scenarios/spec.md:35 表格括號寫「（開放上傳）」，無任何 Requirement 或欄位敘述 | 新：`orders/_components/detail/ItemsTab.js:550-554` 上傳鈕唯一門控為 `review_status ∈ ['待分派','稿件未上傳']` 與 `!readOnly`，無開放旗標 | openspec 缺／prototype 缺 |
+| 59 | 印件檔（`file_role=印件檔`）可暫以 `round_id=null` 存放待綁 | `04-business-logic/營運規則/訂單到交付/稿件管理規則.md`（file_role 分組正本）；`05-entities/審稿輪次.md`:57 明寫「含印件檔可暫 round_id=null 待綁」 | openspec 內部相斥：prepress-review/spec.md:318、327、332、468、495 均寫 `round_id=null` 暫存；同檔 641「所有 PrintItemFile MUST 綁定某個 ReviewRound（`round_id` 必填，不得為 NULL）」＋667「禁止建立 round_id = NULL 的 PrintItemFile」直接相反。後者亦與 wiki 相斥 | 新：與 wiki 同側——`orders/_lib/store.js:296` 首輪送審前上傳的印件檔 `round_id` 為 `null` | openspec 內部相斥（其中一側與 wiki 相斥） |
+| 60 | 審稿輪次的建立時點：**上傳新稿即建下一輪**（退回重審時不建輪次、客戶上傳新稿才建） | `印件審稿.md`:92；`06-state-machines/印件狀態.md`:154；`審稿輪次.md`:35-36（送審者／送審時間為該輪欄位） | openspec 內部相斥：prepress-review/spec.md:644、656-658、687 寫「業務補件上傳 → 建 Round N+1（待審）」；同檔 329-336 寫「WHEN 原審稿人員**再次送出審核** THEN 建立 round_no = 2」 | 新：與「上傳即建輪」同側——`orders/_lib/store.js:200`（補件新檔綁新輪）、`334-346` | openspec 內部相斥 |
+| 61 | 稿件上傳的角色分流：B2B 由業務代客戶上傳、B2C 由會員於電商會員中心自行上傳 | `印件審稿.md`:32；`稿件管理規則.md`:59 | prepress-review/spec.md:457-509 分 B2C／B2B 兩個 Requirement，一致 | 新：缺角色門控——`orders/_components/detail/ItemsTab.js:550-554` ＋ `orders/detail/page.js:76` 唯一門控為 `readOnly = isOrderTerminal(order.status)`，未區分業務代上傳與會員自送、無角色判斷 | prototype 缺 |
+| 62 | 退件原因 10 項分類、不合格必填 | `審稿輪次.md`:38（逐字 10 項） | prepress-review/spec.md:306 逐字 10 項相同、437-440 必選 | 新：`_lib/prepressReview.js:20-31` 逐字 10 項相同；`orders/_lib/store.js:364-372` ＋ `ReviewDialog.js:166-175` 不合格必選（「其他」時審稿備註必填，`ReviewDialog.js:46`） | 對齊 |
+| 63 | **技術性退件不排除退件率**——退件率把全部不合格輪次都算進去，分類只用來看分布 | `審稿輪次.md`:38（AR-6 2026-08-01 拍板「技術性退件不排除，原寫法作廢」） | 相斥：prepress-review/spec.md:306 括號寫「技術性退件（…；KPI 不合格率分母排除）」；360-366 整個 Scenario 名為「技術性退件以 reject_reason_category 區分並排除不合格率 KPI」，明文「此 Round SHALL 於 KPI 儀表板的『不合格率』計算時排除」＋「計入技術退件比率單獨指標」 | 新：無 KPI 實作（不適用）。舊：`src/utils/prepressReview.ts:527` `computeReviewKpi`、`SupervisorDashboard.tsx:307`（不合格率）與 `312-313`（技術退件比率）並列，採 openspec 側口徑 | openspec 衝突（拍板後未同步）／prototype 衝突（舊 repo） |
+| 64 | 審稿備註送出後仍可由原審稿人員修改，修改寫入印件活動紀錄稽核 | `審稿輪次.md`:33；`稿件管理規則.md`:41 | prepress-review/spec.md:307、382-388、897-933 完整（含權限限原審稿人員、通知補件方） | 新：缺——無修改入口、無 action。舊：型別與事件型別存在（`src/types/prepressReview.ts:117`、`146`、`src/components/prepress-review/ActivityLogTimeline.tsx:36` 有 icon）但無 store mutation | prototype 缺 |
+| 65 | 三種備註分層（稿件備註跟印件 500 字／送審備註跟輪次／審稿備註跟輪次 1000 字可改） | `審稿輪次.md`:40-46；`05-entities/印件.md`:54；`稿件管理規則.md`:28-32 | prepress-review/spec.md:307、713-724、853-865 一致 | 新：`orders/_lib/store.js:204-217`、`375-391` 輪次含 `review_note`／`submitted_note`，印件層 `client_note` 於 `orders/mock-data.js` 承載 | 對齊 |
+| 66 | 批次審稿：整批同結果／縮圖共用一張／審稿後檔案逐件／退件原因整批共用／**審稿備註預設整批共用可逐印件覆寫**／個別移除 | `稿件管理規則.md`:34-39；`印件審稿.md`:86 | prepress-review/spec.md:214-265 六項全齊、一致 | 新：五項有（`orders/_lib/store.js:438-469` `shared_thumb` 一張逐件各寫一筆、`reviewed_files_by_item` 逐件、`ReviewDialog.js:24-31`、`38-58` 可逐件移除），**缺「共用備註＋逐件覆寫」**——`store.js:444` `review_note` 逐件傳入、無共用預設值。舊：有 `reviewNote` ＋ `noteOverrides`（`src/store/useErpStore.ts:552-560`、`3942`） | prototype 缺（新 repo 一項） |
+| 67 | 工單建立時鎖定當時合格輪的審稿後檔案與縮圖，**審稿備註不鎖** | `稿件管理規則.md`:41 | prepress-review/spec.md:390-396、913 一致 | 新：`print-items/_lib/work-order-actions.js:22` 依 `current_round_id` 取檔案 | 對齊 |
+| 68 | 免審與售後補印路徑的輪次**不產生審稿後檔案與縮圖**（無審稿人員介入，可上機檔案不在系統建模） | `審稿輪次.md`:52；`稿件管理規則.md`:73（PI-006 已封存） | 相斥：prepress-review/spec.md:318「每輪合格 Round SHALL 至少含 1 份 `file_role=審稿後檔案` 與 1 份 `file_role=縮圖`」為無條件約束，未寫免審／售後補印例外；同檔 353-358 的免審 Scenario 亦未排除該約束 | 新：免審印件根本不建輪次（見 #78），約束不觸發 | openspec 衝突 |
+| 69 | 成品縮圖為**衍生顯示**（取自當前合格審稿輪次的縮圖），印件不獨立持有 | `05-entities/印件.md`:53 | 相斥：order-management/spec.md:756「成品縮圖獨立於稿件檔案」＋767「儲存縮圖並更新印件的**成品縮圖網址**」＝印件層獨立欄位 | 新：與 wiki 同側——`print-items/detail/page.js:138`、`648-660` 依 `current_round_id` 取縮圖；`orders/_lib/store.js:409-416` 縮圖綁輪次（缺圖時補 `THUMB_PLACEHOLDER_URL`） | openspec 衝突 |
+| 70 | 審稿判定的資料落點：合格時上傳審稿後檔案＋縮圖並將當前合格輪次指針指向本輪；不合格時通知補件方 | `審稿輪次.md`:30-31、61；`印件狀態.md`:149-150 | prepress-review/spec.md:337-341、420-435 一致 | 新：`orders/_lib/store.js:403-418`（`patch.current_round_id = doneRound.id`）、`364-372` | 對齊 |
+
+## C. 合格之後：確認可製作與退回重審
+
+| # | 流程點／規則 | wiki 正本 | openspec 現況與差異 | prototype 現況與差異 | 性質 |
+|---|---|---|---|---|---|
+| 71 | 退回重審的**退回原因選填**（有填才寫進訂單活動紀錄、不另設欄位） | `印件審稿.md`:92；`印件狀態.md`:153 | 相斥（兩檔）：prepress-review/spec.md:1359「退回原因 MUST 為必填」、1372-1374；order-management/spec.md:878「退回原因 SHALL 為必填欄位」 | 舊：相斥——`src/store/useErpStore.ts:3520` `if (!returnReason.trim()) return { error: '退回原因為必填' }`。新：無此動作（見 #72） | openspec 衝突／prototype 衝突（舊 repo） |
+| 72 | 業務退回重審動作本身（合格 → 待改稿） | `印件審稿.md`:92；`印件狀態.md`:93、153 | prepress-review/spec.md:1357-1398；order-management/spec.md:839、859-880 皆有 | 新：**缺**——全 repo 無 UI 亦無 store function；但 mock 已種出其結果資料：`orders/mock-data.js:2324`（`review_status: '待改稿'`）、`2384-2394`（`type: '退回重審'` 事件）、`2505`、`3183`。「待改稿」目前只能靠 mock 種子出現。舊：有 `src/store/useErpStore.ts:3519-3571` `returnToRevision`（限合格才可、不建輪次、寫印件事件與訂單活動紀錄） | prototype 缺（新 repo） |
+| 73 | 退回重審時**不建輪次**，客戶上傳新稿時才建下一輪 | `印件審稿.md`:92；`印件狀態.md`:154 | prepress-review/spec.md:1381、1414 一致 | 舊：`useErpStore.ts:3541-3564` 不建輪次，一致 | 對齊 |
+| 74 | 退回重審僅限「合格」狀態；「已確認可製作」後不可退回 | `印件審稿.md`:92；`印件狀態.md`:153 | prepress-review/spec.md:1363；order-management/spec.md:868-872 一致 | 舊：`useErpStore.ts:3529-3531` 限合格，一致 | 對齊 |
+| 75 | 「合格 → 待改稿」退回重審為現行轉換；合格**不是**不可回退的終態 | `印件狀態.md`:93、153、173（動機段明列與棄用重建的分工） | 相斥＋死引用：business-scenarios/spec.md:292 明寫「核心原則：**審稿維度合格為終態**。合格後發現問題一律走『棄用建新』或『同印件新工單』，**不回退審稿狀態**」；prepress-review/spec.md:1174 引用「spec § 審稿人員審稿作業『合格為終態，後續需變更內容須透過棄用原印件 + 建立新印件』既定設計」——該句在現行 § 審稿人員審稿作業（400-453）**已不存在**。同檔 1420 又寫「退回重審與棄用 + clone 並存」，與 1174 相斥 | 不適用（介面層無此主張） | openspec 衝突＋死引用 |
+| 76 | 業務確認可製作：B2B 手動／B2C 系統自動；轉「已確認可製作」即觸發工單建立 | `印件狀態.md`:152、155；`印件審稿.md`:34 | prepress-review/spec.md:1331-1355 一致 | 新：`orders/_lib/store.js:527-540`（B2B 手動，`orders/_lib/permissions.js:41-44` 限 `sales`）、`419-425`（B2C `order_source==='B2C'` 合格後自動推進並寫事件） | 對齊 |
+| 77 | 審稿維度八態列舉的正本歸屬 | `印件狀態.md`:29-38（八態正本） | prepress-review/spec.md:674 逐字複寫全八態（雖同句標明「狀態列舉正本見 wiki」），違反 CLAUDE.md § 單一正本鐵則「OpenSpec spec MUST NOT 複寫 wiki 狀態列舉」 | 新：`orders/mock-data.js:101-110` 八值齊、逐字相同；`_lib/prepressReview.js:36-45` 狀態機白名單八態齊，轉換集合與 wiki 十條一致。舊：**相斥**——`src/types/order.ts:36-40` legacy `reviewStatus` 僅 5 值（無待分派／待改稿／已確認可製作）與 `src/types/prepressReview.ts:22-30` 的 8 值 `reviewDimensionStatus` 雙欄併存，`useErpStore.ts:3169-3171` 同時寫兩欄 | 措辭（openspec 複寫）／prototype 衝突（舊 repo 雙欄併存） |
+
+## D. 免審路徑
+
+| # | 流程點／規則 | wiki 正本 | openspec 現況與差異 | prototype 現況與差異 | 性質 |
+|---|---|---|---|---|---|
+| 78 | 免審直通：**訂單成立時**系統自動建一筆 `source=免審稿` 合格輪次、審稿維度自「待分派」直達「合格」、不進待審清單 | `04-business-logic/營運規則/售前/免審決策樹.md`:25；`印件審稿.md`:84；`印件狀態.md`:147 | prepress-review/spec.md:353-358、688、1462-1469 一致 | 新：**缺輪次**——`orders/_lib/store.js:239` 免審印件僅設 `review_status: skip_review ? '合格' : '待分派'`，`263` `review_rounds: []`；`156-164` `confirmSignBack` 也不建輪次；`source='免審稿'` 輪次僅存在於 mock（`orders/mock-data.js:2755`）。不進待審清單一致（`prepress-review/_lib/selectors.js:13`、`26-31`、`82-83`）。舊：有輪次但**時點不同**——`useErpStore.ts:3150-3178` 於 `confirmSignBack`（回簽時）建，非訂單成立時，`src/utils/prepressReview.ts:372` `buildSkipReviewRound` | prototype 缺／prototype 衝突（時點） |
+| 79 | 免審印件的 B2B 仍須業務手動確認可製作，B2C 才自動 | `免審決策樹.md`:27-28；`印件審稿.md`:84 | openspec 內部相斥：prepress-review/spec.md:1469 分流正確；但 order-management/spec.md:138-139「訂單下所有印件的審稿狀態皆為『合格』或『免審稿』→ 直達『製作等待中』（跳過審稿段）」未分流 B2B／B2C，且與同檔 357 派生規則 2「所有印件『已確認可製作』→ 製作等待中」相斥；423-425 亦寫「所有印件皆免審稿 → 推進至已確認可製作」未分流 | 新：`orders/_lib/store.js:156-164` `confirmSignBack` 以 `allSkip` 判定直達「製作等待中」——與 order-management 138-139 同側、與 wiki 相斥 | openspec 內部相斥（與 wiki 相斥）／prototype 衝突 |
+| 80 | 免審為印件可編輯欄位、**次一輪生效**（審稿中途改免審，其下一輪的「→合格」由系統自動觸發） | `免審決策樹.md`:37；`審稿分配規則.md`:28；`印件狀態.md`:149、176 | 文字有（prepress-review/spec.md:45；order-management/spec.md:151、167-173），但 prepress-review 的狀態同步表（678-693）**無「該輪免審 → 系統自動判合格」這一列**——同步表只列「建 Round 1（source=免審稿）→ 待分派轉合格」，涵蓋不到中途改免審的第 N 輪 | 兩 repo 皆無「每輪起始檢查」邏輯（新 repo 免審只在 `addPrintItem` 判一次） | openspec 缺（同步表）／prototype 缺 |
+| 81 | 免審印件合格後被退回重審，下一輪誰審**依該輪免審值決定**；線下單不隨上傳重跑分派 | `審稿分配規則.md`:28、47；`免審決策樹.md`:37 | 相斥（兩點）：prepress-review/spec.md:1521-1526「客戶上傳新稿後 SHALL 走正常審稿流程（**系統自動分配審稿人員，非免審**）」——(a) 無視印件當下的免審值、硬性走需審稿；(b) 對線下單套用自動分配（同檔 57-62 已明文 MUST NOT） | 不適用（退回重審在新 repo 缺、舊 repo 無免審值檢查） | openspec 衝突 |
+
+## E. 打樣與審稿段的銜接（段 3 新增四 Requirement）
+
+| # | 流程點／規則 | wiki 正本 | openspec 現況與差異 | prototype 現況與差異 | 性質 |
+|---|---|---|---|---|---|
+| 82 | 打樣 NG-稿件問題 clone 出的新印件，審稿維度初值為**「待分派」**（尚無負責審稿人員） | `印件狀態.md`:31（待分派＝初始、判準為無負責審稿人員）；`07-scenarios/打樣後稿件問題重審.md`:29 明寫「新印件建立時審稿維度為『待分派』」 | 相斥且擴散三處：prepress-review/spec.md:1183 reset 清單 `reviewStatus = 稿件未上傳 / reviewDimensionStatus = 稿件未上傳`、1206、1213 各自複述一次；business-scenarios/spec.md:117 表格步驟 4「印件 B（審稿）＝**稿件未上傳（初始狀態）**」。**openspec 內部相斥**：同檔 674、680、707-711 明訂「待分派為初始態、判準＝無負責審稿人員（不論稿件是否已上傳）」。另 1182-1183 的保留／reset 兩份清單**都沒有列負責審稿人員欄位**——clone 後該欄歸屬未定義，「稿件未上傳」語意（已有負責人）與之對不上 | 新：無 clone 動線（`orders/_lib/store.js:900` 註解明載「只記值；原印件棄用重建的動線歸段 4」）；一般新建印件初值正確為「待分派」（`store.js:239`）。舊：**相斥**——`src/store/useErpStore.ts:4418-4419` clone 時同時把 `reviewStatus` 與 `reviewDimensionStatus` 設為 `稿件未上傳` | openspec 衝突＋內部相斥／prototype 衝突（舊 repo） |
+| 83 | clone reset 的欄位名與值域須用現行正本（完工良品數；印製維度九態） | `05-entities/印件.md`:81（「入庫數量」已正名「完工良品數」）；`印件狀態.md`:42-52（印製維度九態） | prepress-review/spec.md:1183、1205、1213 帶入已退役欄位名 `warehouseQty`，並把 `printItemStatus` 寫成 `待生產`；1197、1200、1210 寫 `已完成`／`已棄用`——`待生產`／`已完成` 都不在 wiki 印製維度九態內（對應值應為「等待中」／「製作完成」） | 新：印製維度九值齊且逐字對齊 wiki（`orders/mock-data.js:90-100`）。舊：**相斥**——`src/types/order.ts:41` `PrintItemStatus` 僅 5 值（`待生產`／`生產中`／`已完成`／`已取消`／`已棄用`）；`src/types/order.ts:61` 仍有 `warehouseQty`，clone 時重設（`useErpStore.ts:4415`） | openspec 衝突（用詞過時＋值域外）／prototype 衝突（舊 repo） |
+| 84 | NG-稿件問題的棄用＋建新印件為**系統自動的單一原子動作** | `打樣後稿件問題重審.md`:27（步 2「系統自動棄用原打樣印件並複製建立新印件」）；`04-business-logic/營運規則/訂單到交付/打樣流程.md`:41 | openspec 內部相斥：prepress-review/spec.md:1176 明訂 atomic transaction；business-scenarios/spec.md:114-117 表格拆成兩個手動步驟——步驟 3「**業務/印務手動觸發**印件 A『已棄用』」、步驟 4「**系統/印務**建立新打樣印件 B」 | 新：缺——`print-items/_components/SampleResultAction.js:155-163` 自承「該動線尚未在系統內提供」。舊：有——`useErpStore.ts:4384-4389`、`4395-4456` `rebuildPrintItemForSampleNG`（單一 action 內完成棄用與 clone） | openspec 內部相斥／prototype 缺（新 repo） |
+| 85 | NG-稿件問題的前提：原打樣印件審稿維度**已到「已確認可製作」終態** | `打樣後稿件問題重審.md`:16、25 | 相斥／缺：business-scenarios/spec.md:114、117、289 全程把印件 A 的審稿維度記為「**合格**」（289 表格「審稿維度狀態｜合格（不變）」）；prepress-review/spec.md:1197 的 GIVEN 只寫 `sampleResult = 待確認`、`printItemStatus = 已完成`，未提審稿維度前提 | 新：`orders/_lib/store.js:916-921` 判定門控只查印件類型、角色與印製狀態＝已送達，未查審稿維度 | openspec 衝突／openspec 缺 |
+| 86 | NG-製程問題重打後印製維度自「已送達」回「等待中」、**隨即由系統自動推進「製程已確認」**（不再走一次製作細節確認） | `印件狀態.md`:119、156、164、180-181 | openspec 內部相斥：prepress-review/spec.md:1005、1031-1032 有此自動推進；business-scenarios/spec.md:93-98 的重打情境表格步驟 3-4.5 印製維度停在「等待中」直到「工單已交付」，**中間缺「製程已確認」站**（段 3 新條文未回寫情境） | 新：`orders/_lib/store.js:930-946` 直接寫 `print_item_status: '製程已確認'`（937），資料上**不曾有任何一刻為「等待中」**，但活動紀錄文字（944-946）聲稱「自『已送達』回『等待中』重跑一輪並即刻推進『製程已確認』」。歸零以計算界線實作（`print-items/_lib/sample-cycle.js`），不清欄位 | openspec 內部相斥／prototype 衝突（資料與留痕文字不符）。另見 wiki 疑義 4 |
+| 87 | clone 出的新印件後續走**線下單手動分派**（非系統自動） | `打樣後稿件問題重審.md`:29 明寫「本卡屬線下單，分派為手動、非系統自動」 | 相斥：prepress-review/spec.md:1189、1232「新打樣印件後續流程：等待業務重新上傳稿件 → 進入審稿流程（**走自動分派演算法** / 走免審稿快速路徑依業務情境）」 | 新：clone 動線不存在、接不上（分派機制本身在：`AssignReviewerDialog.js`、`ItemsTab.js:138`） | openspec 衝突 |
+| 88 | 印件「衍生來源印件」欄位（打樣 NG-稿件問題棄用複製時指回原印件，唯讀） | `05-entities/印件.md`:58 | prepress-review/spec.md:1130-1168 完整（`derived_from_print_item_id` FK＋正反向追溯） | **兩 repo 皆缺此印件欄位**。新：全 repo 無此字串；`source_print_item_id` 只出現在 mock 的售後補印輪次（`orders/mock-data.js:2813`）。舊：`src/types/prepressReview.ts:76-83` 的 `sourcePrintItemId` 掛在**輪次**上且限售後補印；衍生關係僅以 notes 文字承載（`useErpStore.ts:4427`、`4437`） | prototype 缺 |
+| 89 | 打樣結果的判定者為**業務／諮詢** | `05-entities/印件.md`:67（「業務／諮詢依客戶回饋判定」） | prepress-review/spec.md:993、1018 寫「業務側（業務、**業務主管**、諮詢）」——多出業務主管 | 新：`orders/_lib/store.js:916-921` 限 `sales`／`sales_manager`／`consultant`、`SampleResultAction.js:28-32` 同——與 openspec 同側、與 wiki 相斥 | openspec 衝突／prototype 衝突 |
+
+## F. 訂單層審稿段（狀態向上傳遞）
+
+| # | 流程點／規則 | wiki 正本 | openspec 現況與差異 | prototype 現況與差異 | 性質 |
+|---|---|---|---|---|---|
+| 90 | 訂單審稿段的落點須涵蓋印件審稿維度**全八態**（含「待分派」） | `印件狀態.md`:29-38（八態）；`06-state-machines/訂單狀態.md`:175（系統依印件審稿狀態自動歸納落點） | order-management/spec.md:354-360 的派生五規則**完全沒有「待分派」**：規則 1 不合格、2 全部已確認可製作、3 等待審稿／已補件／待改稿、4 全為合格或已確認可製作、5「否則（全部『稿件未上傳』；或『合格』/『已確認可製作』+『稿件未上傳』混合）」。線下單回簽後尚未分派的印件（「待分派」，稿件可能已上傳）落不進任何一條 | 新：**無任何向上歸納邏輯**（見 #92）。舊：`src/store/useErpStore.ts:75-113` `deriveOrderReviewStatus` 五規則（91-100）與 openspec 逐條相同，**同樣沒有「待分派」** | openspec 缺／prototype 缺（三方同缺） |
+| 91 | 免審快速路徑的訂單落點條件為「**全部印件已確認可製作**」 | `訂單狀態.md`:176 | 相斥：order-management/spec.md:138-139 條件寫「所有印件的審稿狀態皆為『合格』或『免審稿』」→ 直達製作等待中。B2B 免審印件在「合格」但未確認可製作時即被判離開審稿段（見 #79） | 新：`orders/_lib/store.js:156-164` 同 openspec 側 | openspec 衝突 |
+| 92 | 訂單審稿段三值與由印件向上歸納的機制（稿件未上傳／等待審稿／待補件；等待審稿 → 製作等待中） | `訂單狀態.md`:45-54、177-180 | order-management/spec.md:352-431 完整（含觸發時機清單 368-375） | 新：三值在列舉與門控中存在（`orders/mock-data.js:30-32`、`51`、`orders/_lib/permissions.js:12-14`），但**全 repo 沒有任何地方把訂單狀態寫成「待補件」**；「等待審稿 → 製作等待中」也只在 `confirmSignBack`（`store.js:156-164`）用 `allSkip` 判一次、之後不再重算。舊：有 `deriveOrderReviewStatus` ＋ `applyOrderReviewBubbleUpForOrder`（`useErpStore.ts:75-113`、`3510`、`3567`） | prototype 缺（新 repo） |
+| 93 | 製作段不退回審稿段；有印件被退回重審時以警示標記提醒 | `訂單狀態.md`:74 | order-management/spec.md:366、414-419 一致（含「1 件待改稿」警示標記） | 新：缺（依附 #72 與 #92） | prototype 缺 |
+| 94 | 審稿段內「等待審稿 ↔ 待補件」允許雙向互換、不視為回退 | `訂單狀態.md`:73、179 | order-management/spec.md:330、341-344、356 一致 | 新：缺（「待補件」從未被寫入，見 #92） | prototype 缺 |
+
+## G. 措辭、引用與命名
+
+| # | 流程點／規則 | wiki／規約正本 | openspec 現況與差異 | prototype 現況 | 性質 |
+|---|---|---|---|---|---|
+| 95 | 術語規約：`bubble-up` → 「狀態向上傳遞」／「自動推進」 | CLAUDE.md § 9 術語對應表 | 殘留 10 處：order-management/spec.md:145、352（Requirement 標題「訂單審稿段 Bubble-up 派生」）、354、368、380、386、388、396、421；prepress-review/spec.md:700 | 不適用 | 措辭過時 |
+| 96 | 「審稿關卡逾期訂單數」這個指標**不做**、不設距交期緩衝閾值 | AR-14（2026-08-01 拍板「不設此閾值，這個指標一併不做」，已封存） | 仍在：prepress-review/spec.md:1258（Summary 卡「審稿關卡逾期數」）、1315-1329 整個 Requirement「審稿環節訂單級指標」＋1319「安全緩衝閾值待確認（prototype 先採距交期 ≤ 2 工作天暫定值）」 | 新：已實作該指標——`prepress-review/_lib/selectors.js:52-74` `isOrderOverdueInReview`（buffer 2 天） | openspec 衝突（拍板後未刪）／prototype 衝突 |
+| 97 | 難易度 1-10 **必填**（未填難易度的印件無法送出需求單） | `04-business-logic/營運規則/售前/難易度機制.md`:26；`印件審稿.md`:30 | prepress-review/spec.md:586、779 把「待派工」定義為「`difficultyLevel` **未填** 或 `assignedReviewerId` 為 null 的印件數」——前提與必填相斥 | 新：無此指標（不適用） | 措辭過時 |
+| 98 | OQ 引用須指向現行位置與正確編號 | OQ 平層＝未結案佇列、`_archives/<年>/`＝已封存 | 四類勘誤：(a) prepress-review/spec.md:39 寫「降級路徑（**PI-004** 定案）」，但 PI-004 實為「打樣印件印製維度生命週期未建模」，破例派工的拍板卡是 AR-10；(b) 同檔 306 寫「**PI-009** 定案 10 項」，PI-009 在 OQ 全庫（平層與封存）**皆不存在**；(c) 190、192 三個引用路徑 `08-open-questions/AR-5-…`、`AR-15-…`、`AR-16-…` 指向平層，三卡均已封存至 `_archives/2026/`＝死鏈；(d) 1143 引用舊 repo 原始碼路徑 `sens-erp-prototype/src/store/useErpStore.ts:2563` 作為條文論據 | 不適用 | 引用勘誤（死鏈） |
+| 99 | QC 實體已退役、改掛印件層品檢紀錄 | `06-state-machines/QC 狀態.md`（已退役）；`05-entities/印件.md`:91-104（品檢缺口處置） | 殘留：business-scenarios/spec.md:118（步驟 8「師傅生產完成，**QC 通過**」）、585、633（「PrintItem 走原審稿 / 工單 / 生產任務 / **QC** / 出貨流程」）；後兩處另與段 4 #17（補印印件自動產生合格輪次、不走人工審稿）相斥 | 不適用 | 措辭過時 |
+| 100 | 「待分派」在兩個領域同名不同義 | 審稿維度「待分派」＝印件尚無負責審稿人員（`印件狀態.md`:31） | 同一字串另指印務主管的工單分派待辦：work-order/spec.md:34、315、698、700、712；order-management/spec.md:2187、2201、2229。同一份 spec 集合內兩義並用、無消歧註記 | 新：兩義並存於不同模組（`prepress-review/_lib/selectors.js:29-31` vs 工單側） | 疑義（術語撞名，只陳述） |
+
+---
+
+# 情境走查（審稿段三張主卡）
+
+## 一、印件審稿（`07-scenarios/印件審稿.md`，6 主步＋7 岔路）
+
+| 步 | wiki 內容 | openspec 對應 | prototype 對應 |
+|---|---|---|---|
+| 主 1 | 業務在需求單建立印件、評難易度（1-10 必填）、視情況標免審 | 有：order-management/spec.md:797-830（難易度繼承與更正）、149-173（免審可編輯） | 新：`orders/_lib/store.js:230-263` `addPrintItem` 有難易度與 `skip_review`；免審印件初值直接為「合格」 |
+| 主 2 | 分派審稿人員——線下單回簽後由訂單管理人手動分派（候選全部啟用中、難易度僅參考）；線上單於首次上傳當下由系統自動分派 | 有：prepress-review/spec.md:101-181（線下）、28-98（線上） | 新：分派入口在印件詳情與審稿列表批次列（`print-items/detail/page.js:233`、`603-612`、`ReviewOrderList.js:391`），訂單詳情印件列無分派鈕；**自動分派未依訂單來源分流**（矩陣 #47） |
+| 主 3 | 補件方上傳原稿（B2B 業務代／B2C 會員自送）；與第 2 步順序可互換，稿先到而人未派停「待分派」並通知 | 有：prepress-review/spec.md:138-152 兩序皆支援 | 新：`orders/_lib/store.js:286-354` 兩序皆通、建 round 1 綁 round_id；**無角色門控**（矩陣 #61）、無「稿件上傳開放」旗標（矩陣 #58）、無待分派通知 |
+| 主 4 | 審稿人員逐輪判定：合格上傳審稿後檔案＋縮圖、備註選填；不合格擇一退件原因（10 項）、系統通知補件方；每輪紀錄與三類檔案完整保留 | 有：prepress-review/spec.md:400-453、294-396 | 新：`orders/_lib/store.js:364-418`、`ReviewDialog.js` 齊備；**審稿備註送出後不可改**（矩陣 #64） |
+| 主 5 | 合格後 B2B 由業務確認可製作、B2C 由系統自動 | 有：prepress-review/spec.md:1331-1355 | 新：`store.js:527-540`／`419-425` 齊備 |
+| 主 6 | 收斂於「已確認可製作」終態、觸發工單建立 | 有：prepress-review/spec.md:1346、1354 | 新：`print-items/_lib/work-order-actions.js` 承接 |
+| 岔 1 | 審稿討論（線下單）：業務勾選印件開 Slack 串、mention 訂單管理人、連結留存 | 有：prepress-review/spec.md:185-210 | 新：有，但 mention 對象硬寫字面值（矩陣 #55） |
+| 岔 2 | 免審直通：訂單成立時系統建合格輪次、自「待分派」直達「合格」、不進待審清單 | 有：prepress-review/spec.md:353-358、1462-1469 | 新：**不建輪次**（矩陣 #78）；不進待審清單一致 |
+| 岔 3 | 批次審稿：同訂單、同一審稿人員、整批同結果、縮圖共用、審稿後檔案逐件、備註預設共用可覆寫、個別移除 | 有：prepress-review/spec.md:214-265 | 新：五項有，缺「共用備註＋逐件覆寫」（矩陣 #66）；另允許跨訂單勾選（wiki 限同訂單） |
+| 岔 4 | 補件迴圈（B2B）：業務看退件原因與審稿備註、代客戶上傳、選填補件說明 → 「已補件」，回原審稿人員（線下單不隨上傳重跑分派） | 有：prepress-review/spec.md:485-509、513-530 | 新：`store.js:200`（新輪）＋`ItemsTab.js:550-568` 補件入口限「不合格／待改稿」；補件回原審稿人員成立 |
+| 岔 5 | 補件迴圈（B2C）：會員於電商會員中心看歷史輪次與最新意見、重新上傳、電商回寫 ERP；這輪誰審依每輪起始檢查（換人／難易度／免審） | 有：prepress-review/spec.md:457-482；**每輪起始檢查的「免審」分支未進狀態同步表**（矩陣 #80） | 新：無電商前台側；補件走同一 ERP 入口、無每輪起始檢查 |
+| 岔 6 | 業務退回重審：僅限「合格」、**原因選填**、不建輪次、轉「待改稿」，客戶上傳新稿才建下一輪 | 有：prepress-review/spec.md:1357-1398，但**原因必填**（矩陣 #71） | 新：**動作缺**，mock 已種出「待改稿」與「退回重審」事件（矩陣 #72）。舊：有，但原因必填 |
+| 岔 7 | 補件停滯：不設輪次上限、不設停滯提醒，印件一直停「不合格」直到補件或訂單取消 | 無明文 MUST NOT（矩陣 #49） | 兩 repo 皆無提醒機制（現況符合） |
+
+## 二、覆寫審稿分派（`07-scenarios/覆寫審稿分派.md`，3 主步＋1 岔路）
+
+| 步 | wiki 內容 | openspec 對應 | prototype 對應 |
+|---|---|---|---|
+| 主 1 | 訂單管理人或審稿主管選取「已有負責審稿人員且審稿未完成」的印件執行「分派審稿人員」，系統顯示原審稿人員與目前審稿狀態 | 有：prepress-review/spec.md:105、160-166 | 新：`orders/_lib/store.js:478-487`；`AssignReviewerDialog.js` 顯示原負責人。**角色門控矛盾**（矩陣 #56） |
+| 主 2 | 從候選清單挑新審稿人員、原因選填；候選＝全部啟用中（離職停用不列出），難易度與能力等級僅參考標示不過濾不阻擋 | 有：prepress-review/spec.md:109-110、130-136 | 新：`AssignReviewerDialog.js:54-64`、`66-69`、`185-191`、`193` 一致 |
+| 主 3 | 系統換人並寫一筆換人活動紀錄（原／新審稿人員、時間、原因若有填）；歸屬即時更新、新審稿人員待審清單出現該印件 | 有：prepress-review/spec.md:114、164-166 | 新：`store.js:478-487`、`514-516`（未完成輪次同步換人）、`75-81`（補 timestamp） |
+| 岔 2a | 候選清單為空 → 提示無可選人員、本次換人不成立、印件維持原歸屬 | 有：prepress-review/spec.md:176-181，但條件措辭為「全員不在崗」（矩陣 #45、#51） | 新：未處理空集合提示 |
+| 收斂 | 換人不改審稿維度狀態、由新審稿人員接手 | 有：prepress-review/spec.md:694 明文 MUST NOT 改狀態 | 新：一致 |
+
+## 三、維護審稿人員能力等級（`07-scenarios/維護審稿人員能力等級.md`，3 主步、無岔路）
+
+| 步 | wiki 內容 | openspec 對應 | prototype 對應 |
+|---|---|---|---|
+| 主 1 | 審稿主管檢視審稿部門所有審稿人員清單與每人當前能力等級 | 有：prepress-review/spec.md:595（能力維護模組）、796-814（對比表含「派案等級」可點擊編輯） | 新：**缺**（無主管工作台，`layout.js:56-67` 審稿選單只有待審訂單與待分派審稿）。舊：`SupervisorDashboard.tsx:220`、`509-541` 有 |
+| 主 2 | 依實際審稿表現評定新等級，1-10 整數 | 有：prepress-review/spec.md:15-18 範圍驗證 | 新：缺。舊：`useErpStore.ts:3574-3576` 驗 1-10 |
+| 主 3 | 系統留活動紀錄含調整時間、操作者、舊值、新值四項 | 有：prepress-review/spec.md:20-24 | 新：缺。舊：`useErpStore.ts:3573-3599` 寫 `reviewerCapabilityLogs`（timestamp／actor／from／to） |
+| 收斂／範圍外 | 等級變更只作用於變更之後的分派；**不設初值、可為空**（空＝不做審稿、不進候選） | 「只作用於未來」一致（24）；**「可為空」相斥**（矩陣 #43） | 新：硬編碼兩人皆有值。舊：`addReviewer` 強制 1-10、無可為空路徑 |
+
+---
+
+# 狀態轉換逐條判定（印件審稿維度 10 條＋訂單審稿段 4 條）
+
+## 印件狀態·審稿維度（`06-state-machines/印件狀態.md`:145-154）
+
+| # | 轉換（觸發事件／條件） | openspec 判定 | prototype 判定 |
+|---|---|---|---|
+| T1 | 待分派 → 稿件未上傳（訂單管理人分派；線下單、稿件尚未上傳） | 一致：prepress-review/spec.md:681、146-152 | 新一致：`orders/_lib/store.js:488-512`（稿未到 → 稿件未上傳）；`_lib/prepressReview.js:37` 白名單含此弧 |
+| T2 | 待分派 → 等待審稿（分派審稿人員；稿件已上傳。線下單由訂單管理人、線上單於首次上傳當下由系統自動） | 一致：prepress-review/spec.md:682-683、138-145 | 新**部分衝突**：弧與狀態正確（`store.js:488-512`），但線上／線下未分流——`store.js:302-326` 線下單上傳亦自動派人（矩陣 #47） |
+| T3 | 待分派 → 合格（符合免審條件、系統自動；免審印件不經分派） | 一致：prepress-review/spec.md:688、353-358 | 新**部分缺**：狀態一致（`store.js:239` 免審直接「合格」），但**不建 `source=免審稿` 輪次**（矩陣 #78） |
+| T4 | 稿件未上傳 → 等待審稿（客戶上傳稿件，建立首輪審稿） | 一致：prepress-review/spec.md:684 | 新一致：`store.js:286-354`（含建 round 1） |
+| T5 | 等待審稿／已補件 → 合格（該輪需審稿時由審稿人員判定；該輪為免審時由系統自動判合格） | **部分缺**：審稿人員判定一致（685）；「該輪免審 → 系統自動判合格」只有散文（45），同步表 678-693 無此列（矩陣 #80） | 新**部分缺**：審稿人員判定一致（`store.js:403-418`）；無每輪起始檢查，中途改免審不生效 |
+| T6 | 等待審稿／已補件 → 不合格（審稿人員判定不合格） | 一致：prepress-review/spec.md:686、430-440 | 新一致：`store.js:364-372`；退件原因 10 項必選 |
+| T7 | 不合格 → 已補件（客戶重新上傳稿件；退補件可多次來回） | 一致：prepress-review/spec.md:687。註：輪次建立時點在同檔內相斥（矩陣 #60） | 新一致：`store.js:200`（補件新檔綁新輪） |
+| T8 | 合格 → 已確認可製作（業務確認可製作；B2C 系統自動。終態、觸發工單建立） | 一致：prepress-review/spec.md:689-690、1331-1355 | 新一致：`store.js:527-540`／`419-425` |
+| T9 | 合格 → 待改稿（業務退回重審，**原因選填**、寫進訂單活動紀錄；僅限合格；此時不建輪次） | **衝突**：弧一致（691），但原因必填（1359、order-management:878）（矩陣 #71） | 新**缺**：白名單有此弧（`_lib/prepressReview.js:44`）但無 action 與 UI（矩陣 #72）。舊有、原因必填 |
+| T10 | 待改稿 → 等待審稿（客戶上傳新稿；新稿上傳時才建下一輪） | **部分衝突**：弧一致（692、1414），但 1521-1526 對免審印件硬性走「系統自動分配、非免審」（矩陣 #81） | 新**缺**：白名單有此弧（`_lib/prepressReview.js:44`），因 T9 缺而到不了 |
+
+**額外判定（wiki 明文的 negative 規則）**：改派 MUST NOT 改變審稿維度狀態 → openspec 694 一致、新 repo `store.js:478-487` 一致。
+
+## 訂單狀態·審稿段（`06-state-machines/訂單狀態.md`:177-180）
+
+| # | 轉換（觸發事件／條件） | openspec 判定 | prototype 判定 |
+|---|---|---|---|
+| O1 | 稿件未上傳 → 等待審稿（稿件上傳觸發審稿；印件審稿狀態向上歸納） | 一致：order-management/spec.md:358、372 | 新**缺**：無歸納邏輯（矩陣 #92）。舊：`useErpStore.ts:95-96` 一致 |
+| O2 | 等待審稿 → 待補件（任一印件審稿不合格） | 一致：order-management/spec.md:356、388-393 | 新**缺**：全 repo 無處寫入「待補件」。舊：`useErpStore.ts:91-92` 一致 |
+| O3 | 待補件 → 等待審稿（補件完成、無其他不合格印件；不視為回退） | 一致：order-management/spec.md:330、356、396-400 | 新**缺**。舊一致 |
+| O4 | 等待審稿 → 製作等待中（**全部印件已確認可製作**；全數合格但尚有未確認件時停在等待審稿） | **部分衝突**：派生規則 2（357）與 Scenario（402-412）一致；但同檔 138-139 的免審快速路徑條件寫「合格或免審稿」即直達製作等待中（矩陣 #91、#79） | 新**缺**：只在 `confirmSignBack`（`store.js:156-164`）用 `allSkip` 判一次、之後不重算（矩陣 #92）。舊：`useErpStore.ts:93-94` 一致 |
+
+**共同缺口（14 條之外）**：印件審稿維度的「待分派」在訂單層派生規則中無落點——openspec 五規則與舊 repo 五規則皆無此分支（矩陣 #90）。
+
+---
+
+# wiki 內部疑義（只陳述，不調和）
+
+| # | 位置 | 疑似問題 |
+|---|---|---|
+| 1 | `07-scenarios/印件審稿.md`:108 vs `05-entities/審稿輪次.md`:38（＋AR-6 拍板） | 情境卡範圍外段寫「不合格率（退件率）指標的分母口徑與**技術性退件如何排除** → 屬實作規格層 KPI 定義」，措辭預設存在排除機制；審稿輪次卡與 AR-6（2026-08-01）明訂「技術性退件**不排除**、原寫法作廢」。兩處措辭相斥 |
+| 2 | AR-10（`_archives/2026/AR-10-主管覆寫分派是否允許破例派工.md`）決議 vs `04-business-logic/營運規則/訂單到交付/審稿分配規則.md`:53、`07-scenarios/覆寫審稿分派.md`:26 | AR-10（2026-05-23）拍板「審稿主管重新分配時**不能選能力不足的審稿人員**，候選清單先擋（UI 層預先過濾）」；現行規則卡與情境卡均為「候選不過濾、能力等級僅參考標示、不篩選也不阻擋」（2026-07-03 拍板）。封存 OQ 未標註已被後續拍板推翻 |
+| 3 | `06-state-machines/訂單狀態.md`:45-54、175 vs `06-state-machines/印件狀態.md`:31 | 訂單審稿段只有三值（稿件未上傳／等待審稿／待補件），但印件可能處於「待分派」且稿件**已上傳**（`審稿分配規則.md`:43 明文支援「先傳檔後分派」）。此時訂單既非「稿件未上傳」（稿已上傳）亦非「等待審稿」（無人在審），三值涵蓋不到。訂單狀態卡:213 把「歸納細則」劃為實作規格層，未定義本情形的落點 |
+| 4 | `04-business-logic/營運規則/訂單到交付/打樣流程.md`:40 vs `06-state-machines/印件狀態.md`:119、156、164 | 印件狀態卡於段 3 落卡新增「重打回『等待中』後**隨即由系統自動推進「製程已確認」**」；打樣流程卡 L40 仍只寫「印製維度自『已送達』回『等待中』重跑」，未含自動推進，兩卡未同步 |
+| 5 | `03-roles/訂單管理人.md`:29、`03-roles/審稿主管.md`:27 vs `05-entities/人員.md`:35 | 兩張角色卡把「原審稿人員停用或**請假**」並列為換人情境，但人員卡只有「是否啟用」一個欄位；「請假」在 wiki 沒有可判定的系統事實來源（`覆寫審稿分派.md`:22 明說請假期間仍是啟用中、由執行者自行判斷）。openspec 與舊 repo 據此各自造出「在崗／不在崗」欄位（矩陣 #45） |
+| 6 | `06-state-machines/印件狀態.md`:87、90（mermaid 圖）vs 同卡:149（轉換表） | 轉換表把「等待審稿／已補件 → 合格」的觸發者寫成「該輪需審稿時由審稿人員判定；**該輪為免審時由系統自動判合格**」；mermaid 圖對應兩條弧只標「審稿人員判定合格」／「原審稿人員重審判定合格」，未畫系統自動觸發的分支。圖與表不同步 |
+| 7 | `07-scenarios/印件審稿.md`:84 vs `05-entities/審稿輪次.md`:36 | 免審合格輪次的時點兩處不同：情境卡寫「系統在**訂單成立時**自動建立一筆合格輪次」，審稿輪次卡的「送審時間」欄寫「免審稿為**印件建立時間**」。訂單期間業務追加免審印件時兩者不是同一時點 |
+| 8 | `03-roles/審稿主管.md`:28 vs `05-entities/人員.md`:39 | 主管卡寫「設定每位審稿人員的能力等級**上限**」，人員卡與規則卡一律稱「能力等級」（1-10）。同一欄位兩種稱法 |
+| 9 | `05-entities/人員.md`:39 | 欄位表「可否修改」格寫「可（**尚未實作**，wiki 先立、待後續開發）」——實作進度資訊寫進 wiki 欄位表，與 CLAUDE.md § wiki 與 OpenSpec 分工「wiki 不承載與實作文件的對應」的邊界相摩擦 |
+
+---
+
+# 交界註記（歸屬其他段、本段只記關聯）
+
+1. **補印印件的審稿路徑**：wiki `售後服務規則`:44 明訂補印印件自動產生一筆審稿輪次（來源＝售後補印、結果自動合格、沿用來源印件最終合格稿件），不走人工審稿；business-scenarios/spec.md:585、633 仍寫「PrintItem 走原**審稿** / 工單 / 出貨流程」，新 repo `orders/_components/detail/TicketViewDrawer.js:170-180` 亦寫 `review_status: '等待審稿'`。此列已由既有矩陣段 4 #17 承載，本段不重複編號。
+2. **段 3 新增四 Requirement 的其餘部分**（打樣週期歸零六欄、印件追溯欄位的正反向查詢、舊週期紀錄不刪）與審稿段無銜接矛盾，逐項比對後判定對齊（prepress-review/spec.md:1065-1168 vs `印件狀態.md`:181、`齊套邏輯`；prototype 以計算界線實作，見既有矩陣段 4 #36）。
+3. **prototype 兩 repo 職能分裂本身**：審稿主管工作台與 KPI、退回重審、免審輪次、能力等級維護、訂單向上歸納五項只存在舊 repo，新 repo `prepress-review/README.md:3-5` 自承儀表板不在範圍；新 repo 完全無測試（無 `*.test.*`／`*.spec.*`／playwright／vitest／jest 設定，`package.json` 無 test script），舊 repo 有 10 支審稿相關測試（`src/test/scenarios/prepressReviewE2E.test.ts`、`src/test/store/assignReviewer.test.ts`、`src/test/store/bubbleUp.test.ts` 等）。
