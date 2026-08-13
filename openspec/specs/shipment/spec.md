@@ -5,7 +5,7 @@
 **範圍**：
 - 主要：出貨單建立與額度檢核、分批出貨、揀貨與裝箱回報、出貨與送達確認、送達後的收尾判定、異常與作廢的額度回補、數量帳守恆鏈
 - 次要：出貨單狀態的轉換守衛
-- 不含：品檢與入庫（`qc`）、款項與發票（`order-billing`）、售後與補印（`after-sales-ticket`）
+- 不含：品檢與入庫（`qc`）、款項與發票（`order-billing`）、售後與補做（`after-sales-ticket`）
 
 **正本邊界**：欄位表見 wiki [出貨單](../../../memory/Sens_wiki/wiki/erp/05-entities/出貨單.md)；狀態列舉見 wiki [出貨單狀態](../../../memory/Sens_wiki/wiki/erp/06-state-machines/出貨單狀態.md)；可出貨額度與回補公式見 wiki [齊套邏輯](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)；情境過程見 wiki [出貨與送達](../../../memory/Sens_wiki/wiki/erp/07-scenarios/出貨與送達.md)；介面與互動見 Prototype。本 spec 只承載系統行為與轉換守衛。
 
