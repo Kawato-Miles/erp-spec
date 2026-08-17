@@ -32,3 +32,4 @@
 - [x] 4.2 ACCEPTANCE.md 續補 4B 驗收項（每任務群組至少一條端到端）＋既有審稿驗收項基準同步——驗證：驗收項可照走
 - [x] 4.3 跨模組資料流稽核（Opus）：免審全鏈（建印件→合格輪→B2B 確認→工單草稿）、訂單層歸納鏈（審稿事件→派生→訂單落點）、退回重審鏈——驗證：零斷鏈（三鏈主幹通、8 斷鏈全修於 erp 752f3f1＋delta 31b8fc5，mock 不變式零例外複驗）
 - [x] 4.4 `openspec validate correct-production-stage-seg4b --strict` 通過＋免登入白名單確認——驗證：validate 過、3020 可直開
+- [x] 4.5 verify 報告的 main spec 殘留口徑收進 delta（純規格側、prototype 已符合不需改碼）：prepress-review 四條 MODIFIED（B2C 會員補件／B2B 業務補件改上傳即建輪、審稿備註修改稽核刪主管覆寫死引用與合格終態措辭、待分派審稿清單母集合限線下單）＋order-management 三條 MODIFIED（印件 ReviewRound 整合改檔案三角色並去欄位表複寫、印件印製維度狀態機刪主管覆寫候選清單、稿件上傳補上傳開放旗標前提）＋打樣 NG 複製新印件補「免審值＝否」——驗證：七條標題與 main 逐字相符、`openspec validate --strict` 通過
