@@ -19,31 +19,38 @@
 ## Requirements
 ### Requirement: AfterSalesTicket 實體與欄位
 
-系統 SHALL 提供 AfterSalesTicket 實體，作為訂單已完成後客訴 / 不良 / 規格不符 / 物流問題 / 工法限制 / 交期延誤等售後事件的承載容器。一張 AfterSalesTicket 屬於單一 Order，記錄業務 / 諮詢與業務主管討論後的決議結果、售後類型分類，並關聯下游動作（OrderAdjustment / PrintItem / SalesAllowance）。
+系統 SHALL 提供售後服務單實體，作為**訂單成立後**客訴 / 不良 / 規格不符 / 物流問題 / 工法限制 / 交期延誤等售後事件的承載容器。一張售後服務單 SHALL 屬於單一訂單，記錄業務／諮詢與業務主管討論後的決議結果、售後類型分類，並關聯下游動作（訂單異動、補做生產任務）。
 
-欄位正本見 [wiki 售後服務實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/售後服務.md) § 欄位（業務可見）；關聯（0..N 訂單異動單、0..N 補印印件）見同卡 § 關鍵關聯。
+**建單 SHALL 為零前提**：訂單成立之後的任何時間皆可建單，系統 SHALL NOT 以訂單狀態為建單把關（規格見 § 售後服務單建單零前提）。
+
+**售後服務單 SHALL NOT 持有印件、SHALL NOT 建立印件**：「相關印件」為受理層的指認（選填、多選，記客戶反映的是哪幾件印件），補做的載體 SHALL 為加開在原工單上的補做生產任務（見 § 售後服務單決議觸發補做）。
+
+欄位正本見 wiki [售後服務](../../../memory/Sens_wiki/wiki/erp/05-entities/售後服務.md) § 欄位（業務可見）；關聯（0..N 訂單異動、N:M 相關印件、0..N 補做生產任務、0..N 退款款項紀錄）見同卡 § 關鍵關聯。本 spec 不複寫欄位表。
 
 **Priority**: P0
 
-**Rationale**: 售後事件需要獨立於訂單異動單的受理容器，讓訂單異動單回歸純金額異動載具。
+**變更理由**: 兩處與售後與補做統一案（拍板 25）及零前提（本 change）相斥——(1) 原 Scenario「AfterSalesTicket 建單時 Order 必須已完成」把訂單終態設為建單把關，該把關本次廢除（其唯一功能是金額分界，已下沉到決議選項）；(2) 原關聯寫「0..N 補印印件」，補印印件型別本次廢除，關聯改為「N:M 相關印件（受理時勾選）＋ 0..N 補做生產任務（觸發來源）」。同時補上「相關印件」為選填欄與「售後服務單不持有、不建立印件」的邊界句。
 
-#### Scenario: 業務 / 諮詢於已完成訂單建立 AfterSalesTicket
+**Rationale**: 售後事件需要獨立於訂單異動的受理容器，讓訂單異動回歸純金額異動載具。建單不設前提，是因為開一張單本身不會讓任何資源流出，而客戶什麼時候反映問題不由我們的訂單狀態決定；把關擺在建單那一關，只會讓客訴退回通訊軟體裡、事後查不到。真正該擋的是錢與生產這兩個動作，所以把關下沉到決議選項。
 
-- **GIVEN** Order.status = 已完成、completion_date = 2026-03-15、訂單尚無關聯 AfterSalesTicket
-- **WHEN** 業務或諮詢於 2026-05-06 點擊訂單詳情頁的「建立售後服務單」
-- **THEN** 系統 SHALL 開啟 AfterSalesTicket 建單表單
-- **AND** 必填 `customer_complaint`、`case_category`
-- **AND** 可選填 `slack_thread_url`
-- **AND** 系統 SHALL 寫入 `case_no`（AS-20260506-XX）、`opened_at`、`opened_by` = 當前使用者
-- **AND** 新 AfterSalesTicket.status SHALL = 受理中
-- **AND** resolution SHALL = NULL（決議前）
+#### Scenario: 業務 / 諮詢於訂單建立售後服務單
 
-#### Scenario: AfterSalesTicket 建單時 Order 必須已完成
+- **GIVEN** 訂單 ORD-2026-0512 已成立、訂單尚無未結案的售後服務單
+- **WHEN** 業務或諮詢點擊訂單詳情頁的「建立售後服務單」
+- **THEN** 系統 SHALL 開啟售後服務單建單表單
+- **AND** 必填「客訴內容」與「售後類型」
+- **AND** 可選填「相關印件」與「討論紀錄連結」
+- **AND** 系統 SHALL 寫入售後服務單編號、建立時間、建立者＝當前使用者
+- **AND** 新售後服務單狀態 SHALL ＝ 受理中
+- **AND** 決議處理方式 SHALL 為空（決議前）
 
-- **GIVEN** Order.status ≠ 已完成（例：生產中、出貨中）
-- **WHEN** 業務 / 諮詢嘗試點擊「建立售後服務單」
-- **THEN** 系統 MUST 拒絕並提示「訂單尚未完成，請使用『建立訂單異動單』處理生產期間的異動」
-- **AND** 系統 MUST NOT 建立 AfterSalesTicket
+#### Scenario: 相關印件為選填、不擋存檔
+
+- **GIVEN** 客戶只說「有一批貨有色差」，業務尚不確定是哪幾件印件
+- **WHEN** 業務不勾選任何相關印件即送出建單
+- **THEN** 系統 SHALL 允許存檔、售後服務單 SHALL 成立於受理中
+- **AND** 業務 SHALL 可於結案前查明後再補勾相關印件
+- **AND** 系統 SHALL NOT 以「未指定印件」為由擋下受理
 
 ### Requirement: 業務 / 諮詢角色售後 ticket 權限範圍
 
@@ -100,61 +107,65 @@
 
 ### Requirement: AfterSalesTicket 狀態機
 
-AfterSalesTicket SHALL 採用三狀態機（受理中 → 處理中 → 已結案；狀態列舉正本見 [wiki 售後服務狀態卡](../../../memory/Sens_wiki/wiki/erp/06-state-machines/售後服務狀態.md)），無核可關卡（業務與主管在 Slack 線下討論，系統只記錄結果）。
+售後服務單 SHALL 採用三狀態機（受理中 → 處理中 → 已結案；狀態列舉正本見 [wiki 售後服務狀態](../../../memory/Sens_wiki/wiki/erp/06-state-machines/售後服務狀態.md)），無核可關卡（業務與主管在系統外討論，系統只記錄結果）。
 
 狀態轉換：
 
 ```
-受理中 ─ 送出決議（填 resolution）──▶ 處理中
+受理中 ─ 送出決議（填決議處理方式）──▶ 處理中
 處理中 ─ 業務點結案（有未完結下游動作時先提示，確認後仍可結案）──▶ 已結案
-處理中 ─ 業務修改 resolution ───────▶ 處理中（同態，但允許 resolution 變更）
+處理中 ─ 業務修改決議處理方式 ──────▶ 處理中（同態，但允許決議變更）
 已結案 ─ 不可重開 ──────────────────▶ X
 ```
 
-`closure_status` 為 derived field：`status = 已結案` → `closure_status = 已結案`；否則 `closure_status = 未結案`。
+送出決議時各選項能不能選 SHALL 依當下事實即時判定（見 § 受理與決議兩段的即時可選判定），系統 SHALL NOT 讓業務存檔之後才發現該動作做不了。
+
+結案歸納標記為衍生值：狀態＝已結案 → 已結案；否則未結案。
 
 **Priority**: P0
 
+**變更理由**: 一處與統一案相斥——原 Scenario 的未完結下游動作列舉為「補印印件尚未出貨完成」，補印印件型別本次廢除，改為「補做生產任務尚未完成／補做量尚未出貨完成」；決議值域「補印」一併正名「補做」。另補上「決議選項即時判定可否」與狀態機的銜接句（把關下沉到決議的落點）。狀態三值、無核可關卡、結案軟提示皆不變。
+
 **Rationale**: 「處理完沒」只有業務看全貌才知道，系統不足以自動判斷或阻擋；結案為純手動，未完結下游動作以提醒取代硬阻擋（漏做退款由三方對帳應退差額警示兜底）。
 
-#### Scenario: 受理中 ticket 填入 resolution 推進處理中
+#### Scenario: 受理中售後服務單填入決議推進處理中
 
-- **GIVEN** AfterSalesTicket.status = 受理中、resolution = NULL
-- **WHEN** 業務填入 resolution = 退款 並點「送出決議」
-- **THEN** status SHALL → 處理中
-- **AND** 系統 SHALL 寫入 ActivityLog（事件描述 = 「決議送出」、resolution 值）
+- **GIVEN** 售後服務單狀態 ＝ 受理中、決議處理方式為空、所屬訂單已達終態
+- **WHEN** 業務填入決議處理方式 ＝ 退款 並點「送出決議」
+- **THEN** 狀態 SHALL → 處理中
+- **AND** 系統 SHALL 寫入活動紀錄（事件描述 ＝ 「決議送出」、決議值）
 
-#### Scenario: 處理中 ticket 業務手動結案
+#### Scenario: 處理中售後服務單業務手動結案
 
-- **GIVEN** AfterSalesTicket.status = 處理中、resolution = 退款、關聯 OrderAdjustment 確認可執行、退款 Payment 已建立、折讓已開立
+- **GIVEN** 售後服務單狀態 ＝ 處理中、決議處理方式 ＝ 退款、關聯訂單異動已確認可執行、退款款項紀錄已建立、折讓已開立
 - **WHEN** 業務點擊「結案」
-- **THEN** status SHALL → 已結案（下游動作已全數完結，不出現提醒）
-- **AND** 系統 SHALL 寫入 closed_at = 當下時間、closed_by = 操作業務
-- **AND** 系統 SHALL 寫入 ActivityLog（事件描述 = 「結案」）
+- **THEN** 狀態 SHALL → 已結案（下游動作已全數完結，不出現提醒）
+- **AND** 系統 SHALL 寫入結案時間 ＝ 當下、結案者 ＝ 操作業務
+- **AND** 系統 SHALL 寫入活動紀錄（事件描述 ＝ 「結案」）
 
 #### Scenario: 結案時有未完結下游動作提示但允許強制結案
 
-- **GIVEN** AfterSalesTicket.status = 處理中、resolution = 退款+補印、關聯 OrderAdjustment 處於待主管審核、補印 PrintItem 尚未出貨完成
+- **GIVEN** 售後服務單狀態 ＝ 處理中、決議處理方式 ＝ 退款+補做、關聯訂單異動處於待主管審核、補做生產任務尚未完成
 - **WHEN** 業務點擊「結案」
-- **THEN** 系統 SHALL 顯示提醒並列出未完結項目（未完結訂單異動單、未出貨完成的補印印件）
-- **AND** 業務確認後系統 SHALL 允許結案，status → 已結案
-- **AND** 系統 SHALL 寫入 ActivityLog（事件描述 = 「結案」、附當下未完結項目清單）
+- **THEN** 系統 SHALL 顯示提醒並列出未完結項目（未完結的訂單異動、未完成或未出貨完成的補做量）
+- **AND** 業務確認後系統 SHALL 允許結案，狀態 → 已結案
+- **AND** 系統 SHALL 寫入活動紀錄（事件描述 ＝ 「結案」、附當下未完結項目清單）
 - **AND** 系統 MUST NOT 以未完結下游動作為由鎖定結案按鈕或拒絕結案
 
-#### Scenario: 處理中 ticket 修改 resolution
+#### Scenario: 處理中售後服務單修改決議
 
-- **GIVEN** AfterSalesTicket.status = 處理中、resolution = 退款
-- **WHEN** 業務發現客戶要求改為「退款+補印」，於 ticket 上修改 resolution
-- **THEN** resolution SHALL 更新為「退款+補印」
-- **AND** status SHALL 維持「處理中」
-- **AND** 系統 SHALL 寫入 ActivityLog（事件描述 = 「resolution 變更」、舊值、新值）
+- **GIVEN** 售後服務單狀態 ＝ 處理中、決議處理方式 ＝ 退款
+- **WHEN** 業務發現客戶要求改為「退款+補做」，於單上修改決議處理方式
+- **THEN** 決議處理方式 SHALL 更新為「退款+補做」
+- **AND** 狀態 SHALL 維持「處理中」
+- **AND** 系統 SHALL 寫入活動紀錄（事件描述 ＝ 「決議變更」、舊值、新值）
 
-#### Scenario: 已結案 ticket 不可重開
+#### Scenario: 已結案售後服務單不可重開
 
-- **GIVEN** AfterSalesTicket.status = 已結案
-- **WHEN** 業務嘗試於 UI 操作「重開」
-- **THEN** 系統 MUST 拒絕並提示「已結案 ticket 不可重開，請建立新售後服務單處理新客訴」
-- **AND** 業務 SHALL 可建立新 ticket（既有結案 ticket 不阻擋）
+- **GIVEN** 售後服務單狀態 ＝ 已結案
+- **WHEN** 業務嘗試於介面操作「重開」
+- **THEN** 系統 MUST 拒絕並提示「已結案售後服務單不可重開，請建立新售後服務單處理新客訴」
+- **AND** 業務 SHALL 可建立新售後服務單（既有已結案單不阻擋）
 
 ### Requirement: 售後類型分類（case_category）
 
@@ -242,150 +253,97 @@ AfterSalesTicket SHALL 提供 `slack_thread_url` 欄位，業務於建單後將 
 
 ### Requirement: 與 OrderAdjustment 關聯（金額異動執行）
 
-退款 / 補印收費場景下，業務 SHALL 於 ticket 內建立關聯的 OrderAdjustment。OrderAdjustment 加新欄位 `linked_after_sales_ticket_id`（FK -> AfterSalesTicket，nullable）標示其源自哪張售後 ticket。
+退款 / 補做收費場景下，業務 SHALL 於售後服務單內建立關聯的訂單異動。訂單異動加「關聯售後服務單」欄標示其源自哪張售後服務單。
 
-OrderAdjustment 仍走既有狀態機（草稿 → 待主管審核 → 確認可執行；主管核可當下即生效，見 [order-adjustment spec](../order-adjustment/spec.md)），業務主管在 OrderAdjustment 層級審核金額。AfterSalesTicket 本身無核可關卡。
+**金額動作 SHALL 依訂單是否達終態開關**（分界正本見 wiki [明細時點分界](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/明細時點分界.md)）：
 
-**補印收費的判斷載體（行為驅動）**：補印收不收費不設欄位，收費事實由「售後單下有無補收 OrderAdjustment」體現——要向客戶收費就是業務手動建補收異動單（金額為與客戶協商的價格），公司吸收費用就只建補印 PrintItem 不建異動單。系統 MUST NOT 自動帶建補費 OA。
+- **訂單未達終態**：售後服務單內 SHALL NOT 開放建立退款或補收訂單異動（入口 SHALL 灰掉並附一句指引——金額走訂單明細直接調整，即階段一）
+- **訂單已達終態（訂單完成或已取消）**：SHALL 開放（階段二）
+
+可用性 SHALL 隨訂單狀態即時切換：售後服務單在訂單未終態時建立、訂單之後推進終態後，同一張售後服務單的金額動作入口 SHALL 自動由灰轉亮，系統 SHALL NOT 要求重建售後服務單。
+
+訂單異動仍走既有狀態機（草稿 → 待主管審核 → 確認可執行；見 [order-adjustment spec](../order-adjustment/spec.md)），業務主管在訂單異動層級審核金額。售後服務單本身無核可關卡。
+
+**補做收費的判斷載體（行為驅動）**：補做收不收費 SHALL NOT 設欄位，收費事實 SHALL 由「售後服務單下有無補收訂單異動」體現——要向客戶收費就是業務手動建補收異動（金額為與客戶協商的價格），公司吸收費用就只發起補做、不建異動。系統 MUST NOT 自動帶建補費異動。
 
 **「確認可執行」生效機制**：
 
-OrderAdjustment 於業務主管核可當下即推進「確認可執行」、應收即時調整（不綁退款 Payment 累計，見 [order-adjustment spec](../order-adjustment/spec.md)）。ticket 內的後續退款動作屬對帳核銷層：
+訂單異動於業務主管核可當下即推進「確認可執行」、應收即時調整（不綁退款款項紀錄累計，見 [order-adjustment spec](../order-adjustment/spec.md)）。售後服務單內的後續退款動作屬對帳核銷層：
 
-- OA 確認可執行後，ticket 詳情頁的「關聯 OrderAdjustment 卡片」SHALL 顯示「建立退款 Payment」入口按鈕
-- 業務點擊後開啟退款 Payment 建立 dialog，填入退款日期 / 對帳附件 / 對帳備註（詳見 order-management spec）
-- 提交後系統建立 Payment、切已完成時核銷對帳應退差額＋更新 ticket 卡片顯示「退款已完成（Payment-{payment_no}）」；MUST NOT 回頭改變 OA 狀態
+- 訂單異動確認可執行後，售後服務單詳情頁的「關聯訂單異動卡片」SHALL 顯示「建立退款款項紀錄」入口按鈕
+- 業務點擊後開啟退款款項建立 dialog，填入退款日期 / 對帳附件 / 對帳備註（詳見 order-management spec）
+- 提交後系統建立款項紀錄、切已完成時核銷對帳應退差額＋更新卡片顯示「退款已完成」；MUST NOT 回頭改變訂單異動狀態
 
 **金額修改時機**：
 
-OrderAdjustment 金額修改依金額編輯閘門（正本見 wiki [訂單異動規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/訂單異動規則.md)）：草稿與已退回可改（改後重新送審）；一般退款於主管核可當下即確認可執行鎖定，無「已核可」停留窗口（該窗口屬諮詢取消系統代審單，不發生於售後 ticket 場景）。
+訂單異動金額修改依金額編輯閘門（正本見 wiki [訂單異動規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/訂單異動規則.md)）：草稿與已退回可改（改後重新送審）；一般退款於主管核可當下即確認可執行鎖定，無「已核可」停留窗口（該窗口屬諮詢取消系統代審單，不發生於售後服務單場景）。
 
 **Priority**: P0
 
-**Rationale**: 售後金額動作沿用既有異動單流程（主管審核把關不因售後而繞過），售後單本身不直接改錢。
+**變更理由**: 兩處變更——(1) 原條文的補印場景全數改寫為補做：不再「建補印印件」，改為印務於印件層發起補做、原工單加開補做生產任務（統一案，拍板 25），關聯欄位由「補印印件」改為補做生產任務；(2) 補上金額動作的訂單終態開關。原 spec 因為建單前提是「訂單已完成」，金額動作永遠可用、不需要開關；零前提之後售後服務單可能在訂單進行中就存在，若不設開關就會出現兩條並行的金額路徑（訂單明細直接調整與售後單內異動）同時開著，同一筆錢可能被調兩次。
 
-#### Scenario: 退款場景 ticket 內加掛 OrderAdjustment（核可即生效＋退款核銷）
+**Rationale**: 售後金額動作沿用既有異動流程（主管審核把關不因售後而繞過），售後服務單本身不直接改錢。開關依訂單終態而不依售後服務單狀態，是因為分界的依據是「訂單明細還能不能改」——能改就在明細上改（看得到原價與改後價），不能改才需要異動單這個載體。
 
-- **GIVEN** ticket.resolution = 退款、status = 處理中
-- **WHEN** 業務於 ticket 內點「建立退款異動單」
-- **THEN** 系統 SHALL 開啟 OrderAdjustment 建單表單，預填 adjustment_type = 退印、linked_after_sales_ticket_id = 此 ticket
-- **AND** 業務填入 amount = -5000、明細 = 「退印瑕疵部分」
-- **AND** OrderAdjustment SHALL 走草稿 → 待主管審核 → 主管核可當下即「確認可執行」、應收 -5000 即時認列
-- **AND** 確認可執行後 ticket 卡片 SHALL 顯示「建立退款 Payment」按鈕
-- **AND** 業務點按鈕，dialog 顯示 → 業務填入 refund_date / reconciliation_attachment / reconciliation_note 並提交
-- **AND** 系統 SHALL 建立 Payment(-5000, type=refund)，切已完成時核銷對帳應退差額；MUST NOT 改變 OA 狀態
-- **AND** 視需要開立 SalesAllowance 關聯該退款 Payment（若已開過發票跨期，本 change 不處理 SalesAllowance 自動建立邏輯，留 OQ-4）
+#### Scenario: 訂單未達終態時售後服務單內金額動作灰掉並指引
 
-#### Scenario: 業務於 ticket 內改被退回 OA 的金額後重送
+- **GIVEN** 訂單 ORD-2026-0512 狀態 ＝ 生產中，業務已建立售後服務單 AS-20260812-01（客戶反映其中一款貼紙印壞）
+- **WHEN** 業務於該售後服務單查看可做的動作
+- **THEN** 「建立退款異動」與「建立補收異動」入口 SHALL 為灰掉狀態
+- **AND** 灰掉處 SHALL 附一句指引：訂單尚未進終態，金額請至訂單明細直接調整
+- **AND** 系統 SHALL NOT 允許繞過介面建立關聯訂單異動
 
-- **GIVEN** ticket AS-001 內有關聯 OA-001（status = 已退回，主管退回原因：金額待與客戶再確認）
-- **WHEN** 業務於 ticket 卡片點「編輯金額」並改為 -4800
+#### Scenario: 訂單推進終態後同一張售後服務單金額動作自動開放
+
+- **GIVEN** 上一情境的售後服務單 AS-20260812-01 仍為處理中，之後該訂單其餘印件全數送達、訂單自動推進「訂單完成」
+- **WHEN** 業務重新開啟 AS-20260812-01
+- **THEN** 「建立退款異動」入口 SHALL 為可用
+- **AND** 系統 SHALL NOT 要求業務另建一張新的售後服務單
+
+#### Scenario: 退款場景售後服務單內加掛訂單異動（核可即生效＋退款核銷）
+
+- **GIVEN** 售後服務單決議處理方式 ＝ 退款、狀態 ＝ 處理中、所屬訂單已達終態
+- **WHEN** 業務於單內點「建立退款異動」
+- **THEN** 系統 SHALL 開啟訂單異動建單表單，預填異動類型 ＝ 退印、關聯售後服務單 ＝ 此單
+- **AND** 業務填入異動金額 ＝ -5000、明細 ＝ 「退印瑕疵部分」
+- **AND** 訂單異動 SHALL 走草稿 → 待主管審核 → 主管核可當下即「確認可執行」、應收 -5000 即時認列
+- **AND** 確認可執行後卡片 SHALL 顯示「建立退款款項紀錄」按鈕
+- **AND** 業務點按鈕、填入退款日期 / 對帳附件 / 對帳備註並提交
+- **AND** 系統 SHALL 建立退款款項紀錄（-5000），切已完成時核銷對帳應退差額；MUST NOT 改變訂單異動狀態
+- **AND** 視需要開立折讓單關聯該退款款項紀錄
+
+#### Scenario: 業務於售後服務單內改被退回訂單異動的金額後重送
+
+- **GIVEN** 售後服務單 AS-20260812-01 內有關聯訂單異動 OA-001（狀態 ＝ 已退回，主管退回原因：金額待與客戶再確認）
+- **WHEN** 業務於卡片點「編輯金額」並改為 -4800
 - **THEN** OA-001 金額 SHALL 更新為 -4800，業務重新提交後回到「待主管審核」
-- **AND** OA-001.status SHALL 維持「已核可」（不需重新送審）
-- **AND** ticket 卡片對照欄位 SHALL 顯示「主管核可金額 -$5,000｜當前金額 -$4,800｜業務已調整 +$200」
-- **AND** 後續業務點「建立退款 Payment」時 dialog 預設 amount = -4800（current_amount）
+- **AND** 卡片對照欄位 SHALL 顯示「主管核可金額 -$5,000｜當前金額 -$4,800｜業務已調整 +$200」
+- **AND** 後續業務點「建立退款款項紀錄」時 dialog 預設金額 ＝ -4800
 
-#### Scenario: 補印收費場景 ticket 內加掛 OrderAdjustment（業務手動建補費 OA）
+#### Scenario: 補做收費場景售後服務單內加掛訂單異動（業務手動建補費異動）
 
-- **GIVEN** ticket.resolution = 補印、case_category = 規格不符、業務與客戶議定補印收費
-- **WHEN** 業務於 ticket 內建補印 PrintItem 後**手動**點「建立補印費異動單」
-- **THEN** 系統 SHALL 開啟 OrderAdjustment 建單表單，預填 adjustment_type = 補退、linked_after_sales_ticket_id = 此 ticket
-- **AND** 業務填入 amount = +補印費（與客戶協商的價格）、明細 = 「補印費」
-- **AND** 業務送審 → 主管核可 →（若 OA 為正金額即客戶補繳則走正常 Payment 路徑、若為退款型才走退款 Payment 路徑）
-- **AND** PrintItem 走原審稿 / 工單流程
-- **AND** 系統 SHALL NOT 自動帶建補費 OA（收費決策由業務手動建單體現；金額為協商價，不做工本費自動展算——AFT-5 拍板）
+- **GIVEN** 售後服務單決議處理方式 ＝ 補做、售後類型 ＝ 規格不符、所屬訂單已達終態、業務與客戶議定補做收費
+- **WHEN** 印務已發起補做（原工單加開補做生產任務）後，業務**手動**點「建立補做費異動」
+- **THEN** 系統 SHALL 開啟訂單異動建單表單，預填異動類型 ＝ 補退、關聯售後服務單 ＝ 此單
+- **AND** 業務填入異動金額 ＝ +補做費（與客戶協商的價格）、明細 ＝ 「補做費」
+- **AND** 業務送審 → 主管核可 → 依正負金額走對應的款項路徑
+- **AND** 補做量 SHALL 走既有生產與出貨鏈（見 § 售後服務單決議觸發補做）
+- **AND** 系統 SHALL NOT 自動帶建補費異動（收費決策由業務手動建單體現；金額為協商價，不做工本費自動展算）
 
-#### Scenario: 補印免費場景不建 OrderAdjustment
+#### Scenario: 補做免費場景不建訂單異動
 
-- **GIVEN** ticket.resolution = 補印、公司吸收補印費用
-- **WHEN** 業務於 ticket 內建補印 PrintItem 且未建立補收異動單
-- **THEN** 系統 SHALL NOT 自動建立 OrderAdjustment
-- **AND** ticket 內顯示「免費補印，無金額異動」標示（依售後單下無補收異動單推導）
-- **AND** PrintItem 走原審稿 / 工單流程
+- **GIVEN** 售後服務單決議處理方式 ＝ 補做、公司吸收費用
+- **WHEN** 印務發起補做、業務未建立補收異動
+- **THEN** 系統 SHALL NOT 自動建立訂單異動
+- **AND** 單內顯示「免費補做，無金額異動」標示（依售後服務單下無補收異動推導）
+- **AND** 補做量 SHALL 走既有生產與出貨鏈
 
-#### Scenario: ticket 內 OrderAdjustment 取消後提示業務確認 resolution
+#### Scenario: 售後服務單內訂單異動取消後提示業務確認決議
 
-- **GIVEN** ticket.resolution = 退款、status = 處理中、關聯 OrderAdjustment 處於草稿或已退回狀態
-- **WHEN** 業務於 OrderAdjustment 點「取消」推進至「已取消」終態
-- **THEN** ticket.resolution SHALL 維持原值（系統不自動清空）
-- **AND** ticket 詳情頁的「關聯動作」區塊 SHALL 顯示提示「該決議的下游動作已取消，請確認是否變更 resolution 或重新建立關聯動作」
-- **AND** 業務 SHALL 可選擇：(a) 修改 resolution 為其他值（不處理 / 補印）、(b) 重新建立關聯 OrderAdjustment、(c) 維持現狀
-
-### Requirement: 與 PrintItem 關聯（補印觸發）
-
-補印場景下，業務 SHALL 於 ticket 內建立補印 PrintItem。系統建 PrintItem 時：
-
-- 自動寫入印件類型＝補印印件（三值列舉正本見 wiki [印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) 欄位表）
-- 自動寫入 `related_after_sales_ticket_id` FK，供下游工單流程回溯來源
-
-**[本 change 變更] 補印審稿自動通過 + 沿用原稿**：
-
-補印 PrintItem **不走人工審稿流程**，系統建立時自動完成審稿環節：
-
-| 欄位 | 行為 |
-|------|------|
-| `reviewStatus` | 直接設為 `'合格'`（不經「等待審稿」「審稿中」中間態） |
-| `reviewFiles` | **複製來源印件的 `reviewFiles`**（保留全部稿件歷史檔案，供印務查閱） |
-| `reviewRounds` | **複製來源印件的 `reviewRounds`** + 新增一筆「售後補印自動通過輪次」 |
-| `currentRoundId` | 指向新增的「售後補印自動通過輪次」 |
-| `assignedReviewerId` | 維持 `null`（無需指派審稿員） |
-| `skipReview` | 維持 `false`（避免與既有「業務手動勾選免審稿」語意混淆；本 change 用「售後補印自動通過輪次」表達補印跳審稿）|
-| `reviewActivityLogs` | 複製來源印件的歷史 ActivityLog + append 一筆「售後補印自動通過審稿」事件（含來源印件 ID + ticket 編號 + 自動通過時間） |
-| `printItemStatus` | 設為 `'待生產'`（印件總覽顯示為「等待中」狀態，印務主管立刻可分配工單） |
-
-**「售後補印自動通過輪次」**的 `ReviewRound` 欄位規範：
-
-- `source = '售後補印'`（新增 enum 值，區別於 `'審稿'` / `'免審稿'`）
-- `sourcePrintItemId` 指向來源印件 ID（新增 optional 欄位）
-- `submittedBy = '系統'`、`submittedAt = 當下`
-- `submittedNote = '售後補印自動通過 — 沿用 PI-XXX 合格稿件'`
-- `reviewerId = null`、`reviewedAt = 當下`
-- `result = '合格'`
-- `roundNo` = 來源印件的最後一輪 + 1（接續原序號）
-
-**業務情境涵蓋範圍**：
-
-- **適用**：原稿無問題的補印（印件瑕疵 / 物流破損 / 規格符合）— 占售後補印 99% 情境
-- **不適用**：補印同時改稿（規格變更）— 此情境應走「規格變更」OrderAdjustment 而非補印路徑（OQ-SP-1 留釐清是否需要區分入口）
-- **例外處理**：若印務分配工單時發現稿件實際有問題，可走既有「補件 / 不合格」狀態機回退處理（OQ-SP-2）
-
-#### Scenario: 業務於 ticket 內建補印 PrintItem 自動通過審稿
-
-- **GIVEN** ticket.resolution = 補印、原印件 PI-001 reviewStatus = '合格'、currentRoundId 指向 Round-3（合格輪次）
-- **WHEN** 業務於 ticket 內點「建立補印印件」、選來源印件 PI-001、填補印數量 50 並提交
-- **THEN** 系統 SHALL 建立補印 PrintItem PI-002，type = '補印印件'、related_after_sales_ticket_id 寫入
-- **AND** PI-002.reviewStatus SHALL = '合格'（直接終態）
-- **AND** PI-002.reviewFiles SHALL = 複製 PI-001.reviewFiles（含 Round-3 的合格稿件檔案）
-- **AND** PI-002.reviewRounds SHALL = 複製 PI-001.reviewRounds + 新增一筆 Round-4（source = '售後補印'、result = '合格'、sourcePrintItemId = PI-001、submittedNote 含「沿用 PI-001 合格稿件」）
-- **AND** PI-002.currentRoundId SHALL 指向新增的 Round-4
-- **AND** PI-002.assignedReviewerId SHALL = null
-- **AND** PI-002.printItemStatus SHALL = '待生產'
-- **AND** PI-002.reviewActivityLogs SHALL append「售後補印自動通過審稿」事件
-- **AND** PI-002 SHALL 立刻出現在印務主管「印件總覽」的「等待中」分類（無需經過審稿員）
-- **AND** PI-002 SHALL NOT 出現在審稿員的「等待審稿」工作清單
-
-#### Scenario: 補印 PrintItem 印務分配工單
-
-- **GIVEN** PI-002（補印印件）printItemStatus = '待生產'、currentRoundId 指向 Round-4（自動通過）
-- **WHEN** 印務主管於印件總覽點 PI-002 的「分配印件」
-- **THEN** 系統 SHALL 允許印務主管建立工單（與大貨印件流程同）
-- **AND** 工單建立時稿件來源 SHALL 為 PI-002.reviewFiles 中 currentRoundId 對應檔案（= 沿用 PI-001 的最終合格稿件）
-
-#### Scenario: 補印自動通過審稿後可追溯來源稿件
-
-- **GIVEN** PI-002 由 PI-001 自動產生補印
-- **WHEN** 客服 / 印務 / 業務於 PI-002 詳情頁查閱
-- **THEN** 系統 SHALL 顯示 reviewRounds 列表（含複製自 PI-001 的歷史 + 自動通過輪次）
-- **AND** 自動通過輪次 SHALL 標示「售後補印自動通過 — 沿用 [PI-001](../print-items/PI-001) 合格稿件」可點擊跳轉來源印件
-- **AND** 來源印件追溯路徑：PI-002 → Round-4.sourcePrintItemId = PI-001
-
-#### Scenario: 補印自動通過後印務發現稿件實際有問題（例外處理）
-
-- **GIVEN** PI-002 透過自動通過建立、印務主管分配工單後印務發現稿件版本實際有錯
-- **WHEN** 印務 escalate 給業務 / 審稿主管
-- **THEN** 業務 SHALL 可於 PI-002 詳情頁觸發「重新審稿」動作（透過既有「補件」路徑）
-- **AND** 補件後 PI-002 走原審稿流程（指派審稿員 → 審稿）
-- **AND** 此例外情境留 OQ-SP-2 進一步釐清標準動作流程
+- **GIVEN** 售後服務單決議處理方式 ＝ 退款、狀態 ＝ 處理中、關聯訂單異動處於草稿或已退回狀態
+- **WHEN** 業務於訂單異動點「取消」推進至「已取消」終態
+- **THEN** 決議處理方式 SHALL 維持原值（系統不自動清空）
+- **AND** 售後服務單詳情頁的「關聯動作」區塊 SHALL 顯示提示「該決議的下游動作已取消，請確認是否變更決議或重新建立關聯動作」
+- **AND** 業務 SHALL 可選擇：(a) 修改決議處理方式為其他值（不處理 / 補做）、(b) 重新建立關聯訂單異動、(c) 維持現狀
 
 ### Requirement: additional_complaint_log（escape hatch）
 
@@ -418,31 +376,33 @@ additional_complaint_log: [
 
 ### Requirement: 訂單詳情頁售後服務 Tab
 
-訂單詳情頁 SHALL 新增「售後服務」Tab（沿用 [refactor-detail-pages-to-subheader-tab-layout](https://github.com/Kawato-Miles/sens-erp-prototype) 既有 Tab 模式），與「資訊」「印件」「對帳」「活動紀錄」並列。
+訂單詳情頁 SHALL 提供「售後服務」Tab，與「資訊」「印件」「對帳」「活動紀錄」並列。
 
 Tab 顯示內容：
-- 訂單關聯的 AfterSalesTicket 列表（最多 1 張未結案 + 0..N 張已結案）
-- 「建立售後服務單」按鈕（僅 Order.status = 已完成 且無未結案 ticket 時可點擊）
-- 各 ticket 卡片顯示：case_no、案件摘要、case_category、resolution、status、closed_at（若已結案）
+- 訂單關聯的售後服務單列表（最多 1 張未結案 + 0..N 張已結案）
+- 「建立售後服務單」按鈕：**SHALL 於訂單成立後的任何訂單狀態皆可點擊**，唯一的 disabled 條件 SHALL 為「該訂單已有未結案售後服務單」
+- 各售後服務單卡片顯示：售後服務單編號、案件摘要、售後類型、決議處理方式、狀態、結案時間（若已結案）
 
 **Priority**: P1
 
-**Rationale**: 售後服務以訂單為容器，訂單詳情頁為售後單的建立與操作入口。
+**變更理由**: 原條文把「訂單已完成」列為按鈕可點擊的條件，並有一個「未完成訂單售後服務 Tab 隱藏入口」的 Scenario 指引業務改走訂單異動——與零前提相斥（該 Scenario 隨本次改寫移除）。零前提之後入口的唯一 disabled 條件是「已有未結案單」（一訂單限一張未結案的既有限制不變）。
 
-#### Scenario: 已完成訂單顯示售後服務 Tab
+**Rationale**: 售後服務以訂單為容器，訂單詳情頁為售後服務單的建立與操作入口；入口不隨訂單狀態隱藏，是因為客戶什麼時候反映問題不由訂單狀態決定，入口藏起來只會讓客訴回到通訊軟體。
 
-- **GIVEN** Order.status = 已完成
+#### Scenario: 任何訂單狀態皆顯示售後服務 Tab 與可用入口
+
+- **GIVEN** 訂單已成立（狀態可為生產中、出貨中、訂單完成或已取消）、尚無未結案售後服務單
 - **WHEN** 業務於訂單詳情頁切到「售後服務」Tab
-- **THEN** Tab 內容 SHALL 顯示訂單關聯的 AfterSalesTicket 列表
-- **AND** 若無 ticket，Tab 顯示「尚無售後服務紀錄」+「建立售後服務單」按鈕
-- **AND** 若有未結案 ticket，「建立售後服務單」按鈕 SHALL 為 disabled 並提示「此訂單已有未結案 ticket」
+- **THEN** Tab 內容 SHALL 顯示訂單關聯的售後服務單列表
+- **AND** 若無售後服務單，Tab 顯示「尚無售後服務紀錄」+「建立售後服務單」按鈕（可點擊）
+- **AND** 系統 SHALL NOT 以訂單未完成為由隱藏或鎖定該按鈕
 
-#### Scenario: 未完成訂單售後服務 Tab 隱藏入口
+#### Scenario: 已有未結案售後服務單時入口 disabled
 
-- **GIVEN** Order.status ≠ 已完成
+- **GIVEN** 訂單已有 1 張處於「處理中」的售後服務單
 - **WHEN** 業務切到「售後服務」Tab
-- **THEN** Tab 內容 SHALL 顯示「訂單未完成時無售後服務」+ 引導文「請使用『訂單異動單』處理生產期間異動」
-- **AND** 「建立售後服務單」按鈕 MUST 隱藏
+- **THEN** 「建立售後服務單」按鈕 SHALL 為 disabled 並提示「此訂單已有未結案售後服務單，請於該單的客戶補述紀錄補登後續反映」
+- **AND** 系統 SHALL 提供連結直接跳至既有售後服務單
 
 ### Requirement: 訂單列表售後狀態欄位與篩選器
 
@@ -482,182 +442,175 @@ Tab 顯示內容：
 
 ### Requirement: 我的售後服務作業頁
 
-系統 SHALL 提供「我的售後服務」作業頁（路由 `/my-after-sales`），業務 / 諮詢登入後 SHALL 可從業務平台 sidebar 進入。該頁列出當前使用者開立且 `status ≠ 已結案` 的 AfterSalesTicket，加強「漏單沒處理」的信號，提供 next action 提示協助業務 / 諮詢快速判斷下一步操作。
+系統 SHALL 提供「我的售後服務」作業頁（路由 `/my-after-sales`），業務 / 諮詢登入後 SHALL 可從業務平台 sidebar 進入。該頁列出當前使用者開立且狀態 ≠ 已結案 的售後服務單，加強「漏單沒處理」的信號，提供 next action 提示協助業務 / 諮詢快速判斷下一步操作。
 
-頁面 layout SHALL 對齊 [Prototype DESIGN.md § 6.1 列表頁規範第 42 條](../../../../sens-erp-prototype/DESIGN.md)：「搜尋 + 多維度篩選 + 狀態統計卡 + 單一資料表 + 分頁」模式，禁止按狀態拆多張表或用卡片分組呈現資料。範式參考：[QuoteListPage](../../../../sens-erp-prototype/src/components/quote/QuoteListPage.tsx)（canonical reference）。
+頁面 layout 與版型以 Prototype 為正本（介面與互動正本），本 spec 只承載資料範圍、分組定義與排序規則。
 
 **頁面結構 SHALL 包含三個區段**：
 
-1. **搜尋與篩選 Card**（單一 Card 內含三組元素，與既有列表頁慣例一致）：
+1. **搜尋與篩選 Card**：
    - 搜尋框：訂單編號 / 案名 / 客戶名稱（部分匹配、不分大小寫）
-   - 篩選 grid（3 欄）：next action select / case_category select / 受理區間 date range
-   - StatusCard grid（3 張數字卡）：逾期 / 待填決議 / 待結案，數字依篩選後結果顯示（filtered={true} 標記）
+   - 篩選：next action / 售後類型 / 受理區間
+   - 三張數字卡：逾期 / 待填決議 / 待結案，數字依篩選後結果顯示
 
-2. **操作列**：`flex justify-end`，含「刷新」「重設篩選」等動作
+2. **操作列**：含「刷新」「重設篩選」等動作
 
-3. **單一資料表**：`<ErpTableCard>` 包 `<table className="erp-table">`，依下列欄位順序：
+3. **單一資料表**，依下列欄位順序：行號、售後服務單編號、訂單編號、客戶 / 案名、受理時間（相對時間）、售後類型、決議處理方式（空值顯示 `—`）、next action、狀態、操作（跳訂單詳情頁售後 Tab）
 
-   | 欄位 | 寬度 | 說明 |
-   |---|---|---|
-   | # | 56px | 行號（依分頁）|
-   | caseNo | 140px | AS-YYYYMMDD-XX |
-   | 訂單編號 | 130px | ORD-... |
-   | 客戶 / 案名 | auto | clientName · caseName |
-   | 受理時間 | 110px | 相對時間（5 天前）|
-   | 售後類型 | 100px | case_category |
-   | 決議 | 90px | resolution（NULL 時顯示 `—`）|
-   | next action | 110px | 逾期 / 待填決議 / 待建關聯動作 / 待結案 |
-   | status | 100px | status badge（受理中黃 / 處理中藍 / 逾期紅）|
-   | 操作 | 60px | `[→]` 跳訂單詳情頁售後 Tab |
+4. **分頁**：每頁 10 筆
 
-4. **分頁**：`<ErpPagination>`，PAGE_SIZE = 10（與 ConsultationRequestList 一致）
-
-next action 分組 SHALL 採用下列定義（互斥；逾期優先於其他三組），以「獨立 table 欄位」形式呈現每行 ticket 的 next action 值：
+next action 分組 SHALL 採用下列定義（互斥；逾期優先於其他三組），以「獨立表格欄位」形式呈現每列售後服務單的 next action 值：
 
 | 分組 | 條件 |
 |------|------|
-| 逾期 | `opened_at` 距今 `> DEFAULT_RED_LIGHT_DAYS (7 天)` 且 `status ≠ 已結案` |
-| 待填決議 | `status = 受理中` 且 `resolution = NULL` 且非逾期 |
-| 待建關聯動作 | `status = 處理中` 且 `resolution ∈ {退款, 補印, 退款+補印}` 且該 resolution 對應下游動作（OrderAdjustment / 補印 PrintItem）尚未建立 且非逾期 |
-| 待結案 | `status = 處理中` 且（對應下游動作已執行 或 `resolution = 不處理`）且非逾期 |
+| 逾期 | 建立時間距今 > 7 天 且 狀態 ≠ 已結案 |
+| 待填決議 | 狀態 ＝ 受理中 且 決議處理方式為空 且非逾期 |
+| 待建關聯動作 | 狀態 ＝ 處理中 且 決議處理方式 ∈ {退款, 補做, 退款+補做} 且該決議對應的下游動作（訂單異動 / 補做生產任務）尚未建立 且非逾期 |
+| 待結案 | 狀態 ＝ 處理中 且（對應下游動作已執行 或 決議處理方式 ＝ 不處理）且非逾期 |
 
-預設排序：`opened_at` 升序（最久未處理優先）。
+**「待建關聯動作」對補做的判定 SHALL 看補做生產任務**：決議為補做而該張售後服務單尚未被任何補做生產任務掛為補做來源時列入此組；已被掛上（已承接）即視為下游動作已建立。系統 SHALL NOT 以「是否有補印印件」判定。
 
-sidebar 入口 SHALL 持續顯示當前使用者未結案 ticket 數字徽章（任何頁面都可見），徽章為 0 時 SHALL NOT 顯示徽章但保留入口。
+預設排序：建立時間升序（最久未處理優先）。
+
+sidebar 入口 SHALL 持續顯示當前使用者未結案售後服務單數字徽章（任何頁面都可見），徽章為 0 時 SHALL NOT 顯示徽章但保留入口。
 
 **Priority**: P1
 
-**Rationale**: 給業務 / 諮詢一個以個人待辦為範圍的售後作業入口，防漏單。
+**變更理由**: 三處與統一案及零前提相斥——(1) next action「待建關聯動作」的決議值域寫「補印」、下游動作寫「補印印件」，值域正名為「補做」、下游動作改為補做生產任務（判定改看補做來源是否已掛上）；(2) 空列表說明文寫「售後服務單需先在訂單已完成後從訂單詳情頁建立」，與零前提相斥；(3) 版型段原以 Prototype 檔案路徑與元件名逐項規定 layout，Prototype 已為介面與互動正本，改為只承載資料範圍與分組定義。四組分組定義、互斥規則、逾期優先、排序與徽章行為皆不變。
+
+**Rationale**: 給業務 / 諮詢一個以個人待辦為範圍的售後作業入口，防漏單。分組看的是「下一步該誰動什麼」，所以補做的判定要看補做來源有沒有被掛上——那才是補做已經真的發起的事實，補印印件在統一案之後不存在。
 
 #### Scenario: 業務進入「我的售後服務」頁
 
-- **GIVEN** 業務 Alice 名下有未結案 ticket 5 張（逾期 1 張 / 待填決議 2 張 / 待結案 2 張）
+- **GIVEN** 業務 Alice 名下有未結案售後服務單 5 張（逾期 1 張 / 待填決議 2 張 / 待結案 2 張）
 - **WHEN** Alice 從 sidebar 點擊「我的售後服務」
 - **THEN** 系統 SHALL 導航至 `/my-after-sales`
-- **AND** 頁面 SHALL 顯示頂端待辦摘要：逾期 1 / 待填決議 2 / 待結案 2
-- **AND** table SHALL 列出 5 張 ticket，依 opened_at 升序排序
-- **AND** 每行 SHALL 顯示對應的 next action 欄位值
+- **AND** 頁面 SHALL 顯示待辦摘要：逾期 1 / 待填決議 2 / 待結案 2
+- **AND** 表格 SHALL 列出 5 張單，依建立時間升序排序
+- **AND** 每列 SHALL 顯示對應的 next action 欄位值
 
 #### Scenario: 諮詢進入「我的售後服務」頁
 
-- **GIVEN** 諮詢 Bob 名下有未結案 ticket 3 張
+- **GIVEN** 諮詢 Bob 名下有未結案售後服務單 3 張
 - **WHEN** Bob 從 sidebar 點擊「我的售後服務」
-- **THEN** 系統 SHALL 顯示與業務角色相同的頁面結構（同 table、同摘要卡、同篩選器）
-- **AND** table 僅 SHALL 含 `opened_by = Bob AND status ≠ 已結案` 的 ticket
+- **THEN** 系統 SHALL 顯示與業務角色相同的頁面結構
+- **AND** 表格僅 SHALL 含建立者 ＝ Bob 且狀態 ≠ 已結案 的售後服務單
 
-#### Scenario: 點擊摘要卡套用 next action filter
+#### Scenario: 決議為補做且尚未發起補做時列入待建關聯動作
 
-- **GIVEN** 業務 Alice 進入「我的售後服務」頁，無 filter 套用、table 顯示全部 5 張未結案 ticket
-- **WHEN** Alice 點擊頂端「逾期 1」摘要卡
-- **THEN** table 套用 `nextAction = '逾期'` filter
-- **AND** table 僅 SHALL 顯示「逾期」分組的 1 張 ticket
-- **AND** 「逾期」摘要卡視覺強調（border 或背景加深）標示為 active
-- **AND** 其他 StatusCard 數字 SHALL 依篩選後結果重新計算（待填決議 0 / 待結案 0）
+- **GIVEN** 售後服務單 AS-20260812-01 狀態 ＝ 處理中、決議處理方式 ＝ 補做、建立時間 3 天前、尚無任何補做生產任務掛此單為補做來源
+- **WHEN** 業務檢視「我的售後服務」頁
+- **THEN** 該列的 next action SHALL 為「待建關聯動作」
+- **AND** 印務發起補做、補做生產任務掛上此單之後，該列 next action SHALL 轉為「待結案」
 
-#### Scenario: 再點同一摘要卡取消 filter（toggle）
+#### Scenario: 點擊摘要卡套用 next action 篩選
 
-- **GIVEN** 「逾期」摘要卡為 active，table 已套用 `nextAction = '逾期'` filter
+- **GIVEN** 業務 Alice 進入「我的售後服務」頁，無篩選套用、表格顯示全部 5 張
+- **WHEN** Alice 點擊「逾期 1」摘要卡
+- **THEN** 表格套用 next action ＝ 逾期 篩選、僅顯示該 1 張
+- **AND** 「逾期」摘要卡視覺強調標示為 active
+- **AND** 其他數字卡 SHALL 依篩選後結果重新計算
+
+#### Scenario: 再點同一摘要卡取消篩選
+
+- **GIVEN** 「逾期」摘要卡為 active
 - **WHEN** Alice 再點「逾期」摘要卡
-- **THEN** filter SHALL 取消
-- **AND** table SHALL 恢復顯示全部 5 張 ticket
-- **AND** 「逾期」摘要卡 SHALL 取消 active 視覺強調
-- **AND** StatusCard 數字恢復為未篩選狀態
+- **THEN** 篩選 SHALL 取消、表格恢復顯示全部 5 張
+- **AND** 數字卡恢復為未篩選狀態
 
-#### Scenario: 點 ticket 行跳訂單詳情頁售後 Tab
+#### Scenario: 點售後服務單列跳訂單詳情頁售後 Tab
 
-- **GIVEN** table 中有一行 ticket `AS-20260512-01`，所屬訂單 `ORD-2026-005`
-- **WHEN** 使用者點擊該行或操作欄的 `[→]` 按鈕
+- **GIVEN** 表格中有一列售後服務單 `AS-20260512-01`，所屬訂單 `ORD-2026-005`
+- **WHEN** 使用者點擊該列或操作欄按鈕
 - **THEN** 系統 SHALL 導航至 `/orders/ORD-2026-005?tab=afterSales&ticket=AS-20260512-01`
-- **AND** 訂單詳情頁 SHALL 自動切到「售後服務」Tab 並展開該 ticket
+- **AND** 訂單詳情頁 SHALL 自動切到「售後服務」Tab 並展開該單
 
 #### Scenario: 篩選器組合運作
 
-- **GIVEN** 使用者名下 ticket 含「印件瑕疵」「規格不符」「物流問題」三類
-- **WHEN** 使用者於 case_category 篩選器選擇「印件瑕疵」
-- **THEN** table SHALL 僅顯示 `case_category = 印件瑕疵` 的 ticket
-- **AND** 頂端 StatusCard 數字 SHALL 依篩選後結果重新計算
-
-#### Scenario: next action 與 case_category 篩選同時套用
-
-- **GIVEN** 使用者點「逾期」摘要卡套用 `nextAction = '逾期'` filter
-- **WHEN** 使用者再於 case_category 篩選器選擇「印件瑕疵」
-- **THEN** table SHALL 同時套用兩個 filter（`nextAction = '逾期' AND case_category = '印件瑕疵'`）
-- **AND** filter 為 AND 邏輯（取交集）
+- **GIVEN** 使用者名下售後服務單含「印件瑕疵」「規格不符」「物流問題」三類
+- **WHEN** 使用者於售後類型篩選器選擇「印件瑕疵」
+- **THEN** 表格 SHALL 僅顯示售後類型 ＝ 印件瑕疵 的售後服務單
+- **AND** 數字卡 SHALL 依篩選後結果重新計算
+- **AND** 與 next action 篩選同時套用時 SHALL 為 AND 邏輯（取交集）
 
 #### Scenario: 訂單編號搜尋
 
 - **WHEN** 使用者於搜尋欄輸入 `ORD-2026-005`
-- **THEN** table SHALL 僅顯示 `order_id`、`order.orderNo`、`order.caseName` 或 `order.clientName` 部分匹配的 ticket
+- **THEN** 表格 SHALL 僅顯示訂單編號、案名或客戶名稱部分匹配的售後服務單
 - **AND** 搜尋 SHALL 不分大小寫
 
 #### Scenario: 分頁顯示與切換
 
-- **GIVEN** 使用者名下有 25 張未結案 ticket（含 1 張逾期）
+- **GIVEN** 使用者名下有 25 張未結案售後服務單
 - **WHEN** 使用者進入「我的售後服務」頁
-- **THEN** table SHALL 顯示第 1 頁 10 張 ticket
-- **AND** `<ErpPagination>` SHALL 顯示「1 / 3 頁」
+- **THEN** 表格 SHALL 顯示第 1 頁 10 張、分頁 SHALL 顯示「1 / 3 頁」
 - **WHEN** 使用者點擊下一頁
-- **THEN** table SHALL 切換至第 2 頁 10 張 ticket
+- **THEN** 表格 SHALL 切換至第 2 頁 10 張
 
 #### Scenario: 列表為空狀態
 
-- **GIVEN** 業務 Alice 無未結案 ticket
+- **GIVEN** 業務 Alice 無未結案售後服務單
 - **WHEN** Alice 進入「我的售後服務」
-- **THEN** table SHALL 顯示「目前沒有符合條件的售後服務單」row
-- **AND** 頂端待辦摘要數字 SHALL 全部顯示 0
-- **AND** SHALL 顯示說明文：「售後 ticket 需先在訂單已完成後從訂單詳情頁的『售後服務』Tab 建立」
+- **THEN** 表格 SHALL 顯示「目前沒有符合條件的售後服務單」
+- **AND** 待辦摘要數字 SHALL 全部顯示 0
+- **AND** SHALL 顯示說明文：「售後服務單自訂單詳情頁的『售後服務』Tab 建立；訂單成立後任何時間都建得出來」
 
 #### Scenario: 篩選後無結果
 
-- **GIVEN** 業務 Alice 名下有 3 張 ticket，全部為「印件瑕疵」
-- **WHEN** Alice 套用 case_category = 「物流問題」filter
-- **THEN** table SHALL 顯示「目前沒有符合條件的售後服務單」
+- **GIVEN** 業務 Alice 名下有 3 張售後服務單，全部為「印件瑕疵」
+- **WHEN** Alice 套用售後類型 ＝ 「物流問題」篩選
+- **THEN** 表格 SHALL 顯示「目前沒有符合條件的售後服務單」
 - **AND** 提示 SHALL 引導使用者重設篩選
 
 #### Scenario: sidebar 入口顯示未結案數字徽章
 
-- **GIVEN** 業務 Alice 名下有未結案 ticket 5 張（含 1 張逾期）
+- **GIVEN** 業務 Alice 名下有未結案售後服務單 5 張
 - **WHEN** Alice 登入後查看 sidebar
 - **THEN** 「我的售後服務」入口 SHALL 顯示數字徽章「5」
-- **AND** 徽章 SHALL 於任何頁面都可見（不限於首頁）
+- **AND** 徽章 SHALL 於任何頁面都可見
 - **AND** Alice 結案 1 張後徽章 SHALL 即時更新為「4」
 
 #### Scenario: sidebar 入口徽章為 0 時不顯示
 
-- **GIVEN** 諮詢 Bob 名下無任何未結案 ticket
+- **GIVEN** 諮詢 Bob 名下無任何未結案售後服務單
 - **WHEN** Bob 登入後查看 sidebar
 - **THEN** 「我的售後服務」入口 SHALL 保留顯示（不隱藏入口）
 - **AND** 數字徽章 SHALL NOT 顯示
 
 ### Requirement: AfterSalesTicket 活動紀錄
 
-系統 SHALL 為 AfterSalesTicket 寫入完整 ActivityLog，涵蓋以下事件：
+系統 SHALL 為售後服務單寫入完整活動紀錄，涵蓋以下事件：
 
-- 建立 ticket（含 case_category 初始值）
-- 填入 / 修改 resolution
-- 填入 / 修改 case_category
+- 建立售後服務單（含售後類型初始值）
+- 勾選 / 修改相關印件
+- 填入 / 修改決議處理方式
+- 填入 / 修改售後類型
 - 修改客訴內容（含修改前後全文）
 - 填寫 / 修改結案後客戶回饋（含修改前後全文）
-- 貼入 / 修改 slack_thread_url
-- append additional_complaint_log
-- 建立關聯 OrderAdjustment（含 OrderAdjustment.id）
-- 建立關聯補印 PrintItem（含 PrintItem.id）
+- 貼入 / 修改討論紀錄連結
+- 補登客戶補述紀錄
+- 建立關聯訂單異動（含訂單異動編號）
+- **補做被發起（含補做生產任務編號、對象印件、目標數量、發起人）**
 - 結案（含強制結案時的未完結項目清單）
 
 **Priority**: P1
 
-**Rationale**: 售後單無核可關卡，可追溯性完全依賴活動紀錄；修改留痕是「可改不鎖定」設計的前提。
+**變更理由**: 一處與統一案相斥——原事件清單含「建立關聯補印 PrintItem」，補印印件型別本次廢除，改為「補做被發起」並記補做生產任務編號、對象印件、目標數量與發起人（發起人為印務、不是開單的業務，這是本案唯一由他人在售後服務單上留下的事件，不記就查不出補了什麼給誰）。同時補上「勾選 / 修改相關印件」事件（新增欄位的留痕）。
 
-#### Scenario: 業務查閱 ticket 活動紀錄
+**Rationale**: 售後服務單無核可關卡，可追溯性完全依賴活動紀錄；修改留痕是「可改不鎖定」設計的前提。補做的量與對象是印務在系統上設定的，這件事的依據只在活動紀錄與補做任務上，必須記得清楚才追得回「當初答應客戶補幾件」。
 
-- **WHEN** 業務於 ticket 詳情頁切到「活動紀錄」區塊
+#### Scenario: 業務查閱售後服務單活動紀錄
+
+- **WHEN** 業務於售後服務單詳情頁切到「活動紀錄」區塊
 - **THEN** 系統 SHALL 顯示完整事件歷程（操作人、操作時間、事件描述）
 - **AND** 修改類事件 SHALL 同時顯示舊值與新值
 
-<!-- 「業務離職 / 請假時 ticket 負責人轉派」Requirement 已於
-     add-my-after-sales-action-page-and-remove-owner-transfer change（2026-05-19 歸檔）
-     REMOVED。
-     業務離職實務替代方案見 [OQ AFT-1](../../../memory/Sens_wiki/wiki/erp/08-open-questions/AFT-1-業務離職轉派.md)。 -->
+#### Scenario: 印務發起補做寫入售後服務單活動紀錄
+
+- **GIVEN** 售後服務單 AS-20260812-01 決議處理方式 ＝ 補做、相關印件含「規格說明卡」
+- **WHEN** 印務於該印件發起補做、設定目標數量 100 並確認
+- **THEN** 售後服務單活動紀錄 SHALL 寫入一筆「補做被發起」事件
+- **AND** 該筆 SHALL 含補做生產任務編號、對象印件、目標數量 100、發起人 ＝ 該印務、發起時間
 
 ### Requirement: 業務主管全公司售後管理頁
 
@@ -840,165 +793,198 @@ next action 分組定義沿用 本 spec § 我的售後服務作業頁 的四組
 
 ### Requirement: 售後 ticket 內建 OA 連動 BillingInstallment（取代 PaymentPlan / PlannedInvoice 連動）
 
-系統 SHALL 沿用 v0.6 AfterSalesTicket → OA → Payment + 折讓 / 作廢連動鏈主結構，且 SHALL 對齊 v1.14 結構性變更：補收 OA 跳過審核中間態 + 退款 OA 沿用主管核可 + 補收場景由業務新增 BillingInstallment 取代 PaymentPlan + 退款 Payment MUST NOT 建立 PaymentAllocation 以保留正向期次稽核歷史。
+系統 SHALL 沿用「售後服務單 → 訂單異動 → 款項紀錄 + 折讓 / 作廢」連動鏈主結構，且 SHALL 對齊：補收訂單異動跳過審核中間態 + 退款訂單異動沿用主管核可 + 補收場景由業務新增請款期次 + 退款款項紀錄 MUST NOT 建立款項分配以保留正向期次稽核歷史。
 
-v0.6 既有「AfterSalesTicket → OA → Payment + 折讓/作廢」連動鏈主結構保留，本 change 沿用：
-- 訂單完成後補收（向客戶收費）：ticket 內建 OA(+N) → 跳過審核中間態直達確認可執行（補收 OA 新規則）→ 業務新增 BillingInstallment 承載補收應收 → 開票 + 收款核銷
-- 訂單完成後退款：ticket 內建 OA(-N) → 業務主管核可 → 業務於 OA 介面建退款 Payment（處理中）+ 補對帳附件 + 切已完成 → 系統推進 OA 確認可執行 → 發票端折讓 / 作廢
-- 免費補印（公司吸收費用）：ticket 內建補印 PrintItem（沿用既有設計、不建 OA）
+本 Requirement 的所有路徑 SHALL 以「所屬訂單已達終態」為前提（金額動作的訂單終態開關見 § 與 OrderAdjustment 關聯）。訂單未達終態時售後服務單內 SHALL NOT 出現本 Requirement 的任何入口。
 
-對齊本 change 結構性變更：
-- ticket 內建 OA 沿用「補收正項跳過審核 / 退款負項主管核可」對稱破壞規則（補收進期次、退款不進期次）
-- ticket 內補收場景由業務新增 BillingInstallment（取代既有「業務新增 PaymentPlan」）
-- 退款 Payment 不建 PaymentAllocation（不進正向期次，保留 BillingInstallment 稽核歷史）
+- 訂單終態後補收（向客戶收費）：售後服務單內建訂單異動（+N）→ 跳過審核中間態直達確認可執行（補收新規則）→ 業務新增請款期次承載補收應收 → 開票 + 收款核銷
+- 訂單終態後退款：售後服務單內建訂單異動（-N）→ 業務主管核可 → 業務於訂單異動介面建退款款項紀錄（處理中）+ 補對帳附件 + 切已完成 → 系統推進訂單異動確認可執行 → 發票端折讓 / 作廢
+- 免費補做（公司吸收費用）：由印務發起補做（不建訂單異動），成本進原印件的實際成本帳
+
+對齊規則：
+- 售後服務單內建訂單異動沿用「補收正項跳過審核 / 退款負項主管核可」對稱破壞規則（補收進期次、退款不進期次）
+- 售後服務單內補收場景由業務新增請款期次
+- 退款款項紀錄不建款項分配（不進正向期次，保留請款期次稽核歷史）
 
 **Priority**: P0
 
-**Rationale**: 售後金流沿用既有異動單／期次／發票機制，不為售後另開帳務路徑。
+**變更理由**: 兩處變更——(1) 原條文的「免費補印（公司吸收費用）：ticket 內建補印 PrintItem」改為「免費補做：由印務發起補做、不建訂單異動」，並補上補做成本歸戶原印件（統一案的核心效益：品質成本看得出花在哪一件貨上）；(2) 原條文的三條路徑都以「訂單已完成」為隱含前提（因為建單前提如此），零前提之後前提要明寫，否則訂單進行中的售後服務單會誤開帳務入口。帳務機制本身（補收免審、退款主管核可、補收進期次、退款不建款項分配）完全不變。
 
-#### Scenario: 訂單完成後補印收費 ticket 內建 OA 立即執行
+**Rationale**: 售後金流沿用既有異動 / 期次 / 發票機制，不為售後另開帳務路徑。免費補做不產生任何金額單據，是因為那筆錢公司自己吸收——留痕在售後服務單、成本在工單帳，事後稽核拿得到；為它造一張 0 元單據只會讓帳上多一筆什麼都沒發生的紀錄。
 
-- **GIVEN** 訂單已完成、業務建立 AfterSalesTicket（resolution=補印）、業務與客戶議定補印費 3000
-- **WHEN** 業務於 ticket 內建 OA-200（amount=+3000, adjustment_type=補退, linked_after_sales_ticket_id=ticket.id）並點「儲存並執行」
-- **THEN** OA-200.status SHALL = 確認可執行（跳過審核中間態）
+#### Scenario: 訂單終態後補做收費、售後服務單內建訂單異動立即執行
+
+- **GIVEN** 訂單已完成、業務建立售後服務單（決議處理方式 ＝ 補做）、業務與客戶議定補做費 3000
+- **WHEN** 業務於單內建訂單異動 OA-200（金額 ＝ +3000、異動類型 ＝ 補退、關聯售後服務單 ＝ 此單）並點「儲存並執行」
+- **THEN** OA-200 狀態 SHALL ＝ 確認可執行（跳過審核中間態）
 - **AND** 應收 SHALL +3000
-- **AND** 業務 MAY 新增 BillingInstallment「售後補印費 3000」承載補收應收
-- **AND** 業務於該期次一鍵開票 + 收款核銷後 → ticket 結案
+- **AND** 業務 MAY 新增請款期次「售後補做費 3000」承載補收應收
+- **AND** 業務於該期次一鍵開票 + 收款核銷後 → 售後服務單結案
 
-#### Scenario: 訂單完成後售後退款 ticket 內建 OA 沿用主管核可
+#### Scenario: 訂單終態後售後退款、售後服務單內建訂單異動沿用主管核可
 
-- **GIVEN** 訂單已完成、業務建立 AfterSalesTicket（resolution=退款）
-- **WHEN** 業務於 ticket 內建 OA-201（amount=-5000, adjustment_type=退印, linked_after_sales_ticket_id=ticket.id）並送審
-- **THEN** OA-201.status SHALL = 待主管審核
-- **WHEN** 業務主管核可 + 業務建退款 Payment + 切已完成
-- **THEN** 系統推進 OA-201 = 確認可執行、應收 -5000
-- **AND** 退款 Payment MUST NOT 建 PaymentAllocation（不進正向期次）
-- **AND** 業務於 INV 詳情頁建 SalesAllowance（折讓不關聯退款 Payment）
-- **AND** 業務確認客戶滿意 → 點 ticket「結案」
+- **GIVEN** 訂單已完成、業務建立售後服務單（決議處理方式 ＝ 退款）
+- **WHEN** 業務於單內建訂單異動 OA-201（金額 ＝ -5000、異動類型 ＝ 退印、關聯售後服務單 ＝ 此單）並送審
+- **THEN** OA-201 狀態 SHALL ＝ 待主管審核
+- **WHEN** 業務主管核可 + 業務建退款款項紀錄 + 切已完成
+- **THEN** 系統推進 OA-201 ＝ 確認可執行、應收 -5000
+- **AND** 退款款項紀錄 MUST NOT 建款項分配（不進正向期次）
+- **AND** 業務於發票詳情頁建折讓單（折讓不關聯退款款項紀錄）
+- **AND** 業務確認客戶滿意 → 點「結案」
 
-#### Scenario: 免費補印場景沿用既有設計（不建 OA + 不影響 BillingInstallment）
+#### Scenario: 免費補做不建訂單異動、成本歸戶原印件
 
-- **GIVEN** 訂單已完成、業務建立 AfterSalesTicket（resolution=補印）、公司吸收補印費用
-- **WHEN** 業務於 ticket 內建補印 PrintItem 且未建補收異動單
-- **THEN** 系統 MUST NOT 建立 OrderAdjustment
-- **AND** 訂單應收 / BillingInstallment / 發票 / 收款 SHALL 完全不變動
-- **AND** 不出現對帳警示 banner（無 OA 執行）
+- **GIVEN** 訂單已完成、業務建立售後服務單（決議處理方式 ＝ 補做）、公司吸收費用
+- **WHEN** 印務於相關印件發起補做、原工單加開補做生產任務
+- **THEN** 系統 MUST NOT 建立訂單異動
+- **AND** 訂單應收 / 請款期次 / 發票 / 收款 SHALL 完全不變動、不出現對帳警示
+- **AND** 補做生產任務的實際成本 SHALL 計入該原印件的實際成本帳（品質成本歸戶原印件）
+
+#### Scenario: 訂單未達終態時本 Requirement 的入口不出現
+
+- **GIVEN** 訂單狀態 ＝ 生產中、業務已建立售後服務單並決議「補做」
+- **WHEN** 業務查看該售後服務單
+- **THEN** 「建立補收異動」「新增請款期次」等帳務入口 SHALL NOT 出現（或為灰掉並附指引）
+- **AND** 補做本身 SHALL 照常由印務發起（生產動作不受金額分界限制）
 
 ### Requirement: 售後場景退款流程三組件組合
 
-售後服務單若處理方式涉及退款（`resolution ∈ {退款, 退款+補印}`）SHALL 由三組件組合構成完整退款流程，每組件對應獨立動作與獨立 user story：
+售後服務單若決議處理方式涉及退款（決議處理方式 ∈ {退款, 退款+補做}）SHALL 由三組件組合構成完整退款流程，每組件對應獨立動作：
 
-1. **訂單異動單建立 + 業務主管審核**（金額異動審批）
-   - 業務 / 諮詢於售後服務單內建立關聯訂單異動單，異動類型 = 「補退」或「退印」，金額為負（退款金額），原因引用售後服務單上的客戶反映
-   - 系統自動設定訂單異動單 `linkedAfterSalesTicketId` 指向當前售後服務單
-   - 訂單異動單送業務主管審核 → 業務主管核可 → 業務執行 → 應收重算
+1. **訂單異動建立 + 業務主管審核**（金額異動審批）
+   - 業務 / 諮詢於售後服務單內建立關聯訂單異動，異動類型 ＝ 「補退」或「退印」，金額為負（退款金額），原因引用售後服務單上的客戶反映
+   - 系統自動設定訂單異動的「關聯售後服務單」指向當前售後服務單
+   - 訂單異動送業務主管審核 → 核可 → 業務執行 → 應收重算
 
 2. **退款款項處理**（金流動作）
-   - 業務 / 諮詢於訂單詳情頁「付款管理」區建立負值收款紀錄（金額 = -退款金額）
-   - 退款備註 SHALL 關聯訂單異動單編號 / 售後服務單編號
+   - 業務 / 諮詢於訂單詳情頁「付款管理」區建立負值款項紀錄（金額 ＝ -退款金額）
+   - 退款備註 SHALL 關聯訂單異動編號 / 售後服務單編號
 
 3. **發票異動**（稅務動作）
-   - 依發票是否跨齊報稅期選擇：
-     - **未跨期**：作廢發票（系統呼叫第三方平台執行作廢）
-     - **已跨期**：開立折讓單（金額為負）
-   - 折讓單 SHALL 關聯既有發票與負值收款紀錄
+   - 依發票是否跨齊報稅期選擇：未跨期作廢發票（系統呼叫第三方平台執行作廢）；已跨期開立折讓單（金額為負）
+   - 折讓單 SHALL 關聯既有發票與負值款項紀錄
+
+**前提**：本 Requirement 的三組件 SHALL 以所屬訂單已達終態為前提；訂單未達終態時退款不在售後服務單內做（金額走訂單明細直接調整）。
 
 售後服務單於「處理中」狀態 SHALL 顯示三組件進度提示。三組件完成與否 MUST NOT 作為結案的前置條件：業務點「結案」時若三組件未全部完成，系統 SHALL 列出未完結組件提醒，業務確認後仍可結案（軟提示，詳見狀態機 Requirement）；漏建退款款項由三方對帳「應退差額警示（不可忽略）」承接。
 
 **Priority**: P0
 
+**變更理由**: 兩處變更——決議值域「退款+補印」正名「退款+補做」；補上「訂單已達終態」前提（零前提之後售後服務單可存在於訂單進行中，三組件的入口需與金額分界一致，否則會與訂單明細直接調整這條路重疊）。三組件的內容、順序與軟提示規則不變。
+
 **Rationale**: 售後退款須同時處理應收、金流、稅務三面才能對帳平衡；以提醒取代硬阻擋，尊重「處理完沒只有業務知道全貌」的結案自主，漏做由對帳警示兜底。
 
 #### Scenario: 售後退款完整三組件組合流程
 
-- **GIVEN** 售後服務單處理方式為「退款」，退款金額 1000
+- **GIVEN** 售後服務單決議處理方式為「退款」、退款金額 1000、所屬訂單已達終態
 - **WHEN** 業務執行完整退款流程
-- **THEN** 步驟 1：售後服務單內建立關聯訂單異動單（金額 -1000）→ 業務主管審核 → 核可 → 執行 → 應收重算
-- **AND** 步驟 2：訂單詳情頁建立負值收款紀錄（-1000）
+- **THEN** 步驟 1：售後服務單內建立關聯訂單異動（金額 -1000）→ 業務主管審核 → 核可 → 執行 → 應收重算
+- **AND** 步驟 2：訂單詳情頁建立負值款項紀錄（-1000）
 - **AND** 步驟 3：依發票跨齊報稅期狀態選擇開立折讓單（-1000）或作廢發票重開
 - **AND** 三組件全部完成後業務點「結案」SHALL 直接結案（無提醒）
-- **AND** 對帳：應收 = 0、收款淨額 = 0、發票淨額 = 0
+- **AND** 對帳：應收 ＝ 0、收款淨額 ＝ 0、發票淨額 ＝ 0
 
 #### Scenario: 跨齊報稅期售後退款走折讓
 
 - **GIVEN** 售後服務單退款場景，發票已跨齊報稅期
-- **AND** 訂單異動單已核可 + 負值收款紀錄已建立
-- **WHEN** 業務於發票異動 UI 點「作廢」
+- **AND** 訂單異動已核可 + 負值款項紀錄已建立
+- **WHEN** 業務於發票異動介面點「作廢」
 - **THEN** 系統呼叫第三方平台失敗
-- **AND** UI MUST 顯示錯誤訊息「此發票已跨齊報稅期無法作廢，請改開折讓單」
+- **AND** 介面 MUST 顯示錯誤訊息「此發票已跨齊報稅期無法作廢，請改開折讓單」
 - **AND** 業務 SHALL 改點「折讓」按鈕開立折讓單（金額 -1000）
 
 #### Scenario: 三組件未完成時結案顯示提醒但允許強制結案
 
-- **GIVEN** 售後服務單處理方式為「退款」
-- **AND** 訂單異動單已核可但退款款項與發票異動未完成
+- **GIVEN** 售後服務單決議處理方式為「退款」
+- **AND** 訂單異動已核可但退款款項與發票異動未完成
 - **WHEN** 業務點擊「結案」按鈕
 - **THEN** 系統 SHALL 顯示提醒並列出未完結組件（退款款項、發票異動）
 - **AND** 業務確認後系統 SHALL 允許結案
 - **AND** 系統 MUST NOT 鎖定結案按鈕或拒絕結案
-- **AND** 異動單已執行而退款款項未建時，三方對帳 SHALL 顯示應退差額警示（不可忽略）承接追蹤
+- **AND** 異動已執行而退款款項未建時，三方對帳 SHALL 顯示應退差額警示（不可忽略）承接追蹤
 
 ### Requirement: 售後服務階段流程（AfterSalesTicket 端到端）
 
-訂單已完成後（Order.status = 已完成）的客訴 / 不良 / 規格不符等售後事件 SHALL 走 AfterSalesTicket 流程。AfterSalesTicket 是訂單五大業務階段（需求 → 訂單 → 生產 → 出貨 → 售後）的最後階段，作為訂單已完成後事件的可追蹤容器。
+**訂單成立後**客戶反映的客訴 / 不良 / 規格不符等售後事件 SHALL 走售後服務單流程。售後服務單是訂單五大業務階段（需求 → 訂單 → 生產 → 出貨 → 售後）的最後階段，作為訂單成立後事件的可追蹤容器。
 
 **流程概觀**：
 
-1. **受理**：業務於訂單詳情頁建立 AfterSalesTicket，填入 customer_complaint、case_category。ticket.status = 受理中
-2. **討論**（系統外）：業務於 Slack @ 業務主管討論處理方式，討論完成後業務將 Slack thread URL 貼入 ticket.slack_thread_url
-3. **決議**：業務於 ticket 填入 resolution（不處理 / 退款 / 補印 / 退款+補印）並點「送出決議」，ticket.status → 處理中
-4. **執行下游動作**（依 resolution）：
+1. **受理**：業務於訂單詳情頁建立售後服務單，填入客訴內容、售後類型，知道客戶反映哪幾件印件就一併勾進「相關印件」。狀態 ＝ 受理中。**受理段不設把關、必定存檔成功**
+2. **討論**（系統外）：業務於公司通訊軟體與業務主管討論處理方式，討論完把連結貼入討論紀錄連結
+3. **決議**：業務填入決議處理方式（不處理 / 退款 / 補做 / 退款+補做）並點「送出決議」，狀態 → 處理中。**各選項能不能選依當下事實即時顯示**（見 § 受理與決議兩段）
+4. **執行下游動作**（依決議）：
    - 不處理：不建任何下游動作
-   - 退款：業務於 ticket 內建關聯 OrderAdjustment(退印, -金額) → 走 OA 狀態機 → 業務於發票區建退款 Payment + 視需要開 SalesAllowance
-   - 免費補印（公司吸收費用）：業務於 ticket 內建補印 PrintItem → 走原審稿 / 工單流程，不建異動單
-   - 付費補印（向客戶收費，實務少見）：業務於 ticket 內手動建關聯 OrderAdjustment(補退, +金額，金額為與客戶協商價) + 建補印 PrintItem
-   - 退款+補印：同時走退款與補印路徑
-5. **結案**（純手動）：業務確認客戶滿意後點 ticket 上的「結案」按鈕。若有未完結下游動作系統提醒、確認後仍可結案。ticket.status → 已結案
+   - 退款（訂單已達終態）：業務於單內建關聯訂單異動（退印、-金額）→ 走訂單異動狀態機 → 業務建退款款項紀錄 + 視需要開折讓單
+   - 補做（對象印件已送達）：**印務於該印件發起補做，原工單經異動加開補做生產任務**→ 生管確認 → 報工 → 品檢複驗 → 完工良品數與可出貨額度長出 → 業務建出貨單送達（見 § 售後服務單決議觸發補做）
+   - 補做收費（向客戶收費，實務少見）：業務另手動建關聯訂單異動（補退、+協商價）
+   - 退款+補做：同時走兩條路徑
+5. **結案**（純手動）：業務確認客戶滿意後點「結案」。若有未完結下游動作系統提醒、確認後仍可結案。狀態 → 已結案
 
 **特殊規則**：
 
-- AfterSalesTicket 本身**無核可關卡**（業務與主管 Slack 線下討論，ERP 僅記錄結果）
-- 一個 Order 最多 1 張未結案 ticket；結案後可建新 ticket
-- Order.status 永遠保持「已完成」不回退（售後處理中為 UI 徽章，非主狀態）
-- 補印場景中，補印 PrintItem 出貨完成 SHALL NOT 自動結案 ticket（需業務確認客戶滿意）
-- 結案時若有未完結異動單或未出貨完成的補印印件，系統提醒但允許強制結案（見狀態機 Requirement）
-- 補印收不收費不設欄位判斷，收費事實由「有沒有建補收異動單」體現（規則正本見 wiki [售後服務規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/售後服務規則.md)）
-- ticket 內 OrderAdjustment 仍走業務主管審核（OrderAdjustment 既有狀態機不變）
+- 售後服務單本身**無核可關卡**（業務與主管系統外討論，系統僅記錄結果）
+- 一個訂單最多 1 張未結案售後服務單；結案後可建新單
+- **售後服務單 SHALL NOT 改變訂單狀態**：已達終態的訂單不因售後服務單回退；未達終態的訂單照常自行推進——**已送達印件的補做 SHALL NOT 進訂單完成判定的未送達集合**，其他印件送達時訂單照常自動完成，且 SHALL NOT 中斷進行中的補做
+- **補做 SHALL NOT 建立新印件、SHALL NOT 產生新審稿輪次**：原印件維持「已送達」，稿件與審稿輪次原封不動
+- 補做量出貨完成 SHALL NOT 自動結案（需業務確認客戶滿意）
+- 補做收不收費不設欄位判斷，收費事實由「有沒有建補收訂單異動」體現（規則正本見 wiki [售後服務規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/售後服務規則.md)）
+- 售後服務單內訂單異動仍走業務主管審核（訂單異動既有狀態機不變）
+- **改規格 SHALL 走新訂單**：客戶要改內容一律走新訂單流程，不在售後路徑（補做 SHALL NOT 同時改稿改規格）
 
 **Priority**: P0
 
-**Rationale**: 售後服務階段流程為訂單完成後事件的統一入口，確保客訴追蹤與帳務處理不遺漏。規則正本見 wiki [售後服務規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/售後服務規則.md)。
+**變更理由**: 全面改寫——原條文以「訂單已完成後」為流程入口且第 4 步的補印路徑為「建補印印件 → 走原審稿 / 工單流程」，兩者皆被本 change 取代：入口改為訂單成立後（零前提），補印改為售後服務單決議觸發原工單補做（統一案，拍板 25）。同時明寫三條原本沒有落點的邊界：訂單完成判定與售後補做的互不干擾（已送達印件不進未送達集合、完成不中斷補做）、補做不建印件不產生審稿輪次、改規格走新訂單。
+
+**Rationale**: 售後服務階段流程為訂單成立後事件的統一入口，確保客訴追蹤與帳務處理不遺漏。補做永遠是同一條流程、售後只是多一個觸發來源，所以流程概觀第 4 步交棒給既有補做機制而不自行描述一套。規則正本見 wiki [售後服務規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/售後服務規則.md)。
 
 #### Scenario: 售後事件完整流程（退款場景）
 
-- **GIVEN** Order.status = 已完成、客戶於 2026-05-06 反映瑕疵要求退款 5,000
-- **WHEN** 業務於訂單詳情頁建立 AfterSalesTicket（case_category=印件瑕疵、customer_complaint=「客戶反映 5,000 元印刷瑕疵」）
-- **THEN** ticket.status SHALL = 受理中
-- **AND** 業務於 Slack 與業務主管討論後將 thread URL 貼入 slack_thread_url
-- **AND** 業務於 ticket 填 resolution = 退款 並點「送出決議」，ticket.status → 處理中
-- **AND** 業務於 ticket 內建 OrderAdjustment(退印, -5000, linked_after_sales_ticket_id=此 ticket) → 走 OA 狀態機 → 確認可執行
-- **AND** 業務於訂單發票區建退款 Payment(-5000) + 開 SalesAllowance(-5000, 關聯 Invoice #1)
-- **AND** 業務確認客戶滿意後點 ticket 上「結案」，ticket.status → 已結案
+- **GIVEN** 訂單已完成、客戶於 2026-05-06 反映瑕疵要求退款 5,000
+- **WHEN** 業務於訂單詳情頁建立售後服務單（售後類型 ＝ 印件瑕疵、客訴內容 ＝ 「客戶反映 5,000 元印刷瑕疵」）
+- **THEN** 狀態 SHALL ＝ 受理中
+- **AND** 業務於通訊軟體與業務主管討論後將連結貼入討論紀錄連結
+- **AND** 業務填決議處理方式 ＝ 退款 並點「送出決議」，狀態 → 處理中
+- **AND** 業務於單內建訂單異動（退印、-5000、關聯售後服務單 ＝ 此單）→ 走狀態機 → 確認可執行
+- **AND** 業務於訂單發票區建退款款項紀錄（-5000）+ 開折讓單（-5000，關聯原發票）
+- **AND** 業務確認客戶滿意後點「結案」，狀態 → 已結案
 
-#### Scenario: 售後事件完整流程（免費補印場景）
+#### Scenario: 售後事件完整流程（免費補做場景）
 
-- **GIVEN** Order.status = 已完成、客戶反映規格不符要求補印 100 份、公司吸收補印費用
-- **WHEN** 業務建立 AfterSalesTicket（case_category=規格不符、resolution=補印）
-- **THEN** ticket.status → 處理中
-- **AND** 業務於 ticket 內點「建立補印印件」建 PrintItem(related_after_sales_ticket_id=此 ticket)
-- **AND** PrintItem 走原審稿 → 工單 → 出貨流程
-- **AND** 系統 MUST NOT 建立 OrderAdjustment（免費補印，業務未建補收異動單）
-- **AND** 補印 PrintItem 出貨完成 SHALL NOT 自動結案 ticket
-- **AND** 業務確認客戶滿意後點「結案」推進 ticket.status → 已結案
+- **GIVEN** 訂單 ORD-2026-0470 已完成、客戶反映其中 100 份規格不符要重做、公司吸收費用
+- **WHEN** 業務建立售後服務單（售後類型 ＝ 規格不符、相關印件 ＝ 「規格說明卡」、決議處理方式 ＝ 補做）
+- **THEN** 狀態 → 處理中
+- **AND** 印務於該印件發起補做、原工單加開目標數量 100 的補做生產任務（補做來源掛此售後服務單）
+- **AND** 補做量 SHALL 走生管確認 → 報工 → 品檢複驗 → 完工良品數累計 → 可出貨額度長出 → 業務建出貨單送達
+- **AND** 系統 MUST NOT 建立新印件、MUST NOT 產生新審稿輪次、MUST NOT 建立訂單異動
+- **AND** 對象印件印製維度 SHALL 全程維持「已送達」
+- **AND** 補做量出貨完成 SHALL NOT 自動結案；業務確認客戶滿意後點「結案」推進 → 已結案
+
+#### Scenario: 訂單進行中的已送達印件客訴走同一條補做
+
+- **GIVEN** 訂單狀態 ＝ 出貨中，其中印件 A 已送達、印件 B 仍在製作中
+- **WHEN** 客戶反映印件 A 有 50 份破損，業務建立售後服務單（相關印件 ＝ A）並決議「補做」
+- **THEN** 系統 SHALL 允許（相關印件 A 已送達）
+- **AND** 印務於印件 A 發起補做、原工單加開補做生產任務
+- **AND** 印件 B 送達時訂單 SHALL 照常自動推進「訂單完成」——印件 A 已送達、SHALL NOT 進未送達集合
+- **AND** 訂單完成 SHALL NOT 中斷仍在進行的補做；補做量驗過後照常建出貨單送出
+- **AND** 該售後服務單的退款 / 補收入口 SHALL 於訂單推進終態後自動由灰轉亮
 
 #### Scenario: 售後事件完整流程（不處理場景）
 
-- **GIVEN** Order.status = 已完成、客戶反映輕微瑕疵但接受不處理
-- **WHEN** 業務建立 AfterSalesTicket（case_category=印件瑕疵、resolution=不處理）
-- **THEN** ticket.status → 處理中
-- **AND** 系統 MUST NOT 建立 OrderAdjustment、PrintItem、Payment
-- **AND** 業務點「結案」推進 ticket.status → 已結案
+- **GIVEN** 訂單已完成、客戶反映輕微瑕疵但接受不處理
+- **WHEN** 業務建立售後服務單（售後類型 ＝ 印件瑕疵、決議處理方式 ＝ 不處理）
+- **THEN** 狀態 → 處理中
+- **AND** 系統 MUST NOT 建立訂單異動、補做生產任務、款項紀錄
+- **AND** 業務點「結案」推進 → 已結案
 - **AND** 訂單應收 / 發票 / 收款均不變動，三方對帳不受影響
+
+#### Scenario: 客戶要改規格時不走補做
+
+- **GIVEN** 售後服務單受理中、客戶反映不只要重做、還要改尺寸
+- **WHEN** 業務判定屬規格變更
+- **THEN** 系統 SHALL NOT 提供「補做同時改稿改規格」的路徑
+- **AND** 業務 SHALL 引導客戶走新訂單流程（新需求單 → 新訂單），該部分不在售後路徑
+- **AND** 若客戶另有純重做的部分，該部分 MAY 照常在本張售後服務單決議補做
 
 ### Requirement: 售後服務單三組件進度展示
 
@@ -1023,3 +1009,217 @@ v0.6 既有「AfterSalesTicket → OA → Payment + 折讓/作廢」連動鏈主
   - 退款收款紀錄：未開始
   - 發票異動：未開始
 - **AND** 結案按鈕 SHALL 維持可點擊；點擊時系統顯示未完結組件提醒，業務確認後可結案
+### Requirement: 售後服務單建單零前提
+
+系統 SHALL 允許業務／諮詢於**訂單成立之後的任何時間**建立售後服務單，SHALL NOT 以訂單狀態（生產中、出貨中、訂單完成、已取消）為建單把關。訂單成立的時點正本見 wiki [訂單成立確認](../../../memory/Sens_wiki/wiki/erp/07-scenarios/訂單成立確認.md)（線下單已回簽、線上單已付款）。
+
+**受理段 SHALL 零把關**：必填客訴內容與售後類型，其餘（相關印件、討論紀錄連結）皆選填；填完 SHALL 必定存檔成功。系統 SHALL NOT 於受理段檢核訂單狀態、印件狀態或任何下游條件。
+
+**唯一保留的建單限制 SHALL 為「一訂單最多一張未結案售後服務單」**（既有規則，不變）：已有未結案單時 SHALL 拒絕新建並指引改於該單的客戶補述紀錄補登；已結案單 SHALL NOT 計入此限制。
+
+**已取消訂單 SHALL 同樣可建單**：訂單取消後最常見的售後事件就是取消後退款（走售後服務單內的退款訂單異動），系統 SHALL NOT 以訂單已取消為由關閉入口。
+
+規則正本見 wiki [售後服務規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/售後服務規則.md)。
+
+**Priority**: P0
+
+**Rationale**: 開一張售後服務單本身不會讓任何資源流出（不動錢、不動生產），而客戶什麼時候反映問題不由我們的訂單狀態決定。原本的「訂單須已完成」前提唯一的功能是把金額動作分界擋在門口，但代價是訂單進行中的客訴無處可記——那些客訴會退回通訊軟體，事後誰答應客戶什麼查不出來，這正是當初要開這張單解決的問題。把關下沉到決議選項之後，該擋的（錢與生產）照樣擋得住，而受理這件事回到它該有的成本：零。
+
+#### Scenario: 訂單生產中即可建立售後服務單
+
+- **GIVEN** 訂單 ORD-2026-0512 狀態 ＝ 生產中、無未結案售後服務單
+- **WHEN** 客戶反映先收到的那批貨有色差，業務點「建立售後服務單」並填客訴內容與售後類型後送出
+- **THEN** 系統 SHALL 建立售後服務單、狀態 ＝ 受理中
+- **AND** 系統 SHALL NOT 提示「訂單尚未完成請改用訂單異動」
+- **AND** 系統 SHALL NOT 因訂單狀態拒絕存檔
+
+#### Scenario: 已取消訂單可建立售後服務單
+
+- **GIVEN** 訂單 ORD-2026-0480 狀態 ＝ 已取消、客戶要求退還已付款項
+- **WHEN** 業務建立售後服務單
+- **THEN** 系統 SHALL 允許建單、狀態 ＝ 受理中
+- **AND** 因訂單已達終態，決議選項中的「退款」SHALL 為可選
+
+#### Scenario: 已有未結案售後服務單時拒絕新建
+
+- **GIVEN** 訂單 ORD-2026-0512 已有 1 張處於「處理中」的售後服務單 AS-20260812-01
+- **WHEN** 業務再次點擊「建立售後服務單」
+- **THEN** 系統 MUST 拒絕新建並提示改於 AS-20260812-01 的客戶補述紀錄補登
+- **AND** 系統 SHALL 提供連結直接跳至該單
+
+#### Scenario: 已結案售後服務單不計入限制
+
+- **GIVEN** 訂單既有售後服務單 AS-20260701-01 狀態 ＝ 已結案
+- **WHEN** 業務點擊「建立售後服務單」
+- **THEN** 系統 SHALL 允許建單
+- **AND** 新舊單 SHALL 共存於該訂單下，業務可於訂單詳情頁切換查看
+
+### Requirement: 受理與決議兩段
+
+售後服務單的操作 SHALL 明確分為兩段，把關 SHALL 只存在於第二段：
+
+| 段 | 動作 | 把關 |
+|----|------|------|
+| 受理（建單當下） | 填客訴內容、售後類型，勾相關印件（選填），貼討論紀錄連結（選填） | 零把關，必定存檔成功 |
+| 決議（之後在單上做動作） | 送出決議處理方式、建立下游動作 | 每個選項依當下事實**即時顯示可否** |
+
+**決議選項的即時可選判定 SHALL 依當下事實計算並在介面上直接呈現**（不可選者 SHALL 灰掉並附一句原因與該走哪條路）：
+
+| 選項 | 可選條件 | 不可選時的指引 |
+|------|---------|--------------|
+| 不處理 | 恆可選 | — |
+| 補做 | 相關印件中至少一件印製維度為「已送達」 | 貨還在自己手上，品質缺口走品檢缺口補做（見 `qc` § 補做的兩個觸發來源） |
+| 退款 | 所屬訂單已達終態（訂單完成或已取消） | 訂單尚未進終態，金額請至訂單明細直接調整 |
+| 退款+補做 | 同時滿足上兩列 | 依未滿足的那一項顯示對應指引 |
+
+系統 MUST NOT 讓業務先存檔、之後才發現該決議做不了。判定 SHALL 於每次開啟單頁時重算（依當下訂單與印件事實），SHALL NOT 快取建單當時的可選性——訂單狀態與印件狀態都會在售後服務單存續期間變化。
+
+決議 SHALL 為單頭層級：SHALL NOT 逐印件記各自的處理方式、SHALL NOT 設補做數量欄（補做要補哪幾件、各補多少由印務於發起補做時設定，見 § 售後服務單決議觸發補做）。
+
+規則正本見 wiki [售後服務規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/售後服務規則.md) § 規則第 3 步、情境過程見 wiki [售後受理與決議](../../../memory/Sens_wiki/wiki/erp/07-scenarios/售後受理與決議.md)。
+
+**Priority**: P0
+
+**Rationale**: 把關從建單移到決議之後，需要一個機制回答「那業務怎麼知道哪些做得了」——答案是選項自己講。灰掉＋一句指引比擋在存檔那一刻好，因為業務在填的當下就看得到路在哪；擋在存檔那一刻等於讓人白填一次表單，還會逼出「那我先不記」的迴避行為。判定要每次重算而不快取，是因為售後服務單可能建在訂單進行中、活到訂單完成之後，事實一直在動。
+
+#### Scenario: 相關印件未送達時補做選項灰掉
+
+- **GIVEN** 售後服務單狀態 ＝ 受理中、相關印件僅一件、該印件印製維度 ＝ 製作中
+- **WHEN** 業務開啟決議處理方式選單
+- **THEN** 「補做」與「退款+補做」SHALL 為灰掉
+- **AND** 灰掉處 SHALL 顯示原因與指引（貨還在自己手上，品質缺口走品檢缺口補做）
+- **AND** 「不處理」SHALL 可選
+
+#### Scenario: 訂單未達終態時退款選項灰掉
+
+- **GIVEN** 售後服務單狀態 ＝ 受理中、所屬訂單狀態 ＝ 出貨中、相關印件中有一件已送達
+- **WHEN** 業務開啟決議處理方式選單
+- **THEN** 「退款」與「退款+補做」SHALL 為灰掉，附指引（金額請至訂單明細直接調整）
+- **AND** 「補做」SHALL 可選（該印件已送達）
+
+#### Scenario: 事實變化後可選性重算
+
+- **GIVEN** 售後服務單建立時所屬訂單 ＝ 生產中（退款灰掉）
+- **WHEN** 訂單之後推進「訂單完成」，業務重新開啟該售後服務單
+- **THEN** 「退款」SHALL 轉為可選
+- **AND** 系統 SHALL NOT 沿用建單當時的可選性快取
+
+#### Scenario: 受理段不因任何下游條件擋下存檔
+
+- **GIVEN** 訂單 ＝ 生產中、客戶反映的印件全部未送達、業務未勾任何相關印件
+- **WHEN** 業務填客訴內容與售後類型後送出建單
+- **THEN** 系統 SHALL 存檔成功、狀態 ＝ 受理中
+- **AND** 系統 SHALL NOT 在受理段檢核任何下游條件
+
+#### Scenario: 決議為單頭層級、不逐印件不設數量
+
+- **GIVEN** 售後服務單相關印件勾了三件、其中兩件已送達
+- **WHEN** 業務送出決議處理方式 ＝ 補做
+- **THEN** 系統 SHALL 只記單頭層級的一個決議值
+- **AND** 系統 SHALL NOT 要求逐印件填處理方式、SHALL NOT 提供補做數量欄
+- **AND** 要補哪幾件、各補多少 SHALL 由印務於發起補做時設定
+
+### Requirement: 售後服務單決議觸發補做
+
+售後服務單決議處理方式為「補做」或「退款+補做」時，SHALL 由**印務於對象印件的印件層發起補做**，系統 SHALL 於該印件的**原工單**經工單異動加開補做生產任務。系統 MUST NOT 建立新印件、MUST NOT 建立新工單、MUST NOT 產生新的審稿輪次。
+
+**發起與承載**：
+
+- 操作角色 SHALL 為印務（沿用既有補做機制的角色分工）；發起入口 SHALL 為印件層
+- 對象印件 SHALL 限印製維度為「已送達」者；對象與數量 SHALL 由印務於發起時設定（依客訴描述與業務同客戶確認的結果），數量 SHALL 承載於補做生產任務的**目標數量**
+- 補做生產任務的**補做來源** SHALL 掛該張售後服務單（供追溯與防重）
+- 起補工序與各工序補做量 SHALL 依齊套帳各工序剩餘量推算（系統建議、印務可調），與品檢缺口補做共用同一套推算（見 `qc` § 補做的兩個觸發來源）
+
+**防重 SHALL 以「售後服務單的補做決議」為可消耗單位**：該張售後服務單被任一補做生產任務掛為補做來源後 SHALL 標記為已承接，SHALL NOT 再發起第二次；要再補 SHALL 由業務另開一張售後服務單（與品檢缺口紀錄被承接後即消耗同構）。
+
+**穿越印件印製終態的例外放行**：一般補做（品檢缺口）於所屬印件印製維度已達終態（已送達／已棄用）時 SHALL 擋下；**由售後服務單決議觸發的補做 SHALL 例外放行**，重開原工單（已完成 → 異動），對象印件印製維度 SHALL 維持「已送達」不變、補做活動全在工單層。放行條件的規格落點為 [work-order spec § 補生產承接](../work-order/spec.md)，狀態轉換正本見 wiki [工單狀態](../../../memory/Sens_wiki/wiki/erp/06-state-machines/工單狀態.md)。
+
+**與訂單完成判定的互不干擾**：對象印件已在「已送達」，SHALL NOT 進入訂單完成判定的未送達集合——訂單 MAY 於補做進行中照常自動推進「訂單完成」，且該推進 SHALL NOT 中斷或作廢進行中的補做。
+
+**成本歸戶**：補做生產任務的實際成本 SHALL 計入**原印件**的實際成本帳（品質成本歸戶該件貨）。免費補做 SHALL NOT 產生任何金額單據；收費與否由是否掛補收訂單異動體現（見 § 與 OrderAdjustment 關聯）。
+
+補做走完整生產與出貨鏈（工單異動 → 生管確認 → 報工 → 品檢複驗 → 完工良品數累計 → 可出貨額度長出 → 建出貨單），與大貨等效；補做量出貨的建單前提見 [shipment spec § 出貨單建立與額度檢核](../shipment/spec.md)。規則正本見 wiki [售後服務規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/售後服務規則.md) § 補做的執行規則。
+
+**Priority**: P0
+
+**Rationale**: 補做永遠是同一條流程，售後只是多一個觸發來源。原設計為售後另建一件補印印件，代價是：審稿輪次要複製一份並補一輪假的自動合格、印件數隨客訴膨脹、品質成本掛在一件 0 元新印件上而看不出這批貨實際花多少、訂單完成判定還要為補印印件另設分母排除條款。改為在原工單加開補做任務之後，這四件事同時消失，審稿零處理。守衛之所以能穿越印件終態，是因為當年否決重開的理由（成本與責任會纏在一起算不清）在統一案下被正面解決：責任判定與決議留痕在售後服務單、成本歸戶原印件正是刻意設計，而當年缺的出貨額度配套已由額度單軌補齊。防重要對稱，否則同一張客訴會被補兩次貨。
+
+#### Scenario: 印務依決議發起補做、原工單加開任務
+
+- **GIVEN** 售後服務單 AS-20260812-01 決議處理方式 ＝ 補做、相關印件「規格說明卡」印製維度 ＝ 已送達、該印件原工單狀態 ＝ 已完成
+- **WHEN** 印務於該印件發起補做、設定目標數量 100 並確認
+- **THEN** 系統 SHALL 於原工單開立工單異動、加開一筆補做生產任務（目標數量 100）
+- **AND** 工單 SHALL 自「已完成」轉「異動」
+- **AND** 該補做生產任務的補做來源 SHALL 掛 AS-20260812-01
+- **AND** 起補工序與各工序補做量 SHALL 由系統依齊套帳剩餘量建議、印務可調
+- **AND** 系統 MUST NOT 建立新印件、MUST NOT 建立新工單、MUST NOT 產生新審稿輪次
+- **AND** 對象印件印製維度 SHALL 維持「已送達」
+
+#### Scenario: 對象印件未送達時不得由售後觸發補做
+
+- **GIVEN** 售後服務單相關印件中某件印製維度 ＝ 製作中
+- **WHEN** 印務嘗試就該印件由本張售後服務單發起補做
+- **THEN** 系統 MUST 擋下並指引走品檢缺口補做
+- **AND** 決議選單中「補做」對這張單 SHALL 已為灰掉（見 § 受理與決議兩段）
+
+#### Scenario: 同一張售後服務單只能發起一次補做
+
+- **GIVEN** AS-20260812-01 已被一筆補做生產任務掛為補做來源（已承接）
+- **WHEN** 印務嘗試就同一張售後服務單再發起補做
+- **THEN** 系統 MUST 擋下並提示該單補做已承接
+- **AND** 提示 SHALL 帶出出路：要再補 SHALL 由業務另開一張售後服務單
+
+#### Scenario: 訂單完成不中斷進行中的補做
+
+- **GIVEN** 訂單狀態 ＝ 出貨中、印件 A 已送達且有一筆補做生產任務製作中、印件 B 在運送中
+- **WHEN** 印件 B 送達、系統判定訂單完成
+- **THEN** 訂單 SHALL 推進「訂單完成」（印件 A 已送達、SHALL NOT 進未送達集合）
+- **AND** 印件 A 的補做生產任務 SHALL 照常繼續、SHALL NOT 被作廢或凍結
+- **AND** 補做量驗過後 SHALL 照常長出可出貨額度、業務 SHALL 可於訂單終態下建出貨單
+
+#### Scenario: 免費補做的成本歸戶原印件
+
+- **GIVEN** 售後服務單決議 ＝ 補做、公司吸收費用、補做生產任務已完成（工時與材料成本已入帳）
+- **WHEN** 檢視該印件的實際成本
+- **THEN** 補做生產任務的成本 SHALL 計入原印件的實際成本帳
+- **AND** 系統 SHALL NOT 產生任何金額單據（無訂單異動、無款項紀錄）
+- **AND** 該筆補做的來歷 SHALL 可自補做來源回溯至該張售後服務單
+
+### Requirement: 售後服務單金額動作的訂單終態開關
+
+售後服務單內的金額動作（退款訂單異動、補收訂單異動、請款期次、折讓）SHALL 依所屬訂單是否達終態切換可用性，切換 SHALL 為即時（依當下訂單狀態計算，不快取）：
+
+| 訂單狀態 | 售後服務單內金額動作 | 金額調整改走哪裡 |
+|---------|-------------------|----------------|
+| 未達終態（生產中、出貨中等） | SHALL NOT 開放（入口灰掉並附指引） | 訂單明細直接調整（階段一） |
+| 已達終態（訂單完成、已取消） | SHALL 開放 | 售後服務單內的訂單異動（階段二） |
+
+分界正本見 wiki [明細時點分界](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/明細時點分界.md)；兩個階段 SHALL NOT 同時開放同一筆金額的兩條路徑。
+
+**生產動作 SHALL NOT 受此開關影響**：決議「補做」與印務發起補做的可用性只看對象印件是否已送達，與訂單是否達終態無關。
+
+**Priority**: P0
+
+**Rationale**: 建單前提廢除之後，售後服務單可能在訂單進行中就存在，而訂單進行中的金額調整本來就有一條路（直接改訂單明細，看得到原價與改後價）。兩條路同時開著，同一筆錢可能被調兩次、對帳對不起來，所以要有一個開關把它們錯開；分界用訂單終態而不用售後服務單狀態，是因為決定走哪條路的是「訂單明細還能不能改」這件事。生產動作不受此限，是因為補做的前提是貨已經交出去了，那與錢的分界是兩件事。
+
+#### Scenario: 訂單未達終態時金額入口灰掉
+
+- **GIVEN** 訂單狀態 ＝ 生產中、售後服務單狀態 ＝ 處理中
+- **WHEN** 業務查看該售後服務單可做的動作
+- **THEN** 退款 / 補收訂單異動、請款期次、折讓等入口 SHALL 為灰掉並附指引（金額請至訂單明細直接調整）
+- **AND** 系統 SHALL NOT 允許繞過介面建立關聯訂單異動
+
+#### Scenario: 訂單達終態後金額入口開放
+
+- **GIVEN** 上一情境的訂單之後推進「訂單完成」
+- **WHEN** 業務重新開啟該售後服務單
+- **THEN** 金額動作入口 SHALL 為可用
+- **AND** 系統 SHALL NOT 要求另建新的售後服務單
+
+#### Scenario: 補做不受金額開關限制
+
+- **GIVEN** 訂單狀態 ＝ 出貨中（未達終態）、售後服務單相關印件中有一件已送達
+- **WHEN** 業務送出決議 ＝ 補做、印務發起補做
+- **THEN** 系統 SHALL 允許——生產動作不看訂單終態
+- **AND** 該單的金額動作入口 SHALL 仍維持灰掉
+
