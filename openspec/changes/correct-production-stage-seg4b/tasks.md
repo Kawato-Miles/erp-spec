@@ -28,7 +28,7 @@
 
 ## 4. 指標移除與收尾
 
-- [ ] 4.1 逾期指標移除：`isOrderOverdueInReview` 與相關顯示刪除（AR-14 不做）——驗證：審稿頁無逾期標記與 buffer 邏輯（P8）
-- [ ] 4.2 ACCEPTANCE.md 續補 4B 驗收項（每任務群組至少一條端到端）＋既有審稿驗收項基準同步——驗證：驗收項可照走
+- [x] 4.1 逾期指標移除：`isOrderOverdueInReview` 與相關顯示刪除（AR-14 不做）——驗證：審稿頁無逾期標記與 buffer 邏輯（P8）
+- [x] 4.2 ACCEPTANCE.md 續補 4B 驗收項（每任務群組至少一條端到端）＋既有審稿驗收項基準同步——驗證：驗收項可照走
 - [ ] 4.3 跨模組資料流稽核（Opus）：免審全鏈（建印件→合格輪→B2B 確認→工單草稿）、訂單層歸納鏈（審稿事件→派生→訂單落點）、退回重審鏈——驗證：零斷鏈
-- [ ] 4.4 `openspec validate correct-production-stage-seg4b --strict` 通過＋免登入白名單確認——驗證：validate 過、3020 可直開
+- [x] 4.4 `openspec validate correct-production-stage-seg4b --strict` 通過＋免登入白名單確認——驗證：validate 過、3020 可直開
