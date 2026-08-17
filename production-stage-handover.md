@@ -14,7 +14,7 @@
 | 2 | 報工、場內轉交 | **完成並 archive**（`2026-08-11-correct-production-stage-seg2`）：五批實作＋每批稽核修正＋verify 修正輪，main specs 已合併（含 A2 檔頭）；拍板紀錄 `production-stage-seg2-alignment.md`（十節）；轉交範圍收回為產線 → 產線、產線 → 品檢站兩類（暫存區三類留段 3，見 § 八 B2）；另案 A1（設備停機來源）、A3（bubble-up 全庫清整）與 warehouse_qty 死欄位留後續 |
 | 3 | 品檢、齊套與完工判定、出貨、送達、訂單完成＋五項附屬（SHP-017、A8、A9、A10、認列工單遷回貨運單） | **完成並 archive**（`2026-08-12-correct-production-stage-seg3`）：七批 46 項 tasks＋3 輪補修＋verify 修正，每批 Opus 稽核；main specs 合併 19 MODIFIED／4 ADDED／4 REMOVED（出貨行為單一落點歸 shipment）、validate 全過；erp 分支疊 33 commit（`29385aa`…`b7837c2`）；wiki 落卡兩批（批次一 21 卡＋新情境卡品檢通過入庫、批次二 10 條含短出結案正名 15 卡與訂單手動推進規則）；SHP-017 甲案結案、PT-011 前提修正註記。設計正本 `production-stage-seg3-design.md`、拍板紀錄 `production-stage-seg3-grill.md`（§ 一～一之四）、as-is 正本 `production-stage-dispatch-waybill-asis.md`（**ERP 後端＝`sens-print-core`，`sensation-api` 是 EC 後台勿認錯**）、稽核三輪 `production-stage-seg3-audit-r1/r2/r3.md` |
 | 4A | 副流程生產側 | **完成並 archive**（`2026-08-13-correct-production-stage-seg4a`）：grill 拍板 31 條（`production-stage-seg4-grill.md`）→ 設計 v3 三輪 plan-audit（含三雙盲對抗鏡頭）→ wiki 落卡三批 25 卡＋apply 期間追加 6 筆（PT-034／PT-044 具名翻案、派單第七值「補做」、工單異動六列欄位家、第三分流終態口徑、手動推進限審核通過後）→ 9 capability delta（51 條 Requirement）→ apply 五批＋每批 Opus 稽核＋7.3 三鏈總稽核（斷鏈已修）→ verify 2 CRITICAL＋4 W 全修 → main specs 合併 validate 22/0。erp 分支疊 12 commit（`4413e66`…`b58fbfd`）。關鍵翻案：售後與補做統一（廢補印印件型別、售後單零前提）、出貨建單額度單軌（段 3 R2 翻案）、取消連鎖五層 |
-| 4B | 審稿段 openspec 棄用重寫＋線下單必要流程修 prototype | **待開**。輸入已齊：審稿段差異矩陣 #43-100（48 項，矩陣末段）、grill 拍板條 1-4／7-10（基準＝wiki、範圍＝線下單必要流程、dashboard 棄用刪除、難易度綁 mock 手動分派、審稿三值空窗併等待審稿、請假不設欄位、免審輪次時點＝印件建立時、wiki 機械修 6 項）。**prepress-review spec 整檔棄用重寫**（含段 3 新增四 Requirement 的錯值修正：clone reset 待分派、warehouseQty、等待中；bubble-up 7 處）。4A verify 判歸 4B 的殘留：prepress L303-304 reviewRound.source enum「售後補印」值、打樣歸零字面釐清。**舊 repo sens-erp-prototype＋Lovable 已全面棄用**（正本 CLAUDE.md § 偏好） |
+| 4B | 審稿段 openspec 棄用重寫＋線下單必要流程修 prototype | **完成並 archive**（`2026-08-17-correct-production-stage-seg4b`）：設計 v2 單輪 plan-audit → wiki 落卡八項＋apply 期間追加（訂單管理人欄、訂單狀態離段弧、審稿輪次綁定句）→ prepress-review 重寫（合併後 31 Requirement、REMOVED 七項含主管工作台與三指標）＋order-management 派生六規則＋business-scenarios → apply 四批＋每批 Opus 稽核＋4.3 三鏈總稽核（8 斷鏈全修）→ verify 2C/5W 全修 → main specs 合併 validate 22/0。erp 分支疊 12 commit（`1d2c072`…`d4b8ac9`）。關鍵裁決：上傳即建輪（首輪與補件同通例）、取消免審帶檔輪回未判定、派生單向守衛、待分派佇列限線下單、工單草稿觸發在製作細節確認 |
 
 ## 二、工作方法（沿用，不要另創）
 
@@ -139,6 +139,9 @@
 | 「補印」與英文識別（AfterSalesTicket 等）全庫用詞掃描（統一案後補印失去系統詞義；wiki 約 12 卡＋openspec 敘述性引文殘留） | 段 4 收尾批次 |
 | business-scenarios 全流程驗證表列 8／16／17 打樣印件印製維度回退字面（已送達後又製作完成，存量矛盾） | 段 4A verify 時查證 |
 | 派單卡「顯示型上游狀態欄收不收」判準不一致（本批新增兩欄 vs 範圍外不收工單狀態欄）；訂單狀態卡 227 行超規範粗標 | wiki 治理批次 |
+| main specs「變更理由」段清整（4A/4B sync 帶入約 50 段含「本 change」指涉，比照既有慣例保留；本體只留現況、理由歸 log 需跨檔清整） | 與「補印」用詞掃描同批 |
+| prepress-review 英文實體名標題（ReviewRound 等）與 submittedNote UI 元件名 Requirement | 英文識別全庫正名批 |
+| 4B verify SUGGESTION：通知類 clause 全 spec 無模型（散落各 Requirement 的「SHALL 通知」無統一承載） | 通知機制設計時收 |
 
 ### 四項前置查核結果（2026-08-12，全文 append 於差異矩陣末四段）
 
