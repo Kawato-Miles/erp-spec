@@ -1,6 +1,6 @@
 ## Purpose
 
-售後服務模組 -- 訂單已完成後的客訴 / 不良 / 規格不符 / 物流問題 / 工法限制 / 交期延誤等售後事件的承載容器。
+售後服務模組 -- 客訴 / 不良 / 規格不符 / 物流問題 / 工法限制 / 交期延誤等售後事件的承載容器，訂單成立後任何時間可建（建單零前提，把關下沉到單內決議選項）。
 業務與業務主管於 Slack 線下討論決議，ERP 僅記錄結果（resolution / case_category / Slack thread URL）並追蹤結案。
 
 **問題**：
@@ -12,7 +12,7 @@
 - 次要：透過 case_category 結構化分類，支援未來「哪類瑕疵最常發生」「售後退款金額 / 月（由售後單下退款異動單總額推導）」等管理切片
 
 - 來源 BRD：wiki [售後服務規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/售後服務規則.md)、[售後服務實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/售後服務.md)、[售後服務狀態](../../../memory/Sens_wiki/wiki/erp/06-state-machines/售後服務狀態.md)
-- Prototype：`sens-erp-prototype/src/components/order/AfterSalesSection.tsx` + `AfterSalesTicketDetail.tsx` + `MyAfterSalesBucket.tsx`
+- Prototype：erp repo `apps/erp/src/app/(prototype)/orders/`（售後服務 Tab 與側板）＋`after-sales/`（介面與互動正本歸 Prototype）
 - 相依模組：訂單管理（OrderAdjustment / PrintItem / Payment / SalesAllowance）、業務情境（情境 1-3 改用 ticket 路徑）
 
 ---
