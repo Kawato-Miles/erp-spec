@@ -22,7 +22,7 @@ ingested-to:               # status=ingested 時填，列寫入的既有卡
 
 ## 原始素材
 
-<一字不漏的 raw 內容 ── 對話片段 / WebFetch 摘要 + URL / Prototype 試用紀錄 / Miles 觀察原話 ── 不要在這層加自己的解釋>
+<一字不漏的 raw 內容：對話片段／WebFetch 摘要＋URL／Prototype 試用紀錄／Miles 觀察原話。這一層不加自己的解釋>
 
 ## 第一輪初步分析（Claude 寫）
 
@@ -38,7 +38,7 @@ ingested-to:               # status=ingested 時填，列寫入的既有卡
 
 ## 精練去處（Mode B 完成後填）
 
-<!-- Mode A 寫入時保留下方註解樣板不填；Mode B 完成後以實際 wiki link 清單取代整段註解 -->
+<!-- Mode A 寫入時保留下方註解樣板不填。Mode B 完成後以實際 wiki link 清單取代整段註解 -->
 
 <!-- Mode B step 6 寫入後在此列出 wiki link：
 - [[../04-business-logic/X]] — 新增 § A
@@ -46,4 +46,7 @@ ingested-to:               # status=ingested 時填，列寫入的既有卡
 - 取消（理由：...）
 -->
 
-<!-- 起手提醒（填完刪除本註解）：命名規約、各 mode 流程、Anti-Model-Collapse 四道防線見 .claude/skills/vault-ingest/SKILL.md 與 raw/README.md；共用治理（流程／停下鐵則／紀律）見 00-meta/卡片撰寫共用規範 -->
+<!-- 起手提醒（填完刪除本註解）：
+- 命名規約、各 mode 流程、Anti-Model-Collapse 四道防線：見 .claude/skills/vault-ingest/SKILL.md 與 raw/README.md
+- 共用治理（流程／停下鐵則／紀律）：見 00-meta/卡片撰寫共用規範
+-->
