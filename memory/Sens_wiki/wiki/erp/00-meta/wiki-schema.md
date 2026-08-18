@@ -114,7 +114,7 @@ last-reviewed: YYYY-MM-DD
 ---
 ```
 
-### type=example（凍結範例卡）
+### type=example（示範卡）
 
 ```yaml
 ---

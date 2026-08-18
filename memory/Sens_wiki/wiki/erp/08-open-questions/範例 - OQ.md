@@ -2,7 +2,7 @@
 type: example
 example-of: open-question
 snapshot-source: "[[PT-028-工單已交付觸發條件正本矛盾]]"
-synced-with-template: 2026-08-17
+synced-with-template: 2026-08-18
 status: active
 last-reviewed: 2026-08-03
 ---
