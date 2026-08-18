@@ -6,7 +6,7 @@ last-reviewed: 2026-07-29
 
 # OQ 卡撰寫規範（open-question 層）
 
-> 三層結構：動筆從 [[範本 - OQ]]（骨架）複製起手；合規樣貌對照 [[範例 - OQ]]（凍結快照）；共用治理（撰寫流程／停下鐵則／撰寫紀律／修改既有卡原則）見 [[卡片撰寫共用規範]]——**本卡只寫 OQ 單元的特定標準**。
+> 三層結構：動筆從 [[範本 - OQ]]（骨架）複製起手；合規樣貌對照 [[範例 - OQ]]（示範）；共用治理（撰寫流程／停下鐵則／撰寫紀律／修改既有卡原則）見 [[卡片撰寫共用規範]]——**本卡只寫 OQ 單元的特定標準**。
 > 分工：本卡管「一張 OQ 卡長什麼樣」；`oq-manage` skill（`.claude/skills/oq-manage/SKILL.md`）管「OQ 怎麼流動」（五 mode 操作、去重、封存移檔、audience 判定、Notion 推送）；frontmatter 欄位定義與值域正本在 [[wiki-schema]] § 四。同一條規則只在一處宣告。
 > 本卡 type 為 meta，不屬平層 open 佇列（豁免「平層只放 status=open」語意鐵則，比照範例卡，見 [[卡片撰寫共用規範]] § 一 治理鐵則 4）。
 
@@ -159,7 +159,7 @@ last-reviewed: 2026-07-29
 ## 相關卡
 
 - [[範本 - OQ]] — 骨架（起手樣板）
-- [[範例 - OQ]] — 凍結快照（通過樣本）
+- [[範例 - OQ]] — 示範（通過樣本）
 - [[卡片撰寫共用規範]] — 跨單元共用治理
 - [[wiki-schema]] § 四／§ 七 — frontmatter 值域與前綴 enum 正本
 - `oq-manage` skill（`.claude/skills/oq-manage/SKILL.md`）— 流程正本（五 mode／去重／封存／audience 判定時機／Notion 推送）
