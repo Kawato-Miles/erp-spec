@@ -123,6 +123,8 @@ description: >
 
 依 `references/delivery-template.md` 的標準模板產出。
 
+撰寫前 MUST 讀 `/Users/b-f-03-029/.claude/output-styles/ste100-pm.md`（受控句法正本）與 `/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`（非商業術語對照）；交付草稿的每一句話依其撰寫。若草稿由 sub-agent 代寫，dispatch prompt MUST 附上這兩檔路徑（sub-agent 拿不到 CLAUDE.md 與 output style）。
+
 > **MUST NOT** 拿「另一個需求 / issue 的內容」當對照範本 —— 實例會被修改或刪除，對照即失效。標準模板是從多個既有交付物**精煉出的自包含結構**，更新走版本控管（見本檔 § Rubric 與模板演化）。
 
 - **project 描述 = What 層（薄）**：概述（商業目標＋痛點，源 wiki）/ Use Case（業務敘事，源 wiki）/ Key Feature（Scope 主要／次要功能巢狀＋Out of Scope）/ 各 Feature 章（Function 節＝商業邏輯＋驗收條件）/ 測試決策（受測介面 2-4 個＋測試先行說明，只此一處）/ 另案處理 / 狀態機。操作方式與介面呈現歸 Prototype（介面與互動正本，交付不文字重述、不附參照格）、實作規格下放 Task 票、欄位歸 wiki 實體卡；細則見 references/delivery-template.md v2.2 與 docs/superpowers/specs/2026-07-07-linear-delivery-architecture-design.md
