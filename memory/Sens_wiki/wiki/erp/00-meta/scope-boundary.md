@@ -64,7 +64,7 @@ ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」�
 
 | 屬於 | 位置 |
 |------|------|
-| 視覺規範（顏色 / 字型 / 元件 / layout） | `sens-erp-prototype/DESIGN.md`（**Prototype 唯一權威**）|
+| 視覺規範（顏色 / 字型 / 元件 / layout） | erp repo（`/Users/b-f-03-029/erp`）設計規範，入口 `.claude/skills/prototype-from-prompt/SKILL.md`（**Prototype 唯一權威**）|
 | 設計系統 token | 同上 |
 | 元件清單 | 同上 |
 
@@ -75,16 +75,16 @@ ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」�
 | 表格密度 / 批次操作 / 響應式 | `memory/shared/ui-business-rules.md` |
 | 跨產品通用工作原則（Spec 撰寫 / OQ 管理 / PM 視角 / 迭代工作流） | `memory/shared/principles.md` § 一~五 |
 | ERP 資料模型設計模式（指針模式 / 狀態碼結構化 / 合格終態 / B2C-B2B 分流 / 稽核鉤子）| 原承載卡已隨舊三 agent 審查體系刪除（2026-08-05）；設計比對基準由 [[規劃品質評分準則]] 5-4 業界範式對照承接 |
-| 禁 Emoji / 詳情頁 Tab 順序 / Info Banner | `sens-erp-prototype/DESIGN.md` §0 |
+| 禁 Emoji / 詳情頁 Tab 順序 / Info Banner | erp repo 設計規範（入口同上）|
 
 ### 演算法 / 實作細節
 
 | 屬於 | 位置 |
 |------|------|
-| 自動分配演算法步驟（5 步驟） | `sens-erp-prototype/src/utils/prepressReview.ts` |
-| 計算公式（齊套計算實作） | `sens-erp-prototype/src/utils/printItemStatus.ts` |
-| 訂單計價公式 | `sens-erp-prototype/src/utils/orderPricing.ts` |
-| 排程演算法 | `sens-erp-prototype/src/utils/scheduling.ts` |
+| 自動分配演算法步驟（5 步驟） | erp repo 對應模組實作（`apps/erp`）|
+| 計算公式（齊套計算實作） | erp repo 對應模組實作（`apps/erp`）|
+| 訂單計價公式 | erp repo 對應模組實作（`apps/erp`）|
+| 排程演算法 | erp repo 對應模組實作（`apps/erp`）|
 
 ### 驗收測試（UAT / SIT / UT / 端對端 e2e）
 
@@ -92,7 +92,7 @@ ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」�
 
 | 屬於 | 位置 |
 |------|------|
-| 端對端測試（Playwright e2e）含 UI 點擊步驟 / DOM 斷言 / console.error 斷言 | `sens-erp-prototype/tests/e2e/*.spec.ts` |
+| 端對端測試（Playwright e2e）含 UI 點擊步驟 / DOM 斷言 / console.error 斷言 | erp repo 測試（`apps/erp`）|
 | 單元測試（UT）/ 系統整合測試（SIT） | Prototype 測試碼 |
 | 含技術步驟的測試腳本（點某按鈕 → 斷言某 DOM 節點 → 檢查某 store 狀態） | 同上 |
 
