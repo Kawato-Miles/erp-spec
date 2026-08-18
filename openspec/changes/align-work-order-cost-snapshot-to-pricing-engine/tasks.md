@@ -40,4 +40,12 @@
 - [x] 7.1 全域殘留字眼掃描：預估側不得再出現外包分項與折舊字樣。完成條件：`grep -rn "est_cost.*outsource\|預估.*折舊" apps/erp/src/app/\(prototype\)/work-orders` 無輸出。
 - [x] 7.2 lint 與格式檢查。完成條件：`pnpm lint` 與 `pnpm format:check` 皆 exit code 0。
 - [x] 7.3 端到端試用一輪：建立工單草稿 → 新增印刷型任務並填上機張數與色數 → 存檔看四分項 → 改上機張數看重算 → 送製程審核完成看定格 → 開成本對照分頁。完成條件：六步皆按預期呈現，瀏覽器主控台無錯誤。
-- [x] 7.4 提交並開 PR 交前端主管審核。完成條件：PR 已建立且標題含 change 名稱、描述連回本 change 的 proposal 路徑。
+- [x] 7.4 提交並開 PR 交前端主管審核。完成條件：PR 已建立且標題含 change 名稱、描述連回本 change 的 proposal 路徑。（後續依 PM 指示改為直接併入 `prototype/production-stage`、PR 已關閉、分支已刪除；第 8 群組起直接於該分支疊 commit）
+
+## 8. 缺輸入計價因子改手填（Miles 2026-08-18 裁決：比照上機張數）
+
+- [ ] 8.1 `TaskFormDialog.js` 依所選主檔項目的計價方法動態顯示計價輸入欄位：「才數」（大圖輸出）、「工序面積」（工序面積計價）、「頁數」（台數／頁數／本數計價的裝訂）；未填時以其為輸入的分項回 0。完成條件：選大圖工序出現才數欄、選局部上光類出現工序面積欄、選書冊裝訂出現頁數欄，未填時對應分項為 0。
+- [ ] 8.2 `estimate-cost.js` 移除以主檔預設值頂替的路徑（`chi_per_unit` 等 fallback），改讀任務手填值；單軸退化的查表（工序面積計價誤用數量軸、裝訂一律本數軸）改回各自正確的查表軸。完成條件：`grep -n "chi_per_unit" apps/erp/src/app/\(prototype\)/work-orders/_lib/estimate-cost.js` 無輸出；驗算腳本案例 3 改以手填才數為輸入後通過。
+- [ ] 8.3 mock 既有任務補填合理的才數／工序面積／頁數並全量重算 est_cost。完成條件：重算比對腳本 0 不一致。
+- [ ] 8.4 WO-2026-0301 的局部 UV 任務（pt-0301-3）改指既有工序「局部上光」（pc-203），生產單位類別如實改為加工廠，est_cost 依行情價重算落工序費。完成條件：該任務四分項不再全 0、外發動線欄位如實呈現。
+- [ ] 8.5 驗算腳本全數重跑、lint 通過，直接 commit 至 `prototype/production-stage` 並推送。完成條件：`6/6 passed`、`pnpm lint` exit 0、push 成功。
