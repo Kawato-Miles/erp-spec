@@ -73,7 +73,7 @@ description: >
 - 禁中英夾雜（技術詞須括號附註，不得當主詞 / 形容詞 / 主動詞）。
 - 業務語言段禁工程術語（檔名 / interface / type / function / class）當主詞。
 - 識別到不確定項 MUST 觸發 `oq-manage` mode B 開獨立 OQ 卡（禁 inline、禁 `[!question]` callout）。
-- `source` frontmatter 禁指同層 / 下層 / OpenSpec（只往上指更高位階卡 / 外部已驗證原點）。
+- `source` frontmatter 禁指實作文件（OpenSpec 等）；指向分工正本或外部已驗證原點，詳見 wiki-schema § 4.0。
 - 正本卡正文零迭代史（歷史見 wiki/log.md 與 git）。
 - 規則單一正本（Single Source of Truth）：同規則只在正本卡寫本體，他卡 wiki link 引用不複寫。
 
@@ -217,7 +217,7 @@ description: >
 
 新增獨立卡 MUST 同時：
 
-- 補 `source`（往上指更高位階 / 外部原點，禁指同層 / 下層 / OpenSpec）；wiki 不設 `implemented-by` 等實作對應欄位。
+- 補 `source`（指分工正本或外部原點，禁指實作文件；詳見 wiki-schema § 4.0）；wiki 不設 `implemented-by` 等實作對應欄位。
 - 與被拆出的母卡 / 引用卡互設 wiki link（雙向可達，否則 vault-audit 維度 3 報 orphan）。
 - 若源自某 explore 議題 → 在 wiki/log.md 追加一筆（納入(amend)），變更行含該新卡 `[[卡名]]`。
 
@@ -269,7 +269,7 @@ description: >
 
 | 驗證維度 | 基準 | 兜底機制 |
 |---------|------|---------|
-| source 方向 | 只往上指（更高位階卡 / 外部原點），禁指同層 / 下層 / OpenSpec | vault-audit 偵測 source 指 OpenSpec 報 Error |
+| source 方向 | 指分工正本或外部原點，禁指實作文件（OpenSpec 等） | vault-audit 偵測 source 指 OpenSpec 報 Error |
 | 無循環 | `source` 單向往上，結構上不成環 | vault-audit 維度 7 查直接互指 |
 | 下不抵觸上 | 業務規則不抵觸共用規則、共用規則不抵觸營運原則 | 三視角審查 / 人審層勾稽推理是否跳過既有規則 |
 | 稽核維度 | L1 共用八條 ＋ 該卡型的 L2／L3 全通過 | 同一份維度也是 vault-audit 維度 12 逐項勾的依據 |

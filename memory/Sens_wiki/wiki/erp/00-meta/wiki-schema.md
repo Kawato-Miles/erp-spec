@@ -93,15 +93,15 @@ tags:
 > **通則三：`status: deprecated` 的退役 stub 卡豁免 `source` 與 `tags`。** 退役卡不承載商業邏輯、也不該被領域 tag 撈進檢索結果（現行正本才該被撈到），正文只留一句退役宣告＋重導向連結即可（樣貌見 [[QC]]、[[QC 狀態]]）。
 > **鐵則：卡片 frontmatter 禁含外部系統狀態欄位**（2026-06-10 新增）。「這張卡何時被推到哪個外部系統」是發布管線的狀態，不是商業知識——對外發布追蹤（Notion URL / 最後推送日）唯一正本在 `memory/erp/notion-publish-manifest.md`，由發布類 skill 維護，全程不回寫 wiki 卡。性質同「source 禁指 OpenSpec」：wiki 獨立維護，不與外部系統耦合。
 
-### 4.0 往上指依據、往下指實作的通則（2026-05-31 新增）
+### 4.0 source＝正確性根據的通則（分工，非階層）
 
-> 對齊 [[erp_index]] § 一連結方向。所有承載商業邏輯的卡（`business-rule` / `service-blueprint` / `entity` / `state-machine` / `scenario` / `role`）採「往上 `source`」單欄連結，整張圖的連結不會繞回自己。這些卡型一律**不設 `module` / `implemented-by` / `related-spec`**——與實作模組／實作文件的對應屬 PRD 層，wiki 不承載；領域歸屬由 `tags`（`領域/<領域名>`）承載。
+> 對齊 [[erp_index]] § 一連結方向。所有承載商業邏輯的卡（`business-rule` / `service-blueprint` / `entity` / `state-machine` / `scenario` / `role`）採 `source` 單欄連結。卡片之間是分工不是階層，wiki 卡可互引；同一內容只有一個家（MECE），source 引用該內容的分工正本，不複寫內容。這些卡型一律**不設 `module` / `implemented-by` / `related-spec`**——與實作模組／實作文件的對應屬 PRD 層，wiki 不承載；領域歸屬由 `tags`（`領域/<領域名>`）承載。
 
 | 欄位 | 方向 | 用途 | 指向對象 | 硬規則 |
 |------|------|------|---------|--------|
-| `source` | 往**上層**（更上層）| **正確性根據**（這張卡為什麼對 → 上層卡授權）| 更上層的 Vault 卡（營運原則 / 共用規則 / 業務規則 / 流程狀態角色資料 / 操作步驟），或最上層的依據（法規 / 客戶訪談 / 產業慣例；管理層決策本身不留卡上，脈絡歸 log 與 OQ）| **禁指 OpenSpec spec**（OpenSpec 是實作規格，不是正確性來源，方向顛倒）；**禁指同層卡**（平行卡不互為正確性根據，容易繞回自己）；**禁指下層卡**（下層不授權上層）|
+| `source` | 指**分工正本** | **正確性根據**（這張卡為什麼對 → 引用正本，不複寫）| 其他 Vault 卡（依分工：營運原則 / 共用規則 / 業務規則 / 流程狀態角色資料 / 操作步驟），或最上層的依據（法規 / 客戶訪談 / 產業慣例；管理層決策本身不留卡上，脈絡歸 log 與 OQ）| **禁指實作文件**（OpenSpec spec、Prototype 等——實作文件不是正確性來源）。兩卡互為 source＝內容重複的警訊，處理方式是重分工，不是留著互指 |
 
-- `source` 的「往上指更上層」原則，使依據鏈終止於最上層的依據（法規／訪談／產業慣例），不在 Vault 內部繞回自己；管理層決策不寫進 source，脈絡由 log 與 OQ 承載。
+- `source` 的依據鏈最終追至最上層依據（法規／訪談／產業慣例）。管理層決策不寫進 source，脈絡由 log 與 OQ 承載。
 - 連結不繞回自己由 § 六維度 15 lint 把關（`source` 鏈繞回自己報 Error、`source` 指向 OpenSpec 報 Error）。
 
 ### type=meta
@@ -160,7 +160,7 @@ last-reviewed: YYYY-MM-DD
 type: role
 tags:
   - 領域/<領域名>   # 可多值，角色沾哪幾個領域標哪幾個；判定依 [[business-domain-taxonomy]]
-source:                          # 往上層 = 正確性根據（營運原則 / 商業流程共用規則 / 權責表），禁指 OpenSpec / 同層 / 下層；見 § 4.0
+source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（OpenSpec 等）；見 § 4.0
   - "[[<上層卡或最上層依據>]]"
   - "Notion 核心角色權責表：<URL>"   # 外部依據的網址一律寫在 source，正文與其他欄位不放外部網址
 status: active
@@ -175,7 +175,7 @@ last-reviewed: YYYY-MM-DD
 type: service-blueprint
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
-source:                          # 往上層 = 正確性根據（營運原則 / 上層商業規則卡 / 客戶訪談 / 產業慣例），禁指 OpenSpec / 同層 / 下層；見 § 4.0
+source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（OpenSpec 等）；見 § 4.0
   - "[[<上層卡或最上層依據>]]"
 status: active
 last-reviewed: YYYY-MM-DD
@@ -214,7 +214,7 @@ last-reviewed: YYYY-MM-DD
 type: entity
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
-source:                          # 往上層 = 正確性根據（所屬 business-logic 規則 / 流程狀態角色資料層情境），禁指 OpenSpec / 同層 / 下層；見 § 4.0
+source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（OpenSpec 等）；見 § 4.0
   - "[[<上層卡>]]"
 status: active
 last-reviewed: YYYY-MM-DD
@@ -244,7 +244,7 @@ last-reviewed: YYYY-MM-DD
 type: state-machine
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
-source:                          # 往上層 = 正確性根據（所屬 business-logic 規則 / 流程狀態角色資料層情境），禁指 OpenSpec / 同層 / 下層；見 § 4.0
+source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（OpenSpec 等）；見 § 4.0
   - "[[<上層卡>]]"
 status: active
 last-reviewed: YYYY-MM-DD
@@ -259,7 +259,7 @@ type: scenario
 variant: 接力型 | 能力型 | 排程型      # 必填；判定見 07-scenarios/規範 - 業務情境.md § 二
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
-source:                          # 往上層 = 正確性根據（服務藍圖 / business-logic 規則 / 拍板 OQ / 外部依據），禁指 OpenSpec / 下層；狀態機卡僅得並列為參考資料，不得為唯一來源；能力型正本在角色卡或實體卡時得指之並須標段名，判定見 07-scenarios/規範 - 業務情境.md § 產出格式
+source:                          # 正確性根據＝分工正本（服務藍圖 / business-logic 規則 / 拍板 OQ / 外部依據）；禁指實作文件（OpenSpec 等）；狀態機卡僅得並列為參考資料，不得為唯一來源；能力型正本在角色卡或實體卡時得指之並須標段名，判定見 07-scenarios/規範 - 業務情境.md § 產出格式
   - "[[<藍圖或規則卡>]]"
 status: draft | active
 last-reviewed: YYYY-MM-DD

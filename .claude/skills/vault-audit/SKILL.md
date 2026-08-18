@@ -100,7 +100,7 @@ grep -rnE "待補|待釐清" memory/Sens_wiki/wiki/erp/0[34567]*/ --include="*.m
 
 **目的**：frontmatter 的 `source` 是依據鏈，指錯方向會誤導下游（`implemented-by` 已全庫移除，見維度 5）。
 
-**方向正確**：`source` 禁指 OpenSpec／Prototype（正確性根據只能往上：拍板／權責表／04 規則卡／法規）、禁指同層或下層卡；scenario 卡的 source 得並列狀態機卡為參考資料，但不得為唯一來源。
+**方向正確**：`source` 禁指實作文件（OpenSpec／Prototype）；正確性根據＝分工正本或最上層外部依據（詳見 wiki-schema § 4.0）；兩卡互為 source 視為內容重複警訊；scenario 卡的 source 得並列狀態機卡為參考資料，但不得為唯一來源。
 
 **現況查證例外**：後端現行程式（sens-print-core／sensation-api 等已上線系統）得作為 `source` 的現況查證來源，與訪談同級——這類 source 回答「這些公式與參數憑什麼是對的」，刪了卡就變成無依據的宣稱。仍禁 OpenSpec spec 與 Prototype 原始碼（兩者是下游產物，方向顛倒）。正文引用照舊禁止，系統邊界要寫成商業語言（如「線上商品後台」「ERP 中台」），不寫 repo 名與 endpoint。
 
