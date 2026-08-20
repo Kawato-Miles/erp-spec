@@ -165,10 +165,11 @@ stateDiagram-v2
 
 ---
 
-## 五、Milestone 與開票順序
+## 五、開票順序與 Milestone
 
-- **Milestone＝縱向整合節點**：每個 milestone 是一條可展示的端到端路徑（例「手動分派走通」），把該路徑相關的票掛入；milestone 的先後即整合順序，讓跨票協作的先後在 Linear 介面上直接可見。
-- **開票順序 blockers-first**：先開被依賴的票（取得 Linear 識別碼），再開依賴它的票並建立 Linear 原生 blocking 關係；票內「Blocked by」段同步列出。所有阻擋已完成的票即為可立即開工的前沿。
+- **三層開立順序（v3.0）**：(1) 先開全部 Feature 主票——PM team 建立、**不轉隊**（主票不是開發工作票；PM team 的 GitHub 同步票噪音已由 Miles 接受），取得識別碼；(2) 覆寫 project 描述，把主票識別碼填進「範圍主票清單」；(3) 依 blockers-first 開職能 sub-issue——PM team 建立（觸發 GitHub 同步）→ 轉入 FE / BE team → 以 parentId 掛回主票（轉隊與掛 parent 前先確認 FE / BE team 已在 project teams 清單，見 SKILL.md 操作 know-how「轉隊會靜默解除 project 關聯」）；(4) 概述與 Blocked by 段的原生提及於各票建立後回填。
+- **開票順序 blockers-first**：先開被依賴的票（取得 Linear 識別碼），再開依賴它的票並建立 Linear 原生 blocking 關係；**阻擋關係建在 sub 層，主票不掛 blocked by**；票內「Blocked by」段同步列出。所有阻擋已完成的票即為可立即開工的前沿。
+- **Milestone＝縱向整合節點**：每個 milestone 是一條可展示的端到端路徑（例「手動分派走通」），把該路徑相關的票掛入；milestone 的先後即整合順序。是否建 milestone 依該批拍板，不是固定產出。
 
 ---
 
