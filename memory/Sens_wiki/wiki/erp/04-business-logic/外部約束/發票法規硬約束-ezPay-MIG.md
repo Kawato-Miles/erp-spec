@@ -8,7 +8,7 @@ source:
   - "財政部：營業稅申報期限（每 2 月為 1 期、次期開始 15 日內申報）https://www.etax.nat.gov.tw/etwmain/tax-info/innotative-tax-e-reference/filing/business-tax/V39ogDL"
   - "[[2026-05-26-miles-upload-ezpay-invoice-api-spec]]"
 status: active
-last-reviewed: 2026-08-04
+last-reviewed: 2026-08-21
 tags:
   - 領域/款項與發票
 ---
@@ -145,7 +145,7 @@ ezPay **全 API 金額一律正整數**（發票 TotalAmt、折讓 TotalAmt / Al
 
 | 衝突點 | ezPay 規定 | 印刷業實務 | 處理方式（Miles 已確認）|
 |--------|-----------|-----------|----------------------|
-| **單價小數** | `ItemPrice` 限 Int（純整數）| DM 0.5 元/張、傳單 2.5 元/張常見 | 不換算；前端 lint 擋小數（業務自行調整為「批 / 式」計價）|
+| **單價小數** | `ItemPrice` 限 Int（純整數）| DM 0.5 元/張、傳單 2.5 元/張常見 | 不換算；系統預設以單一「式」品項開立（數量 1、單價即未稅額），單價因此恆為整數，見 [[付款發票邏輯]]|
 | **品項拆解** | 自由分項 | 多印件 + 多收費類型（製版 / 印刷 / 後加工 / 運費）| 業務 / 諮詢自由輸入，預設從訂單印件帶入但可改 |
 | **數量上限** | `ItemCount` Int(5)=99999 | 超大量 DM / 名片可能爆 | 拆多項或改單位（如「千張」）|
 | **單位字數** | 限中文 2 字 / 英數 6 字 | 「組合包裝」「特殊規格」太長 | 限 dropdown 強制合規（共用單位選單（實作規格層） § 共用單位 LOV）|
