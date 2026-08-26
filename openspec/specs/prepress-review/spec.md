@@ -1330,7 +1330,7 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 
 待審清單（審稿人員的待審印件、訂單管理人的待分派清單、待審訂單模組）SHALL 預設依**客戶交期近者優先**排序，SHALL NOT 採建立時間先進先出。
 
-**急單 SHALL 沿用訂單既有的「是否急件」欄位標示**，系統 SHALL NOT 為審稿另設急單標記，也 SHALL NOT 新增印件優先順序欄位（審核先後順序於 Slack 討論串溝通，見 § Slack 審稿討論串）。
+**急單 SHALL 依印件的「急件選項」標示**：該印件急件選項的凍結天數非零（非一般件）即標示為急單。系統 SHALL NOT 取訂單的「是否急件」作為標示來源（該欄已降為注記，見 [order-management spec § 訂單是否急件為注記](../order-management/spec.md)）。系統 SHALL NOT 為審稿另設急單標記，也 SHALL NOT 新增印件優先順序欄位（審核先後順序於 Slack 討論串溝通，見 § Slack 審稿討論串）。
 
 **系統 SHALL NOT 設待分派停滯提醒**：稿件已上傳而尚無負責審稿人員時系統即時通知訂單管理人一次（見 § 線下單審稿人員分派），之後的停滯靠訂單管理人以訂單軸日常巡檢發現，系統 SHALL NOT 再疊一層逾期或升級提醒。
 
@@ -1338,7 +1338,7 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 
 **Priority**: P1
 
-**Rationale**: 排序決定審稿人員每天先看哪一件，交期近的先審才不會讓快到期的單卡在審稿；建立時間排序在單量大的時候會讓最急的單沉到清單底部。三條 negative 規則寫成明文，是因為它們是拍板「不做」的結果（AR-5、AR-11、AR-17），沒有條文背書時下一輪盤點會被當成缺漏補回來——輪次上限只會被繞過（審稿人員把該退的稿硬放行），停滯提醒則是在客戶端的事情上疊系統噪音，業務手上就那幾張單，他自己盯得住。
+**Rationale**: 排序決定審稿人員每天先看哪一件，交期近的先審才不會讓快到期的單卡在審稿；建立時間排序在單量大的時候會讓最急的單沉到清單底部。急單標示改看印件層，是因為要趕的是某一件印刷品——訂單層的布林值答不出是哪一件、趕幾天。三條 negative 規則寫成明文，是因為它們是拍板「不做」的結果（AR-5、AR-11、AR-17），沒有條文背書時下一輪盤點會被當成缺漏補回來——輪次上限只會被繞過（審稿人員把該退的稿硬放行），停滯提醒則是在客戶端的事情上疊系統噪音，業務手上就那幾張單，他自己盯得住。
 
 #### Scenario: 待審清單依交期近者優先排序
 
@@ -1347,11 +1347,18 @@ TBD - created by archiving change add-prepress-review. Update Purpose after arch
 - **THEN** 清單 SHALL 依 8/18、8/20、8/25 的順序呈現
 - **AND** 系統 MUST NOT 以建立時間為預設排序鍵
 
-#### Scenario: 急單沿用訂單既有欄位
+#### Scenario: 急單標示取印件急件選項
 
-- **GIVEN** 某張訂單的「是否急件」為是
+- **GIVEN** 一張訂單旗下兩件印件，名片的急件選項為三天急件、型錄為一般件
 - **WHEN** 審稿人員檢視待審清單
-- **THEN** 該訂單旗下印件 SHALL 帶急件標示
+- **THEN** 名片 SHALL 帶急件標示
+- **AND** 型錄 SHALL NOT 帶急件標示
+
+#### Scenario: 訂單注記為急件不使旗下印件標示
+
+- **GIVEN** 某張訂單的「是否急件」為是，其旗下印件的急件選項皆為一般件
+- **WHEN** 審稿人員檢視待審清單
+- **THEN** 該訂單旗下印件 SHALL NOT 帶急件標示
 - **AND** 系統 MUST NOT 另設審稿專屬急單標記或印件優先順序欄位
 
 #### Scenario: 補件多輪來回不設上限
