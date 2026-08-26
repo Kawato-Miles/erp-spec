@@ -75,14 +75,14 @@
 
 #### Scenario: 待諮詢取消觸發建諮詢訂單與半額退費
 
-- **GIVEN** ConsultationRequest 狀態 = 待諮詢、Payment(P0: +2000, 已完成) 綁 ConsultationRequest
+- **GIVEN** ConsultationRequest 狀態 = 待諮詢、收款款項紀錄 P0（款項類型 = 收款、金額 2000、已完成）綁 ConsultationRequest
 - **WHEN** 諮詢人員 / 業務主管於取消 dialog 選定 cancel_reason_category 並點擊「確認取消諮詢」
 - **THEN** 系統 SHALL 建立諮詢訂單（`order_type = 諮詢`、總額 = 諮詢費 2000）
 - **AND** 系統 SHALL 在諮詢訂單上建立 OrderExtraCharge(consultation_fee, 2000)
-- **AND** 系統 SHALL 將 Payment P0 從 ConsultationRequest 轉移至諮詢訂單（金額 +2000 不變、status 維持已完成）
+- **AND** 系統 SHALL 將收款款項紀錄 P0 從 ConsultationRequest 轉移至諮詢訂單（金額 2000 與款項類型不變、status 維持已完成）
 - **AND** 系統 SHALL 自動建立 OrderAdjustment（amount = -1000、adjustment_type = `諮詢取消退費`、status = 已核可、approved_by = system、executed_at = NULL、requires_supervisor_approval = false、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」）
-- **AND** 系統 SHALL 自動建立退款 Payment（amount = -1000、paymentMethod = 退款、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述訂單異動.id、linked_entity_type = Order、linked_entity_id = 諮詢訂單 ID）
-- **AND** 應收於諮詢人員確認金額時認列（確認前 = 2000；確認後公式 = 訂單額外費用(2000) + ∑確認可執行訂單異動(-1000) = 1000）；確認動作推進訂單異動「確認可執行」（終態），退款 Payment 完成不再改變訂單異動狀態
+- **AND** 系統 SHALL 自動建立退款款項紀錄（款項類型 = 退款、金額 = 1000（正值，方向由款項類型表示）、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述訂單異動.id、linked_entity_type = Order、linked_entity_id = 諮詢訂單 ID）
+- **AND** 應收於諮詢人員執行「確認生效」時認列（確認生效前 = 2000；確認生效後公式 = 訂單額外費用(2000) + ∑確認可執行訂單異動(-1000) = 1000）；確認生效動作推進訂單異動「確認可執行」（終態），退款款項紀錄完成不再改變訂單異動狀態
 - **AND** 系統 MUST NOT 為諮詢取消自動建待開發票（留存 1000 收入由業務手動開票、未開票由對帳差額警示兜底）
 - **AND** 系統 MUST NOT 自動開立 Invoice
 - **AND** 系統 MUST NOT 自動開立 SalesAllowance
@@ -708,7 +708,7 @@ THEN 系統 MUST NOT 允許將訂單狀態回退為「製作等待中」或更�
 
 - **GIVEN** 已取消訂單已收款 > 取消後應收（產生應退差額）
 - **WHEN** 業務處理取消退款
-- **THEN** 業務建立退款訂單異動（負項，業務主管核可即生效調整應收）+ 退款收款紀錄（款項類型 = 退款、處理中）；會計依待出金退款清單出金、切已完成核銷應退差額
+- **THEN** 業務建立退款訂單異動（負項，業務主管核可後停「已核可」、業務與客戶談定金額後執行「確認生效」才調整應收）+ 退款收款紀錄（款項類型 = 退款、金額正值、處理中）；會計依待出金退款清單出金、切已完成核銷應退差額
 - **AND** 退款金流屬款項層收尾（走 [order-adjustment spec](../order-adjustment/spec.md) 訂單異動 + [order-billing spec § 退款流程三組件 / § 退款 OA（負項）/ § 待出金退款清單](../order-billing/spec.md) 收款紀錄），非訂單狀態、非「退款申請 → 退款處理中 → 已退款」EC 序列
 
 #### Scenario: US-ORD-002 訂單取消與五層連鎖
@@ -717,7 +717,7 @@ THEN 系統 MUST NOT 允許將訂單狀態回退為「製作等待中」或更�
 - **THEN** 訂單 SHALL 進入「已取消」終態（不可逆）
 - **AND** 系統 MUST 自動執行五層連鎖：非終態印件 → 已棄用；非終態工單 → 已取消（並終止未確認異動）；生產任務 → 依場內報工／外發發稿分流為已作廢或報廢；名下派單 → 系統提示印務處理、不自動作廢；未離廠出貨單 → 自動作廢並回補額度
 - **AND** 系統 SHALL NOT 對任務層執行連鎖（任務層已移除）
-- **AND** 退款（若有應退差額）SHALL 走訂單收退款模型（退款訂單異動核可即生效 + 退款收款紀錄切已完成核銷應退差額，見 [order-billing spec § 退款流程三組件 / § 待出金退款清單](../order-billing/spec.md)），非「退款申請 → 退款處理中 → 已退款」EC 序列
+- **AND** 退款（若有應退差額）SHALL 走訂單收退款模型（退款訂單異動於業務執行「確認生效」時認列 + 退款收款紀錄切已完成核銷應退差額，見 [order-billing spec § 退款流程三組件 / § 待出金退款清單](../order-billing/spec.md)），非「退款申請 → 退款處理中 → 已退款」EC 序列
 
 ### Requirement: 訂單完成判定
 
