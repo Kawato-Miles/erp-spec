@@ -129,9 +129,10 @@ description: >
 
 - **巢狀結構（v4）**：project 薄目錄（概述、Use Case、功能票清單每條附票名＋用戶故事式範圍句＋原生提及、Out of Scope、測試決策、另案、狀態機）→ milestone（需求主題名，禁日期批次名）→ Feature 票（一票一個功能顆粒，內容固定三段：需求描述用使用者故事／商業邏輯的流程用表格而規則用句子／驗收條件）→ Task 票（職能實作，parent 掛 Feature 票）→ 需要再往下 Sub-Task／Bug。操作方式與介面呈現歸 Prototype（交付不文字重述、不附參照格）、欄位歸 wiki 實體卡；細則見 references/delivery-template.md v4.0
 - **Task 票 = How 層**：行為要求段（行為契約句——什麼情況下系統要發生什麼／不許出現什麼；禁手段詞，手段由開發決定）＋驗收測試段（先紅後綠、落在受測介面）＋Blocked by 段＋依賴與範圍；概述指回父票，不複寫商業邏輯
-- **標題與 Label**：標題只寫功能語意，**禁「（前端）」「（後端）」字樣**；職能由 Label 三軸承載——Role（Backend／Frontend／Design／PM）、Product（ERP／EC／編輯器）、Type（Feature／Task／Bug），皆為工作區既有分組、不自創新值
+- **標題與 Label**：標題格式 `[ Feature ] - <功能語意>`／`[ Task ] - <功能語意>`（前綴保留），前綴之後只寫功能語意，**禁「（前端）」「（後端）」字樣**；職能由 Label 三軸承載——Role（Backend／Frontend／Design／PM）、Product（ERP／EC／編輯器）、Type（Feature／Task／Bug），皆為工作區既有分組、不自創新值；Type 軸必掛且與標題前綴一致
 - **禁 meta 導覽句**：不寫「實作由本票底下的 sub-issue 承載」「本票是○○的商業邏輯與驗收條件正本」類句子——巢狀關係、Blocked by 與 Label 即資訊本體（與 D1 禁 wiki 指路句同族）
 - **長段用收合區塊**：超過 10 行的流程表格、狀態機圖、逐條規則清單收進收合區塊；批次套用前 MUST 先以一張票試寫，確認 Linear 與 GitHub 同步票（details 元素）兩面渲染正常
+- **缺陷與實測修正不開卡**（WBS 原則）：規則改寫進對應 Feature 票、執行細目寫成留言掛對應 Task 票、已完成的票要接修正時狀態改回 Todo；細則見 references/delivery-template.md § 二之二
 - **開票順序**：milestone → Feature 票（PM team、不轉隊）→ 覆寫 project 描述回填識別碼 → 依 blockers-first 開 Task 票並轉隊、掛 parent → blocking 關係建在 Task 層（見 references/delivery-template.md § 七）
 - **迭代交付擴充既有 project 描述時，MUST 融入既有段落結構**：新情境在原清單上加條目（Use Case 原 3 條加第 4 條、Key Feature 加項、功能邏輯說明清單加規則、Design 動線加線），缺的標準區塊（如驗收條件）可新增；**MUST NOT 在描述尾端另起一個平行的完整區塊**（概述＋使用情境＋Spec 全套重來一輪；2026-07-07 業務平台訂單管理審稿擴充實測：附加「審稿情境擴充」完整區塊被 Miles 退回，改融入各段）
 - 禁中英夾雜（英文識別碼用「中文（英文）」格式）
@@ -212,7 +213,7 @@ description: >
 | **新 issue MUST 先開在 PM team 再轉對應 team** | PM team 掛有「同步建立 GitHub backlog issue」自動化；直接開在 FE / BE team 不會產生 GitHub 同步票（2026-07-07 中台審稿交付實測：直開 FE / BE 的票被 Miles 刪除重開）。正確流程：`save_issue` 帶 `team: "PM"` 建立 → 再 `save_issue` 帶 `id` + `team: "Front-End"` 或 `"Back-End"` 轉移（識別碼會換新，如 PM-790 → FE-354；GitHub 附件保留） |
 | **轉隊會靜默解除 project 關聯** | 目標 team 不在該 project 的 teams 清單時，轉隊當下 issue 的 project 關聯被靜默拿掉、不報錯（2026-08-19 工單管理交付實測：六票轉 FE / BE 後全部脫離 project，Miles 發現才補救）。正確流程：開票前先 `save_project` 帶 `addTeams` 把 FE / BE 加進 project → 轉隊 → 轉隊後逐票驗回傳的 `projectId` 非空；補關聯時 project 缺該 team 會回「Discrepancy between issue team and state, cycle or project」 |
 | **save_project 觸發狀態跳轉** | 更新 project 描述時 Linear 自動化會把 status 從 Backlog 帶到「Kick off」。`save_project` MUST 同時帶 `state: "Backlog"`（或交付前的原狀態）抑制，避免擅自推進看板 |
-| **欄位保留紀律（既有票覆寫）** | 覆寫既有票時 `save_issue` 只傳 `id` + `description`；estimate / assignee / cycle / priority / milestone / labels 不傳即不動。交付只改「需求內容」，不碰排程與分派 |
+| **欄位保留紀律（既有票覆寫）** | 覆寫既有票時 `save_issue` 只傳 `id` + `description`；estimate / assignee / cycle / priority / milestone / labels 不傳即不動。交付只改「需求內容」，不碰排程與分派。**例外**：Project 全域規劃 milestone 時既有票一律補掛（含已完成的票），此時可傳 milestone；標題前綴與 Label 三軸的補齊同屬結構件，亦可傳 |
 | **新開票 MUST 設 milestone 與 Label** | 新票依 v4 結構件建立時同時設 milestone（Feature 票）與 Label 三軸（Type／Product／Role）；Label 值取工作區既有分組、不自創。此為結構件、與上一列的既有票保留紀律不衝突 |
 | **issue 互指自動關聯** | 描述內寫 issue 識別碼（如 FE-260 / BE-169）Linear 會自動轉成可點擊 cross-reference；提及某 issue 可能 touch 其 `updatedAt`（內容不變，屬良性 backlink）|
 | **引用 project MUST 用原生提及，禁純文字與 markdown 連結** | issue 內文引用 project 時 MUST 產生 Linear 原生提及（渲染為 @project 名 的卡片）。寫法：description 內直接寫 `<project id="<project UUID>" href="<project URL>/overview">中台 - 訂單管理</project>` 元素（2026-08-03 FE-377 實測可直接寫入並正常渲染）；「本 project」純文字與 markdown `[名稱](URL)` 皆禁止（markdown 連結不會轉成原生提及，曾被 Miles 退回）。此規則僅限 Linear 內部資源（project / issue）；wiki 卡在票內維持純文字引用、不外連 GitHub（2026-08-03 誤連被要求 rollback）|
