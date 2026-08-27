@@ -62,7 +62,7 @@ threshold=$(date -v-90d +%Y-%m-%d 2>/dev/null || date -d "90 days ago" +%Y-%m-%d
 
 **目的**：`[[連結]]` 指到不存在的卡，讀者點了撲空。
 
-方法：載入 skill `obsidian-cli`，用它執行 JavaScript 讀 `app.metadataCache.unresolvedLinks`，取含未解析連結的檔清單。參數語法以該 skill 為準，本檔不列例子（2026-08-01 實測：語法寫錯會直接報 `Missing required parameter`，這一維度長期沒跑成功過；正確查出來是 75 筆）。
+方法：載入 skill `obsidian-cli`，查**未解析連結**（該 CLI 有專屬指令，不必自行執行 JavaScript 讀 metadataCache）。指令名與參數語法以該 skill 為準，本檔不列例子（2026-08-01 實測：扣除下列範圍後為 75 筆）。
 
 **範圍**：只計 03／04／05／06／07 正本卡與 `00-meta/`。排除四類——`raw/` 唯讀層、`08-open-questions/_archives/` 與 `log.md`／`changelog.md` 等只追加層（依規約不得改，報了也修不了）、`09-canvases/`（目錄改版後節點路徑過時，屬另案重建）、`wiki/範本/` 骨架（佔位連結一律寫成角括號形式，不計）。
 
