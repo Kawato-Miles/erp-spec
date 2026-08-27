@@ -193,7 +193,7 @@
 
 上傳成功後系統 SHALL 於當下建立該印件的當輪審稿輪次並將該檔綁定該輪（見 [prepress-review spec § ReviewRound 資料模型](../prepress-review/spec.md)）；線上單於首次上傳當下由系統自動分派審稿人員，**線下單的稿件上傳 MUST NOT 觸發自動分派**，由訂單管理人或審稿主管手動分派。
 
-**免審印件同樣自本入口上傳、但 SHALL NOT 進入審稿流程**（免審路徑正本見 [prepress-review spec § 免審印件的審稿路徑](../prepress-review/spec.md)）：上傳項目為印件檔、審稿後檔案（選填）與**完稿縮圖（必填）**，系統 SHALL 將這些檔案綁定該印件既有的免審合格輪次、SHALL NOT 另建輪次；缺完稿縮圖 SHALL 擋下送出並附理由。
+**免審印件同樣自本入口上傳、但 SHALL NOT 進入審稿流程**（免審路徑正本見 [prepress-review spec § 免審印件的審稿路徑](../prepress-review/spec.md)）：上傳項目為印件檔、審稿後檔案（選填）與**完稿縮圖（必填）**，系統 SHALL 將這些檔案綁定該印件既有的免審合格輪次、SHALL NOT 另建輪次；缺完稿縮圖 SHALL 擋下送出並附理由。**線上單的免審印件**成立時無業務經手上傳，業務 SHALL 可事後於訂單詳情以同一入口補傳完稿縮圖（掛既有免審合格輪次）；補傳前該印件的工單單據不帶圖（決議見 wiki PI-008，已封存）。
 
 **Priority**: P0
 
