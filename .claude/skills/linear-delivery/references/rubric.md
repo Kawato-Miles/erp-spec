@@ -31,6 +31,7 @@ D5 交付結構完整性：...
 - 絕對不要把「規格正本」指向開發打不開的內部檔
 - 絕對不要引用 Notion 頁面 / DB 連結當交付依據（Notion 已停用為 BRD）
 - 絕對不要把 PM 內部流程術語（change / delta / archive / OQ 編號）寫進給開發的內容
+- 絕對不要寫「欄位正本：wiki ○○卡」「狀態列舉正本為 wiki ○○卡」類**指路句**——交付內容自包含後這種句子只是把讀者導去別處，Miles 拍板 Linear 不放任何指路內容（2026-08-27；wiki 作為取材來源不變，但不出現在票文）
 
 **正例**：資料欄位段以自包含欄位表呈現（業務語言、只列本批相關欄位）；跨 issue 以 Linear 識別碼（如 FE-259）互指。
 
@@ -121,6 +122,7 @@ D5 交付結構完整性：...
 | v1.2 | 2026-06-01 | Step 5 改剛性閉環（修完必重評、達標才寫入）+ 評審獨立性（重評餵完整草稿不暗示改動）+ 防 reward hacking（不放水 / 不表面改字過關）+ 硬上限 3 輪卡住問 Miles；評審輸出補迭代輪次 / 達標判定 / evidence-anchored 引用位置 | Miles 要「PRD 修到通過 Goal 為止」。上網研究三類最佳實踐後補強：/goal（supervisor 完全獨立評審防 mission drift）、LLM-as-judge（3 級窄量表 + 禁令對抗 leniency bias + analytic 逐維度 + evidence-anchored）、agentic loop（reward hacking 防呆 + 迭代上限）。修正「業務平台交付時修一輪沒重評就自審寫入」鬆散處 —— 評審才能判通過、實作者不能自判 |
 | v1.3 | 2026-06-11 | D3 完整性必要區塊清單加入「驗收條件」（可勾稽情境、3-5 條、二元判定、與功能邏輯說明分工、不混 Definition of Done）；不新增評分維度 | 驗收條件最佳實踐查證：格式採情境式（Given/When/Then）與規則式條列混用、依素材性質分流（Altexsoft / Scrum Alliance）；數量 3-5 條、超量即拆（Scrum Alliance / Mike Cohn）；outcome 導向、可量化閾值、各條獨立（Atlassian / Scrum Alliance）；驗收條件 ≠ Definition of Done 不混寫（Mike Cohn / Atlassian）。「可驗證 / 不寫做法」已由 D2、D4 覆蓋，「附得齊不齊」歸完整性，故併入 D3 避免維度爆炸 |
 | v1.4 | 2026-07-06 | D1 正本邊界自「Notion / Linear 雙正本」收斂為「Linear 唯一正本、交付內容自包含」；新增禁令「不引用 Notion 連結當交付依據」；資料欄位正例改自包含欄位表 | 審稿交付盤點時發現 prepress-review spec 無 Notion BRD 連結（Purpose 段 TBD），Miles 拍板：已不再使用 Notion 作為 BRD，交付文件拿掉 Notion 引用 |
+| v1.5 | 2026-08-27 | D1 新增禁令：禁 wiki 指路句（「欄位正本：wiki ○○卡」類）；wiki 仍為取材來源但不出現在票文 | 三面同步交付第 3 輪：第 1 輪評分者依 PM-1074 慣例判通過、第 3 輪判違規，兩輪相左呈 Miles，拍板刪除並禁絕 |
 | v1.5 | 2026-07-06 | 評分分數化：每維度 通過 2 / 部分 1 / 未通過 0，滿分 8，合格分數 = 8 且 D4 必為 2（一票否決）；評分者自 senior-pm 改為一般 sub-agent（rubric 符合性評分，不重跑上游真實性查證）；資料欄位表自交付內容移除（欄位正本在 wiki 實體卡，開發端直接取得） | 中台審稿管理交付時 Miles 拍板：交付內容自 BRD / PRD 整理、上游已定案，不需 senior-pm 深度查證，改用 goal 機制迭代到合格分數；開發自 wiki 實體取得欄位，project 不複寫 |
 | v1.6 | 2026-07-15 | 新增 D5 交付結構完整性（Prototype 參照／參照邊界段／測試決策章／驗收測試段／Blocked by／milestone；禁另開設計票）；滿分 8 → 10、合格分數 = 10 且 D4 必為 2 | 工作流 v2.0 改版（Miles 拍板，設計哲學參照 mattpocock skills repo）：Prototype 升為介面與互動正本、設計票移除、票層驗收改測試先行、票間相依顯性化 |
 | v1.7 | 2026-07-15 | D5 對齊模板 v2.1：移除「Prototype 參照邊界」段要求（改為禁令：交付不另附邊界表，正本在 CLAUDE.md）；新增禁令「票內不重複測試先行引言」（說明只在測試決策章一處） | 中台審稿試跑後 Miles 校正：邊界表屬內部規範不外露交付、逐票重複引言是噪音 |
