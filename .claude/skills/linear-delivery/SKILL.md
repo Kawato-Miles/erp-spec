@@ -132,7 +132,7 @@ description: >
 - **標題與 Label**：標題格式 `[ Feature ] - <功能語意>`／`[ Task ] - <功能語意>`（前綴保留），前綴之後只寫功能語意，**禁「（前端）」「（後端）」字樣**；職能由 Label 三軸承載——Role（Backend／Frontend／Design／PM）、Product（ERP／EC／編輯器）、Type（Feature／Task／Bug），皆為工作區既有分組、不自創新值；Type 軸必掛且與標題前綴一致
 - **禁 meta 導覽句**：不寫「實作由本票底下的 sub-issue 承載」「本票是○○的商業邏輯與驗收條件正本」類句子——巢狀關係、Blocked by 與 Label 即資訊本體（與 D1 禁 wiki 指路句同族）
 - **長段用收合區塊**：超過 10 行的流程表格、狀態機圖、逐條規則清單收進收合區塊；批次套用前 MUST 先以一張票試寫，確認 Linear 與 GitHub 同步票（details 元素）兩面渲染正常
-- **票主體是正本、留言是修正紀錄**（WBS 原則）：內容與定案不符一律直接改票主體，不因票已完成而保留錯的內容；每次修正另寫留言記錄原本怎麼寫與依據哪張 wiki 卡，主體被修訂處附留言連結；要不要另開票依修正性質判定，開票前先問 Miles。細則見 references/delivery-template.md § 二之二
+- **票主體是正本、留言是修正紀錄**（WBS 原則）：內容與定案不符一律直接改票主體，不因票已完成而保留錯的內容；主體被修訂處附留言連結；要不要另開票依修正性質判定，開票前先問 Miles。缺陷的留言**分兩則不合併**——訂正紀錄（改了什麼、依據哪張 wiki 卡）與實測修正（標題帶日期、首行 tag 負責人、現況問題對期望行為、修正規則條列，禁寫程式碼檔案位置）。細則見 references/delivery-template.md § 二之二
 - **開票順序**：milestone → Feature 票（PM team、不轉隊）→ 覆寫 project 描述回填識別碼 → 依 blockers-first 開 Task 票並轉隊、掛 parent → blocking 關係建在 Task 層（見 references/delivery-template.md § 七）
 - **迭代交付擴充既有 project 描述時，MUST 融入既有段落結構**：新情境在原清單上加條目（Use Case 原 3 條加第 4 條、Key Feature 加項、功能邏輯說明清單加規則、Design 動線加線），缺的標準區塊（如驗收條件）可新增；**MUST NOT 在描述尾端另起一個平行的完整區塊**（概述＋使用情境＋Spec 全套重來一輪；2026-07-07 業務平台訂單管理審稿擴充實測：附加「審稿情境擴充」完整區塊被 Miles 退回，改融入各段）
 - 禁中英夾雜（英文識別碼用「中文（英文）」格式）
