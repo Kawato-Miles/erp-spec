@@ -215,6 +215,7 @@ description: >
 | **save_project 觸發狀態跳轉** | 更新 project 描述時 Linear 自動化會把 status 從 Backlog 帶到「Kick off」。`save_project` MUST 同時帶 `state: "Backlog"`（或交付前的原狀態）抑制，避免擅自推進看板 |
 | **欄位保留紀律（既有票覆寫）** | 覆寫既有票時 `save_issue` 只傳 `id` + `description`；estimate / assignee / cycle / priority / milestone / labels 不傳即不動。交付只改「需求內容」，不碰排程與分派。**例外**：Project 全域規劃 milestone 時既有票一律補掛（含已完成的票），此時可傳 milestone；標題前綴與 Label 三軸的補齊同屬結構件，亦可傳 |
 | **新開票 MUST 設 milestone 與 Label** | 新票依 v4 結構件建立時同時設 milestone（Feature 票）與 Label 三軸（Type／Product／Role）；Label 值取工作區既有分組、不自創。此為結構件、與上一列的既有票保留紀律不衝突 |
+| **設 parent 用 UUID、不要用識別碼** | `save_issue` 的 `parentId` 傳識別碼（如 `PM-1085`）時可能不生效或被還原，傳該票的 UUID 才穩定（2026-08-28 訂單 project 重構實測：FE-477 傳識別碼後 parent 退回舊值，改傳 UUID 才落定）。寫入後逐票驗回傳的 `parentId` |
 | **issue 互指自動關聯** | 描述內寫 issue 識別碼（如 FE-260 / BE-169）Linear 會自動轉成可點擊 cross-reference；提及某 issue 可能 touch 其 `updatedAt`（內容不變，屬良性 backlink）|
 | **引用 project MUST 用原生提及，禁純文字與 markdown 連結** | issue 內文引用 project 時 MUST 產生 Linear 原生提及（渲染為 @project 名 的卡片）。寫法：description 內直接寫 `<project id="<project UUID>" href="<project URL>/overview">中台 - 訂單管理</project>` 元素（2026-08-03 FE-377 實測可直接寫入並正常渲染）；「本 project」純文字與 markdown `[名稱](URL)` 皆禁止（markdown 連結不會轉成原生提及，曾被 Miles 退回）。此規則僅限 Linear 內部資源（project / issue）；wiki 卡在票內維持純文字引用、不外連 GitHub（2026-08-03 誤連被要求 rollback）|
 | **進行中 issue 不覆寫** | 已有內容且 In Progress 的 issue（含 v1.x 時期的設計票遺產）不覆寫，只由 project 描述引用 |
