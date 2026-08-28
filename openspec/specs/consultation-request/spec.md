@@ -374,9 +374,9 @@ ConsultationRequest 狀態 MUST 維持「已轉需求單」終態不變（諮詢
 2. 諮詢訂單上建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費 2000)
 3. Payment 從 ConsultationRequest 轉移至諮詢訂單（修改 linked_entity_type 與 linked_entity_id；款項類型維持收款、金額維持 2000、status 維持 已完成）
 4. **系統 SHALL 自動建立 OrderAdjustment**（金額 = -1000、adjustment_type = `諮詢取消退費`、status = **已核可**、approved_by = system、approved_amount = -1000、executed_at = NULL、requires_supervisor_approval = false、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」）— **系統內生直接建為「已核可」**（「負向異動須審核」不破例，因金額固定由系統代行審核；executed_at 待諮詢人員執行「確認生效」時寫入並推進「確認可執行」、應收於此刻認列；已核可階段可調整金額不需重審、亦可取消（決定不退））
-5. **系統 SHALL 自動建立退款款項紀錄**（款項類型 = 退款、金額 = 1000（正值）、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述 OA.id、linked_entity_type = Order、linked_entity_id = 諮詢訂單 ID）
+5. **系統 MUST NOT 自動建立退款款項紀錄**——該筆由諮詢人員於執行「確認生效」之後自行建立（款項類型 = 退款、金額 = 1000（正值）、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述 OA.id、linked_entity_type = Order、linked_entity_id = 諮詢訂單 ID）。理由：認列之前應收仍為 2000、收款淨額 2000，可退額度為零，系統代建會被防超退上限擋下（見 wiki [對帳一致性](../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/帳務/對帳一致性.md)）
 6. **系統 MUST NOT 自動開立任何 Invoice 或 SalesAllowance、MUST NOT 自動建立待開發票（BillingInstallment / PlannedInvoice）**（廢除諮詢專屬自動建待開發票；諮詢訂單留存 1000 收入由業務循一般訂單取消發票開立路徑於需要時手動開立，未開票風險由對帳「應收 > 發票淨額」差額警示兜底）
-7. **諮詢訂單 status 直接推進至「已取消」終態、paymentStatus = 已付款**（取代既有「訂單完成」；諮詢取消是「沒成交的生意」，語意應為已取消而非完成；不需製作中間態；退款款項紀錄為已取消後的善後金流動作維持「處理中」）
+7. **諮詢訂單 status 直接推進至「已取消」終態、paymentStatus = 已付款**（本步 MUST 晚於第 4 步建立訂單異動——訂單進終態後建立訂單異動須掛售後服務單，先建才不必為制度性退費開客訴容器）（取代既有「訂單完成」；諮詢取消是「沒成交的生意」，語意應為已取消而非完成；不需製作中間態；退款款項紀錄為已取消後的善後金流動作維持「處理中」）
 8. ConsultationRequest 狀態 MUST 推進至「已取消」終態、`cancel_reason_category` 寫入 dialog 選定值、`linked_consultation_order_id` 寫入新諮詢訂單 ID
 
 **已取消訂單善後金流不鎖**：諮詢訂單「已取消」終態僅鎖訂單內容編輯（印件 / 規格 / 備註），善後金流動作（退款款項紀錄切已完成、發票開立、銷貨折讓）SHALL 照常，沿用一般訂單取消既有善後流程。諮詢取消 MUST NOT 走 AfterSalesTicket（售後容器強制 Order.status=已完成）。
