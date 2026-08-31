@@ -1,7 +1,7 @@
 ---
 name: linear-delivery
 description: >
-  把已定案的規格交付到 Linear（巢狀：project 薄目錄 + milestone 需求主題 + Feature 票 + Task 票），依自包含標準模板（v4.0）產出，交付前以 Rubric 評分稽核（執行者與評審分離、合格 10 / 10）才發布。對開發而言 Linear 為交付正本、wiki 為欄位與狀態正本、Prototype 為介面與互動正本；OpenSpec 為 PM 內部工作版本不外露。
+  把已定案的規格交付到 Linear（巢狀：project 薄目錄 + milestone 需求主題 + Feature 票 + Task 票，四層 WBS 嚴格去重），依自包含標準模板（v5.0）產出，交付前以 Rubric 評分稽核（執行者與評審分離、合格 10 / 10）才發布。對開發而言 Linear 為交付正本、wiki 為欄位與狀態正本、Prototype 為介面與互動正本；OpenSpec 為 PM 內部工作版本不外露。
   觸發：Miles 說「交付到 Linear」「發布給開發」「把 X 模組交付給開發」「調整 Linear 上的 project / issue」「依評分稽核交付文件」。
   不適用：Vault 整體健康稽核（用 vault-audit）、規劃前 know-how 稽核（用 erp-planning-pre-check）。
   強制規則（7 條 anti-pattern 禁令）與 Rubric 流程見本文與 references/。
@@ -32,7 +32,7 @@ description: >
 
 | 元素 | 本 skill 的填法 |
 |------|----------------|
-| **Outcome（最終成果）** | Linear project 薄目錄（功能票清單）+ milestone（需求主題）+ Feature 票（使用者故事＋商業邏輯＋驗收條件，一票一功能）+ Task 票（行為契約＋驗收測試）+ 狀態機 UML + v4 結構件（測試決策章／Label 三軸／行為要求段／驗收測試段／Blocked by／Task 掛對 parent）齊備，且 Rubric 符合性評分達**合格分數 10 / 10**（由與實作者分離的評分 sub-agent 判定，非實作者自判）|
+| **Outcome（最終成果）** | Linear project 薄目錄（功能票清單）+ milestone（需求主題）+ Feature 票（使用者故事＋商業邏輯＋驗收條件，一票一功能、規則帶短名）+ Task 票（職能實作契約＋驗收，不複寫商業規則）+ 狀態機 UML + 結構件（測試決策章／Label 三軸／票段落齊備／Task 掛對 parent）齊備，且 Rubric 符合性評分達**合格分數 10 / 10**（由與實作者分離的評分 sub-agent 判定，非實作者自判）|
 | **Verification（驗證方式）** | 由評分 sub-agent 跑 `references/rubric.md` 5 維度符合性評分（每維度 0-2 分，合格 = 10 分且 D4 = 2）；逐條對照「絕對不要」禁令清單 |
 | **Constraint（限制條件）** | 只改本次交付的 project 描述與指定 issue 描述；**既有票絕對不動** estimate / assignee / cycle / priority / milestone / labels（新開票另計——新票 MUST 設 milestone 與 Label 三軸）；不外露 OpenSpec 路徑 |
 | **Iteration Policy（迭代策略）** | 修完 MUST 重新評審（餵完整草稿、不暗示改動）；每輪記錄第 N 輪改了什麼 / 哪些維度未過 / 下一步；達標才停、硬上限 3 輪、卡住停下問 Miles |
@@ -128,7 +128,7 @@ description: >
 > **MUST NOT** 拿「另一個需求 / issue 的內容」當對照範本 —— 實例會被修改或刪除，對照即失效。標準模板是從多個既有交付物**精煉出的自包含結構**，更新走版本控管（見本檔 § Rubric 與模板演化）。
 
 - **巢狀結構（v4）**：project 薄目錄（概述、Use Case、功能票清單每條附票名＋用戶故事式範圍句＋原生提及、Out of Scope、測試決策、另案、狀態機）→ milestone（需求主題名，禁日期批次名）→ Feature 票（每個功能一節，每節固定四段：節名／使用者故事／結構化規則／驗收條件，每節收合）→ Task 票（職能實作，parent 掛 Feature 票或該功能的原 Task 票）→ 需要再往下 Sub-Task／Bug。操作方式與介面呈現歸 Prototype（交付不文字重述、不附參照格）、欄位歸 wiki 實體卡；細則見 references/delivery-template.md v4.0
-- **Task 票 = How 層**：背景（使用者故事）＋算式（有才寫，進程式碼區塊）＋規則（行為契約句——什麼情況下系統要發生什麼／不許出現什麼；禁手段詞，手段由開發決定）＋驗收（落在受測介面）＋範圍（只取用的依賴與不做的項目）；不寫指路句、不寫 Blocked by 段
+- **Task 票 = How 層**：背景（使用者故事）＋算式（有才寫，進程式碼區塊）＋規則（該職能的實作契約——只寫這個職能要保證的行為，對應商業規則以 Feature 票規則短名括註、不複寫本體；禁手段詞，手段由開發決定）＋驗收（落在受測介面）＋範圍（只取用的依賴與不做的項目）；不寫指路句、不寫 Blocked by 段
 - **標題與 Label**：標題格式 `[ Feature ] - <功能語意>`／`[ Task ] - <功能語意>`（前綴保留），前綴之後只寫功能語意，**禁「（前端）」「（後端）」字樣**；職能由 Label 三軸承載——Role（Backend／Frontend／Design／PM）、Product（ERP／EC／編輯器）、Type（Feature／Task／Bug），皆為工作區既有分組、不自創新值；Type 軸必掛且與標題前綴一致
 - **禁 meta 導覽句**：不寫「實作由本票底下的 sub-issue 承載」「本票是○○的商業邏輯與驗收條件正本」類句子——巢狀關係、Blocked by 與 Label 即資訊本體（與 D1 禁 wiki 指路句同族）
 - **長段用收合區塊**：超過 10 行的流程表格、狀態機圖、逐條規則清單收進收合區塊；批次套用前 MUST 先以一張票試寫，確認 Linear 與 GitHub 同步票（details 元素）兩面渲染正常
@@ -141,7 +141,7 @@ description: >
 
 主對話 agent（實作者）對照 `references/rubric.md` 5 維度的「絕對不要」禁令清單逐條自查，修掉明顯違規。
 
-自審 MUST 含：有業務可觀測結果的功能是否已附驗收條件、驗收條件是否 outcome 導向且二元可勾稽、是否誤把通用品質門檻（Definition of Done）混入驗收條件、驗收條件條目是否殘留內部路徑或檔名；以及 v4 結構件——測試決策章是否在（且測試先行說明只此一處、票內不重複引言）、每張 Feature 票是否只裝一個功能顆粒且三段齊備（使用者故事／流程表格＋規則句／驗收條件）、是否掛 milestone 與 Label 三軸、標題是否誤帶職能字樣、是否殘留 meta 導覽句、每張 Task 票是否有行為要求段（無手段詞）、驗收測試段（每條標受測介面）與 Blocked by 段、parent 是否掛對 Feature 票、是否誤開設計票或誤附邊界表。**結構性交付缺 v4 結構件者不得發布（由 D5 承接評分）。**
+自審 MUST 含：有業務可觀測結果的功能是否已附驗收條件、驗收條件是否 outcome 導向且二元可勾稽、是否誤把通用品質門檻（Definition of Done）混入驗收條件、驗收條件條目是否殘留內部路徑或檔名；以及結構件——測試決策章是否在（且測試先行說明只此一處、票內不重複引言）、每張 Feature 票是否只裝一個功能顆粒且功能節四段齊備（節名／使用者故事／規則／驗收條件）且規則帶短名、是否掛 milestone 與 Label 三軸、標題是否誤帶職能字樣、是否殘留 meta 導覽句、每張 Task 票段落是否齊備（背景／規則／驗收／範圍；規則無手段詞且未複寫商業規則本體、驗收每條標受測介面）、parent 是否掛對 Feature 票、是否誤開設計票、誤附邊界表或誤寫 Blocked by 段。**結構性交付缺結構件者不得發布（由 D5 承接評分）。**
 
 ### Step 4：符合性評分（執行者 / 評分者分離）
 
@@ -185,7 +185,7 @@ description: >
 | 2 | 分層與顆粒度 | project 寫完整 What、issue 寫該角色 How，不重複不空洞 | 一般 |
 | 3 | 完整性 | 必要區塊齊備；狀態密集模組每個狀態機附 UML | 一般 |
 | 4 | 真實性（不捏造）| 來源未定義就記 OQ 標另案，不自編 | **一票否決** |
-| 5 | 交付結構完整性 | v4 結構件齊備：一票一功能顆粒／測試決策章／功能票清單原生提及／milestone 與 Label 三軸／行為要求段／驗收測試段／Blocked by／Task 掛對 parent，且標題不帶職能字樣、長段用收合、不另開設計票、不另附邊界表 | 一般 |
+| 5 | 交付結構完整性 | 結構件齊備：一票一功能顆粒／測試決策章／功能票清單原生提及／milestone 與 Label 三軸／Feature 功能節四段／Task 段落齊備（背景・規則・驗收・範圍）／Task 掛對 parent，且標題不帶職能字樣、長段用收合、不另開設計票、不另附邊界表、不另寫 Blocked by 段 | 一般 |
 
 評分尺度：每維度 **通過 2 分 / 部分 1 分 / 未通過 0 分**，滿分 10。**合格分數 = 10 分（且維度 4 必為 2），未達即不發布**；維度 4 任一處捏造直接擋。
 
