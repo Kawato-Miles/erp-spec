@@ -336,7 +336,7 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 | Task 類型 | 必讀 | 視需要 |
 |----------|------|--------|
 | **商業層查詢**（商業目標 / 角色 / 商業邏輯 / 實體關聯 / 狀態機 / 跨模組情境）| 讀 wiki 總入口 [wiki/index.md](memory/Sens_wiki/wiki/index.md)，依 `[[business-domain-taxonomy]]` 檢索規約定位對應領域卡（判領域 → 領域 tag 查卡名清單 → 呈現 → 載入；入口即 router，不在此重列深路徑） | OpenSpec spec § Requirements（功能規格） |
-| **撰寫 OpenSpec change**（背景對齊）| Vault `04-business-logic/` + `05-entities/` + `03-roles/` 對應卡 → 引用至 proposal `## Why` | `09-canvases/` 視覺化、Notion 索引（`10-references/notion-index.md`） |
+| **撰寫 OpenSpec change**（背景對齊）| Vault `04-business-logic/` + `05-entities/` + `03-roles/` 對應卡 → 引用至 proposal `## Why` | Notion 索引（`10-references/notion-index.md`） |
 | **撰寫 Spec / PRD** | 觸發 OpenSpec change 工作流（`/opsx:propose` 或 `/opsx:new`），背景資料由 Vault 對應卡引用 | 迭代時參考 `memory/erp/spec-iteration-workflow.md` |
 | 情境驗證 / 補情境 | Vault `07-scenarios/`（業務情境卡；三層：骨架 `wiki/範本/範本 - 業務情境`／規範 `規範 - 業務情境`／範例 `範例 - 業務情境`）+ 業務情境 spec（`openspec/specs/business-scenarios/spec.md`）| Vault `03-roles/`（角色責任分配）|
 | 確認 / 解答 Open Question | Vault `08-open-questions/`（**內部正本，2026-05-19 改寫**）+ 觸發 `oq-manage` skill | Notion OQ DB（對外確認版，見 § OQ 工作流）|

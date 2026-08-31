@@ -26,7 +26,6 @@ last-reviewed: 2026-07-29
 | `state-machine` | 狀態機 | `06-state-machines/` |
 | `scenario` | 業務情境（目標完成過程；接力型／能力型／排程型） | `07-scenarios/` |
 | `open-question` | OQ 卡 | `08-open-questions/` |
-| `canvas-ref` | Canvas 對應的 markdown 描述 | `09-canvases/` |
 | `review-knowledge` | 規劃品質量尺與稽核方法論 | `11-review-knowledge/` |
 | `misjudgement-record` | 稽核誤判案例庫 | `11-review-knowledge/` |
 | `raw` | Raw 素材（已驗證的觀察 / 反饋 / 研究筆記，未精練）| `raw/` |
@@ -344,7 +343,6 @@ ingested-to:                                           # status=ingested 時填
 | `wiki/範本/`（vault 層，跨主題） | 骨架檔（內容為填空 frontmatter 樣板，豁免本 schema 檢查；見 [[卡片撰寫共用規範]] § 一）|
 | `07-scenarios/` | `scenario`（業務情境）/ `meta`（`規範 - 業務情境.md` 等）/ `example`（`範例 - 業務情境.md`）|
 | `08-open-questions/` | `open-question` / `meta`（`OQ運作總覽.md`／`規範 - OQ.md`）/ `example`（`範例 - OQ.md`）|
-| `09-canvases/` | `.canvas` 檔（無 frontmatter）/ `canvas-ref` |
 | `raw/` | `raw` / `meta`（`README.md`）|
 | `raw/_attachments/` | 任意檔（PDF / 圖 / docx / 訪談錄音轉文字等）；不需 frontmatter |
 
