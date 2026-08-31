@@ -108,7 +108,7 @@ D5 交付結構完整性：...
 **定義**：交付模板的結構件齊備——Project 含「測試決策」章（受測介面 2-4 個＋測試先行說明，只此一處）與功能票清單（每條附票名、用戶故事式範圍句、原生提及）；milestone 以需求主題命名；每張 Feature 票掛 milestone、掛 Label（Type/Feature＋Product）、為其 Task 票的 parent、每個功能節四段齊備（節名／使用者故事／規則／驗收條件）；每張 Task 票掛 Label（Type/Task＋Role＋Product），段落依模板 § 四（背景／算式／規則／驗收／範圍；驗收每條標受測介面），parent 掛對 Feature 票；阻擋關係以 Linear 原生 blocking 建在 Task 層、票內不列 Blocked by 段。
 
 **絕對不要**：
-- **絕對不要一張 Feature 票裝多個功能顆粒**——票內出現兩條互不相干的流程主線、或驗收條件超過 5 條，即為顆粒度違規，拆票掛同一 milestone
+- **絕對不要一個功能節裝多個功能顆粒**——節內出現兩條互不相干的流程主線、或驗收條件超過 5 條，即為顆粒度違規，拆節；Feature 票承載一個需求主題，主題內多個功能節合法（2026-08-31 Miles 追認），主題之間互不相干才拆票
 - **絕對不要在標題帶職能字樣**——「（前端）」「（後端）」「FE」「BE」一律不進標題，職能由 Role Label 承載
 - **絕對不要留沒掛 milestone 的 Feature 票，或 Label 三軸不全的票**——Role（Backend／Frontend／Design／PM）、Product（ERP／EC／編輯器）、Type（Feature／Task／Bug）為工作區既有分組，缺一即缺資訊；不自創新值
 - **絕對不要用日期或批次當 milestone 名**——「2026-08 工單編輯批」「第三批」類名稱不成立，milestone 名寫需求主題（「工單主流程」）

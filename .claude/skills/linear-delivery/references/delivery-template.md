@@ -11,13 +11,13 @@
 |----|--------|--------|-------|
 | Project | 薄目錄＋商業脈絡 | 一個平台的一個模組 | — |
 | Milestone | 需求主題 | 一組要一起交付的功能 | — |
-| Feature 票 | 單一功能顆粒的需求正本 | **一張票一個功能** | Type/Feature＋Product/ERP |
+| Feature 票 | 一個需求主題的需求正本 | **一票一個需求主題；票內一個功能節＝一個功能顆粒** | Type/Feature＋Product/ERP |
 | Task 票 | 該功能的職能實作 | 一職能一張 | Type/Task＋Role/Backend 或 Frontend＋Product/ERP |
 | Sub-Task 票 / Bug 票 | Task 再往下切 | 開發自行判斷 | 依需要 |
 
 - Feature 票掛 milestone；Task 票的 parent 掛 Feature 票；再往下需要時開 Sub-Task 或 Bug。
 - 閱讀順序由大到小、內容不重複：project 讀方向、milestone 讀這批要交付什麼、Feature 票讀需求本體、Task 票讀自己要交付的行為。
-- **一張 Feature 票只裝一個功能**：一張票塞多個功能（如把確認、指派、規劃、審核裝進「工單建立主流程」）即為顆粒度違規，回頭拆成多張 Feature 票、掛同一個 milestone。
+- **顆粒度的載體是功能節**（2026-08-31 Miles 追認）：Feature 票承載一個需求主題，票內每個功能節裝一個功能顆粒、四段齊備並各自收合。一節出現兩條互不相干的流程主線、或驗收條件超過 5 條，即拆節；主題之間互不相干才拆票，拆出的票掛同一個 milestone。
 
 ---
 
