@@ -2792,3 +2792,7 @@ last-reviewed: 2026-06-02
 ## [2026-05-31] 健檢 | ERP 入口層收斂單一 index + 退役競爭舊 README + 補連修 22 孤兒
 - 變更：退役 ERP 主題同層競爭舊入口 `00-meta/README.md`（SSOT 反模式，外部 backlink=0），獨有內容遷入 [[vault-charter]] §七（人類首次閱讀順序）/ §八（工具），「不在此 Vault」表確認與 vault-charter §六 重複故直接刪；ERP 入口 [[erp_index|indexx]] §三 高量層改連各層 README / 子索引（MOC：08-OQ / 13-US / 14-reviews / 11-review-knowledge 4 個 README + 4 個 10-references *-index + 6 個 09-canvases）；[[wiki/erp/08-open-questions/README|OQ 索引]] 補登 13 張孤兒 OQ；root `CLAUDE.md` 商業層查詢改走 ERP 入口 index（由「載入決策表」router）+ 補正 `01-products/erp/`→`01-products/` stale 路徑。orphans 49→27、unresolved 168→168（零新增壞鏈）。
 - 衝突：無。另案待辦：glossary-graphic-editor 仍留 ERP 02-domain（Miles 只搬 product-vision，圖編術語去留待決）、同名卡（QC / README ×11 / _template）根治（alias vs 改名，開 OQ）、US 17 孤兒建模組 MOC、root index「圖編 cavans→canvas / 待建」待 canvas 主題入口建立後更新。
+
+## [2026-09-01] 同步(oq) | 開卡 AFT-15 售後單後端資料缺口補齊時機
+- 變更：新增 [[AFT-15-售後單後端資料缺口補齊時機-印件關聯與補述操作人]]（open, internal, medium）。緣起：售後介面重整（erp PR #162）查證 sens-print-core 後端現況，拍板介面照後端修剪——相關印件區塊移除、補述只顯示日期與內容；兩個後端缺口（ticket-印件關聯、補述操作人與時分）的補齊排程待裁決。去重已查平層與 _archives（AFT-10／AFT-13／AFT-14 皆不同議題）。
+- 衝突：無。
