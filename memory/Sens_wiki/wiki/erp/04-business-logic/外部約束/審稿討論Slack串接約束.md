@@ -2,7 +2,7 @@
 type: business-rule
 mutability: external
 status: active
-last-reviewed: 2026-08-31
+last-reviewed: 2026-09-01
 source:
   - "Slack Webhook 介面契約（第三方介面）"
 tags:
@@ -17,7 +17,7 @@ tags:
 - 說出討論串的共用模型：一起勾選的印件共用同一串、一件印件每種討論串最多一串（審稿與製作皆同）
 - 判斷哪些紀錄一律留在系統、哪些只留在通訊軟體
 
-> 必讀條件：任何模組討論審稿討論串建立、印件勾選建立討論串 MUST 先讀本卡。
+> 必讀條件：任何模組討論審稿討論串建立、印件勾選建立討論串，都必須先讀本卡。
 
 ## 現況
 
