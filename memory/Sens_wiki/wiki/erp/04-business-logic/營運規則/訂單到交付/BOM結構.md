@@ -6,7 +6,7 @@ source:
   - "計價設定現況查證：sens-print-core dev 分支全套計價 model ＋ options 發布管線 ＋ 報價 quote_item（2026-07-23）"
   - "計價公式現況對證：sensation-api dev 分支計價引擎 `product/pricing/`（engine／markup／imposition／mother_sheet 與 material M1-M5／process P1-P8／binding B1-B3／equipment E1-E3 各 spec 模組）（2026-07-23）"
 status: active
-last-reviewed: 2026-08-31
+last-reviewed: 2026-09-01
 tags:
   - 領域/生產執行
   - 領域/售前
@@ -26,7 +26,7 @@ tags:
 
 BOM 主檔由[[印務]]維護（主檔維護先讓印務處理、後續視需要再細分）；[[EC 商品管理]]取用它組合線上商品（款式與尺寸的成本與售價從 BOM 推算）；工單的生產任務建立時帶入對應主檔項目的計價設定。
 
-內部需求單報價的「成本總額」現況仍由印務主管人工估算填入，未接引擎。
+內部需求單報價的「成本估算」欄現況仍由印務主管人工填入，未接引擎。
 
 ## 規則
 

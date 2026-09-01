@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-07-29
+last-reviewed: 2026-09-01
 ---
 
 # Wiki Schema（Formal）
@@ -89,7 +89,7 @@ tags:
 > 本節的 yaml 區塊是**欄位定義與值域的正本**；可複製的起手樣板由 `wiki/範本/` 骨架卡承載。兩者重疊處以本節為準，骨架異動時與本節同 commit 對齊（治理見 [[卡片撰寫共用規範]] § 一）。
 > **通則一：`title` 只在檔名無法自我說明時填。** 檔名即標題，`title` 填與檔名相同的值屬冗餘（改名後變成第二個會 stale 的名字來源），故各 type 的 yaml 區塊一律不列 `title`。唯一該填的情形是檔名帶前綴而標題不含該前綴（如日期前綴檔名 `2026-06-13-生產模組架構設計`，`title` 填去掉日期的標題）。
 > **通則二：欄位無值即刪整個欄位，不留空。** `related-oq:`、`notion-url:`、`expected-resolution-at:` 這類選填欄位沒有值時刪掉整行（含空 list `[]`），需要時再加回；留空欄位在稽核時無法區分「沒有」與「漏填」。
-> **通則三：`status: deprecated` 的退役 stub 卡豁免 `source` 與 `tags`。** 退役卡不承載商業邏輯、也不該被領域 tag 撈進檢索結果（現行正本才該被撈到），正文只留一句退役宣告＋重導向連結即可（樣貌見 [[QC]]）。
+> **通則三：`status: deprecated` 的退役 stub 卡豁免 `source` 與 `tags`。** 退役卡不承載商業邏輯、也不該被領域 tag 撈進檢索結果（現行正本才該被撈到），正文只留一句退役宣告＋重導向連結即可。
 > **鐵則：卡片 frontmatter 禁含外部系統狀態欄位**（2026-06-10 新增）。「這張卡何時被推到哪個外部系統」是發布管線的狀態，不是商業知識——對外發布追蹤（Notion URL / 最後推送日）唯一正本在 `memory/erp/notion-publish-manifest.md`，由發布類 skill 維護，全程不回寫 wiki 卡。性質同「source 禁指 OpenSpec」：wiki 獨立維護，不與外部系統耦合。
 
 ### 4.0 source＝正確性根據的通則（分工，非階層）
@@ -109,7 +109,7 @@ tags:
 ---
 type: meta
 status: active
-last-reviewed: YYYY-MM-DD
+last-reviewed: 2026-09-01
 ---
 ```
 
@@ -122,7 +122,7 @@ example-of: <entity|role|state-machine|scenario|...>   # 對應單元的 type
 snapshot-source: "[[<快照來源卡>]]"
 synced-with-template: YYYY-MM-DD   # 最後與規範同步日，不得早於對應 _template 規範檔的最後實質修改
 status: active
-last-reviewed: YYYY-MM-DD
+last-reviewed: 2026-09-01
 ---
 ```
 
@@ -136,7 +136,7 @@ type: <product-vision|phase|metric>
 module:
   - cross-module  # 或具體模組
 status: active
-last-reviewed: YYYY-MM-DD
+last-reviewed: 2026-09-01
 ---
 ```
 
@@ -148,7 +148,7 @@ type: glossary
 module:
   - <ERP|線上編輯器|跨產品>
 status: active
-last-reviewed: YYYY-MM-DD
+last-reviewed: 2026-09-01
 ---
 ```
 
@@ -163,7 +163,7 @@ source:                          # 正確性根據＝分工正本或最上層依
   - "[[<上層卡或最上層依據>]]"
   - "Notion 核心角色權責表：<URL>"   # 外部依據的網址一律寫在 source，正文與其他欄位不放外部網址
 status: active
-last-reviewed: YYYY-MM-DD
+last-reviewed: 2026-09-01
 ---
 ```
 
@@ -177,7 +177,7 @@ tags:
 source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（OpenSpec 等）；見 § 4.0
   - "[[<上層卡或最上層依據>]]"
 status: active
-last-reviewed: YYYY-MM-DD
+last-reviewed: 2026-09-01
 ---
 ```
 
@@ -192,7 +192,7 @@ tags:
 source:
   - "<依據來源：產業慣例 / 法規 / 客戶訪談 / 上層商業規則卡>"
 status: active
-last-reviewed: YYYY-MM-DD
+last-reviewed: 2026-09-01
 ---
 ```
 
@@ -216,7 +216,7 @@ tags:
 source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（OpenSpec 等）；見 § 4.0
   - "[[<上層卡>]]"
 status: active
-last-reviewed: YYYY-MM-DD
+last-reviewed: 2026-09-01
 ---
 ```
 
@@ -230,7 +230,7 @@ tags:
 source:                          # 三源抽取＋Miles 矛盾裁決紀錄（wiki/log.md 條目）
   - "<三源互盲抽取交叉比對＋裁決紀錄日期>"
 status: active
-last-reviewed: YYYY-MM-DD
+last-reviewed: 2026-09-01
 ---
 ```
 
@@ -246,7 +246,7 @@ tags:
 source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（OpenSpec 等）；見 § 4.0
   - "[[<上層卡>]]"
 status: active
-last-reviewed: YYYY-MM-DD
+last-reviewed: 2026-09-01
 ---
 ```
 
@@ -261,7 +261,7 @@ tags:
 source:                          # 正確性根據＝分工正本（服務藍圖 / business-logic 規則 / 拍板 OQ / 外部依據）；禁指實作文件（OpenSpec 等）；狀態機卡僅得並列為參考資料，不得為唯一來源；能力型正本在角色卡或實體卡時得指之並須標段名，判定見 07-scenarios/規範 - 業務情境.md § 產出格式
   - "[[<藍圖或規則卡>]]"
 status: draft | active
-last-reviewed: YYYY-MM-DD
+last-reviewed: 2026-09-01
 ---
 ```
 
