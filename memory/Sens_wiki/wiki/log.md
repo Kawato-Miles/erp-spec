@@ -2810,3 +2810,7 @@ last-reviewed: 2026-06-02
 ## [2026-09-02] 同步 | 作廢 change add-pending-receivables-and-invoicing-pages
 - 變更：刪除 active change `add-pending-receivables-and-invoicing-pages`。理由：用舊命名（PaymentPlan、待收款）、指向已棄用的 sens-erp-prototype、依賴的前置 change 早已歸檔；且與 2026-09-02 中台款項管理交付拍板相反（清單唯讀無寫入操作、不加預計開票日欄、逾期天數不做、應收清單照後端現況「已開立發票且待收大於零」）。跨訂單四張清單（應收款項／待開發票／待退款／帳務異常）的行為規格改由新 change（capability `payment-worklists`）從 wiki 重起。
 - 衝突：無。
+
+## [2026-09-02] 同步(oq) | 擴充 PT-051 補候選 D（生產任務日期欄改預計完成日）
+- 變更：[[PT-051-工單預計完工日的推算邏輯]] 待解答補一項、候選方案補 D（任務手填日期由預計開工日改為預計完成日，工單預計完工日取最大值），不受影響項移除「預計開工日已定案」。緣起：工單詳情 Prototype 介面優化 grill，Summary 的「預計交期」格因任務無完成日暫以「最晚任務開工」代替。去重已查平層（ORD-044 為截止日條文矛盾，不同議題）與 _archives（PT-024 已結案、只定倒推開工日）。
+- 衝突：無。
