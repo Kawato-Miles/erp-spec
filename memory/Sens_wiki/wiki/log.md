@@ -2796,3 +2796,7 @@ last-reviewed: 2026-06-02
 ## [2026-09-01] 同步(oq) | 開卡 AFT-15 售後單後端資料缺口補齊時機
 - 變更：新增 [[AFT-15-售後單後端資料缺口補齊時機-印件關聯與補述操作人]]（open, internal, medium）。緣起：售後介面重整（erp PR #162）查證 sens-print-core 後端現況，拍板介面照後端修剪——相關印件區塊移除、補述只顯示日期與內容；兩個後端缺口（ticket-印件關聯、補述操作人與時分）的補齊排程待裁決。去重已查平層與 _archives（AFT-10／AFT-13／AFT-14 皆不同議題）。
 - 衝突：無。
+
+## [2026-09-02] 同步 | 作廢 change add-pending-receivables-and-invoicing-pages
+- 變更：刪除 active change `add-pending-receivables-and-invoicing-pages`。理由：用舊命名（PaymentPlan、待收款）、指向已棄用的 sens-erp-prototype、依賴的前置 change 早已歸檔；且與 2026-09-02 中台款項管理交付拍板相反（清單唯讀無寫入操作、不加預計開票日欄、逾期天數不做、應收清單照後端現況「已開立發票且待收大於零」）。跨訂單四張清單（應收款項／待開發票／待退款／帳務異常）的行為規格改由新 change（capability `payment-worklists`）從 wiki 重起。
+- 衝突：無。
