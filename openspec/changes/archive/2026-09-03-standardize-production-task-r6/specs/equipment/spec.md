@@ -1,12 +1,5 @@
-# equipment Specification
+## MODIFIED Requirements
 
-## Purpose
-設備主檔 -- 維護工廠內所有設備的基本資料：名稱、適用工序（能力標籤）、所屬產線標籤、啟用狀態、每日可用時數，以及印刷計價參數與自身成本參數。
-
-**範圍**：主檔維護與停用連動。設備佇列、負荷與停機的可視化歸 [production-overview](../production-overview/spec.md)（M3）；選機由印務於製程規劃時決定，見 [work-order](../work-order/spec.md) § 製程規劃。
-
-**正本邊界**：欄位表見 wiki [設備](../../../memory/Sens_wiki/wiki/erp/05-entities/設備.md)、產線標籤見 wiki [產線](../../../memory/Sens_wiki/wiki/erp/05-entities/產線.md)、計價參數的計算框架見 wiki [BOM結構](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md) § 計價引擎計算框架。
-## Requirements
 ### Requirement: 設備主檔管理
 
 系統 SHALL 提供設備主檔，維護工廠內所有設備的基本資料。每筆設備 MUST 包含：設備名稱、適用工序（能力標籤，選機匹配的依據）、所屬產線、啟用狀態、每日可用時數，以及印刷計價參數（開機費、階梯價、色數模式與特殊色倍率）與固定開機損。
@@ -51,4 +44,3 @@
 
 - **WHEN** 印務嘗試新增與現有設備同名的設備
 - **THEN** 系統阻擋並提示名稱已存在
-
