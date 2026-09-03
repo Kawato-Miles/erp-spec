@@ -6,7 +6,7 @@ source:
   - "計價設定現況查證：sens-print-core dev 分支全套計價 model ＋ options 發布管線 ＋ 報價 quote_item（2026-07-23）"
   - "計價公式現況對證：sensation-api dev 分支計價引擎 `product/pricing/`（engine／markup／imposition／mother_sheet 與 material M1-M5／process P1-P8／binding B1-B3／equipment E1-E3 各 spec 模組）（2026-07-23）"
 status: active
-last-reviewed: 2026-09-01
+last-reviewed: 2026-09-03
 tags:
   - 領域/生產執行
   - 領域/售前
@@ -141,7 +141,7 @@ BOM 主檔由[[印務]]維護（主檔維護先讓印務處理、後續視需要
 
 - 成本驅動因子為什麼決定計價方式、令與開數、拼版與起跳價的產業常識 → [[印刷成本結構]]
 - 各主檔的欄位定義與計價子表列 → [[材料主檔]]、[[工序主檔]]、[[裝訂主檔]]、[[設備]]
-- 拼模的業務換算、放損倒推與取整方向 → [[數量換算規則]]
+- 拼模的業務換算、各任務數量欄的定義與取整方向 → [[數量換算規則]]
 - 印件配方與部件配方怎麼展開成工單 → [[配方展開規則]]
 - BOM 成本怎麼進入客戶報價 → [[報價邏輯]]
 - 展開後的生產任務怎麼算齊、怎麼算完成 → [[齊套邏輯]]
