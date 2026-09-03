@@ -760,5 +760,5 @@ Prototype MUST 跑通下列步驟，且訂單主狀態 SHALL 維持「已完成�
 
 本規格無獨立 Data Model。業務情境所涉及的資料結構參考各模組 spec Data Model：
 - 訂單、印件：[訂單管理 spec](../order-management/spec.md)
-- 工單與生產任務結構：[工單管理 spec](../work-order/spec.md)；派工與報工：[派工與現場執行 spec](../production-execution/spec.md)
+- 工單與生產任務結構：[工單管理 spec](../work-order/spec.md)；派工與報工：[生產管理 spec](../production-execution/spec.md)
 - 狀態定義：各模組 spec 狀態機 Requirement
