@@ -1095,7 +1095,7 @@
 
 ### Requirement: 生產任務相依性
 
-印務 SHALL 可為生產任務設定前置任務清單，且 SHALL 逐筆手動設定——系統 SHALL NOT 於建立、展開或新增任務時自動帶入任何前置（含同段材料型對工序型、依規劃排序的線性鏈、印件層工序段對各部件末段）。前置 SHALL 允許指向別張工單的生產任務（跨工單前置）。前置判定為數量級：到料量取該前置轉交到位的數量（**已點收量**，SHALL NOT 看已送達量），多個前置時可做量取各前置到料量的最小值；標為不需轉交的前置 SHALL NOT 產生到料量、SHALL NOT 擋派工。規則正本見 wiki [工序相依性規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/工序相依性規則.md)，取數與放行行為見 [production-execution spec § 派工前置檢查](../production-execution/spec.md)。
+印務 SHALL 可為生產任務設定前置任務清單，且 SHALL 逐筆手動設定——系統 SHALL NOT 於建立、展開或新增任務時自動帶入任何前置（含同段材料型對工序型、依規劃排序的線性鏈、印件層工序段對各部件末段）。前置 SHALL 允許指向別張工單的生產任務（跨工單前置）。前置判定為數量級：到料量取該前置轉交到位的數量（**已點收量**，SHALL NOT 看已送達量），多個前置時可做量取各前置到料量的最小值；標為不需轉交的前置 SHALL NOT 產生到料量、SHALL NOT 擋報工。規則正本見 wiki [工序相依性規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/工序相依性規則.md)，取數與放行行為見 [production-execution spec § 報工前置檢查](../production-execution/spec.md)。
 
 **Priority**: P0
 
