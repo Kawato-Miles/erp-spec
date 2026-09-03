@@ -122,6 +122,8 @@ description: >
 
 ### Step 2：依自包含標準模板產出（核心校正）
 
+**舊票重構前置（v3 票升 v4.2 或整 project 重整時 MUST）**：先不寫任何 Task 票。第一步把每張 Feature 票切成單一主線的功能節（節名有「與」「頓號」即檢查是否兩條主線），第二步列出全部規則短名表（一條規則只在一節、一個短名只指一處），第三步才依短名表寫 Task 票的實作契約。2026-09-03 中台工單管理重構實測：跳過這三步直接搬舊「行為要求」段，Task 票整段複寫規則本體、短名對不到父票、多重歸屬反覆出現，八輪才達標。
+
 依 `references/delivery-template.md` 的標準模板產出。
 
 撰寫前 MUST 讀 `/Users/b-f-03-029/.claude/output-styles/ste100-pm.md`（受控句法正本）與 `/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`（非商業術語對照）；交付草稿的每一句話依其撰寫。若草稿由 sub-agent 代寫，dispatch prompt MUST 附上這兩檔路徑（sub-agent 拿不到 CLAUDE.md 與 output style）。
@@ -151,6 +153,8 @@ description: >
 **評分聚焦 rubric 符合性、不重跑上游查證**（2026-07-06 Miles 拍板）：交付內容自 BRD（wiki）/ PRD（OpenSpec）整理而來、上游已定案，不需 senior-pm 深度真實性查證；D4 的評分方式是檢查「交付文件內的規則能否對應到整理來源、缺料處是否已標另案處理」，不重新審查上游設計本身。
 
 **重評獨立性（第 2 輪起 MUST）**：重評時 MUST 餵**完整修正後草稿**、MUST NOT 暗示「改了什麼 / 上輪哪維度被扣」，讓評分者如完全獨立的 supervisor 重新判（對齊 /goal 完全獨立評審、防誘導與 leniency bias 放水）。
+
+**評分者續評（第 4 輪起）**：前三輪每輪換新評分者以擴大覆蓋；第 4 輪起改由同一位評分者續評（仍餵完整草稿、仍不暗示改動），讓失分項收斂為上輪修正的連帶效應，避免每換一人就在新位置找到同型問題。2026-09-03 實測：換人三輪 5→4→7，同一人續評四輪 5→7→7→8→10。
 
 > 規模小的單 issue 微調 MAY 由主 agent 自審即可，不強制調用評分者；結構性交付（新 project / 多 issue / 含狀態機）SHALL 調用評分 sub-agent。
 
