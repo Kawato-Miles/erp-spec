@@ -1,6 +1,6 @@
 ## Context
 
-四張清單皆為唯讀彙總視圖，資料完全來自訂單、發票、收款項目、款項紀錄既有異動後的重新查詢，不新增任何實體、不新增任何寫入動作。商業規則正本在 wiki：進出條件與可見範圍見 [帳務流程 § 跨訂單作業清單](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/帳務/帳務流程.md)，帳務異常四型判定見 [對帳一致性 § 差額怎麼分型](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/帳務/對帳一致性.md)，待退款清單欄位組成見 [待出金退款清單組成](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/帳務/待出金退款清單組成.md)，欄位取值來源見 [帳務](../../../memory/Sens_wiki/wiki/erp/05-entities/帳務.md)、[訂單 § 金額組成](../../../memory/Sens_wiki/wiki/erp/05-entities/訂單.md)。
+四張清單皆為唯讀彙總視圖，資料完全來自訂單、發票、收款項目、款項紀錄既有異動後的重新查詢，不新增任何實體、不新增任何寫入動作。商業規則正本在 wiki：進出條件與可見範圍見 [帳務流程 § 跨訂單作業清單](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/帳務/帳務流程.md)，帳務異常兩型判定見 [對帳一致性 § 差額怎麼分型](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/帳務/對帳一致性.md)，待退款清單欄位組成見 [待出金退款清單組成](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/帳務/待出金退款清單組成.md)，欄位取值來源見 [帳務](../../../memory/Sens_wiki/wiki/erp/05-entities/帳務.md)、[訂單 § 金額組成](../../../memory/Sens_wiki/wiki/erp/05-entities/訂單.md)。
 
 後端 `sens-print-core` 現況：應收款項清單（`ReceivableExporter` 含匯出）與待退款清單已實作；待開發票清單與帳務異常清單尚無實作。本 change 只定義行為規格，不寫實作程式碼。
 
@@ -11,7 +11,7 @@ Prototype 由另一 agent 於 `erp` repo 平行製作，路徑 `apps/erp/src/app
 ### Goals
 
 - 定義四張清單（應收款項、待開發票、待退款、帳務異常）的進入 / 移出條件、欄位、排序、搜尋、可見範圍、匯出行為，作為 Prototype 與後續後端實作的行為契約。
-- 帳務異常清單的四型判定（發票待開 / 發票待折讓或作廢 / 款項待收 / 超收）與詳情固定句型定案，取代人工逐筆比對。
+- 帳務異常清單的兩型判定（發票待折讓或作廢 / 超收）與詳情固定句型定案，取代人工逐筆比對；少開發票與少收款兩個方向不進本清單，各由待開發票清單與應收款項清單接住。
 - 與 `order-billing` 既有規格銜接，不重複定義單張訂單層的金額、期次、發票、折讓、核銷規則。
 
 ### Non-Goals
