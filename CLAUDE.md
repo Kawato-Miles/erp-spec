@@ -302,7 +302,7 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 - 全域偏好（回覆風格、語言與用語、文件迭代分層）正本在 `~/.claude/CLAUDE.md`；sub-agent 不會自動拿到該檔，需要遵守時明讀
 - Spec 格式：**OpenSpec**（`openspec/specs/`）為工作版本（正本）；對開發的發布以 Linear 為唯一正本（經 `linear-delivery` skill 交付，內容自包含，不再使用 Notion 作為 BRD 發布版）。變更管理使用 OpenSpec change 工作流
 - **Prototype / 介面設計**：Prototype 一律在 `erp` repo（本地路徑 `/Users/b-f-03-029/erp`，統一 design system、前端直串，開分支＋前端主管 PR 合併；工作模式見 memory `project_erp_repo_prototype_workflow`，實作 MUST 經 repo 內 skill `prototype-from-prompt`）。舊 repo `sens-erp-prototype` 與 Lovable 已於 2026-08-12 拍板**全面棄用**，不再考慮、不再對齊
-- **ERP 平台限制**（2026-07-21 修訂）：辦公角色（業務、印務、生管、會計等）僅支援電腦版（桌機瀏覽器）；**現場回報介面例外開放行動版**，範圍寫死於四個介面——師傅報工、品檢記錄、揀貨裝箱回報、出貨／送達確認（師傅、品檢人員、揀貨人員、出貨人員四角色用 ERP 手機版）；廠務轉交回報走 Slack 表單通道（正本在系統、通知帶單預填、保留補登路徑、身分對映四前提）。決策脈絡見 Vault OQ PT-001 決議（已封存）
+- **ERP 平台限制**（2026-09-04 修訂）：辦公角色（業務、印務、生管、會計等）僅支援電腦版（桌機瀏覽器）；**現場回報介面例外開放手機寬度**，範圍寫死於五個介面——師傅報工、品檢記錄、貨運單點收秤重、揀貨裝箱回報、出貨／送達確認（師傅、品檢人員、揀貨人員、出貨人員四角色在現場以手機寬度操作同一套頁面）；廠務轉交回報走 Slack 表單通道（正本在系統、通知帶單預填、保留補登路徑、身分對映四前提）。決策脈絡見 Vault OQ PT-001 決議（已封存）
 - 優先非同步溝通
 - 寫或改程式碼時載入 skill `andrej-karpathy-skills:karpathy-guidelines`
 
