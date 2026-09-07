@@ -173,8 +173,14 @@ ol.howto li::before{
   background:var(--primary);color:#fff;font-size:13px;font-weight:600;
 }
 ol.howto .do{margin:0;font-weight:500;line-height:1.7}
-ol.howto .see{margin:4px 0 0;color:var(--text-2);line-height:1.7}
-ol.howto .see::before{content:"你會看到";display:inline-block;margin-right:8px;padding:0 6px;border-radius:4px;background:var(--bg-2);color:var(--text-3);font-size:12px}
+ol.howto .see{
+  margin:8px 0 0;padding:8px 12px;border-left:3px solid var(--primary);border-radius:0 6px 6px 0;
+  background:var(--primary-soft);color:var(--text);line-height:1.7;
+}
+ol.howto .see::before{
+  content:"你會看到";display:block;margin-bottom:2px;
+  font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--primary);
+}
 b.ui{font-weight:600;color:var(--text);background:var(--primary-soft);padding:1px 5px;border-radius:4px}
 
 /* 提示框 */
