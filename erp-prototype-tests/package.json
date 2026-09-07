@@ -1,0 +1,16 @@
+{
+  "name": "erp-prototype-tests",
+  "private": true,
+  "type": "module",
+  "description": "ERP prototype 的自動化驗收：Vitest 測 (prototype)/_lib 純函式，Playwright 測畫面操作。測試碼放 Sens repo，erp repo 不加任何檔案。",
+  "scripts": {
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "vitest": "^3.2.4"
+  }
+}
