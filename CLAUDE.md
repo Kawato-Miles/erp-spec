@@ -344,11 +344,11 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 | 業務情境 | Vault `07-scenarios/`（業務情境卡；三層：骨架 `wiki/範本/範本 - 業務情境`／規範 `規範 - 業務情境`／範例 `範例 - 業務情境`）| 各模組 spec § Scenarios（Acceptance Scenarios，Given/When/Then 工程驗收）、Vault `03-roles/` |
 | **審查方法論 / 框架查詢** | Vault `11-review-knowledge/`（入口 [審查知識路由](memory/Sens_wiki/wiki/erp/11-review-knowledge/審查知識路由.md)）| `plan-design`／`plan-audit` skill |
 | **Prototype 製作** | erp repo 內 skill `/Users/b-f-03-029/erp/.claude/skills/prototype-from-prompt/SKILL.md`（設計規範唯一入口）+ 對應 Spec + 狀態機 spec | Notion 測試案例 DB：https://www.notion.so/2b93886511fa817fbd65e7608726f036 |
-| Prototype 驗證 / 反饋 | `/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/` 對應模組 + 同 repo `ACCEPTANCE.md` | — |
+| Prototype 驗證 / 反饋 | `/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/` 對應模組 + Sens `erp-prototype-tests/`（`docs/scenario-catalog.md` 情境目錄、`npm test` 自動化驗收） | `erp-prototype-tests/docs/findings-20260908.md` |
 
 ### 資源導航
 
 - wiki 總入口（商業需求 KM 中樞）：[wiki/index.md](memory/Sens_wiki/wiki/index.md)
 - Notion URL 唯一正本：`memory/shared/notion-index.md`
 - OpenSpec 規格目錄：`openspec/specs/`（20 個模組，目錄結構即自描述）
-- Prototype repo：`/Users/b-f-03-029/erp`（實作入口：`.claude/skills/prototype-from-prompt/SKILL.md`；驗收：`apps/erp/src/app/(prototype)/ACCEPTANCE.md`）
+- Prototype repo：`/Users/b-f-03-029/erp`（實作入口：`.claude/skills/prototype-from-prompt/SKILL.md`；驗收：Sens `erp-prototype-tests/`（測試碼即驗收表））
