@@ -197,32 +197,20 @@ b.ui{font-weight:600;color:var(--text);background:var(--primary-soft);padding:1p
 .two-col ul{margin:0;padding-left:18px;display:grid;gap:4px}
 .two-col li{line-height:1.7}
 
-/* 狀態流程：主鏈＋分支 */
-.flow{max-width:68ch;margin:0 0 20px;padding:18px 20px;border:1px solid var(--line);border-radius:8px;background:var(--bg-2)}
-.flow-main{display:flex;flex-wrap:wrap;align-items:center;gap:6px 0}
-.flow .node{
-  display:inline-block;padding:6px 12px;border:1px solid var(--line);border-radius:6px;
-  background:var(--bg);font-size:14px;font-weight:600;color:var(--text);
-}
-.flow .node.end{border-color:var(--ok);color:var(--ok)}
-.flow .node.lost{border-color:#D9A3A3;color:#A33A3A}
-.flow .link{
-  display:inline-flex;align-items:center;gap:0;position:relative;
-  min-width:96px;height:22px;margin:0 2px;
-}
-.flow .link::before{content:"";position:absolute;left:0;right:10px;top:50%;border-top:1.5px solid var(--text-3)}
-.flow .link::after{
-  content:"";position:absolute;right:2px;top:50%;width:7px;height:7px;
-  border:solid var(--text-3);border-width:1.5px 1.5px 0 0;transform:translateY(-50%) rotate(45deg);
-}
-.flow .link .lbl{
-  position:relative;z-index:1;margin:0 auto;padding:0 6px;
-  background:var(--bg-2);color:var(--primary);font-size:12.5px;font-weight:600;white-space:nowrap;
-}
-.flow-branch{display:grid;gap:8px;margin:12px 0 0 24px;padding-left:16px;border-left:1.5px dashed var(--text-3)}
-.flow-branch .branch{display:flex;flex-wrap:wrap;align-items:center;gap:6px 0}
-.flow-branch .then{margin-left:10px;font-size:13px;color:var(--text-2)}
-.flow-note{margin:14px 0 0;font-size:13px;color:var(--text-3)}
+/* 狀態流程圖（SVG） */
+.flow{max-width:68ch;margin:0 0 20px;padding:16px 18px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg-2)}
+.flow svg{display:block;width:100%;height:auto;font-family:var(--font)}
+.flow .fb{fill:var(--bg);stroke:var(--text-3);stroke-width:1.2}
+.flow .fb.end{stroke:var(--ok)}
+.flow .fb.lost{stroke:#C97B7B}
+.flow .ft{fill:var(--text);font-size:13px;font-weight:600}
+.flow .ft.end{fill:var(--ok)}
+.flow .ft.lost{fill:#A33A3A}
+.flow .fa{fill:none;stroke:var(--text-2);stroke-width:1.4}
+.flow .fa.dash{stroke-dasharray:4 4;stroke:var(--text-3)}
+.flow .fm{fill:var(--text-2)}
+.flow .fl{fill:var(--primary);font-size:12px;font-weight:600;paint-order:stroke;stroke:var(--bg-2);stroke-width:4px;stroke-linejoin:round}
+.flow figcaption{margin:10px 0 0;font-size:13px;color:var(--text-3);line-height:1.6}
 td.col-yesno{white-space:nowrap;font-weight:600}
 td.col-yesno.yes{color:var(--ok)}
 td.col-yesno.no{color:var(--text-3)}
@@ -1817,20 +1805,30 @@ function headHtml(s,u,kindLabel){
 }
 
 function renderOverview(s,u){
-  // 階段鏈：節點＝狀態，連線上標動作按鈕；議價中之後分三條路
-  const chain=[['待確認需求','送印務評估'],['待評估成本','評估完成'],['待報價','報價'],['議價中',null]];
+  // 狀態流程圖（SVG）：方框＝需求單狀態，箭頭上的字＝要按的按鈕
+  const box=(x,y,w,t,cls)=>'<rect class="fb '+(cls||'')+'" x="'+x+'" y="'+y+'" width="'+w+'" height="34" rx="6"/>'+
+    '<text class="ft '+(cls||'')+'" x="'+(x+w/2)+'" y="'+(y+22)+'" text-anchor="middle">'+t+'</text>';
+  const arrow=(d,lbl,lx,ly,dash)=>'<path class="fa'+(dash?' dash':'')+'" d="'+d+'" marker-end="url(#ah)"/>'+
+    (lbl?'<text class="fl" x="'+lx+'" y="'+ly+'" text-anchor="middle">'+lbl+'</text>':'');
   const stageFlow=
-    '<div class="flow">'+
-      '<div class="flow-main">'+
-        chain.map((c,i)=>'<span class="node">'+c[0]+'</span>'+(c[1]?'<span class="link"><span class="lbl">'+c[1]+'</span></span>':'')).join('')+
-      '</div>'+
-      '<div class="flow-branch">'+
-        '<div class="branch"><span class="link"><span class="lbl">成交</span></span><span class="node end">成交</span><span class="then">→ 建立訂單</span></div>'+
-        '<div class="branch"><span class="link"><span class="lbl">重新評估</span></span><span class="node">待評估成本</span><span class="then">→ 印務主管重走評估完成</span></div>'+
-        '<div class="branch"><span class="link"><span class="lbl">流失</span></span><span class="node lost">流失</span><span class="then">→ 日後可「重新啟動」回到待評估成本</span></div>'+
-      '</div>'+
-      '<p class="flow-note">框內是需求單狀態，連線上是要按的按鈕。「議價中」之後依客戶回覆走三條路之一。</p>'+
-    '</div>';
+    '<figure class="flow"><svg viewBox="0 0 760 250" role="img" aria-label="需求單狀態流程圖">'+
+      '<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="fm"/></marker></defs>'+
+      // 主鏈
+      box(8,40,118,'待確認需求')+arrow('M126 57H196','送印務評估',161,48)+
+      box(196,40,118,'待評估成本')+arrow('M314 57H384','評估完成',349,48)+
+      box(384,40,96,'待報價')+arrow('M480 57H550','報價',515,48)+
+      box(550,40,84,'議價中')+arrow('M634 57H684','成交',659,48)+
+      box(684,40,68,'成交','end')+
+      // 成交 → 建立訂單
+      arrow('M718 74V116','建立訂單',718,100,true)+box(668,116,84,'訂單草稿','end')+
+      // 議價中 → 重新評估 → 回待評估成本
+      arrow('M604 74V150H255V78','重新評估',430,166)+
+      // 議價中 → 流失
+      arrow('M580 74V186','流失',562,140)+box(532,186,96,'流失','lost')+
+      // 流失 → 重新啟動 → 回待評估成本
+      arrow('M532 203H235V78','重新啟動',390,222,true)+
+    '</svg>'+
+    '<figcaption>方框是需求單狀態，箭頭上的字是要按的按鈕。虛線是可選的後續動作。「議價中」之後依客戶回覆走成交、重新評估或流失。</figcaption></figure>';
   return wrapDoc('<article class="scn">'+
     headHtml(s,u,'概覽')+
     '<section class="sec"><h3>讀完這頁你會</h3><ul class="goals">'+s.goals.map(g=>'<li>'+markCodes(g)+'</li>').join('')+'</ul></section>'+
