@@ -26,3 +26,9 @@ MUST 先讀：
 
 ## 回報格式
 表格：頁 id｜改了什麼（一句）｜依據（程式碼檔名:行號 或 報告差異編號）。最後一段列「無法判斷、需 Miles 決定」的事項（沒有就寫無）。
+
+## 2026-09-07 晚間追加（Miles 拍板）
+- 步驟與說明裡不寫介面元件實作詞：TextArea、Select、Input、Modal、Dialog、Drawer、Tooltip、placeholder、InputNumber、「顯示字數」「上限 N 字」等。字數上限只能留在 fields 表的「填什麼」欄。改寫成業務語言：「填退回原因」。
+- 不寫測試或 prototype 專用內容：「模擬回寫」「本 prototype」「mock」「假資料」「Dev」「模擬角色」「種子資料」等一律刪除或改寫。手冊讀者是正式系統的使用者。
+- 一章一目標：每頁 title 只對應一個業務目標；steps 只完成該目標。第二個目標拆成新頁或併入該目標所屬的頁。
+- 每頁情境在 prototype 都要有對應假資料可操作（由 prototype 側補，手冊不寫單號）。
