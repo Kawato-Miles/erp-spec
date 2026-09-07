@@ -1,403 +1,312 @@
 <title>感官 ERP 操作手冊</title>
 
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
-/* ═══════════════════════════════════════════════════════════
-   色票：印刷校樣語彙
-   紙白 / 墨黑 / 版線 / 青版藍（主動作）/ 洋紅版（警示）
-   角色標記色＝七個印版色標，只用於色條，不做滿版底色
-   ═══════════════════════════════════════════════════════════ */
+/* 文件站版式（參考 GitBook 樣式）：白底、單一主色、三欄 */
 :root{
   color-scheme:light;
-
-  --paper:#FAF9F6;
-  --ink:#16161A;
-  --ink-soft:#5C5A57;
-  --rule:#E2DFD9;
-  --accent:#0B5FD9;
-  --flag:#C2185B;
-
-  --surface:#FFFFFF;
-  --zebra:#F2F0EA;
-  --sunk:#F1EFE8;
-  --accent-wash:#ECF2FD;
-  --shade:rgba(22,22,26,.10);
-
-  --plate-sales:#0B99D6;
-  --plate-order_manager:#D6006E;
-  --plate-print_manager:#E8A400;
-  --plate-print_officer:#16161A;
-  --plate-production_planner:#E2571E;
-  --plate-picker:#0E8C6A;
-  --plate-cross:#6B4FBB;
-  --plate-presales:#1F7A5A;
-  --plate-orderflow:#7A4BD6;
-  --plate-money:#0D7C8C;
-
-  --font-ui:-apple-system,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
-  --font-mono:ui-monospace,"SF Mono",Menlo,monospace;
-
-  --head-h:112px;
-  --rail-w:266px;
+  --primary:#3C5C9C;
+  --primary-soft:#EEF2F9;
+  --primary-line:#C9D4EA;
+  --text:#1F2A37;
+  --text-2:#4B5563;
+  --text-3:#6B7280;
+  --bg:#FFFFFF;
+  --bg-2:#F7F8FA;
+  --line:#E5E7EB;
+  --line-2:#EEF0F3;
+  --ok:#2F7D5B;
+  --warn:#B45309;
+  --font:"Inter","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --head-h:64px;
+  --nav-w:280px;
+  --toc-w:220px;
 }
-
-/* 角色 → 印版色標 */
-[data-plate="sales"]{--plate:var(--plate-sales)}
-[data-plate="order_manager"]{--plate:var(--plate-order_manager)}
-[data-plate="print_manager"]{--plate:var(--plate-print_manager)}
-[data-plate="print_officer"]{--plate:var(--plate-print_officer)}
-[data-plate="production_planner"]{--plate:var(--plate-production_planner)}
-[data-plate="picker"]{--plate:var(--plate-picker)}
-[data-plate="cross"]{--plate:var(--plate-cross)}
-[data-plate="presales"]{--plate:var(--plate-presales)}
-[data-plate="orderflow"]{--plate:var(--plate-orderflow)}
-[data-plate="money"]{--plate:var(--plate-money)}
-
-/* ═══ 基礎 ═══ */
 *{box-sizing:border-box}
+html{scroll-padding-top:calc(var(--head-h) + 16px)}
 body{
-  margin:0;
-  background:var(--paper);
-  color:var(--ink);
-  font-family:var(--font-ui);
-  font-size:15.5px;
-  line-height:1.7;
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:var(--font);font-size:16px;line-height:1.75;
   -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
 }
-a{color:var(--accent);text-underline-offset:2px}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
-
-.num{
-  font-family:var(--font-mono);
-  font-variant-numeric:tabular-nums;
-  font-size:.92em;
-  letter-spacing:-.01em;
-}
-.path{overflow-wrap:anywhere}
+a{color:var(--primary);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .hidden{display:none !important}
+.num{font-family:var(--mono);font-size:.9em;font-variant-numeric:tabular-nums}
+.path{overflow-wrap:anywhere}
+button{font-family:inherit}
 
-/* ═══ 報頭 ═══ */
+/* 頂欄 */
 .masthead{
-  position:sticky;top:0;z-index:30;
-  background:var(--paper);
-  border-bottom:1px solid var(--rule);
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
-  align-items:end;
-  gap:10px 24px;
-  padding:13px 24px 11px;
+  position:sticky;top:0;z-index:30;height:var(--head-h);
+  display:flex;align-items:center;gap:20px;
+  padding:0 24px;background:var(--bg);border-bottom:1px solid var(--line);
 }
-.mast-id{display:grid;gap:2px;min-width:0}
-.mast-id h1{
-  margin:0;
-  font-size:clamp(15px,1.5vw,17px);
-  font-weight:700;
-  letter-spacing:.01em;
-  line-height:1.35;
-  text-wrap:balance;
+.mast-id{display:flex;align-items:center;gap:10px;min-width:0}
+.mast-id .logo{
+  width:28px;height:28px;border-radius:6px;background:var(--primary);color:#fff;
+  display:grid;place-items:center;font-weight:700;font-size:13px;letter-spacing:.02em;flex:0 0 auto;
 }
-.mast-sub{margin:0;font-size:12px;color:var(--ink-soft);line-height:1.5}
-.mast-tools{display:flex;align-items:center;gap:8px}
-.mast-sep{margin:0 7px;opacity:.5}
-
+.mast-id h1{margin:0;font-size:16px;font-weight:600;line-height:1.2;white-space:nowrap}
+.mast-sub{display:none}
+.mast-tools{margin-left:auto}
 #search{
-  width:216px;max-width:42vw;
-  padding:6px 10px;
-  border:1px solid var(--rule);
-  border-radius:2px;
-  background:var(--surface);
-  color:var(--ink);
-  font-family:inherit;font-size:13px;
+  width:260px;max-width:40vw;padding:8px 12px;
+  border:1px solid var(--line);border-radius:8px;background:var(--bg-2);
+  color:var(--text);font-size:14px;
 }
-#search::placeholder{color:var(--ink-soft)}
-#search:focus-visible{border-color:var(--accent)}
-/* ═══ 版面 ═══ */
-.layout{
-  display:grid;
-  grid-template-columns:var(--rail-w) minmax(0,1fr);
-  align-items:start;
-}
+#search:focus-visible{border-color:var(--primary);background:var(--bg);outline:0;box-shadow:0 0 0 3px var(--primary-soft)}
 
-/* ═══ 側欄：角色 → 情境 ═══ */
+/* 三欄 */
+.layout{display:grid;grid-template-columns:var(--nav-w) minmax(0,1fr);max-width:1400px;margin:0 auto}
 .sidebar{
-  position:sticky;top:var(--head-h);
-  height:calc(100vh - var(--head-h));
-  display:flex;flex-direction:column;
-  border-right:1px solid var(--rule);
-  padding:12px 10px 0;
-  overflow:hidden;
+  position:sticky;top:var(--head-h);height:calc(100vh - var(--head-h));
+  overflow:hidden;border-right:1px solid var(--line);padding:16px 12px 0;
 }
-.sb-scroll{flex:1 1 auto;overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:10px}
-.sb-hint{margin:0;padding:0 8px;font-size:11.5px;line-height:1.65;color:var(--ink-soft)}
+.sb-scroll{height:100%;overflow-y:auto;padding-bottom:24px;display:flex;flex-direction:column;gap:6px}
+.sb-hint{display:none}
 .sb-home{
-  display:flex;align-items:center;gap:8px;
-  width:100%;padding:7px 9px;
-  border:0;border-radius:3px;
-  background:transparent;color:var(--ink-soft);
-  font-family:inherit;font-size:12.8px;font-weight:600;
-  text-align:left;cursor:pointer;
+  display:flex;align-items:center;width:100%;padding:7px 12px;border:0;border-radius:6px;
+  background:transparent;color:var(--text-2);font-size:14px;text-align:left;cursor:pointer;
 }
-.sb-home:hover{color:var(--accent)}
-.sb-home::before{content:"";width:3px;height:13px;background:var(--rule);flex:0 0 auto}
-.sb-home:hover::before{background:var(--accent)}
-
-#nav{display:flex;flex-direction:column;gap:1px}
-
-/* 單元分組 */
-.unit{display:flex;flex-direction:column;gap:1px;padding-bottom:6px}
+.sb-home:hover{background:var(--bg-2);color:var(--text)}
+.sb-home.active{background:var(--primary-soft);color:var(--primary);font-weight:600}
+#nav{display:flex;flex-direction:column;gap:2px}
+.unit{display:flex;flex-direction:column;gap:2px;padding:10px 0 4px}
 .unit-head{
-  display:flex;align-items:center;flex-wrap:wrap;gap:5px 7px;
-  margin:11px 9px 4px;
-  font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--ink-soft);
+  margin:6px 12px 6px;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--text-3);
 }
-.unit-head .carrier{
-  font-size:10.5px;font-weight:600;letter-spacing:0;
-  border:1px solid var(--rule);border-radius:2px;padding:1px 5px;
+.unit-head .carrier{display:none}
+.unit-intro-btn,.role-head,.scn-btn{
+  display:flex;align-items:center;gap:8px;width:100%;
+  border:0;border-radius:6px;background:transparent;text-align:left;cursor:pointer;
+  color:var(--text-2);font-size:14px;line-height:1.45;
 }
-.unit-intro-btn{
-  display:flex;align-items:center;gap:8px;
-  width:100%;padding:6px 9px;
-  border:0;border-radius:3px;
-  background:transparent;color:var(--ink-soft);
-  font-family:inherit;font-size:12.8px;
-  text-align:left;cursor:pointer;
-}
-.unit-intro-btn:hover{background:var(--sunk);color:var(--ink)}
-.unit-intro-btn.active{background:var(--sunk);color:var(--ink);font-weight:600}
-.unit-intro-btn::before{content:"";width:3px;height:13px;background:var(--rule);flex:0 0 auto}
-.unit-intro-btn.active::before{background:var(--plate,var(--ink-soft))}
-
-.role-group{min-width:0}
-.role-head{
-  display:flex;align-items:center;gap:8px;
-  width:100%;padding:7px 9px;
-  border:0;border-radius:3px;
-  background:transparent;color:var(--ink);
-  font-family:inherit;font-size:13.5px;font-weight:600;
-  text-align:left;cursor:pointer;
-}
-.role-head:hover{background:var(--sunk)}
-.plate-bar{flex:0 0 auto;width:3px;height:14px;background:var(--plate,var(--ink-soft))}
+.unit-intro-btn{padding:7px 12px}
+.unit-intro-btn:hover{background:var(--bg-2);color:var(--text)}
+.unit-intro-btn.active{background:var(--primary-soft);color:var(--primary);font-weight:600}
+.role-head{padding:7px 12px;font-weight:500;color:var(--text)}
+.role-head:hover{background:var(--bg-2)}
+.plate-bar{display:none}
 .role-head .caret{
-  flex:0 0 auto;width:9px;
-  font-size:9px;color:var(--ink-soft);
+  margin-left:auto;flex:0 0 auto;width:14px;font-size:10px;color:var(--text-3);
   transition:transform .15s ease;
 }
 .role-group.open .role-head .caret{transform:rotate(90deg)}
-.role-head .count{
-  margin-left:auto;
-  font-family:var(--font-mono);font-variant-numeric:tabular-nums;
-  font-size:11px;color:var(--ink-soft);
-}
-.scn-list{display:none;margin:0;padding:1px 0 7px 12px;list-style:none}
+.role-head .count{display:none}
+.scn-list{display:none;margin:0;padding:0 0 4px 14px;list-style:none}
 .role-group.open .scn-list{display:block}
-.scn-btn{
-  display:flex;align-items:flex-start;gap:8px;
-  width:100%;padding:6px 8px 6px 10px;
-  border:0;border-left:1px solid var(--rule);border-radius:0 3px 3px 0;
-  background:transparent;color:var(--ink-soft);
-  font-family:inherit;font-size:12.8px;line-height:1.5;
-  text-align:left;cursor:pointer;
+.scn-btn{padding:6px 12px 6px 14px;border-left:1px solid var(--line)}
+.scn-btn:hover{background:var(--bg-2);color:var(--text)}
+.scn-btn.active{background:var(--primary-soft);color:var(--primary);font-weight:600;border-left-color:var(--primary)}
+.scn-btn .kind{
+  flex:0 0 auto;font-size:11px;padding:0 6px;border-radius:4px;
+  background:var(--bg-2);color:var(--text-3);
 }
-.scn-btn:hover{background:var(--sunk);color:var(--ink)}
-.scn-btn.active{
-  background:var(--sunk);color:var(--ink);font-weight:600;
-  border-left:2px solid var(--plate);padding-left:9px;
-}
-/* ═══ 內容區 ═══ */
-.content{min-width:0;padding:28px 30px 96px;max-width:1060px}
+.scn-btn.active .kind{background:var(--bg);color:var(--primary)}
 
-.scn{
-  display:grid;gap:26px;
-  border-left:3px solid var(--plate,var(--rule));
-  padding-left:22px;
+/* 內容與右側目錄 */
+.content{
+  min-width:0;display:grid;grid-template-columns:minmax(0,760px) var(--toc-w);
+  gap:48px;padding:40px 48px 96px;
 }
-.scn-head{display:grid;gap:9px}
-.crumb{margin:0;font-size:12px;color:var(--ink-soft)}
-.scn-head h2{
-  margin:0;
-  font-size:clamp(20px,2.3vw,25px);
-  font-weight:700;line-height:1.35;letter-spacing:.01em;
-  text-wrap:balance;
-}
-.scn-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
-.badge-role{
-  display:inline-flex;align-items:center;gap:7px;
-  font-size:12px;color:var(--ink);
-  border:1px solid var(--rule);border-radius:2px;
-  padding:3px 9px;
-}
-.badge-role .chip{width:8px;height:8px;background:var(--plate,var(--ink-soft))}
-.badge-role .who{color:var(--ink-soft)}
-.tag-supp{
-  display:inline-block;
-  font-size:11.5px;color:var(--flag);
-  border:1px solid var(--flag);border-radius:2px;
-  padding:2px 8px;
-}
-.tag-carrier{
-  display:inline-block;
-  font-size:11.5px;color:var(--ink-soft);
-  border:1px solid var(--rule);border-radius:2px;
-  padding:2px 8px;
-}
-.switch-note{margin:0;font-size:12.5px;color:var(--ink-soft);line-height:1.65}
+.doc{min-width:0}
+.toc{position:sticky;top:calc(var(--head-h) + 40px);align-self:start;font-size:13px}
+.toc h4{margin:0 0 10px;font-size:12px;font-weight:600;color:var(--text-3)}
+.toc ul{margin:0;padding:0;list-style:none;border-left:1px solid var(--line)}
+.toc li a{display:block;padding:4px 12px;color:var(--text-2);border-left:2px solid transparent;margin-left:-1px}
+.toc li a:hover{color:var(--text);text-decoration:none}
+.toc li a.active{color:var(--primary);border-left-color:var(--primary)}
 
-/* 單元導讀：狀態軸 */
-.chain-list{display:grid;gap:9px;margin:0;padding:0;list-style:none;max-width:72ch}
-.chain-list dt{font-size:12px;font-weight:700;color:var(--ink-soft);letter-spacing:.04em}
-.chain-list dd{margin:3px 0 0;padding:8px 11px;background:var(--sunk);border-radius:2px;line-height:1.8;overflow-wrap:anywhere}
+.crumb{margin:0 0 12px;font-size:13px;color:var(--text-3)}
+.crumb .sep{margin:0 6px}
+.doc h1,.scn-head h2,.home-head h2{
+  margin:0;font-size:32px;font-weight:700;line-height:1.25;letter-spacing:-.01em;text-wrap:balance;
+}
+.lede{margin:12px 0 0;font-size:17px;color:var(--text-2);line-height:1.7;max-width:66ch}
+.scn{display:grid;gap:0}
+.scn-head{padding-bottom:20px;border-bottom:1px solid var(--line)}
+.scn-meta{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:14px;font-size:14px;color:var(--text-3)}
+.scn-meta .who{color:var(--text-3)}
+.badge-role,.tag-carrier,.kind-tag,.tag-supp,.switch-note{display:none}
+.roles-line{margin:0;font-size:14px;color:var(--text-3)}
+.roles-line b{color:var(--text-2);font-weight:500}
 
-.sec{display:grid;gap:11px}
+.sec{padding-top:36px}
 .sec > h3{
-  margin:0;
-  font-size:12px;font-weight:700;
-  letter-spacing:.09em;color:var(--ink-soft);
+  margin:0 0 14px;font-size:20px;font-weight:600;line-height:1.35;color:var(--text);letter-spacing:-.005em;
 }
-.sec p{margin:0;max-width:66ch}
-.sec .lede{max-width:64ch}
+.sec p{margin:0;max-width:68ch}
+.sec .lede{font-size:16px;color:var(--text);margin:0 0 14px}
 
-ul.points{display:grid;gap:7px;margin:0;padding:0;list-style:none;max-width:70ch}
-ul.points li{position:relative;padding-left:17px}
-ul.points li::before{
-  content:"";position:absolute;left:1px;top:.68em;
-  width:5px;height:5px;border:1px solid var(--ink-soft);
+ul.points,ul.prereq,ul.goals,ul.check{display:grid;gap:8px;margin:0;padding:0 0 0 22px;max-width:68ch;list-style:disc}
+ul.points li::marker,ul.prereq li::marker,ul.goals li::marker,ul.check li::marker{color:var(--text-3)}
+ul.check{list-style:none;padding-left:0}
+ul.check li{position:relative;padding-left:28px}
+ul.check li::before{
+  content:"";position:absolute;left:1px;top:.4em;width:14px;height:14px;border-radius:50%;
+  border:1.5px solid var(--ok);
 }
-ul.prereq{display:grid;gap:7px;margin:0;padding:0;list-style:none;max-width:70ch}
-ul.prereq li{position:relative;padding-left:17px}
-ul.prereq li::before{
-  content:"";position:absolute;left:1px;top:.62em;
-  width:6px;height:6px;border:1px solid var(--accent);border-radius:50%;
+ul.check li::after{
+  content:"";position:absolute;left:6px;top:.45em;width:3px;height:7px;
+  border:solid var(--ok);border-width:0 1.5px 1.5px 0;transform:rotate(45deg);
 }
 .xlink{
-  padding:0;border:0;background:transparent;
-  color:var(--accent);font-family:inherit;font-size:inherit;line-height:inherit;
-  text-align:left;text-decoration:underline;text-underline-offset:2px;
-  cursor:pointer;
+  padding:0;border:0;background:transparent;color:var(--primary);
+  font-size:inherit;line-height:inherit;text-align:left;cursor:pointer;
 }
-.xlink:hover{text-decoration-thickness:2px}
+.xlink:hover{text-decoration:underline}
 
-/* ═══ 步驟表 ═══ */
-.table-wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:2px}
-table{border-collapse:collapse;width:100%;min-width:780px;font-size:14px}
+/* 情境框 */
+.story{
+  margin:0;max-width:68ch;padding:16px 20px;border-radius:8px;
+  background:var(--bg-2);border:1px solid var(--line-2);line-height:1.75;
+}
+.story .who{display:block;font-size:12px;font-weight:600;color:var(--text-3);margin-bottom:6px}
+
+/* 步驟 */
+ol.howto{display:grid;gap:18px;margin:0;padding:0;list-style:none;counter-reset:h;max-width:68ch}
+ol.howto li{position:relative;padding-left:44px;counter-increment:h}
+ol.howto li::before{
+  content:counter(h);position:absolute;left:0;top:1px;width:28px;height:28px;
+  display:grid;place-items:center;border-radius:50%;
+  background:var(--primary);color:#fff;font-size:13px;font-weight:600;
+}
+ol.howto .do{margin:0;font-weight:500;line-height:1.7}
+ol.howto .see{margin:4px 0 0;color:var(--text-2);line-height:1.7}
+ol.howto .see::before{content:"你會看到";display:inline-block;margin-right:8px;padding:0 6px;border-radius:4px;background:var(--bg-2);color:var(--text-3);font-size:12px}
+b.ui{font-weight:600;color:var(--text);background:var(--primary-soft);padding:1px 5px;border-radius:4px}
+
+/* 提示框 */
+.callout{
+  margin:0;max-width:68ch;padding:14px 16px 14px 18px;border-radius:8px;
+  border:1px solid var(--primary-line);border-left:4px solid var(--primary);background:var(--primary-soft);
+}
+.callout h4{margin:0 0 6px;font-size:13px;font-weight:600;color:var(--primary)}
+.callout ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.callout li{line-height:1.7}
+.callout li::marker{color:var(--primary)}
+
+/* 兩欄盒 */
+.two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:68ch}
+.two-col .box{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:var(--bg)}
+.two-col h4{margin:0 0 8px;font-size:14px;font-weight:600;color:var(--text)}
+.two-col ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.two-col li{line-height:1.7}
+
+/* 狀態流程：主鏈＋分支 */
+.flow{max-width:68ch;margin:0 0 20px;padding:18px 20px;border:1px solid var(--line);border-radius:8px;background:var(--bg-2)}
+.flow-main{display:flex;flex-wrap:wrap;align-items:center;gap:6px 0}
+.flow .node{
+  display:inline-block;padding:6px 12px;border:1px solid var(--line);border-radius:6px;
+  background:var(--bg);font-size:14px;font-weight:600;color:var(--text);
+}
+.flow .node.end{border-color:var(--ok);color:var(--ok)}
+.flow .node.lost{border-color:#D9A3A3;color:#A33A3A}
+.flow .link{
+  display:inline-flex;align-items:center;gap:0;position:relative;
+  min-width:96px;height:22px;margin:0 2px;
+}
+.flow .link::before{content:"";position:absolute;left:0;right:10px;top:50%;border-top:1.5px solid var(--text-3)}
+.flow .link::after{
+  content:"";position:absolute;right:2px;top:50%;width:7px;height:7px;
+  border:solid var(--text-3);border-width:1.5px 1.5px 0 0;transform:translateY(-50%) rotate(45deg);
+}
+.flow .link .lbl{
+  position:relative;z-index:1;margin:0 auto;padding:0 6px;
+  background:var(--bg-2);color:var(--primary);font-size:12.5px;font-weight:600;white-space:nowrap;
+}
+.flow-branch{display:grid;gap:8px;margin:12px 0 0 24px;padding-left:16px;border-left:1.5px dashed var(--text-3)}
+.flow-branch .branch{display:flex;flex-wrap:wrap;align-items:center;gap:6px 0}
+.flow-branch .then{margin-left:10px;font-size:13px;color:var(--text-2)}
+.flow-note{margin:14px 0 0;font-size:13px;color:var(--text-3)}
+td.col-yesno{white-space:nowrap;font-weight:600}
+td.col-yesno.yes{color:var(--ok)}
+td.col-yesno.no{color:var(--text-3)}
+/* 表格 */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;max-width:100%}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
 thead th{
-  padding:9px 12px;
-  background:var(--sunk);
-  border-bottom:1px solid var(--rule);
-  font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--ink-soft);
-  text-align:left;white-space:nowrap;
+  padding:10px 14px;background:var(--bg-2);border-bottom:1px solid var(--line);
+  font-size:13px;font-weight:600;color:var(--text-2);text-align:left;white-space:nowrap;
 }
-tbody td{padding:10px 12px;border-top:1px solid var(--rule);vertical-align:top;line-height:1.62}
-tbody tr:nth-child(even){background:var(--zebra)}
-td.col-no{
-  width:46px;text-align:center;color:var(--ink-soft);
-  font-family:var(--font-mono);font-variant-numeric:tabular-nums;
-}
-td.col-where{width:196px;overflow-wrap:anywhere}
-td.col-do{width:274px}
+tbody td{padding:10px 14px;border-top:1px solid var(--line-2);vertical-align:top;line-height:1.65}
+tbody tr:first-child td{border-top:0}
+td.col-no{width:52px;text-align:center;color:var(--text-3);font-family:var(--mono)}
+td.col-where{width:200px;overflow-wrap:anywhere;color:var(--text-2)}
+td.col-do{width:280px}
+td.col-num{font-family:var(--mono);text-align:right;width:64px}
+.cell-role .chip{display:none}
 
-/* ═══ 總覽頁 ═══ */
-.home{display:grid;gap:26px;max-width:860px}
-.home-head{display:grid;gap:8px}
-.home-head h2{
-  margin:0;font-size:clamp(21px,2.6vw,27px);
-  font-weight:700;line-height:1.3;letter-spacing:.01em;text-wrap:balance;
+/* 上下頁 */
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
+.pager a,.pager button{
+  display:grid;gap:4px;padding:14px 16px;border:1px solid var(--line);border-radius:8px;
+  background:var(--bg);text-align:left;cursor:pointer;color:var(--text);text-decoration:none;
 }
-.home-head .eyebrow{margin:0;font-size:12px;letter-spacing:.09em;color:var(--ink-soft)}
-ol.steps{display:grid;gap:7px;margin:0;padding:0;list-style:none;counter-reset:s;max-width:70ch}
-ol.steps li{position:relative;padding-left:26px;counter-increment:s}
-ol.steps li::before{
-  content:counter(s,decimal-leading-zero);
-  position:absolute;left:0;top:.06em;
-  font-family:var(--font-mono);font-size:11.5px;color:var(--ink-soft);
-}
-.home .table-wrap table{min-width:640px}
-.cell-role{display:flex;align-items:center;gap:8px;white-space:nowrap}
-.cell-role .chip{width:3px;height:13px;background:var(--plate,var(--ink-soft));flex:0 0 auto}
-td.col-num{
-  font-family:var(--font-mono);font-variant-numeric:tabular-nums;
-  text-align:right;width:64px;
-}
-footer{
-  margin:0;padding-top:16px;
-  border-top:1px solid var(--rule);
-  font-size:12px;color:var(--ink-soft);line-height:1.65;
-}
+.pager button:hover{border-color:var(--primary-line);background:var(--bg-2)}
+.pager .dir{font-size:12px;color:var(--text-3)}
+.pager .ttl{font-size:15px;font-weight:600;color:var(--primary)}
+.pager .next{text-align:right}
 
-/* ═══ 跳轉高亮 ═══ */
-@keyframes flash-in{
-  0%{background:var(--accent-wash)}
-  100%{background:transparent}
+/* 首頁 */
+.home{display:grid;gap:0}
+.home-head .eyebrow{display:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{
+  display:grid;gap:6px;padding:16px 18px;border:1px solid var(--line);border-radius:10px;
+  background:var(--bg);text-align:left;cursor:pointer;color:var(--text);
 }
-.scn.flash{animation:flash-in 1.5s ease-out}
+.card:hover{border-color:var(--primary-line);background:var(--bg-2)}
+.card .ttl{font-size:15px;font-weight:600;color:var(--primary)}
+.card .desc{font-size:14px;color:var(--text-2);line-height:1.6}
+ol.steps{display:grid;gap:8px;margin:0;padding-left:22px;max-width:68ch}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--text-3);line-height:1.65}
 
-/* ═══ 窄視窗：側欄收為頂部橫向角色列 ═══ */
+/* 跳轉高亮 */
+@keyframes flash-in{0%{background:var(--primary-soft)}100%{background:transparent}}
+.scn.flash,.home.flash{animation:flash-in 1.2s ease-out}
+
+/* 窄視窗 */
+@media (max-width:1180px){
+  .content{grid-template-columns:minmax(0,1fr)}
+  .toc{display:none}
+}
 @media (min-width:901px){
   .sidebar.filtered .role-group .scn-list{display:block}
 }
 @media (max-width:900px){
-  .masthead{grid-template-columns:minmax(0,1fr);padding:11px 14px 10px}
-  .mast-tools{flex-wrap:wrap}
-  #search{width:100%;max-width:none;flex:1 1 160px}
+  .masthead{padding:0 14px;gap:12px}
+  #search{width:100%;max-width:none}
   .layout{display:block}
   .sidebar{
-    position:sticky;top:var(--head-h);z-index:20;
-    height:auto;
-    display:block;
-    background:var(--paper);
-    border-right:0;border-bottom:1px solid var(--rule);
-    padding:8px 14px 9px;
-    overflow:visible;
+    position:sticky;top:var(--head-h);z-index:20;height:auto;border-right:0;border-bottom:1px solid var(--line);
+    padding:8px 14px 9px;overflow:visible;background:var(--bg);
   }
-  .sb-scroll{display:block;overflow:visible}
-  .sb-hint,.sb-home{display:none}
-  #nav{
-    flex-direction:row;flex-wrap:nowrap;gap:6px;
-    overflow-x:auto;overflow-y:hidden;
-    padding-bottom:2px;
-  }
+  .sb-scroll{display:block;overflow:visible;padding-bottom:0}
+  .sb-home{display:none}
+  #nav{flex-direction:row;flex-wrap:nowrap;gap:6px;overflow-x:auto;overflow-y:hidden;padding-bottom:2px}
   .unit{display:contents}
-  .unit-head{
-    flex:0 0 auto;align-self:center;
-    margin:0 2px 0 6px;white-space:nowrap;
-  }
-  .unit-head .carrier{display:none}
-  .unit-intro-btn{
-    flex:0 0 auto;width:auto;
-    border:1px solid var(--rule);border-radius:99px;
-    padding:6px 12px;white-space:nowrap;font-size:13px;
-  }
-  .unit-intro-btn::before{display:none}
-  .role-group{flex:0 0 auto}
-  .role-head{
-    border:1px solid var(--rule);border-radius:99px;
-    padding:6px 12px;white-space:nowrap;font-size:13px;
-  }
-  .role-group.open .role-head{border-color:var(--plate)}
+  .unit-head{flex:0 0 auto;align-self:center;margin:0 4px 0 8px;white-space:nowrap}
+  .unit-intro-btn,.role-head{flex:0 0 auto;width:auto;border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap}
+  .role-group{flex:0 0 auto;position:relative}
+  .role-group.open .role-head{border-color:var(--primary);color:var(--primary)}
   .role-head .caret{display:none}
   .scn-list{
-    position:absolute;left:14px;right:14px;top:calc(100% - 5px);z-index:25;
-    max-height:56vh;overflow-y:auto;
-    padding:6px;
-    background:var(--surface);
-    border:1px solid var(--rule);border-radius:3px;
-    box-shadow:0 10px 26px var(--shade);
+    position:absolute;left:0;top:calc(100% + 6px);z-index:25;min-width:260px;max-height:56vh;overflow-y:auto;
+    padding:6px;background:var(--bg);border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 26px rgba(31,42,55,.12);
   }
-  .content{padding:20px 14px 72px}
-  .scn{padding-left:14px;gap:22px}
-  table{min-width:660px}
-  td.col-where{width:170px}
-  td.col-do{width:230px}
+  .scn-btn{border-left:0}
+  .content{padding:24px 16px 72px}
+  .doc h1,.scn-head h2,.home-head h2{font-size:26px}
+  .pager{grid-template-columns:1fr}
+  .pager .next{text-align:left}
 }
-
 @media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{
-    transition-duration:.001ms !important;
-    animation-duration:.001ms !important;
-    animation-iteration-count:1 !important;
-    scroll-behavior:auto !important;
-  }
+  *,*::before,*::after{transition-duration:.001ms !important;animation-duration:.001ms !important;scroll-behavior:auto !important}
 }
 </style>
 
@@ -405,20 +314,20 @@ footer{
 
   <header class="masthead">
     <div class="mast-id">
+      <span class="logo" aria-hidden="true">感</span>
       <h1>感官 ERP 操作手冊</h1>
-      <p class="mast-sub">售前到生產階段 段 1<span class="mast-sep" aria-hidden="true">・</span>四個單元<span class="mast-sep" aria-hidden="true">・</span>45 個情境</p>
     </div>
     <div class="mast-tools">
-      <label class="sr-only" for="search">搜尋情境</label>
-      <input id="search" type="search" placeholder="搜尋情境標題與重點" autocomplete="off">
+      <label class="sr-only" for="search">搜尋</label>
+      <input id="search" type="search" placeholder="搜尋" autocomplete="off">
     </div>
   </header>
 
   <div class="layout">
     <nav class="sidebar" id="sidebar" aria-label="情境目錄">
       <div class="sb-scroll">
-        <p class="sb-hint">目錄分三層：單元、角色或流程、情境。點標題展開，點情境看內容。<br>單元一至單元三在 Dev 環境操作，單元四在 Prototype 操作。</p>
-        <button class="sb-home" id="homeBtn" type="button">回總覽</button>
+        <p class="sb-hint">目錄分三層：單元、角色或流程、情境。點標題展開，點情境看內容。<br>單元一與單元四在 Prototype 操作；單元二、單元三在 Dev 環境操作。單元一每個主題先讀概覽，再看操作說明。</p>
+        <button class="sb-home" id="homeBtn" type="button">總覽</button>
         <div id="nav"></div>
       </div>
     </nav>
@@ -437,39 +346,11 @@ footer{
 const UNITS = [
 {
   key:'u1',
-  nav:'單元一　售前',
-  title:'單元一　售前（需求單到成交）',
-  carrier:'Dev 環境實測',
-  note:'本單元的步驟以 Dev 環境實測為準。切換角色請以該角色的帳號登入；操作會實際寫入 Dev 環境資料。',
-  intro:{
-    lede:'客戶把想印的東西問過來。公司要在系統裡接住這筆生意。這一段要記下客戶要什麼、算出成本、報出價格。談成之後轉成一張訂單。這一段的載體是需求單，它是報價談判期間的工作單據。成交之後才會生出訂單。',
-    solve:[
-      '把口頭或信件裡的詢價落成一筆有單號、有負責人的紀錄',
-      '讓詢價查得到，不再散在個人信箱',
-      '讓業務與印務主管在同一張單上分工',
-      '業務談客戶與價格，印務主管算成本',
-      '在報價定案的當下留下報價紀錄快照',
-      '之後改動不會蓋掉當時談定的版本',
-      '成交之後不用重打一次資料，需求單直接生成訂單'
-    ],
-    roles:[
-      ['業務','建立需求單，登錄印件需求與報價金額。送印務評估，對客戶報價。記錄成交或流失。把成交的需求單轉成訂單。'],
-      ['印務主管','在需求單上評估成本，評估完成後把球交回接單業務。']
-    ],
-    flows:[
-      ['需求單進度軸','確認需求（列表顯示「待確認需求」）→ 評估成本 → 報價 →（議價）→ 成交'],
-      ['報價後的岔路','報價 → 重新評估（退回評估成本重算）｜報價 → 流失（本筆需求結束）']
-    ],
-    notes:[
-      '需求單建立後，列表狀態顯示「待確認需求」。',
-      '它就是進度軸的「確認需求」階段，同一階段有兩種標籤。',
-      '這時可直接按「送印務評估」推進。',
-      '議價為可選段，價格一次談成時直接由報價走到成交。',
-      '單號由系統產生，格式為 Q-YYYYMMDD-XX。',
-      '需求單建立與成交都會自動發送 Slack 通知。',
-      '通知連結會回填到需求單上。'
-    ]
-  }
+  nav:'單元一　需求單管理',
+  title:'單元一　需求單管理（詢價到成交、轉訂單）',
+  carrier:'Prototype',
+  note:'',
+  intro:null
 },
 {
   key:'u2m',
@@ -553,132 +434,209 @@ const UNITS = [
 
 const DATA = [
 {
-  key:'presales', unit:'u1', role:'售前流程', user:'依實際登入帳號',
-  pos:'從客戶詢價、成本評估、報價到成交，最後把成交的需求單轉成訂單。',
-  duty:'業務主導全段，印務主管負責成本評估；情境依序操作即為一條完整售前動線。',
+  key:'presales', unit:'u1', role:'需求單管理', user:'業務、印務主管',
+  pos:'客戶詢價進來，在需求單上談規格、算成本、報價，談成後轉成訂單。',
+  duty:'業務主導全段，印務主管負責成本評估；先讀概覽建立心智模型，再依操作說明逐步做。',
   scenarios:[
   {
-    id:'u1-create-qr', title:'如何為客戶建立需求單', actor:'業務', actorUser:'',
-    intro:'客戶把要印的東西問過來時，業務要先建需求單。需求單要記下誰的案子、誰接的。也要記下由哪位印務主管評估成本、用哪家公司開帳。這些一開始就要定下來。後面的評估、報價、成交才有人接得住。需求單建好之後，這筆詢價就從個人信箱變成全公司查得到的紀錄。',
-    points:[
-      '知道必填共六欄：需求案名、客戶、詢價來源、接單業務、評估印務主管、帳務公司',
-      '知道客戶欄是用搜尋方式挑既有客戶，不是自由輸入',
-      '知道評估印務主管在這一步就要指定',
-      '知道送評估時球要交給這位印務主管',
-      '知道選填欄位有：窗口聯絡人、印件類型、出貨方式、發票開立方式、報價截止日、預計交貨日期、收款條件備註、備註',
-      '知道單號由系統自動產生，不需要自己編',
-      '知道單號格式為 Q-YYYYMMDD-XX',
-      '知道建立完成後列表狀態顯示「待確認需求」',
-      '知道它就是進度軸的「確認需求」階段，同一階段有兩種標籤',
-      '知道從「待確認需求」可直接按「送印務評估」推進',
-      '知道中間沒有另一個確認動作',
-      '知道系統會自動發送 Slack 通知',
-      '知道通知連結會回填到需求單上'
+    id:'q-overview', kind:'overview', title:'需求單管理概覽', actor:'業務、印務主管',
+    intro:'客戶問「這個能不能印、多少錢」的那一刻，生意還沒有成立。需求單就是接住這一刻的單據：把口頭或訊息裡的詢價落成一筆有單號、有負責人、有金額的紀錄，一路帶到成交，再一鍵變成訂單。',
+    goals:[
+      '說出需求單在整條 ERP 流程裡的位置，以及它和訂單的分界',
+      '看懂需求單的六個狀態，知道每個狀態該由誰做下一步',
+      '知道業務與印務主管各自在需求單上負什麼責任',
+      '知道成交後系統會把哪些資料帶進訂單，哪些不會'
     ],
-    prereq:null,
-    steps:[
-      ['1','需求單管理列表','點「新增」','開啟新增需求單表單'],
-      ['2','新增需求單表單','填必填六欄：需求案名、客戶（以搜尋方式選取）、詢價來源、接單業務、評估印務主管、帳務公司','六欄皆填妥後才可送出；任一欄未填會被擋下'],
-      ['3','新增需求單表單','視情況補填選填欄位：窗口聯絡人、印件類型、出貨方式、發票開立方式、報價截止日、預計交貨日期、收款條件備註、備註','選填欄位留空不影響建立'],
-      ['4','新增需求單表單','送出','需求單建立完成，單號自動產生為 Q-YYYYMMDD-XX；列表狀態顯示「待確認需求」（即進度軸的「確認需求」階段）'],
-      ['5','需求單詳情','檢視頁面上的通知資訊','Slack 通知已自動發送，連結回填在需求單上']
+    points:['需求單','狀態','業務','印務主管','成交','轉訂單','概覽'],
+    why:{
+      lede:'沒有需求單之前，詢價散在每個業務的信箱與通訊軟體裡。誰報過價、報了多少、印務有沒有看過成本，全靠記憶。客戶回頭追問時要翻對話，成交後還要把同一份資料重打進訂單。',
+      items:[
+        '詢價沒有單號，查不到也接不了手',
+        '成本是不是印務算過的，沒有紀錄可證明',
+        '報價改了好幾版，最後談定的是哪一版說不清',
+        '成交後重打訂單，數量、單價、交期容易打錯'
+      ]
+    },
+    what:{
+      lede:'需求單是報價談判期間的工作單據。一張需求單對一個客戶案子，底下可以掛多筆印件，每筆印件各自有數量、成本與報價。它有自己的單號（Q-西元年月日-流水號），成交前所有的談判動作都記在這張單上。',
+      groups:[
+        ['單頭','案名、客戶與窗口、詢價來源、接單業務、評估印務主管、帳務公司、出貨方式、發票開立方式、交期與報價截止日'],
+        ['印件','每筆一列：項目名稱、印件類型（打樣或大貨）、數量與單位、難易度、成本總額、報價總額、出貨方式、包裝說明、參考檔案'],
+        ['金額','小計（未稅）、稅額 5%、含稅總額，由印件報價總額加總，在評估完成時定案'],
+        ['紀錄','報價紀錄每輪一筆、活動紀錄每個動作一筆、權限管理記誰能看能改']
+      ]
+    },
+    how:{
+      lede:'需求單沿著六個狀態往前走。前四個是正常路徑，成交是終點，流失是岔路。每一步都有一顆主要按鈕，按下去狀態就換。',
+      stages:[
+        ['待確認需求','業務','建好需求單、補齊印件','送印務評估','待評估成本'],
+        ['待評估成本','印務主管','核對印件做得出來、成本算得對','評估完成','待報價'],
+        ['待報價','業務','把價格報給客戶','報價','議價中'],
+        ['議價中','業務','依客戶回覆三選一','成交／重新評估／流失','成交／待評估成本／流失'],
+        ['成交','業務','把成交的需求單轉成訂單','建立訂單','訂單建立（狀態草稿）'],
+        ['流失','業務','客戶回頭時可重新啟動','重新啟動','待評估成本']
+      ]
+    },
+    roles:[
+      ['業務','建立需求單、登錄印件與報價、送印務評估、對客戶報價、記錄成交或流失、建立訂單。需求單從頭到尾的擁有者。'],
+      ['印務主管','在「待評估成本」階段核對成本並按「評估完成」。這一按會留下一筆報價紀錄，之後改金額不會蓋掉它。'],
+      ['業務主管','不在需求單上動作。成交轉訂單後，訂單會自動指派一位審核業務主管，由他在訂單上核准。']
+    ],
+    handoff:{
+      lede:'按「建立訂單」時，系統把下列資料帶進訂單。帶不過去的，要在訂單上補填。',
+      rows:[
+        ['客戶、窗口聯絡人','會','訂單抬頭與聯絡人'],
+        ['接單業務、帳務公司','會','訂單負責業務與開帳公司'],
+        ['預計交貨日期','會','成為訂單的客戶交期'],
+        ['出貨方式、發票開立方式','會','單頭值帶進訂單；印件層出貨方式帶進各印件，空值退回單頭'],
+        ['收款條件備註、備註','會','訂單備註'],
+        ['每筆印件：名稱、類型、數量、單位、規格備註、包裝說明','會','逐筆複製成訂單印件'],
+        ['每筆印件：報價總額','會','系統除以數量反推單價，再算小計與稅額'],
+        ['審核業務主管','會','系統自動指派，可在送審後改派'],
+        ['成本總額、毛利率','不會','成本是內部資訊，不進訂單'],
+        ['報價紀錄、活動紀錄','不會','留在需求單上供回查'],
+        ['急件選項','不會','訂單印件預設一般件，急件在訂單上另選']
+      ]
+    },
+    related:[
+      ['q-create','建立需求單'],['q-items','登錄印件需求與金額'],['q-estimate','送印務評估與評估完成'],['q-quote','報價、成交或流失'],['q-order','把成交的需求單轉成訂單']
     ]
   },
   {
-    id:'u1-add-items', title:'如何把印件需求與價格記進需求單', actor:'業務', actorUser:'',
-    intro:'需求單開好之後還只是一個空殼。真正要談的是客戶要印什麼、印多少、多少錢。業務把客戶講的品項、數量、出貨與包裝方式記下來。成本與報價金額則是與印務一起把關的數字。這一段填完，需求單上就有一份可以拿去談的金額。',
-    points:[
-      '知道印件是逐筆新增的，一張需求單可以有多筆印件',
-      '知道印件內容業務與印務都可以登錄',
-      '知道每筆印件要填：項目名稱、印件類型（打樣／大貨）、數量與單位、難易度（1 至 10）、成本總額、報價總額',
-      '知道數量的單位（張、份等）可以用搜尋方式挑選',
-      '知道毛利率由成本總額與報價總額自動計算，不用自己算',
-      '知道另可記出貨方式（整疊／折好／TBD）、包裝說明與參考檔案',
-      '知道印件會列進「印件報價」區',
-      '知道小計、稅額、含稅總額自動統計'
-    ],
-    prereq:[['u1-create-qr','單元一 → 如何為客戶建立需求單（以你自行建立的需求單為例）']],
+    id:'q-create', kind:'howto', title:'建立需求單', actor:'業務', actorUser:'洪嘉駿',
+    intro:'客戶剛把需求問過來。你要在系統裡開一張需求單，讓這筆詢價從此有單號、有負責人。',
+    goals:['開一張新需求單並填齊必填欄位','知道窗口聯絡人與出貨方式怎麼選','建好後在列表找到它，狀態為「待確認需求」'],
+    points:['新增需求單','必填','客戶','窗口聯絡人','出貨方式','待確認需求'],
+    story:'鼎味餐飲集團的張育誠傳訊息來，秋季菜單要換版，想印 2,000 張 A4 對摺的菜單摺頁，九月底前要。你是接單業務洪嘉駿。在還沒談規格與價格之前，先把這筆詢價開成需求單。',
+    before:['以業務身分登入','左側選「需求單管理」進入需求單列表'],
     steps:[
-      ['1','需求單詳情','點「新增印件」','開啟新增印件表單'],
-      ['2','新增印件表單','填項目名稱、印件類型（打樣／大貨）、數量與單位（可搜尋）、難易度（1 至 10）','基本需求內容記錄完成'],
-      ['3','新增印件表單','填成本總額與報價總額','毛利率自動計算並顯示'],
-      ['4','新增印件表單','視需要填出貨方式（整疊／折好／TBD）、包裝說明，並上傳參考檔案','製作與交付的細節一併留在這筆印件上'],
-      ['5','新增印件表單','送出','印件列入「印件報價」區'],
-      ['6','需求單詳情 → 印件報價','檢視金額統計','小計、稅額、含稅總額自動統計；再新增一筆印件時統計金額同步更新']
-    ]
+      ['在需求單列表右上點「新增」。','右側滑出「新增需求單」表單。頂部提示單號會在建立後自動產生。'],
+      ['填「需求案名」，例如「秋季菜單摺頁」。','案名是列表與搜尋的主要辨識字，寫客戶看得懂的名字。'],
+      ['在「客戶」下拉輸入客戶名稱關鍵字，選「鼎味餐飲集團」。','客戶只能選既有主檔，不能自由輸入。選定後「窗口聯絡人」自動帶出主要窗口張育誠。'],
+      ['確認「窗口聯絡人」。要換人時展開下拉，只會列出這家客戶的聯絡人。','客戶改選時，聯絡人會被清空，需重選。'],
+      ['選「詢價來源」、「接單業務」、「評估印務主管」、「帳務公司」。','這四欄與案名、客戶合為六個必填欄。評估印務主管就是之後要按「評估完成」的人。'],
+      ['視情況選「出貨方式」（自取、專車配送、第三方物流）與「發票開立方式」。','這兩欄成交後會帶進訂單。現在不確定可以留空，成交前補上即可。'],
+      ['視情況填「報價截止日」、「預計交貨日期」、「收款條件備註」、「備註」。','預計交貨日期會成為訂單的客戶交期。'],
+      ['點右上「確認」。','表單關閉，列表最上方出現新的一列，單號為 Q-西元年月日-流水號，狀態「待確認需求」，統計卡「待確認需求」加一。']
+    ],
+    fields:[
+      ['需求案名','客戶看得懂的案名','必填'],
+      ['客戶','從主檔搜尋選取','必填'],
+      ['詢價來源','電話、Line、客戶介紹、業務拜訪、官網諮詢信等','必填'],
+      ['接單業務','負責這張單的業務','必填'],
+      ['評估印務主管','之後負責按「評估完成」的人','必填'],
+      ['帳務公司','用哪家公司開帳','必填'],
+      ['窗口聯絡人','依客戶帶出，預設主要窗口','選填'],
+      ['出貨方式','自取、專車配送、第三方物流三選一','選填'],
+      ['發票開立方式','隨貨附發票、月結開立、紙本發票另寄、電子發票','選填'],
+      ['報價截止日、預計交貨日期','日期','選填'],
+      ['收款條件備註、備註、Slack 連結','自由文字','選填']
+    ],
+    check:['列表出現新單，狀態為「待確認需求」','點單號能進詳情頁，基本資訊顯示你填的客戶與窗口','必填任一欄留空按確認，該欄出現紅字提示、不會送出'],
+    notes:['客戶只能從既有主檔挑選；新客戶請先在客戶管理建檔。','單號由系統產生，同一天第二張流水號加一。']
   },
   {
-    id:'u1-cost-eval', title:'如何請印務評估成本', actor:'業務送出、印務主管評估', actorUser:'',
-    intro:'業務手上的成本數字要有人背書才能拿去報價。送印務評估就是把球交給需求單上指定的評估印務主管。由他確認這些印件做得出來、成本算得對。印務主管按下評估完成的當下，系統留下一份報價紀錄快照。系統同時通知接單業務回來報價。',
-    points:[
-      '知道「送印務評估」由業務執行',
-      '知道執行後狀態自「確認需求」轉「評估成本」',
-      '知道送出後畫面上的動作換成「評估完成」',
-      '知道接下來等印務主管處理',
-      '知道「評估完成」由需求單上指定的評估印務主管執行',
-      '知道評估完成的確認框會提示「將自動建立報價紀錄快照，並通知接單業務」',
-      '知道評估完成後狀態轉「報價」',
-      '知道報價紀錄增加一筆',
-      '知道快照是當下金額的定格',
-      '知道之後再改金額不會蓋掉這一筆'
-    ],
-    prereq:[['u1-add-items','單元一 → 如何把印件需求與價格記進需求單（需求單上要先有印件與金額）']],
+    id:'q-items', kind:'howto', title:'登錄印件需求與金額', actor:'業務', actorUser:'洪嘉駿',
+    intro:'需求單開好只是空殼。客戶要印什麼、印多少、多少錢，要逐筆記成印件。',
+    goals:['在需求單上新增一筆印件並填齊規格','分清成本總額、報價總額與毛利率三個數字','知道出貨方式與包裝說明是兩件不同的事'],
+    points:['印件報價','新增印件','成本總額','報價總額','毛利率','包裝說明','出貨方式'],
+    story:'鼎味的菜單摺頁規格談定了：A4 對摺、雪銅紙 200g、四色雙面，2,000 張。你先估成本 12,000 元，打算報 16,000 元。把這筆印件記進 Q-20260903-01。',
+    before:['需求單狀態為「待確認需求」或「待評估成本」（成交後印件不可再改）','以業務或印務主管角色開該需求單詳情'],
     steps:[
-      ['1','需求單詳情','以業務身分點「送印務評估」','狀態自「確認需求」轉「評估成本」；畫面上的動作換成「評估完成」'],
-      ['2','需求單詳情','改以評估印務主管身分開同一張需求單','看得到「評估完成」動作'],
-      ['3','需求單詳情','點「評估完成」','跳出確認框，提示「將自動建立報價紀錄快照，並通知接單業務」'],
-      ['4','確認框','確認送出','狀態轉「報價」；報價紀錄增加一筆'],
-      ['5','需求單詳情 → 報價紀錄','檢視新增的那一筆','記錄的是評估完成當下的金額版本']
-    ]
+      ['在需求單詳情切到「印件報價」頁籤，點「新增印件」。','開啟新增印件表單。'],
+      ['填「項目名稱」，選「印件類型」。','印件類型分打樣印件與大貨印件。菜單正式印製選大貨。'],
+      ['填「數量」，選「單位」。','單位從主檔挑，菜單用「張」。'],
+      ['選「難易度」1 到 10。','難易度是給印務主管看的參考，不影響金額。'],
+      ['填「成本總額」與「報價總額」。','兩欄都是整筆金額，不是單價。填完毛利率自動顯示，算式為報價減成本再除以報價。'],
+      ['視情況選「出貨方式」，填「包裝說明」與「預計交貨日期」。','印件層的出貨方式獨立於單頭，留空時轉訂單會退回單頭的值。包裝說明是自由文字，例如「每 500 張一箱」。'],
+      ['視情況填「印件規格備註」並上傳「參考檔案」。','規格備註會帶進訂單印件，後段訂單管理人核對製作細節時看的就是它。'],
+      ['點「確認」。','印件列入「印件報價」表，顯示數量、難易度、成本、報價、毛利率、出貨方式、包裝說明。']
+    ],
+    fields:[
+      ['項目名稱','客戶看得懂的品名','必填'],
+      ['印件類型','打樣印件、大貨印件','必填'],
+      ['數量、單位','整數與主檔單位','必填'],
+      ['難易度','1 到 10','必填'],
+      ['成本總額','整筆成本，未稅','必填'],
+      ['報價總額','整筆報價，未稅','必填'],
+      ['出貨方式','自取、專車配送、第三方物流；留空退回單頭','選填'],
+      ['包裝說明','自由文字','選填'],
+      ['預計交貨日期、印件規格備註、參考檔案','日期、文字、檔案','選填']
+    ],
+    check:['「印件報價」表多一列，毛利率欄有值','再新增第二筆，表格出現兩列，各自獨立','需求單頭部的小計（未稅）此時仍為 0，要到「評估完成」才寫入'],
+    notes:['小計、稅額、含稅總額在印務主管按「評估完成」時一次定案，新增印件不會即時重算。','報價總額欄名容易被當成單價。它是整筆金額，轉訂單時系統會用它除以數量反推單價。']
   },
   {
-    id:'u1-quote-won', title:'如何向客戶報價並記錄成交', actor:'業務', actorUser:'',
-    intro:'成本評估回來之後，業務把價格報給客戶。業務要把談的結果記回系統。價格談成就記成交。客戶不做了就記流失。覺得成本要重算就退回讓印務重新評估。系統要的不是談判過程，而是這筆生意最後往哪一條路走。',
-    points:[
-      '知道業務點「報價」後，動作列出現「重新評估」「流失」「成交」',
-      '知道這些動作擇一執行',
-      '知道議價是需求單進度軸上的可選階段',
-      '知道本手冊未涵蓋議價操作',
-      '知道選「重新評估」會退回評估成本',
-      '知道印務主管重算後再走一次報價',
-      '知道選「流失」代表這筆需求結束',
-      '知道流失後不會再往下產生訂單',
-      '知道選「成交」後狀態轉「成交」',
-      '知道畫面出現「建立訂單」',
-      '知道成交同樣會有 Slack 連結回填'
-    ],
-    prereq:[['u1-cost-eval','單元一 → 如何請印務評估成本（狀態要先到「報價」）']],
+    id:'q-estimate', kind:'howto', title:'送印務評估與評估完成', actor:'業務送出、印務主管評估', actorUser:'洪嘉駿、吳國豪',
+    intro:'業務估的成本要有印務背書才能報價。這一步把球交給印務主管，他確認做得出來、成本算得對，再交回來。',
+    goals:['以業務身分送出評估，看狀態轉「待評估成本」','以印務主管身分完成評估，看狀態轉「待報價」','找到評估完成留下的那筆報價紀錄'],
+    points:['送印務評估','評估完成','待評估成本','待報價','報價紀錄'],
+    story:'菜單摺頁的印件填好了。你把需求單送給評估印務主管吳國豪。他看過紙材與工序，覺得成本合理，按下評估完成。系統替這一版金額留下一筆報價紀錄，並通知你可以報價了。',
+    before:['需求單至少有一筆印件，且成本總額與報價總額都填了','需求單狀態為「待確認需求」'],
     steps:[
-      ['1','需求單詳情','點「報價」','動作列出現「重新評估」「流失」「成交」，此時即可按「成交」'],
-      ['2','需求單詳情','依與客戶談定的結果，在三個動作中擇一','三個動作各自對應不同結果，選錯要走回頭路'],
-      ['3','需求單詳情','價格談成時點「成交」','狀態轉「成交」；畫面出現「建立訂單」；Slack 連結回填'],
-      ['4','需求單詳情','若客戶要求重算成本，改點「重新評估」','退回評估成本，由印務主管重新評估後再走一次報價'],
-      ['5','需求單詳情','若客戶不做了，改點「流失」','本筆需求結束，不再往下產生訂單']
-    ]
+      ['以業務角色開需求單詳情，點右上主要按鈕「送印務評估」。','不跳確認框，狀態直接轉「待評估成本」。進度條移到「評估成本」，主要按鈕文字換成「評估完成」。'],
+      ['以印務主管身分開同一張需求單。','主要按鈕顯示為「評估完成」。只有需求單上指定的評估印務主管能按。'],
+      ['核對「印件報價」頁籤的每筆印件與成本。有誤時點該列「編輯」修改。','印務主管在這個階段可以直接改印件內容。'],
+      ['點「評估完成」。','跳出「完成成本評估」對話框，提示「系統將自動建立一筆報價紀錄快照，並通知接單業務。」'],
+      ['點「確認」。','狀態轉「待報價」，主要按鈕換成「報價」。需求單頭部的小計、稅額、含稅總額此時寫入。'],
+      ['切到「報價紀錄」頁籤。','多一筆紀錄，記錄評估者、評估日期與當下的成本與報價金額。之後再改印件金額，這筆不會變。']
+    ],
+    fields:null,
+    check:['狀態標籤依序出現「待評估成本」再「待報價」','報價紀錄頁籤筆數加一，報價輪次顯示 1 輪','頭部含稅總額等於各印件報價總額加總乘 1.05'],
+    notes:['對話框裡的「快照」指的是把當下金額定格存檔，日後改金額也不會覆蓋。','要重算時不用刪紀錄，走下一頁的「重新評估」即可，會再留一筆新紀錄。']
   },
   {
-    id:'u1-create-order', title:'如何把成交的需求單轉成訂單', actor:'業務', actorUser:'',
-    intro:'談成之後要開始執行。這時候載體要從需求單換成訂單。客戶、交期、金額、印件明細由系統從需求單帶過去。業務不必再打一次。系統也把這張訂單該送給誰審核一併指派好。建立完成後畫面跳到訂單詳情，接下來的動作都在訂單上做。',
-    points:[
-      '知道「建立訂單」只有在需求單狀態為「成交」之後才出現',
-      '知道確認框的原文提示為「帶入客戶、業務、交期、報價與帳務資訊，複製印件明細、自動指派審核主管」',
-      '知道印件明細是複製過去的，不需要在訂單上重新輸入',
-      '知道系統於建立訂單時自動指派一位預設的審核業務主管',
-      '知道預設值不一定是實際該審這張單的主管',
-      '知道送審後要核對，必要時改派',
-      '知道建立後畫面跳轉到訂單詳情',
-      '知道訂單狀態為「草稿」',
-      '知道草稿代表這張訂單還沒經業務主管核准',
-      '知道草稿狀態不能往下走'
-    ],
-    prereq:[['u1-quote-won','單元一 → 如何向客戶報價並記錄成交（需求單狀態要先到「成交」）']],
+    id:'q-quote', kind:'howto', title:'報價、成交或流失', actor:'業務', actorUser:'洪嘉駿',
+    intro:'成本評估回來，價格報給客戶。客戶的回覆決定這張單往哪條路走：成交、回頭重算，或結束。',
+    goals:['按「報價」進入議價中','依客戶回覆在成交、重新評估、流失三者中選對一個','知道流失後怎麼重新啟動'],
+    points:['報價','議價中','成交','重新評估','流失','重新啟動','流失原因'],
+    story:'你把 16,000 元報給鼎味。張育誠回說預算只有 15,000。你想請印務再看能不能省一點，走重新評估。第二輪報 15,000，客戶點頭，你按成交。',
+    before:['需求單狀態為「待報價」','以業務身分登入'],
     steps:[
-      ['1','需求單詳情','點「建立訂單」','跳出確認框，提示原文為「帶入客戶、業務、交期、報價與帳務資訊，複製印件明細、自動指派審核主管」'],
-      ['2','確認框','確認送出','訂單建立完成，畫面跳轉到訂單詳情'],
-      ['3','訂單詳情','檢視頁首狀態','訂單狀態為「草稿」'],
-      ['4','訂單詳情 → 訂單項目頁籤','核對印件明細','需求單上的印件已複製過來'],
-      ['5','訂單詳情','檢視審核業務主管欄位','系統已自動指派一位預設的審核業務主管；不是實際該審的主管時，送主管審核後再改派；做法見單元三第一個情境的補充段']
-    ]
+      ['以業務角色開需求單詳情，點「報價」。','狀態轉「議價中」。右上出現三顆按鈕：「重新評估」、「流失」、「成交」。'],
+      ['客戶要求重算時點「重新評估」。','跳出「重新評估報價」對話框，填說明（例如「客戶要求降價 10%」）後確認。狀態退回「待評估成本」，說明寫進報價紀錄，印務主管重走評估完成。'],
+      ['客戶不做時點「流失」。','跳出「確認此需求單流失」對話框。「流失原因」必選：價格因素、交期因素、規格不符、無回覆、改找他家、其他。可再填說明。確認後狀態轉「流失」，頭部顯示流失原因。'],
+      ['價格談成時點「成交」。','狀態轉「成交」，進度條全亮，右上出現「建立訂單」。成交後印件不可再新增或修改。'],
+      ['流失的需求單日後客戶回頭，點「重新啟動」。','對話框提示狀態將回到「評估成本」階段。確認後狀態轉「待評估成本」，重走評估與報價。']
+    ],
+    fields:null,
+    check:['議價中時右上恰好三顆按鈕','流失原因留空按確認會被擋下','成交後「印件報價」頁籤沒有「新增印件」按鈕'],
+    notes:['「議價中」是需求單的正常中繼站，價格一次談成時也要先按「報價」再按「成交」。','重新評估每走一次，報價紀錄多一筆、報價輪次加一，舊紀錄保留。']
+  },
+  {
+    id:'q-order', kind:'howto', title:'把成交的需求單轉成訂單', actor:'業務', actorUser:'洪嘉駿',
+    intro:'談成之後載體換成訂單。客戶、交期、金額、印件由系統帶過去，你不用重打。',
+    goals:['從成交的需求單建立訂單','核對訂單帶入的資料','知道訂單狀態為草稿代表什麼'],
+    points:['建立訂單','查看訂單','草稿','審核業務主管','帶入'],
+    story:'鼎味的菜單摺頁成交了。你按建立訂單，系統生出一張新訂單，帶著客戶、窗口、交期、出貨方式、印件與金額。接下來收款、審稿、生產都在訂單上做。',
+    before:['需求單狀態為「成交」','單頭的出貨方式與發票開立方式已填（沒填會帶空值進訂單）'],
+    steps:[
+      ['以業務角色開成交的需求單詳情，點右上「建立訂單」。','跳出「建立訂單」對話框，提示「訂單將帶入此需求單的客戶、業務、交期、報價與帳務資訊，並複製印件明細、自動指派審核主管。」'],
+      ['點「確認」。','畫面跳到新訂單的詳情頁，訂單編號為 ORD-西元年-流水號。'],
+      ['核對「基本資訊」卡。','客戶編號、窗口聯絡人、負責業務、帳務公司、客戶交期、出貨方式、發票開立方式與需求單一致。「審核業務主管」顯示系統指派的林雅婷，狀態為「草稿」。'],
+      ['切到「訂單項目」頁籤核對印件。','每筆印件的名稱、類型、數量、單價、小計、出貨方式、包裝備註都從需求單帶過來。小計等於需求單該筆報價總額。'],
+      ['回到需求單詳情。','標題列出現「已建立訂單：ORD-…」標籤，「建立訂單」按鈕換成「查看訂單」。活動紀錄多一筆「建立訂單」。']
+    ],
+    fields:null,
+    check:['訂單列表多一筆，狀態「草稿」','訂單應收總額等於需求單含稅總額（無其他費用時）','同一張需求單無法再按第二次「建立訂單」'],
+    notes:['草稿代表訂單尚未經業務主管核准，金額與發票頁籤在核准前停用。核准步驤見單元三。','審核業務主管是系統預設值，不是實際該審的人時，送主管審核後再改派。','成本總額與毛利率不進訂單。']
+  },
+  {
+    id:'q-duplicate', kind:'howto', title:'複製需求單', actor:'業務', actorUser:'洪嘉駿',
+    intro:'同一個客戶再來一次類似的案子，不用從頭填。複製舊需求單，改數量與金額就好。',
+    goals:['從既有需求單複製出新單','知道哪些內容會被複製、哪些會重置'],
+    points:['複製需求單','重置','待確認需求'],
+    story:'鼎味的菜單摺頁印完三個月後，冬季菜單又要換版，規格一樣、數量改 3,000。你打開上次的 Q-20260903-01 複製一張。',
+    before:['任何狀態的需求單都可以複製'],
+    steps:[
+      ['開需求單詳情，點標題列的複製圖示。','跳出「複製需求單」對話框，顯示要複製的單號。'],
+      ['點「確認」。','畫面跳到新需求單詳情，單號為當天日期加流水號，狀態重置為「待確認需求」。'],
+      ['核對內容。','客戶、窗口、業務、帳務公司、出貨方式、印件全部帶過來。報價輪次歸 0、金額歸 0、報價紀錄清空、訂單連結清空。'],
+      ['修改數量與金額後，照「送印務評估與評估完成」往下走。','新單與舊單各自獨立。']
+    ],
+    fields:null,
+    check:['列表多一筆新單，狀態「待確認需求」','新單的印件筆數與舊單相同','新單頭部小計為 0'],
+    notes:['複製不會複製報價紀錄。要看舊價格請回舊單的報價紀錄頁籤。']
   }
   ]
 },
@@ -1719,6 +1677,21 @@ const DATA = [
 }
 ];
 
+
+/* 角色一覽（首頁）：角色 → 職責 → 相關單元 */
+const ROLES=[
+  ['業務','建需求單、報價、成交轉訂單；送主管審核、記錄回簽、上傳稿件、確認可製作；規劃收款、開發票、登記收款','單元一、二、三'],
+  ['業務主管','核准被指派給自己的訂單','單元三'],
+  ['印務主管','需求單成本評估；工單加開、分派、製程審核；維護 BOM 主檔','單元一、四'],
+  ['訂單管理人／審稿主管','分派審稿人員；確認印件製作細節，觸發系統建工單草稿','單元三、四'],
+  ['審稿人員','檢查稿件並判定合格或不合格，上傳審稿後檔案','單元三'],
+  ['印務','規劃工單製程、送審、交付產線；追蹤生產與處理異動；外發回廠收尾','單元四'],
+  ['生管','接收任務、合批打包成工作包、指派師傅、排程','單元四'],
+  ['師傅','在工作包上報工','單元四'],
+  ['揀貨人員','外發回貨的認列與點收、出貨裝箱','單元四'],
+  ['廠務','場內轉交的起搬與送達','單元四']
+];
+
 /* ─────────────────────────────────────────────
    渲染
    ───────────────────────────────────────────── */
@@ -1752,7 +1725,7 @@ const sidebarEl=document.getElementById('sidebar');
 function buildNav(){
   navEl.innerHTML=UNITS.map(u=>
     '<section class="unit" data-unit="'+u.key+'">'+
-      '<h4 class="unit-head">'+u.nav+
+      '<h4 class="unit-head">'+u.nav.replace(/\u3000/g,' ')+
         '<span class="carrier">'+u.carrier+'</span>'+
       '</h4>'+
       (u.intro?'<button class="unit-intro-btn" type="button" data-intro="'+u.key+'">單元導讀</button>':'')+
@@ -1763,10 +1736,8 @@ function buildNav(){
 function groupNav(g){
   return  '<div class="role-group" data-role="'+g.key+'" data-plate="'+g.key+'">'+
       '<button class="role-head" type="button">'+
-        '<i class="plate-bar" aria-hidden="true"></i>'+
-        '<span class="caret" aria-hidden="true">&#9656;</span>'+
         '<span>'+g.role+'</span>'+
-        '<span class="count">'+g.scenarios.length+'</span>'+
+        '<span class="caret" aria-hidden="true">&#9656;</span>'+
       '</button>'+
       '<ul class="scn-list">'+g.scenarios.map(s=>
         '<li><button class="scn-btn" type="button" data-scn="'+s.id+'">'+
@@ -1783,10 +1754,137 @@ function openRoleOf(id){
   });
 }
 
+
+
+/* 頁面骨架：正文 + 右側目錄 + 上下頁 */
+function wrapDoc(inner){
+  return '<div class="doc" id="scnDoc">'+inner+'</div><aside class="toc" id="toc"></aside>';
+}
+function orderOf(){ return ALL.map(x=>x.id); }
+function pagerHtml(id){
+  const order=orderOf(); const k=order.indexOf(id);
+  const prev=k>0?byId(order[k-1]):null, next=k<order.length-1?byId(order[k+1]):null;
+  return '<nav class="pager" aria-label="上下頁">'+
+    (prev?'<button type="button" data-goto="'+prev.id+'"><span class="dir">上一頁</span><span class="ttl">'+prev.title+'</span></button>':'<span></span>')+
+    (next?'<button type="button" class="next" data-goto="'+next.id+'"><span class="dir">下一頁</span><span class="ttl">'+next.title+'</span></button>':'<span></span>')+
+  '</nav>';
+}
+function buildToc(){
+  const toc=document.getElementById('toc'); if(!toc) return;
+  const hs=[...contentEl.querySelectorAll('.sec > h3')];
+  if(!hs.length){toc.innerHTML='';return;}
+  hs.forEach((h,i)=>{ if(!h.id) h.id='sec-'+i; });
+  toc.innerHTML='<h4>本頁內容</h4><ul>'+hs.map(h=>'<li><a href="#'+h.id+'">'+h.textContent+'</a></li>').join('')+'</ul>';
+  const links=[...toc.querySelectorAll('a')];
+  if(window.IntersectionObserver){
+    const io=new IntersectionObserver(es=>{
+      es.forEach(e=>{ if(e.isIntersecting){ links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id)); } });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    hs.forEach(h=>io.observe(h));
+  }
+}
+function afterRender(id,flash){
+  contentEl.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.goto,true)));
+  document.querySelectorAll('.scn-btn').forEach(b=>b.classList.toggle('active',b.dataset.scn===id));
+  document.querySelectorAll('.unit-intro-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('homeBtn').classList.remove('active');
+  if(id) openRoleOf(id);
+  buildToc();
+  window.scrollTo({top:0,behavior:(flash && !noMotion)?'smooth':'auto'});
+  if(flash && !noMotion){const doc=document.getElementById('scnDoc');doc.classList.add('flash');setTimeout(()=>doc.classList.remove('flash'),1300);}
+}
+
+/* 「」內的介面文字加粗；只動標籤外的文字節點 */
+function markUi(html){
+  return html.split(/(<[^>]*>)/).map(part=>
+    part.charAt(0)==='<' ? part : part.replace(/「([^」]{1,24})」/g,'<b class="ui">「$1」</b>')
+  ).join('');
+}
+const richUi=t=>markUi(rich(t));
+const gotoList=arr=>'<ul class="prereq">'+arr.map(p=>
+  '<li><button class="xlink" type="button" data-goto="'+p[0]+'">'+markCodes(p[1])+'</button></li>').join('')+'</ul>';
+
+function headHtml(s,u,kindLabel){
+  const actor=s.actor||s.role;
+  let who=(s.actorUser!==undefined?s.actorUser:s.user);
+  if(who===actor) who='';
+  return '<header class="scn-head">'+
+      '<p class="crumb">'+u.nav.replace(/　/g,' ')+'<span class="sep">/</span>'+s.role+'</p>'+
+      '<h2>'+s.title+'</h2>'+
+      '<p class="lede">'+markCodes(s.intro)+'</p>'+
+      '<p class="roles-line" style="margin-top:12px">'+(kindLabel==='概覽'?'涉及角色':'操作角色')+'：<b>'+actor+'</b>'+(who?'（'+who+'）':'')+'</p>'+
+    '</header>';
+}
+
+function renderOverview(s,u){
+  // 階段鏈：節點＝狀態，連線上標動作按鈕；議價中之後分三條路
+  const chain=[['待確認需求','送印務評估'],['待評估成本','評估完成'],['待報價','報價'],['議價中',null]];
+  const stageFlow=
+    '<div class="flow">'+
+      '<div class="flow-main">'+
+        chain.map((c,i)=>'<span class="node">'+c[0]+'</span>'+(c[1]?'<span class="link"><span class="lbl">'+c[1]+'</span></span>':'')).join('')+
+      '</div>'+
+      '<div class="flow-branch">'+
+        '<div class="branch"><span class="link"><span class="lbl">成交</span></span><span class="node end">成交</span><span class="then">→ 建立訂單</span></div>'+
+        '<div class="branch"><span class="link"><span class="lbl">重新評估</span></span><span class="node">待評估成本</span><span class="then">→ 印務主管重走評估完成</span></div>'+
+        '<div class="branch"><span class="link"><span class="lbl">流失</span></span><span class="node lost">流失</span><span class="then">→ 日後可「重新啟動」回到待評估成本</span></div>'+
+      '</div>'+
+      '<p class="flow-note">框內是需求單狀態，連線上是要按的按鈕。「議價中」之後依客戶回覆走三條路之一。</p>'+
+    '</div>';
+  return wrapDoc('<article class="scn">'+
+    headHtml(s,u,'概覽')+
+    '<section class="sec"><h3>讀完這頁你會</h3><ul class="goals">'+s.goals.map(g=>'<li>'+markCodes(g)+'</li>').join('')+'</ul></section>'+
+    '<section class="sec"><h3>為什麼需要需求單</h3><p class="lede">'+markCodes(s.why.lede)+'</p>'+
+      '<ul class="points">'+s.why.items.map(x=>'<li>'+markCodes(x)+'</li>').join('')+'</ul></section>'+
+    '<section class="sec"><h3>需求單是什麼</h3><p class="lede">'+markCodes(s.what.lede)+'</p>'+
+      '<div class="table-wrap"><table><thead><tr><th>區塊</th><th>裝什麼</th></tr></thead><tbody>'+
+      s.what.groups.map(g=>'<tr><td class="col-where">'+g[0]+'</td><td>'+markCodes(g[1])+'</td></tr>').join('')+
+      '</tbody></table></div></section>'+
+    '<section class="sec"><h3>怎麼運作</h3><p class="lede">'+markCodes(s.how.lede)+'</p>'+stageFlow+
+      '<div class="table-wrap"><table><thead><tr><th>狀態</th><th>球在誰手上</th><th>要做什麼</th><th>按哪個按鈕</th><th>之後變成</th></tr></thead><tbody>'+
+      s.how.stages.map(st=>'<tr><td class="col-where">'+st[0]+'</td><td>'+st[1]+'</td><td>'+st[2]+'</td><td>'+richUi('「'+st[3]+'」')+'</td><td>'+st[4]+'</td></tr>').join('')+
+      '</tbody></table></div></section>'+
+    '<section class="sec"><h3>誰在這裡做什麼</h3><div class="table-wrap"><table>'+
+      '<thead><tr><th>角色</th><th>在需求單上負責什麼</th></tr></thead><tbody>'+
+      s.roles.map(r=>'<tr><td class="col-where">'+r[0]+'</td><td>'+richUi(r[1])+'</td></tr>').join('')+
+      '</tbody></table></div></section>'+
+    '<section class="sec"><h3>成交後什麼會帶進訂單</h3><p class="lede">'+richUi(s.handoff.lede)+'</p>'+
+      '<div class="table-wrap"><table><thead><tr><th>資料</th><th>帶進訂單</th><th>說明</th></tr></thead><tbody>'+
+      s.handoff.rows.map(r=>'<tr><td>'+markCodes(r[0])+'</td><td class="col-yesno '+(r[1]==='會'?'yes':'no')+'">'+r[1]+'</td><td>'+markCodes(r[2])+'</td></tr>').join('')+
+      '</tbody></table></div></section>'+
+    '<section class="sec"><h3>接著做</h3>'+gotoList(s.related)+'</section>'+
+  '</article>'+pagerHtml(s.id));
+}
+
+function renderHowto(s,u){
+  const steps='<ol class="howto">'+s.steps.map(st=>
+    '<li><p class="do">'+richUi(st[0])+'</p><p class="see">'+richUi(st[1])+'</p></li>').join('')+'</ol>';
+  const fields=s.fields?'<section class="sec"><h3>欄位一覽</h3><div class="table-wrap"><table>'+
+    '<thead><tr><th>欄位</th><th>填什麼</th><th>必填</th></tr></thead><tbody>'+
+    s.fields.map(f=>'<tr><td class="col-where">'+f[0]+'</td><td>'+markCodes(f[1])+'</td><td>'+f[2]+'</td></tr>').join('')+
+    '</tbody></table></div></section>':'';
+  return wrapDoc('<article class="scn">'+
+    headHtml(s,u,'操作說明')+
+    '<section class="sec"><h3>做完這頁你會</h3><ul class="goals">'+s.goals.map(g=>'<li>'+richUi(g)+'</li>').join('')+'</ul></section>'+
+    '<section class="sec"><h3>情境</h3><p class="story"><span class="who">'+(s.actor||s.role)+(s.actorUser?'・'+s.actorUser:'')+'</span>'+richUi(s.story)+'</p></section>'+
+    '<section class="sec"><h3>開始之前</h3><ul class="prereq">'+s.before.map(b=>'<li>'+richUi(b)+'</li>').join('')+'</ul></section>'+
+    '<section class="sec"><h3>步驟</h3>'+steps+'</section>'+
+    fields+
+    '<section class="sec"><h3>檢查你做對了</h3><ul class="check">'+s.check.map(c=>'<li>'+richUi(c)+'</li>').join('')+'</ul></section>'+
+    (s.notes&&s.notes.length?'<section class="sec"><div class="callout"><h4>注意</h4><ul>'+s.notes.map(n=>'<li>'+richUi(n)+'</li>').join('')+'</ul></div></section>':'')+
+  '</article>'+pagerHtml(s.id));
+}
+
 /* ── 情境內容 ── */
 function renderScenario(id,flash){
   const s=byId(id);
   if(!s){renderHome();return;}
+  if(s.kind==='overview'||s.kind==='howto'){
+    const u0=unitOf(s.unit);
+    contentEl.innerHTML=(s.kind==='overview'?renderOverview(s,u0):renderHowto(s,u0));
+    afterRender(id,flash);
+    return;
+  }
   const prereqHtml = s.prereq && s.prereq.length
     ? '<ul class="prereq">'+s.prereq.map(p=>
         '<li><button class="xlink" type="button" data-goto="'+p[0]+'">'+markCodes(p[1])+'</button></li>').join('')+'</ul>'
@@ -1802,42 +1900,22 @@ function renderScenario(id,flash){
   const actor=s.actor||s.role;
   const who=(s.actorUser!==undefined?s.actorUser:s.user);
 
-  contentEl.innerHTML=
-    '<article class="scn" id="scnDoc" data-plate="'+s.roleKey+'">'+
+  contentEl.innerHTML=wrapDoc(
+    '<article class="scn">'+
       '<header class="scn-head">'+
-        '<p class="crumb">'+u.nav+' &rsaquo; '+s.role+' &rsaquo; '+s.title+'</p>'+
+        '<p class="crumb">'+u.nav.replace(/　/g,' ')+'<span class="sep">/</span>'+s.role+'</p>'+
         '<h2>'+s.title+'</h2>'+
-        '<div class="scn-meta">'+
-          '<span class="badge-role"><i class="chip" aria-hidden="true"></i>主角色：'+actor+
-            '<span class="who">'+(who?'（'+who+'）':'')+'</span></span>'+
-          '<span class="tag-carrier">驗證載體：'+u.carrier+'</span>'+
-          (s.supp?'<span class="tag-supp">依設計補寫，ACCEPTANCE 未列</span>':'')+
-        '</div>'+
-        '<p class="switch-note">'+u.note+'</p>'+
+        '<p class="lede">'+markCodes(s.intro)+'</p>'+
+        '<p class="roles-line" style="margin-top:12px">操作角色：<b>'+actor+'</b>'+(who?'（'+who+'）':'')+'</p>'+
       '</header>'+
-      '<section class="sec"><h3>這個情境在做什麼</h3><p class="lede">'+markCodes(s.intro)+'</p></section>'+
       '<section class="sec"><h3>重點</h3><ul class="points">'+
         s.points.map(p=>'<li>'+markCodes(p)+'</li>').join('')+'</ul></section>'+
-      '<section class="sec"><h3>前置情境</h3>'+prereqHtml+'</section>'+
-      '<section class="sec"><h3>怎麼操作</h3><div class="table-wrap"><table>'+
-        '<thead><tr><th>步驟</th><th>在哪個畫面</th><th>做什麼</th><th>預期看到什麼</th></tr></thead>'+
+      '<section class="sec"><h3>開始之前</h3>'+prereqHtml+'</section>'+
+      '<section class="sec"><h3>步驟</h3><div class="table-wrap"><table>'+
+        '<thead><tr><th>步驟</th><th>在哪個畫面</th><th>做什麼</th><th>你會看到</th></tr></thead>'+
         '<tbody>'+rows+'</tbody></table></div></section>'+
-    '</article>';
-
-  contentEl.querySelectorAll('[data-goto]').forEach(b=>
-    b.addEventListener('click',()=>select(b.dataset.goto,true)));
-
-  document.querySelectorAll('.scn-btn').forEach(b=>
-    b.classList.toggle('active',b.dataset.scn===id));
-  document.querySelectorAll('.unit-intro-btn').forEach(b=>b.classList.remove('active'));
-  openRoleOf(id);
-
-  window.scrollTo({top:0,behavior:(flash && !noMotion)?'smooth':'auto'});
-  if(flash && !noMotion){
-    const doc=document.getElementById('scnDoc');
-    doc.classList.add('flash');
-    setTimeout(()=>doc.classList.remove('flash'),1600);
-  }
+    '</article>'+pagerHtml(id));
+  afterRender(id,flash);
 }
 
 /* ── 單元導讀 ── */
@@ -1848,92 +1926,80 @@ function renderUnitIntro(key,flash){
   const scns=[];
   DATA.filter(g=>g.unit===key).forEach(g=>g.scenarios.forEach(s=>scns.push(s)));
 
-  contentEl.innerHTML=
-    '<article class="scn" id="scnDoc" data-plate="'+DATA.find(g=>g.unit===key).key+'">'+
+  contentEl.innerHTML=wrapDoc(
+    '<article class="scn">'+
       '<header class="scn-head">'+
-        '<p class="crumb">'+u.nav+' &rsaquo; 單元導讀</p>'+
+        '<p class="crumb">'+u.nav.replace(/　/g,' ')+'<span class="sep">/</span>單元導讀</p>'+
         '<h2>'+u.title+'</h2>'+
-        '<div class="scn-meta">'+
-          '<span class="tag-carrier">驗證載體：'+u.carrier+'</span>'+
-          '<span class="tag-carrier">情境數：'+scns.length+'</span>'+
-        '</div>'+
-        '<p class="switch-note">'+u.note+'</p>'+
+        '<p class="lede">'+markCodes(it.lede)+'</p>'+
       '</header>'+
       '<section class="sec"><h3>這段流程在解決什麼事</h3>'+
-        '<p class="lede">'+markCodes(it.lede)+'</p>'+
         '<ul class="points">'+it.solve.map(x=>'<li>'+markCodes(x)+'</li>').join('')+'</ul></section>'+
       '<section class="sec"><h3>涉及角色與分工</h3><div class="table-wrap"><table>'+
         '<thead><tr><th>角色</th><th>在這一段負責什麼</th></tr></thead><tbody>'+
         it.roles.map(r=>'<tr><td class="col-where">'+r[0]+'</td><td>'+markCodes(r[1])+'</td></tr>').join('')+
         '</tbody></table></div></section>'+
-      '<section class="sec"><h3>狀態軸</h3><dl class="chain-list">'+
-        it.flows.map(f=>'<dt>'+f[0]+'</dt><dd>'+f[1]+'</dd>').join('')+
-        '</dl></section>'+
+      '<section class="sec"><h3>狀態軸</h3><div class="table-wrap"><table><thead><tr><th>對象</th><th>狀態變化</th></tr></thead><tbody>'+
+        it.flows.map(f=>'<tr><td class="col-where">'+f[0]+'</td><td>'+f[1]+'</td></tr>').join('')+
+        '</tbody></table></div></section>'+
       '<section class="sec"><h3>先知道這幾件事</h3>'+
         '<ul class="points">'+it.notes.map(x=>'<li>'+markCodes(x)+'</li>').join('')+'</ul></section>'+
       '<section class="sec"><h3>本單元情境</h3>'+
         '<ul class="prereq">'+scns.map(s=>
           '<li><button class="xlink" type="button" data-goto="'+s.id+'">'+s.title+'</button></li>').join('')+
         '</ul></section>'+
-    '</article>';
-
-  contentEl.querySelectorAll('[data-goto]').forEach(b=>
-    b.addEventListener('click',()=>select(b.dataset.goto,true)));
-
+    '</article>');
+  contentEl.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.goto,true)));
   document.querySelectorAll('.scn-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.unit-intro-btn').forEach(b=>
-    b.classList.toggle('active',b.dataset.intro===key));
-
+  document.getElementById('homeBtn').classList.remove('active');
+  document.querySelectorAll('.unit-intro-btn').forEach(b=>b.classList.toggle('active',b.dataset.intro===key));
+  buildToc();
   window.scrollTo({top:0,behavior:(flash && !noMotion)?'smooth':'auto'});
 }
 
 /* ── 總覽 ── */
 function renderHome(){
-  contentEl.innerHTML=
+  contentEl.innerHTML=wrapDoc(
    '<div class="home">'+
-   '<header class="home-head">'+
-     '<p class="eyebrow">售前到生產階段 段 1</p>'+
+   '<header class="scn-head home-head">'+
      '<h2>感官 ERP 操作手冊</h2>'+
+     '<p class="lede">從客戶詢價到工單報工，每個角色在 ERP 上要做什麼、怎麼做。左側依單元與角色分組，每個主題先有概覽，再有逐步操作說明。</p>'+
    '</header>'+
-   '<section class="sec"><h3>這份手冊怎麼用</h3>'+
-   '<ol class="steps">'+
-   '<li>手冊分四個單元，名稱見下方的單元一覽。單元一至單元三在 Dev 環境操作，單元四在 Prototype 操作。</li>'+
-   '<li>操作單元四前先啟動 prototype。在 erp repo 執行 <span class="num">pnpm dev:erp</span>。再在瀏覽器開起來的 ERP 原型並登入。</li>'+
-   '<li>左側先選單元，再選角色或流程，最後選情境。每個情境固定四段：這個情境在做什麼、重點、前置情境、怎麼操作。</li>'+
-   '<li>單元一至單元三各有一頁單元導讀。先看導讀再走情境，會知道整段在解決什麼事。</li>'+
-   '<li>搜尋框會同時過濾情境標題與重點文字。</li>'+
-   '</ol></section>'+
-   '<section class="sec"><h3>單元一覽</h3>'+
-   '<div class="table-wrap"><table>'+
-   '<thead><tr><th>單元</th><th>驗證載體</th><th>情境數</th><th>涵蓋內容</th></tr></thead><tbody>'+
+   '<section class="sec"><h3>單元</h3><div class="cards">'+
    UNITS.map(u=>{
-     let n=0; DATA.filter(g=>g.unit===u.key).forEach(g=>n+=g.scenarios.length);
-     const covers=DATA.filter(g=>g.unit===u.key).map(g=>g.role).join('、');
-     return '<tr><td>'+u.title+'</td><td>'+u.carrier+'</td>'+
-            '<td class="col-num">'+n+'</td><td>'+covers+'</td></tr>';
+     const groups=DATA.filter(g=>g.unit===u.key);
+     let n=0; groups.forEach(g=>n+=g.scenarios.length);
+     const first=groups[0]&&groups[0].scenarios[0];
+     const target=(u.intro?'intro:'+u.key:(first?first.id:''));
+     return '<button type="button" class="card" data-open="'+target+'">'+
+       '<span class="ttl">'+u.title.replace(/　/g,' ')+'</span>'+
+       '<span class="desc">'+groups.map(g=>g.role).join('、')+'</span>'+
+       '<span class="desc">'+n+' 個主題</span></button>';
    }).join('')+
-   '</tbody></table></div></section>'+
-   '<section class="sec"><h3>操作前要知道的事</h3>'+
-   '<ul class="points">'+
-   '<li>單元一至單元三在 Dev 環境操作，資料會實際寫入。切換角色請以該角色的帳號登入。</li>'+
-   '<li>單元四的模擬資料存在記憶體，重新整理頁面即重置。單一情境請一氣呵成走完。</li>'+
-   '<li>各模組自帶模擬資料，但編號是同一套。編號格式為印件 PI-[年]-[四碼]、工單 WO-[年]-[四碼]、配方 PS- / BR-。跨模組一律以編號認人。</li>'+
-   '<li>已連動的是段 1 主線：訂單 → 工單 → 印件總覽 → 生管待派 → 派單點收。品檢入庫累計反映在出貨管理的額度，不反映在印件總覽。這是已知的模擬資料邊界，不是缺陷。</li>'+
-   '</ul></section>'+
-   '<section class="sec"><h3>角色與流程一覽</h3>'+
+   '</div></section>'+
+   '<section class="sec"><h3>怎麼使用這份手冊</h3>'+
+   '<ol class="steps">'+
+   '<li>左側先選單元，再選角色或流程，最後選主題。</li>'+
+   '<li>每個單元先讀概覽或導讀，知道這段流程在解決什麼、狀態怎麼走、誰負責哪一步。</li>'+
+   '<li>操作說明頁給你情境、開始之前的條件、逐步操作與每一步會看到的結果，最後有檢查點。</li>'+
+   '<li>頂欄搜尋會同時比對主題標題與內文重點。</li>'+
+   '</ol></section>'+
+   '<section class="sec"><h3>角色一覽</h3>'+
+   '<p class="lede">系統依角色開放不同功能。找到自己的角色，就知道要看哪幾個單元。</p>'+
    '<div class="table-wrap"><table>'+
-   '<thead><tr><th>單元</th><th>角色或流程</th><th>使用者</th><th>情境數</th><th>一句話定位</th></tr></thead><tbody>'+
-   DATA.map(g=>'<tr>'+
-     '<td>'+unitOf(g.unit).nav+'</td>'+
-     '<td><span class="cell-role" data-plate="'+g.key+'"><i class="chip" aria-hidden="true"></i>'+g.role+'</span></td>'+
-     '<td>'+g.user+'</td>'+
-     '<td class="col-num">'+g.scenarios.length+'</td>'+
-     '<td>'+g.pos+'</td></tr>').join('')+
+   '<thead><tr><th>角色</th><th>在 ERP 上負責什麼</th><th>相關單元</th></tr></thead><tbody>'+
+   ROLES.map(r=>'<tr><td style="white-space:nowrap;font-weight:600">'+r[0]+'</td><td>'+r[1]+'</td><td style="white-space:nowrap">'+r[2]+'</td></tr>').join('')+
    '</tbody></table></div></section>'+
-   '<footer>資料來源：單元一至單元三為 Dev 環境實測筆記；單元四為 erp repo 的 ACCEPTANCE.md（86 項驗收操作）、生產階段校正 段 1 商業層設計、wiki 角色卡與情境卡。</footer>'+
-   '</div>';
+   '<footer>本手冊依 ERP 現行流程撰寫，畫面文字以系統實際顯示為準。</footer>'+
+   '</div>');
+  contentEl.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>{
+    const t=b.dataset.open;
+    if(t.indexOf('intro:')===0) renderUnitIntro(t.slice(6),true); else if(t) select(t,true);
+  }));
   document.querySelectorAll('.scn-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.unit-intro-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('homeBtn').classList.add('active');
+  buildToc();
 }
 
 function select(id,flash){
@@ -1983,7 +2049,7 @@ document.getElementById('search').addEventListener('input',e=>{
   DATA.forEach(g=>{
     let hit=0;
     g.scenarios.forEach(s=>{
-      const hay=(s.title+' '+s.points.join(' ')+' '+s.intro+' '+g.role).toLowerCase();
+      const hay=(s.title+' '+(s.points||[]).join(' ')+' '+(s.goals||[]).join(' ')+' '+(s.story||'')+' '+s.intro+' '+g.role).toLowerCase();
       const li=document.querySelector('.scn-btn[data-scn="'+s.id+'"]').parentElement;
       const match=hay.indexOf(q)>=0;
       li.classList.toggle('hidden',!match);
@@ -2007,6 +2073,14 @@ if(window.ResizeObserver) new ResizeObserver(syncHead).observe(mastEl);
 window.addEventListener('resize',syncHead);
 
 /* 寬版預設展開第一個角色；窄版角色列為橫向捲動，不預先落下情境面板 */
-if(!isNarrow()) document.querySelector('.role-group').classList.add('open');
+/* 寬版全部展開；窄版收合。載入時視窗可能尚未定寬，故在 resize 時補做 */
+function ensureNavOpen(){
+  if(isNarrow()) return;
+  document.querySelectorAll('.role-group').forEach(g=>g.classList.add('open'));
+}
+ensureNavOpen();
+window.addEventListener('resize',ensureNavOpen);
 renderHome();
 </script>
+
+</body></html>
