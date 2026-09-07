@@ -95,18 +95,15 @@ button{font-family:inherit}
 }
 .role-group.open .role-head .caret{transform:rotate(90deg)}
 .role-head .count{display:none}
-.scn-list{display:none;margin:0;padding:0 0 4px 14px;list-style:none}
+.scn-list{display:none;margin:0;padding:0 0 4px 0;list-style:none}
 .role-group.open .scn-list{display:block}
-.role-group.solo .scn-list{padding-left:0}
-.role-group.solo .scn-btn{border-left:0;padding-left:12px}
-.scn-btn{padding:6px 12px 6px 14px;border-left:1px solid var(--line)}
-.scn-btn:hover{background:var(--bg-2);color:var(--text)}
-.scn-btn.active{background:var(--primary-soft);color:var(--primary);font-weight:600;border-left-color:var(--primary)}
-.scn-btn .kind{
-  flex:0 0 auto;font-size:11px;padding:0 6px;border-radius:4px;
-  background:var(--bg-2);color:var(--text-3);
-}
-.scn-btn.active .kind{background:var(--bg);color:var(--primary)}
+.scn-btn{padding:6px 12px 6px 22px;border-left:3px solid transparent;border-radius:0 6px 6px 0;color:var(--text-2)}
+.scn-btn:hover{color:var(--text);background:transparent}
+.scn-btn.active{border-left-color:var(--primary);background:var(--primary-soft);color:var(--primary);font-weight:600}
+.scn-sub{margin:0;padding:0;list-style:none}
+.scn-sub .scn-btn{padding-left:34px}
+.role-sub{margin:8px 0 2px;padding:0 0 0 22px;font-size:12px;font-weight:600;color:var(--text-3)}
+li.sub{list-style:none}
 
 /* 內容與右側目錄 */
 .content{
@@ -288,11 +285,6 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-si
     padding:6px;background:var(--bg);border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 26px rgba(31,42,55,.12);
   }
   .scn-btn{border-left:0}
-  .role-group.solo{display:contents}
-  .role-group.solo .scn-list{position:static;display:contents;box-shadow:none;border:0;padding:0;background:transparent}
-  .role-group.solo .scn-list li{display:contents}
-  .role-group.solo .scn-btn{flex:0 0 auto;width:auto;border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap}
-  .role-group.solo .scn-btn.active{border-color:var(--primary)}
   .content{padding:24px 16px 72px}
   .doc h1,.scn-head h2,.home-head h2{font-size:26px}
   .pager{grid-template-columns:1fr}
@@ -344,14 +336,13 @@ const UNITS = [
   note:'',
   intro:null
 },
-{ key:'u2', nav:'單元二　訂單管理', title:'單元二　訂單管理（訂單成立到確認製作細節）', carrier:'', note:'', intro:null },
-{ key:'u2p', nav:'單元三　款項與發票', title:'單元三　款項與發票（收款規劃到對帳）', carrier:'', note:'', intro:null },
-{ key:'u3', nav:'單元四　審稿管理', title:'單元四　審稿管理（稿件送審到確認可製作）', carrier:'', note:'', intro:null },
-{ key:'u4', nav:'單元五　工單管理', title:'單元五　工單管理（工單分派到交付產線）', carrier:'', note:'', intro:null },
+{ key:'u2', nav:'單元二　訂單管理', title:'單元二　訂單管理（訂單成立到確認製作細節，含款項與發票對帳）', carrier:'', note:'', intro:null },
+{ key:'u3', nav:'單元三　審稿管理', title:'單元三　審稿管理（稿件送審到確認可製作）', carrier:'', note:'', intro:null },
+{ key:'u4', nav:'單元四　工單管理', title:'單元四　工單管理（工單分派到交付產線）', carrier:'', note:'', intro:null },
 {
   key: 'u5',
-  nav: '單元六　生產管理',
-  title: '單元六　生產管理（工單交付產線到工序全部完成）',
+  nav: '單元五　生產管理',
+  title: '單元五　生產管理（工單交付產線到工序全部完成）',
   carrier: '',
   note: '',
   intro: null,
@@ -845,13 +836,13 @@ const DATA = [
   ]
 },
 {
-  key:'payment', unit:'u2p', role:'款項與發票', user:'業務、會計、業務主管',
+  key:'payment', unit:'u2', parent:'orders', role:'款項與發票（對帳作業）', user:'業務、會計、業務主管',
   pos:'訂單核准之後，這一段管錢：訂單該收多少、分幾期收、發票怎麼開、收款怎麼記、帳怎麼對。',
-  duty:'業務與會計都能在訂單詳情操作；會計是實際登記收款與開票的人，業務負責核對客戶端的認知一致；業務主管、會計、生管主管另外用中台兩張清單跨訂單盤點。',
+  duty:'業務與會計都能在訂單詳情操作；會計是實際登記收款與開票的人，業務負責核對客戶端的認知一致；會計用「款項管理」兩張清單做日常查帳，跨訂單盤點。',
   scenarios:[
   {
     id:'m-overview', kind:'overview', title:'款項與發票概覽', actor:'業務、會計、業務主管',
-    intro:'訂單「金額與發票」頁籤，是一張訂單所有金錢事項的匯總。內容含：訂單金額、分期規劃、實際收款、已開發票、折讓退款。頁籤最上方有「三方對帳」。比對應收、收款、發票三個金額，兜不起來就顯示警示。中台另有兩張跨訂單清單，讓會計與主管不必逐張訂單點開查核。',
+    intro:'訂單「金額與發票」頁籤，是一張訂單所有金錢事項的匯總。內容含：訂單金額、分期規劃、實際收款、已開發票、折讓退款。並提供「三方對帳」，比對應收、收款、發票三個金額，供比對帳款。',
     goals:[
       '說出「應收總額」「收款淨額」「發票淨額」三個數字怎麼算',
       '說出這三個數字為什麼要放在一起看',
@@ -860,8 +851,8 @@ const DATA = [
       '款項紀錄記真的收到或退了多少',
       '知道發票、折讓、款項紀錄各自能做哪些動作',
       '知道作廢與退回的規則是什麼',
-      '知道中台兩張款項清單各自在查什麼',
-      '知道什麼時候該去中台，不是進單一訂單'
+      '知道會計日常查帳用的兩張清單各自在查什麼',
+      '知道什麼時候用清單查帳、什麼時候進單一訂單操作'
     ],
     points:['款項與發票','三方對帳','收款項目','款項紀錄','發票','折讓','應收總額','收款淨額','發票淨額','概覽'],
     why:{
@@ -905,13 +896,13 @@ const DATA = [
     roles:[
       ['業務','核對訂單金額、規劃收款項目的期別與金額。視情況新增或編輯收款項目。金額與發票頁籤對業務不是唯讀，但實務上開票與登記款項多半是會計在做。'],
       ['會計','逐期開立發票、登記款項紀錄（收款與退款）、處理折讓與作廢。會計是這個頁籤最主要的操作者。'],
-      ['業務主管、生管主管','不在單一訂單頁籤上操作。改用左側「款項管理」兩張中台清單跨訂單盤點進度。']
+      ['業務主管','不在單一訂單頁籤上操作。用左側「款項管理」兩張清單跨訂單看收款進度。']
     ],
     handoff:null,
     related:[
       ['m-check-amount','核對訂單金額'],['m-plan-installment','規劃收款項目'],
       ['m-issue-invoice','開立發票'],['m-record-payment','登記收款'],
-      ['m-void-allowance','作廢發票與折讓'],['m-worklists','中台款項工作清單']
+      ['m-void-allowance','作廢發票與折讓'],['m-worklists','會計日常查帳']
     ]
   },
   {
@@ -923,7 +914,7 @@ const DATA = [
     before:['以業務或會計身分登入','開該訂單詳情，切到「金額與發票」頁籤'],
     entries:[
       ['訂單列表進訂單詳情頁','左側「訂單管理」下「訂單列表」，點該筆訂單編號。進訂單詳情頁，切到「金額與發票」頁籤。看第 2 區塊「應收金額」卡。','要核對特定一張訂單目前應收多少'],
-      ['中台款項清單點訂單編號','左側「款項管理」下「應收款項」或「待開發票」清單。點該筆訂單編號，直接跳進同一頁籤。','已經在中台盤點清單上，順手核對這張訂單的金額']
+      ['款項管理清單點訂單編號','左側「款項管理」下「應收款項」或「待開發票」清單。點該筆訂單編號，直接跳進同一頁籤。','已在查帳清單上，順手核對這張訂單的金額']
     ],
     steps:[
       ['進入「金額與發票」頁籤。','切到頁面第 2 區塊「應收金額」卡。'],
@@ -953,7 +944,7 @@ const DATA = [
     entries:[
       ['訂單詳情頁「收款項目」區塊「新增收款項目」','左側「訂單管理」下「訂單列表」點該筆訂單編號進訂單詳情頁，切到「金額與發票」頁籤。第 3 區塊「收款項目」右上「新增收款項目」按鈕。','要新開一期收款規劃'],
       ['訂單詳情頁「收款項目」列上編輯','同一區塊，既有期次列上的編輯圖示','要調整既有期次的金額或日期'],
-      ['應收款項中台清單點訂單編號','左側「款項管理」下「應收款項」清單。點該筆訂單編號，跳進同一頁籤操作。','在應收款項清單看到待收金額，順手進去補期次']
+      ['應收款項清單點訂單編號','左側「款項管理」下「應收款項」清單。點該筆訂單編號，跳進同一頁籤操作。','在應收款項清單看到待收金額，順手進去補期次']
     ],
     steps:[
       ['開「金額與發票」頁籤，看「收款項目」上方有沒有警示。','出現「收款項目合計與應收總額不一致」提示，內文「收款項目合計 NT$ 16,800、應收總額 NT$ 17,325，建議新增收款項目或調整既有金額對齊。」'],
@@ -987,7 +978,7 @@ const DATA = [
     before:['以會計或業務身分登入','該期收款項目的發票狀態為「尚未開立」或「已作廢」','開訂單詳情「金額與發票」頁籤'],
     entries:[
       ['訂單詳情頁「收款項目」列上開立發票圖示','左側「訂單管理」下「訂單列表」點該筆訂單編號進訂單詳情頁，切到「金額與發票」頁籤。第 3 區塊「收款項目」該列點「開立發票」圖示。圖示僅在發票狀態「尚未開立」或「已作廢」時出現。','已經在訂單詳情頁核對過金額，順手開這一期的票'],
-      ['中台待開發票清單點訂單編號','左側「款項管理」下「待開發票」清單，一期一列。點該筆訂單編號跳進同一頁籤，再點「開立發票」圖示。','要按期別盤點全公司哪些期次還沒開票，逐筆處理']
+      ['待開發票清單點訂單編號','左側「款項管理」下「待開發票」清單，一期一列。點該筆訂單編號跳進同一頁籤，再點「開立發票」圖示。','要按期別盤點全公司哪些期次還沒開票，逐筆處理']
     ],
     steps:[
       ['在「收款項目」表找到「尾款 70%」那一列，點操作欄「開立發票」圖示。','圖示只在發票狀態「尚未開立」或「已作廢」的列才會出現。跳出「開立電子發票」對話框，寬版視窗。'],
@@ -1019,7 +1010,7 @@ const DATA = [
     before:['以會計或業務身分登入','訂單狀態非終態','開訂單詳情「金額與發票」頁籤'],
     entries:[
       ['訂單詳情頁「款項紀錄」區塊「新增款項」','左側「訂單管理」下「訂單列表」點該筆訂單編號進訂單詳情頁，切到「金額與發票」頁籤。第 4 區塊「款項紀錄」右上「新增款項」按鈕。','客戶匯款進帳戶，登記一筆收款或退款'],
-      ['應收款項中台清單點訂單編號','左側「款項管理」下「應收款項」清單，點該筆訂單編號跳進同一頁籤再點「新增款項」。','已在中台清單上盯著待收的訂單，順手進去登記']
+      ['應收款項清單點訂單編號','左側「款項管理」下「應收款項」清單，點該筆訂單編號跳進同一頁籤再點「新增款項」。','已在應收款項清單上盯著待收的訂單，順手進去登記']
     ],
     steps:[
       ['在「款項紀錄」區塊右上點「新增款項」。','跳出「新增款項紀錄」對話框。'],
@@ -1073,14 +1064,14 @@ const DATA = [
     notes:['作廢原因框限制字數：中文最多 6 字，純英數最多 20 字。','發票作廢後軌號不可重用。要重開，得回「收款項目」列再點一次「開立發票」。發票流水號會 +1，不是回這張作廢的發票上改。','折讓子表只在有折讓明細的發票列才能展開。沒有折讓過的發票列不能展開。']
   },
   {
-    id:'m-worklists', kind:'howto', title:'查中台款項工作清單', actor:'會計、業務主管、業務', actorUser:'陳美玲',
-    intro:'不想一張一張訂單點開查，就用左側「款項管理」底下兩張清單。兩張清單跨訂單盤點應收與待開發票。清單本身不能操作，點訂單編號會跳進該訂單「金額與發票」頁籤去做事。',
+    id:'m-worklists', kind:'howto', title:'會計日常查帳：待開發票與應收款項', actor:'會計', actorUser:'陳美玲',
+    intro:'會計每天查帳不必逐張訂單點開。左側「款項管理」底下兩張清單跨訂單盤點待開發票與應收款項。清單只供查閱，點訂單編號進該訂單「金額與發票」頁籤操作。',
     goals:['說出兩張清單各自的進出條件是什麼','用清單找到目標訂單並跳進帳務頁籤','看懂應收款項清單的匯出功能在做什麼'],
     points:['款項管理','應收款項','待開發票'],
-    story:'月底對帳，陳美玲照兩張清單依序盤點。先看應收款項清單，抓出還沒收齊的訂單。再看待開發票清單，抓漏開的期次。',
-    before:['以會計、業務主管、業務或諮詢身分登入','左側選單看得到「款項管理」（業務、業務主管、諮詢、會計、主管皆可見）'],
+    story:'會計每天早上查帳。先看待開發票清單，抓出到期未開的期次。再看應收款項清單，抓出還沒收齊的訂單。',
+    before:['以會計身分登入','左側選單看得到「款項管理」（業務、業務主管、諮詢、會計、主管皆可見）'],
     entries:[
-      ['款項管理選單','左側選單「款項管理」，展開後選「應收款項」或「待開發票」其中一張。','要跨訂單盤點應收或待開發票，不想一張一張訂單點開']
+      ['款項管理選單','左側選單「款項管理」，展開後選「應收款項」或「待開發票」其中一張。','日常查帳：跨訂單盤點待開發票與應收款項']
     ],
     steps:[
       ['左側選單點「款項管理」展開，選「應收款項」。','清單列出訂單編號、案名、客戶、應收總額、收款淨額、待收五欄。進入條件：這張訂單有已開立發票，且待收金額大於零。待收降到零，或訂單已無開立中發票，就會從清單消失。'],
@@ -2050,17 +2041,17 @@ const DATA = [
 
 /* 角色一覽（首頁）：角色 → 職責 → 相關單元 */
 const ROLES=[
-  ['業務','建需求單、報價、成交轉訂單；送主管審核、記錄回簽、新增印件與上傳稿件、補件、確認可製作；規劃收款、開發票、登記收款','單元一、二、三、四'],
+  ['業務','建需求單、報價、成交轉訂單；送主管審核、記錄回簽、新增印件與上傳稿件、補件、確認可製作；核對金額、規劃收款','單元一、二、三'],
   ['業務主管','核准被指派給自己的訂單','單元二'],
-  ['會計','中台款項清單：待開發票、應收款項；開票、登記收款、作廢與折讓','單元三'],
-  ['訂單管理人','分派審稿人員；確認印件製作細節，觸發系統建工單草稿','單元二、四'],
-  ['審稿主管','與訂單管理人同權分派審稿人員；可代為判定','單元四'],
-  ['審稿人員','檢查稿件並判定合格或不合格，上傳審稿後檔案','單元四'],
-  ['印務主管','需求單成本評估；工單分派、加開、刪除空草稿；製程審核核可與退回','單元一、五'],
-  ['印務','規劃工單製程、送審與收回、交付產線；在工單或印件詳情頁代報工','單元五、六'],
-  ['生管','接收任務、合批打包成工作包、指派師傅、建轉交單、代報工、手動完成','單元六'],
-  ['師傅','在工作包上報工、點收送到自己站點的料','單元六'],
-  ['廠務','場內轉交的起搬與送達','單元六']
+  ['會計','日常查帳：待開發票、應收款項；開票、登記收款、作廢與折讓','單元二'],
+  ['訂單管理人','分派審稿人員；確認印件製作細節，觸發系統建工單草稿','單元二、三'],
+  ['審稿主管','與訂單管理人同權分派審稿人員；可代為判定','單元三'],
+  ['審稿人員','檢查稿件並判定合格或不合格，上傳審稿後檔案','單元三'],
+  ['印務主管','需求單成本評估；工單分派、加開、刪除空草稿；製程審核核可與退回','單元一、四'],
+  ['印務','規劃工單製程、送審與收回、交付產線；在工單或印件詳情頁代報工','單元四、五'],
+  ['生管','接收任務、合批打包成工作包、指派師傅、建轉交單、代報工、手動完成','單元五'],
+  ['師傅','在工作包上報工、點收送到自己站點的料','單元五'],
+  ['廠務','場內轉交的起搬與送達','單元五']
 ];
 
 /* ─────────────────────────────────────────────
@@ -2086,7 +2077,7 @@ function markCodes(html){
     part.charAt(0)==='<' ? part : part.replace(CODE_RE,'<span class="num">$1</span>')
   ).join('');
 }
-const rich=t=>markCodes(linkify(t));
+const rich=t=>markCodes(linkify(String(t).replace(/\n/g,'<br>')));
 
 const navEl=document.getElementById('nav');
 const contentEl=document.getElementById('content');
@@ -2100,7 +2091,7 @@ function buildNav(){
         '<span class="carrier">'+u.carrier+'</span>'+
       '</h4>'+
       (u.intro?'<button class="unit-intro-btn" type="button" data-intro="'+u.key+'">單元導讀</button>':'')+
-      DATA.filter(g=>g.unit===u.key).map(g=>groupNav(g)).join('')+
+      DATA.filter(g=>g.unit===u.key && !g.parent).map(g=>groupNav(g)).join('')+
     '</section>').join('');
 }
 
@@ -2114,13 +2105,18 @@ function groupNav(g){
       '<ul class="scn-list">'+g.scenarios.map(s=>
         '<li><button class="scn-btn" type="button" data-scn="'+s.id+'">'+
         '<span class="txt">'+s.title+'</span></button></li>').join('')+
+        DATA.filter(x=>x.parent===g.key).map(sub=>
+          '<li class="sub"><div class="role-sub">'+sub.role+'</div><ul class="scn-sub">'+sub.scenarios.map(s=>
+            '<li><button class="scn-btn" type="button" data-scn="'+s.id+'">'+
+            '<span class="txt">'+s.title+'</span></button></li>').join('')+'</ul></li>').join('')+
       '</ul>'+
     '</div>';
 }
 
 function openRoleOf(id){
   const s=byId(id);
-  document.querySelectorAll('.role-group').forEach(g=>g.classList.toggle('open',g.dataset.role===s.roleKey));
+  const grp=DATA.find(g=>g.key===s.roleKey); const top=(grp&&grp.parent)||s.roleKey;
+  document.querySelectorAll('.role-group').forEach(g=>g.classList.toggle('open',g.dataset.role===top));
 }
 
 
@@ -2286,13 +2282,16 @@ function renderOverview(s,u){
       // 成交 → 建立訂單
       arrow('M718 74V116','建立訂單',718,100,true)+box(668,116,84,'訂單草稿','end')+
       // 議價中 → 重新評估 → 回待評估成本
-      arrow('M604 74V150H255V78','重新評估',430,166)+
+      arrow('M604 74V152H235V78','重新評估',430,168)+
       // 議價中 → 流失
-      arrow('M580 74V186','流失',562,140)+box(532,186,96,'流失','lost')+
+      '<path class="fa" d="M67 74V118"/><path class="fa" d="M255 74V118"/><path class="fa" d="M432 74V118"/>'+
+      '<path class="fa" d="M67 118H580"/>'+
+      '<text class="fl" x="300" y="134" text-anchor="middle">任一進行中狀態都可流失</text>'+
+      arrow('M580 74V186','流失',562,160)+box(532,186,96,'流失','lost')+
       // 流失 → 重新啟動 → 回待評估成本
-      arrow('M532 203H235V78','重新啟動',390,222,true)+
+      arrow('M532 203H215V78','重新啟動',390,222,true)+
     '</svg>'+
-    '<figcaption>方框是需求單狀態，箭頭上的字是要按的按鈕。虛線是可選的後續動作。「議價中」之後依客戶回覆走成交、重新評估或流失。</figcaption></figure>';
+    '<figcaption>方框是需求單狀態，箭頭上的字是要按的按鈕。虛線是可選的後續動作。四個進行中狀態都可以按「流失」；「議價中」另可走成交或重新評估。</figcaption></figure>';
   return wrapDoc('<article class="scn">'+
     headHtml(s,u,'概覽')+
     '<section class="sec"><h3>讀完這頁你會</h3><ul class="goals">'+s.goals.map(g=>'<li>'+markCodes(g)+'</li>').join('')+'</ul></section>'+
@@ -2426,12 +2425,12 @@ function renderHome(){
    '<div class="home">'+
    '<header class="scn-head home-head">'+
      '<h2>感官 ERP 操作手冊</h2>'+
-     '<p class="lede">從客戶詢價到工序報工，六個單元依流程順序排列：需求單、訂單、款項與發票、審稿、工單、生產。每個單元先有概覽，再有逐步操作說明。</p>'+
+     '<p class="lede">從客戶詢價到工序報工，五個單元依流程順序排列：需求單、訂單（含款項與發票對帳）、審稿、工單、生產。每個單元先有概覽，再有逐步操作說明。</p>'+
    '</header>'+
    '<section class="sec"><h3>單元</h3><div class="cards">'+
    UNITS.map(u=>{
-     const groups=DATA.filter(g=>g.unit===u.key);
-     let n=0; groups.forEach(g=>n+=g.scenarios.length);
+     const groups=DATA.filter(g=>g.unit===u.key && !g.parent);
+     let n=0; DATA.filter(g=>g.unit===u.key).forEach(g=>n+=g.scenarios.length);
      const first=groups[0]&&groups[0].scenarios[0];
      const target=(u.intro?'intro:'+u.key:(first?first.id:''));
      return '<button type="button" class="card" data-open="'+target+'">'+
