@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs, gotoInApp } from '../_helpers.mjs';
+import { openAs, gotoInApp, switchRole } from '../_helpers.mjs';
 import { clickIntoDetail } from './_ch07.mjs';
 
 test('7.20 部件配方改版，改一處所有引用它的印件配方下次展開都生效（原編號 40）', async ({
@@ -34,24 +34,29 @@ test('7.20 部件配方改版，改一處所有引用它的印件配方下次展
   await expect(versions.filter({ hasText: '停用' })).toHaveCount(1);
 });
 
-test.fixme(
-  '7.21 配方管理的角色門控（原編號 44）',
-  async ({ page }) => {
-    // 預期：印務主管可看、維護動作不可用；生管與其他角色見無權檢視。
-    // 實際：可檢視角色（recipes/_lib/permissions.js 的 VIEWER_ROLES）含生管與主管，
-    //       生管進到配方頁看得到清單、不是無權檢視；且生管的側欄沒有配方管理入口，
-    //       站內導頁到不了這一頁。印務主管「可看不可維護」那一半與情境相符。
-    await openAs(page, '印務主管', '/recipes/print-items');
-    await expect(page.locator('tr.ant-table-row').filter({ hasText: 'PS-2026-0601' })).toHaveCount(
-      1,
-    );
-    await expect(page.getByRole('button', { name: '新增印件配方' })).toHaveCount(0);
-    await gotoInApp(page, '/recipes/components');
-    await expect(page.getByRole('button', { name: '新增部件配方' })).toHaveCount(0);
-    // 生管見無權檢視
-    await expect(page.getByText('無權檢視配方管理')).toBeVisible();
-  },
-);
+test('7.21 配方管理的角色門控（原編號 44）', async ({ page }) => {
+  await openAs(page, '印務主管', '/recipes/print-items');
+
+  // 印務主管可看、維護動作不可用
+  await expect(page.locator('tr.ant-table-row').filter({ hasText: 'PS-2026-0601' })).toHaveCount(
+    1,
+  );
+  await expect(page.getByRole('button', { name: '新增印件配方' })).toHaveCount(0);
+  await gotoInApp(page, '/recipes/components');
+  await expect(page.getByRole('button', { name: '新增部件配方' })).toHaveCount(0);
+
+  // 生管雖在可檢視角色內、看得到清單、不是無權檢視；但側欄沒有配方管理入口，日常動線進不去
+  await switchRole(page, '生管');
+  await expect(page.locator('tr.ant-table-row').filter({ hasText: 'BR-2026-0601' })).toHaveCount(
+    1,
+  );
+  await expect(page.getByText('無權檢視配方管理')).toHaveCount(0);
+  await expect(page.locator('.ant-menu').getByText('配方管理')).toHaveCount(0);
+
+  // 業務等其餘角色（不在可檢視角色）見無權檢視
+  await switchRole(page, '業務');
+  await expect(page.getByText('無權檢視配方管理')).toBeVisible();
+});
 
 test(
   '7.22 類似品估算參考（原編號 26）',

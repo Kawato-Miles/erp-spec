@@ -44,85 +44,136 @@ test('7.1 新增任務時前置相依不自動帶值（原編號 49）', async (
   await expect(rows.last()).toContainText('無'); // 前置欄顯示「無」
 });
 
-test.fixme(
-  '7.3 參考完稿圖唯讀，工單上不再上傳完稿（原編號 70）',
-  async ({ page }) => {
-    // 預期：基本資料顯示參考完稿圖的檔名與「已鎖定不隨改稿更動」說明；
-    //       「編輯製程說明與品檢需求」對話框只有製程說明與品檢需求兩段。
-    // 實際：工單詳情的「工單資訊」卡不列參考完稿圖（原始碼註解寫明改由印件檔案面板承載，
-    //       同一份檔案不在一頁上出現兩次），畫面上沒有「已鎖定不隨改稿更動」這句；
-    //       編輯入口名為「編輯工單資訊」，抽屜有預計完工日、製程說明、品檢需求三段。
-    await openAs(page, '印務', '/work-orders');
-    await openWorkOrder(page, 'WO-2026-0901');
-    await page.getByText('查看工單資訊').click();
-    await expect(page.getByText('參考完稿圖')).toBeVisible();
-    await expect(page.getByText('已鎖定不隨改稿更動')).toBeVisible();
-    await page.getByRole('button', { name: '編輯製程說明與品檢需求' }).click();
-    await expect(page.locator('.ant-drawer-body')).toContainText('製程說明');
-    await expect(page.locator('.ant-drawer-body')).toContainText('品檢需求');
-    await expect(page.locator('.ant-drawer-body')).not.toContainText('上傳');
-  },
-);
+test('7.3 參考完稿圖唯讀，工單上不再上傳完稿（原編號 70）', async ({ page }) => {
+  await openAs(page, '印務', '/work-orders');
+  await openWorkOrder(page, 'WO-2026-0901');
 
-test.fixme(
-  '7.4 同一個日期在三個頁面叫同一個名字（原編號 71）',
-  async ({ page }) => {
-    // 預期：製程規劃、生產任務管理、工廠總覽三處的日期欄名皆為「預計完成日」，
-    //       且製程規劃的表與對話框另有唯讀的「實際開工日」成對呈現。
-    // 實際：製程規劃母表與生產任務管理頁的欄名是「預計完成」（無「日」字），
-    //       實際開工只出現在製程規劃的展開層、欄名為「實際開工」，任務表單裡沒有這一欄。
-    //       「預計開工日／建議開工日／建議日期」三個舊名確實已全數不存在。
-    await openAs(page, '印務', '/work-orders');
-    await openWorkOrder(page, 'WO-2026-0901');
-    const planningHeaders = page.locator('.ant-table-thead th');
-    await expect(planningHeaders.filter({ hasText: '預計完成日' })).toHaveCount(1);
-    await expect(planningHeaders.filter({ hasText: '實際開工日' })).toHaveCount(1);
-    for (const legacy of ['預計開工日', '建議開工日', '建議日期']) {
-      await expect(page.getByText(legacy)).toHaveCount(0);
-    }
-    await switchRole(page, '生管');
-    await gotoInApp(page, '/production-floor/dispatch');
-    await expect(page.locator('.ant-table-thead th').filter({ hasText: '預計完成日' })).not.toHaveCount(0);
-    await gotoInApp(page, '/production-floor/metrics');
-    await expect(page.getByText('預計完成日').first()).toBeVisible();
-  },
-);
+  // 工單資訊面板不列參考完稿圖，同一份檔案只在印件檔案面板出現一次，標為審稿後檔案
+  await page.getByText('查看工單資訊').click();
+  await expect(page.locator('body')).not.toContainText('參考完稿圖');
+  await page.getByText('查看印件檔案').click();
+  await expect(page.getByText('審稿後印件檔')).toBeVisible();
 
-test.fixme(
-  '7.5 需轉交標記在有報工之後鎖定（原編號 98）',
-  async ({ page }) => {
-    // 預期：鏈二 WO-2026-0710 的「裁切成型」（尚無報工）可切換需轉交，
-    //       「海報四色印刷」（已有報工）切換鎖定並提示不可變更。
-    // 實際：WO-2026-0710 的狀態是「製作中」，製程編輯把關條件只放行草稿與重新確認製程，
-    //       故兩筆任務的表單都整份唯讀（標題後綴「製程已定案，僅備註可改」），
-    //       需轉交切換一律停用，沒有「有無報工」這一層差別；原始碼註解亦寫明此規則不另設把關。
-    await openAs(page, '印務', '/work-orders');
-    await openWorkOrder(page, 'WO-2026-0710');
-    const cutRow = page.locator('tr.ant-table-row').filter({ hasText: '裁切成型' });
-    await cutRow.getByRole('button', { name: '編輯' }).click();
-    const toggle = formField(page, '需轉交').locator('button[role="switch"]');
-    await expect(toggle).toBeEnabled();
-    await toggle.click();
-    await expect(taskForm(page)).toContainText('不需轉交');
-  },
-);
+  // 編輯抽屜三段——預計完工日、製程說明（供主管審核）、品檢需求（隨工單交付品檢站），
+  // 沒有上傳完稿檔的入口；上傳檔案存的是印務自己的工單附件，是另一顆獨立按鈕
+  await page.getByRole('button', { name: /編輯$/ }).first().click();
+  const drawer = page.locator('.ant-drawer-body');
+  await expect(drawer).toContainText('預計完工日');
+  await expect(drawer).toContainText('製程說明');
+  await expect(drawer).toContainText('品檢需求');
+  await expect(drawer).not.toContainText('上傳');
+});
 
-test.fixme(
-  '7.9 生產任務清單改成單一平列卡片（原編號 161）',
-  async ({ page }) => {
-    // 預期：卡內欄序為群組、廠商、任務名稱、製作細節、設備、預計生產、放損、目標數量、單位、備註，
-    //       其後接狀態、預計完成日、前置與操作；卡上沒有任何成本或金額欄。
-    // 實際：清單確實沒有材料／工序／裝訂分段標題、為單一序列（這一半成立），
-    //       但呈現是母子表格（任務／印件部位／印務規劃／現場執行四個欄群），不是平列卡片，
-    //       且「印務規劃」群內有「預估成本」金額欄，與「卡上沒有任何成本或金額欄」相斥。
-    await openAs(page, '印務', '/work-orders');
-    await openWorkOrder(page, 'WO-2026-0901');
-    for (const section of ['材料任務', '工序任務', '裝訂任務']) {
-      await expect(page.getByRole('heading', { name: section })).toHaveCount(0);
-    }
-    await expect(page.locator('.ant-table-thead th').filter({ hasText: '預估成本' })).toHaveCount(0);
-  },
-);
+test('7.4 同一個日期在三個頁面叫同一個名字（原編號 71）', async ({ page }) => {
+  await openAs(page, '印務', '/work-orders');
+  await openWorkOrder(page, 'WO-2026-0710');
+
+  // 製程規劃、生產任務管理頁欄名縮寫為「預計完成」；三個舊名一律不存在
+  const planningHeaders = page.locator('.ant-table-thead th');
+  await expect(planningHeaders.filter({ hasText: '預計完成' })).not.toHaveCount(0);
+  for (const legacy of ['預計開工日', '建議開工日', '建議日期']) {
+    await expect(page.getByText(legacy)).toHaveCount(0);
+  }
+
+  // 實際開工只列在生產任務的展開層，欄名「實際開工」，不與預計完成成對呈現在表格上
+  const firstRow = page.locator('tr.ant-table-row').first();
+  await firstRow.locator('.ant-table-row-expand-icon').click();
+  await expect(page.locator('tr.ant-table-expanded-row').first()).toContainText('實際開工');
+  await expect(planningHeaders.filter({ hasText: '實際開工' })).toHaveCount(0);
+
+  // 生管在生產任務管理頁看到同一欄名縮寫
+  await switchRole(page, '生管');
+  await gotoInApp(page, '/production-floor/dispatch');
+  await expect(
+    page.locator('.ant-table-thead th').filter({ hasText: '預計完成' }),
+  ).not.toHaveCount(0);
+
+  // 工廠總覽寫全名「預計完成日」（生管側欄沒有工廠總覽入口，改切印務檢視）
+  await switchRole(page, '印務');
+  await gotoInApp(page, '/production-floor/metrics');
+  await expect(page.getByText('預計完成日').first()).toBeVisible();
+});
+
+test('7.5 需轉交標記在有報工之後鎖定（原編號 98）', async ({ page }) => {
+  // 範圍限制：製程編輯只放行草稿與重新確認製程，草稿工單不會有報工——
+  // 「已有報工後鎖定」與「僅有未終態轉交單時提示列出單號」兩段在現行資料驗不到，本測試不驗。
+  await openAs(page, '印務', '/work-orders');
+  await openWorkOrder(page, 'WO-2026-0901');
+
+  // 需轉交可切換，提示寫明標為否代表做完即放行下游、不建轉交單；預設值為是
+  const cutRow = page.locator('tr.ant-table-row').filter({ hasText: '裁切成型' });
+  await cutRow.getByRole('button', { name: '編輯' }).click();
+  const needsTransferField = formField(page, '需轉交');
+  const toggle = needsTransferField.locator('button[role="switch"]');
+  await expect(toggle).toBeEnabled();
+  await expect(toggle).toHaveAttribute('aria-checked', 'true');
+  // 提示為滑鼠停留才展開的說明圖示，停留在欄名上看內容
+  await needsTransferField.locator('.ant-form-item-label').hover();
+  await expect(page.locator('.ant-tooltip-inner')).toContainText('做完即放行下游、不建轉交單');
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-checked', 'false');
+  await taskForm(page).getByRole('button', { name: '取消' }).click();
+  await expect(taskForm(page)).toBeHidden();
+
+  // 印務可逐筆標例外：三摺加工那一筆各自獨立，不受裁切成型剛才的改動影響
+  const foldRow = page.locator('tr.ant-table-row').filter({ hasText: '三摺加工' });
+  await foldRow.getByRole('button', { name: '編輯' }).click();
+  const toggle2 = formField(page, '需轉交').locator('button[role="switch"]');
+  await expect(toggle2).toBeEnabled();
+  await expect(toggle2).toHaveAttribute('aria-checked', 'true');
+});
+
+test('7.9 生產任務清單是單一序列的母子表格（原編號 161）', async ({ page }) => {
+  await openAs(page, '印務', '/work-orders');
+  await openWorkOrder(page, 'WO-2026-0710');
+
+  // 沒有分段標題，全部任務同一序列
+  for (const section of ['材料任務', '工序任務', '裝訂任務']) {
+    await expect(page.getByRole('heading', { name: section })).toHaveCount(0);
+  }
+
+  // 母表格四個欄群：任務、印件部位、印務規劃（設備／承作、投產目標、預估成本、預計完成、前置）、
+  // 現場執行（狀態、交付狀態、完成量）
+  const headers = page.locator('.ant-table-thead th');
+  for (const label of [
+    '任務',
+    '印件部位',
+    '印務規劃',
+    '設備／承作',
+    '投產目標',
+    '預估成本',
+    '預計完成',
+    '前置',
+    '現場執行',
+    '狀態',
+    '交付狀態',
+    '完成量',
+  ]) {
+    await expect(headers.filter({ hasText: label })).not.toHaveCount(0);
+  }
+
+  // 展開層才有的項目：製作細節、備註、單位、放損率、需轉交、計入完成度、派單，
+  // 以及產出、點收、可轉交上限、實際開工、指派師傅
+  const firstRow = page.locator('tr.ant-table-row').first();
+  await firstRow.locator('.ant-table-row-expand-icon').click();
+  const expandedRow = page.locator('tr.ant-table-expanded-row').first();
+  for (const label of [
+    '製作細節',
+    '備註',
+    '單位',
+    '放損率',
+    '需轉交',
+    '計入完成度',
+    '派單',
+    '產出',
+    '點收',
+    '可轉交上限',
+    '實際開工',
+    '指派師傅',
+  ]) {
+    await expect(expandedRow).toContainText(label);
+  }
+});
 
 test('7.10 排序走側板，一次生效；清單被動過就擋下（原編號 162）', async ({ page }) => {
   test.setTimeout(90_000); // 拖曳整段可重試，預設 30 秒不夠

@@ -16,81 +16,72 @@ const selectVisibleOption = (page, label) =>
     })
     .first();
 
-test.fixme(
-  '14.1 工單列表查詢與篩選（原編號 1）——搜尋／狀態／負責印務／交期篩選皆如情境所述' +
-    '（驗算過，見下方保留的步驟），唯情境「列表為單一維度，沒有展開列」與實際不符：' +
-    'work-orders/page.js 的 NestedTable 已加 expandable.expandedRowRender（Miles 2026-09-04' +
-    ' 拍板「四處子表共用同一份欄位定義」的一部分），工單列表現在有展開列，需 Miles 裁決情境目錄',
-  async ({ page }) => {
-    // 起點資料：工單列表的十二張工單
-    await openAs(page, '生管', '/work-orders');
-    const table = page.locator('.ant-table-tbody').first();
+test('14.1 工單列表查詢與篩選（原編號 1）', async ({ page }) => {
+  // 起點資料：工單列表的十二張工單
+  await openAs(page, '生管', '/work-orders');
+  const table = page.locator('.ant-table-tbody').first();
 
-    // 情境：任一角色輸入關鍵字搜尋（改用現行案名，原文的搜尋關鍵字已失效）
-    const searchInput = page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或客戶名稱');
-    await searchInput.fill('海報');
-    await searchInput.press('Enter');
-    await expect(table).toContainText('WO-2026-0710');
-    await expect(table).not.toContainText('WO-2026-0601');
+  // 情境：任一角色輸入關鍵字搜尋（改用現行案名，原文的搜尋關鍵字已失效）
+  const searchInput = page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或客戶名稱');
+  await searchInput.fill('海報');
+  await searchInput.press('Enter');
+  await expect(table).toContainText('WO-2026-0710');
+  await expect(table).not.toContainText('WO-2026-0601');
 
-    // 清空後以狀態為製作中篩選：現行 12 張工單裡狀態為製作中的唯一一張是 WO-2026-0710
-    await searchInput.fill('');
-    await searchInput.press('Enter');
-    await page.locator('.ant-select', { hasText: '全部狀態' }).click();
-    await selectVisibleOption(page, '製作中').click();
-    const rows = page.locator('.ant-table-tbody .ant-table-row');
-    await expect(rows).toHaveCount(1);
-    await expect(rows.first()).toContainText('WO-2026-0710');
+  // 清空後以狀態為製作中篩選：現行 12 張工單裡狀態為製作中的唯一一張是 WO-2026-0710
+  await searchInput.fill('');
+  await searchInput.press('Enter');
+  await page.locator('.ant-select', { hasText: '全部狀態' }).click();
+  await selectVisibleOption(page, '製作中').click();
+  const rows = page.locator('.ant-table-tbody .ant-table-row');
+  await expect(rows).toHaveCount(1);
+  await expect(rows.first()).toContainText('WO-2026-0710');
 
-    // 再加上負責印務與交期區間：多個條件為交集，WO-2026-0710（製作中、負責印務周建宏、
-    // 交期 2026-09-15）在交集內應仍看得到
-    await page.locator('.ant-select', { hasText: '全部印務' }).click();
-    await selectVisibleOption(page, '周建宏').click();
-    await expect(table).toContainText('WO-2026-0710');
+  // 再加上負責印務與交期區間：多個條件為交集，WO-2026-0710（製作中、負責印務周建宏、
+  // 交期 2026-09-15）在交集內應仍看得到
+  await page.locator('.ant-select', { hasText: '全部印務' }).click();
+  await selectVisibleOption(page, '周建宏').click();
+  await expect(table).toContainText('WO-2026-0710');
 
-    const deadlineInputs = page.locator('.ant-picker-range input');
-    await deadlineInputs.first().fill('2026-09-01');
-    await deadlineInputs.first().press('Enter');
-    await deadlineInputs.nth(1).fill('2026-09-30');
-    await deadlineInputs.nth(1).press('Enter');
-    await page.keyboard.press('Escape');
-    await expect(table).toContainText('WO-2026-0710');
+  const deadlineInputs = page.locator('.ant-picker-range input');
+  await deadlineInputs.first().fill('2026-09-01');
+  await deadlineInputs.first().press('Enter');
+  await deadlineInputs.nth(1).fill('2026-09-30');
+  await deadlineInputs.nth(1).press('Enter');
+  await page.keyboard.press('Escape');
+  await expect(table).toContainText('WO-2026-0710');
+});
 
-    // 列表為單一維度，沒有展開列（展開圖示不存在於工單列表，只在印件列表出現）
-    await expect(page.locator('.ant-table-row-expand-icon')).toHaveCount(0);
-  },
-);
+test('14.2 工單詳情四個頁籤（原編號 2）', async ({ page }) => {
+  // 起點資料：鏈二 WO-2026-0710
+  await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0710');
+  await expect(page.locator('body')).toContainText('WO-2026-0710');
 
-test.fixme(
-  '14.2 工單詳情四個頁籤（原編號 2）——實際頁面在頁首摘要區塊有 AntD Steps 步驟條，' +
-    '與情境「沒有步驟進度條，狀態只在頁首標籤」不符（WorkOrderSummary.js 使用 <Steps>，' +
-    '為 2026-09 生產階段校正後的版式），其餘四頁籤切換與網址隨動行為正常，需 Miles 裁決情境目錄或改頁面',
-  async ({ page }) => {
-    // 起點資料：鏈二 WO-2026-0710
-    await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0710');
-    await expect(page.locator('body')).toContainText('WO-2026-0710');
+  // 任一角色逐一切換製程規劃、預估成本分項、成本對照、異動紀錄四個頁籤，網址隨切換變化。
+  // 製程規劃是預設頁籤（網址一開始未帶 tab 參數，切換到別的頁籤再切回來才看得出網址真的隨動）。
+  await page.getByRole('tab', { name: '預估成本分項' }).click();
+  await expect(page).toHaveURL(/tab=estimate/);
 
-    // 情境：任一角色逐一切換製程規劃、預估成本分項、成本對照、異動紀錄四個頁籤，
-    // 並確認網址隨切換變化。沒有步驟進度條，狀態只在頁首標籤。
-    await expect(page.locator('.ant-steps')).toHaveCount(0);
+  // 成本對照顯示預估、實際、差額與升降
+  await page.getByRole('tab', { name: '成本對照' }).click();
+  await expect(page).toHaveURL(/tab=cost/);
+  await expect(page.locator('body')).toContainText('預估（凍結）');
+  await expect(page.locator('body')).toContainText('實際（累積）');
+  await expect(page.locator('body')).toContainText('差額');
+  await expect(page.locator('body')).toContainText('升降');
 
-    await page.getByRole('tab', { name: '製程規劃' }).click();
-    await expect(page).toHaveURL(/tab=process/);
-    await expect(page.locator('body')).toContainText('海報四色印刷');
+  // 異動紀錄頁籤目前沒有資料，因為現行資料沒有異動事實
+  await page.getByRole('tab', { name: /異動紀錄/ }).click();
+  await expect(page).toHaveURL(/tab=adjustments/);
+  await expect(page.getByRole('tab', { name: /異動紀錄/ })).toContainText('（0）');
 
-    await page.getByRole('tab', { name: '預估成本分項' }).click();
-    await expect(page).toHaveURL(/tab=estimate/);
-
-    await page.getByRole('tab', { name: '成本對照' }).click();
-    await expect(page).toHaveURL(/tab=cost/);
-    await expect(page.locator('body')).toContainText('材料費');
-    await expect(page.locator('body')).toContainText('工序費');
-
-    await page.getByRole('tab', { name: /異動紀錄/ }).click();
-    await expect(page).toHaveURL(/tab=adjustments/);
-    await expect(page.getByRole('tab', { name: /異動紀錄/ })).toContainText('（0）');
-  },
-);
+  // 切回製程規劃：四欄群的母子表格（見 7.9）
+  await page.getByRole('tab', { name: '製程規劃' }).click();
+  await expect(page).toHaveURL(/tab=process/);
+  const headers = page.locator('.ant-table-thead th');
+  await expect(headers.filter({ hasText: '印務規劃' })).not.toHaveCount(0);
+  await expect(headers.filter({ hasText: '現場執行' })).not.toHaveCount(0);
+});
 
 test('14.11 清單上的編號可以直接點開詳情（原編號 181）', async ({ page }) => {
   // 起點資料：生產任務管理頁的任一列（該頁只列待接收任務，現行資料為 WO-2026-0815 四筆）

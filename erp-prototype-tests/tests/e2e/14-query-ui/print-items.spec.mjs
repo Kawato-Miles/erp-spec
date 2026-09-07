@@ -49,11 +49,11 @@ test('14.6 成本區塊的角色可見性（原編號 57）', async ({ page }) =
 });
 
 test.fixme(
-  '14.7 印件詳情的工單與生產任務頁籤（原編號 58）——工單列七欄與情境相符，但生產任務子表' +
-    '（ProductionTasksTable full variant）欄位是「任務（含序號＋種類＋名）、印件部位、設備／承作、' +
-    '投產目標、預估成本、預計完成、前置、狀態、交付狀態、完成量」，與情境所述「工序、廠商類別、' +
-    '計畫設備、預計完成日、目標數量、產出數量、生產任務狀態（沒有順序欄）」七欄不符——任務欄反而' +
-    '帶 #序號標籤，需 Miles 裁決情境目錄或改欄位',
+  '14.7 印件詳情的工單與生產任務頁籤（原編號 58）——工單列七欄、生產任務子表十欄與情境相符' +
+    '（驗算過，見下方保留的步驟），唯情境「工單列預設全部展開」與實際不符：' +
+    'print-items/_components/detail/WorkOrdersTab.js 的 NestedTable 只設了 ' +
+    'expandedRowRender，沒有 defaultExpandAllRows（對照同層 production-floor/schedule 與 ' +
+    'prepress-review/ReviewOrderList 兩處都有帶這個旗標），工單列預設是收合的，需 Miles 裁決情境目錄或補旗標',
   async ({ page }) => {
     // 起點資料：鏈七 PI-2026-0904（兩張工單）
     await openAs(page, '印務主管', '/print-items/detail?id=PI-2026-0904');
@@ -66,18 +66,28 @@ test.fixme(
     await expect(page.locator('body')).toContainText('預計完工日');
 
     // 工單列預設全部展開
-    await expect(page.locator('tr.ant-table-expanded-row').first()).toBeVisible();
+    await expect(page.locator('tr.ant-table-expanded-row')).toHaveCount(2);
 
-    // 生產任務子表七欄，沒有順序欄
-    const expandedRow = page.locator('tr.ant-table-expanded-row').first();
-    await expect(expandedRow).toContainText('工序');
-    await expect(expandedRow).toContainText('廠商類別');
-    await expect(expandedRow).toContainText('計畫設備');
-    await expect(expandedRow).toContainText('預計完成日');
-    await expect(expandedRow).toContainText('目標數量');
-    await expect(expandedRow).toContainText('產出數量');
-    await expect(expandedRow).toContainText('生產任務狀態');
-    await expect(expandedRow.locator('text=/^#\\d/')).toHaveCount(0);
+    // 生產任務子表四個欄群共十欄：任務（序號、種類、任務名同一行）、印件部位、
+    // 印務規劃（設備／承作、投產目標、預估成本、預計完成、前置）、現場執行（狀態、交付狀態、完成量），
+    // 沒有獨立的順序欄
+    const expandedRows = page.locator('tr.ant-table-expanded-row');
+    await expect(expandedRows.first()).toBeVisible();
+    for (const label of [
+      '任務',
+      '印件部位',
+      '設備／承作',
+      '投產目標',
+      '預估成本',
+      '預計完成',
+      '前置',
+      '狀態',
+      '交付狀態',
+      '完成量',
+    ]) {
+      await expect(expandedRows.first().locator('.ant-table-thead')).toContainText(label);
+    }
+    await expect(expandedRows.first().locator('.ant-table-thead')).not.toContainText('順序');
   },
 );
 
