@@ -290,21 +290,15 @@ test('11.8 待驗量由轉交事實推導（原編號 121）', async ({ page }) 
   await expect(ticketRow).toContainText('500');
 });
 
-test.fixme('11.9 分次驗收與單筆在站量檢核（原編號 122）', async ({ page }) => {
-  // 差異：情境要求「驗完後第三次再開驗收視窗填一個數字送出，整筆擋下並顯示當下在站量」，
-  // 但 prototype 在待驗量為 0 時直接把驗收鈕停用（qc-shipping/inspection/page.js
-  // `disabled={row.arrived_qty <= 0}`），第三次根本開不了視窗，也就沒有那句擋下訊息。
+test('11.9 分次驗收與單筆在站量檢核（原編號 122）', async ({ page }) => {
+  // Miles 2026-09-08 裁決：待驗量為 0 時以驗收鈕停用取代開視窗後擋下
   await setupQcReadyState(page);
   await gotoInAppSafe(page, '/qc-shipping/inspection');
   await inspectAtQc(page, { passed: 300, failed: 20 });
   await expect(pendingCard(page)).toContainText('180');
   await inspectAtQc(page, { passed: 180, failed: 0 });
   await expect(pendingCard(page)).toContainText('0（已驗完）');
-  await pendingCard(page).getByRole('button', { name: '驗收' }).click();
-  const dialog = inspectDialog(page);
-  await dialog.getByLabel('通過數量', { exact: true }).fill('10');
-  await dialog.getByRole('button', { name: '記錄驗收' }).click();
-  await expect(page.getByText(/已超過送出當下的在站量 0/)).toBeVisible();
+  await expect(pendingCard(page).getByRole('button', { name: '驗收' })).toBeDisabled();
 });
 
 test('11.10 印件詳情頁看得到歷次分次驗收（原編號 11）', async ({ page }) => {
