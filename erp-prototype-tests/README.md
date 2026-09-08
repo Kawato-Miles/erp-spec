@@ -7,13 +7,15 @@
 | 純函式 | Vitest | `_lib/` 的計算與規則（數量換算、成本估算、齊套、權限） | `tests/unit/<模組>/*.test.mjs` |
 | 畫面操作 | Playwright | 切模擬角色、進頁面、點按鈕、驗預期結果 | `tests/e2e/<章>/*.spec.mjs` |
 
-## 執行
+## 執行（三層，在 `/Users/b-f-03-029/Sens/erp-prototype-tests` 下）
 
-```bash
-cd /Users/b-f-03-029/Sens/erp-prototype-tests && npm test
-```
+| 層 | 指令 | 內容 | 何時跑 |
+|----|------|------|------|
+| smoke | `npm run test:smoke` | 主流程一條：一件印件從需求單到訂單製作完成，33 站，站表見 `docs/main-flow.md` | 改 mock 或 prototype 後立刻跑 |
+| module | `npm run test:module -- tests/e2e/07-process-planning` | 該章全部 | 改單一模組時 |
+| full | `npm test` | Vitest 純函式加全部 Playwright | erp 提交前 |
 
-Playwright 會自動在 3020 埠啟動 erp 開發伺服器（已在跑則沿用）。erp 每次提交前必跑，commit 訊息附「測試 N 項通過」。
+Playwright 會自動在 3020 埠啟動 erp 開發伺服器（已在跑則沿用；跑久出現 ChunkLoadError 就先 `pkill -f "next dev --port 3020"`）。erp 每次提交前必跑全套，commit 訊息附「測試 N 項通過」。
 
 ## 依據文件
 
@@ -21,6 +23,7 @@ Playwright 會自動在 3020 埠啟動 erp 開發伺服器（已在跑則沿用�
 |------|------|
 | erp `(prototype)/MOCK-DATA-CHAIN.md` | mock 資料唯一正本，測試引用的單據編號一律出自這裡 |
 | `docs/scenario-catalog.md` | 情境目錄，一條情境對應一條測試 |
+| `docs/main-flow.md` | 主流程 smoke 站表：每站角色、動作、驗什麼 |
 
 ## 撰寫規約
 
@@ -30,7 +33,8 @@ Playwright 會自動在 3020 埠啟動 erp 開發伺服器（已在跑則沿用�
 4. **起點資料**照情境目錄「起點資料」列；要先推狀態的情境，前置步驤寫在同一條測試開頭並加註解「前置」。
 5. **選取元素**優先用使用者看得到的文字與角色（`getByRole`、`getByText`、表格列含單據編號），不用 CSS class 當唯一依據；AntD 結構類名只在共用工具內使用。
 6. **數字驗算**寫在純函式測試；畫面測試只驗畫面呈現的結果字串。
-7. **逆流程與附加流程不寫測試**，待辦見情境目錄末章。
+7. **逆流程與附加流程不寫測試**，待辦見情境目錄末章。例外：主流程第 14 站業務退回重審。
+9. **主流程 smoke 不設 fixme、不繞道**：任一站走不通即失敗，斷點就是缺口，記進 `docs/findings-*.md`。標籤 `@smoke` 只給主流程。
 8. **handoff**：模組搬到 `(dashboard)/` 後，該模組的 e2e 轉成 Linear 驗收段後刪除；純函式測試整包交前端。路徑只改 `config.mjs`。
 
 共用工具在 `tests/e2e/_helpers.mjs`：`openAs(page, 角色, 路徑)`、`switchRole(page, 角色)`、`gotoInApp(page, 路徑)`、`clickIntoDetail(page, 文字, 網址樣式)`、`cjkName('核可')`（AntD 兩字按鈕中間插空白的容錯）、`ROLE_USERS`。

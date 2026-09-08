@@ -63,6 +63,10 @@ export async function gotoInApp(page, path) {
   const esc = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const urlRe = new RegExp(`${esc}/?(\\?|$)`);
   if (urlRe.test(page.url())) return;
+  // 導頁前記住模擬角色：若導頁後角色變回預設，代表 Next 退回整頁導航（RSC 取回失敗或 chunk 404），
+  // 記憶體資料已歸零。這是開發伺服器環境問題，直接報明，不讓下游斷言誤導成業務缺口。
+  const roleShown = page.locator('header .ant-select-selection-item, .ant-layout-header .ant-select-selection-item').first();
+  const roleBefore = await roleShown.innerText().catch(() => '');
   // 側欄群組的子項在群組第一次展開前不會渲染，先把收合群組逐一展開到目標出現
   const revealItem = async () => {
     const item = page.locator(`.ant-menu-item[data-menu-id$="${path}"]`).first();
@@ -91,10 +95,26 @@ export async function gotoInApp(page, path) {
     await item.click();
     await expect(page).toHaveURL(urlRe, { timeout: 10000 });
   }).toPass({ intervals: [1000, 2000, 4000], timeout: 40000 });
+  if (roleBefore) {
+    const roleAfter = await roleShown.innerText().catch(() => '');
+    if (roleAfter && roleAfter !== roleBefore) {
+      throw new Error(`導頁到 ${path} 時發生整頁重載（角色由 ${roleBefore} 變回 ${roleAfter}），記憶體資料已歸零。屬開發伺服器環境問題：重啟 3020 埠伺服器並清除 erp/apps/erp/out 後重跑。`);
+    }
+  }
 }
 
 // 開一條情境：首次整頁載入後切角色
 export async function openAs(page, roleLabel, path) {
   await page.goto(path);
   await switchRole(page, roleLabel);
+}
+
+// 暖機：開發伺服器首次編譯某路由時，Next 取回 RSC 可能失敗並退回整頁導航，記憶體資料與角色會歸零。
+// 長鏈測試在第一步 openAs 之前先把會用到的路由各整頁載入一次（此時尚無需保留的狀態），再開始操作。
+// 詳情頁帶查詢參數者只需暖機其路徑。
+export async function warmUp(page, paths) {
+  for (const path of paths) {
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    await page.locator('.ant-layout, main').first().waitFor({ state: 'attached', timeout: 60000 }).catch(() => {});
+  }
 }
