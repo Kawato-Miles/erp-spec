@@ -324,9 +324,6 @@ test('5.7 回簽前的印件不可分派審稿', async ({ page }) => {
     await expect(page).toHaveURL(/\/print-items\/detail\/?\?id=pi-2026-0913/i, { timeout: 4000 });
   }).toPass({ timeout: 20000 });
 
-  // 分派鈕停用，Tooltip 顯示回簽門檻理由（不整顆隱藏）
-  const assignBtn = page.getByRole('button', { name: /分派審稿人員/ });
-  await expect(assignBtn).toBeDisabled();
-  await assignBtn.locator('xpath=..').hover();
-  await expect(page.getByRole('tooltip')).toContainText('訂單回簽後才可分派審稿人員');
+  // 分派鈕整顆不出現（當前狀態無法使用的功能就隱藏，不停用、不提示）
+  await expect(page.getByRole('button', { name: /分派審稿人員/ })).toHaveCount(0);
 });
