@@ -192,9 +192,13 @@ b.ui{font-weight:600;color:var(--text);background:var(--primary-soft);padding:1p
 .callout ul{margin:0;padding-left:18px;display:grid;gap:4px}
 .callout li{line-height:1.7}
 .callout li::marker{color:var(--primary)}
-dl.faq{margin:0;max-width:68ch;display:grid;gap:14px}
-dl.faq dt{font-weight:600;color:var(--text);line-height:1.7}
-dl.faq dd{margin:4px 0 0;color:var(--text-2);line-height:1.7}
+.faq{max-width:68ch;display:grid;gap:8px}
+.faq details{border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.faq summary{padding:10px 14px;font-weight:600;color:var(--text);cursor:pointer;line-height:1.6;list-style:none;display:flex;gap:10px;align-items:flex-start}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::before{content:"";flex:0 0 auto;width:8px;height:8px;margin-top:9px;border-right:1.5px solid var(--text-3);border-bottom:1.5px solid var(--text-3);transform:rotate(-45deg);transition:transform .15s ease}
+.faq details[open] summary::before{transform:rotate(45deg)}
+.faq details p{margin:0;padding:0 14px 12px 32px;color:var(--text-2);line-height:1.7}
 
 /* 兩欄盒 */
 .two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:68ch}
@@ -678,7 +682,7 @@ const DATA = [
      ],
      [
       "帳務公司",
-      "感官SSP、柏樂BRO、川人KAD、奕果EC",
+      "感官SSP、柏樂BRO",
       "必填"
      ],
      [
@@ -751,9 +755,9 @@ const DATA = [
     "kind": "howto",
     "title": "登錄印件需求與金額",
     "actor": "業務",
-    "intro": "當印件規格談定時，業務在需求單的「印件報價」頁籤新增印件。\n逐筆記錄品名、數量、難易度與金額。",
+    "intro": "當印件規格談定時，業務在需求單的「印件報價」頁籤新增印件。\n逐筆記錄品名、規格、數量與難易度。",
     "goals": [
-     "完成需求單上每一筆印件的規格、數量與金額登錄，讓需求單可以送評估"
+     "完成需求單上每一筆印件的規格與數量登錄，讓需求單可以送評估"
     ],
     "points": [
      "印件報價",
@@ -766,7 +770,7 @@ const DATA = [
      "預計產線",
      "免審稿"
     ],
-    "story": "菜單摺頁的規格談定了：A4 對摺、雪銅紙 200g、四色雙面，數量 2,000 張。你先估成本 12,000 元，打算每張報 8 元。把這筆印件記進需求單。",
+    "story": "菜單摺頁的規格談定了：A4 對摺、雪銅紙 200g、四色雙面，數量 2,000 張。成本要等印務主管一起看。把這筆印件先記進需求單。",
     "before": [
      "需求單狀態為「需求確認中」",
      "以業務身分開這張需求單的詳情頁"
@@ -793,14 +797,14 @@ const DATA = [
      ],
      [
       "選「難易度」1 到 10。",
-      "難易度沒填，需求單不能送印務評估。"
+      "難易度供訂單管理人分派審稿時參考，成交轉訂單時帶入印件。"
      ],
      [
       "視情況填其餘欄位：印件規格備註、出貨方式、預計交貨日期、包裝說明、預計產線、是否免審稿、印件檔案備註。",
       ""
      ],
      [
-      "填「成本估算（未稅）」與「單價（未稅）」。「小計（未稅）」與「毛利率」自動算出。",
+      "視情況填「單價（未稅）」。「小計（未稅）」隨數量與單價自動算出。「成本估算（未稅）」此階段留空，送印務評估後再回填。",
       ""
      ],
      [
@@ -830,7 +834,7 @@ const DATA = [
      ],
      [
       "難易度",
-      "1 到 10，影響審稿與排程",
+      "1 到 10，供審稿分派參考",
       "必填"
      ],
      [
@@ -875,7 +879,7 @@ const DATA = [
      ],
      [
       "成本估算（未稅）",
-      "整筆成本。評估完成前要填齊",
+      "整筆成本。送印務評估後由業務回填，評估完成前要填齊",
       "選填"
      ],
      [
@@ -900,8 +904,8 @@ const DATA = [
      ]
     ],
     "check": [
-     "「印件報價」表多一列，小計與毛利率有值",
-     "需求單頭部含稅總額等於各印件小計加總加 5% 稅額",
+     "「印件報價」表多一列，數量與難易度有值",
+     "填了單價時，小計自動算出，需求單頭部含稅總額等於各印件小計加總加 5% 稅額",
      "再新增第二筆，表格出現兩列，各自獨立"
     ],
     "notes": [
@@ -911,15 +915,15 @@ const DATA = [
      ],
      [
       "「毛利率」顯示「-」？",
-      "成本估算或小計缺值。補成本估算後自動顯示。"
+      "成本估算或小計缺值。成本估算在送印務評估後回填，補齊後自動顯示。"
      ],
      [
       "「新增印件」按鈕不見了？",
       "需求單已成交或流失，印件鎖定不能再改。要改內容請複製一張新需求單。"
      ],
      [
-      "成本還不知道可以先不填嗎？",
-      "可以。成本估算在印務主管按「評估完成」前補齊即可。單價在成交前補齊即可。"
+      "成本與單價現在要填嗎？",
+      "不用。成本估算在送印務評估後、按「評估完成」前回填。單價在成交前填齊即可。"
      ]
     ]
    },
@@ -943,7 +947,7 @@ const DATA = [
     "story": "菜單摺頁的印件登錄好了。你把需求單送給評估印務主管。你們在系統外討論紙材與工序，確認成本 12,000 元。你回填成本估算，印務主管按評估完成。",
     "before": [
      "需求單狀態為「需求確認中」",
-     "每筆印件都填了難易度",
+     "至少有一筆印件",
      "以業務身分登入"
     ],
     "entries": [
@@ -978,10 +982,6 @@ const DATA = [
      "「報價輪次」顯示 1 輪"
     ],
     "notes": [
-     [
-      "點「送印務評估」跳出提示，送不出去？",
-      "有印件還沒填難易度，對話框列出哪幾筆。補齊後再送。"
-     ],
      [
       "印務主管說看不到「評估完成」按鈕？",
       "這張單指派的評估印務主管不是這位主管。業務在「編輯」裡改「評估印務主管」，或請被指派的主管操作。"
@@ -6080,7 +6080,7 @@ function renderOverview(s,u){
 function notesHtml(s){
   if(!s.notes||!s.notes.length) return '';
   if(Array.isArray(s.notes[0])){
-    return '<section class="sec"><h3>常見問題</h3><dl class="faq">'+s.notes.map(n=>'<dt>'+richUi(n[0])+'</dt><dd>'+richUi(n[1])+'</dd>').join('')+'</dl></section>';
+    return '<section class="sec"><h3>常見問題</h3><div class="faq">'+s.notes.map(n=>'<details><summary>'+richUi(n[0])+'</summary><p>'+richUi(n[1])+'</p></details>').join('')+'</div></section>';
   }
   return '<section class="sec"><div class="callout"><h4>注意</h4><ul>'+s.notes.map(n=>'<li>'+richUi(n)+'</li>').join('')+'</ul></div></section>';
 }
