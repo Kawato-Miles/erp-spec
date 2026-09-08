@@ -47,3 +47,15 @@ Playwright 會自動在 3020 埠啟動 erp 開發伺服器（已在跑則沿用�
 - 詳情頁以 `router.push` 開啟時網址可能未即時更新，判定用頁面內容。
 - 每章可有自己的 `_xxx.mjs` 工具檔（非 spec 檔），跨章共用的再收進 `_helpers.mjs`。
 - 首輪撰寫的發現與處置見 `docs/findings-20260908.md`。
+
+## 迭代檢核表（每次 prototype 迭代，不論有沒有進 OpenSpec）
+
+| 時機 | 做什麼 | 產出 |
+|------|------|------|
+| 規劃 | 用情境目錄找受影響的節；找不到就是新情境，先補目錄 | 測試影響清單：改哪些既有測試、新增哪些情境、mock 動哪裡 |
+| 派工 | 任務書帶測試影響清單與 mock 三步順序（先 MOCK-DATA-CHAIN、再 mock-data.js、再測試） | sub-agent 交回程式加測試 |
+| 實作後 | `npm run impact`（對映 erp 改動到章與測試）→ `npm run test:smoke` → 該章 `npm run test:module -- tests/e2e/<章>` | 三段結果 |
+| 提交前 | `npm test` 全套；commit 訊息附 smoke／模組／全套三個結果。影響清單為空且未改測試時，訊息寫明「無測試影響」理由 | erp 提交 |
+| 收尾 | 情境目錄該節更新、發現清單關掉已修項、覆蓋矩陣只在 wiki 流程增減時重做 | Sens 提交 |
+
+`npm run impact` 預設取 erp 工作區未提交變更加最近一筆提交；`npm run impact -- HEAD~3` 取範圍；`npm run impact -- --paths <檔>...` 直接給路徑。

@@ -1,3 +1,5 @@
+> **2026-09-08 快照，不隨迭代維護。** 現況查 `scenario-catalog.md`（情境與測試）與 `findings-20260908.md`（待辦）。wiki 流程增減時才重做一份。測試節號已換算為情境目錄現行編號（前段三章插入後整體加三）。
+
 # 商業需求覆蓋矩陣
 
 比對三個來源：wiki 商業需求正本（分母）、Prototype 實作、測試情境目錄。
@@ -54,19 +56,19 @@
 | B 訂單 | 主 | 訂單成立確認（草稿 → 待業務主管審核 → 審核通過 → 報價待回簽 → 已回簽） | [[訂單成立確認]] | 有：orders/approval-queue/page.js；store 的 submitForReview、approveOrder、markQuoteSent、confirmSignBack | 未涵蓋 |
 | B 訂單 | 主 | 訂單複製建單 | [[訂單複製建單]] | 未實作：全目錄無 duplicateOrder 或同義動作 | 未涵蓋 |
 | B 訂單 | 主 | 訂單客戶與聯絡資料維護 | [[訂單客戶與聯絡資料維護]] | 有：orders/_components/detail/InfoTab.js；updateOrderFields | 未涵蓋 |
-| B 訂單 | 主 | 訂單印件規格維護 | [[訂單印件規格維護]] | 有：updatePrintItem、updatePrintItemUnitPrice | 1.3 |
+| B 訂單 | 主 | 訂單印件規格維護 | [[訂單印件規格維護]] | 有：updatePrintItem、updatePrintItemUnitPrice | 4.3 |
 | B 訂單 | 主 | 訂單三類備註維護（訂單須知、交貨備註、付款備註） | [[訂單三類備註維護]] | 有：InfoTab.js 三欄獨立編輯，經 updateOrderFields 保存 | 未涵蓋 |
 | B 訂單 | 主 | 訂單其他附件保存（含用途說明） | [[訂單其他附件保存]] | 有：AttachmentsTab.js 含用途說明欄；store 的 addAttachment、removeAttachment | 未涵蓋 |
-| B 訂單 | 主 | 訂單負責業務改派（含理由分類與離職交接清空分享成員） | [[訂單負責業務改派]] | 有：reassignOwner（帶 reasonCategory、reasonNote） | 3.5 |
-| B 訂單 | 主 | 單據分享與職務代理（授予檢視或編輯代理、收回） | [[單據分享與職務代理]] | 有：orders 的 addSharedMember、removeSharedMember；work-orders 的 addSharedMember、updateSharedMemberLevel、removeSharedMember；quote 的 updateQuotePermissionLevel | 11.15 |
+| B 訂單 | 主 | 訂單負責業務改派（含理由分類與離職交接清空分享成員） | [[訂單負責業務改派]] | 有：reassignOwner（帶 reasonCategory、reasonNote） | 6.5 |
+| B 訂單 | 主 | 單據分享與職務代理（授予檢視或編輯代理、收回） | [[單據分享與職務代理]] | 有：orders 的 addSharedMember、removeSharedMember；work-orders 的 addSharedMember、updateSharedMemberLevel、removeSharedMember；quote 的 updateQuotePermissionLevel | 14.15 |
 | B 訂單 | 副 | 業務主管認為條件不合理時系統內不設退回、討論走系統外 | [[訂單成立確認]] | 有：permissions.js 與 store 均無訂單退回草稿的動作 | 未涵蓋 |
 | B 訂單 | 副 | 回簽檔追加上傳、不重複推進狀態、不覆寫首次回簽時間 | [[訂單成立確認]] | 部分：confirmSignBack 可重複執行，但未見多份回簽檔並存與首次時間保護 | 未涵蓋 |
 | B 訂單 | 副 | 比價期間直接改印件單價、依當前內容重出報價單 | [[訂單成立確認]] | 有：updatePrintItemUnitPrice；markQuoteSent 可重複 | 未涵蓋 |
-| B 訂單 | 副 | 改急件選項重推訂單交期並同步未終態工單、通知負責印務 | [[訂單印件規格維護]] | 有：_lib/urgent-due-date.js、store 的 _notifyUrgentOptionChange；work-orders 的 syncPrintItemDueDate | 1.5、1.6、1.7 |
-| B 訂單 | 副 | 製作段購買數量鎖定、加量改走加開印件 | [[訂單印件規格維護]] | 有：permissions.js 的分界判定；store 的 addPrintItem 複製原規格 | 1.3 |
+| B 訂單 | 副 | 改急件選項重推訂單交期並同步未終態工單、通知負責印務 | [[訂單印件規格維護]] | 有：_lib/urgent-due-date.js、store 的 _notifyUrgentOptionChange；work-orders 的 syncPrintItemDueDate | 4.5、4.6、4.7 |
+| B 訂單 | 副 | 製作段購買數量鎖定、加量改走加開印件 | [[訂單印件規格維護]] | 有：permissions.js 的分界判定；store 的 addPrintItem 複製原規格 | 4.3 |
 | B 訂單 | 副 | 訂單進終態後客戶欄與印件欄位唯讀 | [[訂單客戶與聯絡資料維護]]、[[訂單印件規格維護]] | 有：permissions.js 的 isOrderTerminal 與 canEditOrderSection | 未涵蓋 |
 | B 訂單 | 副 | 訂單已取消後三類備註與其他附件鎖定 | [[訂單三類備註維護]]、[[訂單其他附件保存]] | 部分：備註鎖定條件為兩個終態（見反向落差第 3 條）；附件未見取消後停用上傳 | 未涵蓋 |
-| B 訂單 | 副 | 代理期間被授權者代為操作、活動紀錄歸實際操作者 | [[單據分享與職務代理]] | 部分：分享層級與代理動作開放已做；活動紀錄的操作者歸屬未逐項驗證 | 11.15 |
+| B 訂單 | 副 | 代理期間被授權者代為操作、活動紀錄歸實際操作者 | [[單據分享與職務代理]] | 部分：分享層級與代理動作開放已做；活動紀錄的操作者歸屬未逐項驗證 | 14.15 |
 | B 訂單 | 逆 | 取消原訂單、另開新訂單依重談金額重走成立 | [[訂單成立確認]] | 部分：cancelOrder 有；另開新訂單無複製入口，須從頭建 | 未涵蓋 |
 
 ### C 款項與發票
@@ -76,7 +78,7 @@
 | C 款項 | 主 | 收款項目規劃（建期、填預計收款日與預計開發票日、預計金額） | [[收款項目規劃]] | 有：billing/InstallmentModal.js、InstallmentSection.js；store 的 addBillingInstallment、updateBillingInstallment | 未涵蓋 |
 | C 款項 | 主 | 收款項目開立發票（一期一票、含稅目標值、品項檢核） | [[收款項目開立發票]] | 有：billing/IssueInvoiceModal.js；store 的 issueInvoice | 未涵蓋 |
 | C 款項 | 主 | 收款核銷分配（登款、分配各期、切已完成） | [[收款核銷分配]] | 有：billing/PaymentRecordModal.js、PaymentAllocationTable.js；store 的 addPayment、updatePayment | 未涵蓋 |
-| C 款項 | 主 | 對帳與催收（三方對帳差錯清單、逾期款項清單、催補複核） | [[對帳與催收]] | 部分：payment/billing-anomaly、payment/receivable、payment/pending-invoice 三頁與 billing/ReconciliationPanel.js 已做；逾期款項清單未做 | 11.13 |
+| C 款項 | 主 | 對帳與催收（三方對帳差錯清單、逾期款項清單、催補複核） | [[對帳與催收]] | 部分：payment/billing-anomaly、payment/receivable、payment/pending-invoice 三頁與 billing/ReconciliationPanel.js 已做；逾期款項清單未做 | 14.13 |
 | C 款項 | 副 | 一期拆兩期（原期取消、兩筆新期平輩） | [[收款項目規劃]] | 未實作：全目錄無拆期動作 | 未涵蓋 |
 | C 款項 | 副 | 預開發票單張超上限時規劃階段拆多期 | [[收款項目規劃]] | 有：addBillingInstallment 可自由多建期 | 未涵蓋 |
 | C 款項 | 副 | 預計金額合計與應收總額不符時顯示差額提示、不阻擋 | [[收款項目規劃]] | 有：InstallmentSection.js 的「收款項目合計與應收總額不一致」提示 | 未涵蓋 |
@@ -89,78 +91,78 @@
 | C 款項 | 逆 | 退款執行（主管核可 → 確認生效認列 → 建退款款項與折讓 → 會計出金後切已完成） | [[退款執行]] | 有：orders/adjustment-review-queue、payment/refund-payout；store 的 createAdjustment、submitAdjustment、approveAdjustment、confirmAdjustment | 未涵蓋 |
 | C 款項 | 逆 | 主管退回退款訂單異動、業務修改後重送 | [[退款執行]] | 有：rejectAdjustment | 未涵蓋 |
 | C 款項 | 逆 | 訂單異動流程判路（補收與五個退款進入點） | [[訂單異動流程]] | 有：createAdjustment 的 type 分流；permissions.js 的售後與諮詢分流判定 | 未涵蓋 |
-| C 款項 | 逆 | 訂單取消五層連鎖（訂單、印件、工單、生產任務、出貨單） | [[訂單異動流程]] | 有：cancelOrder、logCancelCascade、_lib/cancel-actions.js；work-orders 的 cancelForPrintItems；production-floor 的 applyCancelledTaskStatuses | 13.18（列待辦） |
+| C 款項 | 逆 | 訂單取消五層連鎖（訂單、印件、工單、生產任務、出貨單） | [[訂單異動流程]] | 有：cancelOrder、logCancelCascade、_lib/cancel-actions.js；work-orders 的 cancelForPrintItems；production-floor 的 applyCancelledTaskStatuses | 16.18（列待辦） |
 | C 款項 | 逆 | 訂單異動單據更正（改金額、取消建錯的單） | [[訂單異動流程]] | 有：updateAdjustment、cancelAdjustment | 未涵蓋 |
 
 ### D 審稿
 
 | 模組 | 類別 | 流程名 | wiki 卡 | Prototype 實作 | 測試情境 |
 | --- | --- | --- | --- | --- | --- |
-| D 審稿 | 主 | 印件審稿（建印件評難易度 → 分派 → 上傳稿件 → 逐輪判定 → 確認可製作） | [[印件審稿]] | 有：prepress-review/page.js、detail、pending-assign；orders store 的 uploadArtwork、assignReviewer、submitReview、confirmProducible | 2.1、2.2、2.3、2.5 |
+| D 審稿 | 主 | 印件審稿（建印件評難易度 → 分派 → 上傳稿件 → 逐輪判定 → 確認可製作） | [[印件審稿]] | 有：prepress-review/page.js、detail、pending-assign；orders store 的 uploadArtwork、assignReviewer、submitReview、confirmProducible | 5.1、5.2、5.3、5.5 |
 | D 審稿 | 主 | 覆寫審稿分派（換人並留活動紀錄） | [[覆寫審稿分派]] | 有：prepress-review/_components/AssignReviewerDialog.js；store 的 assignReviewer（帶 reason） | 未涵蓋 |
 | D 審稿 | 主 | 維護審稿人員能力等級 | [[維護審稿人員能力等級]] | 未實作：_lib/prepressReview.js 只有能力等級判定資料，無主管維護介面與調整留痕 | 未涵蓋 |
 | D 審稿 | 主 | 打樣決策與重新打樣（填打樣結果 → 確認大貨可製作） | [[打樣決策與重新打樣]] | 有：sample-resource/page.js；orders store 的 recordSampleResult | 未涵蓋 |
-| D 審稿 | 副 | 建立審稿討論串（勾選印件共用一串、mention 訂單管理人） | [[印件審稿]] | 有：_lib/discussions.js；store 的 openReviewDiscussion | 1.4 |
-| D 審稿 | 副 | 免審印件建立當下直達合格、仍需業務確認可製作 | [[印件審稿]] | 有：addPrintItem 的免審路徑自建合格輪次 | 2.4 |
-| D 審稿 | 副 | 批次審稿（整批同一結果、退件原因共用、備註可逐件覆寫） | [[印件審稿]] | 有：submitBatchReview | 2.6 |
-| D 審稿 | 副 | 補件迴圈（不合格 → 補件 → 已補件 → 原審稿人員重審） | [[印件審稿]] | 有：resupplyArtwork | 2.5 |
-| D 審稿 | 副 | 審稿備註修改留痕（限該輪原審稿人員） | [[印件審稿]] | 有：updateReviewNote | 2.6 |
+| D 審稿 | 副 | 建立審稿討論串（勾選印件共用一串、mention 訂單管理人） | [[印件審稿]] | 有：_lib/discussions.js；store 的 openReviewDiscussion | 4.4 |
+| D 審稿 | 副 | 免審印件建立當下直達合格、仍需業務確認可製作 | [[印件審稿]] | 有：addPrintItem 的免審路徑自建合格輪次 | 5.4 |
+| D 審稿 | 副 | 批次審稿（整批同一結果、退件原因共用、備註可逐件覆寫） | [[印件審稿]] | 有：submitBatchReview | 5.6 |
+| D 審稿 | 副 | 補件迴圈（不合格 → 補件 → 已補件 → 原審稿人員重審） | [[印件審稿]] | 有：resupplyArtwork | 5.5 |
+| D 審稿 | 副 | 審稿備註修改留痕（限該輪原審稿人員） | [[印件審稿]] | 有：updateReviewNote | 5.6 |
 | D 審稿 | 副 | 候選清單為空時提示、本次分派不成立 | [[覆寫審稿分派]] | 有：AssignReviewerDialog.js 的無可選人員提示 | 未涵蓋 |
 | D 審稿 | 副 | 打樣結果 NG-製程問題時自動在原打樣印件下建新打樣工單 | [[打樣決策與重新打樣]] | 有：recordSampleResult 帶 newWorkOrderNo | 未涵蓋 |
 | D 審稿 | 副 | 不合格後未補件：不設上限、不設停滯提醒 | [[印件審稿]] | 有：store 無補件次數上限與提醒 | 未涵蓋 |
-| D 審稿 | 逆 | 合格後退回重審（轉待改稿、不建輪次） | [[印件審稿]] | 有：returnForRework | 13.21（列待辦） |
+| D 審稿 | 逆 | 合格後退回重審（轉待改稿、不建輪次） | [[印件審稿]] | 有：returnForRework | 16.21（列待辦） |
 | D 審稿 | 逆 | 打樣後稿件問題重審（棄用原打樣印件、複製新印件重走審稿） | [[打樣後稿件問題重審]] | 有：abandonPrintItem（fromSampleArtworkNg）、copyPrintItemForSampleArtworkNg | 未涵蓋 |
 
 ### E 製作細節確認與工單建立
 
 | 模組 | 類別 | 流程名 | wiki 卡 | Prototype 實作 | 測試情境 |
 | --- | --- | --- | --- | --- | --- |
-| E 工單建立 | 主 | 印件製作細節確認並自動建立草稿工單 | [[印件製作細節確認]] | 有：orders/production-detail-queue/page.js；store 的 confirmProductionDetails；work-orders 的 createDraftWorkOrder | 3.1 |
-| E 工單建立 | 主 | 印務主管指派負責印務與審核主管 | [[印件製作細節確認]] | 有：print-items/pending-assign/page.js；work-orders 的 assignWorkOrder | 3.2、3.6、3.7 |
-| E 工單建立 | 副 | 一張工單不足時印務主管加開工單 | [[印件製作細節確認]] | 有：addExpandedWorkOrders | 3.7、3.8 |
-| E 工單建立 | 副 | 製作細節有誤時走製作討論串、系統內不設退回 | [[印件製作細節確認]] | 有：openProductionDiscussion；store 無製作細節退回動作 | 1.4 |
-| E 工單建立 | 副 | 工單改派負責印務（含理由分類、離職交接清空分享成員） | [[工單]]、[[印務主管]] | 有：assignWorkOrder 帶 reason 與 reason_note | 3.3、3.4 |
-| E 工單建立 | 逆 | 刪除尚未送審且無生產任務的空草稿工單 | [[工單狀態]]、[[印務主管]] | 有：deleteDraftWorkOrder；orders 的 logDraftWorkOrderDeleted | 3.9、3.10 |
+| E 工單建立 | 主 | 印件製作細節確認並自動建立草稿工單 | [[印件製作細節確認]] | 有：orders/production-detail-queue/page.js；store 的 confirmProductionDetails；work-orders 的 createDraftWorkOrder | 6.1 |
+| E 工單建立 | 主 | 印務主管指派負責印務與審核主管 | [[印件製作細節確認]] | 有：print-items/pending-assign/page.js；work-orders 的 assignWorkOrder | 6.2、6.6、6.7 |
+| E 工單建立 | 副 | 一張工單不足時印務主管加開工單 | [[印件製作細節確認]] | 有：addExpandedWorkOrders | 6.7、6.8 |
+| E 工單建立 | 副 | 製作細節有誤時走製作討論串、系統內不設退回 | [[印件製作細節確認]] | 有：openProductionDiscussion；store 無製作細節退回動作 | 4.4 |
+| E 工單建立 | 副 | 工單改派負責印務（含理由分類、離職交接清空分享成員） | [[工單]]、[[印務主管]] | 有：assignWorkOrder 帶 reason 與 reason_note | 6.3、6.4 |
+| E 工單建立 | 逆 | 刪除尚未送審且無生產任務的空草稿工單 | [[工單狀態]]、[[印務主管]] | 有：deleteDraftWorkOrder；orders 的 logDraftWorkOrderDeleted | 6.9、6.10 |
 
 ### F 製程規劃、審核與交付產線
 
 | 模組 | 類別 | 流程名 | wiki 卡 | Prototype 實作 | 測試情境 |
 | --- | --- | --- | --- | --- | --- |
 | F 製程 | 主 | 工單製程規劃（建生產任務挑計價選項 → 設前置 → 登色數 → 填預計生產與放損 → 帶成本 → 選設備與目的站點填預計完成日） | [[工單製程規劃]] | 有：work-orders/detail/page.js；store 的 addProductionTask、updateProductionTask、applyTaskOrder、updateProcessInfo | 4.1 至 4.19 |
-| F 製程 | 主 | 工單製程審核（送審 → 主管檢視 → 核可） | [[工單製程審核]] | 有：work-orders/review-queue/page.js；store 的 submitProcess、approveProcess | 5.1、5.2、5.4、5.9 |
-| F 製程 | 主 | 交付產線（印務把生產任務交付給生管） | [[工單製程審核]]、[[生產流程]] | 有：deliverTasks | 5.3、5.5 |
-| F 製程 | 副 | 外發承作的印刷類工序照登色數、計畫設備留空、設備費為零 | [[工單製程規劃]] | 有：work-orders store 的外發任務分支（setOutsourceVendor、setOutsourceReceivedQty） | 4.7、4.14 |
-| F 製程 | 副 | 拼版模數在系統外算、填進材料型任務的預計生產 | [[工單製程規劃]] | 有：備料張為手填欄位，系統不代算 | 12.4 |
-| F 製程 | 副 | 良品已足下游所需時生管手動完成生產任務 | [[工單製程規劃]] | 有：production-floor 的 manuallyCompleteTask；work-orders 的 completeProductionTask | 7.16 |
-| F 製程 | 副 | 配方展開建工單、做過的工單沉澱回部件配方 | [[配方展開規則]]、[[印件生產流程]] | 有：recipes/print-items、recipes/components 兩組頁面；work-orders 的 replacePrintItemWorkOrders | 4.20、4.21、5.10 |
-| F 製程 | 副 | 紙本工單列印與送審前預覽（不含價格、限印務與生管） | [[工單]] | 有：work-orders/print/page.js | 5.6、5.7、5.8 |
-| F 製程 | 逆 | 印務主管退回製程（填退回原因、工單轉重新確認製程） | [[工單製程審核]] | 有：rejectProcess | 13.1（列待辦） |
-| F 製程 | 逆 | 印務收回已送審工單（填收回原因、回草稿） | [[工單製程審核]] | 有：withdrawProcess | 13.2、13.8（列待辦） |
-| F 製程 | 逆 | 工單異動與生產任務調整（加開、移除、作廢、報廢、減量、生管確認後回原狀態） | [[工單異動與生產任務調整]] | 有：confirmAdjustments、voidTask、scrapTask、excludeTaskByAdjustment、removeProductionTask、startRemakeProduction | 13.20（列待辦） |
+| F 製程 | 主 | 工單製程審核（送審 → 主管檢視 → 核可） | [[工單製程審核]] | 有：work-orders/review-queue/page.js；store 的 submitProcess、approveProcess | 8.1、8.2、8.4、8.9 |
+| F 製程 | 主 | 交付產線（印務把生產任務交付給生管） | [[工單製程審核]]、[[生產流程]] | 有：deliverTasks | 8.3、8.5 |
+| F 製程 | 副 | 外發承作的印刷類工序照登色數、計畫設備留空、設備費為零 | [[工單製程規劃]] | 有：work-orders store 的外發任務分支（setOutsourceVendor、setOutsourceReceivedQty） | 7.7、7.14 |
+| F 製程 | 副 | 拼版模數在系統外算、填進材料型任務的預計生產 | [[工單製程規劃]] | 有：備料張為手填欄位，系統不代算 | 15.4 |
+| F 製程 | 副 | 良品已足下游所需時生管手動完成生產任務 | [[工單製程規劃]] | 有：production-floor 的 manuallyCompleteTask；work-orders 的 completeProductionTask | 10.16 |
+| F 製程 | 副 | 配方展開建工單、做過的工單沉澱回部件配方 | [[配方展開規則]]、[[印件生產流程]] | 有：recipes/print-items、recipes/components 兩組頁面；work-orders 的 replacePrintItemWorkOrders | 7.20、7.21、8.10 |
+| F 製程 | 副 | 紙本工單列印與送審前預覽（不含價格、限印務與生管） | [[工單]] | 有：work-orders/print/page.js | 8.6、8.7、8.8 |
+| F 製程 | 逆 | 印務主管退回製程（填退回原因、工單轉重新確認製程） | [[工單製程審核]] | 有：rejectProcess | 16.1（列待辦） |
+| F 製程 | 逆 | 印務收回已送審工單（填收回原因、回草稿） | [[工單製程審核]] | 有：withdrawProcess | 13.2、16.8（列待辦） |
+| F 製程 | 逆 | 工單異動與生產任務調整（加開、移除、作廢、報廢、減量、生管確認後回原狀態） | [[工單異動與生產任務調整]] | 有：confirmAdjustments、voidTask、scrapTask、excludeTaskByAdjustment、removeProductionTask、startRemakeProduction | 16.20（列待辦） |
 
 ### G 生管接收與派工
 
 | 模組 | 類別 | 流程名 | wiki 卡 | Prototype 實作 | 測試情境 |
 | --- | --- | --- | --- | --- | --- |
-| G 派工 | 主 | 生管接收印務交付的自有工廠任務 | [[生管]]、[[生產任務]]、[[生產流程]] | 有：production-floor/receiving/page.js；store 的 receiveDeliveredTasks、confirmTaskReceipt | 6.2 |
+| G 派工 | 主 | 生管接收印務交付的自有工廠任務 | [[生管]]、[[生產任務]]、[[生產流程]] | 有：production-floor/receiving/page.js；store 的 receiveDeliveredTasks、confirmTaskReceipt | 9.2 |
 | G 派工 | 主 | 建工作包合批派工給師傅（填預計完成日、備註、確樣需求） | [[工作包]]、[[生產流程]] | 有：production-floor/work-packages、dispatch 兩頁；store 的 createWorkPackage、updateMaster、updateWorkPackage | 6.1、6.3 至 6.9 |
-| G 派工 | 副 | 派工不檢查前置到料、把關點在報工 | [[生產流程]]、[[工序相依性規則]] | 有：_lib 的 resolvePrecedence 只在報工時擋 | 6.10、7.1 |
-| G 派工 | 副 | 印務與印務主管代行生管的生產管理操作 | [[生管]] | 有：production-floor 各動作以 operator 傳入、不綁角色 | 7.4、7.5 |
+| G 派工 | 副 | 派工不檢查前置到料、把關點在報工 | [[生產流程]]、[[工序相依性規則]] | 有：_lib 的 resolvePrecedence 只在報工時擋 | 9.10、10.1 |
+| G 派工 | 副 | 印務與印務主管代行生管的生產管理操作 | [[生管]] | 有：production-floor 各動作以 operator 傳入、不綁角色 | 10.4、10.5 |
 
 ### H 報工與場內轉交
 
 | 模組 | 類別 | 流程名 | wiki 卡 | Prototype 實作 | 測試情境 |
 | --- | --- | --- | --- | --- | --- |
-| H 報工 | 主 | 師傅報工（填投入、良品、不良品與現場照；首次報工推進生產任務、工單、印件、訂單） | [[報工規則]] | 有：production-floor 的 submitWorkReport；work-orders 的 applyReportDelta、advanceOnFirstReport；orders 的 advanceOnFirstProductionReport | 7.4、7.11、7.12、7.14、7.15 |
-| H 報工 | 主 | 場內轉交（算可搬量 → 生管建轉交單 → 廠務搬運 → 抵達 → 收貨人點收 → 計入下游到料量） | [[場內轉交與更正]] | 有：production-floor/pending-moves、transfers 兩頁；store 的 createTransferTickets、startTransfer、deliverTransfer、receiveTransfer | 7.2、7.3、7.6、7.7、7.8、7.9 |
-| H 報工 | 副 | 三個報工入口與代報管道記錄 | [[報工規則]] | 有：submitWorkReport 依來源記管道 | 7.4 |
-| H 報工 | 副 | 報工權限守門與繞過介面時寫稽核日誌 | [[報工規則]] | 有：logReportGuardBypass；work-orders 的可見範圍過濾 | 7.5、11.14 |
-| H 報工 | 副 | 轉交單在待搬運態可改明細與數量 | [[場內轉交與更正]] | 有：updateTransferTicket | 7.6 |
+| H 報工 | 主 | 師傅報工（填投入、良品、不良品與現場照；首次報工推進生產任務、工單、印件、訂單） | [[報工規則]] | 有：production-floor 的 submitWorkReport；work-orders 的 applyReportDelta、advanceOnFirstReport；orders 的 advanceOnFirstProductionReport | 10.4、10.11、10.12、10.14、10.15 |
+| H 報工 | 主 | 場內轉交（算可搬量 → 生管建轉交單 → 廠務搬運 → 抵達 → 收貨人點收 → 計入下游到料量） | [[場內轉交與更正]] | 有：production-floor/pending-moves、transfers 兩頁；store 的 createTransferTickets、startTransfer、deliverTransfer、receiveTransfer | 10.2、10.3、10.6、10.7、10.8、10.9 |
+| H 報工 | 副 | 三個報工入口與代報管道記錄 | [[報工規則]] | 有：submitWorkReport 依來源記管道 | 10.4 |
+| H 報工 | 副 | 報工權限守門與繞過介面時寫稽核日誌 | [[報工規則]] | 有：logReportGuardBypass；work-orders 的可見範圍過濾 | 10.5、14.14 |
+| H 報工 | 副 | 轉交單在待搬運態可改明細與數量 | [[場內轉交與更正]] | 有：updateTransferTicket | 10.6 |
 | H 報工 | 副 | 來源生產任務轉報廢或已作廢時擋下在途單點收 | [[場內轉交與更正]] | 有：production-floor store 的點收把關（報廢與已作廢來源擋下） | 未涵蓋 |
-| H 報工 | 逆 | 報工作廢（量未流出者作廢並下修累計） | [[場內轉交與更正]] | 有：voidWorkReport | 13.9、13.22（列待辦） |
-| H 報工 | 逆 | 轉交單作廢重開（含勾「貨已在現場」直接以已送達生成） | [[場內轉交與更正]] | 有：voidTransfer、reopenTransferTicket | 13.10（列待辦） |
-| H 報工 | 逆 | 貨送錯站建回運單、點收後誤收站到料量減記 | [[場內轉交與更正]] | 有：createReturnTicket | 13.11（列待辦） |
-| H 報工 | 逆 | 良品已被已點收轉交單帶走時擋下作廢、改走人工註記 | [[場內轉交與更正]] | 有：voidWorkReport 的擋下分支；appendManualNote | 7.10 |
+| H 報工 | 逆 | 報工作廢（量未流出者作廢並下修累計） | [[場內轉交與更正]] | 有：voidWorkReport | 13.9、16.22（列待辦） |
+| H 報工 | 逆 | 轉交單作廢重開（含勾「貨已在現場」直接以已送達生成） | [[場內轉交與更正]] | 有：voidTransfer、reopenTransferTicket | 16.10（列待辦） |
+| H 報工 | 逆 | 貨送錯站建回運單、點收後誤收站到料量減記 | [[場內轉交與更正]] | 有：createReturnTicket | 16.11（列待辦） |
+| H 報工 | 逆 | 良品已被已點收轉交單帶走時擋下作廢、改走人工註記 | [[場內轉交與更正]] | 有：voidWorkReport 的擋下分支；appendManualNote | 10.10 |
 
 ---
 

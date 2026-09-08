@@ -9,7 +9,8 @@
     "test:e2e": "playwright test",
     "test:smoke": "playwright test --grep @smoke",
     "test:module": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "impact": "node scripts/impact.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
