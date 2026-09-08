@@ -24,6 +24,7 @@ Playwright 會自動在 3020 埠啟動 erp 開發伺服器（已在跑則沿用�
 | erp `(prototype)/MOCK-DATA-CHAIN.md` | mock 資料唯一正本，測試引用的單據編號一律出自這裡 |
 | `docs/scenario-catalog.md` | 情境目錄，一條情境對應一條測試 |
 | `docs/main-flow.md` | 主流程 smoke 站表：每站角色、動作、驗什麼 |
+| wiki `07-scenarios/` | 分母：每張業務情境卡都應有對應情境節與測試 |
 
 ## 撰寫規約
 
@@ -50,12 +51,14 @@ Playwright 會自動在 3020 埠啟動 erp 開發伺服器（已在跑則沿用�
 
 ## 迭代檢核表（每次 prototype 迭代，不論有沒有進 OpenSpec）
 
+迭代順序固定三步：wiki 業務情境卡先有（wiki-amend）→ 依卡在情境目錄補節並寫測試，跑一次應全紅 → 派工實作到綠、提交。wiki 業務情境卡（07-scenarios）就是分母：目錄每節的「依據」行指回卡名，用卡名一搜就知道有沒有測；不另設覆蓋清單。
+
 | 時機 | 做什麼 | 產出 |
 |------|------|------|
 | 規劃 | 用情境目錄找受影響的節；找不到就是新情境，先補目錄 | 測試影響清單：改哪些既有測試、新增哪些情境、mock 動哪裡 |
 | 派工 | 任務書帶測試影響清單與 mock 三步順序（先 MOCK-DATA-CHAIN、再 mock-data.js、再測試） | sub-agent 交回程式加測試 |
 | 實作後 | `npm run impact`（對映 erp 改動到章與測試）→ `npm run test:smoke` → 該章 `npm run test:module -- tests/e2e/<章>` | 三段結果 |
 | 提交前 | `npm test` 全套；commit 訊息附 smoke／模組／全套三個結果。影響清單為空且未改測試時，訊息寫明「無測試影響」理由 | erp 提交 |
-| 收尾 | 情境目錄該節更新、發現清單關掉已修項、覆蓋矩陣只在 wiki 流程增減時重做 | Sens 提交 |
+| 收尾 | 情境目錄該節更新（含「依據」wiki 卡名）、發現清單關掉已修項 | Sens 提交 |
 
 `npm run impact` 預設取 erp 工作區未提交變更加最近一筆提交；`npm run impact -- HEAD~3` 取範圍；`npm run impact -- --paths <檔>...` 直接給路徑。
