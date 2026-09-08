@@ -92,7 +92,7 @@ test('3.6 已開立的發票作廢重開', async ({ page }) => {
   await waitModalsClosed(page);
 
   // 原發票轉作廢並留作廢原因、退出對帳；該期開發票狀態先回已作廢
-  await expect(invoiceRow).toContainText('已作廢');
+  await expect(invoiceRow).toContainText('作廢');
   // 收款項目表以「款項」欄頭錨定，避免與款項紀錄區核銷分配欄同一期次描述文字混淆
   const installmentTable = page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '款項', exact: true }) });
   const installmentRow = installmentTable.locator('tr', { hasText: '訂金 30%' });
@@ -110,7 +110,7 @@ test('3.6 已開立的發票作廢重開', async ({ page }) => {
   await expect(installmentRow).toContainText('已開立');
   const voidedInvoiceRow = invoiceTable.locator('tr', { hasText: 'SSP-26081201' });
   await expect(voidedInvoiceRow).toContainText('NT$ 20,300');
-  await expect(voidedInvoiceRow).toContainText('已作廢');
+  await expect(voidedInvoiceRow).toContainText('作廢');
 });
 
 test('3.7 開出後折讓減額', async ({ page }) => {
@@ -130,7 +130,7 @@ test('3.7 開出後折讓減額', async ({ page }) => {
   await waitModalsClosed(page);
 
   // 折讓確認後訂單的發票淨額扣掉折讓金額，發票本身維持開立
-  await expect(invoiceRow).toContainText('已開立');
+  await expect(invoiceRow).toContainText('開立');
   await expect(page.getByText('發票淨額（含稅）').locator('xpath=following-sibling::div[1]')).toHaveText('NT$ 15,300');
 
   // 折讓單可另掛檔案（展開折讓子表看到回簽檔操作）；此處只驗證折讓明細列存在

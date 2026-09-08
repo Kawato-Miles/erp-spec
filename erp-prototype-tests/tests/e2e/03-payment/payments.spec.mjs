@@ -34,7 +34,7 @@ test('3.8 登錄款項並核銷分配到指定期次', async ({ page }) => {
 
   // 已完成後計入收款淨額，被分配到的期次收款狀態依累計入帳自動推導
   const installmentTable = page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '款項', exact: true }) });
-  await expect(installmentTable.locator('tr', { hasText: '尾款 70%' })).toContainText('已付款');
+  await expect(installmentTable.locator('tr', { hasText: '尾款 70%' })).toContainText('已收訖');
 
   // 三方對帳區的收款淨額同步變動：訂金 20,300 + 尾款 47,425 = 67,725，與應收總額差額歸零（標「對齊」）
   await expect(page.getByText('收款淨額（含稅）').locator('xpath=following-sibling::div[1]')).toHaveText('NT$ 67,725');
@@ -81,10 +81,10 @@ test('3.9 一筆匯款跨多期分配', async ({ page }) => {
   await toastText(page, /已新增款項紀錄/);
   await waitModalsClosed(page);
 
-  // 兩期的收款狀態依各自累計入帳分別推導、互不干擾：尾款 15,000/24,696 部分付款；加開驗收款 5,000/5,000 已付款
+  // 兩期的收款狀態依各自累計入帳分別推導、互不干擾：尾款 15,000/24,696 部分收款；加開驗收款 5,000/5,000 已收訖
   const installmentTable = page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '款項', exact: true }) });
-  await expect(installmentTable.locator('tr', { hasText: '尾款 70%' })).toContainText('部分付款');
-  await expect(installmentTable.locator('tr', { hasText: '加開驗收款' })).toContainText('已付款');
+  await expect(installmentTable.locator('tr', { hasText: '尾款 70%' })).toContainText('部分收款');
+  await expect(installmentTable.locator('tr', { hasText: '加開驗收款' })).toContainText('已收訖');
 });
 
 test('3.10 溢收餘額掛預收（未分配）', async ({ page }) => {
@@ -118,7 +118,7 @@ test('3.10 溢收餘額掛預收（未分配）', async ({ page }) => {
 
   // 這筆錢沒有任何一塊錢懸空：期次全額收訖，系統不另設預收專用入口與預收清單
   const installmentTable = page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '款項', exact: true }) });
-  await expect(installmentTable.locator('tr', { hasText: '尾款 70%' })).toContainText('已付款');
+  await expect(installmentTable.locator('tr', { hasText: '尾款 70%' })).toContainText('已收訖');
   await expect(page.getByText('預收', { exact: false })).toHaveCount(0);
 });
 

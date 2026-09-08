@@ -50,11 +50,11 @@ describe('3.1 業務規劃收款項目分期', () => {
     });
     const order = orderOf('ORD-2026-0901');
     const added = order.billing_installments.find((bi) => bi.description === '加印款');
-    expect(added.invoice_status).toBe('尚未開立');
+    expect(added.invoice_status).toBe('未開立');
     expect(store().getOrder('ORD-2026-0901').billing_installments).toContainEqual(
       expect.objectContaining({ description: '加印款', amount_taxed: 3000 }),
     );
-    expect(calcInstallmentPaymentStatus(order, added)).toBe('未付款');
+    expect(calcInstallmentPaymentStatus(order, added)).toBe('未收');
   });
 
   it('編輯既有一期改金額；取消一期後退出合計與進度推導，但仍留在列表上', () => {
@@ -200,7 +200,7 @@ describe('3.4 以收款項目一鍵開立發票（金額口徑，錨例 ORD-2026
     expect(invoice.amount_taxed).toBe(47425);
     expect(invoice.sales_amount).toBe(45167);
     expect(invoice.tax_amount).toBe(2258);
-    expect(invoice.status).toBe('已開立');
+    expect(invoice.status).toBe('開立');
   });
 });
 
@@ -209,7 +209,7 @@ describe('3.6 已開立的發票作廢重開', () => {
     store().voidInvoice('ORD-2026-0710', 'INV-0710-1', '買受人統編打錯');
     const order = orderOf('ORD-2026-0710');
     const invoice = order.invoices.find((iv) => iv.id === 'INV-0710-1');
-    expect(invoice.status).toBe('已作廢');
+    expect(invoice.status).toBe('作廢');
     expect(invoice.invalid_reason).toBe('買受人統編打錯');
     expect(installmentOf(order, 'BI-0710-1').invoice_status).toBe('已作廢');
   });
@@ -236,11 +236,11 @@ describe('3.6 已開立的發票作廢重開', () => {
     expect(bi.invoice_status).toBe('已開立');
     const newInvoiceNo = bi.invoice_info;
     const newInvoice = order.invoices.find((iv) => iv.invoice_no === newInvoiceNo);
-    expect(newInvoice.status).toBe('已開立');
+    expect(newInvoice.status).toBe('開立');
     expect(newInvoice.amount_taxed).toBe(20300);
 
     const oldInvoice = order.invoices.find((iv) => iv.id === 'INV-0710-1');
-    expect(oldInvoice.status).toBe('已作廢');
+    expect(oldInvoice.status).toBe('作廢');
     expect(oldInvoice.amount_taxed).toBe(20300); // 作廢張金額不受重開牽動
   });
 });
@@ -256,7 +256,7 @@ describe('3.7 開出後折讓減額', () => {
     store().createAllowance('ORD-2026-0710', invoice.id, { amount_taxed: 5000, reason: '色差客訴部分退款' });
     order = orderOf('ORD-2026-0710');
     const updated = order.invoices.find((iv) => iv.id === invoice.id);
-    expect(updated.status).toBe('已開立'); // 發票本身維持開立
+    expect(updated.status).toBe('開立'); // 發票本身維持開立
     const allowance = updated.allowances.find((a) => a.reason === '色差客訴部分退款');
     expect(allowance.status).toBe('已確認');
     expect(allowance.amount_taxed).toBe(5000);
@@ -348,8 +348,8 @@ describe('3.9 一筆匯款跨多期分配', () => {
     });
 
     order = orderOf('ORD-2026-0920');
-    expect(calcInstallmentPaymentStatus(order, bi1)).toBe('部分付款'); // 15,000 / 42,630
-    expect(calcInstallmentPaymentStatus(order, bi2)).toBe('部分付款'); // 5,000 / 10,000，兩期各自累計、互不干擾
+    expect(calcInstallmentPaymentStatus(order, bi1)).toBe('部分收款'); // 15,000 / 42,630
+    expect(calcInstallmentPaymentStatus(order, bi2)).toBe('部分收款'); // 5,000 / 10,000，兩期各自累計、互不干擾
   });
 });
 
@@ -374,7 +374,7 @@ describe('3.10 溢收餘額掛預收（未分配）', () => {
     const payment = updated.payments.find((p) => p.third_party_ref === 'TXN-OVERPAY-0920');
     // 這筆錢沒有任何一塊錢懸空：金額 30,000，已分配 27,630，未分配（記入預收）2,370
     expect(calcPaymentUnallocated(payment)).toBe(2370);
-    expect(calcInstallmentPaymentStatus(updated, bi1)).toBe('已付款'); // 15,000+27,630=42,630 已達門檻
+    expect(calcInstallmentPaymentStatus(updated, bi1)).toBe('已收訖'); // 15,000+27,630=42,630 已達門檻
   });
 });
 
@@ -404,7 +404,7 @@ describe('3.11 三方對帳與跨訂單四張清單', () => {
     const rows = pendingInvoiceRows(PAYMENT_MOCK_ORDERS);
     const bi0710 = rows.find((r) => r.order_no === 'ORD-2026-0710');
     expect(bi0710.amount_taxed).toBe(47425);
-    expect(bi0710.invoice_status).toBe('尚未開立');
+    expect(bi0710.invoice_status).toBe('未開立');
   });
 
   it('待退款清單與帳務異常清單皆無資料（現行資料沒有退款款項、沒有超收也沒有超額發票）', () => {

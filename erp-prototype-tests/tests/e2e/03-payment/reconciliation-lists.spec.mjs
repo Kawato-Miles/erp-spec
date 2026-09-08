@@ -34,7 +34,7 @@ test('3.11 三方對帳與跨訂單四張清單', async ({ page }) => {
   await gotoInApp(page, '/payment/pending-invoice');
   const pendingRow = page.locator('tr', { hasText: 'ORD-2026-0710' });
   await expect(pendingRow).toContainText('NT$ 47,425');
-  await expect(pendingRow).toContainText('尚未開立');
+  await expect(pendingRow).toContainText('未開立');
 
   // 待退款清單與帳務異常清單皆無資料，因為現行資料沒有退款款項、沒有超收也沒有超額發票
   await gotoInApp(page, '/payment/refund-payout');
