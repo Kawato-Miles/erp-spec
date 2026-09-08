@@ -245,10 +245,10 @@ test('11.7 品檢頁在手機寬度下的版型（原編號 120）', async ({ pa
   await expect(card).toContainText('累計（通過／不通過）');
   // 不是橫向捲動的表格：清單區塊裡沒有表格，整頁也不橫向捲動
   await expect(pendingPanel(page).locator('table')).toHaveCount(0);
-  const noOverflow = await page.evaluate(
-    () => document.documentElement.scrollWidth <= window.innerWidth + 1,
-  );
-  expect(noOverflow).toBe(true);
+  // 縮視窗後要等重排（角色切換器改成圖示等）完成再量，故輪詢
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), { timeout: 8000 })
+    .toBe(true);
 
   // 驗收表單為全寬單欄、按鈕單手按得到
   await card.getByRole('button', { name: '驗收' }).click();
