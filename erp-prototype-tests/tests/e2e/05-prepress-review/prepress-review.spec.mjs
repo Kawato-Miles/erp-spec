@@ -318,8 +318,11 @@ test('5.7 回簽前的印件不可分派審稿', async ({ page }) => {
   await page.locator('a', { hasText: 'ORD-2026-0913' }).click();
   await page.getByRole('tab', { name: /訂單項目/ }).click();
   const itemRow = page.locator('tr', { hasText: '秋季型錄拍攝背板 DM' });
-  await itemRow.getByRole('button', { name: '檢視印件' }).click();
-  await expect(page).toHaveURL(/\/print-items\/detail\/?\?id=pi-2026-0913/i);
+  // 清單剛重繪時第一次點擊可能落在尚未接上事件的節點，重試到網址換掉為止
+  await expect(async () => {
+    await itemRow.getByRole('button', { name: '檢視印件' }).click();
+    await expect(page).toHaveURL(/\/print-items\/detail\/?\?id=pi-2026-0913/i, { timeout: 4000 });
+  }).toPass({ timeout: 20000 });
 
   // 分派鈕停用，Tooltip 顯示回簽門檻理由（不整顆隱藏）
   const assignBtn = page.getByRole('button', { name: /分派審稿人員/ });
