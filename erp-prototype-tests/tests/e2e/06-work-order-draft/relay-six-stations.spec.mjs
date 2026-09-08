@@ -131,3 +131,44 @@ test('6.1 一件印件從放行到上產線的六站接力（原編號 72）', a
   await button(dispatchDialog, '確認派工').click();
   await expect(page.locator('body')).toContainText('指派 劉阿海');
 });
+
+// 6.12 起點：鏈六 ORD-2026-0903 旗下 PI-2026-0903（待確認製作細節、沒有工單），
+// 與 6.1 同一件印件、獨立的一條測試（各條測試整頁載入即重置記憶體狀態，互不干擾）。
+// 差別在入口：本條由印件詳情頁的頁首鈕確認，6.1 由待確認製作細節佇列頁確認，
+// 驗證兩個入口共用同一套流程（見 orders/_lib/production-detail-actions.js）。
+test('6.12 訂單管理人從印件詳情頁確認製作細節', async ({ page }) => {
+  test.setTimeout(120_000);
+
+  // 訂單管理人自訂單詳情訂單項目按「檢視印件」進印件詳情頁
+  await openScenario(page, '訂單管理人', '/orders/detail?id=ORD-2026-0903&tab=printItems', {
+    openAs,
+    switchRole,
+  });
+  const itemRow = page.locator('tr', { hasText: 'PI-2026-0903' });
+  await itemRow.getByRole('button', { name: '檢視印件' }).click();
+  await expect(page).toHaveURL(/\/print-items\/detail\/?\?id=pi-2026-0903/i, { timeout: 20000 });
+
+  // 標頭按「確認製作細節」並確認
+  await button(page, '確認製作細節').click();
+  const confirmModal = dialog(page);
+  await expect(confirmModal).toContainText('確認後系統將建立一張空工單草稿');
+  await button(confirmModal, '確認製作細節').click();
+  const toast = await page.locator('.ant-message-notice-content').last().innerText();
+  expect(toast).toContain('轉為「製程已確認」');
+  const workOrderNo = toast.match(/WO-\d{4}-\d{4}/)[0];
+
+  // 印製狀態格即時轉「製程已確認」
+  await expect(page.locator('body')).toContainText('製程已確認');
+  // 旗下工單頁籤即時多一張草稿
+  await openTab(page, '工單與生產任務');
+  await expect(page.locator('body')).toContainText(workOrderNo);
+
+  // 該印件自待確認製作細節佇列消失（仍為訂單管理人身分）
+  await goInApp(page, '/orders/production-detail-queue', gotoInApp);
+  await expect(rowOf(page, 'PI-2026-0903')).toHaveCount(0);
+
+  // 印務主管在待分派印件頁看得到它
+  await switchRole(page, '印務主管');
+  await goInApp(page, '/print-items/pending-assign', gotoInApp);
+  await expect(rowOf(page, 'PI-2026-0903')).toBeVisible();
+});

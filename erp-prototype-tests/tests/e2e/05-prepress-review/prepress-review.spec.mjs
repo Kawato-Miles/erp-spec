@@ -302,3 +302,28 @@ test('5.6 批次退件共用一句備註，改過的備註留得住軌跡（原�
   await page.locator('tr', { hasText: '菜單摺頁批次一' }).getByRole('button', { name: '檢視印件' }).click();
   await expect(page.getByRole('button', { name: '修改備註' })).toHaveCount(0);
 });
+
+// 5.7 起點：鏈八 ORD-2026-0913（審核通過，尚未回簽）旗下 PI-2026-0913（審稿狀態待分派）。
+// 待分派審稿佇列的母集合只收已成立（回簽後）訂單，這張單還沒回簽，故整張不出現；
+// 印件詳情頁的分派鈕原本沒有這道門檻，改在本條驗證兩處對齊。
+// 只驗前半（回簽前不可分派）：把訂單走到已回簽在同一條測試內太繁瑣（要另補收款與審核步驟），
+// 「回簽後兩處都能分派」對照組未驗，5.2／5.3 已驗過已成立訂單走分派全流程可正常運作。
+test('5.7 回簽前的印件不可分派審稿', async ({ page }) => {
+  // 訂單管理人開待分派審稿看不到 ORD-2026-0913
+  await openAs(page, '訂單管理人', '/prepress-review/pending-assign');
+  await expect(page.getByText('ORD-2026-0913', { exact: true })).toHaveCount(0);
+
+  // 進該印件詳情頁：訂單詳情訂單項目按「檢視印件」
+  await gotoInApp(page, '/orders');
+  await page.locator('a', { hasText: 'ORD-2026-0913' }).click();
+  await page.getByRole('tab', { name: /訂單項目/ }).click();
+  const itemRow = page.locator('tr', { hasText: '秋季型錄拍攝背板 DM' });
+  await itemRow.getByRole('button', { name: '檢視印件' }).click();
+  await expect(page).toHaveURL(/\/print-items\/detail\/?\?id=pi-2026-0913/i);
+
+  // 分派鈕停用，Tooltip 顯示回簽門檻理由（不整顆隱藏）
+  const assignBtn = page.getByRole('button', { name: /分派審稿人員/ });
+  await expect(assignBtn).toBeDisabled();
+  await assignBtn.locator('xpath=..').hover();
+  await expect(page.getByRole('tooltip')).toContainText('訂單回簽後才可分派審稿人員');
+});
