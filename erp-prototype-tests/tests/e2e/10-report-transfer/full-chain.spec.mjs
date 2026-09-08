@@ -83,7 +83,7 @@ test('10.14 最後一筆報工把工單、印件、訂單一路推到製作完�
   await transferAndReceive(page, '五色印刷');
   await reportTask(page, '軋盒成型', 2000);
 
-  // 最後一筆：糊盒成型（不需前置到料檢查，軋盒成型 needs_transfer 為否）
+  // 最後一筆：糊盒成型（前置軋盒成型不需轉交，到料量取它報出的累計良品 2,000，不必再走轉交點收）
   await gotoInApp(page, '/production-floor/work-packages');
   const pkgRow = page.locator('.ant-table-row', { hasText: '劉阿海' }).first();
   await pkgRow.getByRole('button', { name: '報工' }).click();

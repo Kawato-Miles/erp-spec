@@ -41,10 +41,20 @@ test('8.5 交付產線後的欄位一路帶到現場報工（原編號 112）', 
   await expect(page.getByText(/已建立工作包 .*，指派 劉阿海/)).toBeVisible();
   await waitModalsClosed(page);
 
-  // 三、師傅報工：印刷任務的前置（備料）尚未轉交到料，整批被擋下；備料任務照實收
+  // 三、師傅報工：印刷任務的前置（備料）尚未轉交到料，這筆連報工入口都沒有；備料任務照實收
   await switchRoleReliable(page, '師傅');
   await gotoInAppStable(page, '/production-floor/work-packages');
-  await page.getByRole('button', { name: '報工' }).first().click();
+  // 子表那一列的操作欄沒有報工（報不了的工不給入口，判定在 report-rules.canReportTask）
+  const pkgRow = page.locator('.ant-table-row').filter({ hasText: /^WP-/ }).first();
+  await pkgRow.getByLabel('展開行').click();
+  const printTaskRow = pkgRow
+    .locator('xpath=following-sibling::tr[1]')
+    .locator('tr')
+    .filter({ hasText: '名片雙面四色印刷' })
+    .first();
+  await expect(printTaskRow.getByRole('button', { name: '報工' })).toHaveCount(0);
+
+  await pkgRow.getByRole('button', { name: '報工' }).click();
   const reportDialog = page.locator('.ant-modal').filter({ hasText: '生產數量' }).last();
 
   // 報工表格只顯示目標數量與已報數量（沒有其他累計欄）
@@ -52,14 +62,10 @@ test('8.5 交付產線後的欄位一路帶到現場報工（原編號 112）', 
   await expect(reportHeaders.filter({ hasText: '目標數量' })).toHaveCount(1);
   await expect(reportHeaders.filter({ hasText: '已報數量' })).toHaveCount(1);
 
-  const printRow = reportDialog.locator('tbody tr').filter({ hasText: '名片雙面四色印刷' }).first();
-  await printRow.locator('.ant-input-number-input').nth(0).fill('100');
-  await printRow.locator('.ant-input-number-input').nth(1).fill('100');
-  await reportDialog.getByRole('button', { name: cjkName('送出報工') }).click();
-  await expect(page.getByText(/有 1 筆檢核未通過，整批未送出/)).toBeVisible();
-  await expect(printRow).toContainText('前置尚未到料');
-  await printRow.locator('.ant-input-number-input').nth(0).fill('0');
-  await printRow.locator('.ant-input-number-input').nth(1).fill('0');
+  // 批次報工只列可報工的任務：前置未到料的印刷任務不進這張表
+  await expect(
+    reportDialog.locator('tbody tr').filter({ hasText: '名片雙面四色印刷' }),
+  ).toHaveCount(0);
 
   // 備料任務（目標數量 628）報 700：累計超過目標照實收、不阻擋也不提示
   const materialRow = reportDialog

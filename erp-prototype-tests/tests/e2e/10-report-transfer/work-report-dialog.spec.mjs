@@ -58,10 +58,13 @@ test('10.5 報工權限綁在工作歸屬上（原編號 89）', async ({ page }
   await openAs(page, '師傅', '/production-floor/work-packages');
   await expect(page.getByText('WP-2026-0710-02')).toHaveCount(0); // 李榮發的包看不到
 
-  // 生管、印務、印務主管與主管可在本頁代報全廠
+  // 生管、印務、印務主管與主管可在本頁代報全廠：生管不是任何一包的指派師傅，
+  // 仍在別人的包（WP-2026-0710-01，指派師傅劉阿海）上看得到報工入口。
+  // 取有可報工任務的那一包來驗——報不了的工一律不給入口（WP-2026-0710-02 的唯一任務
+  // 前置尚未到料，全頁只有這一包報得動）
   await switchRole(page, '生管');
   await expect(
-    page.locator('tr', { hasText: 'WP-2026-0710-02' }).getByRole('button', { name: '報工' }),
+    page.locator('tr', { hasText: 'WP-2026-0710-01' }).getByRole('button', { name: '報工' }),
   ).toBeVisible();
 
   // 印務只在自己主責的工單看得到報工入口：WO-2026-0710 負責人為周建宏（印務本人）
