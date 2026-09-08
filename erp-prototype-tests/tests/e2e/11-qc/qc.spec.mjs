@@ -290,8 +290,8 @@ test('11.8 待驗量由轉交事實推導（原編號 121）', async ({ page }) 
   await expect(ticketRow).toContainText('500');
 });
 
-test('11.9 分次驗收與單筆在站量檢核（原編號 122）', async ({ page }) => {
-  // Miles 2026-09-08 裁決：待驗量為 0 時以驗收鈕停用取代開視窗後擋下
+test.fixme('11.9 分次驗收與單筆在站量檢核（原編號 122）', async ({ page }) => {
+  // Miles 2026-09-08：品檢 prototype 尚未完善、待調整，待驗量為 0 之後的防呆形式暫不驗收
   await setupQcReadyState(page);
   await gotoInAppSafe(page, '/qc-shipping/inspection');
   await inspectAtQc(page, { passed: 300, failed: 20 });

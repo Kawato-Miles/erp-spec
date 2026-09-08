@@ -48,12 +48,7 @@ test('14.6 成本區塊的角色可見性（原編號 57）', async ({ page }) =
   await expect(page.locator('body')).toContainText('毛利率');
 });
 
-test.fixme(
-  '14.7 印件詳情的工單與生產任務頁籤（原編號 58）——工單列七欄、生產任務子表十欄與情境相符' +
-    '（驗算過，見下方保留的步驟），唯情境「工單列預設全部展開」與實際不符：' +
-    'print-items/_components/detail/WorkOrdersTab.js 的 NestedTable 只設了 ' +
-    'expandedRowRender，沒有 defaultExpandAllRows（對照同層 production-floor/schedule 與 ' +
-    'prepress-review/ReviewOrderList 兩處都有帶這個旗標），工單列預設是收合的，需 Miles 裁決情境目錄或補旗標',
+test('14.7 印件詳情的工單與生產任務頁籤（原編號 58）',
   async ({ page }) => {
     // 起點資料：鏈七 PI-2026-0904（兩張工單）
     await openAs(page, '印務主管', '/print-items/detail?id=PI-2026-0904');
@@ -65,8 +60,9 @@ test.fixme(
     await expect(page.locator('body')).toContainText('預計交期');
     await expect(page.locator('body')).toContainText('預計完工日');
 
-    // 工單列預設全部展開
-    await expect(page.locator('tr.ant-table-expanded-row')).toHaveCount(2);
+    // 工單列預設收合（Miles 2026-09-08 維持先前拍板），逐張展開看生產任務
+    await expect(page.locator('tr.ant-table-expanded-row')).toHaveCount(0);
+    await page.locator('.ant-table-row-expand-icon').first().click();
 
     // 生產任務子表四個欄群共十欄：任務（序號、種類、任務名同一行）、印件部位、
     // 印務規劃（設備／承作、投產目標、預估成本、預計完成、前置）、現場執行（狀態、交付狀態、完成量），
