@@ -1,7 +1,7 @@
 ## 1. OpenSpec 收尾
 
 - [x] 1.1 確認四份 delta spec（order-management、quote-request、work-order、prepress-review）已通過 `openspec validate --changes`，且 `openspec status` 顯示 proposal / design / specs 三項為 done。
-- [ ] 1.2 待 Prototype 與測試施工完成、Miles 確認後執行 `openspec archive`，delta 併回四份 main spec。
+- [x] 1.2 待 Prototype 與測試施工完成、Miles 確認後執行 `openspec archive`，delta 併回四份 main spec。
 
 ## 2. Prototype：需求單模組（quote-prototype）
 
@@ -104,5 +104,5 @@
 
 ## 9. Linear 另案追蹤（不在本 change 施工範圍，僅記錄）
 
-- [ ] 9.1 記錄後端落差三條供另案 Linear 票：印件建立 API 不收印件類型與急件選項；訂單 `is_urgent` 欄位後端廢除；審稿前後預計出貨日兩欄與訂單更新可改清單的落差。
-- [ ] 9.2 記錄 OQ ORD-050（印件層交期成為承諾正本後訂單準時交貨率取數層級）為待拍板事項，不在本 change 處理。
+- [x] 9.1 記錄後端落差三條供另案 Linear 票：印件建立 API 不收印件類型與急件選項；訂單 `is_urgent` 欄位後端廢除；審稿前後預計出貨日兩欄與訂單更新可改清單的落差。
+- [x] 9.2 記錄 OQ ORD-050（印件層交期成為承諾正本後訂單準時交貨率取數層級）為待拍板事項，不在本 change 處理。
