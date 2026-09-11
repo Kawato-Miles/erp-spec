@@ -91,11 +91,8 @@ test('5.3 收稿開關由業務控制，上傳入口只給業務（原編號 148
   await addPendingReviewItem(page, { name: '菜單摺頁收稿測試' });
 
   const row = page.locator('tr', { hasText: '菜單摺頁收稿測試' });
-  // 把「稿件上傳開放」設為否
-  // 編輯印件側板的「印件難易度」為必填欄，新增印件 Dialog 未收此欄，故新造的印件第一次進側板
-  // 存檔前要先補上，否則整張表單驗證不過，任何欄位（含這裡要改的收稿開關）都存不進去
+  // 把「稿件上傳開放」設為否（addPendingReviewItem 已在新增當下填妥難易度等七項必填欄位）
   await row.getByRole('button', { name: '編輯印件' }).click();
-  await page.getByLabel(/印件難易度/).fill('3');
   const uploadSwitch = page.locator('.ant-form-item', { hasText: '稿件上傳開放' }).locator('.ant-switch');
   await uploadSwitch.click();
   await page.getByRole('button', { name: '確認' }).click();
@@ -326,4 +323,20 @@ test('5.7 回簽前的印件不可分派審稿', async ({ page }) => {
 
   // 分派鈕整顆不出現（當前狀態無法使用的功能就隱藏，不停用、不提示）
   await expect(page.getByRole('button', { name: /分派審稿人員/ })).toHaveCount(0);
+});
+
+// 5.14 起點：鏈八 ORD-2026-0920（訂單交期 2026-10-08）旗下 PI-2026-0921「量販促銷吊卡」
+// （一般件，訂單交期鏡射訂單訂單交期）。/prepress-review 的訂單列表 defaultExpandAllRows，
+// 子表一律已展開，不需另外點展開圖示。排序（5.13）與空值情境用純函式驗證，
+// 見 tests/unit/print-items/rules-prepress-review-sort.test.mjs；本條只驗畫面呈現的欄位與值。
+test('5.14 待審訂單模組母列顯示訂單交期、子列訂單交期與預計交期並列', async ({ page }) => {
+  await openAs(page, '訂單管理人', '/prepress-review');
+  const orderRow = page.getByText('ORD-2026-0920', { exact: true }).locator('xpath=ancestor::tr[1]');
+  // 母列顯示訂單單頭的訂單交期
+  await expect(orderRow.getByText('2026-10-08')).toBeVisible();
+
+  // 子列印件訂單交期與預計交期並列：一般件，預計交期＝訂單交期（2026-10-08）－1 天＝2026-10-07
+  const itemRow = reviewRow(page, '量販促銷吊卡');
+  await expect(itemRow.getByText('2026-10-08')).toBeVisible();
+  await expect(itemRow.getByText('2026-10-07')).toBeVisible();
 });

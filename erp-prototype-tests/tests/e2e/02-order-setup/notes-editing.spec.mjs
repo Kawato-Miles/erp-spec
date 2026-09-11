@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { openAs, switchRole } from '../_helpers.mjs';
-import { activityItem, button, drawer, openByNo, openScenario, openTab } from './_local.mjs';
+import { activityItem, button, drawer, openByNo, openScenario, openTab, panelSection } from './_local.mjs';
 
 test('2.7 三類備註各自獨立編輯，訂單完成後仍可改（商業需求覆蓋矩陣 B）', async ({ page }) => {
   test.setTimeout(90_000);
@@ -10,7 +10,7 @@ test('2.7 三類備註各自獨立編輯，訂單完成後仍可改（商業需�
   await openTab(page, '資訊');
   await expect(page.locator('body')).toContainText('專車配送至誠品信義店收貨處');
 
-  await button(page, '編輯').click();
+  await button(panelSection(page, '訂單備註'), '編輯').click();
   const panel = drawer(page);
   await expect(panel).toContainText('訂單須知');
   await expect(panel).toContainText('交貨備註');
@@ -24,14 +24,14 @@ test('2.7 三類備註各自獨立編輯，訂單完成後仍可改（商業需�
 
   // 動其中一欄不影響其餘兩欄：訂單須知與付款備註仍為空
   await expect(page.locator('body')).toContainText('2.7 交貨備註改版：專車配送並事先電話確認');
-  await button(page, '編輯').click();
+  await button(panelSection(page, '訂單備註'), '編輯').click();
   const panel2 = drawer(page);
   await expect(panel2.locator('textarea').nth(0)).toHaveValue('');
   await expect(panel2.locator('textarea').nth(2)).toHaveValue('');
   await button(panel2, '取消').click();
 
   // 訂單完成後三欄仍可編輯（只有已取消才鎖）
-  await expect(button(page, '編輯')).toBeVisible();
+  await expect(button(panelSection(page, '訂單備註'), '編輯')).toBeVisible();
 
   await openTab(page, '活動紀錄');
   await expect(activityItem(page, '編輯訂單備註')).toHaveCount(1);

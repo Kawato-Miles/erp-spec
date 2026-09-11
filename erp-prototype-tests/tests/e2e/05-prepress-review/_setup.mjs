@@ -5,12 +5,22 @@ import { switchRole, gotoInApp, clickIntoDetail, cjkName } from '../_helpers.mjs
 // 造一件測試用印件。呼叫端須已完成 openAs 並站在 /orders/detail?id=ORD-2026-0903&tab=printItems，
 // 本函式不含 openAs／page.goto（同一情境內只允許第一步整頁載入）。
 //
-// 新增印件 Dialog 欄位（依 orders/_components/detail/ItemsTab.js「新增印件 Dialog」）：
-// 印件名稱（必填）、類型（打樣印件／大貨印件）、免審稿（Switch，預設關）、
-// 急件選項（必填，預設不選）、備註（選填）。
+// 新增印件 Dialog 欄位（依 orders/_components/detail/ItemsTab.js「新增印件 Dialog」，
+// order-management spec § 新增印件欄位與必填檢核）：七項必填——印件名稱、生產類型
+// （打樣印件／大貨印件）、購買數量、單位、單價、急件選項、難易度；免審稿（Switch，預設關）
+// 與訂單交期等八項選填。本函式對七項必填一律帶預設值，呼叫端只需關心該情境要驗的那個欄位。
 export async function addPendingReviewItem(
   page,
-  { name, type = '大貨印件', skipReview = false, urgentOption = '一般件' } = {},
+  {
+    name,
+    type = '大貨印件',
+    skipReview = false,
+    urgentOption = '一般件',
+    orderedQty = 100,
+    unit = '張',
+    unitPrice = 10,
+    difficulty = 3,
+  } = {},
 ) {
   await page.getByRole('button', { name: '新增印件' }).click();
   const modal = page.locator('.ant-modal-content');
@@ -18,11 +28,25 @@ export async function addPendingReviewItem(
 
   await page.getByLabel('印件名稱').fill(name);
   await modal.getByText(type, { exact: true }).click();
+  await page.getByLabel('購買數量').fill(String(orderedQty));
+  // 可見選項用 .ant-select-item-option class 篩選：role=option 那份是畫面外隱藏複本（README 執行注意事項）
+  await page.locator('.ant-select:has(#unit)').click();
+  await page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
+    .last()
+    .locator('.ant-select-item-option', { hasText: unit })
+    .click();
+  await page.locator('#unit_price_untaxed').fill(String(unitPrice));
   if (skipReview) {
     await modal.locator('.ant-switch').click();
   }
   await page.locator('.ant-select:has(#urgent_option_id)').click();
-  await page.locator('.ant-select-dropdown').last().getByText(urgentOption, { exact: true }).click();
+  await page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
+    .last()
+    .locator('.ant-select-item-option', { hasText: urgentOption })
+    .click();
+  await page.locator('#difficulty_level').fill(String(difficulty));
 
   await modal.getByRole('button', { name: '新增印件', exact: true }).click();
   // Modal 的確認鈕文字與頁首觸發鈕同為「新增印件」：等對話框關閉再回傳，避免連續呼叫兩次時

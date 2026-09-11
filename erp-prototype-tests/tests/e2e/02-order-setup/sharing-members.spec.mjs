@@ -8,6 +8,7 @@ import {
   openByNo,
   openScenario,
   openTab,
+  panelSection,
   pickOption,
 } from './_local.mjs';
 
@@ -47,7 +48,7 @@ test('2.10 分享成員代為操作，活動紀錄歸實際操作者（商業需
 
   // 以被分享者（張惠雯，模擬角色「諮詢」）身分對這張訂單做一次編輯：改交貨備註
   await switchRole(page, '諮詢');
-  await button(page, '編輯').click();
+  await button(panelSection(page, '訂單備註'), '編輯').click();
   const notePanel = drawer(page);
   await notePanel.locator('textarea').nth(1).fill('2.10 分享成員代操作：改交貨備註');
   await button(notePanel, '確認').click();

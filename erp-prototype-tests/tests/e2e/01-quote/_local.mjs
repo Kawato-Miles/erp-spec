@@ -79,8 +79,21 @@ export const fakeFile = (name, mimeType = 'application/pdf') => ({
 
 // ─── 需求單章專用高階流程（build helper） ───
 
+/** 填 AntD DatePicker：填入 YYYY-MM-DD 文字後按 Enter 確認（不開日曆面板點格子） */
+export async function pickDate(input, value) {
+  await input.click();
+  await input.fill(value);
+  await input.press('Enter');
+}
+
+/** 清空 AntD DatePicker 已預填的值（點 hover 才顯示的清除圖示，force 略過可見性檢查） */
+export async function clearDate(scope, label) {
+  await scope.locator('.ant-form-item', { hasText: label }).locator('.ant-picker-clear').click({ force: true });
+}
+
 /**
  * 業務在需求單列表建一張新單頭並進入詳情頁。回傳新單號，操作結束時已在詳情頁。
+ * orderDueDate 選填：單頭「訂單交期」，建立時會預填到之後新增的各印件項目（可逐列改寫或清空）。
  */
 export async function createQuoteHeader(
   page,
@@ -91,6 +104,7 @@ export async function createQuoteHeader(
     sales = '洪嘉駿',
     estimators = ['吳國豪'],
     billing = '感官SSP',
+    orderDueDate,
   },
 ) {
   const panel = drawer(page);
@@ -103,6 +117,7 @@ export async function createQuoteHeader(
     await pickMulti(page, panel.getByLabel('評估印務主管'), estimator);
   }
   await pickOption(page, panel.getByLabel('帳務公司'), billing);
+  if (orderDueDate) await pickDate(panel.getByLabel('訂單交期'), orderDueDate);
   await button(panel, '確認').click();
   await waitModalsClosed(page);
 
@@ -116,10 +131,12 @@ export async function createQuoteHeader(
 /**
  * 在詳情頁新增一筆印件項目。difficulty／unitPrice／costEstimate 為 null 時該欄留空
  * （用於測試「缺漏即擋下轉換」）。
+ * orderDueDate 選填：不傳＝維持新增當下預填的單頭訂單交期；傳字串＝逐列改寫成該日期；
+ * 傳 null＝清空（覆蓋「這件還沒談定交期」的情境）。
  */
 export async function addItem(
   page,
-  { name, productionType = '大貨', quantity = '100', difficulty = 3, unitPrice, costEstimate },
+  { name, productionType = '大貨', quantity = '100', difficulty = 3, unitPrice, costEstimate, orderDueDate },
 ) {
   const panel = drawer(page);
   await clickOpen(button(page, '新增印件'), panel.getByLabel('項目名稱'));
@@ -130,6 +147,11 @@ export async function addItem(
   if (unitPrice != null) await panel.getByLabel('單價（未稅）').fill(String(unitPrice));
   if (costEstimate != null) {
     await panel.getByLabel('成本估算（未稅）').fill(String(costEstimate));
+  }
+  if (orderDueDate === null) {
+    await clearDate(panel, '訂單交期');
+  } else if (orderDueDate !== undefined) {
+    await pickDate(panel.getByLabel('訂單交期'), orderDueDate);
   }
   await button(panel, '確認').click();
   await waitModalsClosed(page);

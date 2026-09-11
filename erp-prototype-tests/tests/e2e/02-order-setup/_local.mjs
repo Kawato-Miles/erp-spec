@@ -4,6 +4,13 @@ import { expect } from '@playwright/test';
 
 export const spaced = (label) => new RegExp(`${label.split('').join('\\s*')}$`);
 export const button = (scope, label) => scope.getByRole('button', { name: spaced(label) });
+
+// 訂單資訊分區編輯（delivery-date-chain-alignment 新增「訂單資訊」編輯鈕）後，「訂單資訊」與
+// 「訂單備註」兩個 PanelBlock 標題列的編輯鈕都未設 aria-label，可及名稱皆為圖示文字＋label 組合
+// （如「edit 編輯」），單靠按鈕名互相混淆。改以各自 PanelBlock 標題（level 5 heading）所在的
+// 標題列（最近一個含 button 子孫的祖先容器）定位，避開可及名稱組合方式的差異。
+export const panelSection = (page, heading) =>
+  page.getByRole('heading', { name: heading, level: 5 }).locator('xpath=ancestor::div[.//button][1]');
 export const dialog = (page) => page.locator('.ant-modal-content:visible').last();
 export const drawer = (page) => page.locator('.ant-drawer-content').last();
 

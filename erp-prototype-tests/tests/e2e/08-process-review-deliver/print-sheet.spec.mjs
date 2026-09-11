@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { openAs } from '../_helpers.mjs';
+import { gotoInApp, openAs } from '../_helpers.mjs';
 import {
   clickAndWaitUrl,
   gotoWorkOrderList,
@@ -47,7 +47,8 @@ test('8.6 印務列印紙本工單，版式與欄位範圍固定且不含價格�
     ['工單編號', 'WO-2026-0908', '客戶', '青硯文具股份有限公司'],
     ['印件名稱', '名片', '印務', '周建宏'],
     ['印件數量', '123', '電話', ''],
-    ['工單日期', '2026-09-03', '交期', '2026-09-10'],
+    // 交期取印件的「預計交期」（本印件訂單交期 2026-09-10 − 1 天、一般件不再多減）
+    ['工單日期', '2026-09-03', '交期', '2026-09-09'],
   ];
   for (const [k1, v1, k2, v2] of pairs) {
     const row = infoTable.locator('tr').filter({ hasText: k1 }).first();
@@ -172,10 +173,10 @@ test('8.7 送審前可預覽紙本，列印權限限印務與生管（原編號 
 test('8.8 急件工單的紙本標示與交期（原編號 170）', async ({ page }) => {
   await openAs(page, '印務', '/work-orders/print?id=wo-2026-0820');
 
-  // 交期取印件的「訂單交期（扣除急件）」推導值（客戶交期 2026-09-10 減三天急件）
+  // 交期取印件的「預計交期」推導值：本印件訂單交期 2026-09-10 − 1 天 − 三天急件凍結天數 ＝ 2026-09-06
   const infoTable = page.locator('table').first();
   const dueRow = infoTable.locator('tr').filter({ hasText: '交期' }).first();
-  await expect(dueRow).toContainText('2026-09-07');
+  await expect(dueRow).toContainText('2026-09-06');
 
   // 明細每一列的製作細節欄列首都有紅色急件標記
   const detailRows = page.locator('table').nth(1).locator('tbody tr');
@@ -188,7 +189,8 @@ test('8.8 急件工單的紙本標示與交期（原編號 170）', async ({ pag
     await expect(mark).toHaveCSS('color', 'rgb(226, 52, 29)');
   }
 
-  // 一般件的對照組：沒有急件標記，交期照客戶交期
+  // 一般件的對照組（錨例 WO-2026-0908／PI-2026-0801）：沒有急件標記，
+  // 交期＝本印件訂單交期 2026-09-10 − 1 天（一般件凍結天數 0）＝ 2026-09-09
   await clickAndWaitUrl(
     page,
     page.getByRole('button', { name: '回工單詳情' }).first(),
@@ -203,5 +205,38 @@ test('8.8 急件工單的紙本標示與交期（原編號 170）', async ({ pag
   await expect(page.getByText('＊急件')).toHaveCount(0);
   await expect(
     page.locator('table').first().locator('tr').filter({ hasText: '交期' }).first(),
-  ).toContainText('2026-09-10');
+  ).toContainText('2026-09-09');
+});
+
+test('8.8（補）工單交期為空時印據表頭印「－」', async ({ page }) => {
+  // 鏈二 PI-2026-0710／WO-2026-0710：業務把印件的訂單交期清空，預計交期同為空、
+  // 非終態工單的預計交期同步為 null；印據表頭不留空白、不擋列印，印「－」（work-order spec
+  // § 工單列印單據 Scenario「工單交期為空時印據表頭印「－」」）。
+  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=printItems');
+  const row = page.locator('tr', { hasText: 'PI-2026-0710' });
+  await row.getByRole('button', { name: '編輯印件' }).click();
+  // 清除鈕只在 hover 時才顯示、位置常落在可視區外；直接對元素派送 click 事件繞開座標可視性檢查
+  const dueDateClear = page.locator('.ant-form-item', { hasText: '訂單交期' }).locator('.ant-picker-clear');
+  await dueDateClear.waitFor({ state: 'attached' });
+  await dueDateClear.evaluate((el) => el.click());
+  await page.getByRole('button', { name: '確認' }).click();
+  await expect(page.getByText(/已更新印件，預計交期已重推導為「未定」/)).toBeVisible();
+  await expect(row.getByText('—').first()).toBeVisible();
+
+  await switchRoleReliable(page, '印務');
+  // 目前站在訂單詳情頁（非工單詳情頁），gotoWorkOrderList／openWorkOrderFromList 假設呼叫端
+  // 已在工單模組內、靠頁首返回鍵離開，這裡改直接以側欄站內導頁到工單列表再搜尋
+  await gotoInApp(page, '/work-orders');
+  const search = page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或客戶名稱');
+  await search.fill('WO-2026-0710');
+  await search.press('Enter');
+  await page.getByText('WO-2026-0710', { exact: true }).first().click();
+  await clickAndWaitUrl(
+    page,
+    page.getByRole('button', { name: '列印紙本工單' }),
+    /\/work-orders\/print/,
+  );
+  const infoTable = page.locator('table').first();
+  const dueRow = infoTable.locator('tr').filter({ hasText: '交期' }).first();
+  await expect(dueRow).toContainText('—');
 });
