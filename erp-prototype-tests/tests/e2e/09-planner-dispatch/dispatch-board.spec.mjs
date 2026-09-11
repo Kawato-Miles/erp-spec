@@ -66,7 +66,7 @@ test('9.6 生管在派工時系統補寫接收留痕（原編號 80）', async (
   await expect(page.getByText(/已建立工作包.*已一併補寫接收留痕/)).toBeVisible();
 });
 
-test('9.7 工廠總覽待排區顯示印件預計交期（原編號 81）', async ({ page }) => {
+test('9.7 工廠總覽待排區顯示印件內部完成日（原編號 81）', async ({ page }) => {
   await openAs(page, '生管', '/production-floor/schedule');
   await expect(page.getByText('待排區（已交付產線、未入工作包）')).toBeVisible();
   // 待排區固定排在頁面最後一塊，取最後一張表格即為它（避免與各視角內的其他表格混淆）
@@ -77,7 +77,7 @@ test('9.7 工廠總覽待排區顯示印件預計交期（原編號 81）', asyn
   await expect(table.getByRole('columnheader', { name: '類別' })).toBeVisible();
   await expect(table.getByRole('columnheader', { name: '計畫設備' })).toBeVisible();
   await expect(table.getByRole('columnheader', { name: '預計完成日' })).toBeVisible();
-  await expect(table.getByRole('columnheader', { name: '印件預計交期' })).toBeVisible();
+  await expect(table.getByRole('columnheader', { name: '印件內部完成日' })).toBeVisible();
   await expect(table.getByRole('columnheader', { name: '估工時' })).toBeVisible();
   await expect(table.getByRole('cell', { name: 'WO-2026-0815' }).first()).toBeVisible();
 
@@ -86,12 +86,11 @@ test('9.7 工廠總覽待排區顯示印件預計交期（原編號 81）', asyn
   await expect(page.getByText('待排區（已交付產線、未入工作包）')).toBeVisible();
 });
 
-// 交期鏈重構（delivery-date-chain-alignment）後，本欄改顯示印件的「預計交期」（訂單交期 − 1 天
-// − 急件凍結天數）。待排區只列鏈三 WO-2026-0815 的四筆待接收任務（package_id 為空，見
-// MOCK-DATA-CHAIN.md），無法換其他鏈驗證。production-floor/_lib/mock-data.js 的
-// print_item_delivery_date 已同步改為 2026-10-04（印件 PI-2026-0815 訂單交期 2026-10-05 − 1 天，
-// 一般件），與 print-items/_lib/mock-data.js、work-orders/_lib/mock-data.js 的 delivery_date 一致。
-test('9.7（補）待排區印件預計交期欄位取值正確', async ({ page }) => {
+// 本欄顯示印件的「內部完成日」（預計出貨日 − 1 天 − 急件凍結天數）。待排區只列鏈三 WO-2026-0815
+// 的四筆待接收任務（package_id 為空，見 MOCK-DATA-CHAIN.md），無法換其他鏈驗證。
+// production-floor/_lib/mock-data.js 的 print_item_delivery_date 為 2026-10-04（印件 PI-2026-0815
+// 預計出貨日 2026-10-05 − 1 天，一般件），與 print-items、work-orders 兩模組的 delivery_date 一致。
+test('9.7（補）待排區印件內部完成日欄位取值正確', async ({ page }) => {
   await openAs(page, '生管', '/production-floor/schedule');
   const table = page.locator('.ant-table').last();
   const row = table.locator('tr', { hasText: 'WO-2026-0815' }).first();

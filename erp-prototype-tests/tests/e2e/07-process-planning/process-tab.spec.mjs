@@ -281,3 +281,62 @@ async function fillTaskEndDate(page, taskName, date) {
   await taskForm(page).getByRole('button', { name: '儲存' }).click();
   await expect(taskForm(page)).toHaveCount(0);
 }
+
+// 7.23 起點：鏈五 WO-2026-0901（草稿、印務登打中），所屬印件 PI-2026-0901 的內部完成日為
+// 2026-09-24。超期只提示不擋：規則正本 wiki [[交期鏈]]（Miles 2026-09-11 拍板），判定函式在
+// work-orders/_lib/task-due-date-warning.js，納入與排除哪些任務由 7.24 純函式驗算。
+test('7.23 生產任務的預計完成日晚於工單內部完成日時軟提示，不擋存檔', async ({ page }) => {
+  await openAs(page, '印務', '/work-orders');
+  await openWorkOrder(page, 'WO-2026-0901');
+
+  // 既有四筆任務的預計完成日皆未填，清單上沒有任何超期標示
+  await expect(page.getByText('超出內部完成日')).toHaveCount(0);
+
+  // 新增一筆裝訂任務，預計完成日填 2026-09-28（晚於內部完成日 2026-09-24 四天）
+  await page.getByRole('button', { name: '新增生產任務' }).click();
+  await pickBomRow(page, { tab: '裝訂', keyword: '騎馬釘' });
+  await formField(page, '印件部位').locator('input').fill('內頁');
+  await formField(page, '目的站點').locator('.ant-select').click();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Enter');
+  const endDate = formField(page, '預計完成日').locator('input');
+  await endDate.fill('2026-09-28');
+  await page.keyboard.press('Enter');
+  await switchFormTab(page, '數量與放損');
+  await formField(page, '預計生產').locator('input').fill('3000');
+  await taskForm(page).getByRole('button', { name: '新增任務' }).click();
+
+  // 存檔照樣成功（表單關閉、任務進清單），另出現一句提示寫明晚於內部完成日、已存檔
+  await expect(taskForm(page)).toHaveCount(0);
+  await expect(page.getByText(/已新增生產任務「騎馬釘裝訂」/)).toBeVisible();
+  await expect(
+    page.getByText(
+      /生產任務「騎馬釘裝訂」的預計完成日 2026-09-28 晚於本工單內部完成日 2026-09-24，已存檔，請自行確認排程/,
+    ),
+  ).toBeVisible();
+
+  // 任務列的預計完成欄旁掛「超出內部完成日」標籤
+  const taskRow = page.locator('tr.ant-table-row').filter({ hasText: '騎馬釘裝訂' }).first();
+  await expect(taskRow.getByText('超出內部完成日')).toBeVisible();
+
+  // 改成同日 2026-09-24：標籤消失（同日不算超期）
+  await setTaskEndDate(page, '騎馬釘裝訂', '2026-09-24');
+  await expect(page.getByText('超出內部完成日')).toHaveCount(0);
+  await expect(taskRow).toContainText('2026-09-24');
+
+  // 再改成早於內部完成日的 2026-09-20：一樣不標示
+  await setTaskEndDate(page, '騎馬釘裝訂', '2026-09-20');
+  await expect(page.getByText('超出內部完成日')).toHaveCount(0);
+  await expect(taskRow).toContainText('2026-09-20');
+});
+
+// 改某一筆生產任務的預計完成日（走該列的編輯對話框）
+async function setTaskEndDate(page, taskName, date) {
+  const row = page.locator('tr.ant-table-row').filter({ hasText: taskName }).first();
+  await row.getByRole('button', { name: '編輯' }).click();
+  const input = formField(page, '預計完成日').locator('input');
+  await input.fill(date);
+  await page.keyboard.press('Enter');
+  await taskForm(page).getByRole('button', { name: '儲存' }).click();
+  await expect(taskForm(page)).toHaveCount(0);
+}

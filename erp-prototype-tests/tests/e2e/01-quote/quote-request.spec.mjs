@@ -12,7 +12,6 @@ import {
   fakeFile,
   fillCostAndCompleteEstimate,
   openTab,
-  pickDate,
   pickOption,
   quoteCurrentStep,
   rowOf,
@@ -348,36 +347,23 @@ test('1.9 需求單狀態只出現六個值，顯示名依 wiki', async ({ page 
   await expect(steps.last()).toHaveClass(/ant-steps-item-finish/);
 });
 
-test('1.10 單頭訂單交期預填至印件項目、業務逐列可改', async ({ page }) => {
+test('1.10 成交轉訂單印件項目預計出貨日逐件帶入、空的就留空', async ({ page }) => {
+  test.setTimeout(90_000);
   const title = '1.10 情境需求案';
   await openAs(page, '業務', '/quote-prototype');
-  await createQuoteHeader(page, { title, orderDueDate: '2026-09-20' });
-  await addItem(page, { name: '名片印件' });
-  await addItem(page, { name: '型錄印件' });
+  await createQuoteHeader(page, { title });
 
-  // 單頭訂單交期建立時已預填到兩筆印件項目
-  await expect(rowOf(page, '名片印件')).toContainText('2026-09-20');
-  await expect(rowOf(page, '型錄印件')).toContainText('2026-09-20');
-
-  // 業務把名片印件的訂單交期改為 2026-09-05，型錄印件維持單頭預填值，兩者互不影響
+  // 新增印件項目時預計出貨日一律空白、無預設值（需求單單頭已無交期欄可預填）
   const panel = drawer(page);
-  await clickOpen(rowOf(page, '名片印件').getByRole('button').first(), panel.getByLabel('項目名稱'));
-  await pickDate(panel.getByLabel('訂單交期'), '2026-09-05');
-  await button(panel, '確認').click();
+  await clickOpen(button(page, '新增印件'), panel.getByLabel('項目名稱'));
+  await expect(panel.locator('#order_due_date')).toHaveValue('');
+  await button(panel, '取消').click();
   await waitModalsClosed(page);
 
-  await expect(rowOf(page, '名片印件')).toContainText('2026-09-05');
-  await expect(rowOf(page, '型錄印件')).toContainText('2026-09-20');
-});
-
-test('1.11 成交轉訂單印件項目訂單交期分層帶入、空值不取單頭補', async ({ page }) => {
-  test.setTimeout(90_000);
-  const title = '1.11 情境需求案';
-  await openAs(page, '業務', '/quote-prototype');
-  await createQuoteHeader(page, { title, orderDueDate: '2026-09-20' });
-  // 名片印件改談自己的訂單交期（不等於單頭值）；型錄印件刻意清空，代表還沒跟客戶談定這件的交期
+  // 名片印件填自己談定的預計出貨日；型錄印件不填，代表還沒跟客戶談定這件的交貨日
   await addItem(page, { name: '名片印件', quantity: '100', unitPrice: '10', orderDueDate: '2026-09-05' });
-  await addItem(page, { name: '型錄印件', quantity: '50', unitPrice: '20', orderDueDate: null });
+  await addItem(page, { name: '型錄印件', quantity: '50', unitPrice: '20' });
+  await expect(rowOf(page, '名片印件')).toContainText('2026-09-05');
 
   await button(page, '送印務評估').click();
   await switchRole(page, '印務主管');
@@ -389,14 +375,15 @@ test('1.11 成交轉訂單印件項目訂單交期分層帶入、空值不取單
   await dialog(page).getByRole('button', { name: /確\s*認/ }).click();
   await expect(page).toHaveURL(/orders\/detail/, { timeout: 40_000 });
 
-  // 訂單單頭的訂單交期＝需求單單頭值 2026-09-20
+  // 訂單單頭沒有任何交期欄（訂單資訊只剩案名可編輯）
   await page.getByRole('tab', { name: /^資訊$/ }).click();
-  await expect(page.getByText('2026-09-20', { exact: true })).toBeVisible();
+  await expect(page.getByText('訂單交期', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('內部製作截止日', { exact: true })).toHaveCount(0);
 
-  // 訂單項目：名片印件的訂單交期為 2026-09-05（不等於單頭值），型錄印件為空、不取單頭回補
+  // 訂單項目：名片印件的預計出貨日為 2026-09-05，型錄印件留空、不從任何地方回補
   await page.getByRole('tab', { name: /訂單項目/ }).click();
   await expect(page.locator('tr', { hasText: '名片印件' })).toContainText('2026-09-05');
   const catalogRow = page.locator('tr', { hasText: '型錄印件' });
-  await expect(catalogRow).not.toContainText('2026-09-20');
+  await expect(catalogRow).not.toContainText('2026-09-05');
   await expect(catalogRow.getByText('—').first()).toBeVisible();
 });

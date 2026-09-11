@@ -325,17 +325,19 @@ test('5.7 回簽前的印件不可分派審稿', async ({ page }) => {
   await expect(page.getByRole('button', { name: /分派審稿人員/ })).toHaveCount(0);
 });
 
-// 5.14 起點：鏈八 ORD-2026-0920（訂單交期 2026-10-08）旗下 PI-2026-0921「量販促銷吊卡」
-// （一般件，訂單交期鏡射訂單訂單交期）。/prepress-review 的訂單列表 defaultExpandAllRows，
-// 子表一律已展開，不需另外點展開圖示。排序（5.13）與空值情境用純函式驗證，
+// 5.14 起點：鏈八 ORD-2026-0920 旗下四件印件（預計出貨日皆為 2026-10-08，審稿維度分別為待分派、
+// 等待審稿、不合格、合格）。/prepress-review 的訂單列表 defaultExpandAllRows，子表一律已展開，
+// 不需另外點展開圖示。排序（5.13）與母列取值規則（5.15）用純函式驗證，
 // 見 tests/unit/print-items/rules-prepress-review-sort.test.mjs；本條只驗畫面呈現的欄位與值。
-test('5.14 待審訂單模組母列顯示訂單交期、子列訂單交期與預計交期並列', async ({ page }) => {
+test('5.14 待審訂單模組母列顯示預計出貨日，子列預計出貨日與內部完成日並列', async ({ page }) => {
   await openAs(page, '訂單管理人', '/prepress-review');
   const orderRow = page.getByText('ORD-2026-0920', { exact: true }).locator('xpath=ancestor::tr[1]');
-  // 母列顯示訂單單頭的訂單交期
-  await expect(orderRow.getByText('2026-10-08')).toBeVisible();
+  // 母列的預計出貨日：訂單層已無交期欄，值取自旗下未收斂印件最早的那一個
+  await expect(orderRow.getByText('2026-10-08').first()).toBeVisible();
+  // 舊欄名不再出現在母表表頭
+  await expect(page.getByRole('columnheader', { name: '訂單交期' })).toHaveCount(0);
 
-  // 子列印件訂單交期與預計交期並列：一般件，預計交期＝訂單交期（2026-10-08）－1 天＝2026-10-07
+  // 子列預計出貨日與內部完成日並列：一般件，內部完成日＝預計出貨日（2026-10-08）－1 天＝2026-10-07
   const itemRow = reviewRow(page, '量販促銷吊卡');
   await expect(itemRow.getByText('2026-10-08')).toBeVisible();
   await expect(itemRow.getByText('2026-10-07')).toBeVisible();

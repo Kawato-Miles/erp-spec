@@ -54,10 +54,10 @@ test('14.7 印件詳情的工單與生產任務頁籤（原編號 58）',
     await openAs(page, '印務主管', '/print-items/detail?id=PI-2026-0904');
     await page.getByRole('tab', { name: /工單與生產任務/ }).click();
 
-    // 工單列含工單編號、類型、狀態、負責印務、預計交期、推算完工日、生產進度
+    // 工單列含工單編號、類型、狀態、負責印務、內部完成日、推算完工日、生產進度
     await expect(page.locator('body')).toContainText('WO-2026-0904');
     await expect(page.locator('body')).toContainText('WO-2026-0905');
-    await expect(page.locator('body')).toContainText('預計交期');
+    await expect(page.locator('body')).toContainText('內部完成日');
     await expect(page.locator('body')).toContainText('預計完工日');
 
     // 工單列預設收合（Miles 2026-09-08 維持先前拍板），逐張展開看生產任務

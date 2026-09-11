@@ -47,7 +47,7 @@ test('8.6 印務列印紙本工單，版式與欄位範圍固定且不含價格�
     ['工單編號', 'WO-2026-0908', '客戶', '青硯文具股份有限公司'],
     ['印件名稱', '名片', '印務', '周建宏'],
     ['印件數量', '123', '電話', ''],
-    // 交期取印件的「預計交期」（本印件訂單交期 2026-09-10 − 1 天、一般件不再多減）
+    // 交期取印件的「內部完成日」（本印件預計出貨日 2026-09-10 − 1 天、一般件不再多減）
     ['工單日期', '2026-09-03', '交期', '2026-09-09'],
   ];
   for (const [k1, v1, k2, v2] of pairs) {
@@ -173,7 +173,7 @@ test('8.7 送審前可預覽紙本，列印權限限印務與生管（原編號 
 test('8.8 急件工單的紙本標示與交期（原編號 170）', async ({ page }) => {
   await openAs(page, '印務', '/work-orders/print?id=wo-2026-0820');
 
-  // 交期取印件的「預計交期」推導值：本印件訂單交期 2026-09-10 − 1 天 − 三天急件凍結天數 ＝ 2026-09-06
+  // 交期取印件的「內部完成日」推導值：本印件預計出貨日 2026-09-10 − 1 天 − 三天急件凍結天數 ＝ 2026-09-06
   const infoTable = page.locator('table').first();
   const dueRow = infoTable.locator('tr').filter({ hasText: '交期' }).first();
   await expect(dueRow).toContainText('2026-09-06');
@@ -190,7 +190,7 @@ test('8.8 急件工單的紙本標示與交期（原編號 170）', async ({ pag
   }
 
   // 一般件的對照組（錨例 WO-2026-0908／PI-2026-0801）：沒有急件標記，
-  // 交期＝本印件訂單交期 2026-09-10 − 1 天（一般件凍結天數 0）＝ 2026-09-09
+  // 交期＝本印件預計出貨日 2026-09-10 − 1 天（一般件凍結天數 0）＝ 2026-09-09
   await clickAndWaitUrl(
     page,
     page.getByRole('button', { name: '回工單詳情' }).first(),
@@ -208,19 +208,19 @@ test('8.8 急件工單的紙本標示與交期（原編號 170）', async ({ pag
   ).toContainText('2026-09-09');
 });
 
-test('8.8（補）工單交期為空時印據表頭印「－」', async ({ page }) => {
-  // 鏈二 PI-2026-0710／WO-2026-0710：業務把印件的訂單交期清空，預計交期同為空、
-  // 非終態工單的預計交期同步為 null；印據表頭不留空白、不擋列印，印「－」（work-order spec
+test('8.8（補）工單內部完成日為空時印據表頭印破折號', async ({ page }) => {
+  // 鏈二 PI-2026-0710／WO-2026-0710：業務把印件的預計出貨日清空，內部完成日同為空、
+  // 非終態工單的內部完成日同步為 null；印據表頭不留空白、不擋列印，印破折號（work-order spec
   // § 工單列印單據 Scenario「工單交期為空時印據表頭印「－」」）。
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=printItems');
   const row = page.locator('tr', { hasText: 'PI-2026-0710' });
   await row.getByRole('button', { name: '編輯印件' }).click();
   // 清除鈕只在 hover 時才顯示、位置常落在可視區外；直接對元素派送 click 事件繞開座標可視性檢查
-  const dueDateClear = page.locator('.ant-form-item', { hasText: '訂單交期' }).locator('.ant-picker-clear');
+  const dueDateClear = page.locator('.ant-form-item', { hasText: '預計出貨日' }).locator('.ant-picker-clear');
   await dueDateClear.waitFor({ state: 'attached' });
   await dueDateClear.evaluate((el) => el.click());
   await page.getByRole('button', { name: '確認' }).click();
-  await expect(page.getByText(/已更新印件，預計交期已重推導為「未定」/)).toBeVisible();
+  await expect(page.getByText(/已更新印件，內部完成日已重推導為「未定」/)).toBeVisible();
   await expect(row.getByText('—').first()).toBeVisible();
 
   await switchRoleReliable(page, '印務');
