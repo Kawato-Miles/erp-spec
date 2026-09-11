@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   orderReviewSortKeyOf,
   compareOrdersByReviewSortKey,
+  isPrintItemUrgent,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/prepress-review/_lib/selectors.js';
 
 // 5.13 待審清單依印件預計交期排序、空值排最後
@@ -71,5 +72,23 @@ describe('5.13 待審清單依印件預計交期排序、空值排最後', () =>
     const sorted = [...orders].sort(compareOrdersByReviewSortKey).map((o) => o.order_no);
     // PI-A1 < PI-Z9（字母序），故掛 PI-A1 的訂單排前面
     expect(sorted).toEqual(['ORD-Y', 'ORD-Z']);
+  });
+});
+
+// tasks.md 任務 6.5（prepress-review spec § 待審清單排序與停滯規則 Scenario「急單標示取印件
+// 急件選項」）：急單標示只取印件的急件選項凍結天數，訂單層已無任何形式的急件欄位。
+// 補一筆迴歸測試，防止未來又誤讀訂單層欄位。
+describe('6.5 急單標示取印件急件選項，不誤讀訂單層欄位', () => {
+  it('isPrintItemUrgent 只依印件自身的急件選項判定', () => {
+    const urgentItem = item('PI-URGENT', '2026-09-20', {
+      urgent_option_days: 3,
+      urgent_option_name: '三天急件',
+      is_urgent: false, // 刻意放矛盾值：若函式誤讀外層（訂單層）欄位就會判成非急件
+    });
+    const normalItem = item('PI-NORMAL', '2026-09-20', {
+      is_urgent: true, // 一般件本身凍結天數為 0，即使外層帶 is_urgent: true 也不判成急件
+    });
+    expect(isPrintItemUrgent(urgentItem)).toBe(true);
+    expect(isPrintItemUrgent(normalItem)).toBe(false);
   });
 });

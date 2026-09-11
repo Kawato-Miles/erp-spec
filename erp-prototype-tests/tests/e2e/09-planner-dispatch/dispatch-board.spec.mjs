@@ -86,38 +86,17 @@ test('9.7 工廠總覽待排區顯示印件預計交期（原編號 81）', asyn
   await expect(page.getByText('待排區（已交付產線、未入工作包）')).toBeVisible();
 });
 
-// 交期鏈重構（delivery-date-chain-alignment）後，本欄應改顯示印件的「預計交期」（訂單交期 − 1 天
+// 交期鏈重構（delivery-date-chain-alignment）後，本欄改顯示印件的「預計交期」（訂單交期 − 1 天
 // − 急件凍結天數）。待排區只列鏈三 WO-2026-0815 的四筆待接收任務（package_id 為空，見
 // MOCK-DATA-CHAIN.md），無法換其他鏈驗證。production-floor/_lib/mock-data.js 的
-// print_item_delivery_date 欄位在鏈一～鏈三仍停在重構前的舊值（未扣減新制多出的 1 天）：
-// PI-2026-0815 訂單交期 2026-10-05、一般件，正確預計交期應為 2026-10-04，
-// 但該檔目前四筆任務仍寫 2026-10-05——與 print-items/_lib/mock-data.js、work-orders/_lib/mock-data.js
-// 已同步的 delivery_date（皆為 2026-10-04）不一致。鏈四（2026-09-04 後建的資料）的
-// print_item_delivery_date 已是正確值，可佐證是鏈一～鏈三漏更新而非算式錯誤。
-// 與 prototype 不符，不改測試遷就、不改 prototype，回報待裁決：同步更新
-// production-floor/_lib/mock-data.js 鏈一～鏈三的 print_item_delivery_date（各減 1 天）。
-test.fixme(
-  '9.7（補）待排區印件預計交期欄位取值正確',
-  {
-    annotation: {
-      type: '與 prototype 不符',
-      description:
-        'production-floor/_lib/mock-data.js 的 print_item_delivery_date 在鏈一～鏈三仍是交期鏈' +
-        '重構前的舊值（未扣減新制多出的 1 天）：WO-2026-0815 四筆任務仍寫 2026-10-05，' +
-        '應為 2026-10-04（印件 PI-2026-0815 訂單交期 2026-10-05 − 1 天，一般件）。' +
-        'print-items/_lib/mock-data.js 與 work-orders/_lib/mock-data.js 皆已同步為 2026-10-04，' +
-        '鏈四（較晚建立）的 print_item_delivery_date 也已是正確值，可見是鏈一～鏈三漏更新。' +
-        '待排區只列 package_id 為空的鏈三任務，換不了其他鏈驗證。待 Miles 裁決：同步更新' +
-        'production-floor/_lib/mock-data.js 鏈一～鏈三的 print_item_delivery_date。',
-    },
-  },
-  async ({ page }) => {
-    await openAs(page, '生管', '/production-floor/schedule');
-    const table = page.locator('.ant-table').last();
-    const row = table.locator('tr', { hasText: 'WO-2026-0815' }).first();
-    await expect(row.getByText('2026-10-04')).toBeVisible();
-  },
-);
+// print_item_delivery_date 已同步改為 2026-10-04（印件 PI-2026-0815 訂單交期 2026-10-05 − 1 天，
+// 一般件），與 print-items/_lib/mock-data.js、work-orders/_lib/mock-data.js 的 delivery_date 一致。
+test('9.7（補）待排區印件預計交期欄位取值正確', async ({ page }) => {
+  await openAs(page, '生管', '/production-floor/schedule');
+  const table = page.locator('.ant-table').last();
+  const row = table.locator('tr', { hasText: 'WO-2026-0815' }).first();
+  await expect(row.getByText('2026-10-04')).toBeVisible();
+});
 
 test('9.8 派工視窗上方列出這次要派的任務內容（原編號 82）', async ({ page }) => {
   await openAs(page, '生管', '/production-floor/dispatch');
