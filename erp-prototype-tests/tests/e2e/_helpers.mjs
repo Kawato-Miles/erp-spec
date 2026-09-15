@@ -103,6 +103,24 @@ export async function gotoInApp(page, path) {
   }
 }
 
+/**
+ * 確認模擬角色還在（記憶體狀態沒被整頁重載清掉）。
+ * 站內導頁後若角色退回預設值，代表 Next 退回整頁導航、剛存進去的模擬資料一併歸零；
+ * 這時下游斷言會以「兩頁的值不一樣」的面貌失敗，讀起來像產品缺口，實際是環境重置。
+ * 讀值的斷言之前先呼叫本函式，把失敗訊息定在真正的原因上。
+ */
+export async function assertRoleKept(page, roleLabel, where) {
+  const shown = page
+    .locator('header .ant-select-selection-item, .ant-layout-header .ant-select-selection-item')
+    .first();
+  const text = await shown.innerText().catch(() => '');
+  if (!text.startsWith(`${roleLabel}（`)) {
+    throw new Error(
+      `${where} 之後模擬角色由「${roleLabel}」變成「${text || '讀不到'}」，代表發生整頁重載、記憶體資料已歸零。屬開發伺服器環境問題，不是兩頁值不同步：重啟開發伺服器後重跑。`,
+    );
+  }
+}
+
 // 開一條情境：首次整頁載入後切角色
 export async function openAs(page, roleLabel, path) {
   await page.goto(path);

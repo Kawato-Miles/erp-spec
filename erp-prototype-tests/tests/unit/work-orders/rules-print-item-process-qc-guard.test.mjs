@@ -66,6 +66,9 @@ describe('7.25 製程說明與品檢需求記在印件層——編輯把關', ()
       '周建宏',
     );
     expect(guard.allowed).toBe(false);
+    // 理由句要指向下一步（找印務主管），不可寫成「你不是負責人」——畫面上的負責人欄就是他
+    expect(guard.reason).toContain('皆已收尾');
+    expect(guard.reason).toContain('印務主管');
   });
 
   it('編輯（代理）層級的分享成員可改', () => {

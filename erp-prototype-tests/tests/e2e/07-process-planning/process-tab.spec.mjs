@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs, gotoInApp, switchRole } from '../_helpers.mjs';
+import { assertRoleKept, openAs, gotoInApp, switchRole, warmUp } from '../_helpers.mjs';
 import {
   bomPicker,
   clickIntoDetail,
@@ -358,6 +358,10 @@ const NEW_QC_REQUIREMENT = '立牌裱板平整度全檢，裁切尺寸允差 1mm
 const NEW_PROCESS_NOTE = '雪銅紙 150g 四色單面，裱五層瓦楞後模切立牌成型。';
 
 test('7.25 製程說明與品檢需求記在印件層，一處改動兩頁同值（新增）', async ({ page }) => {
+  // 本條要走完工單詳情、印件詳情、另一張工單詳情三頁，全程靠記憶體狀態存活：
+  // 先把三條路由各整頁載入一次暖機（此時還沒有要保留的狀態），避免首次編譯路由時
+  // Next 取回 RSC 失敗退回整頁導航，把剛存進去的兩欄值一併清掉。
+  await warmUp(page, ['/work-orders', '/work-orders/detail', '/print-items/detail']);
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0904');
 
@@ -376,6 +380,7 @@ test('7.25 製程說明與品檢需求記在印件層，一處改動兩頁同值
 
   // 點印件編號進印件詳情頁：同一筆事實，值必然相同
   await clickIntoDetail(page, 'PI-2026-0904', /print-items\/detail/);
+  await assertRoleKept(page, '印務', '導頁到印件詳情頁');
   await expect(descValue(page, '品檢需求')).toHaveText(NEW_QC_REQUIREMENT);
   await expect(descValue(page, '製程說明')).toHaveText(NEW_PROCESS_NOTE);
 
@@ -383,6 +388,7 @@ test('7.25 製程說明與品檢需求記在印件層，一處改動兩頁同值
   await page.getByRole('tab', { name: /工單與生產任務/ }).click();
   await clickIntoDetail(page, 'WO-2026-0905', /work-orders\/detail/);
   await expect(page.getByRole('heading', { name: 'WO-2026-0905' })).toBeVisible();
+  await assertRoleKept(page, '印務', '導頁到 WO-2026-0905 工單詳情');
   await page.getByText('查看印件資訊').click();
   await expect(descValue(page, '品檢需求')).toHaveText(NEW_QC_REQUIREMENT);
   await expect(descValue(page, '製程說明')).toHaveText(NEW_PROCESS_NOTE);
