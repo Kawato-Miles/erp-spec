@@ -319,3 +319,23 @@ test('11.10 印件詳情頁看得到歷次分次驗收（原編號 11）', async
   await expect(page.getByText('品檢缺口處置留痕')).toBeVisible();
   await expect(page.getByRole('row', { name: /5,000/ }).first()).toBeVisible();
 });
+
+test('11.11 品檢驗收介面看得到印件的品檢需求（新增）', async ({ page }) => {
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+
+  // 待驗卡上多一行品檢需求（唯讀，取該印件；鏈一 PI-2026-0601 已驗完但列仍在）
+  const card = pendingCard(page, 'PI-2026-0601');
+  await expect(card).toContainText('品檢需求');
+  await expect(card).toContainText('色差全檢，卡角裁切允差 0.3mm。');
+
+  // 前置：生管建轉交單到品檢站 → 廠務搬運並抵達 → 品檢人員點收（鏈四待驗量 500）
+  await switchRoleSafe(page, '生管');
+  await setupQcReadyState(page, { open: false });
+  await gotoInAppSafe(page, '/qc-shipping/inspection');
+
+  // 驗收對話框頂端顯示同一段文字，品檢人員不必退出對話框回頭查
+  await pendingCard(page).getByRole('button', { name: '驗收' }).click();
+  await expect(inspectDialog(page)).toContainText(
+    '品檢需求：書背厚度與封面裁切對版允差 0.5mm，精裝黏合牢固度抽檢 5%。',
+  );
+});

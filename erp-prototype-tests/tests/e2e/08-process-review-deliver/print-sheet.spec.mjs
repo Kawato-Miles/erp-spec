@@ -57,11 +57,19 @@ test('8.6 印務列印紙本工單，版式與欄位範圍固定且不含價格�
     await expect(row).toContainText(k2);
     if (v2) await expect(row).toContainText(v2);
   }
-  // 備註、確樣需求、品檢需求各跨欄一列
-  for (const key of ['備註', '確樣需求', '品檢需求']) {
+  // 備註、確樣需求、品檢需求、製程說明各跨欄一列
+  for (const key of ['備註', '確樣需求', '品檢需求', '製程說明']) {
     const row = infoTable.locator('tr').filter({ hasText: key }).first();
     await expect(row.locator('td')).toHaveCount(1);
     await expect(row.locator('td')).toHaveAttribute('colspan', '3');
+  }
+  // 品檢需求與製程說明取所屬印件 PI-2026-0801（名片）的兩欄，不再取工單自身欄位
+  for (const [key, value] of [
+    ['品檢需求', '四色套印全檢，裁切尺寸 90×54mm 允差 0.3mm。'],
+    ['製程說明', '一級卡 300g 雙面四色，印後裁切分盒，每盒 100 張。'],
+  ]) {
+    const row = infoTable.locator('tr').filter({ hasText: key }).first();
+    await expect(row.locator('td')).toHaveText(value);
   }
 
   // 四、明細八欄，製程為群組名粗體、列序同畫面排序，數量欄放損非零時接「＋放 N」

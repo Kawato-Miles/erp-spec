@@ -2,12 +2,17 @@ import { test, expect } from '@playwright/test';
 import { openAs, gotoInApp, switchRole } from '../_helpers.mjs';
 import {
   bomPicker,
+  clickIntoDetail,
   formField,
   openWorkOrder,
   pickBomRow,
   switchFormTab,
   taskForm,
 } from './_ch07.mjs';
+
+// 詳情頁「標題：值」的值（AntD Descriptions 以 th／td 成對呈現）
+const descValue = (page, label) =>
+  page.locator(`xpath=//th[normalize-space(.)="${label}"]/following-sibling::td[1]`).first();
 
 test('7.1 新增任務時前置相依不自動帶值（原編號 49）', async ({ page }) => {
   await openAs(page, '印務', '/work-orders');
@@ -54,14 +59,20 @@ test('7.3 參考完稿圖唯讀，工單上不再上傳完稿（原編號 70）'
   await page.getByText('查看印件檔案').click();
   await expect(page.getByText('審稿後印件檔')).toBeVisible();
 
-  // 編輯抽屜三段——預計完工日、製程說明（供主管審核）、品檢需求（隨工單交付品檢站），
-  // 沒有上傳完稿檔的入口；上傳檔案存的是印務自己的工單附件，是另一顆獨立按鈕
+  // 編輯工單資訊抽屜只剩預計完工日一段：製程說明與品檢需求的家在印件層，不在工單抽屜裡；
+  // 也沒有上傳完稿檔的入口（上傳檔案存的是印務自己的工單附件，是另一顆獨立按鈕）
   await page.getByRole('button', { name: /編輯$/ }).first().click();
   const drawer = page.locator('.ant-drawer-body');
   await expect(drawer).toContainText('預計完工日');
-  await expect(drawer).toContainText('製程說明');
-  await expect(drawer).toContainText('品檢需求');
+  await expect(drawer).not.toContainText('製程說明');
+  await expect(drawer).not.toContainText('品檢需求');
   await expect(drawer).not.toContainText('上傳');
+  await page.locator('.ant-drawer').getByRole('button', { name: '關閉' }).click();
+
+  // 兩欄改列在印件基本資訊面板（印件層一份文字管旗下全部工單）
+  await page.getByText('查看印件資訊').click();
+  await expect(descValue(page, '製程說明')).toHaveText('雪銅紙 150g 四色雙面，裁切摺三摺後入庫。');
+  await expect(descValue(page, '品檢需求')).toHaveText('摺線對齊允差 0.5mm，四色套印全檢。');
 });
 
 test('7.4 同一個日期在三個頁面叫同一個名字（原編號 71）', async ({ page }) => {
@@ -340,3 +351,39 @@ async function setTaskEndDate(page, taskName, date) {
   await taskForm(page).getByRole('button', { name: '儲存' }).click();
   await expect(taskForm(page)).toHaveCount(0);
 }
+
+// 7.25 的錨值：鏈七 PI-2026-0904 旗下有兩張草稿工單（WO-2026-0904 已指派周建宏、WO-2026-0905 未指派），
+// 兩欄原本皆空；印務在其中一張工單上改，另一張與印件詳情頁要看到同一份文字
+const NEW_QC_REQUIREMENT = '立牌裱板平整度全檢，裁切尺寸允差 1mm。';
+const NEW_PROCESS_NOTE = '雪銅紙 150g 四色單面，裱五層瓦楞後模切立牌成型。';
+
+test('7.25 製程說明與品檢需求記在印件層，一處改動兩頁同值（新增）', async ({ page }) => {
+  await openAs(page, '印務', '/work-orders');
+  await openWorkOrder(page, 'WO-2026-0904');
+
+  // 印務在工單詳情的印件基本資訊面板按「編輯製程與品檢」，寫的是印件事實、不是這張工單的欄位
+  await page.getByRole('button', { name: /編輯製程與品檢/ }).click();
+  const drawer = page.locator('.ant-drawer-body');
+  await drawer.getByLabel(/製程說明/).fill(NEW_PROCESS_NOTE);
+  await drawer.getByLabel(/品檢需求/).fill(NEW_QC_REQUIREMENT);
+  await page.locator('.ant-drawer').getByRole('button', { name: /儲\s*存/ }).click();
+  await expect(page.getByText('已更新製程說明與品檢需求')).toBeVisible();
+
+  // 本張工單的印件基本資訊面板立刻顯示新值
+  await page.getByText('查看印件資訊').click();
+  await expect(descValue(page, '品檢需求')).toHaveText(NEW_QC_REQUIREMENT);
+  await expect(descValue(page, '製程說明')).toHaveText(NEW_PROCESS_NOTE);
+
+  // 點印件編號進印件詳情頁：同一筆事實，值必然相同
+  await clickIntoDetail(page, 'PI-2026-0904', /print-items\/detail/);
+  await expect(descValue(page, '品檢需求')).toHaveText(NEW_QC_REQUIREMENT);
+  await expect(descValue(page, '製程說明')).toHaveText(NEW_PROCESS_NOTE);
+
+  // 同印件的另一張工單（WO-2026-0905）詳情也看到同一份文字
+  await page.getByRole('tab', { name: /工單與生產任務/ }).click();
+  await clickIntoDetail(page, 'WO-2026-0905', /work-orders\/detail/);
+  await expect(page.getByRole('heading', { name: 'WO-2026-0905' })).toBeVisible();
+  await page.getByText('查看印件資訊').click();
+  await expect(descValue(page, '品檢需求')).toHaveText(NEW_QC_REQUIREMENT);
+  await expect(descValue(page, '製程說明')).toHaveText(NEW_PROCESS_NOTE);
+});
