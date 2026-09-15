@@ -2,11 +2,12 @@
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-export const ERP_ROOT = '/Users/b-f-03-029/erp';
+// 盲測或平行驗證時可用環境變數指到另一份 erp 工作副本；預設仍是主 repo。
+export const ERP_ROOT = process.env.ERP_ROOT ?? '/Users/b-f-03-029/erp';
 export const ERP_APP_SRC = path.join(ERP_ROOT, 'apps/erp/src');
 export const PROTOTYPE_ROOT = path.join(ERP_APP_SRC, 'app/(prototype)');
 export const SHARED_ROOT = path.join(ERP_ROOT, 'packages/shared');
 export const ERP_APP_DIR = path.join(ERP_ROOT, 'apps/erp');
-export const DEV_PORT = 3020;
+export const DEV_PORT = Number(process.env.DEV_PORT ?? 3020);
 export const BASE_URL = `http://localhost:${DEV_PORT}`;
 export const TESTS_ROOT = path.dirname(fileURLToPath(import.meta.url));
