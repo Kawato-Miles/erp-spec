@@ -8,8 +8,8 @@
 
 - [x] 1.1 執行 `openspec validate --changes`，三份規格差異檔（work-order、order-management、qc）皆通過；`openspec status` 顯示 proposal / design / specs 三項為 done。
 - [x] 1.2 **與 delivery-date-naming-convergence 的交會**：兩個 change 都改 § 工單列印單據。該 change 的差異檔表頭句已同步寫入「品檢需求（取所屬印件）、製程說明（取所屬印件）」，兩者任一先歸檔皆得到同一份最終文字，不再有順序限制。
-- [ ] 1.3 Prototype 與測試施工完成、Miles 確認後執行 `openspec archive`，三份差異檔併回主 spec。
-- [ ] 1.4 歸檔後執行 `grep -rn "製程說明\|品檢需求" openspec/specs/`，輸出中的每一處 MUST 為「取所屬印件」或指向 order-management § 印件製程說明與品檢需求 的引用，無任何把兩欄寫成工單自持欄位的殘留。
+- [x] 1.3 Prototype 與測試施工完成、Miles 確認後執行 `openspec archive`，三份差異檔併回主 spec。
+- [x] 1.4 歸檔後執行 `grep -rn "製程說明\|品檢需求" openspec/specs/`，輸出中的每一處 MUST 為「取所屬印件」或指向 order-management § 印件製程說明與品檢需求 的引用，無任何把兩欄寫成工單自持欄位的殘留。
 
 ## 2. 測試先行：兩欄歸屬與同源的失敗測試
 
