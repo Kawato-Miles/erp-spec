@@ -125,7 +125,7 @@ test('8.4 印務主管在待審核工單列表逐列核可或退回（原編號 
   await expect(page.getByText('已退回，工單轉「重新確認製程」')).toBeVisible();
   await expect(page.getByText('目前沒有待審核的製程')).toBeVisible();
 
-  // 訂單欄呈現訂單編號（本頁兩張測試工單的訂單為輕量存根，未登記進訂單模組故不帶連結）
+  // 訂單欄呈現訂單編號（兩張測試工單的訂單已登記進訂單模組，故帶連結指向訂單詳情）
   // 非印務主管見無權檢視
   await switchRoleReliable(page, '印務');
   await expect(page.getByText('無權檢視待審核工單')).toBeVisible();
