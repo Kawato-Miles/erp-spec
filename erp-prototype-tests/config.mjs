@@ -3,7 +3,8 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 // 盲測或平行驗證時可用環境變數指到另一份 erp 工作副本；預設仍是主 repo。
-export const ERP_ROOT = process.env.ERP_ROOT ?? '/Users/b-f-03-029/erp';
+export const ERP_DEFAULT_ROOT = '/Users/b-f-03-029/erp';
+export const ERP_ROOT = process.env.ERP_ROOT ?? ERP_DEFAULT_ROOT;
 export const ERP_APP_SRC = path.join(ERP_ROOT, 'apps/erp/src');
 export const PROTOTYPE_ROOT = path.join(ERP_APP_SRC, 'app/(prototype)');
 export const SHARED_ROOT = path.join(ERP_ROOT, 'packages/shared');
