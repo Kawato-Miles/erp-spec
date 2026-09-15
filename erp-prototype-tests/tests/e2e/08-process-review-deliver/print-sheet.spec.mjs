@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { gotoInApp, openAs } from '../_helpers.mjs';
 import {
+  cjkName,
   clickAndWaitUrl,
   gotoWorkOrderList,
   openWorkOrderFromList,
@@ -64,6 +65,7 @@ test('8.6 印務列印紙本工單，版式與欄位範圍固定且不含價格�
     await expect(row.locator('td')).toHaveAttribute('colspan', '3');
   }
   // 品檢需求與製程說明取所屬印件 PI-2026-0801（名片）的兩欄，不再取工單自身欄位
+  // （同印件多張工單印出同一段文字見 8.11，兩欄皆空時印破折號見 8.12）
   for (const [key, value] of [
     ['品檢需求', '四色套印全檢，裁切尺寸 90×54mm 允差 0.3mm。'],
     ['製程說明', '一級卡 300g 雙面四色，印後裁切分盒，每盒 100 張。'],
@@ -247,4 +249,97 @@ test('8.8（補）工單內部完成日為空時印據表頭印破折號', async
   const infoTable = page.locator('table').first();
   const dueRow = infoTable.locator('tr').filter({ hasText: '交期' }).first();
   await expect(dueRow).toContainText('—');
+});
+
+// 8.11／8.12 共用：單據表頭中某一列（備註、確樣需求、品檢需求、製程說明各跨欄一列）的值
+const headerRowValue = (page, label) =>
+  page.locator('table').first().locator('tr').filter({ hasText: label }).first().locator('td');
+
+// 8.11 的錨值：鏈七 PI-2026-0904（促銷立牌 A1）旗下兩張草稿工單，兩欄在 mock 已預填且以部件名分段。
+// WO-2026-0905 起點尚未指派印務，故前置先由印務主管把它指派給周建宏（與 WO-2026-0904 同一人），
+// 這位印務才有兩張單的預覽權限。兩張單皆為草稿，走的是送審前預覽——預覽與正式列印共用同一頁、
+// 同一份版式與同一支取值邏輯（work-orders/print/page.js），表頭兩欄的來源因此驗得到。
+const CHAIN7_PROCESS_NOTE =
+  '板面：合成紙 200g A1 單面四色，印後裁切成型。立牌架：PVC 板裁切壓折線後與板面組裝，每組一袋。';
+const CHAIN7_QC_REQUIREMENT = '板面四色套印全檢，裁切尺寸允差 1mm；立牌架插接牢固度抽檢 5%。';
+
+test('8.11 同一件印件的兩張工單，紙本表頭印出同一份品檢需求與製程說明（新增）', async ({
+  page,
+}) => {
+  // 前置：印務主管把尚未指派的 WO-2026-0905 一併指派給周建宏
+  await openAs(page, '印務主管', '/print-items');
+  const printItemRow = page
+    .locator('tbody tr.ant-table-row')
+    .filter({ hasText: 'PI-2026-0904' })
+    .first();
+  await printItemRow.getByLabel('工單分派').click();
+  const assignDialog = page.locator('.ant-modal-content:visible').last();
+  const officerSelect = assignDialog
+    .locator('tbody tr.ant-table-row')
+    .filter({ hasText: 'WO-2026-0905' })
+    .first()
+    .locator('.ant-select')
+    .nth(0);
+  await officerSelect.click();
+  await page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
+    .last()
+    .locator('.ant-select-item-option[title="周建宏"]')
+    .first()
+    .click();
+  await assignDialog.getByRole('button', { name: cjkName('送出') }).click();
+  await expect(assignDialog).toBeHidden();
+
+  // 印務開第一張工單的紙本（草稿＝送審前預覽，版式與正式列印同一份）
+  await switchRoleReliable(page, '印務');
+  await openWorkOrderFromList(page, 'WO-2026-0904');
+  await clickAndWaitUrl(
+    page,
+    page.getByRole('button', { name: '預覽工單' }),
+    /\/work-orders\/print\/?\?id=wo-2026-0904/,
+  );
+  await expect(headerRowValue(page, '品檢需求')).toHaveText(CHAIN7_QC_REQUIREMENT);
+  await expect(headerRowValue(page, '製程說明')).toHaveText(CHAIN7_PROCESS_NOTE);
+
+  // 同印件第二張工單的紙本：兩欄是同一段文字，取自所屬印件而非工單自身欄位
+  await clickAndWaitUrl(
+    page,
+    page.getByRole('button', { name: '回工單詳情' }).first(),
+    /\/work-orders\/detail/,
+  );
+  await openWorkOrderFromList(page, 'WO-2026-0905');
+  await clickAndWaitUrl(
+    page,
+    page.getByRole('button', { name: '預覽工單' }),
+    /\/work-orders\/print\/?\?id=wo-2026-0905/,
+  );
+  await expect(headerRowValue(page, '品檢需求')).toHaveText(CHAIN7_QC_REQUIREMENT);
+  await expect(headerRowValue(page, '製程說明')).toHaveText(CHAIN7_PROCESS_NOTE);
+});
+
+// 8.12 的錨值：錨例 WO-2026-0908（製程審核完成、負責印務周建宏），所屬印件 PI-2026-0801。
+// mock 的兩欄原本有值，前置先由印務在工單詳情的印件基本資訊面板清成空白（兩欄選填，清空存得了）；
+// 規格寫無值印「－」，Prototype 全站的無值符號統一用破折號「—」，本測試照畫面實際字元斷言。
+test('8.12 印件的兩欄都沒填時，紙本表頭各印破折號且不擋下列印（新增）', async ({ page }) => {
+  await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0908');
+  await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0908' })).toBeVisible();
+
+  // 前置：把所屬印件的製程說明與品檢需求清空
+  await page.getByText('查看印件資訊').click();
+  await page.getByRole('button', { name: /編輯製程與品檢/ }).click();
+  const drawer = page.locator('.ant-drawer-body');
+  await drawer.getByLabel(/製程說明/).fill('');
+  await drawer.getByLabel(/品檢需求/).fill('');
+  await page.locator('.ant-drawer').getByRole('button', { name: cjkName('儲存') }).click();
+  await expect(page.getByText('已更新製程說明與品檢需求').first()).toBeVisible();
+
+  // 列印不被擋下，表頭兩欄各印破折號
+  await clickAndWaitUrl(
+    page,
+    page.getByRole('button', { name: '列印紙本工單' }),
+    /\/work-orders\/print\/?\?id=wo-2026-0908/,
+  );
+  await expect(headerRowValue(page, '品檢需求')).toHaveText('—');
+  await expect(headerRowValue(page, '製程說明')).toHaveText('—');
+  await expect(page.getByRole('button', { name: /^列\s*印$/ })).toBeVisible();
 });

@@ -62,7 +62,7 @@ Miles 2026-09-15 拍板：兩欄一起從工單搬到印件，各一份文字管
 
 - wiki：正本卡已落（2026-09-15），本 change 不再改動。
 - OpenSpec：三份 main spec 的規格差異檔（delta）——work-order、order-management、qc。
-- **歸檔順序**：§ 工單列印單據 的 MODIFIED 基底取自 `changes/delivery-date-naming-convergence/specs/work-order/spec.md`（表頭已為「內部完成日」）。本 change MUST 於 `delivery-date-naming-convergence` 歸檔之後才歸檔，否則表頭的日期欄名會被回退成舊名。
+- **與 delivery-date-naming-convergence 的交會**：兩個 change 都改 § 工單列印單據；該 change 的差異檔表頭句已同步為取所屬印件的寫法，任一先歸檔皆得到同一份最終文字。
 - Prototype（erp repo `(prototype)`）：工單詳情的印件基本資訊面板、印件詳情頁的印件基本資訊面板、紙本工單表頭、品檢驗收介面。
 - 測試（Sens repo `erp-prototype-tests`）：印務登打製程、製程審核與交付產線、品檢三章的情境與 mock 主鏈同步。
 - Mock 既有資料的收斂：同一印件的多張工單各自寫了不同製程說明時，合併成一段文字並以部件名分段（例：「本體：…／封面：…」）。

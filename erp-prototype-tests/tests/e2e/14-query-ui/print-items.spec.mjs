@@ -52,6 +52,15 @@ test('14.7 印件詳情的工單與生產任務頁籤（原編號 58）',
   async ({ page }) => {
     // 起點資料：鏈七 PI-2026-0904（兩張工單）
     await openAs(page, '印務主管', '/print-items/detail?id=PI-2026-0904');
+
+    // 固定區塊的印件基本資訊面板含製程說明與品檢需求兩欄（兩欄的家在印件層，一份管旗下全部工單）
+    const basicPanel = page.locator('.ant-descriptions').first();
+    await expect(basicPanel).toContainText('製程說明');
+    await expect(basicPanel).toContainText('品檢需求');
+    await expect(
+      page.locator('xpath=//th[normalize-space(.)="品檢需求"]/following-sibling::td[1]').first(),
+    ).toHaveText('板面四色套印全檢，裁切尺寸允差 1mm；立牌架插接牢固度抽檢 5%。');
+
     await page.getByRole('tab', { name: /工單與生產任務/ }).click();
 
     // 工單列含工單編號、類型、狀態、負責印務、內部完成日、推算完工日、生產進度

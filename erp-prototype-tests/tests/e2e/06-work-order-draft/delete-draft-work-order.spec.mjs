@@ -15,6 +15,10 @@ import {
 const subRow = (page, no) =>
   page.locator('.ant-table-expanded-row tbody tr.ant-table-row').filter({ hasText: no }).first();
 
+// 詳情頁「標題：值」的值（AntD Descriptions 以 th／td 成對呈現）
+const descValue = (page, label) =>
+  page.locator(`xpath=//th[normalize-space(.)="${label}"]/following-sibling::td[1]`).first();
+
 test('6.9 沒人要的空草稿工單可以刪掉（原編號 62）', async ({ page }) => {
   test.setTimeout(180_000);
   await openScenario(page, '印務主管', '/print-items/pending-assign', { openAs, switchRole });
@@ -61,6 +65,11 @@ test('6.10 已有製程或已送審的工單不可刪（原編號 63）', async 
   expect(tip).toMatch(/僅草稿且尚未送審的工單可刪除|此工單已有生產任務/);
 });
 
+// 鏈七 PI-2026-0904 的製程說明與品檢需求（mock 預填，一份文字管旗下兩張工單）
+const CHAIN7_PROCESS_NOTE =
+  '板面：合成紙 200g A1 單面四色，印後裁切成型。立牌架：PVC 板裁切壓折線後與板面組裝，每組一袋。';
+const CHAIN7_QC_REQUIREMENT = '板面四色套印全檢，裁切尺寸允差 1mm；立牌架插接牢固度抽檢 5%。';
+
 test('6.11 工單的事實只有一份，兩頁看到的一定一樣（原編號 74）', async ({ page }) => {
   test.setTimeout(180_000);
   await openScenario(page, '印務主管', '/print-items', { openAs, switchRole });
@@ -101,4 +110,17 @@ test('6.11 工單的事實只有一份，兩頁看到的一定一樣（原編號
   // 刪除後同一個篩選條件不再命中這件印件
   await pickOption(page, ownerFilter, '蔡明修');
   await expect(rowOf(page, 'PI-2026-0904')).toHaveCount(0);
+
+  // 印件層的製程說明與品檢需求同樣只有一份：印件詳情與旗下工單詳情讀的是同一筆印件事實，
+  // 工單不另存一份（值為鏈七 mock 的預填內容，以部件名分段）
+  await page.getByText('清空篩選').click();
+  await openByNo(page, '促銷立牌 A1', /print-items\/detail/);
+  await expect(descValue(page, '製程說明')).toHaveText(CHAIN7_PROCESS_NOTE);
+  await expect(descValue(page, '品檢需求')).toHaveText(CHAIN7_QC_REQUIREMENT);
+
+  await page.getByRole('tab', { name: /工單與生產任務/ }).click();
+  await openByNo(page, 'WO-2026-0904', /work-orders\/detail/);
+  await page.getByText('查看印件資訊').click();
+  await expect(descValue(page, '製程說明')).toHaveText(CHAIN7_PROCESS_NOTE);
+  await expect(descValue(page, '品檢需求')).toHaveText(CHAIN7_QC_REQUIREMENT);
 });

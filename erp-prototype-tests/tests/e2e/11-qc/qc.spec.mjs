@@ -335,7 +335,79 @@ test('11.11 品檢驗收介面看得到印件的品檢需求（新增）', async
 
   // 驗收對話框頂端顯示同一段文字，品檢人員不必退出對話框回頭查
   await pendingCard(page).getByRole('button', { name: '驗收' }).click();
-  await expect(inspectDialog(page)).toContainText(
+  const dialog = inspectDialog(page);
+  await expect(dialog).toContainText(
     '品檢需求：書背厚度與封面裁切對版允差 0.5mm，精裝黏合牢固度抽檢 5%。',
   );
+
+  // 唯讀：對話框裡這一段不是可填的欄位，也沒有任何編輯入口（要改回印件詳情或工單詳情）
+  await expect(dialog.getByLabel('品檢需求')).toHaveCount(0);
+  await expect(dialog.getByRole('textbox', { name: /品檢需求/ })).toHaveCount(0);
+  await expect(dialog.getByRole('button', { name: /編輯/ })).toHaveCount(0);
+
+  // 製程說明是給主管審核與工廠做活看的，不出現在驗收介面
+  await expect(dialog).not.toContainText('製程說明');
+  await expect(pendingCard(page)).not.toContainText('製程說明');
+});
+
+test('11.12 印件的品檢需求沒填時顯示破折號，驗收照樣記得下去（新增）', async ({ page }) => {
+  // 前置一：印務主管把鏈四 PI-2026-0820 的品檢需求清成空白（兩欄選填，清空存得了）。
+  // 規格寫無值顯示「－」，Prototype 全站的無值符號統一用破折號「—」，本測試照畫面實際字元斷言。
+  await openAs(page, '印務主管', `/print-items/detail?id=${CHAIN4.printItemNo}`);
+  await page.getByRole('button', { name: /編輯製程與品檢/ }).click();
+  const editDrawer = page.locator('.ant-drawer-body');
+  await editDrawer.getByLabel(/品檢需求/).fill('');
+  await page.locator('.ant-drawer').getByRole('button', { name: /儲\s*存/ }).click();
+  await expect(page.getByText('已更新製程說明與品檢需求').first()).toBeVisible();
+  await expect(descValue(page, '品檢需求')).toHaveText('—');
+
+  // 前置二：生管建轉交單到品檢站 → 廠務搬運並抵達 → 品檢人員點收（待驗量 500）
+  await switchRoleSafe(page, '生管');
+  await setupQcReadyState(page, { open: false });
+  await gotoInAppSafe(page, '/qc-shipping/inspection');
+
+  // 待驗卡與驗收對話框的品檢需求都印破折號
+  await expect(pendingCard(page)).toContainText('品檢需求');
+  await pendingCard(page).getByRole('button', { name: '驗收' }).click();
+  await expect(inspectDialog(page)).toContainText('品檢需求：—');
+
+  // 沒寫檢驗要點不擋下驗收：這一筆照樣記得成立
+  const dialog = inspectDialog(page);
+  await dialog.getByLabel('通過數量', { exact: true }).fill('500');
+  await dialog.getByLabel('不通過數量', { exact: true }).fill('0');
+  await dialog.getByRole('button', { name: '記錄驗收' }).click();
+  await expect(page.getByText(/已記錄驗收/).first()).toBeVisible();
+  await expect(recordedCard(page)).toContainText('500');
+});
+
+test('11.13 印務改過品檢需求後，驗收介面顯示新的一份，舊紀錄不留快照（新增）', async ({
+  page,
+}) => {
+  // 前置：貨已點收並驗完一筆（通過 500），此時印件的品檢需求為 mock 的那一段（A）
+  const ORIGINAL = '書背厚度與封面裁切對版允差 0.5mm，精裝黏合牢固度抽檢 5%。';
+  const UPDATED = '書背厚度改抽檢 10%，封面燙金位置偏移不得超過 1mm。';
+  await setupQcReadyState(page);
+  await inspectAtQc(page, { passed: 500, failed: 0 });
+  await expect(recordedCard(page)).toContainText('500');
+
+  // 印務主管把品檢需求改成新的一段（B）
+  await switchRoleSafe(page, '印務主管');
+  await gotoInAppSafe(page, '/print-items');
+  await openPrintItemDetail(page, CHAIN4.printItemName);
+  await expect(descValue(page, '品檢需求')).toHaveText(ORIGINAL);
+  await page.getByRole('button', { name: /編輯製程與品檢/ }).click();
+  const editDrawer = page.locator('.ant-drawer-body');
+  await editDrawer.getByLabel(/品檢需求/).fill(UPDATED);
+  await page.locator('.ant-drawer').getByRole('button', { name: /儲\s*存/ }).click();
+  await expect(page.getByText('已更新製程說明與品檢需求').first()).toBeVisible();
+
+  // 品檢人員回驗收介面：待驗卡顯示新的那一段，不是驗收當時的舊值
+  await switchRoleSafe(page, '品檢人員');
+  await gotoInAppSafe(page, '/qc-shipping/inspection');
+  await expect(pendingCard(page)).toContainText(UPDATED);
+  await expect(pendingCard(page)).not.toContainText(ORIGINAL);
+
+  // 已記錄的那一筆驗收沒有品檢需求這個欄位，也沒有留下舊值的快照
+  await expect(recordedCard(page)).not.toContainText('品檢需求');
+  await expect(recordedCard(page)).not.toContainText(ORIGINAL);
 });
