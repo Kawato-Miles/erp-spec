@@ -208,8 +208,11 @@ export async function createShipment(
 ) {
   await page.getByRole('button', { name: '建立出貨單' }).first().click();
   const dialog = createShipmentDialog(page);
-  await dialog.getByRole('combobox').first().click();
-  await page.locator('.ant-select-item-option').filter({ hasText: CHAIN4.orderNo }).first().click();
+  // 訂單樣本增多後選項會超出下拉可視範圍：下拉支援輸入搜尋（依標籤），先輸入編號過濾再點
+  const orderBox = dialog.getByRole('combobox').first();
+  await orderBox.click();
+  await orderBox.fill(CHAIN4.orderNo);
+  await page.locator('.ant-select-dropdown:visible').last().locator('.ant-select-item-option').filter({ hasText: CHAIN4.orderNo }).first().click();
   await dialog
     .getByRole('row', { name: new RegExp(CHAIN4.printItemNo) })
     .getByRole('spinbutton')
