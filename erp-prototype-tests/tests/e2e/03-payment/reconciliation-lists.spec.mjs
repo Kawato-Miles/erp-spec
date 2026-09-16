@@ -14,6 +14,10 @@ test('3.11 三方對帳與跨訂單四張清單', async ({ page }) => {
   // 換看 ORD-2026-0710：從訂單列表點進去（detail 頁不在側欄選單上，gotoInApp 只認選單項），
   // 再切到「金額與發票」頁籤：收款差額與發票差額皆為 47,425
   await gotoInApp(page, '/orders');
+  // 訂單列表每頁十筆、依日期新到舊，樣本增多後 0710 不一定在第一頁：先用編號搜尋再點
+  const orderSearch = page.getByRole('textbox', { name: /請輸入訂單編號/ });
+  await orderSearch.fill('ORD-2026-0710');
+  await orderSearch.press('Enter');
   await page.getByText('ORD-2026-0710', { exact: true }).click();
   await expect(page).toHaveURL(/detail/);
   await page.locator('.ant-tabs-tab', { hasText: '金額與發票' }).click();

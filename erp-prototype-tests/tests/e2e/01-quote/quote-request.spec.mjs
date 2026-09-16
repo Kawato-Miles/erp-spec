@@ -319,6 +319,8 @@ test('1.9 需求單狀態只出現六個值，顯示名依 wiki', async ({ page 
   await page.getByRole('main').locator('.ant-select').first().click();
   const dropdown = page.locator('.ant-select-dropdown:visible').last();
   await expect(dropdown).toBeVisible();
+  // 下拉選項渲染略晚於容器出現，先等到六個選項都在才讀文字
+  await expect(dropdown.locator('.ant-select-item-option')).toHaveCount(6);
   const optionTexts = await dropdown.locator('.ant-select-item-option').allInnerTexts();
   expect(optionTexts).toEqual([
     '需求確認中',

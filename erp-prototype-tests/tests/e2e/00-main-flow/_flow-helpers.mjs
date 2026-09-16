@@ -88,6 +88,13 @@ export async function expandRow(page, text) {
  * 清單剛掛載時第一次點擊常落在尚未接上事件的節點，開發伺服器首次編譯路由又要好幾秒，故重試。
  */
 export async function openByNo(page, no, urlPattern = /detail/) {
+  // 列表依建立日期由新到舊分頁，較早的單可能在第二頁：先用搜尋框篩到該單再點（共用篩選元件按 Enter 才送出）
+  const search = page.getByPlaceholder(/請輸入訂單編號|請輸入需求單號|請輸入/).first();
+  if (await search.count()) {
+    await search.fill(no);
+    await search.press('Enter');
+    await page.waitForTimeout(300);
+  }
   const link = page.getByText(no, { exact: true }).first();
   for (let i = 0; i < 3; i += 1) {
     await link.click();
