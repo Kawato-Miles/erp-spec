@@ -130,7 +130,7 @@
 
 材料型生產任務 SHALL 由生管派工、師傅執行、報工推進狀態、累計達標即完成（判定見 § 生產任務狀態轉換）。材料型任務 SHALL 預設不計入完成度。材料型任務與同段工序型任務之間的前置相依 SHALL 由印務於製程規劃時設定，系統 SHALL NOT 自動建立（見 [work-order spec § 生產任務相依性](../work-order/spec.md)）。
 
-材料型任務的生產數量 SHALL 為這一筆實際領出去多少料，其累計 SHALL 為材料實際成本的數量輸入：材料費＝依材料費算式代入生產數量累計（算式正本見 wiki [BOM結構](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md) § 計價引擎計算框架，見 [work-order spec § 工單成本對照](../work-order/spec.md)）。同一累計亦 SHALL 為料帳平衡等式的實際領用側（等式與各成分取數的正本見 wiki [數量換算規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/數量換算規則.md)）。系統 SHALL NOT 於本階段以物料消耗記錄承載材料成本——耗料細帳（哪一筆料、廢了多少）留待庫存模組。
+材料型任務的生產數量 SHALL 為這一筆實際領出去多少料（按重量材料以備料張計），其累計 SHALL 為材料實際成本的數量輸入：材料費＝依材料費算式代入 ceil(生產數量累計 ÷ 所選備料的開料數) 得整紙張數（算式正本見 wiki [BOM結構](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md) § 計價引擎計算框架，見 [work-order spec § 工單成本對照](../work-order/spec.md)）。同一累計亦 SHALL 為料帳平衡等式的實際領用側（等式與各成分取數的正本見 wiki [數量換算規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/數量換算規則.md)）。系統 SHALL NOT 於本階段以物料消耗記錄承載材料成本——耗料細帳（哪一筆料、廢了多少）留待庫存模組。
 
 **Priority**: P0
 
