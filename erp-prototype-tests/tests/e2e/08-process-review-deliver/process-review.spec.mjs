@@ -78,9 +78,9 @@ test('8.4 印務主管在待審核工單列表逐列核可或退回（原編號 
   await expect(rows.nth(1)).toContainText('WO-2026-0907');
   await expect(rows.nth(1)).toContainText('2026-09-04 10:15');
 
-  // 母表八欄
+  // 母表九欄（含新增的顏色費用合計與預估成本合計兩格）
   const headers = page.locator('thead.ant-table-thead th');
-  await expect(headers).toHaveCount(9); // 展開鍵一欄 ＋ 八欄
+  await expect(headers).toHaveCount(10); // 展開鍵一欄 ＋ 九欄
   for (const title of [
     '工單編號',
     '印件',
@@ -88,11 +88,17 @@ test('8.4 印務主管在待審核工單列表逐列核可或退回（原編號 
     '送審印務',
     '送審時間',
     '目標數量',
-    '預估成本',
+    '顏色費用合計',
+    '預估成本合計',
     '操作',
   ]) {
     await expect(page.locator('thead.ant-table-thead th', { hasText: title }).first()).toBeVisible();
   }
+
+  // WO-2026-0907 的顏色費用合計為 CMYK 四色的 1,520，預估成本合計為 17,623
+  const anchorRow = rows.filter({ hasText: 'WO-2026-0907' }).first();
+  await expect(anchorRow).toContainText('NT$ 1,520');
+  await expect(anchorRow).toContainText('NT$ 17,623');
 
   // 子表預設收合，展開兩張工單才看得到生產任務
   await expect(page.getByText('雪銅紙 150g 菊全')).toHaveCount(0);

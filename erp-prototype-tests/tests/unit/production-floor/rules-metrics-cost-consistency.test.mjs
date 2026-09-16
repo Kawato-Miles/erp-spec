@@ -6,6 +6,7 @@ import {
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/mock-data.js';
 import { calcWorkOrderActualCost } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/actual-cost.js';
 import { calcCostMetrics, calcMetrics } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/metrics.js';
+import { sumCost } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/estimate-cost.js';
 
 // 15.2 五個指標與工單成本對照走同一支算式（原編號 102，併入原編號 25）
 // 起點資料：鏈二 WP-2026-0710-01 的「海報四色印刷」與 WO-2026-0710 的成本對照。
@@ -13,6 +14,7 @@ import { calcCostMetrics, calcMetrics } from '/Users/b-f-03-029/erp/apps/erp/src
 // 再報一筆工；回兩個頁面比對：毛利率與成本達成率隨同一筆報工變動，工單成本對照的實際成本
 // 同步變動，兩處金額一致（指標卡的成本讀數＝calcCostMetrics，工單成本對照＝
 // calcWorkOrderActualCost，兩支共用同一顆 calcWorkOrderActualCost 引擎）。
+// 成本達成率的取數為預估成本合計與實際成本合計＝任務小計（不含顏色）加五個色別的顏色費用。
 describe('15.2 五個指標與工單成本對照走同一支算式', () => {
   const period = { from: '2026-08-01', to: '2026-09-30', today: '2026-09-05' };
   const salePriceOf = (printItemNo) => (printItemNo === 'PI-2026-0710' ? 21.5 * 3000 : null);
@@ -36,9 +38,7 @@ describe('15.2 五個指標與工單成本對照走同一支算式', () => {
 
   it('工單成本對照的實際成本合計＝指標卡母體只有這張工單時的實際成本合計（同一支算式，非各算各的）', () => {
     const { cost, directActual } = buildScenario(MOCK_WORK_REPORTS);
-    const directTotal =
-      directActual.material + directActual.process + directActual.binding + directActual.equipment;
-    expect(cost.actualSum).toBe(directTotal);
+    expect(cost.actualSum).toBe(sumCost(directActual));
   });
 
   it('工作包對「海報四色印刷」再報一筆工後，兩處金額同步變動且變動量一致', () => {
@@ -54,15 +54,7 @@ describe('15.2 五個指標與工單成本對照走同一支算式', () => {
     };
     const after = buildScenario([...MOCK_WORK_REPORTS, extraReport]);
 
-    const directDelta =
-      after.directActual.process +
-      after.directActual.material +
-      after.directActual.binding +
-      after.directActual.equipment -
-      (before.directActual.process +
-        before.directActual.material +
-        before.directActual.binding +
-        before.directActual.equipment);
+    const directDelta = sumCost(after.directActual) - sumCost(before.directActual);
     const costCardDelta = after.cost.actualSum - before.cost.actualSum;
 
     expect(directDelta).toBeGreaterThan(0);

@@ -150,7 +150,7 @@ test('7.9 生產任務清單是單一序列的母子表格（原編號 161）', 
   }
 
   // 母表格四個欄群：任務、印件部位、印務規劃（設備／承作、投產目標、預估成本、預計完成、前置）、
-  // 現場執行（狀態、交付狀態、完成量）
+  // 現場執行（狀態、交付狀態、完成量）。預估成本欄取任務小計（不含顏色）
   const headers = page.locator('.ant-table-thead th');
   for (const label of [
     '任務',
@@ -168,6 +168,12 @@ test('7.9 生產任務清單是單一序列的母子表格（原編號 161）', 
   ]) {
     await expect(headers.filter({ hasText: label })).not.toHaveCount(0);
   }
+
+  // 預估成本欄顯示該任務的任務小計（不含顏色）：海報四色印刷的任務小計為 5,981，
+  // 它登記的 CMYK 四色（1,200 × 4 ＝ 4,800）不在這一欄裡，改成工單層的顏色列
+  const printingRow = page.locator('tr.ant-table-row').filter({ hasText: '海報四色印刷' }).first();
+  await expect(printingRow).toContainText('NT$ 5,981');
+  await expect(printingRow).not.toContainText('NT$ 10,781');
 
   // 展開層才有的項目：製作細節、備註、單位、放損率、需轉交、計入完成度、派單，
   // 以及產出、點收、可轉交上限、實際開工、指派師傅

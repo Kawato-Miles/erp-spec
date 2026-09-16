@@ -23,7 +23,7 @@ describe('15.4 材料數量與售價是同一個量級', () => {
     expect(deriveTargetQty(materialTask)).not.toBe(wo.target_qty);
   });
 
-  it('材料費＝ceil(628÷8)＝79 張四六全 × 供應商原料單張進價 6.95 元＝549 元（與 est_cost 一致）', () => {
+  it('材料金額＝ceil(628÷8)＝79 張四六全 × 供應商原料單張進價 6.95 元＝549 元（與 est_cost 一致）', () => {
     const wo = MOCK_WORK_ORDERS.find((w) => w.work_order_no === WORK_ORDER_NO);
     const materialTask = wo.tasks.find((t) => t.task_type === '材料');
 
@@ -32,10 +32,11 @@ describe('15.4 材料數量與售價是同一個量級', () => {
     expect(sheetsFromEighthCut).toBe(79);
     expect(Math.round(sheetsFromEighthCut * 6.95)).toBe(549);
 
-    // 引擎重算的材料費與 mock 存的 est_cost 一致，兩處不是各自寫一套算式
+    // 引擎重算的金額與 mock 存的 est_cost 一致，兩處不是各自寫一套算式。
+    // 材料型任務沒有設備側金額，材料金額即它的任務小計（不含顏色）
     const recalculated = estimateTaskCost(materialTask);
-    expect(recalculated.material).toBe(549);
-    expect(recalculated.material).toBe(materialTask.est_cost.material);
+    expect(recalculated.subtotal).toBe(549);
+    expect(recalculated.subtotal).toBe(materialTask.est_cost.subtotal);
   });
 
   it('毛利率不會出現負三位數：整張工單的預估成本合計遠小於印件小計（123 盒 × 單價）', () => {

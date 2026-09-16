@@ -55,7 +55,7 @@ test('7.7 色數依印刷類工序旗標顯示，五個色別各自計數（原�
   for (const label of ['單黑', 'CMYK', 'Pantone', '金屬色（合印）', '獨立印']) {
     await expect(formField(page, label).locator('input')).toHaveCount(1);
   }
-  await expect(taskForm(page)).toContainText('色數為純記錄、不參與計價，設備費照實顯示 0');
+  await expect(taskForm(page)).toContainText('色數為純記錄、不參與計價，各顏色費用照實顯示 0');
 
   // 選一台自有印刷機後，說明列出三顆倍率
   await formField(page, '計畫設備').locator('.ant-select').click();
@@ -75,7 +75,7 @@ test('7.7 色數依印刷類工序旗標顯示，五個色別各自計數（原�
   );
 });
 
-test('7.8 印刷任務成本等於工序費加設備費（原編號 158）', async ({ page }) => {
+test('7.8 印刷任務的成本分成任務小計與各顏色費用兩處凍結（原編號 158）', async ({ page }) => {
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0901');
   await page.getByRole('button', { name: '新增生產任務' }).click();
@@ -94,16 +94,29 @@ test('7.8 印刷任務成本等於工序費加設備費（原編號 158）', asy
   // 任務表單沒有計價輸入段
   await expect(taskForm(page).getByText('計價數量', { exact: true })).toHaveCount(0);
 
-  // 工單彙總為旗下任務四分項相加
+  // 預估成本頁籤：欄只有成本項目與小計，列為各生產任務加顏色的各列加合計列
   await taskForm(page).getByRole('button', { name: '取消' }).click();
   await expect(taskForm(page)).toBeHidden();
-  await page.locator('.ant-tabs-tab').filter({ hasText: '預估成本分項' }).first().click();
+  await page.locator('.ant-tabs-tab').filter({ hasText: '預估成本' }).first().click();
   const headers = page.locator('.ant-table-thead th');
-  await expect(headers.filter({ hasText: '材料費' })).toHaveCount(1);
-  await expect(headers.filter({ hasText: '工序費' })).toHaveCount(1);
-  await expect(headers.filter({ hasText: '裝訂費' })).toHaveCount(1);
-  await expect(headers.filter({ hasText: '設備費' })).toHaveCount(1);
-  await expect(page.locator('.ant-table-summary')).toContainText('工單彙總');
+  await expect(headers.filter({ hasText: '成本項目' })).toHaveCount(1);
+  await expect(headers.filter({ hasText: '小計' })).toHaveCount(1);
+  for (const gone of ['材料費', '工序費', '裝訂費', '設備費']) {
+    await expect(headers.filter({ hasText: gone })).toHaveCount(0);
+  }
+  // 顏色的五列固定呈現，未登記者為 0
+  for (const label of [
+    '顏色費用：單黑',
+    '顏色費用：CMYK',
+    '顏色費用：Pantone',
+    '顏色費用：金屬色（合印）',
+    '顏色費用：獨立印',
+  ]) {
+    await expect(
+      page.locator('.ant-table-tbody tr').filter({ hasText: label }),
+    ).toHaveCount(1);
+  }
+  await expect(page.locator('.ant-table-summary')).toContainText('合計');
 });
 
 test('7.13 計入完成度預設關閉，勾了才填每份工單需生產數量（原編號 171）', async ({ page }) => {

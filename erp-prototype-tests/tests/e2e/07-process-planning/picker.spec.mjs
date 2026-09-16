@@ -49,10 +49,10 @@ test('7.2 備料規格選擇器的牌價欄顯示價格範圍（原編號 69）'
   await expect(stitchRows).toHaveCount(4);
   await expect(stitchRows.first()).toContainText(/元／本/);
 
-  // 工單詳情的預估成本分項照常呈現四分項金額
+  // 工單詳情的預估成本頁籤照常呈現任務小計（不含顏色）
   await picker.getByRole('button', { name: '取消' }).click();
   await expect(taskForm(page)).toHaveCount(0);
-  await page.locator('.ant-tabs-tab').filter({ hasText: '預估成本分項' }).first().click();
+  await page.locator('.ant-tabs-tab').filter({ hasText: '預估成本' }).first().click();
   const summary = page.locator('.ant-table-summary');
   await expect(summary).toContainText('NT$');
   await expect(
@@ -148,9 +148,9 @@ test('7.14 按面積計價的工序改選面積規格，備料任務只在自有
   await openWorkOrder(page, 'WO-2026-0910');
   const firstRow = page.locator('.ant-table-tbody tr.ant-table-row').first();
   await expect(firstRow).toContainText('珠光合成紙');
-  await page.locator('.ant-tabs-tab').filter({ hasText: '預估成本分項' }).first().click();
+  await page.locator('.ant-tabs-tab').filter({ hasText: '預估成本' }).first().click();
   const costRow = page.locator('.ant-table-tbody tr').filter({ hasText: '珠光合成紙' }).first();
-  await expect(costRow).not.toContainText('材料費 NT$ 0');
+  await expect(costRow).not.toContainText('NT$ 0');
   await expect(costRow).toContainText('NT$');
 });
 

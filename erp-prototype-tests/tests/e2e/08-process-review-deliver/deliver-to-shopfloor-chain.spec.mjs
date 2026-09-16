@@ -82,14 +82,15 @@ test('8.5 交付產線後的欄位一路帶到現場報工（原編號 112）', 
   // 已報數量累計 700（超過目標數量 628）照實收：任務因達標收於已完成，工作包進度隨即反映
   await expect(page.getByText('1 / 3')).toBeVisible();
 
-  // 四、工單詳情的成本對照：實際成本由報工投入累計代入計價算式，不是四個 0
+  // 四、工單詳情的成本對照：實際成本由報工投入累計代入計價算式，任務列算得出金額、不是整欄 0
   await switchRoleReliable(page, '印務');
   await gotoInAppStable(page, '/work-orders');
   await page.getByText('WO-2026-0908', { exact: true }).first().click();
   await page.getByRole('tab', { name: '成本對照' }).click();
-  const costRow = page.locator('tbody tr').filter({ hasText: '材料費' }).first();
+  const costRow = page.locator('tbody tr').filter({ hasText: '一級卡 300g 名片八開' }).first();
   await expect(costRow).toBeVisible();
-  const actual = await costRow.locator('td').nth(3).innerText();
+  // 欄序：成本項目、預估、實際、升降
+  const actual = await costRow.locator('td').nth(2).innerText();
   expect(actual).not.toBe('NT$ 0');
   expect(Number(actual.replace(/[^0-9]/g, ''))).toBeGreaterThan(0);
 

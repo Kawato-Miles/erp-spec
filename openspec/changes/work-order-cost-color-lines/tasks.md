@@ -19,16 +19,16 @@
 
 > 期望值取自本 change 的差異規格情境描述，MUST NOT 由實作重算。本節在第 3 節之前完成。
 
-- [ ] 2.1 在 Sens `erp-prototype-tests/` 改寫實際成本規則測試：`tests/unit/production-floor/rules-actual-cost-four-parts.test.mjs` 更名為 `rules-actual-cost-subtotal-colors.test.mjs`，期望值改為任務實際小計（不含顏色）與各顏色費用實際值；覆蓋差異規格 work-order § 工單成本對照的「顏色費用的實際值只取階梯價」
-- [ ] 2.2 改寫 `tests/unit/production-floor/rules-metrics-cost-consistency.test.mjs`：成本達成率取數改為預估成本合計與實際成本合計
-- [ ] 2.3 改寫 `tests/unit/work-orders/process-planning.test.mjs`：預估成本輸出結構改為小計加顏色群，覆蓋「存檔時凍結任務小計與各顏色費用」與「大圖任務的設備側金額全進任務小計」
-- [ ] 2.4 新增純函式情境：顏色費用：單黑、CMYK、Pantone、金屬色（合印）、獨立印的列固定產生，未登記者為 0；任務小計不含任何顏色貢獻
-- [ ] 2.5 新增純函式情境：延伸例——封面書腰合印任務加登記 Pantone 一色，顏色費用：Pantone 為 494（380 × 1.3），該任務小計仍為 3,677，工單合計為 43,503
-- [ ] 2.6 改寫畫面測試 `tests/e2e/07-process-planning/process-tab.spec.mjs` 與 `task-form.spec.mjs`：預估成本欄改讀任務小計（不含顏色）
-- [ ] 2.7 改寫畫面測試 `tests/e2e/08-process-review-deliver/process-review.spec.mjs`：待審核工單列表母表列新增顏色費用合計與預估成本合計
-- [ ] 2.8 改寫畫面測試 `tests/e2e/14-query-ui/work-orders.spec.mjs`：工單成本呈現的列結構改為任務列加顏色列加合計列
-- [ ] 2.9 新增畫面情境：成本對照頁籤的顏色列同時呈現預估、實際與升降；預估與實際皆為 0 的顏色列升降留空
-- [ ] 2.10 改寫 `docs/scenario-catalog.md` 的 7.8 節與其他受影響節，補上新增情境的節號
+- [x] 2.1 在 Sens `erp-prototype-tests/` 改寫實際成本規則測試：`tests/unit/production-floor/rules-actual-cost-four-parts.test.mjs` 更名為 `rules-actual-cost-subtotal-colors.test.mjs`，期望值改為任務實際小計（不含顏色）與各顏色費用實際值；覆蓋差異規格 work-order § 工單成本對照的「顏色費用的實際值只取階梯價」
+- [x] 2.2 改寫 `tests/unit/production-floor/rules-metrics-cost-consistency.test.mjs`：成本達成率取數改為預估成本合計與實際成本合計
+- [x] 2.3 改寫 `tests/unit/work-orders/process-planning.test.mjs`：預估成本輸出結構改為小計加顏色群，覆蓋「存檔時凍結任務小計與各顏色費用」與「大圖任務的設備側金額全進任務小計」
+- [x] 2.4 新增純函式情境：顏色費用：單黑、CMYK、Pantone、金屬色（合印）、獨立印的列固定產生，未登記者為 0；任務小計不含任何顏色貢獻
+- [x] 2.5 新增純函式情境：延伸例——封面書腰合印任務加登記 Pantone 一色，顏色費用：Pantone 為 494（380 × 1.3），該任務小計仍為 3,677，工單合計為 43,503
+- [x] 2.6 改寫畫面測試 `tests/e2e/07-process-planning/process-tab.spec.mjs` 與 `task-form.spec.mjs`：預估成本欄改讀任務小計（不含顏色）
+- [x] 2.7 改寫畫面測試 `tests/e2e/08-process-review-deliver/process-review.spec.mjs`：待審核工單列表母表列新增顏色費用合計與預估成本合計
+- [x] 2.8 改寫畫面測試 `tests/e2e/14-query-ui/work-orders.spec.mjs`：工單成本呈現的列結構改為任務列加顏色列加合計列
+- [x] 2.9 新增畫面情境：成本對照頁籤的顏色列同時呈現預估、實際與升降；預估與實際皆為 0 的顏色列升降留空
+- [x] 2.10 改寫 `docs/scenario-catalog.md` 的 7.8 節與其他受影響節，補上新增情境的節號
 
 ## 3. 預估與實際成本計算模組
 

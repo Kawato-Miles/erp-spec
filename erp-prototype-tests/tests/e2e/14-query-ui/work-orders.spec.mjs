@@ -57,18 +57,32 @@ test('14.2 工單詳情四個頁籤（原編號 2）', async ({ page }) => {
   await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0710');
   await expect(page.locator('body')).toContainText('WO-2026-0710');
 
-  // 任一角色逐一切換製程規劃、預估成本分項、成本對照、異動紀錄四個頁籤，網址隨切換變化。
+  // 任一角色逐一切換製程規劃、預估成本、成本對照、異動紀錄四個頁籤，網址隨切換變化。
   // 製程規劃是預設頁籤（網址一開始未帶 tab 參數，切換到別的頁籤再切回來才看得出網址真的隨動）。
-  await page.getByRole('tab', { name: '預估成本分項' }).click();
+  await page.getByRole('tab', { name: '預估成本' }).click();
   await expect(page).toHaveURL(/tab=estimate/);
 
-  // 成本對照顯示預估、實際、差額與升降
+  // 預估成本的列為各生產任務一列、顏色的五列、合計列；欄只有成本項目與小計
+  const estHeaders = page.locator('.ant-table-thead th');
+  await expect(estHeaders.filter({ hasText: '成本項目' })).toHaveCount(1);
+  await expect(estHeaders.filter({ hasText: '小計' })).toHaveCount(1);
+  const estBody = page.locator('.ant-table-tbody tr');
+  await expect(estBody.filter({ hasText: '海報四色印刷' })).toHaveCount(1);
+  await expect(estBody.filter({ hasText: '顏色費用：CMYK' })).toHaveCount(1);
+  await expect(estBody.filter({ hasText: '顏色費用：金屬色（合印）' })).toHaveCount(1);
+  await expect(estBody.filter({ hasText: '海報四色印刷' })).toContainText('NT$ 5,981');
+  await expect(estBody.filter({ hasText: '顏色費用：CMYK' })).toContainText('NT$ 4,800');
+  await expect(page.locator('.ant-table-summary')).toContainText('NT$ 16,855');
+
+  // 成本對照用同一組列，每列都有預估、實際與升降
   await page.getByRole('tab', { name: '成本對照' }).click();
   await expect(page).toHaveURL(/tab=cost/);
   await expect(page.locator('body')).toContainText('預估（凍結）');
   await expect(page.locator('body')).toContainText('實際（累積）');
-  await expect(page.locator('body')).toContainText('差額');
   await expect(page.locator('body')).toContainText('升降');
+  const compareBody = page.locator('.ant-table-tbody tr');
+  await expect(compareBody.filter({ hasText: '顏色費用：CMYK' })).toHaveCount(1);
+  await expect(compareBody.filter({ hasText: '海報四色印刷' })).toHaveCount(1);
 
   // 異動紀錄頁籤目前沒有資料，因為現行資料沒有異動事實
   await page.getByRole('tab', { name: /異動紀錄/ }).click();
@@ -176,4 +190,35 @@ test('14.15 工單分享頁籤的兩種層級與代理範圍（原編號 188）'
   await expect(page.getByRole('button', { name: '新增分享成員' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '移除' })).toHaveCount(0);
   await expect(page.locator('.ant-select', { hasText: '檢視' }).first().locator('input')).toBeDisabled();
+});
+
+test('14.17 成本對照的顏色列同時呈現預估、實際與升降', async ({ page }) => {
+  // 起點資料：鏈二 WO-2026-0710（已有報工事實，登記 CMYK 四色、沒有特殊色）
+  await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0710&tab=cost');
+  await expect(page.locator('body')).toContainText('WO-2026-0710');
+
+  // 顏色的五列固定呈現，未登記者也在
+  const body = page.locator('.ant-table-tbody tr');
+  for (const label of [
+    '顏色費用：單黑',
+    '顏色費用：CMYK',
+    '顏色費用：Pantone',
+    '顏色費用：金屬色（合印）',
+    '顏色費用：獨立印',
+  ]) {
+    await expect(body.filter({ hasText: label })).toHaveCount(1);
+  }
+
+  // 有登記的顏色列：預估、實際、升降三格都有內容（欄序為成本項目、預估、實際、升降）
+  const cmykRow = body.filter({ hasText: '顏色費用：CMYK' }).first();
+  await expect(cmykRow.locator('td').nth(1)).toContainText('NT$ 4,800');
+  const cmykActual = await cmykRow.locator('td').nth(2).innerText();
+  expect(Number(cmykActual.replace(/[^0-9]/g, ''))).toBeGreaterThan(0);
+  await expect(cmykRow.locator('td').nth(3)).not.toHaveText('');
+
+  // 預估與實際皆為 0 的顏色列：升降留空
+  const pantoneRow = body.filter({ hasText: '顏色費用：Pantone' }).first();
+  await expect(pantoneRow.locator('td').nth(1)).toHaveText('NT$ 0');
+  await expect(pantoneRow.locator('td').nth(2)).toHaveText('NT$ 0');
+  await expect(pantoneRow.locator('td').nth(3)).toHaveText('');
 });
