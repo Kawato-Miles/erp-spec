@@ -15,6 +15,8 @@
 | module | `npm run test:module -- tests/e2e/07-process-planning` | 該章全部 | 改單一模組時 |
 | full | `npm test` | Vitest 純函式加全部 Playwright | erp 提交前 |
 
+本機登入：erp main 版的免登入白名單只放行部分舊路由，工單等 prototype 頁會被導向登入頁。在本目錄建 `.env.local`（已忽略版控）寫入 `ERP_TEST_USERNAME` 與 `ERP_TEST_PASSWORD`，Playwright 會先登入一次並沿用狀態（`tests/e2e/auth.setup.mjs`）；白名單併回 main 後可不設。
+
 Playwright 會自動在 3020 埠啟動 erp 開發伺服器（已在跑則沿用；跑久出現 ChunkLoadError 就先 `pkill -f "next dev --port 3020"`）。erp 每次提交前必跑全套，commit 訊息附「測試 N 項通過」。
 
 ## 依據文件
