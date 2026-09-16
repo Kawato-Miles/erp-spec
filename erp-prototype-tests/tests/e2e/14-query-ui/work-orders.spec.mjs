@@ -62,17 +62,20 @@ test('14.2 工單詳情四個頁籤（原編號 2）', async ({ page }) => {
   await page.getByRole('tab', { name: '預估成本' }).click();
   await expect(page).toHaveURL(/tab=estimate/);
 
-  // 預估成本的列為各生產任務一列、顏色的五列、合計列；欄只有成本項目與小計
-  const estHeaders = page.locator('.ant-table-thead th');
+  // 預估成本的列為各生產任務一列、顏色的五列、合計列；欄只有成本項目與小計。
+  // AntD 會把已看過的頁籤留在 DOM 裡（只是隱藏），故一律縮到作用中頁籤的面板內取列，
+  // 否則製程規劃那張任務表的同名列也會被數進來。
+  const activePane = page.locator('.ant-tabs-tabpane-active');
+  const estHeaders = activePane.locator('.ant-table-thead th');
   await expect(estHeaders.filter({ hasText: '成本項目' })).toHaveCount(1);
   await expect(estHeaders.filter({ hasText: '小計' })).toHaveCount(1);
-  const estBody = page.locator('.ant-table-tbody tr');
+  const estBody = activePane.locator('.ant-table-tbody tr');
   await expect(estBody.filter({ hasText: '海報四色印刷' })).toHaveCount(1);
   await expect(estBody.filter({ hasText: '顏色費用：CMYK' })).toHaveCount(1);
   await expect(estBody.filter({ hasText: '顏色費用：金屬色（合印）' })).toHaveCount(1);
   await expect(estBody.filter({ hasText: '海報四色印刷' })).toContainText('NT$ 5,981');
   await expect(estBody.filter({ hasText: '顏色費用：CMYK' })).toContainText('NT$ 4,800');
-  await expect(page.locator('.ant-table-summary')).toContainText('NT$ 16,855');
+  await expect(activePane.locator('.ant-table-summary')).toContainText('NT$ 16,855');
 
   // 成本對照用同一組列，每列都有預估、實際與升降
   await page.getByRole('tab', { name: '成本對照' }).click();
@@ -80,7 +83,7 @@ test('14.2 工單詳情四個頁籤（原編號 2）', async ({ page }) => {
   await expect(page.locator('body')).toContainText('預估（凍結）');
   await expect(page.locator('body')).toContainText('實際（累積）');
   await expect(page.locator('body')).toContainText('升降');
-  const compareBody = page.locator('.ant-table-tbody tr');
+  const compareBody = page.locator('.ant-tabs-tabpane-active .ant-table-tbody tr');
   await expect(compareBody.filter({ hasText: '顏色費用：CMYK' })).toHaveCount(1);
   await expect(compareBody.filter({ hasText: '海報四色印刷' })).toHaveCount(1);
 
@@ -197,8 +200,8 @@ test('14.17 成本對照的顏色列同時呈現預估、實際與升降', async
   await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0710&tab=cost');
   await expect(page.locator('body')).toContainText('WO-2026-0710');
 
-  // 顏色的五列固定呈現，未登記者也在
-  const body = page.locator('.ant-table-tbody tr');
+  // 顏色的五列固定呈現，未登記者也在（同上，縮到作用中頁籤的面板內取列）
+  const body = page.locator('.ant-tabs-tabpane-active .ant-table-tbody tr');
   for (const label of [
     '顏色費用：單黑',
     '顏色費用：CMYK',
