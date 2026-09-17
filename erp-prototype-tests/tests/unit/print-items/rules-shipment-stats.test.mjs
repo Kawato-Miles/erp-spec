@@ -50,4 +50,15 @@ describe('15.5 印件出貨統計反映已送達的出貨單', () => {
     const value = calcShippableQty(printItem, MOCK_SHIPMENTS, MOCK_QC_RECORDS);
     expect(value).toBe(0);
   });
+
+  // 情境 12.1、12.2：鏈四 SH-2026-0820 是草稿，預計出貨印件 PI-2026-0820 × 500 不計入任何出貨統計
+  it('草稿的預計出貨印件不計入已出貨與累計已出貨數量', () => {
+    const DRAFT_PRINT_ITEM_NO = 'PI-2026-0820';
+    const draft = MOCK_SHIPMENTS.find((sh) => sh.status === '草稿');
+    expect(draft).toBeTruthy();
+    expect(draft.planned_details.some((d) => d.print_item_no === DRAFT_PRINT_ITEM_NO)).toBe(true);
+    expect(draft.details).toHaveLength(0);
+    expect(calcShippedQty({ print_item_no: DRAFT_PRINT_ITEM_NO }, MOCK_SHIPMENTS)).toBe(0);
+    expect(sumShippedQty(MOCK_SHIPMENTS, DRAFT_PRINT_ITEM_NO)).toBe(0);
+  });
 });

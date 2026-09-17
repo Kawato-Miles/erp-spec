@@ -2,18 +2,20 @@ import { expect, test } from '@playwright/test';
 import { openAs } from '../_helpers.mjs';
 import {
   CHAIN4,
+  correctDialog,
+  createTransferToQc,
+  expandedRecords,
   gotoInAppSafe,
   inspectAtQc,
   inspectDialog,
-  pendingCard,
-  pendingPanel,
-  recordedCard,
-  setupArrivedAtQc,
-  setupQcReadyState,
+  moveTransferToQc,
+  pendingRow,
+  pickFailReason,
+  receiveAtQc,
   switchRoleSafe,
 } from './_setup.mjs';
 
-// 前置鏈（建轉交單 → 搬運 → 抵達 → 點收）要跨四個角色與四個頁面，單條情境的時間拉得比預設長
+// 11.8 要跨四個角色與四個頁面推完一段轉交鏈，單條情境的時間拉得比預設長
 test.describe.configure({ timeout: 180_000 });
 
 // 詳情頁「標題：值」的值（AntD Descriptions 以 th／td 成對呈現）
@@ -32,21 +34,41 @@ const openOrderItemsTab = async (page, orderNo) => {
   await page.getByRole('tab', { name: /訂單項目/ }).click();
 };
 
-test('11.1 品檢待驗清單只認已點收的轉交單（原編號 27）', async ({ page }) => {
+// 品檢站清單的表頭
+const qcHeader = (page) => page.locator('.ant-table-thead').first();
+
+test('11.1 待驗清單依印件的齊套完成數列出，不依轉交（原編號 27）', async ({ page }) => {
   await openAs(page, '品檢人員', '/qc-shipping/inspection');
 
-  // 鏈一的貨已點收且已驗完：列留在清單上，四個欄位齊備
-  const card = pendingCard(page, 'PI-2026-0601');
-  await expect(card).toContainText('會員卡（客製燙金）');
-  await expect(card).toContainText('來源站點');
-  await expect(card).toContainText('裁切成型｜POLAR 137 裁切機');
-  await expect(card).toContainText('待驗量（在站量）');
-  await expect(card).toContainText('0（已驗完）');
-  await expect(card).toContainText('點收時間');
-  await expect(card).toContainText('2026-06-18 11:00');
-  await expect(card.getByRole('button', { name: '驗收' })).toBeDisabled();
+  // 欄位：印件、品檢需求、齊套完成數、已驗（通過／不通過）、待驗量、操作
+  await expect(qcHeader(page)).toContainText('印件');
+  await expect(qcHeader(page)).toContainText('品檢需求');
+  await expect(qcHeader(page)).toContainText('齊套完成數');
+  await expect(qcHeader(page)).toContainText('已驗（通過／不通過）');
+  await expect(qcHeader(page)).toContainText('待驗量');
+  await expect(qcHeader(page)).toContainText('操作');
+  // 清單只看製作事實，貨在哪裡到轉交單管理查
+  await expect(page.getByText('待驗量＝齊套完成數 − 已驗量，只看做出來多少')).toBeVisible();
 
-  // 只有品檢人員看得到驗收鈕：換成業務時整頁沒有驗收鈕，並提示要切換角色
+  // 鏈一 PI-2026-0601：齊套 5,000、已驗 5,000、待驗量 0，列留著、驗收鈕停用
+  const done = pendingRow(page, 'PI-2026-0601');
+  await expect(done).toContainText('會員卡（客製燙金）');
+  await expect(done).toContainText('5,000');
+  await expect(done).toContainText('5,000 ／ 0');
+  await expect(done).toContainText('0（已驗完）');
+  await expect(done.getByRole('button', { name: '驗收' })).toBeDisabled();
+
+  // 鏈四 PI-2026-0820：精裝裝訂已報工 500、尚無轉交單，照樣列出待驗量 500
+  const pending = pendingRow(page);
+  await expect(pending).toContainText(CHAIN4.printItemName);
+  await expect(pending).toContainText('500');
+  await expect(pending).toContainText('0 ／ 0');
+  await expect(pending.getByRole('button', { name: '驗收' })).toBeEnabled();
+
+  // 齊套完成數為 0 的印件不列（鏈二裁切未完成、鏈三尚未派工）
+  await expect(page.locator('tr.ant-table-row')).toHaveCount(2);
+
+  // 只有品檢人員看得到操作欄：換成業務時整頁沒有驗收鈕，並提示要切換角色
   await switchRoleSafe(page, '業務');
   await gotoInAppSafe(page, '/qc-shipping/inspection');
   await expect(page.getByRole('button', { name: '驗收' })).toHaveCount(0);
@@ -54,13 +76,11 @@ test('11.1 品檢待驗清單只認已點收的轉交單（原編號 27）', asy
 });
 
 test('11.2 品檢人員分次驗收，通過數即時計入完工良品數（原編號 28）', async ({ page }) => {
-  // 前置：生管建轉交單到品檢站 → 廠務搬運並抵達 → 品檢人員點收（待驗量 500）
-  await setupQcReadyState(page);
-  await gotoInAppSafe(page, '/qc-shipping/inspection');
-  await expect(pendingCard(page)).toContainText('500');
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+  await expect(pendingRow(page)).toContainText('500');
 
   // 不通過大於 0 而未選原因會被擋下
-  await pendingCard(page).getByRole('button', { name: '驗收' }).click();
+  await pendingRow(page).getByRole('button', { name: '驗收' }).click();
   const dialog = inspectDialog(page);
   await dialog.getByLabel('通過數量', { exact: true }).fill('300');
   await dialog.getByLabel('不通過數量', { exact: true }).fill('20');
@@ -68,16 +88,15 @@ test('11.2 品檢人員分次驗收，通過數即時計入完工良品數（原
   await expect(dialog.getByText('不通過數量大於 0 時必填原因')).toBeVisible();
 
   // 補上原因後第一批成立：待驗量由 500 降為 180
-  await dialog.getByLabel('不通過原因').click();
-  await page.getByTitle('色差／偏色').click();
+  await pickFailReason(page, dialog);
   await dialog.getByRole('button', { name: '記錄驗收' }).click();
   await expect(page.getByText(/已記錄驗收/).first()).toBeVisible();
-  await expect(pendingCard(page)).toContainText('180');
+  await expect(pendingRow(page)).toContainText('180');
 
   // 第二批驗完：待驗量歸零，該列留在清單上、驗收鈕停用而不消失
   await inspectAtQc(page, { passed: 180, failed: 0 });
-  await expect(pendingCard(page)).toContainText('0（已驗完）');
-  await expect(pendingCard(page).getByRole('button', { name: '驗收' })).toBeDisabled();
+  await expect(pendingRow(page)).toContainText('0（已驗完）');
+  await expect(pendingRow(page).getByRole('button', { name: '驗收' })).toBeDisabled();
 
   // 印件列表的完工良品數與可出貨額度同步長出來（通過 300＋180）
   await switchRoleSafe(page, '印務主管');
@@ -87,39 +106,37 @@ test('11.2 品檢人員分次驗收，通過數即時計入完工良品數（原
   await expect(row).toContainText('品檢缺口 20');
 });
 
-test('11.3 驗收數量不得超過在站量（原編號 52）', async ({ page }) => {
-  // 前置：貨已點收，品檢站待驗量 500
-  await setupQcReadyState(page);
-  await gotoInAppSafe(page, '/qc-shipping/inspection');
-  await pendingCard(page).getByRole('button', { name: '驗收' }).click();
+test('11.3 驗收數量不得超過待驗量（原編號 52）', async ({ page }) => {
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+  await pendingRow(page).getByRole('button', { name: '驗收' }).click();
   const dialog = inspectDialog(page);
-  await expect(dialog).toContainText('本站在站量 500（已點收）');
+  await expect(dialog).toContainText('本站待驗量 500（齊套完成數 500 − 已驗 0）');
   await expect(dialog).toContainText('本批驗出多種不良時分批各記一筆');
 
-  // 通過＋不通過合計超過待驗量：整筆擋下並提示上限，兩個欄位都不進帳
-  await dialog.getByLabel('通過數量', { exact: true }).fill('400');
-  await dialog.getByLabel('不通過數量', { exact: true }).fill('200');
-  await dialog.getByLabel('不通過原因').click();
-  await page.getByTitle('色差／偏色').click();
+  // 填 600 送出：整筆擋下並顯示當下待驗量 500，且輸入框不自動把數字砍到上限內
+  const passedInput = dialog.getByLabel('通過數量', { exact: true });
+  await passedInput.fill('600');
   await dialog.getByRole('button', { name: '記錄驗收' }).click();
-  await expect(dialog.getByText('通過＋不通過不可超過本站在站量 500').first()).toBeVisible();
+  await expect(dialog.getByText('通過＋不通過不可超過本站待驗量 500').first()).toBeVisible();
   await expect(page.getByText(/已記錄驗收/)).toHaveCount(0);
+  await expect(passedInput).toHaveValue('600');
 
-  // 改成合計不超過待驗量即成立
+  // 改成合計不超過待驗量即成立（通過 400、不通過 100）
+  await passedInput.fill('400');
   await dialog.getByLabel('不通過數量', { exact: true }).fill('100');
+  await pickFailReason(page, dialog);
   await dialog.getByRole('button', { name: '記錄驗收' }).click();
   await expect(page.getByText(/已記錄驗收/).first()).toBeVisible();
-  await expect(recordedCard(page)).toContainText('400');
+  await expect(pendingRow(page)).toContainText('400 ／ 100');
+  await expect(pendingRow(page)).toContainText('0（已驗完）');
 });
 
 test('11.4 製作帳與品質帳並排，互不覆蓋（原編號 103）', async ({ page }) => {
-  // 前置：貨已送到品檢站並點收，尚未驗收
-  await setupQcReadyState(page);
-  await switchRoleSafe(page, '印務主管');
-  await gotoInAppSafe(page, '/print-items');
+  // 起點：鏈四齊套完成數 500、尚未驗收
+  await openAs(page, '印務主管', '/print-items');
   await openPrintItemDetail(page, CHAIN4.printItemName);
 
-  // 兩個數字並排且互不覆蓋；驗收前品質帳為 0、缺口等於在品檢站待驗的量
+  // 兩個數字並排且互不覆蓋；驗收前品質帳為 0、缺口等於待驗量
   await expect(descValue(page, '製作進度（齊套完成數／購買數量）')).toHaveText('500 / 500');
   await expect(descValue(page, '品質帳（完工良品數／缺口）')).toContainText('0');
   await expect(descValue(page, '品質帳（完工良品數／缺口）')).toContainText('500');
@@ -155,10 +172,8 @@ test('11.4 製作帳與品質帳並排，互不覆蓋（原編號 103）', async
 });
 
 test('11.5 品質帳只有一份，驗完三處同時變（原編號 104）', async ({ page }) => {
-  // 前置：貨已點收；驗收前印件列表的完工良品數與可出貨額度皆為 0
-  await setupQcReadyState(page);
-  await switchRoleSafe(page, '印務主管');
-  await gotoInAppSafe(page, '/print-items');
+  // 起點：驗收前印件列表的完工良品數與可出貨額度皆為 0
+  await openAs(page, '印務主管', '/print-items');
   const row = () => page.getByRole('row', { name: new RegExp(CHAIN4.printItemNo) });
   await expect(row()).toContainText('500');
 
@@ -190,19 +205,29 @@ test('11.5 品質帳只有一份，驗完三處同時變（原編號 104）', as
   await switchRoleSafe(page, '業務');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   await page.getByRole('button', { name: '建立出貨單' }).first().click();
-  const dialog = page.locator('.ant-modal-content').filter({ hasText: '建立出貨單（同訂單可合箱' }).first();
-  await dialog.getByRole('combobox').first().click();
-  await page.locator('.ant-select-item-option').filter({ hasText: CHAIN4.orderNo }).first().click();
+  const dialog = page
+    .locator('.ant-modal-content')
+    .filter({ hasText: '建立出貨單（同訂單可合箱' })
+    .first();
+  const orderBox = dialog.getByRole('combobox').first();
+  await orderBox.click();
+  await orderBox.fill(CHAIN4.orderNo);
+  await page
+    .locator('.ant-select-dropdown:visible')
+    .last()
+    .locator('.ant-select-item-option')
+    .filter({ hasText: CHAIN4.orderNo })
+    .first()
+    .click();
+  await dialog.getByRole('tab', { name: /出貨印件/ }).click();
   await expect(
     dialog.getByRole('row', { name: new RegExp(CHAIN4.printItemNo) }),
   ).toContainText('480');
 });
 
 test('11.6 訂單詳情的完工良品數與印件兩處同源（原編號 115）', async ({ page }) => {
-  // 前置：貨已點收但尚未驗收，印件列表與訂單詳情的完工良品數皆為 0
-  await setupQcReadyState(page);
-  await switchRoleSafe(page, '業務');
-  await gotoInAppSafe(page, '/print-items');
+  // 起點：尚未驗收，印件列表與訂單詳情的完工良品數皆為 0
+  await openAs(page, '業務', '/print-items');
   const listRow = () => page.getByRole('row', { name: new RegExp(CHAIN4.printItemNo) });
   await expect(listRow().locator('td').nth(10)).toHaveText('0');
 
@@ -229,60 +254,73 @@ test('11.6 訂單詳情的完工良品數與印件兩處同源（原編號 115�
   ).toHaveText('—');
 });
 
-test('11.7 品檢頁在手機寬度下的版型（原編號 120）', async ({ page }) => {
-  await setupQcReadyState(page);
-  await gotoInAppSafe(page, '/qc-shipping/inspection');
+test('11.7 品檢站在桌機是表格，窄視窗靠側欄收合與橫向捲動（原編號 120）', async ({ page }) => {
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
 
-  // 窄版：單欄卡片，每張卡含印件名與類型標籤、印件編號、來源站點、待驗量、點收時間、累計
-  await page.setViewportSize({ width: 375, height: 812 });
-  const card = pendingCard(page);
-  await expect(card).toContainText(CHAIN4.printItemName);
-  await expect(card).toContainText('大貨印件');
-  await expect(card).toContainText(CHAIN4.printItemNo);
-  await expect(card).toContainText('來源站點');
-  await expect(card).toContainText('待驗量（在站量）');
-  await expect(card).toContainText('點收時間');
-  await expect(card).toContainText('累計（通過／不通過）');
-  // 不是橫向捲動的表格：清單區塊裡沒有表格，整頁也不橫向捲動
-  await expect(pendingPanel(page).locator('table')).toHaveCount(0);
-  // 縮視窗後要等重排（角色切換器改成圖示等）完成再量，故輪詢
+  // 桌機：表格版型，每一列可展開看該印件的歷次品檢紀錄
+  await expect(page.locator('.ant-table').first()).toBeVisible();
+  const doneRow = pendingRow(page, 'PI-2026-0601');
+  await doneRow.getByLabel('展開行').click();
+  const records = expandedRecords(page, 'PI-2026-0601');
+  await expect(records).toContainText('品檢時間');
+  await expect(records).toContainText('通過／不通過');
+  await expect(records).toContainText('不通過原因');
+  await expect(records).toContainText('品檢人員');
+  await expect(records).toContainText('+5,000');
+  await expect(records).toContainText('郭淑芬');
+
+  // 視窗縮到 700 像素：側欄收合為圖示列，表格改為橫向捲動、整頁不被推出視窗
+  await page.setViewportSize({ width: 700, height: 900 });
+  await expect(page.locator('.ant-layout-sider-collapsed')).toHaveCount(1);
   await expect
-    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), { timeout: 8000 })
+    .poll(
+      () =>
+        page.evaluate(() => {
+          const box = document.querySelector('.ant-table-content');
+          return box ? box.scrollWidth > box.clientWidth : false;
+        }),
+      { timeout: 8000 },
+    )
+    .toBe(true);
+  await expect
+    .poll(
+      () => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
+      { timeout: 8000 },
+    )
     .toBe(true);
 
-  // 驗收表單為全寬單欄、按鈕單手按得到
-  await card.getByRole('button', { name: '驗收' }).click();
-  const dialog = inspectDialog(page);
-  await expect(dialog.getByLabel('通過數量', { exact: true })).toBeVisible();
-  await expect(dialog.getByRole('button', { name: '記錄驗收' })).toBeVisible();
-  await dialog.getByRole('button', { name: '取消' }).click();
-
-  // 桌機寬度下版型不破、資訊順序相同
+  // 生管與印務主管：側欄有「品檢與出貨」，進頁看得到同一張清單但沒有操作欄
   await page.setViewportSize({ width: 1280, height: 720 });
-  await expect(pendingCard(page)).toContainText('待驗量（在站量）');
-  await expect(pendingCard(page)).toContainText('點收時間');
+  for (const role of ['生管', '印務主管']) {
+    await switchRoleSafe(page, role);
+    await gotoInAppSafe(page, '/qc-shipping/inspection');
+    await expect(pendingRow(page)).toContainText(CHAIN4.printItemName);
+    await expect(page.locator('.ant-table-thead').first()).not.toContainText('操作');
+    await expect(page.getByRole('button', { name: '驗收' })).toHaveCount(0);
+    await expect(page.getByText('驗收與更正由品檢人員執行')).toBeVisible();
+  }
 });
 
-test('11.8 待驗量由轉交事實推導（原編號 121）', async ({ page }) => {
-  // 前置：建轉交單、搬運、抵達站點（尚未點收）
-  await openAs(page, '生管', '/production-floor/pending-moves');
-  await setupArrivedAtQc(page);
+test('11.8 待驗量由齊套完成數推導，轉交與點收都不改變它（原編號 121）', async ({ page }) => {
+  // 起點：尚無轉交單，待驗量已是 500
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+  await expect(pendingRow(page)).toContainText('500');
+  // 品檢站頁不呈現來源站點與點收時間（貨在哪裡由轉交單管理回答）
+  await expect(qcHeader(page)).not.toContainText('來源站點');
+  await expect(qcHeader(page)).not.toContainText('點收時間');
 
-  // 已送達但未點收的不算：品檢站待驗清單還看不到這件印件
-  await switchRoleSafe(page, '品檢人員');
+  // 生管建一張到品檢站的轉交單、廠務搬運並抵達、品檢人員點收
+  await switchRoleSafe(page, '生管');
+  await createTransferToQc(page);
+  await moveTransferToQc(page);
+  await receiveAtQc(page);
+
+  // 點收前後待驗量都是 500：轉交事實不參與待驗量的算式
   await gotoInAppSafe(page, '/qc-shipping/inspection');
-  await expect(pendingPanel(page)).not.toContainText(CHAIN4.printItemNo);
+  await expect(pendingRow(page)).toContainText('500');
+  await expect(pendingRow(page)).toContainText('0 ／ 0');
 
-  // 點收後才進待驗量，且對得回轉交單明細的 500、來源站點顯示該工序與設備
-  await gotoInAppSafe(page, '/production-floor/receiving');
-  await page.getByRole('button', { name: '點收' }).first().click();
-  await page.getByRole('button', { name: '確認點收' }).click();
-  await expect(page.getByText(/已點收 TT-/)).toBeVisible();
-  await gotoInAppSafe(page, '/qc-shipping/inspection');
-  await expect(pendingCard(page)).toContainText('500');
-  await expect(pendingCard(page)).toContainText('精裝裝訂｜精裝線');
-
-  // 轉交單那一張的明細數量即 500
+  // 貨在哪裡到轉交單管理查：該張單的目的站點與明細數量都在那裡
   await switchRoleSafe(page, '生管');
   await gotoInAppSafe(page, '/production-floor/transfers');
   const ticketRow = page.getByRole('row', { name: /已點收/ }).first();
@@ -290,15 +328,30 @@ test('11.8 待驗量由轉交事實推導（原編號 121）', async ({ page }) 
   await expect(ticketRow).toContainText('500');
 });
 
-test.fixme('11.9 分次驗收與單筆在站量檢核（原編號 122）', async ({ page }) => {
-  // Miles 2026-09-08：品檢 prototype 尚未完善、待調整，待驗量為 0 之後的防呆形式暫不驗收
-  await setupQcReadyState(page);
-  await gotoInAppSafe(page, '/qc-shipping/inspection');
-  await inspectAtQc(page, { passed: 300, failed: 20 });
-  await expect(pendingCard(page)).toContainText('180');
+test('11.9 分次驗收與待驗量歸零後的防呆（原編號 122）', async ({ page }) => {
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+
+  // 第一批：不通過大於 0 必選原因，原因為固定分組選項、沒有「其他」
+  await pendingRow(page).getByRole('button', { name: '驗收' }).click();
+  const dialog = inspectDialog(page);
+  await dialog.getByLabel('通過數量', { exact: true }).fill('300');
+  await dialog.getByLabel('不通過數量', { exact: true }).fill('20');
+  await dialog.getByRole('button', { name: '記錄驗收' }).click();
+  await expect(dialog.getByText('不通過數量大於 0 時必填原因')).toBeVisible();
+  // 原因為分組選項；六組值域與「沒有其他」的完整驗算在純函式測試
+  // tests/unit/qc-shipping/qc-fail-reasons.test.mjs
+  await pickFailReason(page, dialog);
+  await dialog.getByRole('button', { name: '記錄驗收' }).click();
+  await expect(page.getByText(/已記錄驗收/).first()).toBeVisible();
+  await expect(pendingRow(page)).toContainText('180');
+
+  // 第二批把待驗量驗完：列留著顯示已驗完，驗收鈕停用並提示已驗完
   await inspectAtQc(page, { passed: 180, failed: 0 });
-  await expect(pendingCard(page)).toContainText('0（已驗完）');
-  await expect(pendingCard(page).getByRole('button', { name: '驗收' })).toBeDisabled();
+  await expect(pendingRow(page)).toContainText('0（已驗完）');
+  const inspectButton = pendingRow(page).getByRole('button', { name: '驗收' });
+  await expect(inspectButton).toBeDisabled();
+  await inspectButton.locator('xpath=..').hover();
+  await expect(page.locator('.ant-tooltip').filter({ hasText: '已驗完' }).first()).toBeVisible();
 });
 
 test('11.10 印件詳情頁看得到歷次分次驗收（原編號 11）', async ({ page }) => {
@@ -320,21 +373,19 @@ test('11.10 印件詳情頁看得到歷次分次驗收（原編號 11）', async
   await expect(page.getByRole('row', { name: /5,000/ }).first()).toBeVisible();
 });
 
-test('11.11 品檢驗收介面看得到印件的品檢需求（新增）', async ({ page }) => {
+test('11.11 品檢驗收介面看得到印件的品檢需求', async ({ page }) => {
   await openAs(page, '品檢人員', '/qc-shipping/inspection');
 
-  // 待驗卡上多一行品檢需求（唯讀，取該印件；鏈一 PI-2026-0601 已驗完但列仍在）
-  const card = pendingCard(page, 'PI-2026-0601');
-  await expect(card).toContainText('品檢需求');
-  await expect(card).toContainText('色差全檢，卡角裁切允差 0.3mm。');
-
-  // 前置：生管建轉交單到品檢站 → 廠務搬運並抵達 → 品檢人員點收（鏈四待驗量 500）
-  await switchRoleSafe(page, '生管');
-  await setupQcReadyState(page, { open: false });
-  await gotoInAppSafe(page, '/qc-shipping/inspection');
+  // 清單上的品檢需求欄（唯讀，取該印件）
+  await expect(pendingRow(page, 'PI-2026-0601')).toContainText(
+    '色差全檢，卡角裁切允差 0.3mm。',
+  );
+  await expect(pendingRow(page)).toContainText(
+    '書背厚度與封面裁切對版允差 0.5mm，精裝黏合牢固度抽檢 5%。',
+  );
 
   // 驗收對話框頂端顯示同一段文字，品檢人員不必退出對話框回頭查
-  await pendingCard(page).getByRole('button', { name: '驗收' }).click();
+  await pendingRow(page).getByRole('button', { name: '驗收' }).click();
   const dialog = inspectDialog(page);
   await expect(dialog).toContainText(
     '品檢需求：書背厚度與封面裁切對版允差 0.5mm，精裝黏合牢固度抽檢 5%。',
@@ -347,11 +398,11 @@ test('11.11 品檢驗收介面看得到印件的品檢需求（新增）', async
 
   // 製程說明是給主管審核與工廠做活看的，不出現在驗收介面
   await expect(dialog).not.toContainText('製程說明');
-  await expect(pendingCard(page)).not.toContainText('製程說明');
+  await expect(page.locator('.ant-table-thead').first()).not.toContainText('製程說明');
 });
 
-test('11.12 印件的品檢需求沒填時顯示破折號，驗收照樣記得下去（新增）', async ({ page }) => {
-  // 前置一：印務主管把鏈四 PI-2026-0820 的品檢需求清成空白（兩欄選填，清空存得了）。
+test('11.12 印件的品檢需求沒填時顯示破折號，驗收照樣記得下去', async ({ page }) => {
+  // 前置：印務主管把鏈四 PI-2026-0820 的品檢需求清成空白（兩欄選填，清空存得了）。
   // 規格寫無值顯示「－」，Prototype 全站的無值符號統一用破折號「—」，本測試照畫面實際字元斷言。
   await openAs(page, '印務主管', `/print-items/detail?id=${CHAIN4.printItemNo}`);
   await page.getByRole('button', { name: /編輯製程與品檢/ }).click();
@@ -361,14 +412,11 @@ test('11.12 印件的品檢需求沒填時顯示破折號，驗收照樣記得�
   await expect(page.getByText('已更新製程說明與品檢需求').first()).toBeVisible();
   await expect(descValue(page, '品檢需求')).toHaveText('—');
 
-  // 前置二：生管建轉交單到品檢站 → 廠務搬運並抵達 → 品檢人員點收（待驗量 500）
-  await switchRoleSafe(page, '生管');
-  await setupQcReadyState(page, { open: false });
+  // 清單與驗收對話框的品檢需求都印破折號
+  await switchRoleSafe(page, '品檢人員');
   await gotoInAppSafe(page, '/qc-shipping/inspection');
-
-  // 待驗卡與驗收對話框的品檢需求都印破折號
-  await expect(pendingCard(page)).toContainText('品檢需求');
-  await pendingCard(page).getByRole('button', { name: '驗收' }).click();
+  await expect(pendingRow(page).locator('td').nth(2)).toHaveText('—');
+  await pendingRow(page).getByRole('button', { name: '驗收' }).click();
   await expect(inspectDialog(page)).toContainText('品檢需求：—');
 
   // 沒寫檢驗要點不擋下驗收：這一筆照樣記得成立
@@ -377,20 +425,19 @@ test('11.12 印件的品檢需求沒填時顯示破折號，驗收照樣記得�
   await dialog.getByLabel('不通過數量', { exact: true }).fill('0');
   await dialog.getByRole('button', { name: '記錄驗收' }).click();
   await expect(page.getByText(/已記錄驗收/).first()).toBeVisible();
-  await expect(recordedCard(page)).toContainText('500');
+  await expect(pendingRow(page)).toContainText('500 ／ 0');
 });
 
-test('11.13 印務改過品檢需求後，驗收介面顯示新的一份，舊紀錄不留快照（新增）', async ({
-  page,
-}) => {
-  // 前置：貨已點收並驗完一筆（通過 500），此時印件的品檢需求為 mock 的那一段（A）
+test('11.13 印務改過品檢需求後，驗收介面顯示新的一份，舊紀錄不留快照', async ({ page }) => {
   const ORIGINAL = '書背厚度與封面裁切對版允差 0.5mm，精裝黏合牢固度抽檢 5%。';
   const UPDATED = '書背厚度改抽檢 10%，封面燙金位置偏移不得超過 1mm。';
-  await setupQcReadyState(page);
-  await inspectAtQc(page, { passed: 500, failed: 0 });
-  await expect(recordedCard(page)).toContainText('500');
 
-  // 印務主管把品檢需求改成新的一段（B）
+  // 前置：已驗完一筆（通過 500），此時印件的品檢需求為 mock 的那一段
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+  await inspectAtQc(page, { passed: 500, failed: 0 });
+  await expect(pendingRow(page)).toContainText('500 ／ 0');
+
+  // 印務主管把品檢需求改成新的一段
   await switchRoleSafe(page, '印務主管');
   await gotoInAppSafe(page, '/print-items');
   await openPrintItemDetail(page, CHAIN4.printItemName);
@@ -401,13 +448,35 @@ test('11.13 印務改過品檢需求後，驗收介面顯示新的一份，舊�
   await page.locator('.ant-drawer').getByRole('button', { name: /儲\s*存/ }).click();
   await expect(page.getByText('已更新製程說明與品檢需求').first()).toBeVisible();
 
-  // 品檢人員回驗收介面：待驗卡顯示新的那一段，不是驗收當時的舊值
+  // 品檢人員回品檢站：清單顯示新的那一段，不是驗收當時的舊值
   await switchRoleSafe(page, '品檢人員');
   await gotoInAppSafe(page, '/qc-shipping/inspection');
-  await expect(pendingCard(page)).toContainText(UPDATED);
-  await expect(pendingCard(page)).not.toContainText(ORIGINAL);
+  await expect(pendingRow(page)).toContainText(UPDATED);
+  await expect(pendingRow(page)).not.toContainText(ORIGINAL);
 
-  // 已記錄的那一筆驗收沒有品檢需求這個欄位，也沒有留下舊值的快照
-  await expect(recordedCard(page)).not.toContainText('品檢需求');
-  await expect(recordedCard(page)).not.toContainText(ORIGINAL);
+  // 展開的那一筆品檢紀錄沒有品檢需求這個欄位，也沒有留下舊值的快照
+  await pendingRow(page).getByLabel('展開行').click();
+  const records = expandedRecords(page);
+  await expect(records).toContainText('+500');
+  await expect(records).not.toContainText('品檢需求');
+  await expect(records).not.toContainText(ORIGINAL);
+});
+
+test('11.16 更正紀錄沖銷後待驗量回升', async ({ page }) => {
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+  await inspectAtQc(page, { passed: 500, failed: 0 });
+  await expect(pendingRow(page)).toContainText('0（已驗完）');
+
+  // 展開該列對那一筆補一筆更正紀錄（通過 −500）
+  await pendingRow(page).getByLabel('展開行').click();
+  await expandedRecords(page).getByRole('button', { name: '補更正紀錄' }).first().click();
+  const dialog = correctDialog(page);
+  await dialog.getByLabel('通過數量更正（可填負數）', { exact: true }).fill('-500');
+  await dialog.getByRole('button', { name: '送出更正紀錄' }).click();
+  await expect(page.getByText(/已補一筆更正紀錄/).first()).toBeVisible();
+
+  // 已驗量以代數和回到 0，待驗量回升為 500，驗收鈕重新可按
+  await expect(pendingRow(page)).toContainText('0 ／ 0');
+  await expect(pendingRow(page)).toContainText('500');
+  await expect(pendingRow(page).getByRole('button', { name: '驗收' })).toBeEnabled();
 });

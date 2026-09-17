@@ -20,6 +20,17 @@ const shipment = (id, status, qty) => ({
   details: [{ print_item_no: 'PI-2026-0820', name: '《山城記事》精裝書（128 頁）', qty }],
 });
 
+// 草稿的印件與數量存在 planned_details、正式明細為空：額度是建立那一刻才被吃掉的
+const draft = (id, qty) => ({
+  id,
+  status: '草稿',
+  order_no: 'ORD-2026-0820',
+  details: [],
+  planned_details: [
+    { print_item_no: 'PI-2026-0820', name: '《山城記事》精裝書（128 頁）', qty },
+  ],
+});
+
 describe('可出貨額度', () => {
   it('沒有出貨單時額度等於完工良品數', () => {
     expect(calcShippableQty(printItem, [], qcRecords)).toBe(480);
@@ -38,6 +49,17 @@ describe('可出貨額度', () => {
   it('改某張單的明細數量時，本單原有的佔用先還回來當增量基準', () => {
     const shipments = [shipment('sh-1', '未處理', 200)];
     expect(calcShippableQty(printItem, shipments, qcRecords, 'sh-1')).toBe(480);
+  });
+
+  // 情境 12.2：草稿不佔額度——兩張草稿各填 500，印件的可出貨額度不動
+  it('草稿的預計出貨印件不佔額度，開幾張都不動', () => {
+    const shipments = [draft('sh-d1', 500), draft('sh-d2', 500)];
+    expect(calcShippableQty(printItem, shipments, qcRecords)).toBe(480);
+  });
+
+  it('草稿建立為出貨單、數量轉為正式明細之後才佔額度', () => {
+    const shipments = [shipment('sh-d1', '未處理', 400)];
+    expect(calcShippableQty(printItem, shipments, qcRecords)).toBe(80);
   });
 });
 

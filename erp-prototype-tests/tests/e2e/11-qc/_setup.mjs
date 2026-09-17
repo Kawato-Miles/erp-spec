@@ -1,7 +1,8 @@
-// 第十一章（品檢）與第十二章（出貨與送達）共用的前置鏈。
-// 情境目錄多數條目的起點資料都是「鏈四 PT-0820-9（可搬量 500）」加上一段前置操作：
-// 生管建一張到品檢站的轉交單 → 廠務開始搬運並抵達站點 → 品檢人員點收 →（視情境）品檢人員驗收。
-// 這一段只是把資料推到情境的起點，不是被驗的行為本身，故收在這裡供兩章共用。
+// 第十一章（品檢）與第十二章（出貨與送達）共用的前置鏈與版面工具。
+//
+// 待驗清單只看製作事實：印件的齊套完成數大於已驗量就出現在品檢站，待驗量＝齊套完成數 − 已驗量。
+// 鏈四 PI-2026-0820 的精裝裝訂已報工良品 500，因此起點即有待驗量 500——品檢的前置不再需要
+// 建轉交單、搬運與點收。轉交那一段只有第十章與 11.8（驗「轉交不改變待驗量」）才推。
 //
 // 記憶體狀態鐵則：只有 openAs 會整頁載入，之後一律 gotoInApp 與 switchRole。
 import { expect } from '@playwright/test';
@@ -44,10 +45,26 @@ export async function gotoInAppSafe(page, path) {
         await page.waitForTimeout(200);
         continue;
       }
-      await closedGroups.nth(i % count).click();
+      const title = closedGroups.nth(i % count);
+      await title.click();
+      // 等這個群組的 class 真的變成已展開再進下一輪：只等固定時間的話，下一輪的
+      // 「收合中的群組」清單還含剛點過的那一個，會再點一次把它收回去，目標項因此永遠不出現
+      await expect(title.locator('xpath=..')).toHaveClass(/ant-menu-submenu-open/, {
+        timeout: 3000,
+      }).catch(() => {});
       await page.waitForTimeout(250);
     }
-    await item.click();
+    // 點擊前先確認目標項真的看得到：群組收合動畫未結束就點下去，點擊會一直等不到穩定狀態。
+    // 切完角色的第一拍，側欄會依當前路徑重算展開群組、把剛手動展開的收回去；
+    // 所以看到之後再等一小段，確認還在才點，點不到就回到外層重新展開一次
+    await expect(item).toBeVisible({ timeout: 10000 });
+    await page.waitForTimeout(300);
+    if (!(await item.isVisible().catch(() => false))) continue;
+    try {
+      await item.click({ timeout: 5000 });
+    } catch {
+      continue;
+    }
     // 部分頁面切換角色後導頁當下會先拋一次可回復的 client 錯誤（如 setStationById 的既有問題），
     // Next.js 仍會完成路由，只是比一般站內導頁慢，偶爾第一次點擊還沒吃到就要重點一次
     try {
@@ -69,6 +86,10 @@ export const CHAIN4 = {
   movableQty: 500,
   orderedQty: 500,
   clientName: '晨光文創股份有限公司',
+  draftShipmentNo: 'SH-2026-0820',
+  contactPerson: '周雅文',
+  contactPhone: '02-2790-6611',
+  contactAddress: '台北市內湖區文德路 168 號 3 樓',
 };
 
 // 假圖檔（現場照片欄位一律必附，附件內容不影響驗收）
@@ -77,6 +98,66 @@ export const fakePhoto = (name) => ({
   mimeType: 'image/jpeg',
   buffer: Buffer.from('fake-photo'),
 });
+
+// ── 第十一章：品檢站（桌機表格） ──
+
+// 待驗清單上某件印件的那一列
+export const pendingRow = (page, printItemNo = CHAIN4.printItemNo) =>
+  page.locator('tr.ant-table-row').filter({ hasText: printItemNo }).first();
+
+// 該列的展開子表（歷次品檢紀錄）：AntD 把展開內容放在該列的下一個 tr
+export const expandedRecords = (page, printItemNo = CHAIN4.printItemNo) =>
+  pendingRow(page, printItemNo).locator('xpath=following-sibling::tr[1]');
+
+// 驗收對話框
+export const inspectDialog = (page) =>
+  page.locator('.ant-modal-content').filter({ hasText: '驗收：' }).first();
+
+// 補更正紀錄對話框
+export const correctDialog = (page) =>
+  page.locator('.ant-modal-content').filter({ hasText: '補更正紀錄：' }).first();
+
+/**
+ * 選不通過原因。選項清單為虛擬捲動的分組清單，對話框變高時下拉會開在視窗外緣、
+ * 直接點選項會一直等不到可點狀態；改用鍵盤選：下拉一開啟，反白的就是第一個選項。
+ * 本專案各條情境用的都是第一個選項「色差／偏色」，其餘選項的值域驗算在純函式測試。
+ */
+export async function pickFailReason(page, dialog, reason = '色差／偏色') {
+  await dialog.getByLabel('不通過原因').click();
+  const dropdown = page.locator('.ant-select-dropdown:visible').last();
+  await expect(dropdown).toBeVisible({ timeout: 5000 });
+  await page.keyboard.press('Enter');
+  await expect(dialog.locator('.ant-select-selection-item')).toContainText(reason);
+}
+
+/**
+ * 品檢站驗收一筆（預設全數通過 500）。呼叫前角色須為品檢人員。
+ */
+export async function inspectAtQc(
+  page,
+  { passed = 500, failed = 0, reason = '色差／偏色', printItemNo = CHAIN4.printItemNo } = {},
+) {
+  await gotoInAppSafe(page, '/qc-shipping/inspection');
+  await pendingRow(page, printItemNo).getByRole('button', { name: '驗收' }).click();
+  const dialog = inspectDialog(page);
+  await dialog.getByLabel('通過數量', { exact: true }).fill(String(passed));
+  await dialog.getByLabel('不通過數量', { exact: true }).fill(String(failed));
+  if (failed > 0) await pickFailReason(page, dialog, reason);
+  await dialog.getByRole('button', { name: '記錄驗收' }).click();
+  await expect(page.getByText(/已記錄驗收/).first()).toBeVisible();
+}
+
+/**
+ * 印件 PI-2026-0820 已取得可出貨額度的狀態（第十二章多數情境的起點）。
+ * 品檢不必先轉交、不必點收：待驗量由齊套完成數推導，起點就是 500。
+ * @param {{ passed?: number, failed?: number, open?: boolean }} options open=true 時由本函式整頁載入
+ */
+export async function setupShippableState(page, { passed = 500, failed = 0, open = true } = {}) {
+  if (open) await openAs(page, '品檢人員', '/qc-shipping/inspection');
+  await inspectAtQc(page, { passed, failed });
+}
+
+// ── 第十一章與第十章共用：場內轉交到品檢站 ──
 
 // 生管建一張到品檢站的轉交單（來源＝PT-0820-9 精裝裝訂，數量帶可搬全量 500）
 export async function createTransferToQc(page) {
@@ -103,7 +184,7 @@ export async function moveTransferToQc(page) {
   await expect(page.getByText(/已回報抵達站點/)).toBeVisible();
 }
 
-// 品檢人員點收（點收後這批量才進品檢站的待驗清單）
+// 品檢人員點收（點收只回答貨到了哪裡，與待驗量無關）
 export async function receiveAtQc(page) {
   await switchRoleSafe(page, '品檢人員');
   await gotoInAppSafe(page, '/production-floor/receiving');
@@ -113,125 +194,117 @@ export async function receiveAtQc(page) {
 }
 
 /**
- * 貨已送到品檢站但尚未點收（用於驗「已送達未點收不進待驗清單」）。
- * 呼叫端須自行先 openAs 生管。
+ * 貨已送到品檢站但尚未點收。呼叫端須自行先切為生管。
  */
 export async function setupArrivedAtQc(page) {
   await createTransferToQc(page);
   await moveTransferToQc(page);
 }
 
-/**
- * 品檢站已有待驗量 500 的狀態（情境 11.2 的「前置操作」整段）。
- * @param {import('@playwright/test').Page} page
- * @param {{ open?: boolean }} options open=true 時由本函式做整頁載入（第一步 openAs 生管）
- */
-export async function setupQcReadyState(page, { open = true } = {}) {
-  if (open) await openAs(page, '生管', '/production-floor/pending-moves');
-  await setupArrivedAtQc(page);
-  await receiveAtQc(page);
-}
-
-// 品檢站「待驗」區塊
-export const pendingPanel = (page) =>
-  page
-    .locator('[class*="BorderBlock"]')
-    .filter({ has: page.getByRole('heading', { name: /^待驗（/ }) })
-    .first();
-
-// 品檢站「已記錄的驗收」區塊
-export const recordedPanel = (page) =>
-  page
-    .locator('[class*="BorderBlock"]')
-    .filter({ has: page.getByRole('heading', { name: /^已記錄的驗收（/ }) })
-    .first();
-
-// 驗收對話框
-export const inspectDialog = (page) =>
-  page.locator('.ant-modal-content').filter({ hasText: '驗收：' }).first();
-
-// 待驗區塊中某件印件的那張卡
-export const pendingCard = (page, printItemNo = CHAIN4.printItemNo) =>
-  pendingPanel(page).locator('[class*="BorderBlock"]').filter({ hasText: printItemNo }).last();
-
-// 已記錄的驗收區塊中某件印件的那一戶
-export const recordedCard = (page, printItemNo = CHAIN4.printItemNo) =>
-  recordedPanel(page).locator('[class*="BorderBlock"]').filter({ hasText: printItemNo }).first();
-
-/**
- * 品檢站驗收一筆（預設全數通過 500），使 PI-2026-0820 取得可出貨額度。
- * 呼叫前狀態須為 setupQcReadyState 之後，且當下角色為品檢人員。
- */
-export async function inspectAtQc(page, { passed = 500, failed = 0, reason = '色差／偏色' } = {}) {
-  await gotoInAppSafe(page, '/qc-shipping/inspection');
-  await pendingCard(page).getByRole('button', { name: '驗收' }).click();
-  const dialog = inspectDialog(page);
-  await dialog.getByLabel('通過數量', { exact: true }).fill(String(passed));
-  await dialog.getByLabel('不通過數量', { exact: true }).fill(String(failed));
-  if (failed > 0) {
-    await dialog.getByLabel('不通過原因').click();
-    await page.getByTitle(reason).click();
-  }
-  await dialog.getByRole('button', { name: '記錄驗收' }).click();
-  await expect(page.getByText(/已記錄驗收/).first()).toBeVisible();
-}
-
-/**
- * 印件 PI-2026-0820 已取得可出貨額度的狀態（第十二章多數情境的起點）。
- */
-export async function setupShippableState(page, { passed = 500, failed = 0 } = {}) {
-  await setupQcReadyState(page);
-  await inspectAtQc(page, { passed, failed });
-}
-
 // ── 第十二章共用：出貨單 ──
 
-// 出貨方式按鈕的顯示字（自取在畫面上排版為「自 取」）
-export const methodButtonName = (method) => (method === '自取' ? /^自\s*取$/ : method);
-
-// 建立出貨單對話框
+// 建單／編輯草稿／改明細三種模式的對話框
 export const createShipmentDialog = (page) =>
   page.locator('.ant-modal-content').filter({ hasText: '建立出貨單（同訂單可合箱' }).first();
 
-/**
- * 業務建一張出貨單（呼叫前須已切為業務並在出貨管理頁）。
- * @param {{ qty: number, method?: string, logistics?: string|null, receiver?: string }} options
- */
-export async function createShipment(
-  page,
-  {
-    qty,
-    method = '第三方物流',
-    logistics = '新竹物流',
-    receiver = '晨光文創 收貨組｜台北市中正區羅斯福路一段 8 號｜02-2396-1234',
-  },
-) {
-  await page.getByRole('button', { name: '建立出貨單' }).first().click();
-  const dialog = createShipmentDialog(page);
-  // 訂單樣本增多後選項會超出下拉可視範圍：下拉支援輸入搜尋（依標籤），先輸入編號過濾再點
-  const orderBox = dialog.getByRole('combobox').first();
-  await orderBox.click();
-  await orderBox.fill(CHAIN4.orderNo);
-  await page.locator('.ant-select-dropdown:visible').last().locator('.ant-select-item-option').filter({ hasText: CHAIN4.orderNo }).first().click();
-  await dialog
-    .getByRole('row', { name: new RegExp(CHAIN4.printItemNo) })
-    .getByRole('spinbutton')
-    .fill(String(qty));
-  await dialog.getByLabel('收件資訊（收件人／地址／電話）').fill(receiver);
-  // 出貨方式的按鈕群組再點一次會取消選取，故只在與預設值（第三方物流）不同時才點
-  if (method !== '第三方物流') {
-    await dialog.getByRole('button', { name: methodButtonName(method) }).click();
-  }
-  if (method === '第三方物流' && logistics) {
-    await dialog.locator('#logistics').click({ force: true });
-    await page.locator('.ant-select-item-option').filter({ hasText: logistics }).first().click();
-  }
-  await dialog.getByRole('button', { name: '建立出貨單' }).click();
-}
+export const draftShipmentDialog = (page) =>
+  page.locator('.ant-modal-content').filter({ hasText: '編輯出貨單草稿：' }).first();
 
 // 出貨單列表中某一列（以出貨單編號或客戶名稱認列）
 export const shipmentRow = (page, keyword) =>
-  page.getByRole('row', { name: new RegExp(keyword) });
+  page.locator('tr.ant-table-row').filter({ hasText: keyword }).first();
+
+// 列表最上面那一列＝最新建立的單（store 把新單放在陣列最前）
+export const newestShipmentNo = async (page) =>
+  (
+    await page.locator('tr.ant-table-row').first().locator('td').first().innerText()
+  ).trim();
+
+/** 建單對話框：選所屬訂單（下拉支援輸入搜尋，訂單樣本多時要先過濾） */
+export async function pickOrder(page, dialog, orderNo = CHAIN4.orderNo) {
+  const orderBox = dialog.getByRole('combobox').first();
+  await orderBox.click();
+  await orderBox.fill(orderNo);
+  await page
+    .locator('.ant-select-dropdown:visible')
+    .last()
+    .locator('.ant-select-item-option')
+    .filter({ hasText: orderNo })
+    .first()
+    .click();
+}
+
+/** 建單對話框：填預計出貨日（直接打字再按 Enter，避免日期面板互動不穩定） */
+export async function fillPlannedShipDate(dialog, date = '2026-09-10') {
+  const input = dialog.locator('#planned_ship_date');
+  await input.click();
+  await input.fill(date);
+  await input.press('Enter');
+}
+
+/** 建單對話框：選出貨方式（六值一欄） */
+export async function pickShippingMethod(page, dialog, method) {
+  await dialog.locator('#method').click({ force: true });
+  await expect(async () => {
+    await page
+      .locator('.ant-select-dropdown:visible')
+      .last()
+      .locator('.ant-select-item-option')
+      .filter({ hasText: method })
+      .first()
+      .click({ timeout: 3000 });
+  }).toPass({ timeout: 15000 });
+}
+
+/** 建單對話框：到出貨印件頁籤把某件印件的本次出貨數量填成指定值 */
+export async function fillItemQty(dialog, qty, printItemNo = CHAIN4.printItemNo) {
+  await dialog.getByRole('tab', { name: /出貨印件/ }).click();
+  await dialog
+    .getByRole('row', { name: new RegExp(printItemNo) })
+    .getByRole('spinbutton')
+    .fill(String(qty));
+}
+
+/**
+ * 業務建一張已成立的出貨單（呼叫前須已切為業務並在出貨管理頁）。
+ * 一顆對話框走完：選訂單 → 填單頭 → 填出貨印件數量 → 按「建立出貨單」。
+ * @returns {Promise<string>} 新單的出貨單編號
+ */
+export async function createShipment(
+  page,
+  { qty, method = '新竹物流', date = '2026-09-10', orderNo = CHAIN4.orderNo } = {},
+) {
+  await page.getByRole('button', { name: '建立出貨單' }).first().click();
+  const dialog = createShipmentDialog(page);
+  await pickOrder(page, dialog, orderNo);
+  await fillPlannedShipDate(dialog, date);
+  await pickShippingMethod(page, dialog, method);
+  await fillItemQty(dialog, qty);
+  await dialog.getByRole('button', { name: '建立出貨單' }).click();
+  await expect(page.getByText(/出貨單已成立（未處理）/).first()).toBeVisible();
+  // PanelDialog 關閉後仍留在 DOM（只是隱藏），故等它隱藏而不是等它消失
+  await expect(dialog).toBeHidden();
+  return newestShipmentNo(page);
+}
+
+/**
+ * 業務建一張草稿（呼叫前須已切為業務並在出貨管理頁）。
+ * @returns {Promise<string>} 新草稿的出貨單編號
+ */
+export async function createDraftShipment(
+  page,
+  { qty, date = '2026-09-10', orderNo = CHAIN4.orderNo } = {},
+) {
+  await page.getByRole('button', { name: '建立出貨單' }).first().click();
+  const dialog = createShipmentDialog(page);
+  await pickOrder(page, dialog, orderNo);
+  await fillPlannedShipDate(dialog, date);
+  if (qty !== undefined) await fillItemQty(dialog, qty);
+  await dialog.getByRole('button', { name: '儲存草稿' }).click();
+  await expect(page.getByText(/出貨單草稿已建立/).first()).toBeVisible();
+  await expect(dialog).toBeHidden();
+  return newestShipmentNo(page);
+}
 
 /**
  * 揀貨人員把一張未處理的出貨單走到待出貨（開始揀貨 → 裝箱回報）。
@@ -249,7 +322,12 @@ export async function pickAndPack(page, shipmentNo, { actualQty, boxes = 10, per
   // 點開後選項沒出現就再點一次（伺服器忙碌時第一次點擊偶爾落空）
   await expect(async () => {
     await dialog.locator('#box_spec').click({ force: true });
-    await page.locator('.ant-select-dropdown:visible').last().locator('.ant-select-item-option').first().click({ timeout: 3000 });
+    await page
+      .locator('.ant-select-dropdown:visible')
+      .last()
+      .locator('.ant-select-item-option')
+      .first()
+      .click({ timeout: 3000 });
   }).toPass({ timeout: 20000 });
   await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('裝箱照.jpg'));
   await dialog.getByRole('button', { name: '完成裝箱回報' }).click();
