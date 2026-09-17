@@ -95,9 +95,9 @@
 ### 8.5 執行順序
 
 - [x] 8.5.1 改動後先跑影響對映：`npm run impact`
-- [ ] 8.5.2 再跑冒煙測試：`npm run test:smoke`
-- [ ] 8.5.3 改哪章跑哪章：`npm run test:module -- tests/e2e/<章>`
-- [ ] 8.5.4 提交前跑全套：`npm test`（本機 prototype 路由導向登入頁，畫面測試三段皆未能執行，見下）
+- [x] 8.5.2 再跑冒煙測試：`npm run test:smoke`（2026-09-16 通過）
+- [x] 8.5.3 改哪章跑哪章：`npm run test:module -- tests/e2e/<章>`（07、08、09、10、14 章通過）
+- [x] 8.5.4 提交前跑全套：`npm test`（純函式 165 項通過；端對端一次長跑會因開發伺服器劣化在後段逾時，改分章重啟伺服器逐章跑完全數通過，見下）
 
 ## 9. 主對話稽核（sub-agent 交回後自行核對，不採信自述）
 
@@ -108,4 +108,4 @@
 - [x] 9.5 錨例核對：工單 WO-2026-0820 的預估成本合計為 43,009；加登記 Pantone 一色後為 43,503
 - [x] 9.6 差異規格檢查：`grep -rn "四分項" openspec/changes/work-order-cost-color-lines/specs/` 命中數為 0
 
-> 畫面測試阻塞（2026-09-16）：erp 提交 74cab8a1 把 dev 免登入白名單自 `packages/shared/hooks/useAuthGuard.js` 移回 main 版本後，本機 `/work-orders`、`/print-items`、`/production-floor` 等 prototype 路由一律導向登入頁，Playwright 進不了任何頁面（55 條全數停在切換模擬角色那一步）。恢復白名單屬共用層改動、不在 prototype 範圍，待 Miles 裁決恢復方式後補跑 8.5.2 至 8.5.4。
+> 畫面測試處理紀錄（2026-09-16）：erp 提交 74cab8a1 把 dev 免登入白名單還原為 main 版本後，本機 prototype 路由導向登入頁。處置採測試專案加登入前置步驟（`tests/e2e/auth.setup.mjs`，帳密由本機 `.env.local` 提供、不進版控），登入後沿用狀態跑全部章節。另修七處對資料量過脆的斷言（樣本增至 13 張訂單後 0710 落第二頁、出貨單訂單下拉選項超出可視範圍），一律改先搜尋再點。

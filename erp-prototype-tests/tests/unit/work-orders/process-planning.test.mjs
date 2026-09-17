@@ -8,6 +8,7 @@ import {
 import {
   COLOR_KEYS,
   estimateTaskCost,
+  scaleEstCost,
   sumColors,
   sumCost,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/estimate-cost.js';
@@ -405,5 +406,37 @@ describe('7.14 按面積計價的工序改選面積規格（原編號 173）', (
     const base = { ...row.patch, target_qty: 1000 };
     expect(estimateTaskCost({ ...base, pricing_area: null }).subtotal).toBe(0);
     expect(estimateTaskCost({ ...base, pricing_area: 0.06 }).subtotal).toBeGreaterThan(0);
+  });
+});
+
+// 7.29 補做與異動改量時，任務小計與各顏色費用按數量比例縮放並各自取整
+// 起點資料：錨例 WO-2026-0820 書芯印刷（目標數量 2,060，任務小計 5,054，顏色費用：單黑 260）
+describe('7.29 補做與異動改量時，任務小計與各顏色費用按數量比例縮放並各自取整', () => {
+  const base = MOCK_WORK_ORDERS.find((w) => w.work_order_no === 'WO-2026-0820').tasks.find((t) =>
+    t.name.includes('書芯印刷'),
+  );
+
+  it('比例 0.25：任務小計 5,054 取整 1,264、顏色費用：單黑 65，其餘色別 0', () => {
+    expect(base.target_qty).toBe(2060);
+    const scaled = scaleEstCost(base.est_cost, 515 / base.target_qty);
+    expect(scaled.subtotal).toBe(1264);
+    expect(scaled.colors.single_black).toBe(65);
+    for (const k of COLOR_KEYS.filter((key) => key !== 'single_black')) expect(scaled.colors[k]).toBe(0);
+    // 合計以各列相加為準
+    expect(sumCost(scaled)).toBe(1264 + 65);
+  });
+
+  it('五個色別鍵固定齊備，未登記者為 0、不是 undefined', () => {
+    const scaled = scaleEstCost(base.est_cost, 0.5);
+    expect(Object.keys(scaled.colors).sort()).toEqual([...COLOR_KEYS].sort());
+    expect(Object.values(scaled.colors).every((v) => Number.isInteger(v))).toBe(true);
+  });
+
+  it('基準目標數量為 0（比例 0）或比例不合法時全部回 0、不推估', () => {
+    for (const ratio of [0, -1, NaN, undefined]) {
+      const scaled = scaleEstCost(base.est_cost, ratio);
+      expect(scaled.subtotal).toBe(0);
+      expect(sumColors(scaled.colors)).toBe(0);
+    }
   });
 });
