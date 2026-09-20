@@ -78,14 +78,15 @@ test('8.4 印務主管在待審核工單列表逐列核可或退回（原編號 
   await expect(rows.nth(1)).toContainText('WO-2026-0907');
   await expect(rows.nth(1)).toContainText('2026-09-04 10:15');
 
-  // 母表九欄（含新增的顏色費用合計與預估成本合計兩格）
+  // 母表十欄（含確樣需求、顏色費用合計與預估成本合計三格）
   const headers = page.locator('thead.ant-table-thead th');
-  await expect(headers).toHaveCount(10); // 展開鍵一欄 ＋ 九欄
+  await expect(headers).toHaveCount(11); // 展開鍵一欄 ＋ 十欄（含確樣需求）
   for (const title of [
     '工單編號',
     '印件',
     '訂單',
     '送審印務',
+    '確樣需求',
     '送審時間',
     '目標數量',
     '顏色費用合計',

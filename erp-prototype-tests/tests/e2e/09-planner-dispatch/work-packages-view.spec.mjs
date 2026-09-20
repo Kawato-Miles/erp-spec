@@ -23,11 +23,11 @@ test('9.3 一包一設備：派工由生管在工作包頁執行（原編號 15�
 
 test('9.4 工作包主表四欄與現場進度（原編號 16）', async ({ page }) => {
   await openAs(page, '生管', '/production-floor/work-packages');
-  // 主表不設狀態欄，欄位含工作包編號、指派師傅、預計完成日、備註、確樣需求、現場進度、操作
+  // 主表不設狀態欄，欄位含工作包編號、指派師傅、預計完成日、備註、確樣備註、現場進度、操作
   await expect(page.getByRole('columnheader', { name: '工作包編號' })).toBeVisible();
   await expect(page.getByRole('columnheader', { name: '指派師傅' })).toBeVisible();
   await expect(page.getByRole('columnheader', { name: '預計完成日' })).toBeVisible();
-  await expect(page.getByRole('columnheader', { name: '確樣需求' })).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: '確樣備註' })).toBeVisible();
   await expect(page.getByRole('columnheader', { name: '現場進度' })).toBeVisible();
   await expect(page.getByRole('columnheader', { name: '狀態' })).toHaveCount(0);
 
