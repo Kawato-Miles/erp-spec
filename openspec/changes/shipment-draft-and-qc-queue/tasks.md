@@ -24,13 +24,13 @@
 | production-execution § 場內轉交：點收佇列依所屬產線、品檢站點收不改變待驗量 | 10.8、11.8 | e2e/10-report-transfer/receiving-queue、unit/production-floor/receiving-permission、e2e/11-qc | 已覆蓋 |
 | order-management § 訂單取消流程：草稿刪除段 | 12.10 | e2e/12-shipping | 已覆蓋 |
 | dispatch-order § 回廠點收：外發報工後即進待驗清單 | 無 | 無 | 未覆蓋（同 qc 外發案例） |
-| qc § 待驗清單：不良品不進待驗量、良品最小值、負值照實、縮回 0 仍列、兩欄 | 11.1、11.7、11.14、新增 11.17 | unit/qc-shipping/pending-inspections、e2e/11-qc | 待補（批次五） |
-| qc § 分次驗收：更正下限 | 新增 11.18 | unit/qc-shipping、e2e/11-qc | 待補（批次五） |
-| production-execution § 報工作廢：良品已被品檢驗過擋下 | 新增 10.20 | unit/production-floor、e2e/10-report-transfer | 待補（批次五） |
-| shipment § 建立：已棄用重檢、新建一步仍經草稿、先出一批轉出貨中 | 12.2、新增 12.13 | e2e/12-shipping、unit/qc-shipping/shipment-draft | 待補（批次五） |
-| shipment § 送達：異常後回傳忽略、到店不算、先寫入者成立 | 12.6、12.7 | e2e/12-shipping、unit | 待補（批次五） |
-| shipment § 寄件快照、收件不連動 | 12.11、12.12 | e2e/12-shipping、unit | 待補（批次五） |
-| shipment § 收尾判定排除草稿 | 12.8 | unit/print-items/rules-shipment-stats | 待補（批次五） |
+| qc § 待驗清單：不良品不進待驗量、良品最小值、負值照實、縮回 0 仍列、兩欄 | 11.1、11.7、11.14、新增 11.17 | unit/qc-shipping/pending-inspections、e2e/11-qc | 已覆蓋（批次五） |
+| qc § 分次驗收：更正下限 | 新增 11.18 | unit/qc-shipping、e2e/11-qc | 已覆蓋（批次五） |
+| production-execution § 報工作廢：良品已被品檢驗過擋下 | 新增 10.20 | unit/production-floor、e2e/10-report-transfer | 已覆蓋（批次五） |
+| shipment § 建立：已棄用重檢、新建一步仍經草稿、先出一批轉出貨中 | 12.2、新增 12.13 | e2e/12-shipping、unit/qc-shipping/shipment-draft | 已覆蓋（批次五） |
+| shipment § 送達：異常後回傳忽略、到店不算、先寫入者成立 | 12.6、12.7 | e2e/12-shipping、unit | 已覆蓋（批次五） |
+| shipment § 寄件快照、收件不連動 | 12.11、12.12 | e2e/12-shipping、unit | 已覆蓋（批次五） |
+| shipment § 收尾判定排除草稿 | 12.8 | unit/print-items/rules-shipment-stats | 已覆蓋（批次五） |
 
 mock 異動順序：`MOCK-DATA-CHAIN.md` 引言補「出貨單」「品檢」兩段、鏈四 SH-2026-0820 改草稿 → `qc-shipping/_lib/mock-data.js`（六值出貨方式、寄件資訊對照、sh-0820 草稿含預計出貨印件）→ 測試。已於 0cff790f 完成。
 
@@ -67,22 +67,23 @@ mock 異動順序：`MOCK-DATA-CHAIN.md` 引言補「出貨單」「品檢」兩
 - [x] 5.2 wiki 22 卡落卡、OQ 三張（SHP-018 與 QC-007 封存、QC-008 開放）、log 兩筆
 - [x] 5.3 plan-audit 第一輪：rubric 一路＋雙盲對抗推演三路（紀錄 `shipment-draft-and-qc-queue-audit-r1.md`），27 項缺口 Miles 2026-09-20 拍板依建議處理；wiki 13 卡、QC-009、SHP-019、三份 delta 已回補
 - [ ] 5.6 plan-audit 復審：對第一輪未通過與部分通過項（1-1、1-2、1-4、1-5、4-2、4-4、5-1、5-2、5-3）重驗；5-2(a) 待履約與售後資料結構總覽卡建卡
-- [ ] 5.7 建履約與售後資料結構總覽卡（三源互盲抽取已完成，矛盾呈 Miles 裁決後經 wiki-amend 建卡）
+- [x] 5.7 建履約與售後資料結構總覽卡（三源互盲抽取、四項矛盾 Miles 2026-09-20 裁決、Sens 6096985）
+- [ ] 5.8 archive 時手動同步 after-sales-ticket spec 正本邊界句「0..N 退款款項紀錄」→ 退款款項紀錄掛訂單、不掛售後單（非 Requirement，archive 不會自動合併）
 - [x] 5.4 `openspec validate shipment-draft-and-qc-queue` 通過；五份 delta 的 MODIFIED 標題已逐一比對與 main spec 一致、每條 Requirement 含 Priority 與 Rationale、相對連結全部可解析
 - [ ] 5.5 vault-audit（35 卡異動達門檻，建議 Miles 觸發）
 
 ## 6. 批次五：plan-audit 缺口修正（erp，任務書 scratchpad `qc-shipping-audit-fix-brief.md`）
 
-- [ ] 6.1 待驗量基數改良品最小值（新增 `calcKittingGoodQty`、`pending-inspections.js` 重算）、列出條件依 wiki、負值不夾 0、清單加所屬訂單編號與客戶名稱
-- [ ] 6.2 更正下限（`submitInspection`）
-- [ ] 6.3 報工作廢第三道檢核（`voidWorkReport`、`canVoidWorkReport`）
-- [ ] 6.4 印件與訂單自製作中轉出貨中（`advanceOnFirstShipment`）
-- [ ] 6.5 新建畫面一步建立改先草稿再成立；`createShipment` 收斂
-- [ ] 6.6 物流商回傳與人工送達確認的狀態守衛、配達文案；建立時記下帳務公司（`sender_company_code`）
-- [ ] 6.7 `calcReceivingQueue` 註解、`MOCK-DATA-CHAIN.md` 品檢與出貨單段
-- [ ] 6.8 主對話對照 skill 稽核並瀏覽器核對任務書 § 四五步
+- [x] 6.1 待驗量基數改良品最小值（新增 `calcKittingGoodQty`、`pending-inspections.js` 重算）、列出條件依 wiki、負值不夾 0、清單加所屬訂單編號與客戶名稱
+- [x] 6.2 更正下限（`submitInspection`）
+- [x] 6.3 報工作廢第三道檢核（`voidWorkReport`、`canVoidWorkReport`）
+- [x] 6.4 印件與訂單自製作中轉出貨中（`advanceOnFirstShipment`）
+- [x] 6.5 新建畫面一步建立改先草稿再成立；`createShipment` 收斂
+- [x] 6.6 物流商回傳與人工送達確認的狀態守衛、配達文案；建立時記下帳務公司（`sender_company_code`）
+- [x] 6.7 `calcReceivingQueue` 註解、`MOCK-DATA-CHAIN.md` 品檢與出貨單段
+- [x] 6.8 主對話對照 skill 稽核（範圖、色碼、像素、簡體字）；行為由 Playwright 三章 51 項與純函式 244 項驗證（品檢與出貨頁需登入，畫面驗證走測試登入）
 
 ## 7. 批次五測試（Sens erp-prototype-tests）
 
-- [ ] 7.1 情境目錄：11.1、11.3、11.7、11.9、11.14 至 11.16 改良品口徑與新欄；新增 10.20、11.17、11.18、12.13；12.2、12.6、12.7、12.8、12.11 補新斷言
-- [ ] 7.2 純函式與畫面測試依 § 測試影響清單「待補（批次五）」列補齊；`npm run test:unit`、smoke、三章、全套
+- [x] 7.1 情境目錄：11.1、11.3、11.7、11.9、11.14 至 11.16 改良品口徑與新欄；新增 10.20、11.17、11.18、12.13；12.2、12.6、12.7、12.8、12.11 補新斷言
+- [x] 7.2 純函式 244 全過、smoke 過、三章 51 全過；全套 4 紅：6.1、6.13、7.16 既有，14.12 為圖示字型載入時序、測試已改為等字型就緒後量測

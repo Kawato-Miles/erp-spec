@@ -1,8 +1,8 @@
 // 第十一章（品檢）與第十二章（出貨與送達）共用的前置鏈與版面工具。
 //
-// 待驗清單只看製作事實：印件的齊套完成數大於已驗量就出現在品檢站，待驗量＝齊套完成數 − 已驗量。
-// 鏈四 PI-2026-0820 的精裝裝訂已報工良品 500，因此起點即有待驗量 500——品檢的前置不再需要
-// 建轉交單、搬運與點收。轉交那一段只有第十章與 11.8（驗「轉交不改變待驗量」）才推。
+// 待驗清單只看製作事實：待驗量＝做出來的良品 − 已驗量（通過與不通過的代數和），不看轉交、不看點收。
+// 鏈四 PI-2026-0820 的精裝裝訂已報工良品 500、不良品 0，因此起點即有待驗量 500——品檢的前置不再
+// 需要建轉交單、搬運與點收。轉交那一段只有第十章與 11.8（驗「轉交不改變待驗量」）才推。
 //
 // 記憶體狀態鐵則：只有 openAs 會整頁載入，之後一律 gotoInApp 與 switchRole。
 import { expect } from '@playwright/test';
@@ -149,7 +149,7 @@ export async function inspectAtQc(
 
 /**
  * 印件 PI-2026-0820 已取得可出貨額度的狀態（第十二章多數情境的起點）。
- * 品檢不必先轉交、不必點收：待驗量由齊套完成數推導，起點就是 500。
+ * 品檢不必先轉交、不必點收：待驗量由做出來的良品推導，起點就是 500。
  * @param {{ passed?: number, failed?: number, open?: boolean }} options open=true 時由本函式整頁載入
  */
 export async function setupShippableState(page, { passed = 500, failed = 0, open = true } = {}) {
@@ -268,6 +268,8 @@ export async function fillItemQty(dialog, qty, printItemNo = CHAIN4.printItemNo)
 /**
  * 業務建一張已成立的出貨單（呼叫前須已切為業務並在出貨管理頁）。
  * 一顆對話框走完：選訂單 → 填單頭 → 填出貨印件數量 → 按「建立出貨單」。
+ * 這一顆按鈕在新建入口沒有直達未處理的路——系統先落一張草稿、同一個動作立刻把它推成未處理，
+ * 所以列表只會多一張單（見情境 12.2）。
  * @returns {Promise<string>} 新單的出貨單編號
  */
 export async function createShipment(

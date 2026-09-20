@@ -8,11 +8,14 @@ import { MOCK_ORDERS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/
 import { MOCK_WORK_ORDERS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/mock-data.js';
 import { MOCK_FLOOR_TASKS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/mock-data.js';
 
-// 情境 11.1（待驗清單依齊套完成數列出）、11.14（多部件取最小值）、11.15（不需轉交照樣列出）、
-// 11.16（更正沖銷後回升）的數字驗算；畫面呈現另在 e2e 第十一章驗。
-// 待驗量＝齊套完成數 − 已驗量（品檢紀錄通過與不通過的代數和），不看轉交、不看點收。
+// 情境 11.1（待驗清單列出條件與欄位）、11.14（多部件取良品最小值）、11.15（不需轉交照樣列出）、
+// 11.16（更正沖銷後回升）、11.17（不良品不進待驗量）、11.19（良品縮回 0 仍留在清單上）
+// 的數字驗算；畫面呈現另在 e2e 第十一章驗。
+//
+// 待驗量＝做出來的良品 − 已驗量（品檢紀錄通過與不通過的代數和），不看轉交、不看點收。
+// 齊套完成數取產出（良品＋不良品），是製作進度那一欄，不參與待驗量。
 
-// 起點資料以外的情境用合成資料：多部件與不需轉交兩種樣本現行 mock 上沒有對應的印件。
+// 起點資料以外的情境用合成資料：多部件、不需轉交、報廢三種樣本現行 mock 上沒有對應的印件。
 const workOrderOf = (printItemNo, tasks, extra = {}) => ({
   id: `wo-${printItemNo}`,
   status: '製作中',
@@ -23,12 +26,14 @@ const workOrderOf = (printItemNo, tasks, extra = {}) => ({
   ...extra,
 });
 
-const taskOf = (id, producedQty, extra = {}) => ({
+// 一筆生產任務：良品與不良品分開給，產出數量為兩者之和（現場報工的三本帳）
+const taskOf = (id, goodQty, defectQty = 0, extra = {}) => ({
   id,
   name: id,
   count_in_completion: true,
   status: '製作中',
-  produced_qty: producedQty,
+  good_qty: goodQty,
+  produced_qty: goodQty + defectQty,
   qty_per_work_order: 1,
   print_item_units_per_output: 1,
   history: [],
@@ -41,7 +46,14 @@ const printItemOf = (printItemNo, name) => ({
   print_item_type: '大貨印件',
 });
 
-describe('11.1 待驗清單依印件的齊套完成數列出', () => {
+const qcRecordOf = (printItemNo, passed, failed, at) => ({
+  print_item_no: printItemNo,
+  passed_qty: passed,
+  failed_qty: failed,
+  inspected_at: at,
+});
+
+describe('11.1 待驗清單依印件做出來的良品列出', () => {
   const rows = calcPendingInspections({
     printItems: MOCK_PRINT_ITEMS,
     orders: MOCK_ORDERS,
@@ -51,9 +63,10 @@ describe('11.1 待驗清單依印件的齊套完成數列出', () => {
   });
   const rowOf = (printItemNo) => rows.find((r) => r.print_item_no === printItemNo);
 
-  it('鏈四 PI-2026-0820 精裝裝訂已報工 500、尚無轉交單，待驗量 500', () => {
+  it('鏈四 PI-2026-0820 精裝裝訂已報工良品 500、尚無轉交單，待驗量 500', () => {
     expect(rowOf('PI-2026-0820')).toMatchObject({
       kitting_qty: 500,
+      kitting_good_qty: 500,
       inspected_pass: 0,
       inspected_fail: 0,
       pending_qty: 500,
@@ -63,44 +76,71 @@ describe('11.1 待驗清單依印件的齊套完成數列出', () => {
   it('鏈一 PI-2026-0601 已驗完，待驗量 0 的列留在清單上', () => {
     expect(rowOf('PI-2026-0601')).toMatchObject({
       kitting_qty: 5000,
+      kitting_good_qty: 5000,
       inspected_pass: 5000,
       pending_qty: 0,
     });
   });
 
-  it('齊套完成數為 0 或算不出來的印件不列（鏈二裁切未完成、鏈三尚未派工）', () => {
+  it('每一列帶所屬訂單編號與客戶名稱（自訂單帶出）', () => {
+    expect(rowOf('PI-2026-0820')).toMatchObject({
+      order_no: 'ORD-2026-0820',
+      client_name: '晨光文創股份有限公司',
+    });
+    expect(rowOf('PI-2026-0601')).toMatchObject({
+      order_no: 'ORD-2026-0601',
+      client_name: '誠品書店股份有限公司',
+    });
+  });
+
+  it('沒有良品也沒有品檢紀錄的印件不列（鏈二裁切未完成、鏈三尚未派工）', () => {
     expect(rowOf('PI-2026-0710')).toBeUndefined();
     expect(rowOf('PI-2026-0815')).toBeUndefined();
     expect(rows).toHaveLength(2);
   });
 });
 
-describe('11.14 多部件印件的待驗量取各部件齊套完成數的最小值', () => {
+describe('11.14 多部件印件的待驗量取各部件良品的最小值', () => {
   const printItems = [printItemOf('PI-TEST-GIFT', '禮盒')];
-  const orders = [];
-  const buildWorkOrders = (linerQty) => [
-    workOrderOf('PI-TEST-GIFT', [taskOf('pt-body', 1000), taskOf('pt-liner', linerQty)]),
+  const buildWorkOrders = (linerGood, linerDefect) => [
+    workOrderOf('PI-TEST-GIFT', [
+      taskOf('pt-body', 1000),
+      taskOf('pt-liner', linerGood, linerDefect),
+    ]),
   ];
 
-  it('盒身 1,000、內襯 600 時待驗量為 600，不是兩者相加的 1,600', () => {
+  it('盒身良品 1,000、內襯良品 590（不良品 10）時待驗量為 590', () => {
     const rows = calcPendingInspections({
       printItems,
-      orders,
-      workOrders: buildWorkOrders(600),
+      orders: [],
+      workOrders: buildWorkOrders(590, 10),
       qcRecords: [],
     });
-    expect(rows[0].kitting_qty).toBe(600);
-    expect(rows[0].pending_qty).toBe(600);
+    expect(rows[0].kitting_good_qty).toBe(590);
+    expect(rows[0].pending_qty).toBe(590);
   });
 
-  it('內襯補到 1,000 後待驗量為 1,000', () => {
+  it('待驗量不是兩個部件相加，也不是含不良品的那個數', () => {
     const rows = calcPendingInspections({
       printItems,
-      orders,
-      workOrders: buildWorkOrders(1000),
+      orders: [],
+      workOrders: buildWorkOrders(590, 10),
       qcRecords: [],
     });
-    expect(rows[0].pending_qty).toBe(1000);
+    expect(rows[0].pending_qty).not.toBe(1590);
+    expect(rows[0].pending_qty).not.toBe(600);
+    // 齊套完成數（製作進度）仍取產出，內襯做了 600 件所以是 600
+    expect(rows[0].kitting_qty).toBe(600);
+  });
+
+  it('內襯再報良品 400、累計 990 後待驗量為 990', () => {
+    const rows = calcPendingInspections({
+      printItems,
+      orders: [],
+      workOrders: buildWorkOrders(990, 10),
+      qcRecords: [],
+    });
+    expect(rows[0].pending_qty).toBe(990);
   });
 });
 
@@ -110,7 +150,7 @@ describe('11.15 末道任務標不需轉交的印件照樣進待驗清單', () =
       printItems: [printItemOf('PI-TEST-NOMOVE', '免搬運印件')],
       orders: [],
       workOrders: [
-        workOrderOf('PI-TEST-NOMOVE', [taskOf('pt-last', 500, { needs_transfer: false })]),
+        workOrderOf('PI-TEST-NOMOVE', [taskOf('pt-last', 500, 0, { needs_transfer: false })]),
       ],
       qcRecords: [],
     });
@@ -128,9 +168,7 @@ describe('11.16 更正紀錄沖銷後待驗量回升', () => {
       printItems,
       orders: [],
       workOrders,
-      qcRecords: [
-        { print_item_no: 'PI-TEST-FIX', passed_qty: 500, failed_qty: 0, inspected_at: '2026-09-17 10:00' },
-      ],
+      qcRecords: [qcRecordOf('PI-TEST-FIX', 500, 0, '2026-09-17 10:00')],
     });
     expect(rows[0].pending_qty).toBe(0);
   });
@@ -141,25 +179,75 @@ describe('11.16 更正紀錄沖銷後待驗量回升', () => {
       orders: [],
       workOrders,
       qcRecords: [
-        { print_item_no: 'PI-TEST-FIX', passed_qty: 500, failed_qty: 0, inspected_at: '2026-09-17 10:00' },
-        { print_item_no: 'PI-TEST-FIX', passed_qty: -500, failed_qty: 0, inspected_at: '2026-09-17 11:00' },
+        qcRecordOf('PI-TEST-FIX', 500, 0, '2026-09-17 10:00'),
+        qcRecordOf('PI-TEST-FIX', -500, 0, '2026-09-17 11:00'),
       ],
     });
     expect(rows[0].inspected_pass).toBe(0);
     expect(rows[0].pending_qty).toBe(500);
   });
 
-  it('已驗量超過齊套完成數時待驗量夾在 0、不為負', () => {
+  it('已驗量多過良品時照實顯示負數，不夾在 0', () => {
     const rows = calcPendingInspections({
       printItems,
       orders: [],
       workOrders,
       qcRecords: [
-        { print_item_no: 'PI-TEST-FIX', passed_qty: 480, failed_qty: 20, inspected_at: '2026-09-17 10:00' },
-        { print_item_no: 'PI-TEST-FIX', passed_qty: 30, failed_qty: 0, inspected_at: '2026-09-17 11:00' },
+        qcRecordOf('PI-TEST-FIX', 480, 20, '2026-09-17 10:00'),
+        qcRecordOf('PI-TEST-FIX', 30, 0, '2026-09-17 11:00'),
       ],
     });
-    expect(rows[0].pending_qty).toBe(0);
+    expect(rows[0].pending_qty).toBe(-30);
+  });
+});
+
+describe('11.17 不良品不進待驗量，齊套完成數照樣含它', () => {
+  const rows = calcPendingInspections({
+    printItems: [printItemOf('PI-TEST-DEFECT', '不良品樣本')],
+    orders: [],
+    workOrders: [workOrderOf('PI-TEST-DEFECT', [taskOf('pt-cut', 1000, 3)])],
+    qcRecords: [],
+  });
+
+  it('裁切良品 1,000、不良品 3 時待驗量為 1,000', () => {
+    expect(rows[0].kitting_good_qty).toBe(1000);
+    expect(rows[0].pending_qty).toBe(1000);
+  });
+
+  it('齊套完成數仍顯示 1,003（製作進度取產出，兩個數互不覆蓋）', () => {
+    expect(rows[0].kitting_qty).toBe(1003);
+  });
+});
+
+describe('11.19 良品縮回 0 但已驗過的印件仍留在清單上', () => {
+  const printItems = [printItemOf('PI-TEST-SCRAP', '報廢樣本')];
+  const qcRecords = [qcRecordOf('PI-TEST-SCRAP', 500, 0, '2026-09-18 10:00')];
+
+  it('唯一的計入完成度任務轉報廢後該列仍列出，待驗量為 −500', () => {
+    const rows = calcPendingInspections({
+      printItems,
+      orders: [],
+      workOrders: [
+        workOrderOf('PI-TEST-SCRAP', [taskOf('pt-only', 500, 0, { status: '報廢' })]),
+      ],
+      qcRecords,
+    });
+    expect(rows).toHaveLength(1);
+    expect(rows[0].kitting_good_qty).toBe(0);
+    expect(rows[0].inspected_pass).toBe(500);
+    expect(rows[0].pending_qty).toBe(-500);
+  });
+
+  it('待驗量不大於 0 又沒有任何品檢紀錄的印件才不列', () => {
+    const rows = calcPendingInspections({
+      printItems,
+      orders: [],
+      workOrders: [
+        workOrderOf('PI-TEST-SCRAP', [taskOf('pt-only', 500, 0, { status: '報廢' })]),
+      ],
+      qcRecords: [],
+    });
+    expect(rows).toHaveLength(0);
   });
 });
 
@@ -170,11 +258,12 @@ describe('已棄用的印件不進待驗清單', () => {
       orders: [
         {
           order_no: 'ORD-TEST-DROP',
+          client_name: '樣本客戶',
           print_items: [{ print_item_no: 'PI-TEST-DROP', print_item_status: '已棄用' }],
         },
       ],
       workOrders: [workOrderOf('PI-TEST-DROP', [taskOf('pt-only', 500)])],
-      qcRecords: [],
+      qcRecords: [qcRecordOf('PI-TEST-DROP', 100, 0, '2026-09-18 10:00')],
     });
     expect(rows).toHaveLength(0);
   });

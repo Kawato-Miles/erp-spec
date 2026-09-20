@@ -122,10 +122,17 @@ test('14.12 手機寬度下五頁可完整操作（原編號 182）', async ({ p
     await expect(popupItem).toBeVisible();
     await popupItem.click();
     await page.waitForTimeout(300);
-    // 頁面內容不被推出視窗、沒有水平捲軸
-    const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
-    const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
-    expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 1);
+    // 頁面內容不被推出視窗、沒有水平捲軸。圖示字型（Material Symbols）載入前，
+    // 頁首的通知鈴與角色切換器會先以字面文字渲染而暫時撐寬頁面，故先等字型就緒再量，
+    // 並給版面幾秒收斂。
+    await page.evaluate(() => document.fonts.ready);
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+        { timeout: 5000, message: `${label}：頁面寬度超過視窗` },
+      )
+      .toBeLessThanOrEqual(1);
   }
 
   // 側欄仍可手動展開

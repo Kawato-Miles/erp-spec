@@ -166,6 +166,70 @@ test('12.2 業務建草稿再建立出貨單，額度在成立那一刻檢核並
   await expect(shipmentRow(page, firstDraftNo)).toContainText('未處理');
 });
 
+test('12.2（新建入口）一步按建立出貨單，系統先落一張草稿再推成未處理', async ({ page }) => {
+  // 前置：品檢驗收讓 PI-2026-0820 取得可出貨額度 500
+  await setupShippableState(page, { passed: 500 });
+  await switchRoleSafe(page, '業務');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  // 只數出貨單列（關掉的對話框仍留在 DOM，它裡面的印件列也是 ant-table-row）；
+  // 先等列表把既有的單畫出來再數，否則數到的是還沒載完的空表
+  const shipmentRows = page.locator('tr.ant-table-row').filter({ hasText: /SH-\d{4}-\d{4}/ });
+  await expect(shipmentRow(page, CHAIN4.draftShipmentNo)).toBeVisible();
+  const before = await shipmentRows.count();
+  const draftsBefore = await shipmentRows.filter({ hasText: '草稿' }).count();
+
+  // 在新建的對話框一次填齊直接按「建立出貨單」
+  const shipmentNo = await createShipment(page, { qty: 500 });
+
+  // 列表只多一張未處理的單，不留半張草稿
+  await expect(shipmentRow(page, shipmentNo)).toContainText('未處理');
+  await expect(shipmentRows).toHaveCount(before + 1);
+  await expect(shipmentRows.filter({ hasText: '草稿' })).toHaveCount(draftsBefore);
+
+  // 建單人與建立日期照草稿路徑寫；預計出貨印件已轉為正式明細
+  await shipmentRow(page, shipmentNo).getByText(shipmentNo).click();
+  const drawer = detailDrawer(page);
+  await expect(drawer).toContainText('建單人');
+  await expect(drawer).toContainText('洪嘉駿');
+  await expect(drawer).toContainText('出貨明細');
+  await expect(drawer).not.toContainText('預計出貨印件');
+});
+
+test('12.2（草稿等待期間印件被棄用）編輯草稿時當場提示，整張擋下', async ({ page }) => {
+  // 起點：鏈四 SH-2026-0820 草稿的預計出貨印件為 PI-2026-0820 × 500
+  await openAs(page, '業務', '/orders');
+  await clickIntoDetail(page, CHAIN4.orderNo, /orders\/detail/);
+  await page.getByRole('tab', { name: /訂單項目/ }).click();
+
+  // 業務對那件印件按「取消製作」
+  await page
+    .getByRole('row', { name: new RegExp(CHAIN4.printItemNo) })
+    .first()
+    .getByRole('button', { name: '取消製作' })
+    .click();
+  const confirm = page.locator('.ant-modal-confirm').last();
+  await expect(confirm).toContainText(`確定取消製作「${CHAIN4.printItemName}」？`);
+  await confirm.getByRole('button', { name: '取消製作' }).click();
+  await expect(page.getByText(/已棄用印件/).first()).toBeVisible();
+
+  // 回出貨管理編輯那張草稿：當場列出是哪幾條已棄用，並指出這張草稿請直接刪除
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await shipmentRow(page, CHAIN4.draftShipmentNo)
+    .getByRole('button', { name: '編輯草稿' })
+    .click();
+  const dialog = draftShipmentDialog(page);
+  await dialog.getByRole('tab', { name: /出貨印件/ }).click();
+  await expect(dialog).toContainText('本單有 1 條印件已棄用');
+  await expect(dialog).toContainText(CHAIN4.printItemNo);
+  await expect(dialog).toContainText('這張草稿請直接刪除');
+  await expect(dialog).toContainText('本張出貨單沒有印件');
+
+  // 一條都不剩，按「建立出貨單」整張擋下
+  await dialog.getByRole('button', { name: '建立出貨單' }).click();
+  await expect(page.getByText('請至少留一條出貨印件').first()).toBeVisible();
+  await expect(page.getByText(/出貨單已成立/)).toHaveCount(0);
+});
+
 test('12.3 揀貨人員開始揀貨並回報裝箱（原編號 31）', async ({ page }) => {
   await setupShippableState(page, { passed: 500 });
   await switchRoleSafe(page, '業務');
@@ -301,6 +365,8 @@ test('12.6 出貨確認填托運單號與重量，三種方式各走各的分流
     .locator('.ant-modal-content')
     .filter({ hasText: '模擬物流商回報配達：' })
     .first();
+  // 配達的定義寫在視窗上：到店與配送中都不算
+  await expect(syncDialog).toContainText('配達指物流商的簽收或取件完成，到店與配送中都不算');
   await syncDialog.getByRole('button', { name: '模擬回報配達' }).click();
   await expect(page.getByText(/已接收物流商配達回報（模擬）/).first()).toBeVisible();
   await shipmentRow(page, carrierNo).getByText(carrierNo).click();
@@ -360,15 +426,28 @@ test('12.7 三種出貨方式的憑證形式各自不同（原編號 129）', as
   await dialog.getByRole('button', { name: '確認送達' }).click();
   await expect(page.getByText(/送達確認完成/)).toBeVisible();
 
-  // 第三方的送達備援：手動回填物流商配達時間
+  // 第三方的送達備援：手動回填物流商配達時間，視窗寫明要回填的是簽收或取件完成的時間
   await shipmentRow(page, carrierNo).getByRole('button', { name: '送達確認' }).click();
   dialog = page.locator('.ant-modal-content').filter({ hasText: '送達確認：' }).first();
+  await expect(dialog).toContainText('簽收或取件完成');
+  await expect(dialog).toContainText('到店與配送中都不算配達');
   const deliveredTime = dialog.getByLabel('物流商配達時間（手動補登）');
   await deliveredTime.click();
   await deliveredTime.fill('2026-09-17 10:00');
   await deliveredTime.press('Enter');
   await dialog.getByRole('button', { name: '確認送達' }).click();
   await expect(page.getByText(/送達確認完成/).first()).toBeVisible();
+
+  // 兩條路先寫入者成立：人工補登一成立，這張單離開運送中，兩顆送達按鈕一併退場，
+  // 後到的配達回報沒有入口（守衛本身與「此單已收尾，請重新整理」以純函式驗，
+  // 見 tests/unit/qc-shipping/shipment-draft.test.mjs）
+  await expect(shipmentRow(page, carrierNo)).toContainText('已送達');
+  await expect(
+    shipmentRow(page, carrierNo).getByRole('button', { name: '模擬物流商回報配達' }),
+  ).toHaveCount(0);
+  await expect(shipmentRow(page, carrierNo).getByRole('button', { name: '送達確認' })).toHaveCount(
+    0,
+  );
 });
 
 test('12.8 累計送達達到購買數量，印件與訂單一起收尾（原編號 130）', async ({ page }) => {
@@ -497,4 +576,29 @@ test('12.12 收件三欄預設帶訂單聯絡人、可改', async ({ page }) => 
   await expect(drawer).toContainText('倉儲收貨組');
   await expect(drawer).toContainText(CHAIN4.contactPhone);
   await expect(drawer).toContainText(CHAIN4.contactAddress);
+  await closeDrawer(page);
+
+  // 草稿存下去之後三欄就跟著這張單走：訂單事後換窗口聯絡人，草稿上的收件資料不被改掉
+  await gotoInAppSafe(page, '/orders');
+  await clickIntoDetail(page, CHAIN4.orderNo, /orders\/detail/);
+  await page.getByRole('tab', { name: /資訊/ }).first().click();
+  await page.getByRole('button', { name: '切換窗口聯絡人' }).click();
+  const contactPanel = page.locator('.ant-drawer-content').last();
+  await contactPanel.locator('.ant-select').first().click();
+  await page
+    .locator('.ant-select-dropdown:visible')
+    .last()
+    .locator('.ant-select-item-option')
+    .filter({ hasText: '備用聯絡人（示範資料）' })
+    .first()
+    .click();
+  await contactPanel.getByRole('button', { name: /確\s*認/ }).click();
+  await expect(page.getByText('已切換窗口聯絡人').last()).toBeVisible();
+
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await shipmentRow(page, draftNo).getByText(draftNo).click();
+  const drawerAfter = detailDrawer(page);
+  await expect(drawerAfter).toContainText('倉儲收貨組');
+  await expect(drawerAfter).toContainText(CHAIN4.contactPhone);
+  await expect(drawerAfter).not.toContainText('備用聯絡人（示範資料）');
 });

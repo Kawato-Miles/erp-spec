@@ -22,14 +22,18 @@ export async function pickOption(page, select, label) {
  * 頁面剛載入、React 尚未接手時的點擊會沒有反應，故重試到網址真的換頁為止。
  */
 export async function openByNo(page, no, urlPattern = /detail/) {
-  // 列表依建立日期由新到舊分頁，較早的單可能在第二頁：先用搜尋框篩到該單再點（共用篩選元件按 Enter 才送出）
-  const search = page.getByPlaceholder(/請輸入訂單編號|請輸入需求單號|請輸入/).first();
-  if (await search.count()) {
-    await search.fill(no);
-    await search.press('Enter');
-    await page.waitForTimeout(300);
-  }
   const link = page.getByText(no, { exact: true }).first();
+  // 列表依建立日期由新到舊分頁，較早的單可能在第二頁：先用搜尋框篩到該單再點（共用篩選元件按 Enter 才送出）。
+  // **畫面上已經看得到就不要搜**：印件列表的搜尋只吃印件、訂單與客戶，把工單編號打進去會把整張表篩空，
+  // 展開列裡的那個工單連結跟著消失（6.1、6.13 就是在展開列上點工單編號）。
+  if (!(await link.isVisible().catch(() => false))) {
+    const search = page.getByPlaceholder(/請輸入訂單編號|請輸入需求單號|請輸入/).first();
+    if (await search.count()) {
+      await search.fill(no);
+      await search.press('Enter');
+      await page.waitForTimeout(300);
+    }
+  }
   // 開發伺服器首次進某個路由要即時編譯，換頁可能要十幾秒，故單次等待放寬
   for (let i = 0; i < 3; i += 1) {
     await link.click();

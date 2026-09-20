@@ -37,35 +37,41 @@ const openOrderItemsTab = async (page, orderNo) => {
 // 品檢站清單的表頭
 const qcHeader = (page) => page.locator('.ant-table-thead').first();
 
-test('11.1 待驗清單依印件的齊套完成數列出，不依轉交（原編號 27）', async ({ page }) => {
+test('11.1 待驗清單依印件做出來的良品列出，不依轉交（原編號 27）', async ({ page }) => {
   await openAs(page, '品檢人員', '/qc-shipping/inspection');
 
-  // 欄位：印件、品檢需求、齊套完成數、已驗（通過／不通過）、待驗量、操作
+  // 欄位：印件、所屬訂單編號、客戶名稱、品檢需求、齊套完成數、已驗（通過／不通過）、待驗量、操作
   await expect(qcHeader(page)).toContainText('印件');
+  await expect(qcHeader(page)).toContainText('所屬訂單編號');
+  await expect(qcHeader(page)).toContainText('客戶名稱');
   await expect(qcHeader(page)).toContainText('品檢需求');
   await expect(qcHeader(page)).toContainText('齊套完成數');
   await expect(qcHeader(page)).toContainText('已驗（通過／不通過）');
   await expect(qcHeader(page)).toContainText('待驗量');
   await expect(qcHeader(page)).toContainText('操作');
-  // 清單只看製作事實，貨在哪裡到轉交單管理查
-  await expect(page.getByText('待驗量＝齊套完成數 − 已驗量，只看做出來多少')).toBeVisible();
+  // 待驗量只看做出來的良品，貨在哪裡到轉交單管理查
+  await expect(page.getByText('待驗量＝做出來的良品 − 已驗量，只看做出來多少')).toBeVisible();
 
-  // 鏈一 PI-2026-0601：齊套 5,000、已驗 5,000、待驗量 0，列留著、驗收鈕停用
+  // 鏈一 PI-2026-0601：良品 5,000、已驗 5,000、待驗量 0，列留著、驗收鈕停用
   const done = pendingRow(page, 'PI-2026-0601');
   await expect(done).toContainText('會員卡（客製燙金）');
+  await expect(done).toContainText('ORD-2026-0601');
+  await expect(done).toContainText('誠品書店股份有限公司');
   await expect(done).toContainText('5,000');
   await expect(done).toContainText('5,000 ／ 0');
   await expect(done).toContainText('0（已驗完）');
   await expect(done.getByRole('button', { name: '驗收' })).toBeDisabled();
 
-  // 鏈四 PI-2026-0820：精裝裝訂已報工 500、尚無轉交單，照樣列出待驗量 500
+  // 鏈四 PI-2026-0820：精裝裝訂已報工良品 500、尚無轉交單，照樣列出待驗量 500
   const pending = pendingRow(page);
   await expect(pending).toContainText(CHAIN4.printItemName);
+  await expect(pending).toContainText(CHAIN4.orderNo);
+  await expect(pending).toContainText(CHAIN4.clientName);
   await expect(pending).toContainText('500');
   await expect(pending).toContainText('0 ／ 0');
   await expect(pending.getByRole('button', { name: '驗收' })).toBeEnabled();
 
-  // 齊套完成數為 0 的印件不列（鏈二裁切未完成、鏈三尚未派工）
+  // 沒有良品也沒有品檢紀錄的印件不列（鏈二裁切未完成、鏈三尚未派工）
   await expect(page.locator('tr.ant-table-row')).toHaveCount(2);
 
   // 只有品檢人員看得到操作欄：換成業務時整頁沒有驗收鈕，並提示要切換角色
@@ -110,7 +116,7 @@ test('11.3 驗收數量不得超過待驗量（原編號 52）', async ({ page }
   await openAs(page, '品檢人員', '/qc-shipping/inspection');
   await pendingRow(page).getByRole('button', { name: '驗收' }).click();
   const dialog = inspectDialog(page);
-  await expect(dialog).toContainText('本站待驗量 500（齊套完成數 500 − 已驗 0）');
+  await expect(dialog).toContainText('本站待驗量 500（可驗良品 500 − 已驗 0）');
   await expect(dialog).toContainText('本批驗出多種不良時分批各記一筆');
 
   // 填 600 送出：整筆擋下並顯示當下待驗量 500，且輸入框不自動把數字砍到上限內
@@ -257,8 +263,11 @@ test('11.6 訂單詳情的完工良品數與印件兩處同源（原編號 115�
 test('11.7 品檢站在桌機是表格，窄視窗靠側欄收合與橫向捲動（原編號 120）', async ({ page }) => {
   await openAs(page, '品檢人員', '/qc-shipping/inspection');
 
-  // 桌機：表格版型，每一列可展開看該印件的歷次品檢紀錄
+  // 桌機：表格版型，每一列帶所屬訂單編號與客戶名稱，也可展開看該印件的歷次品檢紀錄
   await expect(page.locator('.ant-table').first()).toBeVisible();
+  await expect(page.getByText('待驗量＝做出來的良品 − 已驗量，只看做出來多少')).toBeVisible();
+  await expect(pendingRow(page)).toContainText(CHAIN4.orderNo);
+  await expect(pendingRow(page)).toContainText(CHAIN4.clientName);
   const doneRow = pendingRow(page, 'PI-2026-0601');
   await doneRow.getByLabel('展開行').click();
   const records = expandedRecords(page, 'PI-2026-0601');
@@ -301,7 +310,7 @@ test('11.7 品檢站在桌機是表格，窄視窗靠側欄收合與橫向捲動
   }
 });
 
-test('11.8 待驗量由齊套完成數推導，轉交與點收都不改變它（原編號 121）', async ({ page }) => {
+test('11.8 待驗量由做出來的良品推導，轉交與點收都不改變它（原編號 121）', async ({ page }) => {
   // 起點：尚無轉交單，待驗量已是 500
   await openAs(page, '品檢人員', '/qc-shipping/inspection');
   await expect(pendingRow(page)).toContainText('500');
@@ -415,7 +424,8 @@ test('11.12 印件的品檢需求沒填時顯示破折號，驗收照樣記得�
   // 清單與驗收對話框的品檢需求都印破折號
   await switchRoleSafe(page, '品檢人員');
   await gotoInAppSafe(page, '/qc-shipping/inspection');
-  await expect(pendingRow(page).locator('td').nth(2)).toHaveText('—');
+  // 欄位順序：展開、印件、所屬訂單編號、客戶名稱、品檢需求…，品檢需求為第 5 格
+  await expect(pendingRow(page).locator('td').nth(4)).toHaveText('—');
   await pendingRow(page).getByRole('button', { name: '驗收' }).click();
   await expect(inspectDialog(page)).toContainText('品檢需求：—');
 
@@ -478,5 +488,31 @@ test('11.16 更正紀錄沖銷後待驗量回升', async ({ page }) => {
   // 已驗量以代數和回到 0，待驗量回升為 500，驗收鈕重新可按
   await expect(pendingRow(page)).toContainText('0 ／ 0');
   await expect(pendingRow(page)).toContainText('500');
+  await expect(pendingRow(page).getByRole('button', { name: '驗收' })).toBeEnabled();
+});
+
+test('11.18 更正紀錄沖不到負數', async ({ page }) => {
+  // 前置：驗一筆通過 500，已驗量 500、待驗量 0
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+  await inspectAtQc(page, { passed: 500, failed: 0 });
+  await expect(pendingRow(page)).toContainText('0（已驗完）');
+
+  // 展開該列對那一筆補更正紀錄，通過數量更正填 −600
+  await pendingRow(page).getByLabel('展開行').click();
+  await expandedRecords(page).getByRole('button', { name: '補更正紀錄' }).first().click();
+  const dialog = correctDialog(page);
+  const passedDelta = dialog.getByLabel('通過數量更正（可填負數）', { exact: true });
+  await passedDelta.fill('-600');
+  await dialog.getByRole('button', { name: '送出更正紀錄' }).click();
+
+  // 整筆擋下，訊息只有一句；紀錄不新增、已驗量不動
+  await expect(page.getByText('更正後的累計不得低於 0').first()).toBeVisible();
+  await expect(page.getByText(/已補一筆更正紀錄/)).toHaveCount(0);
+
+  // 改成 −500 剛好沖到 0：這一筆成立，待驗量回升為 500
+  await passedDelta.fill('-500');
+  await dialog.getByRole('button', { name: '送出更正紀錄' }).click();
+  await expect(page.getByText(/已補一筆更正紀錄/).first()).toBeVisible();
+  await expect(pendingRow(page)).toContainText('0 ／ 0');
   await expect(pendingRow(page).getByRole('button', { name: '驗收' })).toBeEnabled();
 });
