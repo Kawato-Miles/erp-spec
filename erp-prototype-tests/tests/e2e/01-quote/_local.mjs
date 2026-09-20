@@ -134,7 +134,7 @@ export async function addItem(
   const panel = drawer(page);
   await clickOpen(button(page, '新增印件'), panel.getByLabel('項目名稱'));
   await panel.getByLabel('項目名稱').fill(name);
-  await pickOption(page, panel.getByLabel('印件類型'), productionType);
+  await pickOption(page, panel.getByLabel('印件屬性'), productionType);
   await panel.getByLabel('數量').fill(quantity);
   if (difficulty != null) await pickOption(page, panel.getByLabel('難易度'), String(difficulty));
   if (unitPrice != null) await panel.getByLabel('單價（未稅）').fill(String(unitPrice));

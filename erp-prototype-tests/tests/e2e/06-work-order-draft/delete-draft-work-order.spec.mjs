@@ -104,7 +104,7 @@ test('6.11 工單的事實只有一份，兩頁看到的一定一樣（原編號
   await created.getByLabel('刪除').click();
   await button(dialog(page), '確認').click();
   await expect(page.locator('.ant-table-expanded-row tbody tr.ant-table-row')).toHaveCount(2);
-  // 工單數欄（展開鈕、印件名稱、印件編號、印件類型、印製狀態、審稿狀態之後的那一格）
+  // 工單數欄（展開鈕、印件名稱、印件編號、印件屬性、印製狀態、審稿狀態之後的那一格）
   await expect(rowOf(page, 'PI-2026-0904').locator('td').nth(6)).toHaveText('2');
 
   // 刪除後同一個篩選條件不再命中這件印件

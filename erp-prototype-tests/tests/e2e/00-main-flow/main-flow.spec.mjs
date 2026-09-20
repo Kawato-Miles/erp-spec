@@ -212,7 +212,7 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
       const itemPanel = drawer(page);
       await clickOpen(button(page, '新增印件'), itemPanel.getByLabel('項目名稱'));
       await itemPanel.getByLabel('項目名稱').fill(name);
-      await pickOption(page, itemPanel.getByLabel('印件類型'), '大貨');
+      await pickOption(page, itemPanel.getByLabel('印件屬性'), '大貨');
       await itemPanel.getByLabel('數量').fill('100');
       await pickOption(page, itemPanel.getByLabel('難易度'), '3');
       await itemPanel.getByLabel('單價（未稅）').fill('50');

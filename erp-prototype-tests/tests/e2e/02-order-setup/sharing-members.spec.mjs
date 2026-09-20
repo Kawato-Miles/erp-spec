@@ -13,9 +13,9 @@ import {
 } from './_local.mjs';
 
 // 情境目錄 2.10：分享成員代為操作，活動紀錄歸實際操作者。
-// 已由 06 章覆蓋的部分（不重寫）：改派負責業務時「離職交接清空分享成員 vs 長假代理保留」的
+// 已由 06 章覆蓋的部分（不重寫）：改派接單業務時「離職交接清空分享成員 vs 長假代理保留」的
 // 完整處置，見 tests/e2e/06-work-order-draft/order-reassign-reason.spec.mjs（6.5）——
-// 該測試已驗過分享頁籤標題帶成員數（分享（0）／分享（1））與訂單負責業務不因改派而變動的呈現方式。
+// 該測試已驗過分享頁籤標題帶成員數（分享（0）／分享（1））與訂單接單業務不因改派而變動的呈現方式。
 // 本測試只補 6.5 沒涵蓋的兩件事：新增／移除分享成員本身、以及被分享者代為操作時活動紀錄歸實際操作者。
 test('2.10 分享成員代為操作，活動紀錄歸實際操作者（商業需求覆蓋矩陣 B）', async ({ page }) => {
   test.setTimeout(90_000);
@@ -26,7 +26,7 @@ test('2.10 分享成員代為操作，活動紀錄歸實際操作者（商業需
   await openTab(page, '分享');
   await expect(page.locator('body')).toContainText('張惠雯');
 
-  // 新增一位分享成員（候選排除負責業務洪嘉駿與既有成員張惠雯）
+  // 新增一位分享成員（候選排除接單業務洪嘉駿與既有成員張惠雯）
   await button(page, '新增分享成員').click();
   const addPanel = dialog(page);
   await pickOption(page, addPanel.locator('.ant-select').nth(0), '李志豪');
@@ -42,7 +42,7 @@ test('2.10 分享成員代為操作，活動紀錄歸實際操作者（商業需
   await expect(page.getByText('已移除分享成員').last()).toBeVisible();
   await expect(page.locator('body')).toContainText('分享（1）');
 
-  // 訂單負責業務全程不變
+  // 訂單接單業務全程不變
   await openTab(page, '資訊');
   await expect(page.locator('body')).toContainText('洪嘉駿');
 
@@ -54,7 +54,7 @@ test('2.10 分享成員代為操作，活動紀錄歸實際操作者（商業需
   await button(notePanel, '確認').click();
   await expect(page.getByText('已更新訂單備註').last()).toBeVisible();
 
-  // 活動紀錄的操作者歸實際操作者（張惠雯），不是訂單負責業務洪嘉駿
+  // 活動紀錄的操作者歸實際操作者（張惠雯），不是訂單接單業務洪嘉駿
   await openTab(page, '活動紀錄');
   await expect(activityItem(page, '編輯訂單備註')).toHaveCount(1);
   await expect(page.locator('.ant-timeline-item-content').first()).toContainText('張惠雯');

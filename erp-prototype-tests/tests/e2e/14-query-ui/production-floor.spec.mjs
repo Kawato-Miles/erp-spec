@@ -33,10 +33,10 @@ test('14.5 欄位說明圖示（原編號 20）', async ({ page }) => {
   // 起點資料：工作包管理頁
   await openAs(page, '生管', '/production-floor/work-packages');
 
-  // 情境：任一角色停留在「確樣需求」「現場進度」「可做量」欄名旁的說明圖示上
+  // 情境：任一角色停留在「確樣備註」「現場進度」「可做量」欄名旁的說明圖示上
   // （本頁包列沒有「可做量」欄——那欄在生產任務子表；包列改停留同樣有說明圖示的「預計完成日」）
   const checks = [
-    { label: '確樣需求', textFragment: '確樣事項' },
+    { label: '確樣備註', textFragment: '現場確樣提醒' },
     { label: '現場進度', textFragment: '任務總數' },
     { label: '預計完成日', textFragment: '期限' },
   ];

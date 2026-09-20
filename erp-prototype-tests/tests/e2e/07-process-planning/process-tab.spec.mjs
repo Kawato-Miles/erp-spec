@@ -92,11 +92,12 @@ test('7.4 同一個日期在三個頁面叫同一個名字（原編號 71）', a
     await expect(page.getByText(legacy)).toHaveCount(0);
   }
 
-  // 實際開工只列在生產任務的展開層，欄名「實際開工」，不與預計完成成對呈現在表格上
+  // 開工只列在生產任務的展開層，欄名「任務實際開工」（值取首筆報工的時間），
+  // 不與預計完成成對呈現在表格上
   const firstRow = page.locator('tr.ant-table-row').first();
   await firstRow.locator('.ant-table-row-expand-icon').click();
-  await expect(page.locator('tr.ant-table-expanded-row').first()).toContainText('實際開工');
-  await expect(planningHeaders.filter({ hasText: '實際開工' })).toHaveCount(0);
+  await expect(page.locator('tr.ant-table-expanded-row').first()).toContainText('任務實際開工');
+  await expect(planningHeaders.filter({ hasText: '任務實際開工' })).toHaveCount(0);
 
   // 生管在生產任務管理頁看到同一欄名縮寫
   await switchRole(page, '生管');
@@ -176,7 +177,7 @@ test('7.9 生產任務清單是單一序列的母子表格（原編號 161）', 
   await expect(printingRow).not.toContainText('NT$ 10,781');
 
   // 展開層才有的項目：製作細節、備註、單位、放損率、需轉交、計入完成度、派單，
-  // 以及產出、點收、可轉交上限、實際開工、指派師傅
+  // 以及產出、點收、可轉交上限、任務實際開工、指派師傅
   const firstRow = page.locator('tr.ant-table-row').first();
   await firstRow.locator('.ant-table-row-expand-icon').click();
   const expandedRow = page.locator('tr.ant-table-expanded-row').first();
@@ -191,7 +192,7 @@ test('7.9 生產任務清單是單一序列的母子表格（原編號 161）', 
     '產出',
     '點收',
     '可轉交上限',
-    '實際開工',
+    '任務實際開工',
     '指派師傅',
   ]) {
     await expect(expandedRow).toContainText(label);

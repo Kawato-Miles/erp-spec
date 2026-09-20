@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { openAs, switchRole } from '../_helpers.mjs';
 import { pickOption, openByNo, drawer, openTab, button, reloadAs, openScenario, activityItem } from './_local-helpers.mjs';
 
-test('6.5 訂單改派負責業務要選理由分類，離職交接連同分享成員一起清空（原編號 190）', async ({
+test('6.5 訂單改派接單業務要選理由分類，離職交接連同分享成員一起清空（原編號 190）', async ({
   page,
 }) => {
   test.setTimeout(180_000);
@@ -28,9 +28,9 @@ test('6.5 訂單改派負責業務要選理由分類，離職交接連同分享�
     '已改派給 李志豪（離職交接），活動紀錄已留痕；已清空分享成員 1 位',
   );
 
-  // 活動紀錄新增兩筆——改派負責業務與清空分享成員各一筆
+  // 活動紀錄新增兩筆——改派接單業務與清空分享成員各一筆
   await openTab(page, '活動紀錄');
-  await expect(activityItem(page, '改派負責業務為 李志豪（離職交接）')).toHaveCount(1);
+  await expect(activityItem(page, '改派接單業務為 李志豪（離職交接）')).toHaveCount(1);
   await expect(activityItem(page, '已清空分享成員 1 位')).toHaveCount(1);
   // 分享頁籤的成員數歸零；訂單狀態維持製作中
   await expect(page.locator('body')).toContainText('分享（0）');
@@ -52,7 +52,7 @@ test('6.5 訂單改派負責業務要選理由分類，離職交接連同分享�
 
   await openTab(page, '活動紀錄');
   await expect(
-    activityItem(page, '改派負責業務為 李志豪（長假代理）：王小姐 9/10 至 9/20 休假'),
+    activityItem(page, '改派接單業務為 李志豪（長假代理）：王小姐 9/10 至 9/20 休假'),
   ).toHaveCount(1);
   await expect(activityItem(page, '已清空分享成員')).toHaveCount(0);
   // 張惠雯保留、頁籤仍為「分享（1）」；訂單狀態仍為製作中

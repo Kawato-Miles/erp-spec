@@ -172,7 +172,7 @@ export async function buildDraftOrder(page, { openAs, switchRole, gotoInApp }, {
   const itemPanel = drawer(page);
   await clickOpen(button(page, '新增印件'), itemPanel.getByLabel('項目名稱'));
   await itemPanel.getByLabel('項目名稱').fill(itemName);
-  await pickOption(page, itemPanel.getByLabel('印件類型'), '大貨');
+  await pickOption(page, itemPanel.getByLabel('印件屬性'), '大貨');
   await itemPanel.getByLabel('數量').fill(qty);
   await pickOption(page, itemPanel.getByLabel('難易度'), '3');
   await itemPanel.getByLabel('單價（未稅）').fill(unitPrice);

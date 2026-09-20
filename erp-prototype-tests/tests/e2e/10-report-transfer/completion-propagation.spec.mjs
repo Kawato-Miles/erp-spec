@@ -44,6 +44,37 @@ test('10.12 首次報工把上游三層一起推進，已收尾的不被拉回�
   await gotoInApp(page, '/work-orders');
   await page.getByText('WO-2026-0815', { exact: true }).click();
   await expect(page.getByText('製作中').first()).toBeVisible();
+
+  // 同一筆報工的時間寫入該任務的「任務實際開工」（展開生產任務列讀）：
+  // 期望值取自 openspec work-order § 任務實際開工取首筆報工時間——分派日不寫入，
+  // 尚未報工的其餘三筆仍為空
+  await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0815' })).toBeVisible();
+  // 備料是製程的第一道，列在生產任務清單首位——展開它就是剛才報過工的那一筆
+  await page.locator('tr.ant-table-row').first().locator('.ant-table-row-expand-icon').click();
+  const expanded = page.locator('tr.ant-table-expanded-row').first();
+  await expect(expanded).toContainText('任務實際開工');
+  const startedAt = expanded
+    .locator('th.ant-descriptions-item-label:has-text("任務實際開工") + td')
+    .first();
+  await expect(startedAt).not.toHaveText('—');
+  await expect(startedAt).toHaveText(/\d{4}-\d{2}-\d{2}/);
+});
+
+test('10.19 尚未報工的生產任務，任務實際開工為空（分派日不寫入）', async ({ page }) => {
+  // 起點資料：鏈三 WO-2026-0815 四筆任務已派工、尚無任何報工
+  // 期望值取自 openspec work-order § 分派後尚未報工時任務實際開工為空
+  await dispatchAllTasks(page);
+
+  await switchRole(page, '印務');
+  await gotoInApp(page, '/work-orders');
+  await page.getByText('WO-2026-0815', { exact: true }).click();
+  await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0815' })).toBeVisible();
+  const firstRow = page.locator('tr.ant-table-row').first();
+  await firstRow.locator('.ant-table-row-expand-icon').click();
+  const expanded = page.locator('tr.ant-table-expanded-row').first();
+  await expect(
+    expanded.locator('th.ant-descriptions-item-label:has-text("任務實際開工") + td').first(),
+  ).toHaveText('—');
 });
 
 test('10.15 完成判定一律取生產數量（投入）累計（原編號 159）', async ({ page }) => {

@@ -52,40 +52,28 @@ test('14.1 工單列表查詢與篩選（原編號 1）', async ({ page }) => {
   await expect(table).toContainText('WO-2026-0710');
 });
 
-test('14.2 工單詳情四個頁籤（原編號 2）', async ({ page }) => {
+test('14.2 工單詳情的頁籤：成本區只留成本對照（原編號 2）', async ({ page }) => {
   // 起點資料：鏈二 WO-2026-0710
+  // 期望值取自 openspec work-order § 工單成本對照：成本區只有「成本對照」一個頁籤，
+  // 各生產任務的預估值仍於對照的預估欄逐列可讀
   await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0710');
   await expect(page.locator('body')).toContainText('WO-2026-0710');
 
-  // 任一角色逐一切換製程規劃、預估成本、成本對照、異動紀錄四個頁籤，網址隨切換變化。
-  // 製程規劃是預設頁籤（網址一開始未帶 tab 參數，切換到別的頁籤再切回來才看得出網址真的隨動）。
-  await page.getByRole('tab', { name: '預估成本' }).click();
-  await expect(page).toHaveURL(/tab=estimate/);
+  // 不出現「預估成本」頁籤
+  await expect(page.getByRole('tab', { name: '預估成本' })).toHaveCount(0);
 
-  // 預估成本的列為各生產任務一列、顏色的五列、合計列；欄只有成本項目與小計。
-  // AntD 會把已看過的頁籤留在 DOM 裡（只是隱藏），故一律縮到作用中頁籤的面板內取列，
-  // 否則製程規劃那張任務表的同名列也會被數進來。
-  const activePane = page.locator('.ant-tabs-tabpane-active');
-  const estHeaders = activePane.locator('.ant-table-thead th');
-  await expect(estHeaders.filter({ hasText: '成本項目' })).toHaveCount(1);
-  await expect(estHeaders.filter({ hasText: '小計' })).toHaveCount(1);
-  const estBody = activePane.locator('.ant-table-tbody tr');
-  await expect(estBody.filter({ hasText: '海報四色印刷' })).toHaveCount(1);
-  await expect(estBody.filter({ hasText: '顏色費用：CMYK' })).toHaveCount(1);
-  await expect(estBody.filter({ hasText: '顏色費用：金屬色（合印）' })).toHaveCount(1);
-  await expect(estBody.filter({ hasText: '海報四色印刷' })).toContainText('NT$ 5,981');
-  await expect(estBody.filter({ hasText: '顏色費用：CMYK' })).toContainText('NT$ 4,800');
-  await expect(activePane.locator('.ant-table-summary')).toContainText('NT$ 16,855');
-
-  // 成本對照用同一組列，每列都有預估、實際與升降
+  // 成本對照用同一組列，每列都有預估、實際與升降；預估欄逐列讀得到各任務的預估值
   await page.getByRole('tab', { name: '成本對照' }).click();
   await expect(page).toHaveURL(/tab=cost/);
-  await expect(page.locator('body')).toContainText('預估（凍結）');
-  await expect(page.locator('body')).toContainText('實際（累積）');
-  await expect(page.locator('body')).toContainText('升降');
-  const compareBody = page.locator('.ant-tabs-tabpane-active .ant-table-tbody tr');
+  const activePane = page.locator('.ant-tabs-tabpane-active');
+  await expect(activePane).toContainText('預估（凍結）');
+  await expect(activePane).toContainText('實際（累積）');
+  await expect(activePane).toContainText('升降');
+  const compareBody = activePane.locator('.ant-table-tbody tr');
   await expect(compareBody.filter({ hasText: '顏色費用：CMYK' })).toHaveCount(1);
+  await expect(compareBody.filter({ hasText: '顏色費用：金屬色（合印）' })).toHaveCount(1);
   await expect(compareBody.filter({ hasText: '海報四色印刷' })).toHaveCount(1);
+  await expect(compareBody.filter({ hasText: '海報四色印刷' })).toContainText('NT$ 5,981');
 
   // 異動紀錄頁籤目前沒有資料，因為現行資料沒有異動事實
   await page.getByRole('tab', { name: /異動紀錄/ }).click();
@@ -98,6 +86,68 @@ test('14.2 工單詳情四個頁籤（原編號 2）', async ({ page }) => {
   const headers = page.locator('.ant-table-thead th');
   await expect(headers.filter({ hasText: '印務規劃' })).not.toHaveCount(0);
   await expect(headers.filter({ hasText: '現場執行' })).not.toHaveCount(0);
+});
+
+test('14.19 工單摘要卡的兩格利潤率取所屬印件口徑', async ({ page }) => {
+  // 起點資料：鏈二 WO-2026-0710（所屬印件 PI-2026-0710，旗下只有這一張工單）
+  // 期望值取自 openspec work-order § 工單詳情摘要卡利潤率的四個 Scenario
+  await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0710');
+  await expect(page.locator('body')).toContainText('預估利潤率');
+  await expect(page.locator('body')).toContainText('實際利潤率');
+
+  // 摘要卡不再有任務進度格與顏色費用合計格
+  await expect(page.locator('body')).not.toContainText('任務進度');
+  await expect(page.locator('body')).not.toContainText('顏色費用合計');
+
+  // 現場角色整格不出現，也不以空值或「權限不足」字樣呈現
+  for (const role of ['生管', '師傅', '品檢人員']) {
+    await switchRole(page, role);
+    await expect(page.locator('body')).not.toContainText('預估利潤率');
+    await expect(page.locator('body')).not.toContainText('實際利潤率');
+    await expect(page.locator('body')).not.toContainText('權限不足');
+  }
+
+  // 業務與業務主管看得到兩格（利潤是他們判斷要不要再接這一款的依據）
+  for (const role of ['業務', '業務主管']) {
+    await switchRole(page, role);
+    await expect(page.locator('body')).toContainText('預估利潤率');
+    await expect(page.locator('body')).toContainText('實際利潤率');
+  }
+});
+
+test('14.20 工單詳情顯示接單業務、訂單類型、客戶編號與工單聯絡', async ({ page }) => {
+  // 起點資料：鏈四 WO-2026-0820（所屬訂單 ORD-2026-0820，客戶晨光文創、客戶編號 MBC000006，
+  // 接單業務洪嘉駿、訂單類型線下單；負責印務周建宏的聯絡電話已填）
+  // 期望值取自 openspec work-order § 工單詳情的印件與聯絡資訊顯示
+  await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0820');
+  await expect(page.locator('body')).toContainText('WO-2026-0820');
+
+  // 標題列的案名：訂單案名、印件名稱與客戶名稱
+  await expect(page.locator('body')).toContainText('《山城記事》精裝書');
+  await expect(page.locator('body')).toContainText('晨光文創股份有限公司');
+
+  // 印件基本資訊區的三項唯讀衍生（面板預設收合，先展開）
+  await page.getByText('查看印件資訊').first().click();
+  const basic = page.locator('.ant-descriptions');
+  await expect(basic.filter({ hasText: '客戶編號' }).first()).toContainText('MBC000006');
+  await expect(basic.filter({ hasText: '接單業務' }).first()).toContainText('洪嘉駿');
+  await expect(basic.filter({ hasText: '訂單類型' }).first()).toContainText('線下單');
+
+  // 工單聯絡取負責印務在人員資料的聯絡電話（工單資訊卡預設收合，先展開）
+  await page.getByText('查看工單資訊').first().click();
+  await expect(
+    page.locator('th.ant-descriptions-item-label:has-text("工單聯絡") + td').first(),
+  ).toContainText('02-2721-5588 #211');
+});
+
+test('14.21 負責印務未填聯絡電話時工單聯絡印破折號', async ({ page }) => {
+  // 起點資料：WO-2026-0910（負責印務蔡明修未填聯絡電話）
+  // 期望值取自 openspec work-order § 負責印務未填電話時顯示「－」
+  await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0910');
+  await page.getByText('查看工單資訊').first().click();
+  await expect(
+    page.locator('th.ant-descriptions-item-label:has-text("工單聯絡") + td').first(),
+  ).toHaveText('—');
 });
 
 test('14.11 清單上的編號可以直接點開詳情（原編號 181）', async ({ page }) => {

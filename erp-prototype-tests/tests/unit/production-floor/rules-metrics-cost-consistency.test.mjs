@@ -11,13 +11,14 @@ import { sumCost } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work
 // 15.2 五個指標與工單成本對照走同一支算式（原編號 102，併入原編號 25）
 // 起點資料：鏈二 WP-2026-0710-01 的「海報四色印刷」與 WO-2026-0710 的成本對照。
 // 生管、高階主管或印務先記下五張指標卡的數字與工單成本對照的實際成本；到工作包頁對該任務
-// 再報一筆工；回兩個頁面比對：毛利率與成本達成率隨同一筆報工變動，工單成本對照的實際成本
+// 再報一筆工；回兩個頁面比對：利潤率與成本達成率隨同一筆報工變動，工單成本對照的實際成本
 // 同步變動，兩處金額一致（指標卡的成本讀數＝calcCostMetrics，工單成本對照＝
 // calcWorkOrderActualCost，兩支共用同一顆 calcWorkOrderActualCost 引擎）。
 // 成本達成率的取數為預估成本合計與實際成本合計＝任務小計（不含顏色）加五個色別的顏色費用。
 describe('15.2 五個指標與工單成本對照走同一支算式', () => {
   const period = { from: '2026-08-01', to: '2026-09-30', today: '2026-09-05' };
-  const salePriceOf = (printItemNo) => (printItemNo === 'PI-2026-0710' ? 21.5 * 3000 : null);
+  // 利潤率的分母取印件的小計（未稅），不取「售價」一詞（wiki 生產績效指標 § 規則 4）
+  const subtotalOf = (printItemNo) => (printItemNo === 'PI-2026-0710' ? 21.5 * 3000 : null);
 
   const buildScenario = (workReports) => {
     const workOrders = MOCK_WORK_ORDERS.filter((w) => w.work_order_no === 'WO-2026-0710');
@@ -26,7 +27,7 @@ describe('15.2 五個指標與工單成本對照走同一支算式', () => {
       workReports,
       period,
       facts: { workReports, floorTasks: MOCK_FLOOR_TASKS },
-      salePriceOf,
+      subtotalOf,
     });
     const directActual = calcWorkOrderActualCost({
       workOrder: workOrders[0],
@@ -61,7 +62,7 @@ describe('15.2 五個指標與工單成本對照走同一支算式', () => {
     expect(costCardDelta).toBe(directDelta);
   });
 
-  it('成本達成率＝（實際－預估）÷預估，帶正負號；毛利率＝（售價－實際）÷售價，兩率隨同一筆報工變動', () => {
+  it('成本達成率帶正負號；利潤率拆預估與實際兩組、分母同為印件小計，實際那一組隨同一筆報工變動', () => {
     const before = buildScenario(MOCK_WORK_REPORTS);
     const extraReport = {
       id: 'wr-test-15-2b',
@@ -75,11 +76,24 @@ describe('15.2 五個指標與工單成本對照走同一支算式', () => {
     const after = buildScenario([...MOCK_WORK_REPORTS, extraReport]);
 
     expect(after.cost.costAttainment).not.toBe(before.cost.costAttainment);
-    expect(after.cost.grossMargin).not.toBe(before.cost.grossMargin);
+    // 實際利潤率隨報工變動；預估利潤率不隨報工變動（預估成本是建單當時凍結的）
+    expect(after.cost.actualProfitRate).not.toBe(before.cost.actualProfitRate);
+    expect(after.cost.estProfitRate).toBe(before.cost.estProfitRate);
+
     // 成本達成率公式驗算：(實際-預估)/預估
     const expectedAttainment =
       Math.round(((after.cost.actualSum - after.cost.estSum) / after.cost.estSum) * 1000) / 10;
     expect(after.cost.costAttainment).toBe(expectedAttainment);
+
+    // 兩式的分母都是印件小計（未稅），不是售價、也不是含稅金額
+    const subtotal = after.cost.subtotalSum;
+    expect(subtotal).toBe(21.5 * 3000);
+    expect(after.cost.estProfitRate).toBe(
+      Math.round(((subtotal - after.cost.estSum) / subtotal) * 1000) / 10,
+    );
+    expect(after.cost.actualProfitRate).toBe(
+      Math.round(((subtotal - after.cost.actualSum) / subtotal) * 1000) / 10,
+    );
   });
 
   it('五指標一次算齊（calcMetrics）的成本讀數與 calcCostMetrics 單獨呼叫一致', () => {
@@ -88,7 +102,7 @@ describe('15.2 五個指標與工單成本對照走同一支算式', () => {
       workReports: MOCK_WORK_REPORTS,
       tasks: MOCK_FLOOR_TASKS,
       workOrders,
-      salePriceOf,
+      subtotalOf,
       period,
     });
     const cost = calcCostMetrics({
@@ -96,7 +110,7 @@ describe('15.2 五個指標與工單成本對照走同一支算式', () => {
       workReports: MOCK_WORK_REPORTS,
       period,
       facts: { workReports: MOCK_WORK_REPORTS, floorTasks: MOCK_FLOOR_TASKS },
-      salePriceOf,
+      subtotalOf,
     });
     expect(metrics.grossMargin).toBe(cost.grossMargin);
     expect(metrics.costAttainment).toBe(cost.costAttainment);

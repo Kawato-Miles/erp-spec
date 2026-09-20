@@ -47,7 +47,8 @@ test('8.6 印務列印紙本工單，版式與欄位範圍固定且不含價格�
   const pairs = [
     ['工單編號', 'WO-2026-0908', '客戶', '青硯文具股份有限公司'],
     ['印件名稱', '名片', '印務', '周建宏'],
-    ['印件數量', '123', '電話', ''],
+    // 電話取負責印務在人員資料的聯絡電話（周建宏已填）
+    ['印件數量', '123', '電話', '02-2721-5588 #211'],
     // 交期取印件的「內部完成日」（本印件預計出貨日 2026-09-10 − 1 天、一般件不再多減）
     ['工單日期', '2026-09-03', '交期', '2026-09-09'],
   ];
@@ -64,6 +65,11 @@ test('8.6 印務列印紙本工單，版式與欄位範圍固定且不含價格�
     await expect(row.locator('td')).toHaveCount(1);
     await expect(row.locator('td')).toHaveAttribute('colspan', '3');
   }
+  // 確樣需求取本工單同名欄位（固定十值多選），多值以頓號串接
+  await expect(
+    infoTable.locator('tr').filter({ hasText: '確樣需求' }).first().locator('td'),
+  ).toHaveText('新版、數位樣、看印');
+
   // 品檢需求與製程說明取所屬印件 PI-2026-0801（名片）的兩欄，不再取工單自身欄位
   // （同印件多張工單印出同一段文字見 8.11，兩欄皆空時印破折號見 8.12）
   for (const [key, value] of [
@@ -341,5 +347,32 @@ test('8.12 印件的兩欄都沒填時，紙本表頭各印破折號且不擋下
   );
   await expect(headerRowValue(page, '品檢需求')).toHaveText('—');
   await expect(headerRowValue(page, '製程說明')).toHaveText('—');
+  await expect(page.getByRole('button', { name: /^列\s*印$/ })).toBeVisible();
+});
+
+// 8.13 的錨值：WO-2026-0910（製程審核完成、負責印務蔡明修）。mock 上這張單的確樣需求未勾選、
+// 負責印務蔡明修未填聯絡電話——兩欄各印破折號、不擋下列印。
+// 期望值取自 openspec work-order § 確樣需求未勾選或電話未填時印「－」；Prototype 全站的無值符號
+// 統一用破折號「—」，本測試照畫面實際字元斷言。
+test('8.13 確樣需求未勾選且負責印務未填電話時，表頭兩欄各印破折號（新增）', async ({ page }) => {
+  await openAs(page, '生管', '/work-orders/detail?id=wo-2026-0910');
+  await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0910' })).toBeVisible();
+
+  await clickAndWaitUrl(
+    page,
+    page.getByRole('button', { name: '列印紙本工單' }),
+    /\/work-orders\/print\/?\?id=wo-2026-0910/,
+  );
+
+  // 確樣需求跨欄一列，未勾選時印破折號
+  await expect(headerRowValue(page, '確樣需求')).toHaveText('—');
+
+  // 負責印務印在「印務」那一列，其聯絡電話印在「電話」那一格；未填時印破折號
+  const infoTable = page.locator('table').first();
+  await expect(infoTable.locator('tr').filter({ hasText: '印務' }).first()).toContainText('蔡明修');
+  const phoneRow = infoTable.locator('tr').filter({ hasText: '電話' }).first();
+  await expect(phoneRow.locator('td').last()).toHaveText('—');
+
+  // 不擋下列印
   await expect(page.getByRole('button', { name: /^列\s*印$/ })).toBeVisible();
 });

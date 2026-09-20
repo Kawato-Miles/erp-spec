@@ -94,13 +94,14 @@ test('7.8 印刷任務的成本分成任務小計與各顏色費用兩處凍結�
   // 任務表單沒有計價輸入段
   await expect(taskForm(page).getByText('計價數量', { exact: true })).toHaveCount(0);
 
-  // 預估成本頁籤：欄只有成本項目與小計，列為各生產任務加顏色的各列加合計列
+  // 成本對照頁籤（成本區只有這一個）：欄為成本項目、預估、實際與升降，
+  // 列為各生產任務加顏色的各列加合計列；快照不出現材料費／工序費／裝訂費／設備費四個舊欄名
   await taskForm(page).getByRole('button', { name: '取消' }).click();
   await expect(taskForm(page)).toBeHidden();
-  await page.locator('.ant-tabs-tab').filter({ hasText: '預估成本' }).first().click();
+  await page.locator('.ant-tabs-tab').filter({ hasText: '成本對照' }).first().click();
   const headers = page.locator('.ant-table-thead th');
   await expect(headers.filter({ hasText: '成本項目' })).toHaveCount(1);
-  await expect(headers.filter({ hasText: '小計' })).toHaveCount(1);
+  await expect(headers.filter({ hasText: '預估（凍結）' })).toHaveCount(1);
   for (const gone of ['材料費', '工序費', '裝訂費', '設備費']) {
     await expect(headers.filter({ hasText: gone })).toHaveCount(0);
   }

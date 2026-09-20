@@ -8,8 +8,14 @@ test('2.5 訂單客戶與窗口聯絡人維護（商業需求覆蓋矩陣 B）',
   await openByNo(page, 'ORD-2026-0710');
   await openTab(page, '資訊');
 
-  // 起點：客戶台北數位行銷有限公司，現任窗口聯絡人
+  // 起點：客戶台北數位行銷有限公司，現任窗口聯絡人。
+  // 客戶欄指向廠客主檔那一筆：客戶名稱取廠客簡稱、客戶編號取廠客的客戶編號，兩項皆為唯讀衍生
+  //（期望值取自 openspec order-management § 訂單客戶欄引用廠客主檔）
   await expect(page.locator('body')).toContainText('台北數位行銷有限公司');
+  const customerValue = (label) =>
+    page.locator(`th.ant-descriptions-item-label:has-text("${label}") + td`).first();
+  await expect(customerValue('客戶編號')).toHaveText('BC000039');
+  await expect(customerValue('客戶名稱')).toHaveText('台北數位行銷');
 
   await button(page, '切換窗口聯絡人').click();
   // 切換窗口聯絡人是側板（PanelDrawer），不是對話框

@@ -75,7 +75,7 @@ describe('2.7／2.8 三類備註的編輯把關（只有已取消才鎖）', () 
 });
 
 describe('2.10 分享成員管理與改派負責人的角色把關', () => {
-  it('分享管理限負責業務本人、編輯（代理）成員，或業務主管／主管；已取消一律唯讀', () => {
+  it('分享管理限接單業務本人、編輯（代理）成員，或業務主管／主管；已取消一律唯讀', () => {
     const order = {
       status: '製作中',
       sales_person: '洪嘉駿',
@@ -88,7 +88,7 @@ describe('2.10 分享成員管理與改派負責人的角色把關', () => {
     expect(canManageSharing({ ...order, status: '已取消' }, 'sales', '洪嘉駿')).toBe(false);
   });
 
-  it('改派負責業務限業務主管或主管', () => {
+  it('改派接單業務限業務主管或主管', () => {
     expect(canReassignOwner('sales_manager')).toBe(true);
     expect(canReassignOwner('supervisor')).toBe(true);
     expect(canReassignOwner('sales')).toBe(false);
