@@ -40,7 +40,7 @@ mock 異動順序：`MOCK-DATA-CHAIN.md` 引言補「出貨單」「品檢」兩
 - [x] 1.2 純函式：`pending-inspections.test.mjs` 依新簽章重寫、`shipment-draft.test.mjs` 新增、`shippable-quota.test.mjs` 補草稿不佔額度、`receiving-permission.test.mjs` 新增、`rules-shipment-stats.test.mjs` 補草稿不計入
 - [x] 1.3 畫面：`11-qc/qc.spec.mjs`、`12-shipping/shipping.spec.mjs`、`10-report-transfer/receiving-queue.spec.mjs` 依新口徑重寫；`_setup.mjs` 補強側欄群組收合時序
 - [x] 1.4 執行結果：unit 206 全過、smoke 過、三章 48 全過；全套殘 4 紅（6.1、6.13、7.10、7.16）屬工單成本收斂 change 既有紅項
-- [ ] 1.5 補純函式案例：外發生產任務（完全外發、印務報工 1,200）在無轉交單時待驗量 1,200（對應 qc 與 dispatch-order 兩條 Scenario）；情境目錄第十一章補一節、依據寫「品檢通過入庫、外發委外與回廠點收」
+- [ ] 1.5（另案，隨 QC-008 打樣段一起補）補純函式案例：外發生產任務（完全外發、印務報工 1,200）在無轉交單時待驗量 1,200（對應 qc 與 dispatch-order 兩條 Scenario）；情境目錄第十一章補一節、依據寫「品檢通過入庫、外發委外與回廠點收」
 
 ## 2. 出貨單草稿（erp 0cff790f）
 
@@ -66,9 +66,9 @@ mock 異動順序：`MOCK-DATA-CHAIN.md` 引言補「出貨單」「品檢」兩
 - [x] 5.1 主對話對照 skill 稽核（hex／px／important／createGlobalStyle；未動共用元件；無簡體字）並瀏覽器核對十一步與六步
 - [x] 5.2 wiki 22 卡落卡、OQ 三張（SHP-018 與 QC-007 封存、QC-008 開放）、log 兩筆
 - [x] 5.3 plan-audit 第一輪：rubric 一路＋雙盲對抗推演三路（紀錄 `shipment-draft-and-qc-queue-audit-r1.md`），27 項缺口 Miles 2026-09-20 拍板依建議處理；wiki 13 卡、QC-009、SHP-019、三份 delta 已回補
-- [ ] 5.6 plan-audit 復審：對第一輪未通過與部分通過項（1-1、1-2、1-4、1-5、4-2、4-4、5-1、5-2、5-3）重驗；5-2(a) 待履約與售後資料結構總覽卡建卡
+- [x] 5.6 plan-audit 復審（2026-09-21 無未通過；1-3、5-1 補字已修，4-4 依 QC-008、SHP-019 界線）——原文：plan-audit 復審：對第一輪未通過與部分通過項（1-1、1-2、1-4、1-5、4-2、4-4、5-1、5-2、5-3）重驗；5-2(a) 待履約與售後資料結構總覽卡建卡
 - [x] 5.7 建履約與售後資料結構總覽卡（三源互盲抽取、四項矛盾 Miles 2026-09-20 裁決、Sens 6096985）
-- [ ] 5.8 archive 時手動同步 after-sales-ticket spec 正本邊界句「0..N 退款款項紀錄」→ 退款款項紀錄掛訂單、不掛售後單（非 Requirement，archive 不會自動合併）
+- [x] 5.8 archive 時手動同步 after-sales-ticket spec 正本邊界句「0..N 退款款項紀錄」→ 退款款項紀錄掛訂單、不掛售後單（非 Requirement，archive 不會自動合併）
 - [x] 5.4 `openspec validate shipment-draft-and-qc-queue` 通過；五份 delta 的 MODIFIED 標題已逐一比對與 main spec 一致、每條 Requirement 含 Priority 與 Rationale、相對連結全部可解析
 - [ ] 5.5 vault-audit（35 卡異動達門檻，建議 Miles 觸發）
 
