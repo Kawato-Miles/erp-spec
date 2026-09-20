@@ -9,7 +9,8 @@ import { MOCK_WORK_ORDERS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(protot
 import { MOCK_FLOOR_TASKS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/mock-data.js';
 
 // 情境 11.1（待驗清單列出條件與欄位）、11.14（多部件取良品最小值）、11.15（不需轉交照樣列出）、
-// 11.16（更正沖銷後回升）、11.17（不良品不進待驗量）、11.19（良品縮回 0 仍留在清單上）
+// 11.16（更正沖銷後回升）、11.17（不良品不進待驗量）、11.19（良品縮回 0 仍留在清單上）、
+// 11.20（打樣印件同一套算法、重打只算本週期）、11.21（外發報工後即進清單）
 // 的數字驗算；畫面呈現另在 e2e 第十一章驗。
 //
 // 待驗量＝做出來的良品 − 已驗量（品檢紀錄通過與不通過的代數和），不看轉交、不看點收。
@@ -248,6 +249,95 @@ describe('11.19 良品縮回 0 但已驗過的印件仍留在清單上', () => {
       qcRecords: [],
     });
     expect(rows).toHaveLength(0);
+  });
+});
+
+describe('11.20 打樣印件與大貨印件同一套算法，重打只算本打樣週期', () => {
+  // 現行七條主鏈旗下全是大貨印件，打樣要用合成資料：一件打樣印件、旗下都是打樣工單
+  const printItems = [
+    { print_item_no: 'PI-TEST-SAMPLE', name: '樣品盒', print_item_type: '打樣印件' },
+  ];
+  // 第一輪的打樣工單（沒有重打起點標記，界線仍為空）
+  const firstRound = workOrderOf('PI-TEST-SAMPLE', [taskOf('pt-sample-1', 1)], {
+    id: 'wo-sample-1',
+    work_order_type: '打樣',
+    created_at: '2026-09-10 09:00',
+  });
+  // 業務填打樣結果 NG-製程問題時系統自動建的那一張，帶重打起點標記、界線認它
+  const secondRound = workOrderOf('PI-TEST-SAMPLE', [taskOf('pt-sample-2', 1)], {
+    id: 'wo-sample-2',
+    work_order_type: '打樣',
+    created_at: '2026-09-12 09:00',
+    sample_cycle_reset: true,
+  });
+  const firstRoundPass = qcRecordOf('PI-TEST-SAMPLE', 1, 0, '2026-09-10 15:00');
+
+  it('第一輪報工良品 1 時打樣印件照樣列出，待驗量為 1', () => {
+    const rows = calcPendingInspections({
+      printItems,
+      orders: [],
+      workOrders: [firstRound],
+      qcRecords: [],
+    });
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      print_item_type: '打樣印件',
+      kitting_qty: 1,
+      kitting_good_qty: 1,
+      pending_qty: 1,
+    });
+  });
+
+  it('第一輪驗完通過 1 之後待驗量歸零，列仍留著', () => {
+    const rows = calcPendingInspections({
+      printItems,
+      orders: [],
+      workOrders: [firstRound],
+      qcRecords: [firstRoundPass],
+    });
+    expect(rows).toHaveLength(1);
+    expect(rows[0].inspected_pass).toBe(1);
+    expect(rows[0].pending_qty).toBe(0);
+  });
+
+  it('重打之後只算新那一輪：良品仍為 1、不是兩輪相加的 2，已驗量按週期回到 0', () => {
+    const rows = calcPendingInspections({
+      printItems,
+      orders: [],
+      workOrders: [firstRound, secondRound],
+      qcRecords: [firstRoundPass],
+    });
+    expect(rows[0].kitting_qty).toBe(1);
+    expect(rows[0].kitting_good_qty).toBe(1);
+    expect(rows[0].inspected_pass).toBe(0);
+    expect(rows[0].pending_qty).toBe(1);
+  });
+});
+
+describe('11.21 外發生產任務報工後即進待驗清單', () => {
+  it('整筆交外包廠、印務依回廠點收報工良品 1,200 且沒有轉交單時，待驗量為 1,200', () => {
+    const rows = calcPendingInspections({
+      printItems: [printItemOf('PI-TEST-OUT', '外發樣本')],
+      orders: [],
+      workOrders: [
+        workOrderOf('PI-TEST-OUT', [
+          // 外發任務的良品寫在工單模組那一筆（現場任務池沒有它），故不給 floorTasks
+          taskOf('pt-outsourced', 1200, 0, {
+            unit_class: '外包廠',
+            vendor: '誠泰紙藝加工廠',
+            dispatch_no: 'DP-2026-0921',
+            destination_station_key: '品檢站',
+          }),
+        ]),
+      ],
+      floorTasks: [],
+      qcRecords: [],
+    });
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      kitting_good_qty: 1200,
+      pending_qty: 1200,
+    });
   });
 });
 
