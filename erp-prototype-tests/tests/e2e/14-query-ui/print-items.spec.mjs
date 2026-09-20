@@ -213,7 +213,7 @@ test('14.9 印件詳情頁的兩本帳與報價與利潤都要有數字（原編
   ]) {
     await expect(
       pane.locator(`th.ant-descriptions-item-label:has-text("${label}") + td`).first(),
-    ).not.toHaveText('－');
+    ).not.toHaveText('—');
   }
   await expect(pane).not.toContainText('稅額');
   await expect(pane).not.toContainText('含稅');

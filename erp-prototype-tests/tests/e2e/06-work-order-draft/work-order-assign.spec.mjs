@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { openAs, gotoInApp, switchRole } from '../_helpers.mjs';
 import { pickOption, openByNo, dialog, openTab, button, openScenario } from './_local-helpers.mjs';
 
-test('6.2 印務主管把草稿工單指派給負責印務與審核主管（原編號 46）', async ({ page }) => {
+test('6.2 印務主管把草稿工單指派給負責印務與工單審核主管（原編號 46）', async ({ page }) => {
   test.setTimeout(180_000);
   await openScenario(page, '印務主管', '/work-orders', { openAs, switchRole });
   await openByNo(page, 'WO-2026-0905');
@@ -21,7 +21,7 @@ test('6.2 印務主管把草稿工單指派給負責印務與審核主管（原�
   await button(modal, '分派').click();
 
   // 分派後提示帶出兩人名，按鈕改為「改派」，頁首提示消失
-  await expect(page.locator('body')).toContainText('已分派給 周建宏，審核主管 吳國豪');
+  await expect(page.locator('body')).toContainText('已分派給 周建宏，工單審核主管 吳國豪');
   await expect(button(page, '改派')).toBeVisible();
   await expect(button(page, '分派')).toHaveCount(0);
   await expect(page.locator('body')).not.toContainText('本工單尚未分派主責印務');

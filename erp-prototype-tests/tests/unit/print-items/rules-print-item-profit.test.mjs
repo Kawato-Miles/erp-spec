@@ -32,7 +32,7 @@ describe('15.8 印件的預估與實際兩組利潤、四式共用同一個分�
     expect(r.estRate).toBeNull();
     expect(r.actualProfit).toBeNull();
     expect(r.actualRate).toBeNull();
-    expect(formatRate(r.estRate)).toBe('－');
+    expect(formatRate(r.estRate)).toBe('—');
   });
 
   it('旗下工單全無報工事實時只有預估算得出來，實際兩式為空', () => {
