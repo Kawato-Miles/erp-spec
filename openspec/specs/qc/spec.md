@@ -15,7 +15,7 @@
 
 系統 SHALL 提供品檢人員的待驗清單，內容依印件的**待驗量**列出：待驗量＝各計入完成度生產任務的良品數取最小值（品檢介面稱「可驗良品數」）− 已驗量，已驗量＝該印件品檢紀錄通過數量與不通過數量的代數和（欄位正本見 wiki [印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) 待驗量欄，取數規則見 wiki [齊套邏輯](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)）。基數 SHALL 取良品、SHALL NOT 取齊套完成數（產出含不良品）——不良品留在原站處置，不進待驗量。待驗量為負時 SHALL 照實顯示負數、SHALL NOT 夾為 0。清單 SHALL 只看製作事實，SHALL NOT 依轉交單與點收推導、SHALL NOT 取品檢站在站量、SHALL NOT 取已送達量。品檢 SHALL 為印件入庫前的最終品檢，工序之間 SHALL NOT 設品檢節點。
 
-**列出條件**：待驗量大於 0、或已有品檢紀錄的印件 SHALL 列出（列出條件正本見 wiki [印件生產流程](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/印件生產流程.md)）；待驗量已為 0 者 SHALL 留在清單上並標示已驗完。齊套完成數為 0 且無品檢紀錄的印件 SHALL NOT 列出。印製維度為「已棄用」的印件 SHALL NOT 列出。打樣印件的待驗量算法另案處理（見 wiki [QC-008](../../../memory/Sens_wiki/wiki/erp/08-open-questions/QC-008-打樣印件在齊套完成數規則下的待驗量算法.md)），本 Requirement 不涵蓋。
+**列出條件**：待驗量大於 0、或已有品檢紀錄的印件 SHALL 列出（列出條件正本見 wiki [印件生產流程](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/印件生產流程.md)）；待驗量已為 0 者 SHALL 留在清單上並標示已驗完。齊套完成數為 0 且無品檢紀錄的印件 SHALL NOT 列出。印製維度為「已棄用」的印件 SHALL NOT 列出。打樣印件與大貨印件 SHALL 用同一套算法；打樣印件重打時 SHALL 只算本打樣週期的打樣工單與品檢紀錄（週期界線正本見 wiki [印件狀態](../../../memory/Sens_wiki/wiki/erp/06-state-machines/印件狀態.md)）。
 
 **呈現內容**：印件（編號、名稱、印件類型）、所屬訂單編號、客戶名稱、品檢需求、齊套完成數、可驗良品數、已驗（通過／不通過）、待驗量。所屬訂單編號與客戶名稱 SHALL 自訂單帶出、唯讀，供品檢人員對現場紙本工單的表頭。清單 SHALL NOT 呈現來源站點與點收時間。**貨的位置 SHALL 由轉交單管理回答**（點收規格見 [production-execution spec § 場內轉交](../production-execution/spec.md)），品檢站頁 SHALL NOT 另建位置視圖或到站量。
 
