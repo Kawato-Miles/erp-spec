@@ -12,7 +12,7 @@
 - [ ] 1.4 Prototype 與測試施工完成、Miles 確認後執行 `openspec archive`。歸檔順序 MUST 為：`delivery-date-naming-convergence`、`work-order-visibility-and-sharing`、本 change。
 - [ ] 1.5 歸檔後手改兩處規格差異檔改不到的殘留用詞：`openspec/specs/production-overview/spec.md` 檔頭的指標列（毛利率 → 利潤率）、`openspec/specs/order-management/spec.md` § Data Model 的實體關聯總覽（負責業務 → 接單業務）。
 - [ ] 1.6 歸檔後手改 `openspec/specs/order-adjustment/spec.md` 第 151 行「印件類型明細」為「異動明細」（異動分類語意，避免與印件屬性混淆）
-- [ ] 1.6 歸檔後執行 `grep -rn "毛利率\|負責業務\|實際開工日" openspec/specs/`，輸出應只剩兩類：BOM結構的「毛利率加成」定價法名稱、after-sales-ticket 的「負責業務主管」（＝負責＋業務主管，非改名對象）。另執行 `grep -rn "印件類型" openspec/specs/`，輸出應只剩 order-adjustment 第 151 行（語意待確認，見 design.md § Open Questions）。
+- [ ] 1.7 歸檔後執行 `grep -rn "毛利率\|負責業務\|實際開工日" openspec/specs/`，輸出應只剩兩類：BOM結構的「毛利率加成」定價法名稱、after-sales-ticket 的「負責業務主管」（＝負責＋業務主管，非改名對象）。另執行 `grep -rn "印件類型" openspec/specs/`，輸出應只剩 order-adjustment 第 151 行（語意待確認，見 design.md § Open Questions）。
 
 ## 2. 測試先行：失敗測試落地
 
