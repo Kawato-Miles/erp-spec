@@ -261,7 +261,7 @@ ConsultationRequest 實體 SHALL 提供 `consultant_note` 欄位作為諮詢人�
 
 業務在需求單 `requirement_note` 上 SHALL 可再編輯（既有規則不變）；下游 spec / Prototype MUST NOT 依賴雙區塊格式做 parsing（純文字傳輸，業務可自由編輯）。
 
-**諮詢人員 = 需求單負責業務**：諮詢人員轉需求單時，新建需求單的負責業務（owner）SHALL 設定為當前諮詢人員（即 `consultant_id`）。
+**諮詢人員 = 需求單接單業務**：諮詢人員轉需求單時，新建需求單的接單業務（owner）SHALL 設定為當前諮詢人員（即 `consultant_id`）。
 
 需求單後續結局影響 Payment 轉移目的地：
 
@@ -284,7 +284,7 @@ ConsultationRequest 實體 SHALL 提供 `consultant_note` 欄位作為諮詢人�
   ```
 - **AND** `linked_consultation_request_id` MUST 寫入 ConsultationRequest ID
 - **AND** 印件預填 `quantity` MUST = 200（級距 101-300 中間值）
-- **AND** 需求單負責業務 MUST = `consultant_id`
+- **AND** 需求單接單業務 MUST = `consultant_id`
 
 #### Scenario: consultant_note 為空時雙區塊省略諮詢人員筆記區塊
 
@@ -310,8 +310,6 @@ ConsultationRequest 實體 SHALL 提供 `consultant_note` 欄位作為諮詢人�
 - **WHEN** 業務於需求單詳情頁編輯 `requirement_note`，修改格式或新增內容
 - **THEN** 系統 SHALL 允許自由編輯（既有 quote-request 規則不變）
 - **AND** 編輯不影響上游 ConsultationRequest 的 `consultation_topic` / `consultant_note`（兩者解耦，僅在 mapping 時刻合併）
-
----
 
 ### Requirement: 需求單流失觸發建諮詢訂單收尾
 
@@ -683,7 +681,7 @@ v1.10 spec § 諮詢結束做大貨 → 需求單成交轉一般訂單情境保�
 
 ### Requirement: 諮詢單負責人改派
 
-業務主管 SHALL 可於諮詢單詳情頁改派負責諮詢人員（`consultant_id`），即「重新指定認領人」，覆寫已有值。改派為改 owner 的管理動作。改派的通用規則（理由分類五值必填、五要素留痕、候選人以 Role 模組權限篩選、全公司範圍、改派不改狀態）沿用 wiki [業務主管](../../../memory/Sens_wiki/wiki/erp/03-roles/業務主管.md) § 改派負責業務。
+業務主管 SHALL 可於諮詢單詳情頁改派負責諮詢人員（`consultant_id`），即「重新指定認領人」，覆寫已有值。改派為改 owner 的管理動作。改派的通用規則（理由分類五值必填、五要素留痕、候選人以 Role 模組權限篩選、全公司範圍、改派不改狀態）沿用 wiki [業務主管](../../../memory/Sens_wiki/wiki/erp/03-roles/業務主管.md) § 改派接單業務。
 
 **與認領的區分**：本改派針對 `consultant_id` **已有值**（已認領）的諮詢單；`consultant_id` 為空時應走「認領 / 代為認領」（見 § Requirement: 諮詢人員認領），不走改派。
 
@@ -708,8 +706,6 @@ v1.10 spec § 諮詢結束做大貨 → 需求單成交轉一般訂單情境保�
 - **GIVEN** 諮詢單 `status ∈ {已轉需求單, 完成諮詢, 已取消}`
 - **WHEN** 業務主管開啟該諮詢單詳情頁
 - **THEN** 「改派負責人」入口 SHALL disabled
-
----
 
 ### Requirement: 諮詢前置流程端到端規則
 
