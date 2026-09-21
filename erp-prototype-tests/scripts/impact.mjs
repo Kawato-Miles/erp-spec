@@ -50,7 +50,7 @@ for (const d of e2eDirs) for (const f of readdirSync(path.join(e2eRoot, d))) if 
 
 console.log(`erp 改動的 prototype 檔案：${proto.length} 個；模組：${[...modules].join('、') || '無'}`);
 if (mockChanged) console.log('★ 動到 mock 或 MOCK-DATA-CHAIN：先確認 MOCK-DATA-CHAIN 已改，再檢查引用該鏈編號的測試。');
-if (modules.has('__scaffold__')) console.log('★ 動到腳手架（_lib／_components／layout）：影響全站，跑全套。');
+if (modules.has('__scaffold__')) console.log('★ 動到腳手架（_lib／_components／layout）：影響全站，提交前就跑全套 npm test。');
 
 const runDirs = new Set();
 const specHits = new Map();
@@ -69,4 +69,5 @@ console.log('  npm run test:smoke');
 for (const d of [...runDirs].sort()) console.log(`  npm run test:module -- tests/e2e/${d}`);
 console.log('\n引用到這些模組路由的測試檔（改介面或動線時逐檔看）：');
 for (const [f, mods] of [...specHits].sort()) console.log(`  ${f}  ←  ${[...mods].join('、')}`);
-console.log('\n提交前：npm test（全套）。若上面清單為空且未改任何測試，commit 訊息須寫明「無測試影響」的理由。');
+console.log('\n提交前：上面的 smoke 加影響章通過即可。全套 npm test 留到分支合併回 develop 或開 PR 前跑一次（判「影響全站」時例外，提交前就跑）。');
+console.log('若上面清單為空且未改任何測試，commit 訊息須寫明「無測試影響」的理由。');
