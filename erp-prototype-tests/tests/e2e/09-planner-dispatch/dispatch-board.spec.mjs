@@ -86,15 +86,18 @@ test('9.7 工廠總覽待排區顯示印件內部完成日（原編號 81）', a
   await expect(page.getByText('待排區（已交付產線、未入工作包）')).toBeVisible();
 });
 
-// 本欄顯示印件的「內部完成日」（預計出貨日 − 1 天 − 急件凍結天數）。待排區只列鏈三 WO-2026-0815
-// 的四筆待接收任務（package_id 為空，見 MOCK-DATA-CHAIN.md），無法換其他鏈驗證。
-// production-floor/_lib/mock-data.js 的 print_item_delivery_date 為 2026-10-04（印件 PI-2026-0815
-// 預計出貨日 2026-10-05 − 1 天，一般件），與 print-items、work-orders 兩模組的 delivery_date 一致。
+// 本欄顯示印件的「印件內部完成日」＝未扣急件內部完成日扣掉急件凍結天數（工作天）。待排區只列
+// 鏈三 WO-2026-0815 的四筆待接收任務（package_id 為空，見 MOCK-DATA-CHAIN.md），無法換其他鏈驗證。
+// PI-2026-0815 為一般件（凍結 0 天），未扣值與扣後同為 2026-10-02，故合併格式只印一組日期；
+// production-floor/_lib/mock-data.js 的 print_item_delivery_date 與 print-items、work-orders
+// 兩模組的 delivery_date 一致。
 test('9.7（補）待排區印件內部完成日欄位取值正確', async ({ page }) => {
   await openAs(page, '生管', '/production-floor/schedule');
   const table = page.locator('.ant-table').last();
   const row = table.locator('tr', { hasText: 'WO-2026-0815' }).first();
-  await expect(row.getByText('2026-10-04')).toBeVisible();
+  await expect(row.getByText('2026-10-02', { exact: true })).toBeVisible();
+  // 一般件不加括號：未扣值與扣後同一天時只印一組日期
+  await expect(row.getByText('未扣急件')).toHaveCount(0);
 });
 
 test('9.8 派工視窗上方列出這次要派的任務內容（原編號 82）', async ({ page }) => {

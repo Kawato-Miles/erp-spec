@@ -88,7 +88,7 @@ export async function pickDate(input, value) {
 
 /**
  * 業務在需求單列表建一張新單頭並進入詳情頁。回傳新單號，操作結束時已在詳情頁。
- * 單頭已無任何交期欄——交期的唯一事實在印件層的「預計出貨日」，逐列手填、無預設值。
+ * 單頭已無任何交期欄——交期鏈的起點是印件層的「未扣急件內部完成日」，逐列手填、無預設值。
  */
 export async function createQuoteHeader(
   page,
@@ -124,12 +124,20 @@ export async function createQuoteHeader(
 /**
  * 在詳情頁新增一筆印件項目。difficulty／unitPrice／costEstimate 為 null 時該欄留空
  * （用於測試「缺漏即擋下轉換」）。
- * orderDueDate 選填：不傳＝維持空白（欄位本來就沒有預設值，覆蓋「這件還沒談定交期」的情境）；
- * 傳字串＝填成該日期。
+ * undeductedInternalDueDate 選填：不傳＝維持空白（欄位本來就沒有預設值，覆蓋「這件還沒談定
+ * 交期」的情境）；傳字串＝填成該日期。
  */
 export async function addItem(
   page,
-  { name, productionType = '大貨', quantity = '100', difficulty = 3, unitPrice, costEstimate, orderDueDate },
+  {
+    name,
+    productionType = '大貨',
+    quantity = '100',
+    difficulty = 3,
+    unitPrice,
+    costEstimate,
+    undeductedInternalDueDate,
+  },
 ) {
   const panel = drawer(page);
   await clickOpen(button(page, '新增印件'), panel.getByLabel('項目名稱'));
@@ -141,7 +149,9 @@ export async function addItem(
   if (costEstimate != null) {
     await panel.getByLabel('成本估算（未稅）').fill(String(costEstimate));
   }
-  if (orderDueDate) await pickDate(panel.getByLabel('預計出貨日'), orderDueDate);
+  if (undeductedInternalDueDate) {
+    await pickDate(panel.getByLabel('未扣急件內部完成日'), undeductedInternalDueDate);
+  }
   await button(panel, '確認').click();
   await waitModalsClosed(page);
   await expect(page.getByText(name, { exact: true }).first()).toBeVisible();

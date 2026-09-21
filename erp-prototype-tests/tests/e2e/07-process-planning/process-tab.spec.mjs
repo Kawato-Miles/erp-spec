@@ -69,19 +69,19 @@ test('7.3 參考完稿圖唯讀，工單上不再上傳完稿（原編號 70）'
   // 工單自身的欄位表不含製程說明與品檢需求（兩欄的家在印件層）：先在這張卡上釘死沒有，
   // 後面再到印件基本資訊面板取值，才不會出現「工單留了一份舊值」也一樣通過的情形
   const workOrderInfo = panelBlock(page, '工單資訊');
-  await expect(workOrderInfo).toContainText('預計完工日');
+  await expect(workOrderInfo).toContainText('工單預排完成日');
   await expect(workOrderInfo).not.toContainText('製程說明');
   await expect(workOrderInfo).not.toContainText('品檢需求');
   await expandPanel(page, '印件檔案');
   await expect(page.getByText('審稿後印件檔')).toBeVisible();
 
-  // 編輯工單資訊抽屜分三段（公司對照表 C7）：確樣需求、製程說明、品檢需求。預計完工日不在裡面
-  // ——它是旗下生產任務預計完成日的最大值，唯讀衍生（見 7.12）。
+  // 編輯工單資訊抽屜分三段（公司對照表 C7）：確樣需求、製程說明、品檢需求。工單預排完成日不在裡面
+  // ——它是旗下生產任務任務預計完成日的最大值，唯讀衍生（見 7.12）。
   // 製程說明與品檢需求的值仍寫回印件層、工單不存副本（見 7.25），只有編輯入口收在這一支抽屜裡；
   // 也沒有上傳完稿檔的入口（上傳檔案存的是印務自己的工單附件，是另一顆獨立按鈕）
   await page.getByRole('button', { name: /編輯$/ }).first().click();
   const drawer = page.locator('.ant-drawer-body');
-  await expect(drawer).not.toContainText('預計完工日');
+  await expect(drawer).not.toContainText('工單預排完成日');
   await expect(drawer).toContainText('確樣需求');
   await expect(drawer).toContainText('製程說明');
   await expect(drawer).toContainText('品檢需求');
@@ -292,43 +292,47 @@ async function dragFirstRowDown(page, drawer) {
     await page.mouse.up();
     await expect(rows.first()).toContainText('DM 四色雙面印刷', { timeout: 2000 });
   }).toPass({ timeout: 30000 });
+  // 放開之後把游標移開被拖的那一列：停在原地時 dnd-kit 會把緊接著的第一次點擊當成拖曳的尾巴
+  // 吃掉，側板的「確定」會按不動（真人操作時游標本來就會移到按鈕上，不會遇到這件事）
+  await page.mouse.move(5, 5);
+  await page.waitForTimeout(300);
 }
 
-test('7.12 預計完成日純手填，工單預計完工日取最大值（原編號 164）', async ({ page }) => {
+test('7.12 任務預計完成日純手填，工單預排完成日取最大值（原編號 164）', async ({ page }) => {
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0901');
 
-  // 新增一筆任務時預計完成日為空，不帶任何系統推算值
+  // 新增一筆任務時任務預計完成日為空，不帶任何系統推算值
   await page.getByRole('button', { name: '新增生產任務' }).click();
   await pickBomRow(page, { tab: '工序', keyword: '平版印刷' });
-  await expect(formField(page, '預計完成日').locator('input')).toHaveValue('');
+  await expect(formField(page, '任務預計完成日').locator('input')).toHaveValue('');
   await taskForm(page).getByRole('button', { name: '取消' }).click();
   await expect(taskForm(page)).toHaveCount(0);
 
-  // 全部任務都不填時，工單資訊的預計完工日為空
+  // 全部任務都不填時，工單資訊的工單預排完成日為空
   await expandPanel(page, '工單資訊');
   const info = page
     .locator('th.ant-descriptions-item-label')
-    .filter({ hasText: '預計完工日' })
+    .filter({ hasText: '工單預排完成日' })
     .locator('xpath=following-sibling::td[1]');
   await expect(info).toBeVisible();
   await expect(info).toContainText('－');
 
-  // 填其中兩筆後，工單預計完工日等於已填者的最大值
+  // 填其中兩筆後，工單預排完成日等於已填者的最大值
   await fillTaskEndDate(page, '雪銅紙 150g 菊全', '2026-09-12');
   await fillTaskEndDate(page, 'DM 四色雙面印刷', '2026-09-18');
   await expect(info).toContainText('2026-09-18');
 
-  // 把最晚那一筆改早，工單預計完工日即時重算（改任務就是改工單的完工日，沒有第二個入口）
+  // 把最晚那一筆改早，工單預排完成日即時重算（改任務就是改工單的預排完成日，沒有第二個入口）
   await fillTaskEndDate(page, 'DM 四色雙面印刷', '2026-09-15');
   await expect(info).toContainText('2026-09-15');
 
-  // 編輯工單資訊側板沒有預計完工日欄：這個日期唯讀，要改就改任務的預計完成日
+  // 編輯工單資訊側板沒有工單預排完成日欄：這個日期唯讀，要改就改任務的任務預計完成日
   // 工單資訊卡標題列的編輯鈕（頁面上第一顆「編輯」）
   await page.getByRole('button', { name: /編輯$/ }).first().click();
   const drawer = page.locator('.ant-drawer-content');
   await expect(drawer.getByText('確樣需求')).toBeVisible();
-  await expect(drawer).not.toContainText('預計完工日');
+  await expect(drawer).not.toContainText('工單預排完成日');
   await expect(drawer.getByPlaceholder('留空＝取任務預計完成日的最大值')).toHaveCount(0);
   await drawer.getByRole('button', { name: '關閉' }).click();
   await expect(info).toContainText('2026-09-15');
@@ -338,7 +342,7 @@ test('7.12 預計完成日純手填，工單預計完工日取最大值（原編
 async function fillTaskEndDate(page, taskName, date) {
   const row = taskRows(page).filter({ hasText: taskName }).first();
   await row.getByRole('button', { name: '編輯' }).click();
-  const input = formField(page, '預計完成日').locator('input');
+  const input = formField(page, '任務預計完成日').locator('input');
   await input.fill(date);
   await page.keyboard.press('Enter');
   await taskForm(page).getByRole('button', { name: '儲存' }).click();
@@ -348,48 +352,48 @@ async function fillTaskEndDate(page, taskName, date) {
 // 7.23 起點：鏈五 WO-2026-0901（草稿、印務登打中），所屬印件 PI-2026-0901 的內部完成日為
 // 2026-09-24。超期只提示不擋：規則正本 wiki [[交期鏈]]（Miles 2026-09-11 拍板），判定函式在
 // work-orders/_lib/task-due-date-warning.js，納入與排除哪些任務由 7.24 純函式驗算。
-test('7.23 生產任務的預計完成日晚於工單內部完成日時軟提示，不擋存檔', async ({ page }) => {
+test('7.23 生產任務的任務預計完成日晚於印件內部完成日時軟提示，不擋存檔', async ({ page }) => {
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0901');
 
-  // 既有四筆任務的預計完成日皆未填，清單上沒有任何超期標示
-  await expect(page.getByText('超出內部完成日')).toHaveCount(0);
+  // 既有四筆任務的任務預計完成日皆未填，清單上沒有任何超期標示
+  await expect(page.getByText('超出印件內部完成日')).toHaveCount(0);
 
-  // 新增一筆裝訂任務，預計完成日填 2026-09-28（晚於內部完成日 2026-09-24 四天）
+  // 新增一筆裝訂任務，任務預計完成日填 2026-09-28（晚於印件內部完成日 2026-09-24）
   await page.getByRole('button', { name: '新增生產任務' }).click();
   await pickBomRow(page, { tab: '裝訂', keyword: '騎馬釘' });
   await formField(page, '印件部位').locator('input').fill('內頁');
   await formField(page, '目的站點').locator('.ant-select').click();
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('Enter');
-  const endDate = formField(page, '預計完成日').locator('input');
+  const endDate = formField(page, '任務預計完成日').locator('input');
   await endDate.fill('2026-09-28');
   await page.keyboard.press('Enter');
   await switchFormTab(page, '數量與放損');
   await formField(page, '預計生產').locator('input').fill('3000');
   await taskForm(page).getByRole('button', { name: '新增任務' }).click();
 
-  // 存檔照樣成功（表單關閉、任務進清單），另出現一句提示寫明晚於內部完成日、已存檔
+  // 存檔照樣成功（表單關閉、任務進清單），另出現一句提示寫明晚於印件內部完成日、已存檔
   await expect(taskForm(page)).toHaveCount(0);
   await expect(page.getByText(/已新增生產任務「騎馬釘裝訂」/)).toBeVisible();
   await expect(
     page.getByText(
-      /生產任務「騎馬釘裝訂」的預計完成日 2026-09-28 晚於本工單內部完成日 2026-09-24，已存檔，請自行確認排程/,
+      /生產任務「騎馬釘裝訂」的任務預計完成日 2026-09-28 晚於本工單的印件內部完成日 2026-09-24，已存檔；這張工單送出審核時會被排程硬擋擋下/,
     ),
   ).toBeVisible();
 
-  // 任務列的預計完成欄旁掛「超出內部完成日」標籤
+  // 任務列的任務預計完成日欄旁掛「超出印件內部完成日」標籤
   const taskRow = taskRows(page).filter({ hasText: '騎馬釘裝訂' }).first();
-  await expect(taskRow.getByText('超出內部完成日')).toBeVisible();
+  await expect(taskRow.getByText('超出印件內部完成日')).toBeVisible();
 
   // 改成同日 2026-09-24：標籤消失（同日不算超期）
   await setTaskEndDate(page, '騎馬釘裝訂', '2026-09-24');
-  await expect(page.getByText('超出內部完成日')).toHaveCount(0);
+  await expect(page.getByText('超出印件內部完成日')).toHaveCount(0);
   await expect(taskRow).toContainText('2026-09-24');
 
-  // 再改成早於內部完成日的 2026-09-20：一樣不標示
+  // 再改成早於印件內部完成日的 2026-09-20：一樣不標示
   await setTaskEndDate(page, '騎馬釘裝訂', '2026-09-20');
-  await expect(page.getByText('超出內部完成日')).toHaveCount(0);
+  await expect(page.getByText('超出印件內部完成日')).toHaveCount(0);
   await expect(taskRow).toContainText('2026-09-20');
 });
 
@@ -397,7 +401,7 @@ test('7.23 生產任務的預計完成日晚於工單內部完成日時軟提示
 async function setTaskEndDate(page, taskName, date) {
   const row = taskRows(page).filter({ hasText: taskName }).first();
   await row.getByRole('button', { name: '編輯' }).click();
-  const input = formField(page, '預計完成日').locator('input');
+  const input = formField(page, '任務預計完成日').locator('input');
   await input.fill(date);
   await page.keyboard.press('Enter');
   await taskForm(page).getByRole('button', { name: '儲存' }).click();
@@ -567,4 +571,74 @@ test('7.34 生產任務頁籤在 1440 與 1600 寬都不出現橫向捲軸', asy
     expect(diffs.length).toBeGreaterThan(0);
     for (const diff of diffs) expect(diff).toBeLessThanOrEqual(1);
   }
+});
+
+test('7.35 生產任務表的欄寬與展開列依內容配比，兩個事實時間只顯示日期', async ({ page }) => {
+  // 起點資料：鏈四 WO-2026-0820（九筆任務、五個部位；書芯印刷首筆有效報工 2026-08-27 15:00、
+  // 達標報工 2026-08-28 16:30）
+  // 期望值取自 Miles 2026-09-22 指示：欄寬依內容、展開列欄名依內容、兩個事實時間只顯示日期
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openAs(page, '印務', '/work-orders');
+  await openWorkOrder(page, 'WO-2026-0820');
+  await expect(taskRows(page).first()).toBeVisible();
+
+  // 主表欄寬依內容分配：任務欄最寬，狀態與交付狀態兩個標籤欄明顯窄於它。
+  // 欄名需完全相符——「任務」與「任務預計完成日」兩欄都含「任務」二字
+  const headWidth = async (title) => {
+    const th = page
+      .locator('.ant-table-thead th')
+      .filter({ has: page.getByText(title, { exact: true }) })
+      .first();
+    return Math.round((await th.boundingBox()).width);
+  };
+  const taskWidth = await headWidth('任務');
+  for (const narrow of ['狀態', '交付狀態', '前置']) {
+    expect(taskWidth).toBeGreaterThan(await headWidth(narrow));
+  }
+  // 設備／承作次之：比任務欄窄、比狀態欄寬
+  const equipWidth = await headWidth('設備／承作');
+  expect(equipWidth).toBeLessThan(taskWidth);
+  expect(equipWidth).toBeGreaterThan(await headWidth('狀態'));
+
+  // 兩個寬度下都不出現橫向捲軸
+  for (const width of [1440, 1600]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect(taskRows(page).first()).toBeVisible();
+    const diffs = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('.ant-table-content, .ant-table-body')).map(
+        (el) => el.scrollWidth - el.clientWidth,
+      ),
+    );
+    for (const diff of diffs) expect(diff).toBeLessThanOrEqual(1);
+  }
+
+  // 展開「書芯印刷（單黑雙面）」：欄名寬度依內容配，不是每一格同寬
+  await taskRows(page)
+    .filter({ hasText: '書芯印刷' })
+    .first()
+    .locator('.ant-table-row-expand-icon')
+    .click();
+  const expandedRow = page.locator('tr.ant-table-expanded-row').first();
+  const labelWidths = await expandedRow
+    .locator('.ant-descriptions-item-label')
+    .evaluateAll((cells) => cells.map((cell) => Math.round(cell.getBoundingClientRect().width)));
+  expect(labelWidths.length).toBeGreaterThan(5);
+  // 至少三種不同寬度，且最寬者明顯寬過最窄者——平均切時這兩個條件都不成立
+  expect(new Set(labelWidths).size).toBeGreaterThanOrEqual(3);
+  expect(Math.max(...labelWidths)).toBeGreaterThan(Math.min(...labelWidths) * 1.3);
+
+  // 兩個事實時間只顯示日期，不帶時分
+  const valueOf = async (label) => {
+    const cell = expandedRow
+      .locator(
+        `xpath=.//span[normalize-space(.)="${label}"]/ancestor::th[1]/following-sibling::td[1]`,
+      )
+      .first();
+    return (await cell.innerText()).trim();
+  };
+  expect(await valueOf('任務實際開工')).toBe('2026-08-27');
+  expect(await valueOf('任務實際完成日')).toBe('2026-08-28');
+
+  // 報工紀錄卡的時間戳照舊帶到分
+  await expect(expandedRow).toContainText('2026-08-28 16:30');
 });

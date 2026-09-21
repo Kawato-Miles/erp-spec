@@ -51,6 +51,11 @@ test('8.9 送審防呆：至少要有一筆任務計入完成度（原編號 172
 });
 
 test('8.2 印務主管核可製程，外包任務同時自動產生派單（原編號 4）', async ({ page }) => {
+  // 已知衝突（2026-09-22 全鏈核對發現，未自行調和）：本情境要核可的 WO-2026-0906，在 mock 上
+  // 同時是「核可硬擋」的具名樣本（旗下局部上光的任務預計完成日 2026-09-24 晚於印件內部完成日
+  // 2026-09-18，見情境 7.30／7.31 與 MOCK-DATA-CHAIN.md § 鏈外測試資料），核可必定被擋下。
+  // 全 mock 只有這一張含外包任務的待審核工單，換不了起點；製程確認中的工單印務也改不了任務日期。
+  // 處置待 Miles 裁決：另造一張含外包任務、排程正常的待審核工單，或本情境改走退回後重送的路徑。
   await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0906');
 
   await page.getByRole('button', { name: '核可製程' }).click();
@@ -78,14 +83,16 @@ test('8.4 印務主管在待審核工單列表逐列核可或退回（原編號 
   await expect(rows.nth(1)).toContainText('WO-2026-0907');
   await expect(rows.nth(1)).toContainText('2026-09-04 10:15');
 
-  // 母表十欄（含確樣需求、顏色費用合計與預估成本合計三格）
+  // 母表十二欄（含印件內部完成日、工單預排完成日、確樣需求、顏色費用合計與預估成本合計）
   const headers = page.locator('thead.ant-table-thead th');
-  await expect(headers).toHaveCount(11); // 展開鍵一欄 ＋ 十欄（含確樣需求）
+  await expect(headers).toHaveCount(13); // 展開鍵一欄 ＋ 十二欄
   for (const title of [
     '工單編號',
     '印件',
     '訂單',
     '送審印務',
+    '印件內部完成日',
+    '工單預排完成日',
     '確樣需求',
     '送審時間',
     '目標數量',
@@ -96,10 +103,11 @@ test('8.4 印務主管在待審核工單列表逐列核可或退回（原編號 
     await expect(page.locator('thead.ant-table-thead th', { hasText: title }).first()).toBeVisible();
   }
 
-  // WO-2026-0907 的顏色費用合計為 CMYK 四色的 1,520，預估成本合計為 17,623
+  // WO-2026-0907 的顏色費用合計為 CMYK 四色的 1,520；預估成本合計為兩筆任務小計
+  // 2,949 ＋ 5,054 ＝ 8,003 加上顏色費用 1,520 ＝ 9,523
   const anchorRow = rows.filter({ hasText: 'WO-2026-0907' }).first();
   await expect(anchorRow).toContainText('NT$ 1,520');
-  await expect(anchorRow).toContainText('NT$ 17,623');
+  await expect(anchorRow).toContainText('NT$ 9,523');
 
   // 子表預設收合，展開兩張工單才看得到生產任務
   await expect(page.getByText('雪銅紙 150g 菊全')).toHaveCount(0);
@@ -109,6 +117,7 @@ test('8.4 印務主管在待審核工單列表逐列核可或退回（原編號 
   await expect(page.getByText('局部上光').first()).toBeVisible();
 
   // 核可 WO-2026-0906：確認框載明將自動產生的派單張數
+  // 已知衝突（同 8.2）：這張單同時是核可硬擋的具名樣本，核可必定被擋下；處置待 Miles 裁決
   await page
     .locator('tr', { hasText: 'WO-2026-0906' })
     .first()

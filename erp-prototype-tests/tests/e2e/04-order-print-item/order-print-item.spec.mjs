@@ -66,16 +66,20 @@ test('4.3 購買數量到訂單完成或已取消才鎖定，製作段仍可改�
   await page.getByRole('tab', { name: /訂單項目/ }).click();
   const row2 = page.locator('tr', { hasText: 'PI-2026-0601' });
   await expect(row2.getByRole('button', { name: '編輯印件' })).toHaveCount(0);
-  // 清單剛重繪時第一次點擊可能落在尚未接上事件的節點，重試到網址換掉為止
-  await expect(async () => {
-    await row2.getByRole('button', { name: '檢視印件' }).click();
-    await expect(page).toHaveURL(/\/print-items\/detail\/?\?id=pi-2026-0601/, { timeout: 3000 });
-  }).toPass({ timeout: 20000 });
-  // 唯讀顯示：Descriptions 表格版式，標籤 <th> 後緊接值 <td>，兩者純文字、無任何輸入框
+  // 清單剛重繪時第一次點擊可能落在尚未接上事件的節點，重試到印件詳情頁的內容出現為止。
+  // 判定用頁面內容不用網址：詳情頁以 router.push 開啟，網址可能晚一步才更新（見 README 執行注意事項）
   const qtyValue = page
     .locator('th.ant-descriptions-item-label')
     .filter({ hasText: /^購買數量$/ })
     .locator('xpath=following-sibling::td[1]');
+  // 訂單項目分頁剛切過來時整張表會再重繪一次，先等這一列穩定再點，免得點在被換掉的節點上
+  await expect(row2.getByRole('button', { name: '檢視印件' })).toBeVisible();
+  await page.waitForTimeout(500);
+  await expect(async () => {
+    await row2.getByRole('button', { name: '檢視印件' }).click();
+    await expect(qtyValue).toBeVisible({ timeout: 5000 });
+  }).toPass({ intervals: [1000, 2000, 4000], timeout: 40000 });
+  // 唯讀顯示：Descriptions 表格版式，標籤 <th> 後緊接值 <td>，兩者純文字、無任何輸入框
   await expect(qtyValue).toHaveText('5,000');
 });
 
@@ -131,20 +135,25 @@ test('4.5 業務在印件上選急件選項，系統推出印件層內部完成�
 
   await page.locator('.ant-select:has(#urgent_option_id)').click();
   await page.locator('.ant-select-dropdown').last().getByText(/三天急件/).click();
-  // 側板內即時預覽：內部完成日＝本印件預計出貨日 2026-09-15 − 1 天 − 3 天（急件凍結天數）＝ 2026-09-11
-  // 該欄無 name（唯讀推導，非表單欄位），以所在 Form.Item 容器定位其內的 input
-  const dueDatePreview = page.locator('.ant-form-item', { hasText: '內部完成日' }).locator('input');
-  await expect(dueDatePreview).toHaveValue('2026-09-11');
+  // 側板內即時預覽：印件內部完成日＝未扣急件內部完成日 2026-09-14（一）往前數三個工作天
+  //（9/11、9/10、9/9）＝ 2026-09-09；印件預計交期為其下一個工作天 2026-09-10。
+  // 兩欄皆為唯讀推導、非表單欄位，以所在 Form.Item 容器定位其內的 input
+  const dueDatePreview = page
+    .locator('.ant-form-item', { hasText: '印件內部完成日' })
+    .locator('input');
+  await expect(dueDatePreview).toHaveValue('2026-09-09');
 
   await page.getByRole('button', { name: '確認' }).click();
-  await expect(page.getByText(/已更新印件，內部完成日已重推導為「2026-09-11」/)).toBeVisible();
+  await expect(
+    page.getByText(/印件內部完成日重算為「2026-09-09」、印件預計交期已依新的印件內部完成日重算為「2026-09-10」/),
+  ).toBeVisible();
 
-  // 清單的急件選項欄顯示紅標、內部完成日欄同步顯示新值
-  await expect(row.getByText('三天急件（提前 3 天）')).toBeVisible();
-  await expect(row.getByText('2026-09-11')).toBeVisible();
+  // 清單的急件選項欄顯示紅標、印件內部完成日欄同步顯示新值（標籤帶凍結的天數，單位為工作天）
+  await expect(row.getByText('三天急件（提前 3 個工作天）')).toBeVisible();
+  await expect(row.getByText('2026-09-09')).toBeVisible();
 });
 
-test('4.6 改急件選項或印件預計出貨日只留痕與同步，不通知（原編號 166）', async ({ page }) => {
+test('4.6 改急件選項或未扣急件內部完成日只留痕與同步，不通知（原編號 166）', async ({ page }) => {
   // 前置：與 4.5 同一動作，改 PI-2026-0710 為三天急件（本測試獨立於 4.5 重跑一次）
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=printItems');
   const row = page.locator('tr', { hasText: 'PI-2026-0710' });
@@ -159,10 +168,16 @@ test('4.6 改急件選項或印件預計出貨日只留痕與同步，不通知�
   // 活動紀錄留一筆：改前改後選項與天數、重推導出的內部完成日、同步了哪些工單、未發出任何通知（同頁切 Tab，不算離頁）
   await page.getByRole('tab', { name: /活動紀錄/ }).click();
   const timeline = page.locator('.ant-timeline');
-  await expect(timeline.getByText(/印件內部完成日重推導：PI-2026-0710/).first()).toBeVisible();
-  await expect(timeline.getByText(/急件選項由「一般件」（0 天）改為「三天急件（提前 3 天）」/)).toBeVisible();
-  await expect(timeline.getByText(/內部完成日重推導為「2026-09-11」/)).toBeVisible();
-  await expect(timeline.getByText(/已同步 WO-2026-0710 的內部完成日/)).toBeVisible();
+  await expect(timeline.getByText(/印件交期欄變更：PI-2026-0710/).first()).toBeVisible();
+  await expect(
+    timeline.getByText(/急件選項由「一般件」（0 個工作天）改為「三天急件（提前 3 個工作天）」（3 個工作天）/),
+  ).toBeVisible();
+  await expect(
+    timeline.getByText(/印件內部完成日重算為「2026-09-09」、印件預計交期為「2026-09-10」/),
+  ).toBeVisible();
+  await expect(
+    timeline.getByText(/已同步 WO-2026-0710 的印件內部完成日與印件預計交期/),
+  ).toBeVisible();
   await expect(timeline.getByText(/本次變更未發出任何通知/)).toBeVisible();
 
   // 印務的通知鈴沒有新增這一筆通知
@@ -172,27 +187,31 @@ test('4.6 改急件選項或印件預計出貨日只留痕與同步，不通知�
   await expect(page.getByText(/急件選項改為/)).toHaveCount(0);
   await page.keyboard.press('Escape');
 
-  // 工單列表：非終態工單 WO-2026-0710 的內部完成日同步為 2026-09-11、所屬印件旁出現紅色急件標籤
+  // 工單列表：非終態工單 WO-2026-0710 的印件內部完成日同步為 2026-09-09、所屬印件旁出現紅色急件標籤。
+  // 合併格式：有扣減時括號帶未扣值 2026-09-14
   await gotoInApp(page, '/work-orders');
   const woRow = page.locator('tr', { hasText: 'WO-2026-0710' });
   await expect(woRow.getByText('急件', { exact: true })).toBeVisible();
-  await expect(woRow.getByText('2026-09-11')).toBeVisible();
+  await expect(woRow).toContainText('2026-09-09（未扣急件 2026-09-14）');
 
   // 工單詳情頁首同樣有急件標示（點工單編號連結進站內導頁）
   await woRow.locator('a', { hasText: 'WO-2026-0710' }).click();
   await expect(
-    page.locator('h4', { hasText: 'WO-2026-0710' }).locator('..').getByText(/急件・三天急件提前 3 天/),
+    page
+      .locator('h4', { hasText: 'WO-2026-0710' })
+      .locator('..')
+      .getByText(/急件・三天急件提前 3 個工作天/),
   ).toBeVisible();
 });
 
-test('4.7 新增印件收齊七項必填、預計出貨日選填且無預設值', async ({ page }) => {
+test('4.7 新增印件收齊七項必填、未扣急件內部完成日選填且無預設值', async ({ page }) => {
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=printItems');
   await page.getByRole('button', { name: '新增印件' }).click();
   const modal = page.locator('.ant-modal-content');
   await expect(modal.getByText('印件名稱')).toBeVisible();
 
-  // 預計出貨日無預設值：訂單層已無交期可帶，開啟當下就是空白
-  await expect(page.locator('#order_due_date')).toHaveValue('');
+  // 未扣急件內部完成日無預設值：訂單層已無交期可帶，開啟當下就是空白
+  await expect(page.locator('#undeducted_internal_due_date')).toHaveValue('');
 
   // 七項必填任一為空擋下存檔：先只留難易度空白
   await page.getByLabel('印件名稱').fill('海報加印版');
@@ -222,11 +241,11 @@ test('4.7 新增印件收齊七項必填、預計出貨日選填且無預設值'
   await expect(page.getByText(/已新增印件/)).toBeVisible();
   const newRow = page.locator('tr', { hasText: '海報加印版' });
   await expect(newRow).toBeVisible();
-  // 預計出貨日與內部完成日兩欄皆留空：整列不出現任何日期
+  // 未扣急件內部完成日留空時，推得的印件內部完成日與印件預計交期同為空：整列不出現任何日期
   await expect(newRow).not.toContainText(/\d{4}-\d{2}-\d{2}/);
 });
 
-test('4.8 複製加開印件購買數量與預計出貨日留空、規格側欄位帶入', async ({ page }) => {
+test('4.8 複製加開印件購買數量與未扣急件內部完成日留空、規格側欄位帶入', async ({ page }) => {
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=printItems');
   await page.getByRole('button', { name: '複製原印件規格加開' }).click();
   const modal = page.locator('.ant-modal-content');
@@ -235,9 +254,9 @@ test('4.8 複製加開印件購買數量與預計出貨日留空、規格側欄�
   // 規格側欄位自來源印件 PI-2026-0710 預填：名稱帶「（加開）」、難易度、單價
   await expect(page.locator('#name')).toHaveValue('品牌形象海報 A2（加開）');
   await expect(page.locator('#difficulty_level')).toHaveValue('3');
-  // 購買數量與預計出貨日留空（購買數量必填、預計出貨日選填）
+  // 購買數量與未扣急件內部完成日留空（購買數量必填、未扣急件內部完成日選填）
   await expect(page.locator('#ordered_qty')).toHaveValue('');
-  await expect(page.locator('#order_due_date')).toHaveValue('');
+  await expect(page.locator('#undeducted_internal_due_date')).toHaveValue('');
 
   await page.getByLabel('購買數量').fill('800');
   await modal.getByRole('button', { name: '加開印件' }).click();
@@ -246,7 +265,7 @@ test('4.8 複製加開印件購買數量與預計出貨日留空、規格側欄�
   ).toBeVisible();
 
   const newRow = page.locator('tr', { hasText: '品牌形象海報 A2（加開）' });
-  // 預計出貨日留空顯示「－」
+  // 三個交期欄皆留空，顯示無值符號「－」
   await expect(newRow.locator('td', { hasText: '－' }).first()).toBeVisible();
 
   // 包裝備註（規格側欄位）自來源印件帶入，於印件詳情頁確認
@@ -258,8 +277,8 @@ test('4.8 複製加開印件購買數量與預計出貨日留空、規格側欄�
   await expect(packagingValue).toHaveText('每 100 張一疊');
 });
 
-test('4.9 印件已棄用後預計出貨日唯讀；訂單完成後印件預計出貨日唯讀', async ({ page }) => {
-  // 一、印件已棄用後預計出貨日唯讀（訂單仍非終態）：鏈五 ORD-2026-0901／PI-2026-0901
+test('4.9 印件已棄用後交期欄唯讀；訂單完成後印件交期欄唯讀', async ({ page }) => {
+  // 一、印件已棄用後交期欄唯讀（訂單仍非終態）：鏈五 ORD-2026-0901／PI-2026-0901
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0901&tab=printItems');
   const row = page.locator('tr', { hasText: 'PI-2026-0901' });
   await row.getByRole('button', { name: '取消製作' }).click();
@@ -268,17 +287,18 @@ test('4.9 印件已棄用後預計出貨日唯讀；訂單完成後印件預計�
 
   await row.getByRole('button', { name: '編輯印件' }).click();
   const drawer = page.locator('.ant-drawer-content').last();
-  await expect(drawer.locator('#order_due_date')).toBeDisabled();
+  await expect(drawer.locator('#undeducted_internal_due_date')).toBeDisabled();
+  await expect(drawer.locator('#expected_delivery_date')).toBeDisabled();
   await drawer.getByRole('button', { name: '取消', exact: true }).click();
 
-  // 二、訂單完成後印件預計出貨日唯讀：鏈一 ORD-2026-0601（訂單完成）／PI-2026-0601
+  // 二、訂單完成後印件交期欄唯讀：鏈一 ORD-2026-0601（訂單完成）／PI-2026-0601
   await gotoInApp(page, '/orders');
   await page.getByRole('textbox', { name: /請輸入訂單編號/ }).fill('ORD-2026-0601');
   await page.keyboard.press('Enter');
   await page.locator('a', { hasText: 'ORD-2026-0601' }).first().click();
   await page.getByRole('tab', { name: /訂單項目/ }).click();
   const row2 = page.locator('tr', { hasText: 'PI-2026-0601' });
-  // 終態訂單沒有「編輯印件」入口，預計出貨日無從改起
+  // 終態訂單沒有「編輯印件」入口，交期欄無從改起
   await expect(row2.getByRole('button', { name: '編輯印件' })).toHaveCount(0);
   await expect(async () => {
     await row2.getByRole('button', { name: '檢視印件' }).click();
@@ -286,32 +306,32 @@ test('4.9 印件已棄用後預計出貨日唯讀；訂單完成後印件預計�
   }).toPass({ timeout: 20000 });
   const dueDateValue = page
     .locator('th.ant-descriptions-item-label')
-    .filter({ hasText: /^預計出貨日$/ })
+    .filter({ hasText: /^印件預計交期$/ })
     .locator('xpath=following-sibling::td[1]');
-  await expect(dueDateValue).toHaveText('2026-06-20');
+  await expect(dueDateValue).toHaveText('2026-06-22');
 });
 
 test('4.10 三條複製路徑仍帶入原值，與新增、加開的留空各走各的', async ({ page }) => {
-  // 需求單複製建單：印件項目的預計出貨日原值帶入，不清空。
-  // 起點取鏈一 Q-20260601-01（印件「會員卡（客製燙金）」預計出貨日 2026-06-20）。
+  // 需求單複製建單：印件項目的未扣急件內部完成日原值帶入，不清空。
+  // 起點取鏈一 Q-20260601-01（印件「會員卡（客製燙金）」未扣急件內部完成日 2026-06-18）。
   await openAs(page, '業務', '/quote-prototype');
   await page.getByRole('link', { name: 'Q-20260601-01' }).click();
   await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
   const sourceRow = page.locator('tr', { hasText: '會員卡（客製燙金）' });
-  await expect(sourceRow).toContainText('2026-06-20');
+  await expect(sourceRow).toContainText('2026-06-18');
 
   await page.getByRole('button', { name: '複製需求單' }).click();
   await page.locator('.ant-modal-content').getByRole('button', { name: /確\s*認/ }).click();
   await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
 
-  // 新單的印件項目預計出貨日與來源相同，複製路徑不套用「新增、加開一律留空」那條規則
+  // 新單的印件項目未扣急件內部完成日與來源相同，複製路徑不套用「新增、加開一律留空」那條規則
   const copiedRow = page.locator('tr', { hasText: '會員卡（客製燙金）' });
-  await expect(copiedRow).toContainText('2026-06-20');
+  await expect(copiedRow).toContainText('2026-06-18');
 
-  // 對照：同一張新單上按「新增印件」，預計出貨日是空白的
+  // 對照：同一張新單上按「新增印件」，未扣急件內部完成日是空白的
   await page.getByRole('button', { name: '新增印件' }).click();
   const itemDrawer = page.locator('.ant-drawer-content').last();
-  await expect(itemDrawer.locator('#order_due_date')).toHaveValue('');
+  await expect(itemDrawer.locator('#undeducted_internal_due_date')).toHaveValue('');
   await itemDrawer.getByRole('button', { name: '取消', exact: true }).click();
 });
 

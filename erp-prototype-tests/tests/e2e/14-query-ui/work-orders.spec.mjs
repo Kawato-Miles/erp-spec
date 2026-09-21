@@ -386,8 +386,9 @@ test('14.23 工單資訊的欄序照公司對照表', async ({ page }) => {
     '每份印件生產數量',
     '目標數量',
     '生產數量（報工累計）',
-    '預計完工日',
-    '實際完工日',
+    '印件預計交期',
+    '工單預排完成日',
+    '工單實際完成日',
     '確樣需求',
   ]);
 });
@@ -445,7 +446,7 @@ test('14.25 工單詳情三張資訊卡預設收合，點標題列展開', async
   await expect(panelBlock(page, '工單資訊')).toHaveCount(0);
 });
 
-test('14.26 工單摘要卡每一格都留副標行', async ({ page }) => {
+test('14.26 工單摘要卡每一格都留副標行，印件內部完成日的未扣值收在副標', async ({ page }) => {
   // 起點資料：鏈二 WO-2026-0710（印務身分看得到預估利潤率那一格）
   // 期望值取自 Miles 2026-09-21 指示（摘要卡改用共用統計卡元件帶副標的樣式）
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0710');
@@ -475,4 +476,30 @@ test('14.26 工單摘要卡每一格都留副標行', async ({ page }) => {
     tops.push(Math.round((await count.boundingBox()).y));
   }
   expect(new Set(tops).size).toBe(1);
+
+  // 一般件（PI-2026-0710 未扣值與扣後同一天）：印件內部完成日那一格的副標行留白佔位
+  expect((await captionOf(page, '印件內部完成日').innerText()).trim()).toBe('');
+});
+
+// 摘要卡的格：小標在 ant-flex 裡，主值為其後第一個 div、副標行為第二個
+const cellValueOf = (page, label) =>
+  page
+    .locator(
+      `xpath=//span[normalize-space(.)="${label}"]/ancestor::div[contains(@class,"ant-flex")][1]/parent::div/following-sibling::div[1]`,
+    )
+    .first();
+const captionOf = (page, label) =>
+  page
+    .locator(
+      `xpath=//span[normalize-space(.)="${label}"]/ancestor::div[contains(@class,"ant-flex")][1]/parent::div/following-sibling::div[2]`,
+    )
+    .first();
+
+test('14.26（急件）摘要卡的印件內部完成日主值單行、未扣值在副標行', async ({ page }) => {
+  // 起點資料：鏈四 WO-2026-0820（三天急件；印件內部完成日 2026-09-04、未扣急件內部完成日 2026-09-09）
+  // 期望值取自 Miles 2026-09-22 拍板：摘要卡是合併格式的例外，主值只放扣後日期、未扣值放副標行。
+  // 摘要卡的日期一律以斜線格式呈現（YYYY/MM/DD）
+  await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0820');
+  await expect(cellValueOf(page, '印件內部完成日')).toHaveText('2026/09/04');
+  await expect(captionOf(page, '印件內部完成日')).toHaveText('未扣急件 2026/09/09');
 });

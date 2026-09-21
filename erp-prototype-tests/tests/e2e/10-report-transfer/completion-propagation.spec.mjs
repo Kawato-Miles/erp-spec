@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { gotoInApp, openAs, switchRole, taskRows } from '../_helpers.mjs';
+import { clickIntoDetail, gotoInApp, openAs, switchRole, taskRows } from '../_helpers.mjs';
 
 // 情境目錄第十章：報工向上反映鏈（工單 → 印件 → 訂單）與完成判定。
 // 起點資料：鏈三 WO-2026-0815（工單已交付、四筆任務待派工，客戶好日子烘焙坊，訂單 ORD-2026-0815）。
@@ -42,7 +42,9 @@ test('10.12 首次報工把上游三層一起推進，已收尾的不被拉回�
   // 工單本身由「工單已交付」轉「製作中」
   await switchRole(page, '印務');
   await gotoInApp(page, '/work-orders');
-  await page.getByText('WO-2026-0815', { exact: true }).click();
+  // 清單剛掛載時第一次點擊常落在尚未接上事件的節點：用共用的重試點擊進詳情，
+  // 免得後面的斷言其實還停在列表頁（列表列上同樣看得到「製作中」）
+  await clickIntoDetail(page, 'WO-2026-0815', /work-orders\/detail/);
   await expect(page.getByText('製作中').first()).toBeVisible();
 
   // 同一筆報工的時間寫入該任務的「任務實際開工」（展開生產任務列讀）：

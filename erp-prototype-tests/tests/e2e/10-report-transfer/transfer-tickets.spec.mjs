@@ -143,7 +143,7 @@ test('10.13 用建單時間查卡在搬運那一段的轉交單（原編號 118�
 
   // 清空條件後改試實際轉交日區間：只有已送達之後才有實際轉交日，
   // 該區間不會把待搬運與搬運中的卡點單（TT-20260830-003）藏起來
-  await page.getByRole('button', { name: '清空篩選' }).click();
+  await page.getByRole('button', { name: /清空/ }).click();
   const actualInputs = page.locator('.ant-col', { hasText: '實際轉交日區間' }).locator('input');
   await actualInputs.nth(0).fill('2020-01-01');
   await actualInputs.nth(1).fill('2020-01-02');

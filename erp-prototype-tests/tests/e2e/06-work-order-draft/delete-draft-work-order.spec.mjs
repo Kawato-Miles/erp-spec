@@ -95,7 +95,7 @@ test('6.11 工單的事實只有一份，兩頁看到的一定一樣（原編號
   const ownerFilter = page.locator('.ant-col').filter({ hasText: '負責印務' }).locator('.ant-select');
   await pickOption(page, ownerFilter, '蔡明修');
   await expect(rowOf(page, 'PI-2026-0904')).toBeVisible();
-  await page.getByText('清空篩選').click();
+  await page.getByRole('button', { name: /清空/ }).click();
 
   // 刪除新工單：展開列即時少一張、工單數欄同步重算（清空篩選後展開狀態仍在，不重複點展開）
   if (!(await page.locator('.ant-table-expanded-row').first().isVisible().catch(() => false))) {
@@ -113,7 +113,7 @@ test('6.11 工單的事實只有一份，兩頁看到的一定一樣（原編號
 
   // 印件層的製程說明與品檢需求同樣只有一份：印件詳情與旗下工單詳情讀的是同一筆印件事實，
   // 工單不另存一份（值為鏈七 mock 的預填內容，以部件名分段）
-  await page.getByText('清空篩選').click();
+  await page.getByRole('button', { name: /清空/ }).click();
   await openByNo(page, '促銷立牌 A1', /print-items\/detail/);
   await expect(descValue(page, '製程說明')).toHaveText(CHAIN7_PROCESS_NOTE);
   await expect(descValue(page, '品檢需求')).toHaveText(CHAIN7_QC_REQUIREMENT);
