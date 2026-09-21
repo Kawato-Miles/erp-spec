@@ -19,7 +19,7 @@ describe('5.6／5.7 工單急件標示不再引用訂單是否急件', () => {
       is_urgent: false, // 刻意放一個矛盾值：若函式誤讀外層欄位就會判成非急件
     };
     expect(isUrgentPrintItem(urgentItem)).toBe(true);
-    expect(urgentBadgeLabelOf(urgentItem)).toBe('急件・三天急件提前 3 天');
+    expect(urgentBadgeLabelOf(urgentItem)).toBe('急件・三天急件提前 3 個工作天');
 
     // 一般件（凍結天數 0）：即使外層帶 is_urgent: true 也不判成急件
     const normalItem = {

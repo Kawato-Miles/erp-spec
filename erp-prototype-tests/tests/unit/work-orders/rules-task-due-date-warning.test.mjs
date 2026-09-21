@@ -7,6 +7,7 @@ import {
   overdueTasksOf,
   taskDueDateWarningText,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/task-due-date-warning.js';
+import { scheduleBlockOf } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/_lib/delivery-chain.js';
 
 // 7.24 超期判定納入哪些任務、排除哪些任務
 // 規則正本 wiki [[交期鏈]]（Miles 2026-09-11 拍板）：生產任務的預計完成日晚於**所屬工單**的
@@ -96,17 +97,39 @@ describe('7.24 超期判定納入哪些任務、排除哪些任務', () => {
     expect(overdueTasksOf(wo).map((t) => t.name)).toEqual(['外包上光']);
   });
 
-  it('提示句寫明任務名稱、預計完成日與本工單的內部完成日，並說明已存檔', () => {
+  it('提示句寫明任務名稱、任務預計完成日與本工單的印件內部完成日，並說明已存檔', () => {
     const t = task('局部上光', '2026-09-24');
     expect(taskDueDateWarningText(t, DEADLINE)).toBe(
-      '生產任務「局部上光」的預計完成日 2026-09-24 晚於本工單內部完成日 2026-09-20，已存檔，請自行確認排程',
+      '生產任務「局部上光」的任務預計完成日 2026-09-24 晚於本工單的印件內部完成日 2026-09-20，已存檔；這張工單送出審核時會被排程硬擋擋下',
     );
     expect(taskDueDateWarningText(task('同日', DEADLINE), DEADLINE)).toBeNull();
   });
+
+  // 2.10：本提示與 § 工單排程硬擋 分工不重疊——同一組資料下軟提示標示成立（存檔成功），
+  // 硬擋在送審時另外成立。兩者比對基準相同、比對對象不同（單筆任務 vs 工單預排完成日）
+  it('軟提示標示但不擋存檔；同一張工單送出審核時由硬擋擋下', () => {
+    const wo = workOrder(DEADLINE, [task('局部上光', '2026-09-24'), task('同日完成', DEADLINE)]);
+    // 軟提示：單筆任務標示成立，且本函式不回傳任何「擋下」語意（只給提示句）
+    expect(overdueTasksOf(wo).map((t) => t.name)).toEqual(['局部上光']);
+    expect(taskDueDateWarningText(wo.tasks[0], DEADLINE)).toContain('已存檔');
+    // 硬擋：工單預排完成日 2026-09-24（四）晚於印件內部完成日 2026-09-20（日），
+    // 自 9/21 數到 9/24 共 4 個工作天
+    const block = scheduleBlockOf(wo);
+    expect(block.blocked).toBe(true);
+    expect(block.plannedEnd).toBe('2026-09-24');
+    expect(block.internalDue).toBe('2026-09-20');
+    expect(block.overWorkingDays).toBe(4);
+  });
+
+  it('全部任務皆不晚於印件內部完成日時，軟提示與硬擋同時不成立', () => {
+    const wo = workOrder(DEADLINE, [task('同日完成', DEADLINE), task('提前完成', '2026-09-18')]);
+    expect(overdueTasksOf(wo)).toEqual([]);
+    expect(scheduleBlockOf(wo).blocked).toBe(false);
+  });
 });
 
-// 鏈外 WO-2026-0906 是 mock 上的常駐樣本：外包廠局部上光預計完成日 2026-09-24，
-// 晚於內部完成日 2026-09-20。改 mock 時這條會擋下把樣本改掉的情形。
+// 鏈外 WO-2026-0906 是 mock 上的常駐樣本：外包廠局部上光的任務預計完成日 2026-09-24，
+// 晚於印件內部完成日 2026-09-18。改 mock 時這條會擋下把樣本改掉的情形。
 describe('7.24（補）mock 有一筆看得到超期標示的常駐樣本', async () => {
   const { MOCK_WORK_ORDERS } = await import(
     '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/mock-data.js'
@@ -115,7 +138,7 @@ describe('7.24（補）mock 有一筆看得到超期標示的常駐樣本', asyn
   it('WO-2026-0906 的局部上光落在超期清單裡', () => {
     const wo = MOCK_WORK_ORDERS.find((o) => o.work_order_no === 'WO-2026-0906');
     expect(wo, '找不到 WO-2026-0906').toBeTruthy();
-    expect(internalDeadlineOf(wo)).toBe('2026-09-20');
+    expect(internalDeadlineOf(wo)).toBe('2026-09-18');
     expect(overdueTasksOf(wo).map((t) => t.name)).toEqual(['局部上光']);
   });
 });
