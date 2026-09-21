@@ -54,9 +54,9 @@ test('6.4 工單改派要選理由分類，離職交接連同分享成員一起�
   await expect(assignDialog).toContainText('工單分派');
   await expect(assignDialog).toContainText('改派理由分類');
   await expect(assignDialog).toContainText('補述');
-  // 首次分派的列（WO-2026-0905 尚未指派）在這兩欄顯示「—」
+  // 首次分派的列（WO-2026-0905 尚未指派）在這兩欄顯示「－」
   const firstAssignRow = rowOf(assignDialog, 'WO-2026-0905');
-  await expect(firstAssignRow).toContainText('—');
+  await expect(firstAssignRow).toContainText('－');
 
   const reassignRow = rowOf(assignDialog, 'WO-2026-0904');
   await pickOption(page, reassignRow.locator('.ant-select').nth(0), '蔡明修');

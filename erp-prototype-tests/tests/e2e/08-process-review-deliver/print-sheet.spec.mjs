@@ -237,7 +237,7 @@ test('8.8（補）工單內部完成日為空時印據表頭印破折號', async
   await dueDateClear.evaluate((el) => el.click());
   await page.getByRole('button', { name: '確認' }).click();
   await expect(page.getByText(/已更新印件，內部完成日已重推導為「未定」/)).toBeVisible();
-  await expect(row.getByText('—').first()).toBeVisible();
+  await expect(row.getByText('－').first()).toBeVisible();
 
   await switchRoleReliable(page, '印務');
   // 目前站在訂單詳情頁（非工單詳情頁），gotoWorkOrderList／openWorkOrderFromList 假設呼叫端
@@ -254,7 +254,7 @@ test('8.8（補）工單內部完成日為空時印據表頭印破折號', async
   );
   const infoTable = page.locator('table').first();
   const dueRow = infoTable.locator('tr').filter({ hasText: '交期' }).first();
-  await expect(dueRow).toContainText('—');
+  await expect(dueRow).toContainText('－');
 });
 
 // 8.11／8.12 共用：單據表頭中某一列（備註、確樣需求、品檢需求、製程說明各跨欄一列）的值
@@ -325,7 +325,7 @@ test('8.11 同一件印件的兩張工單，紙本表頭印出同一份品檢需
 
 // 8.12 的錨值：錨例 WO-2026-0908（製程審核完成、負責印務周建宏），所屬印件 PI-2026-0801。
 // mock 的兩欄原本有值，前置先由印務在工單詳情的印件基本資訊面板清成空白（兩欄選填，清空存得了）；
-// 規格寫無值印「－」，Prototype 全站的無值符號統一用破折號「—」，本測試照畫面實際字元斷言。
+// 無值符號＝全形連字號「－」（Miles 2026-09-21 拍板，全站同一個字元），本測試照畫面實際字元斷言。
 test('8.12 印件的兩欄都沒填時，紙本表頭各印破折號且不擋下列印（新增）', async ({ page }) => {
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0908');
   await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0908' })).toBeVisible();
@@ -346,15 +346,15 @@ test('8.12 印件的兩欄都沒填時，紙本表頭各印破折號且不擋下
     page.getByRole('button', { name: '列印紙本工單' }),
     /\/work-orders\/print\/?\?id=wo-2026-0908/,
   );
-  await expect(headerRowValue(page, '品檢需求')).toHaveText('—');
-  await expect(headerRowValue(page, '製程說明')).toHaveText('—');
+  await expect(headerRowValue(page, '品檢需求')).toHaveText('－');
+  await expect(headerRowValue(page, '製程說明')).toHaveText('－');
   await expect(page.getByRole('button', { name: /^列\s*印$/ })).toBeVisible();
 });
 
 // 8.13 的錨值：WO-2026-0910（製程審核完成、負責印務蔡明修）。mock 上這張單的確樣需求未勾選、
 // 負責印務蔡明修未填聯絡電話——兩欄各印破折號、不擋下列印。
 // 期望值取自 openspec work-order § 確樣需求未勾選或電話未填時印「－」；Prototype 全站的無值符號
-// 統一用破折號「—」，本測試照畫面實際字元斷言。
+// 統一用全形連字號「－」，本測試照畫面實際字元斷言。
 test('8.13 確樣需求未勾選且負責印務未填電話時，表頭兩欄各印破折號（新增）', async ({ page }) => {
   await openAs(page, '生管', '/work-orders/detail?id=wo-2026-0910');
   await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0910' })).toBeVisible();
@@ -366,13 +366,13 @@ test('8.13 確樣需求未勾選且負責印務未填電話時，表頭兩欄各
   );
 
   // 確樣需求跨欄一列，未勾選時印破折號
-  await expect(headerRowValue(page, '確樣需求')).toHaveText('—');
+  await expect(headerRowValue(page, '確樣需求')).toHaveText('－');
 
   // 負責印務印在「印務」那一列，其聯絡電話印在「電話」那一格；未填時印破折號
   const infoTable = page.locator('table').first();
   await expect(infoTable.locator('tr').filter({ hasText: '印務' }).first()).toContainText('蔡明修');
   const phoneRow = infoTable.locator('tr').filter({ hasText: '電話' }).first();
-  await expect(phoneRow.locator('td').last()).toHaveText('—');
+  await expect(phoneRow.locator('td').last()).toHaveText('－');
 
   // 不擋下列印
   await expect(page.getByRole('button', { name: /^列\s*印$/ })).toBeVisible();

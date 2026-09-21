@@ -387,5 +387,5 @@ test('1.10 成交轉訂單印件項目預計出貨日逐件帶入、空的就留
   await expect(page.locator('tr', { hasText: '名片印件' })).toContainText('2026-09-05');
   const catalogRow = page.locator('tr', { hasText: '型錄印件' });
   await expect(catalogRow).not.toContainText('2026-09-05');
-  await expect(catalogRow.getByText('—').first()).toBeVisible();
+  await expect(catalogRow.getByText('－').first()).toBeVisible();
 });

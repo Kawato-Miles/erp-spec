@@ -246,8 +246,8 @@ test('4.8 複製加開印件購買數量與預計出貨日留空、規格側欄�
   ).toBeVisible();
 
   const newRow = page.locator('tr', { hasText: '品牌形象海報 A2（加開）' });
-  // 預計出貨日留空顯示「—」
-  await expect(newRow.locator('td', { hasText: '—' }).first()).toBeVisible();
+  // 預計出貨日留空顯示「－」
+  await expect(newRow.locator('td', { hasText: '－' }).first()).toBeVisible();
 
   // 包裝備註（規格側欄位）自來源印件帶入，於印件詳情頁確認
   await newRow.getByRole('button', { name: '檢視印件' }).click();

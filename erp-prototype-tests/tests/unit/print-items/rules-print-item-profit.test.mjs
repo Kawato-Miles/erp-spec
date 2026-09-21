@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   calcPrintItemProfit,
+  derivePrintItemEstCost,
   formatRate,
   PROFIT_BANDS,
   profitBandOf,
@@ -32,7 +33,7 @@ describe('15.8 印件的預估與實際兩組利潤、四式共用同一個分�
     expect(r.estRate).toBeNull();
     expect(r.actualProfit).toBeNull();
     expect(r.actualRate).toBeNull();
-    expect(formatRate(r.estRate)).toBe('—');
+    expect(formatRate(r.estRate)).toBe('－');
   });
 
   it('旗下工單全無報工事實時只有預估算得出來，實際兩式為空', () => {
@@ -128,5 +129,34 @@ describe('15.3 印件預計成本取旗下全部未作廢工單的彙總', () =>
     );
     const cost = aggregatePrintItemCost([summaryOf(30000)]);
     expect(cost.actualTotal).toBeNull();
+  });
+});
+
+// 15.11 有工單但旗下一筆生產任務都沒有時，預計成本視同取不到
+// 期望值取自 Miles 2026-09-21 拍板：成本是生產任務逐筆凍結出來的，一筆都還沒登打就不存在
+// 「這件的成本是 0 元」這個事實；代入 0 會把預估利潤率算成 100%，讀的人會以為這一件全賺。
+// 錨例：鏈七 PI-2026-0904（旗下 WO-2026-0904 與 WO-2026-0905 兩張草稿工單，皆尚未規劃製程）。
+describe('15.11 有工單但無任何生產任務時印件預計成本視同空值', () => {
+  it('旗下兩張工單、彙總金額為 0 時預計成本取不到', () => {
+    expect(derivePrintItemEstCost(2, 0)).toBeNull();
+  });
+
+  it('旗下尚無工單時預計成本一樣取不到', () => {
+    expect(derivePrintItemEstCost(0, 0)).toBeNull();
+  });
+
+  it('旗下工單已登打生產任務時照常取得彙總金額', () => {
+    expect(derivePrintItemEstCost(2, 42000)).toBe(42000);
+  });
+
+  it('預計成本取不到時預估利潤與預估利潤率皆為空，不算成 100%', () => {
+    const r = calcPrintItemProfit({
+      subtotal: 50000,
+      estCost: derivePrintItemEstCost(2, 0),
+      actualCost: null,
+    });
+    expect(r.estProfit).toBeNull();
+    expect(r.estRate).toBeNull();
+    expect(formatRate(r.estRate)).toBe('－');
   });
 });

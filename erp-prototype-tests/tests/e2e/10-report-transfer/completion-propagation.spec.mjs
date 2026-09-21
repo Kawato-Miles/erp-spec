@@ -56,7 +56,7 @@ test('10.12 首次報工把上游三層一起推進，已收尾的不被拉回�
   const startedAt = expanded
     .locator('th.ant-descriptions-item-label:has-text("任務實際開工") + td')
     .first();
-  await expect(startedAt).not.toHaveText('—');
+  await expect(startedAt).not.toHaveText('－');
   await expect(startedAt).toHaveText(/\d{4}-\d{2}-\d{2}/);
 });
 
@@ -74,7 +74,7 @@ test('10.19 尚未報工的生產任務，任務實際開工為空（分派日�
   const expanded = page.locator('tr.ant-table-expanded-row').first();
   await expect(
     expanded.locator('th.ant-descriptions-item-label:has-text("任務實際開工") + td').first(),
-  ).toHaveText('—');
+  ).toHaveText('－');
 });
 
 test('10.15 完成判定一律取生產數量（投入）累計（原編號 159）', async ({ page }) => {

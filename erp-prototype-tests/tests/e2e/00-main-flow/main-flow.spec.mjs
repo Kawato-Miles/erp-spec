@@ -50,7 +50,7 @@ const PRINT_STATION = '名片印刷｜海德堡 SM52 四色機';
 const PART_PREP = '全張備料';
 const PART_PRINT = '全張印刷';
 // 現場端認任務用任務名稱（材料名與工序名），不用印件部位——
-// 交付產線時 print_item_part 沒有被帶進現場任務，現場的報工對話框那一格顯示為「—」
+// 交付產線時 print_item_part 沒有被帶進現場任務，現場的報工對話框那一格顯示為「－」
 const TASK_PREP = '雪銅紙';
 const TASK_PRINT = '平版印刷';
 

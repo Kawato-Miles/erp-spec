@@ -168,7 +168,7 @@ test('14.21 負責印務未填聯絡電話時工單聯絡印破折號', async ({
   await expandPanel(page, '工單資訊');
   await expect(
     page.locator('th.ant-descriptions-item-label:has-text("工單聯絡") + td').first(),
-  ).toHaveText('—');
+  ).toHaveText('－');
 });
 
 test('14.11 清單上的編號可以直接點開詳情（原編號 181）', async ({ page }) => {

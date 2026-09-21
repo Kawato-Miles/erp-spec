@@ -52,7 +52,7 @@ test('6.13 交期一路留空時五個畫面照實留白、不當機', async ({ 
     .getByText('內部完成日', { exact: true })
     .first()
     .locator('xpath=ancestor::div[3]');
-  await expect(summaryCell).toContainText('—');
+  await expect(summaryCell).toContainText('－');
 
   // 四、製程規劃：新增一筆生產任務後，清單上方寫明這張工單沒有交期基準，且不判任何超期
   await switchRole(page, '印務');
@@ -85,12 +85,12 @@ test('6.13 交期一路留空時五個畫面照實留白、不當機', async ({ 
   await button(page, '預覽工單').click();
   await expect(page).toHaveURL(/work-orders\/print/, { timeout: 40_000 });
   const dueRow = page.locator('table').first().locator('tr').filter({ hasText: '交期' }).first();
-  await expect(dueRow).toContainText('—');
+  await expect(dueRow).toContainText('－');
 
   // 六、工單列表該列的內部完成日欄照實留白
   await goInApp(page, '/work-orders', gotoInApp);
   const search = page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或客戶名稱');
   await search.fill(workOrderNo);
   await search.press('Enter');
-  await expect(rowOf(page, workOrderNo)).toContainText('—');
+  await expect(rowOf(page, workOrderNo)).toContainText('－');
 });

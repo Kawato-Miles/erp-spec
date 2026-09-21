@@ -118,7 +118,7 @@ test('6.1 一件印件從放行到上產線的六站接力（原編號 72）', a
   const floorRow = rowOf(page, workOrderNo);
   // 待派清單該筆帶印件編號；PI-2026-0903 的預計出貨日尚未談定，內部完成日欄照實顯示破折號
   await expect(floorRow).toContainText('PI-2026-0903');
-  await expect(floorRow).toContainText('—');
+  await expect(floorRow).toContainText('－');
   await floorRow.getByLabel('接收工作').click();
   await expect(page.locator('body')).toContainText('已接收工作 1 筆生產任務');
   await expect(rowOf(page, workOrderNo)).toContainText('已接收');

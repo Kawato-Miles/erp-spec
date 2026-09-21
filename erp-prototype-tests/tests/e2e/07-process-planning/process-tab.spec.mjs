@@ -312,7 +312,7 @@ test('7.12 預計完成日純手填，工單預計完工日取最大值（原編
     .filter({ hasText: '預計完工日' })
     .locator('xpath=following-sibling::td[1]');
   await expect(info).toBeVisible();
-  await expect(info).toContainText('—');
+  await expect(info).toContainText('－');
 
   // 填其中兩筆後，工單預計完工日等於已填者的最大值
   await fillTaskEndDate(page, '雪銅紙 150g 菊全', '2026-09-12');
@@ -510,7 +510,7 @@ test('7.26 印件的製程說明與品檢需求都沒填，工單照樣送得出
   // 工單頁的入口是工單資訊卡的「編輯」，開的是「編輯工單資訊」抽屜
   await expandPanel(page, '印件基本資訊');
   await editProcessQcOnWorkOrder(page, { processNote: '', qcRequirement: '' });
-  await expectProcessQc(page, { processNote: '—', qcRequirement: '—' });
+  await expectProcessQc(page, { processNote: '－', qcRequirement: '－' });
 
   // 送出審核：系統接受，提示只寫已送出，沒有一句要求補填兩欄
   await page.getByRole('button', { name: '提交審核' }).click();

@@ -257,7 +257,7 @@ test('11.6 訂單詳情的完工良品數與印件兩處同源（原編號 115�
   await gotoInAppSafe(page, '/print-items');
   await expect(
     page.getByRole('row', { name: /PI-2026-0815/ }).locator('td').nth(11),
-  ).toHaveText('—');
+  ).toHaveText('－');
 });
 
 test('11.7 品檢站在桌機是表格，窄視窗靠側欄收合與橫向捲動（原編號 120）', async ({ page }) => {
@@ -412,22 +412,22 @@ test('11.11 品檢驗收介面看得到印件的品檢需求', async ({ page }) 
 
 test('11.12 印件的品檢需求沒填時顯示破折號，驗收照樣記得下去', async ({ page }) => {
   // 前置：印務主管把鏈四 PI-2026-0820 的品檢需求清成空白（兩欄選填，清空存得了）。
-  // 規格寫無值顯示「－」，Prototype 全站的無值符號統一用破折號「—」，本測試照畫面實際字元斷言。
+  // 無值符號＝全形連字號「－」（Miles 2026-09-21 拍板，全站同一個字元），本測試照畫面實際字元斷言。
   await openAs(page, '印務主管', `/print-items/detail?id=${CHAIN4.printItemNo}`);
   await page.getByRole('button', { name: /編輯製程與品檢/ }).click();
   const editDrawer = page.locator('.ant-drawer-body');
   await editDrawer.getByLabel(/品檢需求/).fill('');
   await page.locator('.ant-drawer').getByRole('button', { name: /儲\s*存/ }).click();
   await expect(page.getByText('已更新製程說明與品檢需求').first()).toBeVisible();
-  await expect(descValue(page, '品檢需求')).toHaveText('—');
+  await expect(descValue(page, '品檢需求')).toHaveText('－');
 
   // 清單與驗收對話框的品檢需求都印破折號
   await switchRoleSafe(page, '品檢人員');
   await gotoInAppSafe(page, '/qc-shipping/inspection');
   // 欄位順序：展開、印件、所屬訂單編號、客戶名稱、品檢需求…，品檢需求為第 5 格
-  await expect(pendingRow(page).locator('td').nth(4)).toHaveText('—');
+  await expect(pendingRow(page).locator('td').nth(4)).toHaveText('－');
   await pendingRow(page).getByRole('button', { name: '驗收' }).click();
-  await expect(inspectDialog(page)).toContainText('品檢需求：—');
+  await expect(inspectDialog(page)).toContainText('品檢需求：－');
 
   // 沒寫檢驗要點不擋下驗收：這一筆照樣記得成立
   const dialog = inspectDialog(page);

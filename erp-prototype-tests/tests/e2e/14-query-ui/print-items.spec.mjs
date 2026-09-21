@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs, switchRole } from '../_helpers.mjs';
+import { clickIntoDetail, openAs, switchRole } from '../_helpers.mjs';
 
 // 本機測試常與其他 sub-agent 並行、系統負載偏高，放寬本檔逾時
 test.setTimeout(60_000);
@@ -213,7 +213,7 @@ test('14.9 印件詳情頁的兩本帳與報價與利潤都要有數字（原編
   ]) {
     await expect(
       pane.locator(`th.ant-descriptions-item-label:has-text("${label}") + td`).first(),
-    ).not.toHaveText('—');
+    ).not.toHaveText('－');
   }
   await expect(pane).not.toContainText('稅額');
   await expect(pane).not.toContainText('含稅');
@@ -223,4 +223,41 @@ test('14.9 印件詳情頁的兩本帳與報價與利潤都要有數字（原編
   await expect(page.getByRole('tab', { name: /活動紀錄/ })).toBeVisible();
   await expect(page.getByRole('tab', { name: /工單與生產任務/ })).toBeVisible();
   await expect(page.getByRole('tab', { name: /品檢紀錄/ })).toBeVisible();
+});
+
+test('14.27 有工單但一筆生產任務都沒有時，兩個預估欄顯示無值符號', async ({ page }) => {
+  // 起點資料：鏈七 PI-2026-0904（旗下 WO-2026-0904 與 WO-2026-0905 兩張草稿工單，
+  // 皆尚未規劃製程、無任何生產任務）
+  // 期望值取自 Miles 2026-09-21 拍板：成本是生產任務逐筆凍結出來的，一筆都還沒登打就
+  // 不存在「這件的成本是 0 元」這個事實；代入 0 會把預估利潤率算成 100%
+  await openAs(page, '印務主管', '/print-items/detail?id=PI-2026-0904');
+  await expect(page.locator('body')).toContainText('PI-2026-0904');
+
+  await page.getByRole('tab', { name: '報價與利潤' }).click();
+  const pane = page.locator('.ant-tabs-tabpane-active');
+  const valueOf = (label) =>
+    pane.locator(`th.ant-descriptions-item-label:has-text("${label}") + td`).first();
+
+  // 預估側三欄與實際側兩欄都顯示無值符號，不出現 0、NT$ 0 或 100.0%
+  for (const label of [
+    '預計成本（未稅）',
+    '預估利潤（未稅）',
+    '預估利潤率',
+    '實際成本（未稅）',
+    '實際利潤（未稅）',
+    '實際利潤率',
+  ]) {
+    await expect(valueOf(label)).toHaveText('－');
+  }
+  await expect(pane).not.toContainText('100.0%');
+  await expect(pane).not.toContainText('NT$ 0');
+
+  // 工單摘要卡取同一支，兩格利潤率與其金額副行一併顯示無值符號
+  //（由印件詳情的工單頁籤點編號進工單詳情，站內導頁、記憶體狀態保留）
+  await page.getByRole('tab', { name: /工單與生產任務/ }).click();
+  await clickIntoDetail(page, 'WO-2026-0904', /work-orders\/detail/);
+  await expect(page.locator('body')).toContainText('WO-2026-0904');
+  await expect(page.locator('body')).toContainText('預估利潤率');
+  await expect(page.locator('body')).not.toContainText('100.0%');
+  await expect(page.getByText(/^預估利潤 NT\$ [\d,]+$/)).toHaveCount(0);
 });
