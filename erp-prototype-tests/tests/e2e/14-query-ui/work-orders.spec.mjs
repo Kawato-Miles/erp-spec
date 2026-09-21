@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs, switchRole } from '../_helpers.mjs';
+import { clickIntoDetail, openAs, switchRole } from '../_helpers.mjs';
 import { gotoInAppPatiently as gotoInApp } from './_retry.mjs';
 
 // 本機同時有多個 sub-agent 在跑測試，系統負載偏高時 dev server 首次編譯路由會拖長；
@@ -113,6 +113,27 @@ test('14.19 工單摘要卡的兩格利潤率取所屬印件口徑', async ({ pa
     await expect(page.locator('body')).toContainText('預估利潤率');
     await expect(page.locator('body')).toContainText('實際利潤率');
   }
+
+  // 兩格的利潤率下方各帶一行金額副行（公司對照表 B5）：金額取印件層既有取數，不重算，
+  // 故與印件詳情頁「報價與利潤」頁籤的同名欄位必然同值
+  await switchRole(page, '印務');
+  const estCaption = page.getByText(/^預估利潤 NT\$ [\d,]+$/);
+  const actualCaption = page.getByText(/^實際利潤 NT\$ [\d,]+$/);
+  await expect(estCaption).toBeVisible();
+  await expect(actualCaption).toBeVisible();
+  const estAmount = (await estCaption.textContent()).replace('預估利潤 ', '');
+  const actualAmount = (await actualCaption.textContent()).replace('實際利潤 ', '');
+
+  // 由工單頁的印件編號連結進印件詳情（站內導頁、記憶體狀態保留）
+  await page.getByText('查看印件資訊').first().click();
+  await clickIntoDetail(page, 'PI-2026-0710', /print-items\/detail/);
+  await page.getByRole('tab', { name: '報價與利潤' }).click();
+  await expect(
+    page.locator('th.ant-descriptions-item-label:has-text("預估利潤（未稅）") + td').first(),
+  ).toHaveText(estAmount);
+  await expect(
+    page.locator('th.ant-descriptions-item-label:has-text("實際利潤（未稅）") + td').first(),
+  ).toHaveText(actualAmount);
 });
 
 test('14.20 工單詳情顯示接單業務、訂單類型、客戶編號與工單聯絡', async ({ page }) => {
@@ -274,4 +295,108 @@ test('14.17 成本對照的顏色列同時呈現預估、實際與升降', async
   await expect(pantoneRow.locator('td').nth(1)).toHaveText('NT$ 0');
   await expect(pantoneRow.locator('td').nth(2)).toHaveText('NT$ 0');
   await expect(pantoneRow.locator('td').nth(3)).toHaveText('');
+});
+
+// 工單頁的印件基本資訊欄位清單與欄序（公司對照表 E 區）：工單頁另給一份欄位清單，
+// 印件詳情頁維持原有清單。兩頁的審稿討論串都排在印件配方左邊。
+const WORK_ORDER_PRINT_ITEM_LABELS = [
+  '印件編號',
+  '接單業務',
+  '訂單編號',
+  '客戶編號',
+  '案名',
+  '客戶名稱',
+  '印件屬性',
+  '訂單類型',
+  '負責審稿人員',
+  '出貨方式',
+  '預計出貨日',
+  '內部完成日',
+  '審稿討論串',
+  '印件配方',
+  '製作討論串',
+  '預計產線',
+  '製程說明',
+  '品檢需求',
+  '規格備註',
+  '稿件備註',
+  '包裝備註',
+];
+
+// 工單頁不列的六欄（業務與審稿階段在看的欄位）
+const PRINT_ITEM_ONLY_LABELS = ['印件分類', '難易度', '免審稿', '訂單來源'];
+
+// 印件基本資訊那一張 Descriptions：同頁另有工單資訊與印件檔案兩張，只有這一張含印件編號
+const basicPanelOf = (page) =>
+  page.locator('.ant-descriptions').filter({ hasText: '印件編號' }).first();
+
+const labelsOf = (descriptions) => descriptions.locator('.ant-descriptions-item-label');
+
+test('14.22 工單頁的印件基本資訊只列工單要用的欄位，欄序照公司對照表', async ({ page }) => {
+  // 起點資料：鏈四 WO-2026-0820（所屬印件 PI-2026-0820，大貨印件）
+  // 期望值取自公司對照表 2026-09-18 版 E 區（E7～E10 刪除、E13 左右調換、E 欄序）
+  await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0820');
+  await page.getByText('查看印件資訊').first().click();
+
+  const basic = basicPanelOf(page);
+  await expect(labelsOf(basic)).toHaveText(WORK_ORDER_PRINT_ITEM_LABELS);
+
+  // 六欄在工單頁整列不出現
+  for (const label of PRINT_ITEM_ONLY_LABELS) {
+    await expect(basic.locator('.ant-descriptions-item-label', { hasText: label })).toHaveCount(0);
+  }
+
+  // 印件詳情頁維持原有欄位清單：四欄照樣看得到，且審稿討論串仍排在印件配方左邊
+  await clickIntoDetail(page, 'PI-2026-0820', /print-items\/detail/);
+  const itemBasic = basicPanelOf(page);
+  for (const label of PRINT_ITEM_ONLY_LABELS) {
+    await expect(itemBasic.locator('.ant-descriptions-item-label', { hasText: label })).toHaveCount(
+      1,
+    );
+  }
+  const itemLabels = await labelsOf(itemBasic).allTextContents();
+  expect(itemLabels.indexOf('審稿討論串')).toBeLessThan(itemLabels.indexOf('印件配方'));
+  // 兩頁的欄名一致：不再出現「所屬訂單」，客戶那一欄叫「客戶名稱」
+  expect(itemLabels).toContain('訂單編號');
+  expect(itemLabels).toContain('客戶名稱');
+  expect(itemLabels).not.toContain('所屬訂單');
+});
+
+test('14.23 工單資訊的欄序照公司對照表', async ({ page }) => {
+  // 起點資料：鏈四 WO-2026-0820（非配方展開產生，故無展開來源那一列）
+  // 期望值取自公司對照表 2026-09-18 版 C 區欄序
+  await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0820');
+  await page.getByText('查看工單資訊').first().click();
+
+  const info = page.locator('.ant-descriptions').filter({ hasText: '每份印件生產數量' }).first();
+  await expect(labelsOf(info)).toHaveText([
+    '負責印務',
+    '工單審核主管',
+    '工單聯絡',
+    '每份印件生產數量',
+    '目標數量',
+    '生產數量（報工累計）',
+    '預計完工日',
+    '實際完工日',
+    '確樣需求',
+  ]);
+});
+
+test('14.24 完稿縮圖以縮圖預覽塊與檔名並排呈現', async ({ page }) => {
+  // 起點資料：鏈四 PI-2026-0820（當前合格輪次 RR-2026-0820-1 已掛完稿縮圖一張）
+  // 期望值取自公司對照表 2026-09-18 版 F1
+  await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0820');
+  await page.getByText('查看印件檔案').first().click();
+
+  const thumbCell = page
+    .locator('th.ant-descriptions-item-label:has-text("完稿縮圖") + td')
+    .first();
+  // 檔名與縮圖並排：同一格裡既有檔名文字、也有一張看得到的圖
+  await expect(thumbCell).toContainText('山城記事精裝書-完稿縮圖-v2.png');
+  await expect(thumbCell.locator('img')).toHaveCount(1);
+  // 點檔名開得了預覽（另開分頁，故只驗連結指向該檔）
+  await expect(thumbCell.getByRole('link', { name: /完稿縮圖/ })).toHaveAttribute(
+    'href',
+    /mock-artwork/,
+  );
 });

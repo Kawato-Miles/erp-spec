@@ -47,6 +47,15 @@ test('7.26 印務於製程規劃填工單確樣需求（十值多選、非終態
   // 勾上「看印」後存檔，工單資訊隨之顯示三個值
   await options.filter({ hasText: '看印' }).first().click();
   await page.keyboard.press('Escape');
+
+  // 同一張側板另有製程說明與品檢需求兩段，各帶 0/500 即時字數（公司對照表 C7）；
+  // 取消與儲存兩顆在頂列
+  await expect(drawer).toContainText('製程說明');
+  await expect(drawer).toContainText('品檢需求');
+  await expect(drawer.locator('.ant-input-data-count')).toHaveCount(2);
+  await expect(drawer.locator('.ant-drawer-extra').getByRole('button', { name: '取消' })).toBeVisible();
+  await expect(drawer.locator('.ant-drawer-extra').getByRole('button', { name: '儲存' })).toBeVisible();
+
   await drawer.getByRole('button', { name: '儲存' }).click();
   await expect(drawer).toBeHidden();
   await expect(proofValue).toContainText('看印');
@@ -85,6 +94,25 @@ test('7.27 印件備註側板依角色鎖欄：印務改得動兩欄、稿件備
   await expect(drawer.getByLabel('規格備註')).toBeEnabled();
   await expect(drawer.getByLabel('包裝備註')).toBeEnabled();
   await expect(drawer.getByLabel('稿件備註')).toBeDisabled();
+
+  // 預計產線為一顆一條產線的標籤，每顆自帶移除鈕（公司對照表 E15）
+  const lineTags = drawer.locator('.ant-tag');
+  await expect(lineTags).toHaveText(['平版印刷', '裁切']);
+  await expect(lineTags.first().locator('.anticon-close, .ant-tag-close-icon')).toHaveCount(1);
+
+  // 右側下拉「＋加入產線」只列產線主檔既有的產線，不接受自由輸入；已選的不重複出現
+  await expect(drawer.getByText('＋加入產線')).toBeVisible();
+  // 點下拉本體（placeholder 文字上方蓋著 AntD 的搜尋輸入框，點不到）
+  await drawer.locator('.ant-select').click();
+  const lineOptions = page.locator('.ant-select-dropdown:visible .ant-select-item-option');
+  await expect(lineOptions.filter({ hasText: '燙金' })).toHaveCount(1);
+  await expect(lineOptions.filter({ hasText: '平版印刷' })).toHaveCount(0);
+  await lineOptions.filter({ hasText: '燙金' }).first().click();
+  await expect(lineTags).toHaveText(['平版印刷', '裁切', '燙金']);
+
+  // 標籤上的移除鈕拿掉一條產線
+  await lineTags.filter({ hasText: '裁切' }).locator('.anticon-close, .ant-tag-close-icon').click();
+  await expect(lineTags).toHaveText(['平版印刷', '燙金']);
 
   const SPEC_NOTE = '7.27 規格備註改寫：立牌插槽公差 0.5mm';
   const PACK_NOTE = '7.27 包裝備註改寫：每 10 片一箱、加防撞泡棉';

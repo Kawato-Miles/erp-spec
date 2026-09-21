@@ -330,14 +330,15 @@ test('8.12 印件的兩欄都沒填時，紙本表頭各印破折號且不擋下
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0908');
   await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0908' })).toBeVisible();
 
-  // 前置：把所屬印件的製程說明與品檢需求清空
+  // 前置：把所屬印件的製程說明與品檢需求清空。工單頁的編輯入口是工單資訊卡的「編輯」，
+  // 開的是「編輯工單資訊」抽屜（公司對照表 C7）；兩欄的值仍寫回印件層
   await page.getByText('查看印件資訊').click();
-  await page.getByRole('button', { name: /編輯製程與品檢/ }).click();
-  const drawer = page.locator('.ant-drawer-body');
+  await page.getByRole('button', { name: /編輯$/ }).first().click();
+  const drawer = page.locator('.ant-drawer').filter({ hasText: '編輯工單資訊' }).last();
   await drawer.getByLabel(/製程說明/).fill('');
   await drawer.getByLabel(/品檢需求/).fill('');
-  await page.locator('.ant-drawer').getByRole('button', { name: cjkName('儲存') }).click();
-  await expect(page.getByText('已更新製程說明與品檢需求').first()).toBeVisible();
+  await drawer.getByRole('button', { name: cjkName('儲存') }).click();
+  await expect(page.getByText('已更新工單資訊').first()).toBeVisible();
 
   // 列印不被擋下，表頭兩欄各印破折號
   await clickAndWaitUrl(

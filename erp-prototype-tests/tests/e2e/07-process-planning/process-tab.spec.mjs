@@ -65,13 +65,15 @@ test('7.3 參考完稿圖唯讀，工單上不再上傳完稿（原編號 70）'
   await page.getByText('查看印件檔案').click();
   await expect(page.getByText('審稿後印件檔')).toBeVisible();
 
-  // 編輯工單資訊抽屜只剩預計完工日一段：製程說明與品檢需求的家在印件層，不在工單抽屜裡；
+  // 編輯工單資訊抽屜分四段（公司對照表 C7）：預計完工日、確樣需求、製程說明、品檢需求。
+  // 兩欄的值仍寫回印件層、工單不存副本（見 7.25），只有編輯入口收在這一支抽屜裡；
   // 也沒有上傳完稿檔的入口（上傳檔案存的是印務自己的工單附件，是另一顆獨立按鈕）
   await page.getByRole('button', { name: /編輯$/ }).first().click();
   const drawer = page.locator('.ant-drawer-body');
   await expect(drawer).toContainText('預計完工日');
-  await expect(drawer).not.toContainText('製程說明');
-  await expect(drawer).not.toContainText('品檢需求');
+  await expect(drawer).toContainText('確樣需求');
+  await expect(drawer).toContainText('製程說明');
+  await expect(drawer).toContainText('品檢需求');
   await expect(drawer).not.toContainText('上傳');
   await page.locator('.ant-drawer').getByRole('button', { name: '關閉' }).click();
 
@@ -376,7 +378,7 @@ const NEW_QC_REQUIREMENT = '立牌裱板平整度全檢，裁切尺寸允差 1mm
 const REVISED_PROCESS_NOTE = '板面改上霧膜後再模切，立牌架維持原做法。';
 const REVISED_QC_REQUIREMENT = '霧膜氣泡與剝離抽檢 5%，其餘同前。';
 
-// 在目前這一頁的印件基本資訊面板按「編輯製程與品檢」，填入兩欄後儲存
+// 在印件詳情頁的印件基本資訊面板按「編輯製程與品檢」，填入兩欄後儲存
 async function editProcessQc(page, { processNote, qcRequirement }) {
   await page.getByRole('button', { name: /編輯製程與品檢/ }).click();
   const drawer = page.locator('.ant-drawer-body');
@@ -385,6 +387,18 @@ async function editProcessQc(page, { processNote, qcRequirement }) {
   await page.locator('.ant-drawer').getByRole('button', { name: /儲\s*存/ }).click();
   // 同一條測試內會連續存兩次，前一則提示可能還沒淡出，故取第一則
   await expect(page.getByText('已更新製程說明與品檢需求').first()).toBeVisible();
+}
+
+// 在工單詳情頁改同樣兩欄：入口是工單資訊卡標題列的「編輯」，開的是「編輯工單資訊」抽屜
+//（公司對照表 C7）。工單頁的印件基本資訊面板上沒有「編輯製程與品檢」那一顆。
+async function editProcessQcOnWorkOrder(page, { processNote, qcRequirement }) {
+  await expect(page.getByRole('button', { name: /編輯製程與品檢/ })).toHaveCount(0);
+  await page.getByRole('button', { name: /編輯$/ }).first().click();
+  const drawer = page.locator('.ant-drawer').filter({ hasText: '編輯工單資訊' }).last();
+  await drawer.getByLabel(/製程說明/).fill(processNote);
+  await drawer.getByLabel(/品檢需求/).fill(qcRequirement);
+  await drawer.getByRole('button', { name: /儲\s*存/ }).click();
+  await expect(page.getByText('已更新工單資訊').first()).toBeVisible();
 }
 
 // 目前這一頁的印件基本資訊面板顯示的兩欄值
@@ -409,7 +423,7 @@ test('7.25 製程說明與品檢需求記在印件層，一處改動兩頁同值
   });
 
   // 印務在工單詳情改：寫的是印件事實、不是這張工單的欄位
-  await editProcessQc(page, {
+  await editProcessQcOnWorkOrder(page, {
     processNote: NEW_PROCESS_NOTE,
     qcRequirement: NEW_QC_REQUIREMENT,
   });
@@ -455,9 +469,10 @@ test('7.26 印件的製程說明與品檢需求都沒填，工單照樣送得出
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0901');
 
-  // 前置：印務把所屬印件的兩欄清成空白（兩欄選填，儲存不被擋下）
+  // 前置：印務把所屬印件的兩欄清成空白（兩欄選填，儲存不被擋下）；
+  // 工單頁的入口是工單資訊卡的「編輯」，開的是「編輯工單資訊」抽屜
   await page.getByText('查看印件資訊').click();
-  await editProcessQc(page, { processNote: '', qcRequirement: '' });
+  await editProcessQcOnWorkOrder(page, { processNote: '', qcRequirement: '' });
   await expectProcessQc(page, { processNote: '—', qcRequirement: '—' });
 
   // 送出審核：系統接受，提示只寫已送出，沒有一句要求補填兩欄
