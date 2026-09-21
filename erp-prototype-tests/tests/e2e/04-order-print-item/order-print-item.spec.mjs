@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs, gotoInApp, switchRole } from '../_helpers.mjs';
+import { openAs, gotoInApp, switchRole, cjkName, clickIntoDetail } from '../_helpers.mjs';
 
 // 情境目錄第四章：訂單成立與印件（印製狀態值、訂單類型、購買數量鎖定、討論串、急件）。
 // 起點資料：七條主鏈訂單，鏈二 ORD-2026-0710（製作中）／PI-2026-0710、
@@ -313,4 +313,65 @@ test('4.10 三條複製路徑仍帶入原值，與新增、加開的留空各走
   const itemDrawer = page.locator('.ant-drawer-content').last();
   await expect(itemDrawer.locator('#order_due_date')).toHaveValue('');
   await itemDrawer.getByRole('button', { name: '取消', exact: true }).click();
+});
+
+test('4.11 客戶指定收件日改記在印件層，訂單資訊不再有這一欄', async ({ page }) => {
+  // 起點資料：鏈八 ORD-2026-0920 旗下印件 PI-2026-0920（印件預計交期 2026-10-08、
+  // 客戶指定收件日 2026-10-06）。期望值取自 openspec order-management § 客戶指定收件日
+  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0920');
+
+  // 訂單資訊區與其編輯側板都不再有這一欄
+  const infoPanel = page.locator('.ant-descriptions').filter({ hasText: '訂單編號' }).first();
+  await expect(infoPanel.locator('.ant-descriptions-item-label', { hasText: '客戶指定收件日' })).toHaveCount(0);
+  // AntD 會在兩個中文字的按鈕文字中間插空白，比對按鈕名用 cjkName
+  await page.getByRole('button', { name: cjkName('編輯') }).first().click();
+  const infoDrawer = page.locator('.ant-drawer-content').last();
+  await expect(infoDrawer).toBeVisible();
+  await expect(infoDrawer).not.toContainText('客戶指定收件日');
+  await infoDrawer.getByRole('button', { name: cjkName('取消') }).first().click();
+
+  // 三個衍生日期照舊唯讀呈現
+  await expect(infoPanel).toContainText('訂單內部完成時間');
+  await expect(infoPanel).toContainText('訂單預計交貨日期');
+  await expect(infoPanel).toContainText('全部交完日');
+
+  // 印件編輯側板有這一欄，帶現值 2026-10-06
+  await page.getByRole('tab', { name: /訂單項目/ }).click();
+  const row = page.locator('tr', { hasText: 'PI-2026-0920' }).first();
+  await row.getByRole('button', { name: cjkName('編輯印件') }).first().click();
+  const drawer = page.locator('.ant-drawer-content').last();
+  await expect(drawer.locator('#customer_requested_delivery_date')).toHaveValue('2026-10-06');
+
+  // 存檔：所填日期早於本印件的印件預計交期 2026-10-08，出黃色提醒、仍接受存檔
+  await drawer.getByRole('button', { name: cjkName('確認') }).first().click();
+  await expect(
+    page.getByText('客戶指定收件日早於印件預計交期，請與客戶確認或改急件'),
+  ).toBeVisible();
+  await expect(page.locator('.ant-drawer-content')).toHaveCount(0);
+});
+
+test('4.14 唯讀呈現處的印件內部完成日合併未扣急件那一天', async ({ page }) => {
+  // 起點資料：鏈四 PI-2026-0820（三天急件，未扣急件內部完成日 2026-09-09、印件內部完成日
+  // 2026-09-04）與鏈二 PI-2026-0710（一般件，兩者同為 2026-09-14）。
+  // 期望值取自公司 2026-09-18 對照表與 Miles 2026-09-21 拍板
+  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0820&tab=printItems');
+  const row = page.locator('tr', { hasText: 'PI-2026-0820' }).first();
+  await expect(row).toContainText('2026-09-04（未扣急件 2026-09-09）');
+
+  // 清單不再另列一欄「未扣急件內部完成日」
+  await expect(
+    page.getByRole('tabpanel').locator('th', { hasText: '未扣急件內部完成日' }),
+  ).toHaveCount(0);
+
+  // 同一條規則套在工單列表：急件那張帶括號，一般件那張只有一組日期（同頁比對，不必看兩次）。
+  // 以印務主管身分看列表才帶得出全部工單（負責印務身分只看得到自己負責的那幾張）
+  await switchRole(page, '印務主管');
+  await gotoInApp(page, '/work-orders');
+  const headers = page.locator('.ant-table-thead th');
+  await expect(headers.filter({ hasText: '未扣急件內部完成日' })).toHaveCount(0);
+  await expect(page.locator('tr', { hasText: 'WO-2026-0820' }).first()).toContainText(
+    '2026-09-04（未扣急件 2026-09-09）',
+  );
+  // 一般件不帶括號：這一頁只有急件那一張工單出現「未扣急件」，其餘各列只印一組日期
+  await expect(page.locator('.ant-table-tbody tr', { hasText: '未扣急件' })).toHaveCount(1);
 });

@@ -523,3 +523,48 @@ test('7.26 印件的製程說明與品檢需求都沒填，工單照樣送得出
   await expect(page.getByText('製程確認中', { exact: true }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: '提交審核' })).toHaveCount(0);
 });
+
+test('7.33 任務實際完成日移到展開列，緊接任務實際開工', async ({ page }) => {
+  // 起點資料：鏈四 WO-2026-0820（九筆任務全數報工完成，任務實際完成日有值）
+  // 期望值取自公司 2026-09-18 對照表與 Miles 2026-09-21 拍板
+  await openAs(page, '印務', '/work-orders');
+  await openWorkOrder(page, 'WO-2026-0820');
+
+  // 主表欄頭不再有任務實際完成日；任務預計完成日維持原欄名
+  const headers = page.locator('.ant-table-thead th');
+  await expect(headers.filter({ hasText: '任務實際完成日' })).toHaveCount(0);
+  await expect(headers.filter({ hasText: '任務預計完成日' })).not.toHaveCount(0);
+
+  // 展開任一筆任務：任務實際開工與任務實際完成日相鄰
+  await taskRows(page).first().locator('.ant-table-row-expand-icon').click();
+  const expandedRow = page.locator('tr.ant-table-expanded-row').first();
+  await expect(expandedRow).toContainText('任務實際開工');
+  await expect(expandedRow).toContainText('任務實際完成日');
+  const labels = await expandedRow.locator('.ant-descriptions-item-label').allTextContents();
+  const start = labels.findIndex((t) => t.includes('任務實際開工'));
+  const end = labels.findIndex((t) => t.includes('任務實際完成日'));
+  expect(end).toBe(start + 1);
+});
+
+test('7.34 生產任務頁籤在 1440 與 1600 寬都不出現橫向捲軸', async ({ page }) => {
+  // 起點資料：鏈四 WO-2026-0820（九筆任務、五個部位，是最寬的一張製程清單）
+  // 期望值取自 Miles 2026-09-21 拍板：生產任務表改依容器自適應，不橫向捲動
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openAs(page, '印務', '/work-orders');
+  await openWorkOrder(page, 'WO-2026-0820');
+  await expect(taskRows(page).first()).toBeVisible();
+
+  const overflowAt = async () =>
+    page.evaluate(() => {
+      const holders = Array.from(document.querySelectorAll('.ant-table-content, .ant-table-body'));
+      return holders.map((el) => el.scrollWidth - el.clientWidth);
+    });
+
+  for (const width of [1440, 1600]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect(taskRows(page).first()).toBeVisible();
+    const diffs = await overflowAt();
+    expect(diffs.length).toBeGreaterThan(0);
+    for (const diff of diffs) expect(diff).toBeLessThanOrEqual(1);
+  }
+});

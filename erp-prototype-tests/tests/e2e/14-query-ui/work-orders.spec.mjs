@@ -88,12 +88,12 @@ test('14.2 工單詳情的頁籤：成本區只留成本對照（原編號 2）'
   await expect(headers.filter({ hasText: '現場執行' })).not.toHaveCount(0);
 });
 
-test('14.19 工單摘要卡的兩格利潤率取所屬印件口徑', async ({ page }) => {
+test('14.19 工單摘要卡只留預估利潤率一格', async ({ page }) => {
   // 起點資料：鏈二 WO-2026-0710（所屬印件 PI-2026-0710，旗下只有這一張工單）
-  // 期望值取自 openspec work-order § 工單詳情摘要卡利潤率的四個 Scenario
+  // 期望值取自 openspec 規格差異檔 work-order-summary-drop-actual-profit-rate（刪實際利潤率）
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0710');
   await expect(page.locator('body')).toContainText('預估利潤率');
-  await expect(page.locator('body')).toContainText('實際利潤率');
+  await expect(page.locator('body')).not.toContainText('實際利潤率');
 
   // 摘要卡不再有任務進度格與顏色費用合計格
   await expect(page.locator('body')).not.toContainText('任務進度');
@@ -103,26 +103,22 @@ test('14.19 工單摘要卡的兩格利潤率取所屬印件口徑', async ({ pa
   for (const role of ['生管', '師傅', '品檢人員']) {
     await switchRole(page, role);
     await expect(page.locator('body')).not.toContainText('預估利潤率');
-    await expect(page.locator('body')).not.toContainText('實際利潤率');
     await expect(page.locator('body')).not.toContainText('權限不足');
   }
 
-  // 業務與業務主管看得到兩格（利潤是他們判斷要不要再接這一款的依據）
-  for (const role of ['業務', '業務主管']) {
+  // 印務、業務與業務主管看得到這一格
+  for (const role of ['業務', '業務主管', '印務']) {
     await switchRole(page, role);
     await expect(page.locator('body')).toContainText('預估利潤率');
-    await expect(page.locator('body')).toContainText('實際利潤率');
+    await expect(page.locator('body')).not.toContainText('實際利潤率');
   }
 
-  // 兩格的利潤率下方各帶一行金額副行（公司對照表 B5）：金額取印件層既有取數，不重算，
+  // 這一格的利潤率下方帶一行金額副行（公司對照表 B5）：金額取印件層既有取數，不重算，
   // 故與印件詳情頁「報價與利潤」頁籤的同名欄位必然同值
-  await switchRole(page, '印務');
   const estCaption = page.getByText(/^預估利潤 NT\$ [\d,]+$/);
-  const actualCaption = page.getByText(/^實際利潤 NT\$ [\d,]+$/);
   await expect(estCaption).toBeVisible();
-  await expect(actualCaption).toBeVisible();
+  await expect(page.getByText(/^實際利潤 NT\$ [\d,]+$/)).toHaveCount(0);
   const estAmount = (await estCaption.textContent()).replace('預估利潤 ', '');
-  const actualAmount = (await actualCaption.textContent()).replace('實際利潤 ', '');
 
   // 由工單頁的印件編號連結進印件詳情（站內導頁、記憶體狀態保留）
   await expandPanel(page, '印件基本資訊');
@@ -131,9 +127,8 @@ test('14.19 工單摘要卡的兩格利潤率取所屬印件口徑', async ({ pa
   await expect(
     page.locator('th.ant-descriptions-item-label:has-text("預估利潤（未稅）") + td').first(),
   ).toHaveText(estAmount);
-  await expect(
-    page.locator('th.ant-descriptions-item-label:has-text("實際利潤（未稅）") + td').first(),
-  ).toHaveText(actualAmount);
+  // 實際利潤率仍留在印件層的報價與利潤頁籤
+  await expect(page.locator('body')).toContainText('實際利潤率');
 });
 
 test('14.20 工單詳情顯示接單業務、訂單類型、客戶編號與工單聯絡', async ({ page }) => {
@@ -310,8 +305,10 @@ const WORK_ORDER_PRINT_ITEM_LABELS = [
   '訂單類型',
   '負責審稿人員',
   '出貨方式',
-  '預計出貨日',
-  '內部完成日',
+  '印件預計交期',
+  '印件內部完成日',
+  '訂單預計交貨日期',
+  '客戶指定收件日',
   '審稿討論串',
   '印件配方',
   '製作討論串',
@@ -322,6 +319,9 @@ const WORK_ORDER_PRINT_ITEM_LABELS = [
   '稿件備註',
   '包裝備註',
 ];
+
+// 兩頁都要有的兩欄（2026-09-21 新增，唯讀）
+const SHARED_DATE_LABELS = ['訂單預計交貨日期', '客戶指定收件日'];
 
 // 工單頁不列的六欄（業務與審稿階段在看的欄位）
 const PRINT_ITEM_ONLY_LABELS = ['印件分類', '難易度', '免審稿', '訂單來源'];
@@ -341,6 +341,11 @@ test('14.22 工單頁的印件基本資訊只列工單要用的欄位，欄序�
   const basic = basicPanelOf(page);
   await expect(labelsOf(basic)).toHaveText(WORK_ORDER_PRINT_ITEM_LABELS);
 
+  // 唯讀呈現處不再單獨列未扣急件那一欄（併進印件內部完成日一欄）
+  await expect(
+    basic.locator('.ant-descriptions-item-label', { hasText: '未扣急件內部完成日' }),
+  ).toHaveCount(0);
+
   // 六欄在工單頁整列不出現
   for (const label of PRINT_ITEM_ONLY_LABELS) {
     await expect(basic.locator('.ant-descriptions-item-label', { hasText: label })).toHaveCount(0);
@@ -354,12 +359,17 @@ test('14.22 工單頁的印件基本資訊只列工單要用的欄位，欄序�
       1,
     );
   }
-  const itemLabels = await labelsOf(itemBasic).allTextContents();
+  // 掛提示圖示的欄名（TooltipLabel）文字尾端會多一個空白，比對前先去頭尾空白
+  const itemLabels = (await labelsOf(itemBasic).allTextContents()).map((t) => t.trim());
   expect(itemLabels.indexOf('審稿討論串')).toBeLessThan(itemLabels.indexOf('印件配方'));
   // 兩頁的欄名一致：不再出現「所屬訂單」，客戶那一欄叫「客戶名稱」
   expect(itemLabels).toContain('訂單編號');
   expect(itemLabels).toContain('客戶名稱');
   expect(itemLabels).not.toContain('所屬訂單');
+  // 印件詳情頁的日期組同樣帶這兩欄，且同樣不再單獨列未扣急件那一欄
+  for (const label of SHARED_DATE_LABELS) expect(itemLabels).toContain(label);
+  expect(itemLabels).not.toContain('未扣急件內部完成日');
+  expect(itemLabels.indexOf('印件預計交期')).toBeLessThan(itemLabels.indexOf('訂單預計交貨日期'));
 });
 
 test('14.23 工單資訊的欄序照公司對照表', async ({ page }) => {
@@ -436,7 +446,7 @@ test('14.25 工單詳情三張資訊卡預設收合，點標題列展開', async
 });
 
 test('14.26 工單摘要卡每一格都留副標行', async ({ page }) => {
-  // 起點資料：鏈二 WO-2026-0710（印務身分看得到兩格利潤率）
+  // 起點資料：鏈二 WO-2026-0710（印務身分看得到預估利潤率那一格）
   // 期望值取自 Miles 2026-09-21 指示（摘要卡改用共用統計卡元件帶副標的樣式）
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0710');
 
@@ -445,7 +455,15 @@ test('14.26 工單摘要卡每一格都留副標行', async ({ page }) => {
 
   // 每一格都留副標行，故各格主值的垂直位置對齊：沒有副標的格若被壓短，主值會掉到另一個高度。
   // 取各格小標右邊的主值區塊（小標與主值上下相鄰），比對它們的上緣座標
-  const labels = ['目標數量', '內部完成日', '預計完工日', '實際完工日', '負責印務', '預估利潤率'];
+  const labels = [
+    '目標數量',
+    '印件預計交期',
+    '印件內部完成日',
+    '工單預排完成日',
+    '工單實際完成日',
+    '負責印務',
+    '預估利潤率',
+  ];
   const tops = [];
   for (const label of labels) {
     const count = page
