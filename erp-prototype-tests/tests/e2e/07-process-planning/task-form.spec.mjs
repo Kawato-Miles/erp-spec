@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs } from '../_helpers.mjs';
+import { openAs, taskRows } from '../_helpers.mjs';
 import {
   bomPicker,
   formField,
@@ -205,7 +205,7 @@ test('7.19 編輯既有任務看得到當初選的那一列，製程定案後不
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0901');
   // 第一筆材料任務「雪銅紙 150g 菊全」
-  const materialRow = page.locator('tr.ant-table-row').filter({ hasText: '雪銅紙 150g 菊全' });
+  const materialRow = taskRows(page).filter({ hasText: '雪銅紙 150g 菊全' });
   await materialRow.getByRole('button', { name: '編輯' }).click();
 
   const form = taskForm(page);
@@ -237,7 +237,7 @@ test('7.19 編輯既有任務看得到當初選的那一列，製程定案後不
   await page.getByRole('button', { name: 'arrow_back' }).first().click();
   await expect(page).toHaveURL(/work-orders\/?($|\?)/);
   await openWorkOrder(page, 'WO-2026-0908');
-  await page.locator('tr.ant-table-row').first().getByRole('button', { name: '編輯備註' }).click();
+  await taskRows(page).first().getByRole('button', { name: '編輯備註' }).click();
   const locked = taskForm(page);
   await expect(page.locator('.ant-modal-title').last()).toContainText('製程已定案，僅備註可改');
   await expect(locked.getByRole('button', { name: '重選' })).toHaveCount(0);

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { clickIntoDetail, openAs, switchRole } from '../_helpers.mjs';
+import { clickIntoDetail, collapsePanel, expandPanel, panelBlock, openAs, switchRole } from '../_helpers.mjs';
 import { gotoInAppPatiently as gotoInApp } from './_retry.mjs';
 
 // 本機同時有多個 sub-agent 在跑測試，系統負載偏高時 dev server 首次編譯路由會拖長；
@@ -125,7 +125,7 @@ test('14.19 工單摘要卡的兩格利潤率取所屬印件口徑', async ({ pa
   const actualAmount = (await actualCaption.textContent()).replace('實際利潤 ', '');
 
   // 由工單頁的印件編號連結進印件詳情（站內導頁、記憶體狀態保留）
-  await page.getByText('查看印件資訊').first().click();
+  await expandPanel(page, '印件基本資訊');
   await clickIntoDetail(page, 'PI-2026-0710', /print-items\/detail/);
   await page.getByRole('tab', { name: '報價與利潤' }).click();
   await expect(
@@ -148,14 +148,14 @@ test('14.20 工單詳情顯示接單業務、訂單類型、客戶編號與工�
   await expect(page.locator('body')).toContainText('晨光文創股份有限公司');
 
   // 印件基本資訊區的三項唯讀衍生（面板預設收合，先展開）
-  await page.getByText('查看印件資訊').first().click();
+  await expandPanel(page, '印件基本資訊');
   const basic = page.locator('.ant-descriptions');
   await expect(basic.filter({ hasText: '客戶編號' }).first()).toContainText('MBC000006');
   await expect(basic.filter({ hasText: '接單業務' }).first()).toContainText('洪嘉駿');
   await expect(basic.filter({ hasText: '訂單類型' }).first()).toContainText('線下單');
 
   // 工單聯絡取負責印務在人員資料的聯絡電話（工單資訊卡預設收合，先展開）
-  await page.getByText('查看工單資訊').first().click();
+  await expandPanel(page, '工單資訊');
   await expect(
     page.locator('th.ant-descriptions-item-label:has-text("工單聯絡") + td').first(),
   ).toContainText('02-2721-5588 #211');
@@ -165,7 +165,7 @@ test('14.21 負責印務未填聯絡電話時工單聯絡印破折號', async ({
   // 起點資料：WO-2026-0910（負責印務蔡明修未填聯絡電話）
   // 期望值取自 openspec work-order § 負責印務未填電話時顯示「－」
   await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0910');
-  await page.getByText('查看工單資訊').first().click();
+  await expandPanel(page, '工單資訊');
   await expect(
     page.locator('th.ant-descriptions-item-label:has-text("工單聯絡") + td').first(),
   ).toHaveText('—');
@@ -336,7 +336,7 @@ test('14.22 工單頁的印件基本資訊只列工單要用的欄位，欄序�
   // 起點資料：鏈四 WO-2026-0820（所屬印件 PI-2026-0820，大貨印件）
   // 期望值取自公司對照表 2026-09-18 版 E 區（E7～E10 刪除、E13 左右調換、E 欄序）
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0820');
-  await page.getByText('查看印件資訊').first().click();
+  await expandPanel(page, '印件基本資訊');
 
   const basic = basicPanelOf(page);
   await expect(labelsOf(basic)).toHaveText(WORK_ORDER_PRINT_ITEM_LABELS);
@@ -366,7 +366,7 @@ test('14.23 工單資訊的欄序照公司對照表', async ({ page }) => {
   // 起點資料：鏈四 WO-2026-0820（非配方展開產生，故無展開來源那一列）
   // 期望值取自公司對照表 2026-09-18 版 C 區欄序
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0820');
-  await page.getByText('查看工單資訊').first().click();
+  await expandPanel(page, '工單資訊');
 
   const info = page.locator('.ant-descriptions').filter({ hasText: '每份印件生產數量' }).first();
   await expect(labelsOf(info)).toHaveText([
@@ -386,7 +386,7 @@ test('14.24 完稿縮圖以縮圖預覽塊與檔名並排呈現', async ({ page 
   // 起點資料：鏈四 PI-2026-0820（當前合格輪次 RR-2026-0820-1 已掛完稿縮圖一張）
   // 期望值取自公司對照表 2026-09-18 版 F1
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0820');
-  await page.getByText('查看印件檔案').first().click();
+  await expandPanel(page, '印件檔案');
 
   const thumbCell = page
     .locator('th.ant-descriptions-item-label:has-text("完稿縮圖") + td')
@@ -399,4 +399,62 @@ test('14.24 完稿縮圖以縮圖預覽塊與檔名並排呈現', async ({ page 
     'href',
     /mock-artwork/,
   );
+});
+
+test('14.25 工單詳情三張資訊卡預設收合，點標題列展開', async ({ page }) => {
+  // 起點資料：鏈五 WO-2026-0901（草稿、負責印務周建宏，工單資訊編輯入口為可按狀態）
+  // 期望值取自 Miles 2026-09-21 指示（區塊收合改用共用面板元件自帶的收合樣式）
+  await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0901');
+
+  // 三張卡預設收合：標題看得到，卡內欄位不出現
+  for (const title of ['工單資訊', '印件基本資訊', '印件檔案']) {
+    await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
+    await expect(panelBlock(page, title)).toHaveCount(0);
+  }
+  await expect(page.locator('body')).not.toContainText('每份印件生產數量');
+  await expect(page.locator('body')).not.toContainText('原始印件檔');
+
+  // 舊的自訂折疊列整組不再出現
+  for (const legacy of ['查看工單資訊', '查看印件資訊', '查看印件檔案']) {
+    await expect(page.getByText(legacy)).toHaveCount(0);
+  }
+
+  // 點標題列展開該卡，再點一次收回；三張卡各自獨立
+  await expandPanel(page, '工單資訊');
+  await expect(panelBlock(page, '工單資訊')).toContainText('每份印件生產數量');
+  await expect(panelBlock(page, '印件基本資訊')).toHaveCount(0);
+  await collapsePanel(page, '工單資訊');
+  await expect(page.locator('body')).not.toContainText('每份印件生產數量');
+
+  // 收合狀態下標題列右側的編輯入口照樣在，點它開的是側板、不會連帶收合或展開卡片
+  await page.getByRole('button', { name: /編輯$/ }).first().click();
+  const drawer = page.locator('.ant-drawer-content');
+  await expect(drawer).toBeVisible();
+  await expect(drawer).toContainText('確樣需求');
+  await drawer.getByRole('button', { name: '關閉' }).click();
+  await expect(panelBlock(page, '工單資訊')).toHaveCount(0);
+});
+
+test('14.26 工單摘要卡每一格都留副標行', async ({ page }) => {
+  // 起點資料：鏈二 WO-2026-0710（印務身分看得到兩格利潤率）
+  // 期望值取自 Miles 2026-09-21 指示（摘要卡改用共用統計卡元件帶副標的樣式）
+  await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0710');
+
+  // 負責印務那一格的副標為工單審核主管
+  await expect(page.getByText('工單審核主管 吳國豪')).toBeVisible();
+
+  // 每一格都留副標行，故各格主值的垂直位置對齊：沒有副標的格若被壓短，主值會掉到另一個高度。
+  // 取各格小標右邊的主值區塊（小標與主值上下相鄰），比對它們的上緣座標
+  const labels = ['目標數量', '內部完成日', '預計完工日', '實際完工日', '負責印務', '預估利潤率'];
+  const tops = [];
+  for (const label of labels) {
+    const count = page
+      .locator(
+        `xpath=//span[normalize-space(.)="${label}"]/ancestor::div[contains(@class,"ant-flex")][1]/parent::div/following-sibling::div[1]`,
+      )
+      .first();
+    await expect(count).toBeVisible();
+    tops.push(Math.round((await count.boundingBox()).y));
+  }
+  expect(new Set(tops).size).toBe(1);
 });

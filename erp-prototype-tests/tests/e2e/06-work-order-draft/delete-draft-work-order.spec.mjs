@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs, gotoInApp, switchRole } from '../_helpers.mjs';
+import { expandPanel, openAs, gotoInApp, switchRole } from '../_helpers.mjs';
 import {
   pickOption,
   dialog,
@@ -120,7 +120,7 @@ test('6.11 工單的事實只有一份，兩頁看到的一定一樣（原編號
 
   await page.getByRole('tab', { name: /工單與生產任務/ }).click();
   await openByNo(page, 'WO-2026-0904', /work-orders\/detail/);
-  await page.getByText('查看印件資訊').click();
+  await expandPanel(page, '印件基本資訊');
   await expect(descValue(page, '製程說明')).toHaveText(CHAIN7_PROCESS_NOTE);
   await expect(descValue(page, '品檢需求')).toHaveText(CHAIN7_QC_REQUIREMENT);
 });

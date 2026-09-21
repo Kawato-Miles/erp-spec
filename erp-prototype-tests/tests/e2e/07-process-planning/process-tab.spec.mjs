@@ -1,5 +1,15 @@
 import { test, expect } from '@playwright/test';
-import { assertRoleKept, openAs, gotoInApp, switchRole, warmUp } from '../_helpers.mjs';
+import {
+  assertRoleKept,
+  expandPanel,
+  gotoInApp,
+  groupRows,
+  openAs,
+  panelBlock,
+  switchRole,
+  taskRows,
+  warmUp,
+} from '../_helpers.mjs';
 import {
   bomPicker,
   clickIntoDetail,
@@ -17,7 +27,7 @@ const descValue = (page, label) =>
 test('7.1 新增任務時前置相依不自動帶值（原編號 49）', async ({ page }) => {
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0901');
-  const before = await page.locator('.ant-table-tbody tr.ant-table-row').count();
+  const before = await taskRows(page).count();
 
   await page.getByRole('button', { name: '新增生產任務' }).click();
   await pickBomRow(page, { tab: '工序', keyword: '平版印刷' });
@@ -44,7 +54,7 @@ test('7.1 新增任務時前置相依不自動帶值（原編號 49）', async (
   await formField(page, '預計生產').locator('input').fill('3000');
   await taskForm(page).getByRole('button', { name: '新增任務' }).click();
   await expect(taskForm(page)).toHaveCount(0);
-  const rows = page.locator('.ant-table-tbody tr.ant-table-row');
+  const rows = taskRows(page);
   await expect(rows).toHaveCount(before + 1);
   await expect(rows.last()).toContainText('無'); // 前置欄顯示「無」
 });
@@ -54,23 +64,24 @@ test('7.3 參考完稿圖唯讀，工單上不再上傳完稿（原編號 70）'
   await openWorkOrder(page, 'WO-2026-0901');
 
   // 工單資訊面板不列參考完稿圖，同一份檔案只在印件檔案面板出現一次，標為審稿後檔案
-  await page.getByText('查看工單資訊').click();
+  await expandPanel(page, '工單資訊');
   await expect(page.locator('body')).not.toContainText('參考完稿圖');
   // 工單自身的欄位表不含製程說明與品檢需求（兩欄的家在印件層）：先在這張卡上釘死沒有，
   // 後面再到印件基本資訊面板取值，才不會出現「工單留了一份舊值」也一樣通過的情形
-  const workOrderInfo = page.locator('.ant-collapse').filter({ hasText: '查看工單資訊' }).first();
+  const workOrderInfo = panelBlock(page, '工單資訊');
   await expect(workOrderInfo).toContainText('預計完工日');
   await expect(workOrderInfo).not.toContainText('製程說明');
   await expect(workOrderInfo).not.toContainText('品檢需求');
-  await page.getByText('查看印件檔案').click();
+  await expandPanel(page, '印件檔案');
   await expect(page.getByText('審稿後印件檔')).toBeVisible();
 
-  // 編輯工單資訊抽屜分四段（公司對照表 C7）：預計完工日、確樣需求、製程說明、品檢需求。
-  // 兩欄的值仍寫回印件層、工單不存副本（見 7.25），只有編輯入口收在這一支抽屜裡；
+  // 編輯工單資訊抽屜分三段（公司對照表 C7）：確樣需求、製程說明、品檢需求。預計完工日不在裡面
+  // ——它是旗下生產任務預計完成日的最大值，唯讀衍生（見 7.12）。
+  // 製程說明與品檢需求的值仍寫回印件層、工單不存副本（見 7.25），只有編輯入口收在這一支抽屜裡；
   // 也沒有上傳完稿檔的入口（上傳檔案存的是印務自己的工單附件，是另一顆獨立按鈕）
   await page.getByRole('button', { name: /編輯$/ }).first().click();
   const drawer = page.locator('.ant-drawer-body');
-  await expect(drawer).toContainText('預計完工日');
+  await expect(drawer).not.toContainText('預計完工日');
   await expect(drawer).toContainText('確樣需求');
   await expect(drawer).toContainText('製程說明');
   await expect(drawer).toContainText('品檢需求');
@@ -78,7 +89,7 @@ test('7.3 參考完稿圖唯讀，工單上不再上傳完稿（原編號 70）'
   await page.locator('.ant-drawer').getByRole('button', { name: '關閉' }).click();
 
   // 兩欄改列在印件基本資訊面板（印件層一份文字管旗下全部工單）
-  await page.getByText('查看印件資訊').click();
+  await expandPanel(page, '印件基本資訊');
   await expect(descValue(page, '製程說明')).toHaveText('雪銅紙 150g 四色雙面，裁切摺三摺後入庫。');
   await expect(descValue(page, '品檢需求')).toHaveText('摺線對齊允差 0.5mm，四色套印全檢。');
 });
@@ -96,7 +107,7 @@ test('7.4 同一個日期在三個頁面叫同一個名字（原編號 71）', a
 
   // 開工只列在生產任務的展開層，欄名「任務實際開工」（值取首筆報工的時間），
   // 不與預計完成成對呈現在表格上
-  const firstRow = page.locator('tr.ant-table-row').first();
+  const firstRow = taskRows(page).first();
   await firstRow.locator('.ant-table-row-expand-icon').click();
   await expect(page.locator('tr.ant-table-expanded-row').first()).toContainText('任務實際開工');
   await expect(planningHeaders.filter({ hasText: '任務實際開工' })).toHaveCount(0);
@@ -121,7 +132,7 @@ test('7.5 需轉交標記在有報工之後鎖定（原編號 98）', async ({ p
   await openWorkOrder(page, 'WO-2026-0901');
 
   // 需轉交可切換，提示寫明標為否代表做完即放行下游、不建轉交單；預設值為是
-  const cutRow = page.locator('tr.ant-table-row').filter({ hasText: '裁切成型' });
+  const cutRow = taskRows(page).filter({ hasText: '裁切成型' });
   await cutRow.getByRole('button', { name: '編輯' }).click();
   const needsTransferField = formField(page, '需轉交');
   const toggle = needsTransferField.locator('button[role="switch"]');
@@ -136,21 +147,27 @@ test('7.5 需轉交標記在有報工之後鎖定（原編號 98）', async ({ p
   await expect(taskForm(page)).toBeHidden();
 
   // 印務可逐筆標例外：三摺加工那一筆各自獨立，不受裁切成型剛才的改動影響
-  const foldRow = page.locator('tr.ant-table-row').filter({ hasText: '三摺加工' });
+  const foldRow = taskRows(page).filter({ hasText: '三摺加工' });
   await foldRow.getByRole('button', { name: '編輯' }).click();
   const toggle2 = formField(page, '需轉交').locator('button[role="switch"]');
   await expect(toggle2).toBeEnabled();
   await expect(toggle2).toHaveAttribute('aria-checked', 'true');
 });
 
-test('7.9 生產任務清單是單一序列的母子表格（原編號 161）', async ({ page }) => {
+test('7.9 生產任務清單依印件部位分群的三層表格（原編號 161）', async ({ page }) => {
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0710');
 
-  // 沒有分段標題，全部任務同一序列
+  // 沒有材料、工序、裝訂的分段標題
   for (const section of ['材料任務', '工序任務', '裝訂任務']) {
     await expect(page.getByRole('heading', { name: section })).toHaveCount(0);
   }
+
+  // 第一層為印件部位的分群列：本工單三筆任務同屬「全張」，故只有一列分群列，帶部位名與任務數
+  await expect(groupRows(page)).toHaveCount(1);
+  await expect(groupRows(page).first()).toContainText('全張');
+  await expect(groupRows(page).first()).toContainText('3 項');
+  await expect(taskRows(page)).toHaveCount(3);
 
   // 母表格四個欄群：任務、印件部位、印務規劃（設備／承作、投產目標、預估成本、預計完成、前置）、
   // 現場執行（狀態、交付狀態、完成量）。預估成本欄取任務小計（不含顏色）
@@ -174,13 +191,13 @@ test('7.9 生產任務清單是單一序列的母子表格（原編號 161）', 
 
   // 預估成本欄顯示該任務的任務小計（不含顏色）：海報四色印刷的任務小計為 5,981，
   // 它登記的 CMYK 四色（1,200 × 4 ＝ 4,800）不在這一欄裡，改成工單層的顏色列
-  const printingRow = page.locator('tr.ant-table-row').filter({ hasText: '海報四色印刷' }).first();
+  const printingRow = taskRows(page).filter({ hasText: '海報四色印刷' }).first();
   await expect(printingRow).toContainText('NT$ 5,981');
   await expect(printingRow).not.toContainText('NT$ 10,781');
 
-  // 展開層才有的項目：製作細節、備註、單位、放損率、需轉交、計入完成度、派單，
+  // 第三層：任務列展開後才有的項目——製作細節、備註、單位、放損率、需轉交、計入完成度、派單，
   // 以及產出、點收、可轉交上限、任務實際開工、指派師傅
-  const firstRow = page.locator('tr.ant-table-row').first();
+  const firstRow = taskRows(page).first();
   await firstRow.locator('.ant-table-row-expand-icon').click();
   const expandedRow = page.locator('tr.ant-table-expanded-row').first();
   for (const label of [
@@ -199,13 +216,29 @@ test('7.9 生產任務清單是單一序列的母子表格（原編號 161）', 
   ]) {
     await expect(expandedRow).toContainText(label);
   }
+
+  // 多部位的工單：鏈四 WO-2026-0820 九筆任務分五個部位，分群列各帶自己的任務數；
+  // 任務列的序號標籤仍是全清單的生產順序，不因分群重編
+  await gotoInApp(page, '/work-orders');
+  await openWorkOrder(page, 'WO-2026-0820');
+  await expect(groupRows(page)).toHaveCount(5);
+  await expect(groupRows(page).nth(0)).toContainText('書芯');
+  await expect(groupRows(page).nth(0)).toContainText('3 項');
+  await expect(groupRows(page).nth(1)).toContainText('封面＋書腰（併版）');
+  await expect(groupRows(page).nth(1)).toContainText('3 項');
+  await expect(groupRows(page).nth(4)).toContainText('成書（書芯＋封面＋書腰）');
+  await expect(groupRows(page).nth(4)).toContainText('1 項');
+  await expect(taskRows(page)).toHaveCount(9);
+  await expect(taskRows(page).nth(0)).toContainText('#1');
+  await expect(taskRows(page).nth(8)).toContainText('#9');
+  await expect(taskRows(page).nth(8)).toContainText('精裝裝訂');
 });
 
 test('7.10 排序走側板，一次生效；清單被動過就擋下（原編號 162）', async ({ page }) => {
   test.setTimeout(90_000); // 拖曳整段可重試，預設 30 秒不夠
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0901');
-  const rows = page.locator('.ant-table-tbody tr.ant-table-row');
+  const rows = taskRows(page);
   const originalFirst = (await rows.first().innerText()).includes('雪銅紙');
   expect(originalFirst).toBe(true);
 
@@ -273,7 +306,7 @@ test('7.12 預計完成日純手填，工單預計完工日取最大值（原編
   await expect(taskForm(page)).toHaveCount(0);
 
   // 全部任務都不填時，工單資訊的預計完工日為空
-  await page.getByText('查看工單資訊').click();
+  await expandPanel(page, '工單資訊');
   const info = page
     .locator('th.ant-descriptions-item-label')
     .filter({ hasText: '預計完工日' })
@@ -286,20 +319,24 @@ test('7.12 預計完成日純手填，工單預計完工日取最大值（原編
   await fillTaskEndDate(page, 'DM 四色雙面印刷', '2026-09-18');
   await expect(info).toContainText('2026-09-18');
 
-  // 在工單資訊直接填一個預計完工日時以人填的為準
+  // 把最晚那一筆改早，工單預計完工日即時重算（改任務就是改工單的完工日，沒有第二個入口）
+  await fillTaskEndDate(page, 'DM 四色雙面印刷', '2026-09-15');
+  await expect(info).toContainText('2026-09-15');
+
+  // 編輯工單資訊側板沒有預計完工日欄：這個日期唯讀，要改就改任務的預計完成日
   // 工單資訊卡標題列的編輯鈕（頁面上第一顆「編輯」）
   await page.getByRole('button', { name: /編輯$/ }).first().click();
   const drawer = page.locator('.ant-drawer-content');
-  await drawer.getByPlaceholder('留空＝取任務預計完成日的最大值').fill('2026-09-25');
-  await page.keyboard.press('Enter');
-  await drawer.getByRole('button', { name: '儲存' }).click();
-  await expect(drawer).toBeHidden();
-  await expect(info).toContainText('2026-09-25');
+  await expect(drawer.getByText('確樣需求')).toBeVisible();
+  await expect(drawer).not.toContainText('預計完工日');
+  await expect(drawer.getByPlaceholder('留空＝取任務預計完成日的最大值')).toHaveCount(0);
+  await drawer.getByRole('button', { name: '關閉' }).click();
+  await expect(info).toContainText('2026-09-15');
 });
 
 // 對某一筆生產任務填預計完成日（走該列的編輯對話框）
 async function fillTaskEndDate(page, taskName, date) {
-  const row = page.locator('tr.ant-table-row').filter({ hasText: taskName }).first();
+  const row = taskRows(page).filter({ hasText: taskName }).first();
   await row.getByRole('button', { name: '編輯' }).click();
   const input = formField(page, '預計完成日').locator('input');
   await input.fill(date);
@@ -342,7 +379,7 @@ test('7.23 生產任務的預計完成日晚於工單內部完成日時軟提示
   ).toBeVisible();
 
   // 任務列的預計完成欄旁掛「超出內部完成日」標籤
-  const taskRow = page.locator('tr.ant-table-row').filter({ hasText: '騎馬釘裝訂' }).first();
+  const taskRow = taskRows(page).filter({ hasText: '騎馬釘裝訂' }).first();
   await expect(taskRow.getByText('超出內部完成日')).toBeVisible();
 
   // 改成同日 2026-09-24：標籤消失（同日不算超期）
@@ -358,7 +395,7 @@ test('7.23 生產任務的預計完成日晚於工單內部完成日時軟提示
 
 // 改某一筆生產任務的預計完成日（走該列的編輯對話框）
 async function setTaskEndDate(page, taskName, date) {
-  const row = page.locator('tr.ant-table-row').filter({ hasText: taskName }).first();
+  const row = taskRows(page).filter({ hasText: taskName }).first();
   await row.getByRole('button', { name: '編輯' }).click();
   const input = formField(page, '預計完成日').locator('input');
   await input.fill(date);
@@ -416,7 +453,7 @@ test('7.25 製程說明與品檢需求記在印件層，一處改動兩頁同值
   await openWorkOrder(page, 'WO-2026-0904');
 
   // 起點就已經是同一份事實：mock 預填的兩欄在工單詳情的印件基本資訊面板上讀得到
-  await page.getByText('查看印件資訊').click();
+  await expandPanel(page, '印件基本資訊');
   await expectProcessQc(page, {
     processNote: MOCK_PROCESS_NOTE,
     qcRequirement: MOCK_QC_REQUIREMENT,
@@ -455,7 +492,7 @@ test('7.25 製程說明與品檢需求記在印件層，一處改動兩頁同值
   await clickIntoDetail(page, 'WO-2026-0905', /work-orders\/detail/);
   await expect(page.getByRole('heading', { name: 'WO-2026-0905' })).toBeVisible();
   await assertRoleKept(page, '印務', '導頁到 WO-2026-0905 工單詳情');
-  await page.getByText('查看印件資訊').click();
+  await expandPanel(page, '印件基本資訊');
   await expectProcessQc(page, {
     processNote: REVISED_PROCESS_NOTE,
     qcRequirement: REVISED_QC_REQUIREMENT,
@@ -471,7 +508,7 @@ test('7.26 印件的製程說明與品檢需求都沒填，工單照樣送得出
 
   // 前置：印務把所屬印件的兩欄清成空白（兩欄選填，儲存不被擋下）；
   // 工單頁的入口是工單資訊卡的「編輯」，開的是「編輯工單資訊」抽屜
-  await page.getByText('查看印件資訊').click();
+  await expandPanel(page, '印件基本資訊');
   await editProcessQcOnWorkOrder(page, { processNote: '', qcRequirement: '' });
   await expectProcessQc(page, { processNote: '—', qcRequirement: '—' });
 

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs, switchRole, gotoInApp } from '../_helpers.mjs';
+import { gotoInApp, openAs, switchRole, taskRows } from '../_helpers.mjs';
 
 // 情境目錄第十章：報工向上反映鏈（工單 → 印件 → 訂單）與完成判定。
 // 起點資料：鏈三 WO-2026-0815（工單已交付、四筆任務待派工，客戶好日子烘焙坊，訂單 ORD-2026-0815）。
@@ -50,7 +50,7 @@ test('10.12 首次報工把上游三層一起推進，已收尾的不被拉回�
   // 尚未報工的其餘三筆仍為空
   await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0815' })).toBeVisible();
   // 備料是製程的第一道，列在生產任務清單首位——展開它就是剛才報過工的那一筆
-  await page.locator('tr.ant-table-row').first().locator('.ant-table-row-expand-icon').click();
+  await taskRows(page).first().locator('.ant-table-row-expand-icon').click();
   const expanded = page.locator('tr.ant-table-expanded-row').first();
   await expect(expanded).toContainText('任務實際開工');
   const startedAt = expanded
@@ -69,7 +69,7 @@ test('10.19 尚未報工的生產任務，任務實際開工為空（分派日�
   await gotoInApp(page, '/work-orders');
   await page.getByText('WO-2026-0815', { exact: true }).click();
   await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0815' })).toBeVisible();
-  const firstRow = page.locator('tr.ant-table-row').first();
+  const firstRow = taskRows(page).first();
   await firstRow.locator('.ant-table-row-expand-icon').click();
   const expanded = page.locator('tr.ant-table-expanded-row').first();
   await expect(

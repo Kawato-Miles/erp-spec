@@ -136,3 +136,43 @@ export async function warmUp(page, paths) {
     await page.locator('.ant-layout, main').first().waitFor({ state: 'attached', timeout: 60000 }).catch(() => {});
   }
 }
+
+// 共用面板（PanelBlock）可收合時的標題列：點標題切換內容區。工單詳情頁的工單資訊、
+// 印件基本資訊、印件檔案三張卡預設收合，要讀卡內欄位的測試先呼叫 expandPanel 展開。
+// 標題是 h5，標題列右側的操作鈕不在切換區內（點它們不會收合）。
+// 面板展開時外框（BorderBlock）底下直接掛一條分隔線，收合時整條連同內容區都不渲染；
+// 故以「最近一個直接子層有分隔線的祖先 div」定位這張卡，收合時取不到（count 為 0）。
+// 不可寫成後代分隔線（.//div）：頁面外層容器同時是各張卡的祖先，別張卡展開就會誤中。
+export const panelBlock = (page, title) =>
+  page.locator(
+    `xpath=//h5[normalize-space(.)="${title}"]/ancestor::div[div[contains(@class,"ant-divider")]][1]`,
+  );
+
+// 展開收合中的面板；已展開時不動作（可重複呼叫）。
+export async function expandPanel(page, title) {
+  const heading = page.getByRole('heading', { name: title, exact: true }).first();
+  await expect(heading).toBeVisible();
+  if (await panelBlock(page, title).count()) return;
+  await expect(async () => {
+    await heading.click();
+    await expect(panelBlock(page, title)).toHaveCount(1, { timeout: 2000 });
+  }).toPass({ intervals: [300, 800, 1500], timeout: 15000 });
+}
+
+// 收合已展開的面板（驗「再點一次收回」用）。
+export async function collapsePanel(page, title) {
+  const heading = page.getByRole('heading', { name: title, exact: true }).first();
+  await heading.click();
+  await expect(panelBlock(page, title)).toHaveCount(0);
+}
+
+/**
+ * 工單詳情頁製程規劃頁籤的生產任務清單有三層列：印件部位分群列、任務列、展開列。
+ * 要數任務或取第 n 筆任務時一律用 taskRows——直接數 tr.ant-table-row 會把分群列算進去，
+ * 第一列也會是分群列（點它的展開箭頭是收合整個部位，不是展開那一筆任務）。
+ */
+export const groupRows = (page) => page.locator('.ant-table-tbody tr.grouped-table-group-row');
+export const taskRows = (page) =>
+  page.locator(
+    '.ant-table-tbody tr.ant-table-row:not(.grouped-table-group-row):not(.ant-table-expanded-row)',
+  );

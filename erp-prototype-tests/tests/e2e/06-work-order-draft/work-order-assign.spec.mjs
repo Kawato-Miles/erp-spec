@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs, gotoInApp, switchRole } from '../_helpers.mjs';
+import { expandPanel, openAs, gotoInApp, panelBlock, switchRole } from '../_helpers.mjs';
 import { pickOption, openByNo, dialog, openTab, button, openScenario } from './_local-helpers.mjs';
 
 test('6.2 印務主管把草稿工單指派給負責印務與工單審核主管（原編號 46）', async ({ page }) => {
@@ -10,8 +10,8 @@ test('6.2 印務主管把草稿工單指派給負責印務與工單審核主管�
   // 未分派時頁首出現提示，基本資料顯示尚未分派與尚未指定
   await expect(page.locator('body')).toContainText('本工單尚未分派主責印務');
   await expect(page.locator('body')).toContainText('尚未分派');
-  await page.getByText('查看工單資訊').click();
-  await expect(page.locator('.ant-collapse-content-active')).toContainText('尚未指定');
+  await expandPanel(page, '工單資訊');
+  await expect(panelBlock(page, '工單資訊')).toContainText('尚未指定');
 
   await button(page, '分派').click();
   const modal = dialog(page);

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { gotoInApp, openAs } from '../_helpers.mjs';
+import { expandPanel, gotoInApp, openAs } from '../_helpers.mjs';
 import {
   cjkName,
   clickAndWaitUrl,
@@ -332,7 +332,7 @@ test('8.12 印件的兩欄都沒填時，紙本表頭各印破折號且不擋下
 
   // 前置：把所屬印件的製程說明與品檢需求清空。工單頁的編輯入口是工單資訊卡的「編輯」，
   // 開的是「編輯工單資訊」抽屜（公司對照表 C7）；兩欄的值仍寫回印件層
-  await page.getByText('查看印件資訊').click();
+  await expandPanel(page, '印件基本資訊');
   await page.getByRole('button', { name: /編輯$/ }).first().click();
   const drawer = page.locator('.ant-drawer').filter({ hasText: '編輯工單資訊' }).last();
   await drawer.getByLabel(/製程說明/).fill('');

@@ -279,13 +279,20 @@ describe('7.12 預計完成日純手填，工單預計完工日取最大值（�
     expect(resolvePlannedEndDate(workOrder)).toBe('2026-09-18');
   });
 
-  it('在工單資訊直接填過值時以人填的為準', () => {
+  it('工單自身留有舊的手填值也不採用，一律回任務的最大值', () => {
     expect(
       resolvePlannedEndDate({
         planned_end_date: '2026-09-25',
         tasks: [{ planned_end_date: '2026-09-18', status: '待處理' }],
       }),
-    ).toBe('2026-09-25');
+    ).toBe('2026-09-18');
+  });
+
+  it('任務的預計完成日改動後即時重算', () => {
+    const before = { tasks: [{ planned_end_date: '2026-09-18', status: '待處理' }] };
+    expect(resolvePlannedEndDate(before)).toBe('2026-09-18');
+    const after = { tasks: [{ planned_end_date: '2026-09-15', status: '待處理' }] };
+    expect(resolvePlannedEndDate(after)).toBe('2026-09-15');
   });
 });
 

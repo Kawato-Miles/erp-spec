@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs, switchRole } from '../_helpers.mjs';
+import { openAs, switchRole, taskRows } from '../_helpers.mjs';
 import {
   bomPicker,
   formField,
@@ -66,7 +66,7 @@ test('7.11 新增生產任務一開就選主檔，新任務排在最後（原編
 
   // 清單右上只有一顆新增按鈕
   await expect(page.getByRole('button', { name: /^新增/ })).toHaveCount(1);
-  const before = await page.locator('.ant-table-tbody tr.ant-table-row').count();
+  const before = await taskRows(page).count();
 
   // 一點開就是選擇器：三個頁籤、預選材料，沒有先選類型那一步
   await page.getByRole('button', { name: '新增生產任務' }).click();
@@ -91,7 +91,7 @@ test('7.11 新增生產任務一開就選主檔，新任務排在最後（原編
   await expect(taskForm(page)).toHaveCount(0);
 
   // 新任務排在清單最後一列，既有順序不變
-  const rows = page.locator('.ant-table-tbody tr.ant-table-row');
+  const rows = taskRows(page);
   await expect(rows).toHaveCount(before + 1);
   await expect(rows.first()).toContainText('雪銅紙 150g 菊全');
   await expect(rows.last()).toContainText('騎馬釘裝訂');
@@ -146,7 +146,7 @@ test('7.14 按面積計價的工序改選面積規格，備料任務只在自有
     await switchRole(page, '印務主管');
   }).toPass({ timeout: 30000 });
   await openWorkOrder(page, 'WO-2026-0910');
-  const firstRow = page.locator('.ant-table-tbody tr.ant-table-row').first();
+  const firstRow = taskRows(page).first();
   await expect(firstRow).toContainText('珠光合成紙');
   await page.locator('.ant-tabs-tab').filter({ hasText: '成本對照' }).first().click();
   const costRow = page.locator('.ant-table-tbody tr').filter({ hasText: '珠光合成紙' }).first();
