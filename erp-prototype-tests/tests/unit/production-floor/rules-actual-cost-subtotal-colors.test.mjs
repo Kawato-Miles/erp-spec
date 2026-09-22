@@ -84,6 +84,23 @@ describe('15.3 印件層的實際成本合計由任務小計與各顏色費用�
     expect(printing.colors.cmyk).toBeGreaterThan(0);
   });
 
+  it('材料任務即使填了計畫設備也不扣開機費：預估側本來就沒加這一段，實際小計等於同一支引擎重算的值', () => {
+    const actual = actualCostOf('WO-2026-0710', MOCK_WORK_REPORTS);
+    const workOrder = MOCK_WORK_ORDERS.find((w) => w.work_order_no === 'WO-2026-0710');
+    const material = workOrder.tasks.find((t) => t.id === 'pt-0710-1');
+    // 這筆是材料型任務、卻掛著平版機（計畫設備供排程分組用，不代表它在上機）
+    expect(material.task_type).toBe('材料');
+    expect(material.planned_equipment).toBe('海德堡 SM102 四色機');
+    expect(findEquipment(material.planned_equipment).pricing_type).toBe('平版');
+    // 有效報工的投入累計代入同一支引擎，結果原樣就是實際小計（不再扣一次開機費）
+    const inputQty = MOCK_WORK_REPORTS.filter(
+      (r) => r.task_id === 'pt-0710-1' && r.status !== '已作廢',
+    ).reduce((acc, r) => acc + r.input_qty, 0);
+    const recomputed = estimateTaskCost({ ...material, target_qty: inputQty });
+    expect(actual.byTask['pt-0710-1'].subtotal).toBe(recomputed.subtotal);
+    expect(actual.byTask['pt-0710-1'].subtotal).toBeGreaterThan(0);
+  });
+
   it('報工作廢時投入累計回落，實際成本跟著回沖（作廢報工不計入 isActiveReport）', () => {
     const voidedReport = {
       id: 'wr-test-voided',

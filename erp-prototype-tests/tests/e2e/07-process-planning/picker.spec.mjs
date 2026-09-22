@@ -5,6 +5,7 @@ import {
   formField,
   openWorkOrder,
   pickBomRow,
+  pickPickerFilter,
   pickerRows,
   readOnlyPair,
   switchFormTab,
@@ -222,8 +223,7 @@ test('7.16 選擇器的篩選：分類側欄、名稱、品牌與廠商（原編
 
   // 清掉側欄改用品牌篩選
   await picker.getByRole('button', { name: 'autorenew' }).click();
-  await picker.locator('.ant-select').first().click();
-  await page.locator('.ant-select-item-option').filter({ hasText: '南亞' }).click();
+  await pickPickerFilter(page, picker, '南亞');
   await expect(rows).toHaveCount(3);
   await expect(rows.first()).toContainText('珠光合成紙');
 
@@ -239,8 +239,7 @@ test('7.16 選擇器的篩選：分類側欄、名稱、品牌與廠商（原編
   // 工序頁籤的篩選是工序廠商
   await picker.locator('.ant-tabs-tab', { hasText: '工序' }).click();
   await expect(picker.getByText('工序廠商', { exact: true })).toBeVisible();
-  await picker.locator('.ant-select').first().click();
-  await page.locator('.ant-select-item-option').filter({ hasText: '協力一廠' }).click();
+  await pickPickerFilter(page, picker, '協力一廠');
   await expect(rows.first()).toContainText('協力一廠');
 
   // 裝訂頁籤有裝訂廠商篩選與名稱搜尋、沒有分類側欄

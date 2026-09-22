@@ -87,17 +87,24 @@ test('8.5 交付產線後的欄位一路帶到現場報工（原編號 112）', 
   await gotoInAppStable(page, '/work-orders');
   await page.getByText('WO-2026-0908', { exact: true }).first().click();
   await page.getByRole('tab', { name: '成本對照' }).click();
-  // 限定在成本對照這一個頁籤內找列：製程規劃頁籤切走之後仍留在 DOM 裡，
-  // 不限定的話會先命中製程規劃的任務列（欄序不同，讀到的是別的欄）
-  const costRow = page
-    .locator('.ant-tabs-tabpane-active tbody tr')
+  // 限定在成本對照那張表之內找列：製程規劃頁籤切走之後仍留在 DOM 裡，且切換有延遲，
+  // 只認頁籤是否為作用中會在切換完成前就命中製程規劃的任務列（欄序不同，讀到的是別的欄）。
+  // 改用只有這張表才有的欄名「實際（累積）」定位表身，等它出現即代表已切到成本對照。
+  const costTable = page
+    .locator('.ant-table')
+    .filter({ has: page.getByRole('columnheader', { name: '實際（累積）' }) })
+    .first();
+  const costRow = costTable
+    .locator('tbody tr')
     .filter({ hasText: '一級卡 300g 名片八開' })
     .first();
-  await expect(costRow).toBeVisible();
+  await expect(costRow).toBeVisible({ timeout: 20_000 });
   // 欄序：成本項目、預估、實際、升降
   const actual = await costRow.locator('td').nth(2).innerText();
-  expect(actual).not.toBe('NT$ 0');
-  expect(Number(actual.replace(/[^0-9]/g, ''))).toBeGreaterThan(0);
+  // 期望值 NT$ 612：備料任務報工投入累計 700 備料張，依開料數 8 換算回整紙 ceil(700 ÷ 8)＝88 張，
+  // 乘供應商原料單張進價 6.95 元＝611.6，四捨五入 612（算式來源：wiki BOM結構 § 材料 M1 重量計，
+  // 與預估側同一支引擎，只換數量輸入）。材料任務不上機，實際小計不扣平版開機費。
+  expect(actual).toBe('NT$ 612');
 
   // 五、工作包側板看得到這筆報工紀錄
   await switchRoleReliable(page, '生管');

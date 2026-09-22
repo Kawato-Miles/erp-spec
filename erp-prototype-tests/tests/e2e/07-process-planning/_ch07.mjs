@@ -79,3 +79,31 @@ export function readOnlyPair(page, label) {
 export async function switchFormTab(page, label) {
   await taskForm(page).locator('.ant-tabs-tab').filter({ hasText: label }).click();
 }
+
+/**
+ * 在 BOM 選擇器的篩選下拉（材料品牌／工序廠商／裝訂廠商）挑一個選項。
+ * 這幾顆下拉都開了搜尋（showSearch），清單本身又是虛擬捲動：選項落在視窗外時直接點會逾時，
+ * 且畫面上同時留著先前開過、已收合的下拉，不限定範圍會點到那些看不見的複本。
+ * 故固定三步——先輸入關鍵字把清單縮到只剩目標、只在展開中的那一個下拉裡取選項、捲進視窗再點；
+ * 整段用重試包住，下拉真的收起來才算點到。
+ * @param {import('@playwright/test').Locator} picker BOM 選擇器對話框
+ * @param {string} label 選項文字（與畫面上完全相同）
+ */
+export async function pickPickerFilter(page, picker, label) {
+  const openDropdown = () =>
+    page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last();
+  await expect(async () => {
+    const box = picker.locator('.ant-select').first();
+    if (!(await page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').count())) {
+      await box.click();
+    }
+    await box.locator('input').first().fill(label);
+    const option = openDropdown().locator(`.ant-select-item-option[title="${label}"]`).first();
+    await option.waitFor({ state: 'visible', timeout: 3000 });
+    await option.scrollIntoViewIfNeeded({ timeout: 2000 });
+    await option.click({ timeout: 3000 });
+    await expect(
+      page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)'),
+    ).toHaveCount(0, { timeout: 3000 });
+  }).toPass({ intervals: [500, 1000, 2000], timeout: 30_000 });
+}
