@@ -101,6 +101,113 @@ describe('11.1 待驗清單依印件做出來的良品列出', () => {
   });
 });
 
+// ── 情境 11.22：內部完成日、預計交期、急件標籤三欄與預設排序 ──
+// 三個值的事實持有者都是訂單模組的印件，清單只讀不存。排序的判準是「哪一批先要交出去」，
+// 不是「哪一批先做出來」——一天驗不完全部時，先驗哪一批靠的就是這個先後。
+describe('11.22 待驗清單帶內部完成日、預計交期與急件標籤', () => {
+  const rows = calcPendingInspections({
+    printItems: MOCK_PRINT_ITEMS,
+    orders: MOCK_ORDERS,
+    workOrders: MOCK_WORK_ORDERS,
+    floorTasks: MOCK_FLOOR_TASKS,
+    qcRecords: MOCK_QC_RECORDS,
+  });
+  const rowOf = (printItemNo) => rows.find((r) => r.print_item_no === printItemNo);
+
+  it('鏈一 PI-2026-0601 為一般件：兩個日期照印件推導，急件標籤為空', () => {
+    expect(rowOf('PI-2026-0601')).toMatchObject({
+      internal_due_date: '2026-06-18',
+      expected_delivery_date: '2026-06-22',
+      urgent_option_name: '一般件',
+      urgent_option_days: 0,
+      urgency_label: null,
+    });
+  });
+
+  it('鏈四 PI-2026-0820 為三天急件：標籤取凍結的選項名稱', () => {
+    expect(rowOf('PI-2026-0820')).toMatchObject({
+      internal_due_date: '2026-09-04',
+      expected_delivery_date: '2026-09-07',
+      urgent_option_name: '三天急件',
+      urgent_option_days: 3,
+      urgency_label: '三天急件',
+    });
+  });
+
+  it('預設排序為內部完成日由近到遠（鏈一 6/18 排在鏈四 9/04 之前）', () => {
+    expect(rows.map((r) => r.print_item_no)).toEqual(['PI-2026-0601', 'PI-2026-0820']);
+  });
+});
+
+describe('11.22 沒有內部完成日的印件排最後，同日依最後一次報工由舊到新', () => {
+  // 合成三件印件：兩件同一天到期、一件沒有談定日期。三件都只有一筆計入完成度的任務、報工良品 500
+  const printItems = [
+    printItemOf('PI-TEST-LATE', '晚報工'),
+    printItemOf('PI-TEST-EARLY', '早報工'),
+    printItemOf('PI-TEST-NODATE', '沒談定日期'),
+  ];
+  const workOrders = [
+    workOrderOf('PI-TEST-LATE', [
+      taskOf('t-late', 500, 0, {
+        history: [{ ref_kind: '報工紀錄', event: '報工：500', at: '2026-09-20 15:00' }],
+      }),
+    ]),
+    workOrderOf('PI-TEST-EARLY', [
+      taskOf('t-early', 500, 0, {
+        history: [{ ref_kind: '報工紀錄', event: '報工：500', at: '2026-09-20 09:00' }],
+      }),
+    ]),
+    workOrderOf('PI-TEST-NODATE', [taskOf('t-nodate', 500)]),
+  ];
+  // 訂單側持有三項印件事實：同一天到期的兩件都填 2026-09-30，沒談定的那件留空
+  const orders = [
+    {
+      order_no: 'ORD-TEST-SORT',
+      client_name: '排序樣本客戶',
+      print_items: [
+        {
+          print_item_no: 'PI-TEST-LATE',
+          name: '晚報工',
+          undeducted_internal_due_date: '2026-09-30',
+          urgent_option_id: 'UO-001',
+          urgent_option_name: '一般件',
+          urgent_option_days: 0,
+        },
+        {
+          print_item_no: 'PI-TEST-EARLY',
+          name: '早報工',
+          undeducted_internal_due_date: '2026-09-30',
+          urgent_option_id: 'UO-001',
+          urgent_option_name: '一般件',
+          urgent_option_days: 0,
+        },
+        {
+          print_item_no: 'PI-TEST-NODATE',
+          name: '沒談定日期',
+          undeducted_internal_due_date: null,
+          urgent_option_id: 'UO-001',
+          urgent_option_name: '一般件',
+          urgent_option_days: 0,
+        },
+      ],
+    },
+  ];
+  const rows = calcPendingInspections({ printItems, orders, workOrders });
+
+  it('同一天到期時先報工的排前面', () => {
+    expect(rows.map((r) => r.print_item_no).slice(0, 2)).toEqual([
+      'PI-TEST-EARLY',
+      'PI-TEST-LATE',
+    ]);
+  });
+
+  it('沒有內部完成日的排最後（沒有談定的那一天就沒有交期壓力）', () => {
+    expect(rows[rows.length - 1].print_item_no).toBe('PI-TEST-NODATE');
+    expect(rows[rows.length - 1].internal_due_date).toBeNull();
+    expect(rows[rows.length - 1].expected_delivery_date).toBeNull();
+  });
+});
+
 describe('11.14 多部件印件的待驗量取各部件良品的最小值', () => {
   const printItems = [printItemOf('PI-TEST-GIFT', '禮盒')];
   const buildWorkOrders = (linerGood, linerDefect) => [

@@ -3,6 +3,7 @@ import { openAs } from '../_helpers.mjs';
 import {
   CHAIN4,
   correctDialog,
+  fakePhoto,
   createTransferToQc,
   expandedRecords,
   gotoInAppSafe,
@@ -40,11 +41,15 @@ const qcHeader = (page) => page.locator('.ant-table-thead').first();
 test('11.1 待驗清單依印件做出來的良品列出，不依轉交（原編號 27）', async ({ page }) => {
   await openAs(page, '品檢人員', '/qc-shipping/inspection');
 
-  // 欄位：印件、所屬訂單編號、客戶名稱、品檢需求、齊套完成數、已驗（通過／不通過）、待驗量、操作
+  // 欄位：印件、所屬訂單編號、客戶名稱、品檢需求、內部完成日、預計交期、急件、齊套完成數、
+  // 已驗（通過／不通過）、待驗量、操作
   await expect(qcHeader(page)).toContainText('印件');
   await expect(qcHeader(page)).toContainText('所屬訂單編號');
   await expect(qcHeader(page)).toContainText('客戶名稱');
   await expect(qcHeader(page)).toContainText('品檢需求');
+  await expect(qcHeader(page)).toContainText('內部完成日');
+  await expect(qcHeader(page)).toContainText('預計交期');
+  await expect(qcHeader(page)).toContainText('急件');
   await expect(qcHeader(page)).toContainText('齊套完成數');
   await expect(qcHeader(page)).toContainText('已驗（通過／不通過）');
   await expect(qcHeader(page)).toContainText('待驗量');
@@ -90,6 +95,7 @@ test('11.2 品檢人員分次驗收，通過數即時計入完工良品數（原
   const dialog = inspectDialog(page);
   await dialog.getByLabel('通過數量', { exact: true }).fill('300');
   await dialog.getByLabel('不通過數量', { exact: true }).fill('20');
+  await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('品檢照.jpg'));
   await dialog.getByRole('button', { name: '記錄驗收' }).click();
   await expect(dialog.getByText('不通過數量大於 0 時必填原因')).toBeVisible();
 
@@ -122,6 +128,7 @@ test('11.3 驗收數量不得超過待驗量（原編號 52）', async ({ page }
   // 填 600 送出：整筆擋下並顯示當下待驗量 500，且輸入框不自動把數字砍到上限內
   const passedInput = dialog.getByLabel('通過數量', { exact: true });
   await passedInput.fill('600');
+  await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('品檢照.jpg'));
   await dialog.getByRole('button', { name: '記錄驗收' }).click();
   await expect(dialog.getByText('通過＋不通過不可超過本站待驗量 500').first()).toBeVisible();
   await expect(page.getByText(/已記錄驗收/)).toHaveCount(0);
@@ -210,11 +217,8 @@ test('11.5 品質帳只有一份，驗完三處同時變（原編號 104）', as
   // 出貨建單的可出貨額度同步
   await switchRoleSafe(page, '業務');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await page.getByRole('button', { name: '建立出貨單' }).first().click();
-  const dialog = page
-    .locator('.ant-modal-content')
-    .filter({ hasText: '建立出貨單（同訂單可合箱' })
-    .first();
+  await page.getByRole('button', { name: '建立出貨單草稿' }).first().click();
+  const dialog = page.locator('.ant-drawer-content:visible').first();
   const orderBox = dialog.getByRole('combobox').first();
   await orderBox.click();
   await orderBox.fill(CHAIN4.orderNo);
@@ -225,7 +229,7 @@ test('11.5 品質帳只有一份，驗完三處同時變（原編號 104）', as
     .filter({ hasText: CHAIN4.orderNo })
     .first()
     .click();
-  await dialog.getByRole('tab', { name: /出貨印件/ }).click();
+  await dialog.getByRole('tab', { name: '出貨明細' }).click();
   await expect(
     dialog.getByRole('row', { name: new RegExp(CHAIN4.printItemNo) }),
   ).toContainText('480');
@@ -268,14 +272,20 @@ test('11.7 品檢站在桌機是表格，窄視窗靠側欄收合與橫向捲動
   await expect(page.getByText('待驗量＝做出來的良品 − 已驗量，只看做出來多少')).toBeVisible();
   await expect(pendingRow(page)).toContainText(CHAIN4.orderNo);
   await expect(pendingRow(page)).toContainText(CHAIN4.clientName);
+  // 內部完成日、預計交期與急件標籤三欄自訂單模組的印件帶出
+  await expect(pendingRow(page)).toContainText('2026-09-04');
+  await expect(pendingRow(page)).toContainText('2026-09-07');
+  await expect(pendingRow(page)).toContainText('三天急件');
   const doneRow = pendingRow(page, 'PI-2026-0601');
   await doneRow.getByLabel('展開行').click();
   const records = expandedRecords(page, 'PI-2026-0601');
   await expect(records).toContainText('品檢時間');
   await expect(records).toContainText('通過／不通過');
   await expect(records).toContainText('不通過原因');
+  await expect(records).toContainText('照片');
   await expect(records).toContainText('品檢人員');
   await expect(records).toContainText('+5,000');
+  await expect(records).toContainText('品檢照-QC0601-01.jpg');
   await expect(records).toContainText('郭淑芬');
 
   // 視窗縮到 700 像素：側欄收合為圖示列，表格改為橫向捲動、整頁不被推出視窗
@@ -345,6 +355,7 @@ test('11.9 分次驗收與待驗量歸零後的防呆（原編號 122）', async
   const dialog = inspectDialog(page);
   await dialog.getByLabel('通過數量', { exact: true }).fill('300');
   await dialog.getByLabel('不通過數量', { exact: true }).fill('20');
+  await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('品檢照.jpg'));
   await dialog.getByRole('button', { name: '記錄驗收' }).click();
   await expect(dialog.getByText('不通過數量大於 0 時必填原因')).toBeVisible();
   // 原因為分組選項；六組值域與「沒有其他」的完整驗算在純函式測試
@@ -380,6 +391,11 @@ test('11.10 印件詳情頁看得到歷次分次驗收（原編號 11）', async
   await expect(page.getByText(/歷次品檢紀錄（\d+）/)).toBeVisible();
   await expect(page.getByText('品檢缺口處置留痕')).toBeVisible();
   await expect(page.getByRole('row', { name: /5,000/ }).first()).toBeVisible();
+  // 品檢紀錄列含照片欄：鏈一那一筆顯示檔名
+  await expect(page.locator('.ant-table-thead').filter({ hasText: '品檢時間' })).toContainText(
+    '照片',
+  );
+  await expect(page.getByText('品檢照-QC0601-01.jpg').first()).toBeVisible();
 });
 
 test('11.11 品檢驗收介面看得到印件的品檢需求', async ({ page }) => {
@@ -433,6 +449,7 @@ test('11.12 印件的品檢需求沒填時顯示破折號，驗收照樣記得�
   const dialog = inspectDialog(page);
   await dialog.getByLabel('通過數量', { exact: true }).fill('500');
   await dialog.getByLabel('不通過數量', { exact: true }).fill('0');
+  await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('品檢照.jpg'));
   await dialog.getByRole('button', { name: '記錄驗收' }).click();
   await expect(page.getByText(/已記錄驗收/).first()).toBeVisible();
   await expect(pendingRow(page)).toContainText('500 ／ 0');
@@ -482,6 +499,7 @@ test('11.16 更正紀錄沖銷後待驗量回升', async ({ page }) => {
   await expandedRecords(page).getByRole('button', { name: '補更正紀錄' }).first().click();
   const dialog = correctDialog(page);
   await dialog.getByLabel('通過數量更正（可填負數）', { exact: true }).fill('-500');
+  await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('更正品檢照.jpg'));
   await dialog.getByRole('button', { name: '送出更正紀錄' }).click();
   await expect(page.getByText(/已補一筆更正紀錄/).first()).toBeVisible();
 
@@ -503,6 +521,7 @@ test('11.18 更正紀錄沖不到負數', async ({ page }) => {
   const dialog = correctDialog(page);
   const passedDelta = dialog.getByLabel('通過數量更正（可填負數）', { exact: true });
   await passedDelta.fill('-600');
+  await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('更正品檢照.jpg'));
   await dialog.getByRole('button', { name: '送出更正紀錄' }).click();
 
   // 整筆擋下，訊息只有一句；紀錄不新增、已驗量不動
@@ -515,4 +534,90 @@ test('11.18 更正紀錄沖不到負數', async ({ page }) => {
   await expect(page.getByText(/已補一筆更正紀錄/).first()).toBeVisible();
   await expect(pendingRow(page)).toContainText('0 ／ 0');
   await expect(pendingRow(page).getByRole('button', { name: '驗收' })).toBeEnabled();
+});
+
+test('11.22 品檢站列表帶內部完成日、預計交期與急件標籤，並可依這兩項篩選排序', async ({
+  page,
+}) => {
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+
+  // 三欄的值自訂單模組的印件帶出；一般件不掛標籤
+  const chain1 = pendingRow(page, 'PI-2026-0601');
+  await expect(chain1).toContainText('2026-06-18');
+  await expect(chain1).toContainText('2026-06-22');
+  await expect(chain1).not.toContainText('一般件');
+  const chain4 = pendingRow(page, CHAIN4.printItemNo);
+  await expect(chain4).toContainText('2026-09-04');
+  await expect(chain4).toContainText('2026-09-07');
+  await expect(chain4).toContainText('三天急件');
+
+  // 預設排序為內部完成日由近到遠：鏈一（6/18）排在鏈四（9/04）之前
+  const rows = page.locator('tr.ant-table-row');
+  await expect(rows.first()).toContainText('PI-2026-0601');
+  await expect(rows.nth(1)).toContainText(CHAIN4.printItemNo);
+
+  // 急件選項多選：只留三天急件時鏈一那一列消失
+  const content = page.locator('.ant-layout-content');
+  const urgentSelect = content.locator('.ant-select').nth(1);
+  await urgentSelect.click();
+  await page
+    .locator('.ant-select-dropdown:visible')
+    .last()
+    .locator('.ant-select-item-option')
+    .filter({ hasText: '三天急件' })
+    .first()
+    .click();
+  await page.keyboard.press('Escape');
+  await expect(page.getByText('PI-2026-0601')).toHaveCount(0);
+  await expect(pendingRow(page, CHAIN4.printItemNo)).toBeVisible();
+
+  // 清空篩選把四項一起清掉，兩列都回來
+  await page.getByRole('button', { name: '清空' }).first().click();
+  await expect(pendingRow(page, 'PI-2026-0601')).toBeVisible();
+  await expect(pendingRow(page, CHAIN4.printItemNo)).toBeVisible();
+
+  // 內部完成日區間：只留 2026-09-01 之後，鏈一那一列消失
+  const rangeStart = content.locator('input[placeholder="Start date"], .ant-picker-input input').first();
+  await rangeStart.click();
+  await rangeStart.fill('2026-09-01');
+  await rangeStart.press('Enter');
+  const rangeEnd = content.locator('.ant-picker-input input').nth(1);
+  await rangeEnd.fill('2026-09-30');
+  await rangeEnd.press('Enter');
+  await expect(page.getByText('PI-2026-0601')).toHaveCount(0);
+  await expect(pendingRow(page, CHAIN4.printItemNo)).toBeVisible();
+});
+
+test('11.23 品檢紀錄與更正紀錄都必附品檢照片至少一張', async ({ page }) => {
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+
+  // 驗收沒附照片：整筆擋下，欄位下顯示「品檢照片至少一張」
+  await pendingRow(page).getByRole('button', { name: '驗收' }).click();
+  const dialog = inspectDialog(page);
+  await dialog.getByLabel('通過數量', { exact: true }).fill('500');
+  await dialog.getByLabel('不通過數量', { exact: true }).fill('0');
+  await dialog.getByRole('button', { name: '記錄驗收' }).click();
+  await expect(dialog.getByText('品檢照片至少一張')).toBeVisible();
+  await expect(page.getByText(/已記錄驗收/)).toHaveCount(0);
+
+  // 附一張即送得出
+  await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('品檢照-0820-01.jpg'));
+  await dialog.getByRole('button', { name: '記錄驗收' }).click();
+  await expect(page.getByText(/已記錄驗收/).first()).toBeVisible();
+
+  // 更正紀錄走同一條檢核
+  await pendingRow(page).getByLabel('展開行').click();
+  await expandedRecords(page).getByRole('button', { name: '補更正紀錄' }).first().click();
+  const correct = correctDialog(page);
+  await correct.getByLabel('通過數量更正（可填負數）', { exact: true }).fill('-100');
+  await correct.getByRole('button', { name: '送出更正紀錄' }).click();
+  await expect(correct.getByText('品檢照片至少一張')).toBeVisible();
+  await expect(page.getByText(/已補一筆更正紀錄/)).toHaveCount(0);
+  await correct.locator('input[type="file"]').setInputFiles(fakePhoto('更正品檢照-0820-01.jpg'));
+  await correct.getByRole('button', { name: '送出更正紀錄' }).click();
+  await expect(page.getByText(/已補一筆更正紀錄/).first()).toBeVisible();
+
+  // 子表的照片欄列出檔名
+  await expect(expandedRecords(page)).toContainText('品檢照-0820-01.jpg');
+  await expect(expandedRecords(page)).toContainText('更正品檢照-0820-01.jpg');
 });

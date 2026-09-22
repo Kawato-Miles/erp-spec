@@ -135,6 +135,12 @@ test('10.11 一批貨從報工走到可出貨的全鏈（原編號 105）', asyn
   await gotoInApp(page, '/qc-shipping/inspection');
   await page.getByRole('button', { name: '驗收' }).last().click();
   await page.getByRole('spinbutton', { name: '* 通過數量' }).fill('1180');
+  // 品檢照片至少一張才送得出（通過與不通過都要拍）
+  await page
+    .locator('.ant-modal-content')
+    .filter({ hasText: '驗收：' })
+    .locator('input[type="file"]')
+    .setInputFiles({ name: '品檢照.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('fake-photo') });
   await page.getByRole('button', { name: '記錄驗收' }).click();
   await expect(page.getByText(/已記錄驗收：通過 1,180/)).toBeVisible();
 
