@@ -50,26 +50,16 @@ test('8.9 送審防呆：至少要有一筆任務計入完成度（原編號 172
   await expect(page.getByText('製程確認中', { exact: true }).first()).toBeVisible();
 });
 
-test('8.2 印務主管核可製程，外包任務同時自動產生派單（原編號 4）', async ({ page }) => {
-  // 已知衝突（2026-09-22 全鏈核對發現，未自行調和）：本情境要核可的 WO-2026-0906，在 mock 上
-  // 同時是「核可硬擋」的具名樣本（旗下局部上光的任務預計完成日 2026-09-24 晚於印件內部完成日
-  // 2026-09-18，見情境 7.30／7.31 與 MOCK-DATA-CHAIN.md § 鏈外測試資料），核可必定被擋下。
-  // 全 mock 只有這一張含外包任務的待審核工單，換不了起點；製程確認中的工單印務也改不了任務日期。
-  // 處置待 Miles 裁決：另造一張含外包任務、排程正常的待審核工單，或本情境改走退回後重送的路徑。
-  await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0906');
+test('8.2 印務主管核可製程，工單轉製程審核完成（場內加工；原編號 4）', async ({ page }) => {
+  // Miles 2026-09-22 裁決：外包派單暫不納入 prototype 情境，核可情境以全為自有工廠任務的
+  // WO-2026-0907 為樣本。WO-2026-0906 專供排程硬擋情境（7.30／7.31：核可被擋、對話框列兩個日期）。
+  await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0907');
 
-  await page.getByRole('button', { name: '核可製程' }).click();
-
-  await expect(page.getByText(/外包任務已自動產生派單（初始未送）/)).toBeVisible();
-  await expect(page.getByText('製程審核完成', { exact: true }).first()).toBeVisible();
-  await expect(page.getByRole('button', { name: '核可製程' })).toHaveCount(0);
-
-  // 全為自有工廠任務的 WO-2026-0907 核可時不出現派單那一句
-  await openWorkOrderFromList(page, 'WO-2026-0907');
   await page.getByRole('button', { name: '核可製程' }).click();
   await expect(page.getByText('製程已核可', { exact: true })).toBeVisible();
   await expect(page.getByText(/自動產生派單/)).toHaveCount(0);
   await expect(page.getByText('製程審核完成', { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: '核可製程' })).toHaveCount(0);
 });
 
 test('8.4 印務主管在待審核工單列表逐列核可或退回（原編號 64）', async ({ page }) => {
@@ -116,27 +106,27 @@ test('8.4 印務主管在待審核工單列表逐列核可或退回（原編號 
   await expect(page.getByText('雪銅紙 150g 菊全').first()).toBeVisible();
   await expect(page.getByText('局部上光').first()).toBeVisible();
 
-  // 核可 WO-2026-0906：確認框載明將自動產生的派單張數
-  // 已知衝突（同 8.2）：這張單同時是核可硬擋的具名樣本，核可必定被擋下；處置待 Miles 裁決
+  // 核可 WO-2026-0907（全為自有工廠任務、排程正常）：確認框不出現派單那一句
+  // Miles 2026-09-22 裁決：外包派單暫不納入；WO-2026-0906 為排程硬擋樣本，其核可被擋的對話框見 7.31
   await page
-    .locator('tr', { hasText: 'WO-2026-0906' })
+    .locator('tr', { hasText: 'WO-2026-0907' })
     .first()
     .getByRole('button', { name: '審核通過' })
     .click();
-  await expect(page.getByText(/外發任務將自動產生派單 1 張/)).toBeVisible();
+  await expect(page.getByText(/自動產生派單/)).toHaveCount(0);
   await page.getByRole('button', { name: cjkName('核可') }).click();
   await expect(page.getByText(/製程已核可/)).toBeVisible();
-  await expect(page.getByText('WO-2026-0906')).toHaveCount(0);
+  await expect(page.getByText('WO-2026-0907')).toHaveCount(0);
 
-  // 退回 WO-2026-0907：未填原因被擋下，填了才成立
+  // 退回 WO-2026-0906：未填原因被擋下，填了才成立
   await page
-    .locator('tr', { hasText: 'WO-2026-0907' })
+    .locator('tr', { hasText: 'WO-2026-0906' })
     .first()
     .getByRole('button', { name: cjkName('退回') })
     .click();
   await page.getByRole('button', { name: cjkName('退回') }).last().click();
   await expect(page.getByText('請填寫退回原因')).toBeVisible();
-  await page.getByPlaceholder('請填寫退回原因（必填）').fill('版面尺寸與客戶稿件不符，請重新確認');
+  await page.getByPlaceholder('請填寫退回原因（必填）').fill('局部上光排程晚於印件內部完成日，請重排');
   await page.getByRole('button', { name: cjkName('退回') }).last().click();
   await expect(page.getByText('已退回，工單轉「重新確認製程」')).toBeVisible();
   await expect(page.getByText('目前沒有待審核的製程')).toBeVisible();
