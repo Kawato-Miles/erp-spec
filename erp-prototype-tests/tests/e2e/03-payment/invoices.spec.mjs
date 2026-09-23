@@ -1,9 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { openAs, cjkName } from '../_helpers.mjs';
-import { dialog, toastText, waitModalsClosed } from './_local.mjs';
+import { dialog, openTab, toastText, waitModalsClosed } from './_local.mjs';
 
 // 情境目錄第三章 3.4-3.7：開立發票、品項調平、作廢重開、折讓減額。
 // 起點資料：鏈二 ORD-2026-0710 的尾款期 BI-0710-2（預計金額含稅 47,425、開發票狀態未開立）。
+// 作廢發票限申報期限內（兩個月一期，最晚到下一期第一個月 14 日），原型以瀏覽器當天日期判斷；
+// 涉及作廢的情境一律固定瀏覽器日期，測試結果不隨實際日期漂移。
 
 test('3.4 以收款項目一鍵開立發票', async ({ page }) => {
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=paymentPlan');
@@ -77,8 +79,49 @@ test('3.5 客戶指定品名或要求攤開明細時改品項', async ({ page })
   await expect(page.locator('tr', { hasText: '尾款 70%' })).toContainText('已開立');
 });
 
-test('3.6 已開立的發票作廢重開', async ({ page }) => {
+test('3.5b 品項單價帶兩位小數、小計照實帶小數', async ({ page }) => {
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=paymentPlan');
+
+  const installmentTable = page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '款項', exact: true }) });
+  const targetRow = installmentTable.locator('tr', { hasText: '尾款 70%' });
+  await targetRow.getByRole('button', { name: '開立發票' }).click();
+  const modal = dialog(page);
+  await expect(modal).toBeVisible();
+
+  // 單價超過兩位小數時顯示錯誤
+  await modal.getByLabel('單價（未稅）').fill('1.234');
+  await expect(modal.getByText('單價最多兩位小數')).toBeVisible();
+
+  // 3 × 15,055.67 = 45,167.01：小計照實帶小數；與未稅目標 45,167 差 0.01 元，在一元以內可開立
+  await modal.getByLabel('數量').fill('3');
+  await modal.getByLabel('單價（未稅）').fill('15055.67');
+  await expect(modal.getByText('單價最多兩位小數')).toHaveCount(0);
+  await expect(modal.getByText('NT$ 45,167.01')).toBeVisible();
+  await expect(modal.getByText(/品項明細與期次金額差/)).toHaveCount(0);
+
+  // 銷售額、稅額、發票金額三欄照舊由期次含稅金額導出（整數元）
+  await expect(modal.getByText('銷售額（未稅）').locator('xpath=following-sibling::div[1]')).toHaveText('NT$ 45,167');
+  await expect(modal.getByText('稅額', { exact: true }).locator('xpath=following-sibling::div[1]')).toHaveText('NT$ 2,258');
+  await expect(modal.getByText('發票金額（含稅）').locator('xpath=following-sibling::div[1]')).toHaveText('NT$ 47,425');
+
+  await modal.getByRole('button', { name: cjkName('確認') }).click();
+  await toastText(page, /已開立發票/);
+  await waitModalsClosed(page);
+
+  // 單張發票檢視側板的商品明細：單價與小計帶小數
+  await targetRow.getByRole('button', { name: /^SSP-/ }).click();
+  const drawer = page.locator('.ant-drawer-content:visible').last();
+  await expect(drawer.getByRole('cell', { name: 'NT$ 15,055.67' })).toBeVisible();
+  await expect(drawer.getByRole('cell', { name: 'NT$ 45,167.01' })).toBeVisible();
+});
+
+test('3.6 已開立的發票作廢重開', async ({ page }) => {
+  // 固定在 SSP-26081201（2026-08-12 開立）的作廢期限 2026-09-14 以內
+  await page.clock.setFixedTime(new Date('2026-09-10T10:00:00+08:00'));
+  // 先開資訊頁籤再切到金額與發票：發票區在瀏覽器端首次掛載，才吃得到固定的瀏覽器日期
+  //（直接開 tab=paymentPlan 時發票區由伺服器端先算好，採伺服器當天日期）
+  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710');
+  await openTab(page, '金額與發票');
 
   // 發票主表以「發票號碼」欄頭錨定，避免與收款項目區「發票資料」欄同一單號文字混淆
   const invoiceTable = page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '發票號碼' }) });
@@ -111,6 +154,29 @@ test('3.6 已開立的發票作廢重開', async ({ page }) => {
   const voidedInvoiceRow = invoiceTable.locator('tr', { hasText: 'SSP-26081201' });
   await expect(voidedInvoiceRow).toContainText('NT$ 20,300');
   await expect(voidedInvoiceRow).toContainText('作廢');
+});
+
+test('3.6b 過了申報期限的發票不可作廢、改開折讓單', async ({ page }) => {
+  // SSP-26081201 於 2026-08-12 開立，作廢期限 2026-09-14；固定在期限之後
+  await page.clock.setFixedTime(new Date('2026-09-24T10:00:00+08:00'));
+  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710');
+  await openTab(page, '金額與發票');
+
+  const invoiceTable = page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '發票號碼' }) });
+  const invoiceRow = invoiceTable.locator('tr', { hasText: 'SSP-26081201' });
+  const voidButton = invoiceRow.getByRole('button', { name: '作廢發票' });
+  await expect(voidButton).toBeDisabled();
+  await voidButton.locator('xpath=..').hover();
+  await expect(page.getByRole('tooltip')).toContainText('已過申報期限（2026-09-14），請改開折讓單');
+  // 折讓仍可開立
+  await expect(invoiceRow.getByRole('button', { name: '開立折讓單' })).toBeEnabled();
+});
+
+test('發票區沒有發票時，說明開立入口在收款項目列', async ({ page }) => {
+  // 起點資料：ORD-2026-0911 尚無任何發票
+  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0911&tab=paymentPlan');
+  await expect(page.getByText('尚無發票紀錄。發票從上方收款項目該期的「開立發票」開立。')).toBeVisible();
+  await expect(page.getByText(/由業務自由填入/)).toHaveCount(0);
 });
 
 test('3.7 開出後折讓減額', async ({ page }) => {

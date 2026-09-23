@@ -98,7 +98,7 @@ export async function createQuoteHeader(
     inquirySource = 'Line',
     sales = '洪嘉駿',
     estimators = ['吳國豪'],
-    billing = '感官SSP',
+    billing = '感官',
   },
 ) {
   const panel = drawer(page);

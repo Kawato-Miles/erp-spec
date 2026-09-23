@@ -195,7 +195,7 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
     await pickOption(page, panel.getByLabel('詢價來源'), 'Line');
     await pickOption(page, panel.getByLabel('接單業務'), '洪嘉駿');
     await pickMulti(page, panel.getByLabel('評估印務主管'), '吳國豪');
-    await pickOption(page, panel.getByLabel('帳務公司'), '感官SSP');
+    await pickOption(page, panel.getByLabel('帳務公司'), '感官');
     await panel.getByLabel('收款條件備註').fill('訂金 30%，驗收後 30 天內付清');
     await button(panel, '確認').click();
     await waitModalsClosed(page);

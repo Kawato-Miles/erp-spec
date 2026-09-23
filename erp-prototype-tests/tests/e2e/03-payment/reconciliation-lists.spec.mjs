@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { openAs, gotoInApp } from '../_helpers.mjs';
+import { openAs, gotoInApp, cjkName } from '../_helpers.mjs';
+import { dialog, pickOption, pickDate, toastText, waitModalsClosed } from './_local.mjs';
 
 // 情境目錄 3.11：三方對帳與跨訂單四張清單。
 // 起點資料：鏈一 ORD-2026-0601（已收訖）、鏈二 ORD-2026-0710（尾款未開立未收）、
@@ -8,8 +9,9 @@ import { openAs, gotoInApp } from '../_helpers.mjs';
 test('3.11 三方對帳與跨訂單四張清單', async ({ page }) => {
   await openAs(page, '會計', '/orders/detail?id=ORD-2026-0601&tab=paymentPlan');
 
-  // 差額為零時標對帳通過
+  // 差額為零時標對帳通過；帳務公司顯示公司抬頭，不顯示代碼
   await expect(page.getByText('對帳通過（差額 = 0）')).toBeVisible();
+  await expect(page.getByText('訂單編號 ORD-2026-0601 · 帳務公司 感官')).toBeVisible();
 
   // 換看 ORD-2026-0710：從訂單列表點進去（detail 頁不在側欄選單上，gotoInApp 只認選單項），
   // 再切到「金額與發票」頁籤：收款差額與發票差額皆為 47,425
@@ -46,4 +48,43 @@ test('3.11 三方對帳與跨訂單四張清單', async ({ page }) => {
 
   await gotoInApp(page, '/payment/billing-anomaly');
   await expect(page.locator('.ant-empty-description')).toBeVisible();
+});
+
+test('3.11b 應收款項與待開發票清單隨訂單操作即時更新', async ({ page }) => {
+  // 起點資料：鏈二 ORD-2026-0710 尾款期 47,425 未開立、未收
+  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=paymentPlan');
+
+  // 開立尾款期發票
+  const installmentTable = page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '款項', exact: true }) });
+  await installmentTable.locator('tr', { hasText: '尾款 70%' }).getByRole('button', { name: '開立發票' }).click();
+  let modal = dialog(page);
+  await expect(modal).toBeVisible();
+  await modal.getByRole('button', { name: cjkName('確認') }).click();
+  await toastText(page, /已開立發票/);
+  await waitModalsClosed(page);
+
+  // 登記尾款收款並切已完成
+  await page.getByRole('button', { name: cjkName('新增款項') }).click();
+  modal = dialog(page);
+  await expect(modal).toBeVisible();
+  await pickOption(page, modal.getByLabel('付款方式'), '銀行轉帳');
+  await modal.getByLabel(/收款金額（含稅）/).fill('47425');
+  const tailRow = modal.locator('.ant-table-wrapper tr', { hasText: '尾款 70%' });
+  await tailRow.locator('input[type="checkbox"]').check();
+  await tailRow.getByRole('spinbutton').fill('47425');
+  await pickDate(modal.getByLabel('款項實際完成日'), '2026-09-24');
+  await modal.locator('input[type="file"]').setInputFiles({ name: '入帳憑證-0924.pdf', mimeType: 'application/pdf', buffer: Buffer.from('fake') });
+  await modal.getByLabel('已完成', { exact: true }).check();
+  await modal.getByRole('button', { name: cjkName('新增') }).click();
+  await toastText(page, /已新增款項紀錄/);
+  await waitModalsClosed(page);
+
+  // 站內導頁到兩張清單：ORD-2026-0710 已不在清單上（清單讀即時資料，不讀固定種子）
+  await gotoInApp(page, '/payment/pending-invoice');
+  await expect(page.locator('tr', { hasText: 'ORD-2026-0815' }).first()).toBeVisible();
+  await expect(page.locator('tr', { hasText: 'ORD-2026-0710' })).toHaveCount(0);
+
+  await gotoInApp(page, '/payment/receivable');
+  await expect(page.getByRole('cell', { name: 'ORD-2026-0815', exact: true })).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'ORD-2026-0710', exact: true })).toHaveCount(0);
 });

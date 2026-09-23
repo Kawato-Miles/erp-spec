@@ -3,6 +3,14 @@ import { openAs, cjkName } from '../_helpers.mjs';
 import { dialog, pickOption, pickDate, toastText, waitModalsClosed } from './_local.mjs';
 
 // 情境目錄第三章 3.8-3.10、3.12：登錄款項、核銷分配、溢收掛預收、出貨後盯收。
+// 切「已完成」須掛對帳附件且金額全額有歸屬；收款每一期累計分配不超過該期預計金額。
+
+const receipt = (name = '入帳憑證.pdf') => ({
+  name,
+  mimeType: 'application/pdf',
+  buffer: Buffer.from(`fake ${name}`),
+});
+const attach = (modal, name) => modal.locator('input[type="file"]').setInputFiles(receipt(name));
 
 test('3.8 登錄款項並核銷分配到指定期次', async ({ page }) => {
   // 起點資料：鏈二 ORD-2026-0710（尾款期 47,425 未收）
@@ -25,6 +33,8 @@ test('3.8 登錄款項並核銷分配到指定期次', async ({ page }) => {
 
   await pickDate(modal.getByLabel('款項實際完成日'), '2026-09-15');
   await modal.getByLabel('第三方付款序號').fill('TXN-0915-0710');
+  await attach(modal, '入帳憑證-TXN-0915-0710.pdf');
+  await expect(modal.getByText('入帳憑證-TXN-0915-0710.pdf')).toBeVisible();
 
   // 款項狀態選已完成後送出
   await modal.getByLabel('已完成', { exact: true }).check();
@@ -76,6 +86,7 @@ test('3.9 一筆匯款跨多期分配', async ({ page }) => {
   await newRow.getByRole('spinbutton').fill('5000');
 
   await pickDate(modal.getByLabel('款項實際完成日'), '2026-09-20');
+  await attach(modal, '入帳憑證-0920.pdf');
   await modal.getByLabel('已完成', { exact: true }).check();
   await modal.getByRole('button', { name: cjkName('新增') }).click();
   await toastText(page, /已新增款項紀錄/);
@@ -109,6 +120,7 @@ test('3.10 溢收餘額掛預收（未分配）', async ({ page }) => {
   await expect(modal.getByText(/本次入帳合計 24,696 \/ 款項金額 30,000 元/)).toBeVisible();
 
   await pickDate(modal.getByLabel('款項實際完成日'), '2026-09-21');
+  await attach(modal, '入帳憑證-0921.pdf');
   await modal.getByLabel('已完成', { exact: true }).check();
   // 分配未超過款項金額（24,696 ≤ 30,000），送出鈕不因超額而停用
   await expect(modal.getByRole('button', { name: cjkName('新增') })).toBeEnabled();
@@ -120,6 +132,51 @@ test('3.10 溢收餘額掛預收（未分配）', async ({ page }) => {
   const installmentTable = page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '款項', exact: true }) });
   await expect(installmentTable.locator('tr', { hasText: '尾款 70%' })).toContainText('已收訖');
   await expect(page.getByText('預收', { exact: false })).toHaveCount(0);
+});
+
+test('3.8b 切已完成的把關與單期分配上限', async ({ page }) => {
+  // 起點資料：鏈三 ORD-2026-0815（訂金 10,584 已收滿；尾款 24,696 未收）
+  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0815&tab=paymentPlan');
+  await page.getByRole('button', { name: cjkName('新增款項') }).click();
+  const modal = dialog(page);
+  await expect(modal).toBeVisible();
+  await pickOption(page, modal.getByLabel('付款方式'), '銀行轉帳');
+  await modal.getByLabel(/收款金額（含稅）/).fill('20000');
+  await pickDate(modal.getByLabel('款項實際完成日'), '2026-09-22');
+  const submit = modal.getByRole('button', { name: cjkName('新增') });
+
+  // 單期上限：訂金期已分配滿，再分配 1 元即擋下
+  const allocationTable = modal.locator('.ant-table-wrapper');
+  const depositRow = allocationTable.locator('tr', { hasText: '訂金 30%' });
+  await depositRow.locator('input[type="checkbox"]').check();
+  await depositRow.getByRole('spinbutton').fill('1');
+  await expect(modal.getByText('核銷分配超過該期預計金額')).toBeVisible();
+  await expect(modal.getByText(/訂金 30%：本次填 1 元，這一期最多還能分配 0 元/)).toBeVisible();
+  await expect(submit).toBeDisabled();
+  await depositRow.locator('input[type="checkbox"]').uncheck();
+  await expect(modal.getByText('核銷分配超過該期預計金額')).toHaveCount(0);
+
+  // 切已完成：缺對帳附件、尾款期還沒分配到上限，兩項都列出並擋下
+  const tailRow = allocationTable.locator('tr', { hasText: '尾款 70%' });
+  await tailRow.locator('input[type="checkbox"]').check();
+  await tailRow.getByRole('spinbutton').fill('15000');
+  await modal.getByLabel('已完成', { exact: true }).check();
+  await expect(modal.getByText('尚不能切「已完成」')).toBeVisible();
+  await expect(modal.getByText(/請先上傳對帳附件/)).toBeVisible();
+  await expect(modal.getByText(/還有 5,000 元沒有分配/)).toBeVisible();
+  await expect(submit).toBeDisabled();
+
+  // 補上附件、把餘額分配進尾款期後可送出
+  await attach(modal, '入帳憑證-0922.pdf');
+  await tailRow.getByRole('spinbutton').fill('20000');
+  await expect(modal.getByText('尚不能切「已完成」')).toHaveCount(0);
+  await expect(submit).toBeEnabled();
+
+  // 處理中不需附件、不需分配完
+  await tailRow.getByRole('spinbutton').fill('15000');
+  await modal.getByLabel('處理中', { exact: true }).check();
+  await expect(modal.getByText('尚不能切「已完成」')).toHaveCount(0);
+  await expect(submit).toBeEnabled();
 });
 
 test('3.12 出貨後指定期限付款的盯收', async ({ page }) => {
