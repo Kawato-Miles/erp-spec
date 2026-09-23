@@ -68,12 +68,11 @@ ERP 規劃前 know-how 稽核工具。**禁繞過稽核直接設計 / 禁新建�
 
 **產出量化矩陣**：每格列「已涵蓋 N / 待修補 M / OQ K」三個明確數字，另加一格「資料結構總覽：有（卡名）／無」。
 
-**跨 ≥2 領域 fan-out 選項（2026-05-30 新增，workflow 試點）**：當本次稽核涉及 **≥2 領域**時，MAY 觸發 `/erp-precheck-audit` workflow（腳本 `.claude/workflows/erp-precheck-audit.js`）將各領域平行 fan-out：
+**跨 ≥2 領域 fan-out 選項**：當本次稽核涉及 **≥2 領域**時，MAY 觸發 `/erp-precheck-audit` workflow（腳本 `.claude/workflows/erp-precheck-audit.js`）將各領域平行 fan-out：
 - 傳入 `args: { topic, domains }`（domains 依 Step 1 判定）。
-- workflow 內每領域一個 **sonnet** 稽核 agent 跑 6 卡矩陣 + 對抗式互審（adversarial）找漏，回傳結構化「量化矩陣 + 待修補清單 + OQ 候選 + 連帶實體 + wiki 回補卡」。
+- workflow 內每領域一個 **opus** 稽核 agent 跑 6 卡矩陣 + 對抗式互審（adversarial）找漏，回傳結構化「量化矩陣 + 待修補清單 + OQ 候選 + 連帶實體 + wiki 回補卡」。
 - 主對話 agent 拿 workflow 結果跑 **Step 4 修補**（執行者 / 稽核者分離不變：workflow 內 agent 稽核、主對話 agent 修補）。
 - **單一領域 / 局部變動仍用既有單一稽核 sub-agent**（升級門檻：可重複 / 跨領域才用 workflow，控 token；對齊業界「兩三步能 hold 用 subagent、可擴展才用 workflow」）。
-- **前置 + fallback**：需 Claude Code 版本支援 Dynamic Workflows（research preview，約 v2.1.154+）；**版本不足時 fallback 既有單 sub-agent 序列稽核**（功能不受阻，只是無平行加速）。
 
 ### Step 4：修補 / 標 OQ
 
@@ -87,11 +86,11 @@ ERP 規劃前 know-how 稽核工具。**禁繞過稽核直接設計 / 禁新建�
 - 付款發票邏輯.md 缺「連帶矩陣」→ edit 該卡補入 7 實體連帶章節
 - 業務情境卡缺已知例外岔路 → edit `07-scenarios/` 對應卡補入延伸岔路（步驟判準須為可觀測業務結果）
 
-**產出「propose 前須先更新的 wiki 卡清單」（2026-06-09 修正，原「定案後回補」改為「propose 前更新」）**：
+**產出「propose 前須先更新的 wiki 卡清單」**：
 
 - 稽核時 **MUST** 同時產出「涉及本主題的 ERP_Vault 商業邏輯卡清單」（`04-business-logic/` / `05-entities/` / `06-state-machines/` / `07-scenarios/` 內提及本主題的卡）
 - **pre-check 階段不修這些卡**（本次規劃尚未定案，提前改卡屬 premature documentation）
-- **設計確認後、進入 `/opsx:propose` 之前 MUST 先更新此清單中的 wiki 卡**（wiki 是 BRD 商業邏輯正本，OpenSpec 是 PRD 實作規格；正確順序是先定 BRD 再寫 PRD。教訓：review-return-and-confirm-production change 將 wiki 回補放在 archive 後，導致 OpenSpec spec 混入狀態列舉、wiki 與 spec 重複維護）
+- **設計確認後、進入 `/opsx:propose` 之前 MUST 先更新此清單中的 wiki 卡**（wiki 是 BRD 商業邏輯正本，OpenSpec 是 PRD 實作規格；正確順序是先定 BRD 再寫 PRD；wiki 晚於 archive 才回補，OpenSpec spec 會混入狀態列舉，造成兩處重複維護）
 - 此清單與「Step 4 修補既有卡」的區別：Step 4 修補的是「現況 know-how 缺漏 / 錯誤」（補既有真實狀況）；本清單列的是「本次設計定案後將被改寫的 wiki 商業邏輯卡」（設計確認後、propose 前執行）
 
 ### Step 5：閉環驗證（**禁 false completion**）
@@ -102,7 +101,6 @@ ERP 規劃前 know-how 稽核工具。**禁繞過稽核直接設計 / 禁新建�
 - 跨層影響重新檢查
 
 **回合預算**：
-- Step 3 + 4 + 5 一輪 ≤ 30 分鐘
 - 同領域最多 3 輪（超過 3 輪標 OQ 等 Miles 決策）
 
 ---
@@ -203,20 +201,9 @@ wiki 商業邏輯卡清單（涉及本主題、propose 前須先更新）：<列
 
 | 其他 skill | 協作關係 |
 |----------|---------|
-| `vault-audit` | Vault 整體健康稽核（11 維度）— 本 skill 互補，本 skill 是規劃前準備 |
+| `vault-audit` | Vault 整體健康稽核（14 維度）— 本 skill 互補，本 skill 是規劃前準備 |
 | `vault-audit` | 知識庫 lint 與建議 — 本 skill 識別反模式時可轉該 skill 的建議段 |
 | `wiki-amend` | Step 4 修補既有卡的動筆步一律轉介；本 skill 只產「哪張卡缺什麼」，不決定卡怎麼寫 |
 | `oq-manage` | 缺漏項 Step 4 標 OQ 走 mode B |
 | `misjudgement-record` | 識別到 agent 誤審反模式時觸發 |
 
----
-
-## 九、版本歷史
-
-| 版本 | 日期 | 變動 |
-|------|------|------|
-| v1.0 | 2026-05-28 | 初版建立（6 領域 × 7 卡類型雙軸 + 5 SOP 含閉環 + 執行者稽核者分離 + 五大反模式追蹤）|
-| v1.1 | 2026-05-30 | Step 4 + ack 模板 + changelog 模板新增「wiki 商業邏輯卡清單 + 定案後回補清單」產出（pre-check 不修卡、交棒 archive 階段回補）。原因：converge change 漏對齊 wiki 6 卡 — 規劃時沒列受影響 wiki 卡，archive 後也就漏回補；補「pre-check 不修卡 → 定案後回補」配對步驟 |
-| v1.2 | 2026-06-10 | 稽核操作史輸出由 `00-meta/changelog.md` 改為 wiki/log.md 一筆（動作=健檢、標籤=pre-check，只記摘要：量化矩陣結論 + 修補卡清單），長敘事與決策軌跡留對話與 OQ 卡。原因：`00-meta/changelog.md` 凍結封存，wiki/log.md 成全知識庫唯一只追加操作史 |
-| v1.3 | 2026-06-13 | 卡類型由 7 類收斂為 6 類（原「情境」與「User Story」合併為「業務情境」），跨層追溯由四層（含 Test Case）改三層（商業需求 ↔ 業務情境 ↔ spec），移除 related-test-cases 必檢；SKILL 本體、references/audit-framework.md、`.claude/workflows/erp-precheck-audit.js` 三方同步。原因：使用者故事與 test-case 單元溶解、業務情境單元取代（Phase B / C）|
-| v1.4 | 2026-07-28 | 載入層改版：Step 1 觸發詞複本表刪除（正本只在 taxonomy，含「語意不確定先與 Miles 確認」）；Step 2 改依 taxonomy 檢索規約（tag 查卡名清單 → 呈現 → 載入），共用層固定全載清單刪除（改 `領域/全域` 哨兵卡必載）。原因：wiki 領域 tag 化 P3 切讀取端（plan wiki-tag-migration）|

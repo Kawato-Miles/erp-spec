@@ -3,8 +3,8 @@ export const meta = {
   description: 'ERP 規劃前 know-how 稽核 fan-out：依領域並行稽核（6 領域 × 6 卡類型雙軸）+ schema 結構化輸出 + 對抗式互審找漏 + 彙整修補清單。對應 erp-planning-pre-check skill 的 Step 3，維持「執行者/稽核者分離」（workflow 內 agent 為稽核者，主對話 agent 為修補者）。',
   whenToUse: '規劃 ERP 功能前、跨 ≥2 領域稽核時。單模組局部變動用 skill 既有單 agent 即可，不需此 workflow。',
   phases: [
-    { title: '雙軸稽核', detail: '每領域一個 sonnet 稽核 agent 跑 6 卡類型矩陣（N/M/K）', model: 'sonnet' },
-    { title: '對抗式互審', detail: '每領域一個 sonnet agent 試圖找第一輪漏掉的缺漏', model: 'sonnet' },
+    { title: '雙軸稽核', detail: '每領域一個 opus 稽核 agent 跑 6 卡類型矩陣（N/M/K）', model: 'opus' },
+    { title: '對抗式互審', detail: '每領域一個 opus agent 試圖找第一輪漏掉的缺漏', model: 'opus' },
     { title: '彙整', detail: 'reduce 成統一量化矩陣 + 待修補清單 + OQ 清單 + wiki 回補清單' },
   ],
 }
@@ -74,7 +74,7 @@ const AUDIT_SCHEMA = {
       },
     },
     relatedEntities: { type: 'array', items: { type: 'string' }, description: '連帶矩陣影響的實體清單' },
-    wikiCards: { type: 'array', items: { type: 'string' }, description: '本次設計定案後將被改寫的 wiki 商業邏輯卡（pre-check 不修、交棒 archive 回補）' },
+    wikiCards: { type: 'array', items: { type: 'string' }, description: '本次設計定案後將被改寫的 wiki 商業邏輯卡（pre-check 不修；設計確認後、propose 前更新）' },
   },
   required: ['domain', 'loadedCards', 'matrix', 'gaps', 'oqCandidates', 'relatedEntities', 'wikiCards'],
 }
@@ -112,7 +112,7 @@ function auditPrompt(domain) {
 4. 業務情境卡類型 MUST 檢查變體判定（接力型 / 能力型 / 排程型）是否正確、步驟判準是否為可觀測業務結果。
 5. 業務邏輯卡類型 MUST 檢查連帶矩陣（連帶實體 / 跨模組影響）。
 6. 待修補項 MUST 指向「應 edit 補入的既有卡路徑」（禁新建抽象卡）。
-7. 列出本次設計定案後將被改寫的 wiki 商業邏輯卡（pre-check 不修、交棒 archive 回補）。
+7. 列出本次設計定案後將被改寫的 wiki 商業邏輯卡（pre-check 不修；設計確認後、propose 前更新）。
 
 只回傳結構化結果，不要修改任何檔案。`
 }
@@ -135,10 +135,10 @@ ${JSON.stringify(audit, null, 2)}
 // ---- Phase 1+2：每領域獨立走「稽核 → 對抗式互審」（pipeline 串流，無 barrier）----
 const perDomain = await pipeline(
   domains,
-  (domain) => agent(auditPrompt(domain), { label: `audit:${domain}`, phase: '雙軸稽核', model: 'sonnet', schema: AUDIT_SCHEMA }),
+  (domain) => agent(auditPrompt(domain), { label: `audit:${domain}`, phase: '雙軸稽核', model: 'opus', effort: 'high', schema: AUDIT_SCHEMA }),
   (audit, domain) => {
     if (!audit) return null
-    return agent(verifyPrompt(audit, domain), { label: `verify:${domain}`, phase: '對抗式互審', model: 'sonnet', schema: GAP_SCHEMA })
+    return agent(verifyPrompt(audit, domain), { label: `verify:${domain}`, phase: '對抗式互審', model: 'opus', effort: 'high', schema: GAP_SCHEMA })
       .then((gaps) => ({ domain, audit, adversarial: gaps }))
   }
 )
@@ -165,5 +165,5 @@ return {
   relatedEntities: allEntities,
   wikiCardsToBackfill: allWikiCards,
   adversarialAssessments: clean.map((d) => ({ domain: d.domain, assessment: d.adversarial && d.adversarial.assessment })),
-  note: '主對話 agent 依此結果跑 Step 4 修補（edit 既有卡 + 標 OQ）+ Step 5 閉環驗證；wiki 商業邏輯卡待設計定案後回補（不在 pre-check 修）。',
+  note: '主對話 agent 依此結果跑 Step 4 修補（edit 既有卡 + 標 OQ）+ Step 5 閉環驗證；wiki 商業邏輯卡於設計確認後、propose 前更新（不在 pre-check 修）。',
 }
