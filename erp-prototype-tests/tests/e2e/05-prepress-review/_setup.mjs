@@ -31,11 +31,16 @@ export async function addPendingReviewItem(
   await page.getByLabel('購買數量').fill(String(orderedQty));
   // 可見選項用 .ant-select-item-option class 篩選：role=option 那份是畫面外隱藏複本（README 執行注意事項）
   await page.locator('.ant-select:has(#unit)').click();
-  await page
-    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
-    .last()
-    .locator('.ant-select-item-option', { hasText: unit })
-    .click();
+  const unitDropdown = page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last();
+  // 單位選項 16 個（4.16），下拉是虛擬捲動：目標不在第一屏時先捲到底再點
+  await expect(unitDropdown.locator('.ant-select-item-option').first()).toBeVisible();
+  const unitOption = unitDropdown.locator('.ant-select-item-option', { hasText: unit });
+  if (!(await unitOption.count())) {
+    await unitDropdown.locator('.rc-virtual-list-holder').evaluate((el) => {
+      el.scrollTop = el.scrollHeight;
+    });
+  }
+  await unitOption.click();
   await page.locator('#unit_price_untaxed').fill(String(unitPrice));
   if (skipReview) {
     await modal.locator('.ant-switch').click();

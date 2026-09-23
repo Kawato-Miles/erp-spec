@@ -237,10 +237,14 @@ test('7.19 編輯既有任務看得到當初選的那一列，製程定案後不
   await page.getByRole('button', { name: 'arrow_back' }).first().click();
   await expect(page).toHaveURL(/work-orders\/?($|\?)/);
   await openWorkOrder(page, 'WO-2026-0908');
-  await taskRows(page).first().getByRole('button', { name: '編輯備註' }).click();
+  // 負責印務在製程定案後仍可改目的站點（與製程其他欄位分開判定，見 10.23），其餘只留備註
+  await taskRows(page).first().getByRole('button', { name: '編輯備註與目的站點' }).click();
   const locked = taskForm(page);
-  await expect(page.locator('.ant-modal-title').last()).toContainText('製程已定案，僅備註可改');
+  await expect(page.locator('.ant-modal-title').last()).toContainText(
+    '製程已定案，僅備註與目的站點可改',
+  );
   await expect(locked.getByRole('button', { name: '重選' })).toHaveCount(0);
   await expect(formField(page, '任務名稱').locator('input')).toBeDisabled();
+  await expect(formField(page, '需轉交').locator('button[role="switch"]')).toBeDisabled();
   await expect(formField(page, '備註').locator('textarea')).toBeEnabled();
 });

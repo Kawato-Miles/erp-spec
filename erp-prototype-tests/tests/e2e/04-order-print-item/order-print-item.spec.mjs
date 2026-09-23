@@ -219,11 +219,12 @@ test('4.7 新增印件收齊七項必填、未扣急件內部完成日選填且�
   await page.getByLabel('購買數量').fill('200');
   // 可見選項用 .ant-select-item-option class 篩選：role=option 那份是畫面外隱藏複本（README 執行注意事項）
   await page.locator('.ant-select:has(#unit)').click();
-  await page
-    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
-    .last()
-    .locator('.ant-select-item-option', { hasText: '張' })
-    .click();
+  const unitDropdown = page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last();
+  // 單位選項 16 個、「張」排最後（4.16），下拉是虛擬捲動，先捲到底才渲染得出來
+  await unitDropdown.locator('.rc-virtual-list-holder').evaluate((el) => {
+    el.scrollTop = el.scrollHeight;
+  });
+  await unitDropdown.locator('.ant-select-item-option', { hasText: '張' }).click();
   await page.locator('#unit_price_untaxed').fill('15');
   await page.locator('.ant-select:has(#urgent_option_id)').click();
   await page

@@ -1,19 +1,23 @@
 import { test, expect } from '@playwright/test';
-import { openAs, switchRole, gotoInApp } from '../_helpers.mjs';
+import { openAs, switchRole, gotoInApp, taskRows } from '../_helpers.mjs';
+import { openWorkOrder, taskForm, formField } from '../07-process-planning/_ch07.mjs';
 
 // 情境目錄第十章：轉交單管理頁（/production-floor/transfers）與工作包報工紀錄的人工註記。
 
 test('10.3 轉交單列表、五個狀態與明細（原編號 23）', async ({ page }) => {
   await openAs(page, '生管', '/production-floor/transfers');
-  // 狀態篩選：待搬運、搬運中、已送達、已點收、已作廢
-  await page.locator('.ant-col', { hasText: '單別' }).locator('..').getByText('全部狀態');
+  // 篩選列：狀態、目的地、建單時間區間、實際轉交日區間；轉交單只有一種，沒有單別篩選
+  const filters = page.locator('.ant-col');
+  await expect(filters.filter({ hasText: '狀態' }).first()).toContainText('全部狀態');
+  await expect(filters.filter({ hasText: '目的地' }).first()).toContainText('全部目的地');
+  await expect(page.getByText('全部單別')).toHaveCount(0);
   await expect(page.getByText('TT-20260830-002')).toBeVisible();
 
   await page.getByText('TT-20260830-002').click();
   const drawer = page.locator('.ant-drawer-body');
-  // 單頭固定八格：單別、原轉交單、來源站點、目的地、預計轉交日、貨已在現場、簽收照片、備註
-  await expect(drawer.getByText('單別')).toBeVisible();
-  await expect(drawer.getByText('原轉交單')).toBeVisible();
+  // 單頭固定六格：來源站點、目的地、預計轉交日、貨已在現場、簽收照片、備註（不設單別與原轉交單）
+  await expect(drawer.getByText('單別')).toHaveCount(0);
+  await expect(drawer.getByText('原轉交單')).toHaveCount(0);
   await expect(drawer.getByText('來源站點')).toBeVisible();
   await expect(drawer.getByText('目的地', { exact: true })).toBeVisible();
   await expect(drawer.getByText('預計轉交日')).toBeVisible();
@@ -167,4 +171,72 @@ test('10.13 用建單時間查卡在搬運那一段的轉交單（原編號 118�
   await expect(page.getByText('TT-20260830-002')).toHaveCount(0); // 已送達、實際轉交日不在區間
   await expect(page.getByText('TT-20260828-001')).toHaveCount(0); // 已點收、實際轉交日不在區間
   await expect(page.getByText('TT-20260830-003')).toBeVisible(); // 搬運中，無實際轉交日不受篩選影響
+});
+
+test('10.22 改目的站點後已建的轉交單不動，之後新建的單取新站', async ({ page }) => {
+  // 起點：鏈四 PT-0820-9 精裝裝訂（已完成，目的站點品檢站，可搬量 500）。
+  // 生管先在待搬視圖建一張單：目的地帶出任務當下的目的站點（品檢站）
+  await openAs(page, '生管', '/production-floor/pending-moves');
+  const moveRow = page.locator('tr', { hasText: '精裝裝訂' });
+  await expect(moveRow).toContainText('品檢站');
+  await moveRow.locator('input[type="checkbox"]').check({ force: true });
+  await page.getByRole('button', { name: /建立轉交單（1）/ }).click();
+  await page.getByRole('button', { name: /建立 1 張單/ }).click();
+  const toast = page.getByText(/已建立.*交由廠務搬運/);
+  await expect(toast).toBeVisible();
+  const firstNo = (await toast.innerText()).match(/TT-\d{8}-\d{3}/)[0];
+
+  // 負責印務在工單詳情頁改目的站點：任務已完成、製程已定案，表單只開放備註與目的站點
+  await switchRole(page, '印務');
+  await gotoInApp(page, '/work-orders');
+  await openWorkOrder(page, 'WO-2026-0820');
+  await taskRows(page)
+    .filter({ hasText: '精裝裝訂' })
+    .getByRole('button', { name: '編輯備註與目的站點' })
+    .click();
+  await expect(page.locator('.ant-modal-title').last()).toContainText('僅備註與目的站點可改');
+  await expect(formField(page, '任務名稱').locator('input')).toBeDisabled();
+  const destination = formField(page, '目的站點').locator('.ant-select');
+  await expect(destination).not.toHaveClass(/ant-select-disabled/);
+  await destination.click();
+  await page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
+    .last()
+    .locator('.ant-select-item-option', { hasText: '雙面覆霧膜｜覆膜機' })
+    .click();
+  await taskForm(page).getByRole('button', { name: '儲存' }).click();
+  await expect(page.getByText(/已更新目的站點；已建的轉交單不跟著改/)).toBeVisible();
+
+  // 已建的那張單目的地不動，仍是品檢站
+  await switchRole(page, '生管');
+  await gotoInApp(page, '/production-floor/transfers');
+  const firstRow = page.locator('tr', { hasText: firstNo });
+  await expect(firstRow).toContainText('品檢站');
+  await expect(firstRow).not.toContainText('覆膜機');
+
+  // 要改去處：作廢那張單，再從待搬視圖重新建單；新單取任務新的目的站點
+  await firstRow.getByRole('button', { name: '作廢' }).click();
+  await page.locator('.ant-form-item', { hasText: '作廢原因' }).locator('.ant-select').click();
+  await page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
+    .last()
+    .locator('.ant-select-item-option', { hasText: '目的地填錯' })
+    .click();
+  await page.getByRole('button', { name: '作廢這張單' }).click();
+  await expect(page.getByText(`${firstNo} 已作廢`, { exact: false })).toBeVisible();
+
+  await gotoInApp(page, '/production-floor/pending-moves');
+  const movedRow = page.locator('tr', { hasText: '精裝裝訂' });
+  await expect(movedRow).toContainText('雙面覆霧膜｜覆膜機');
+  await movedRow.locator('input[type="checkbox"]').check({ force: true });
+  await page.getByRole('button', { name: /建立轉交單（1）/ }).click();
+  await page.getByRole('button', { name: /建立 1 張單/ }).click();
+  const toast2 = page.getByText(/已建立.*交由廠務搬運/).last();
+  await expect(toast2).toBeVisible();
+  const secondNo = (await toast2.innerText()).match(/TT-\d{8}-\d{3}/)[0];
+  expect(secondNo).not.toBe(firstNo);
+
+  await gotoInApp(page, '/production-floor/transfers');
+  await expect(page.locator('tr', { hasText: secondNo })).toContainText('雙面覆霧膜｜覆膜機');
+  await expect(page.locator('tr', { hasText: firstNo })).toContainText('品檢站');
 });
