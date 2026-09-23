@@ -18,7 +18,7 @@ import {
   waitModalsClosed,
 } from './_local.mjs';
 
-// 第一章「需求單」情境驗收（docs/scenario-catalog.md 1.1–1.12）。
+// 第一章「需求單」情境驗收（docs/scenario-catalog.md 第一章各節）。
 // 每條情境獨立一條測試：第一步 openAs 之後一律 gotoInApp 與 switchRole，
 // 同一條測試內完成的推狀態鏈就是情境本文寫的「前置」。
 
@@ -493,4 +493,35 @@ test('1.12 需求單印件側板依五區顯示、印務只改成本版同版面
   await expect(panel.getByRole('button', { name: /選擇檔案/ })).toHaveCount(0);
   // 整個側板只剩兩個未停用的輸入元件：成本估算與預計產線（印件預計交期為停用輸入框）
   await expect(panel.locator('input:not([disabled]), textarea:not([disabled])')).toHaveCount(2);
+});
+
+test('1.13 接單業務刪除需求單，列表不再出現', async ({ page }) => {
+  const title = '1.13 情境需求案';
+  await openAs(page, '業務', '/quote-prototype');
+  const quoteNo = await createQuoteHeader(page, { title });
+
+  await gotoInApp(page, '/quote-prototype');
+  await switchRole(page, '業務');
+  const row = rowOf(page, quoteNo);
+  await expect(row).toBeVisible();
+  // 操作欄依序為編輯、刪除兩顆圖示鈕
+  await row.locator('td').last().locator('button').nth(1).click();
+  const confirm = dialog(page);
+  await expect(confirm).toContainText(title);
+  await confirm.getByRole('button', { name: /確\s*認/ }).click();
+  await waitModalsClosed(page);
+
+  await expect(page.locator('tbody tr.ant-table-row').filter({ hasText: quoteNo })).toHaveCount(0);
+});
+
+test('1.13 無刪除權限者看不到刪除鈕', async ({ page }) => {
+  const title = '1.13 權限情境需求案';
+  await openAs(page, '業務', '/quote-prototype');
+  const quoteNo = await createQuoteHeader(page, { title });
+
+  await gotoInApp(page, '/quote-prototype');
+  await switchRole(page, '業務主管');
+  const row = rowOf(page, quoteNo);
+  await expect(row).toBeVisible();
+  await expect(row.locator('td').last().locator('button')).toHaveCount(0);
 });
