@@ -88,7 +88,7 @@ export async function pickDate(input, value) {
 
 /**
  * 業務在需求單列表建一張新單頭並進入詳情頁。回傳新單號，操作結束時已在詳情頁。
- * 單頭已無任何交期欄——交期鏈的起點是印件層的「未扣急件內部完成日」，逐列手填、無預設值。
+ * 單頭已無任何交期欄——交期鏈的起點是印件層的「印件內部完成日」，逐列手填、無預設值。
  */
 export async function createQuoteHeader(
   page,
@@ -150,7 +150,8 @@ export async function addItem(
     await panel.getByLabel('成本估算（未稅）').fill(String(costEstimate));
   }
   if (undeductedInternalDueDate) {
-    await pickDate(panel.getByLabel('未扣急件內部完成日'), undeductedInternalDueDate);
+    // 需求單不標示急件，側板可填日期欄標為「印件內部完成日」（底層仍存未扣值欄位）
+    await pickDate(panel.getByLabel('印件內部完成日'), undeductedInternalDueDate);
   }
   await button(panel, '確認').click();
   await waitModalsClosed(page);

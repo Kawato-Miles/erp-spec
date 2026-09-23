@@ -355,20 +355,19 @@ test('1.10 成交轉訂單印件的未扣急件內部完成日逐件帶入、空
   await openAs(page, '業務', '/quote-prototype');
   await createQuoteHeader(page, { title });
 
-  // 新增印件項目時未扣急件內部完成日一律空白、無預設值（需求單單頭已無交期欄可預填），
-  // 兩個推得欄位同為空、顯示無值符號
+  // 新增印件項目時需求單側板的印件內部完成日一律空白、無預設值（需求單單頭已無交期欄可預填），
+  // 推得的印件預計交期同為空、顯示無值符號
   const panel = drawer(page);
   await clickOpen(button(page, '新增印件'), panel.getByLabel('項目名稱'));
-  await expect(panel.getByLabel('未扣急件內部完成日')).toHaveValue('');
-  // 兩個推得欄位是唯讀顯示、不是表單欄位（沒有 name，label 也就沒有綁定），以所在 Form.Item 取值
+  await expect(panel.getByLabel('印件內部完成日')).toHaveValue('');
+  // 印件預計交期是唯讀顯示、不是表單欄位（沒有 name，label 也就沒有綁定），以所在 Form.Item 取值
   const readonlyValue = (label) =>
     panel.locator('.ant-form-item').filter({ hasText: label }).first().locator('input');
-  await expect(readonlyValue('印件內部完成日')).toHaveValue('－');
   await expect(readonlyValue('印件預計交期')).toHaveValue('－');
   await button(panel, '取消').click();
   await waitModalsClosed(page);
 
-  // 名片印件填自己談定的未扣急件內部完成日（2026-09-08 週二）；型錄印件不填，
+  // 名片印件在需求單側板填自己談定的印件內部完成日（2026-09-08 週二）；型錄印件不填，
   // 代表還沒跟客戶談定這件的內部完成日
   await addItem(page, {
     name: '名片印件',
@@ -377,7 +376,7 @@ test('1.10 成交轉訂單印件的未扣急件內部完成日逐件帶入、空
     undeductedInternalDueDate: '2026-09-08',
   });
   await addItem(page, { name: '型錄印件', quantity: '50', unitPrice: '20' });
-  // 需求單階段沒有急件選項，印件內部完成日等於未扣值；印件預計交期為其下一個工作天
+  // 需求單階段沒有急件選項，列表的印件內部完成日等於側板所填日期；印件預計交期為其下一個工作天
   await expect(rowOf(page, '名片印件')).toContainText('2026-09-08');
   await expect(rowOf(page, '名片印件')).toContainText('2026-09-09');
 
@@ -422,6 +421,19 @@ test('1.12 需求單印件側板依五區顯示、印務只改成本版同版面
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
   };
 
+  const expectReviewExemptHint = async (panel) => {
+    const hintIcon = panel
+      .locator('.ant-form-item-label')
+      .filter({ hasText: '是否免審稿' })
+      .locator('.anticon-info-circle');
+    await expect(hintIcon).toHaveCount(1);
+    await hintIcon.hover();
+    await expect(
+      panel.page().getByRole('tooltip', { name: '勾選後此印件轉訂單時自動合格，不進入審稿流程' }),
+    ).toBeVisible();
+    await panel.page().mouse.move(0, 0);
+  };
+
   const title = '1.12 情境需求案';
   await openAs(page, '業務', '/quote-prototype');
   await createQuoteHeader(page, { title, estimators: ['吳國豪'] });
@@ -433,6 +445,22 @@ test('1.12 需求單印件側板依五區顯示、印務只改成本版同版面
   expectInOrder(text, sections);
   expectInOrder(text, ['規格與製程', '數量', '單位', '包裝說明', '難易度', '預計產線', '審稿設定']);
   expectInOrder(text, ['成本評估區', '成本估算（未稅）', '單價（未稅）', '小計（未稅）', '利潤率', '參考附件']);
+  // 規格與製程區只有一格可填日期（印件內部完成日），旁邊一格唯讀印件預計交期；
+  // 需求單不標示急件，側板不再出現「未扣急件內部完成日」字樣
+  expectInOrder(text, ['規格與製程', '出貨方式', '印件內部完成日', '印件預計交期', '數量', '審稿設定']);
+  await expect(panel.locator('.ant-form-item-label').filter({ hasText: /^印件內部完成日$/ })).toHaveCount(1);
+  await expect(panel.locator('.ant-form-item-label').filter({ hasText: /^印件預計交期$/ })).toHaveCount(1);
+  await expect(panel.getByText('未扣急件內部完成日')).toHaveCount(0);
+  await expect(panel.locator('.ant-picker')).toHaveCount(1);
+  await expect(panel.getByLabel('印件內部完成日')).toBeEditable();
+  const expectedDeliveryInput = panel
+    .locator('.ant-form-item')
+    .filter({ hasText: '印件預計交期' })
+    .first()
+    .locator('input');
+  await expect(expectedDeliveryInput).toBeDisabled();
+  // 是否免審稿旁有提示圖示，滑過顯示轉訂單自動合格的說明
+  await expectReviewExemptHint(panel);
   // 新增模式不顯示印件編號
   await expect(panel.getByText('印件編號', { exact: true })).toHaveCount(0);
   await button(panel, '取消').click();
@@ -450,6 +478,11 @@ test('1.12 需求單印件側板依五區顯示、印務只改成本版同版面
   expectInOrder(text, sections);
   expectInOrder(text, ['規格與製程', '數量', '單位', '包裝說明', '難易度', '預計產線', '審稿設定']);
   expectInOrder(text, ['審稿設定', '是否免審稿', '印件檔案備註', '成本評估區']);
+  // 印務版同樣唯讀顯示印件內部完成日與印件預計交期，是否免審稿帶同一個提示圖示
+  expectInOrder(text, ['規格與製程', '出貨方式', '印件內部完成日', '印件預計交期', '數量', '審稿設定']);
+  await expect(panel.getByLabel('印件內部完成日')).toHaveCount(0);
+  await expect(panel.getByText('未扣急件內部完成日')).toHaveCount(0);
+  await expectReviewExemptHint(panel);
   await expect(panel.getByLabel('成本估算（未稅）')).toBeEditable();
   // 預計產線是多選下拉，搜尋框本身為 readonly，改驗未停用
   await expect(panel.getByLabel('預計產線')).toBeEnabled();
@@ -458,6 +491,6 @@ test('1.12 需求單印件側板依五區顯示、印務只改成本版同版面
     await expect(panel.getByLabel(label, { exact: true })).toHaveCount(0);
   }
   await expect(panel.getByRole('button', { name: /選擇檔案/ })).toHaveCount(0);
-  // 整個側板只剩兩個未停用的輸入元件：成本估算與預計產線（兩個推得日期為停用輸入框）
+  // 整個側板只剩兩個未停用的輸入元件：成本估算與預計產線（印件預計交期為停用輸入框）
   await expect(panel.locator('input:not([disabled]), textarea:not([disabled])')).toHaveCount(2);
 });
