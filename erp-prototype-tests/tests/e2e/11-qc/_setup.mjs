@@ -30,7 +30,8 @@ export async function switchRoleSafe(page, roleLabel, attempts = 3) {
  * 把剛展開的又收回去，切完角色重組選單時尤其明顯。建議把這段併回 _helpers.mjs。
  */
 export async function gotoInAppSafe(page, path) {
-  const item = page.locator(`.ant-menu-item[data-menu-id$="${path}"]`).first();
+  // data-menu-id 格式為「rc-menu-uuid-<流水>-<路徑>」：帶上路徑前的連字號，/print-items 才不會誤中 /recipes/print-items
+  const item = page.locator(`.ant-menu-item[data-menu-id$="-${path}"]`).first();
   const closedGroups = page.locator(
     '.ant-menu-submenu:not(.ant-menu-submenu-open) > .ant-menu-submenu-title',
   );

@@ -227,12 +227,12 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
     await button(page, '送印務評估').click();
     // 狀態轉待評估成本（進度條走到「評估成本」）
     await expect(quoteCurrentStep(page)).toHaveText('評估成本');
-    // 球交給印務主管：被指派的評估印務主管才看得到「評估完成」
-    await switchRole(page, '印務主管');
-    await expect(button(page, '評估完成')).toBeVisible();
   });
 
-  await test.step('第 3 站 印務主管 填兩件印件成本並評估完成', async () => {
+  await test.step('第 3 站 印務主管 填兩件印件成本，業務 評估完成', async () => {
+    // 被指派的評估印務主管只填成本，沒有「評估完成」鈕
+    await switchRole(page, '印務主管');
+    await expect(button(page, '評估完成')).toHaveCount(0);
     for (const name of [ITEM_A, ITEM_B]) {
       const itemPanel = drawer(page);
       await clickOpen(rowOf(page, name).getByRole('button').first(), itemPanel.getByLabel('成本估算（未稅）'));
@@ -240,16 +240,17 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
       await button(itemPanel, '確認').click();
       await waitModalsClosed(page);
     }
+    // 成本到齊後由業務按評估完成
+    await switchRole(page, '業務');
     await button(page, '評估完成').click();
     await dialog(page).getByRole('button', { name: /確\s*認/ }).click();
     await waitModalsClosed(page);
-    // 狀態轉已評估成本（進度條走到「報價」），球回業務：印務主管不再有主要動作鈕
+    // 狀態轉已評估成本（進度條走到「報價」）
     await expect(quoteCurrentStep(page)).toHaveText('報價');
     await expect(button(page, '評估完成')).toHaveCount(0);
   });
 
   await test.step('第 4 站 業務 進入議價並標記成交', async () => {
-    await switchRole(page, '業務');
     await button(page, '報價').click();
     await expect(quoteCurrentStep(page)).toHaveText('議價');
     await button(page, '成交').click();

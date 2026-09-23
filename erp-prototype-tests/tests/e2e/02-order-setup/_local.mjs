@@ -187,11 +187,12 @@ export async function buildDraftOrder(page, { openAs, switchRole, gotoInApp }, {
   await editPanel.getByLabel('成本估算（未稅）').fill('20');
   await button(editPanel, '確認').click();
   await waitModalsClosed(page);
+
+  // 印務主管填成本、業務按評估完成（評估完成由業務部門執行）
+  await switchRole(page, '業務');
   await button(page, '評估完成').click();
   await dialog(page).getByRole('button', { name: /確\s*認/ }).click();
   await waitModalsClosed(page);
-
-  await switchRole(page, '業務');
   await button(page, '報價').click();
   await button(page, '成交').click();
   await expect(button(page, '建立訂單')).toBeVisible();

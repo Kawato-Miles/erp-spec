@@ -158,8 +158,12 @@ export async function addItem(
   await expect(page.getByText(name, { exact: true }).first()).toBeVisible();
 }
 
-/** 印務主管把指定印件的成本估算填妥並按「評估完成」（不切角色，呼叫前先自行 switchRole）。 */
-export async function fillCostAndCompleteEstimate(page, itemNames, cost = 20) {
+/**
+ * 把指定印件的成本估算填成 cost（不切角色，呼叫前先自行 switchRole）。
+ * 業務、諮詢與被指派的評估印務主管都能填：業務開的是完整側板，印務主管開的是只改成本版，
+ * 兩者列上第一顆按鈕都是編輯圖示。
+ */
+export async function fillCosts(page, itemNames, cost = 20) {
   for (const name of itemNames) {
     const panel = drawer(page);
     await clickOpen(rowOf(page, name).getByRole('button').first(), panel.getByLabel('成本估算（未稅）'));
@@ -167,7 +171,32 @@ export async function fillCostAndCompleteEstimate(page, itemNames, cost = 20) {
     await button(panel, '確認').click();
     await waitModalsClosed(page);
   }
+}
+
+/** 業務（或諮詢）按「評估完成」並在確認視窗按確認（不切角色，呼叫前先自行 switchRole）。 */
+export async function completeEstimate(page) {
   await button(page, '評估完成').click();
   await dialog(page).getByRole('button', { name: /確\s*認/ }).click();
   await waitModalsClosed(page);
+}
+
+/**
+ * 業務自己填妥成本並按「評估完成」：用於評估分工不是測試重點的情境（成交、議價、轉訂單）。
+ * 業務、諮詢在需求確認中、待評估成本、已評估成本都能改成本估算（wiki 需求單 § 成本估算欄）。
+ */
+export async function salesFillCostAndCompleteEstimate(page, itemNames, cost = 20) {
+  await fillCosts(page, itemNames, cost);
+  await completeEstimate(page);
+}
+
+/** 把目前這張需求單分享給某人（權限管理頁籤「新增人員」，層級預設檢視）。呼叫者須為可管理這張單的業務。 */
+export async function shareQuoteTo(page, userName) {
+  await openTab(page, '權限管理');
+  const panel = drawer(page);
+  await clickOpen(button(page, '新增人員'), panel.getByText('新增關聯人員'));
+  await rowOf(panel, userName).locator('input[type="checkbox"]').check();
+  await panel.getByRole('button', { name: /新\s*增\s*1/ }).click();
+  await waitModalsClosed(page);
+  await expect(page.locator('.ant-tabs-tabpane-active').getByText(userName, { exact: true })).toBeVisible();
+  await openTab(page, '印件報價');
 }

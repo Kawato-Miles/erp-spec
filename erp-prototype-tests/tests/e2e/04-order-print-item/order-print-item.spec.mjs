@@ -411,14 +411,19 @@ test('4.15 訂單項目的欄名統一為印件屬性與稿件備註，急件提
   const addModal = page.locator('.ant-modal-content:visible').last();
   await expect(addModal.getByText('印件屬性', { exact: true })).toBeVisible();
   await expect(addModal.getByText('生產類型')).toHaveCount(0);
-  await addModal
-    .locator('.ant-form-item-label', { hasText: '急件選項' })
-    .locator('.anticon-info-circle')
-    .first()
-    .hover();
-  await expect(page.locator('.ant-tooltip-inner:visible').last()).toContainText(
-    '印件內部完成日＝未扣急件內部完成日減這個天數，以工作天計',
-  );
+  // 對話框開啟時有縮放動畫，動畫中提示圖示只有幾個像素大，滑鼠停在那一點、動畫結束後就不在圖示上，
+  // 提示不會出現。滑過與檢查一起重試，直到對話框就定位
+  await expect(async () => {
+    await addModal
+      .locator('.ant-form-item-label', { hasText: '急件選項' })
+      .locator('.anticon-info-circle')
+      .first()
+      .hover();
+    await expect(page.locator('.ant-tooltip-inner:visible').last()).toContainText(
+      '印件內部完成日＝未扣急件內部完成日減這個天數，以工作天計',
+      { timeout: 1500 },
+    );
+  }).toPass({ intervals: [300, 600, 1000], timeout: 10000 });
   await addModal.getByRole('button', { name: /取\s*消/ }).click();
   await expect(addModal).toBeHidden();
 

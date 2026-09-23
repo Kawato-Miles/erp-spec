@@ -13,8 +13,12 @@ import {
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/quote-prototype/_lib/transitions.js';
 import {
   canCompleteEstimate,
+  canDeleteQuote,
   canEditCostFields,
+  canManageCostFields,
   canManageQuote,
+  canReassignQuoteOwner,
+  canSeeQuote,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/quote-prototype/_lib/permissions.js';
 import { MOCK_QUOTES } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/quote-prototype/mock-data.js';
 
@@ -89,7 +93,7 @@ describe('1.1／1.2／1.3 轉換前的印件缺漏檢查', () => {
   });
 });
 
-describe('需求單角色把關（wiki 需求單狀態：業務推進、印務主管評估）', () => {
+describe('需求單角色把關（wiki 需求單狀態：業務部門推進與評估完成、印務主管協助成本）', () => {
   const quote = {
     status: 'pending_quote_evaluation',
     sales_name: '洪嘉駿',
@@ -112,12 +116,47 @@ describe('需求單角色把關（wiki 需求單狀態：業務推進、印務�
     expect(canManageQuote(quote, 'print_manager', '吳國豪')).toBe(false);
   });
 
-  it('評估完成限被指派的印務主管，且限待評估成本', () => {
-    expect(canCompleteEstimate(quote, 'print_manager', '吳國豪')).toBe(true);
-    expect(canCompleteEstimate(quote, 'print_manager', '林雅婷')).toBe(false);
-    expect(canCompleteEstimate({ ...quote, status: 'quote_evaluated' }, 'print_manager', '吳國豪')).toBe(
-      false,
-    );
+  it('評估完成由業務、諮詢（可管理這張單者）執行，且限待評估成本；印務主管不可', () => {
+    expect(canCompleteEstimate(quote, 'sales', '洪嘉駿')).toBe(true);
+    expect(canCompleteEstimate(quote, 'consultant', '張惠雯')).toBe(true);
+    expect(canCompleteEstimate(quote, 'sales', '陳映蓉')).toBe(false);
+    expect(canCompleteEstimate(quote, 'print_manager', '吳國豪')).toBe(false);
+    expect(canCompleteEstimate({ ...quote, status: 'quote_evaluated' }, 'sales', '洪嘉駿')).toBe(false);
+  });
+
+  it('業務、諮詢在需求確認中、待評估成本、已評估成本可改成本估算，議價中不可', () => {
+    for (const status of ['requirement_confirming', 'pending_quote_evaluation', 'quote_evaluated']) {
+      expect(canManageCostFields({ ...quote, status }, 'sales', '洪嘉駿')).toBe(true);
+    }
+    expect(canManageCostFields({ ...quote, status: 'negotiating' }, 'sales', '洪嘉駿')).toBe(false);
+    expect(canManageCostFields(quote, 'print_manager', '吳國豪')).toBe(false);
+  });
+
+  it('評估印務主管因指派取得的編輯授權不含刪除', () => {
+    expect(canDeleteQuote(quote, 'sales', '洪嘉駿')).toBe(true);
+    expect(canDeleteQuote(quote, 'print_manager', '吳國豪')).toBe(false);
+  });
+
+  it('列表可見範圍：業務、諮詢、業務主管只看相關的單；印務主管、主管看全部', () => {
+    const unrelated = { ...quote, sales_name: '賴柏宇', created_by_name: '賴柏宇', permissions: [] };
+    expect(canSeeQuote(unrelated, 'sales', '洪嘉駿')).toBe(false);
+    expect(canSeeQuote(unrelated, 'consultant', '張惠雯')).toBe(false);
+    expect(canSeeQuote(unrelated, 'sales_manager', '林雅婷')).toBe(false);
+    expect(canSeeQuote(unrelated, 'print_manager', '吳國豪')).toBe(true);
+    expect(canSeeQuote(unrelated, 'supervisor', '王大明')).toBe(true);
+    const shared = {
+      ...unrelated,
+      permissions: [{ granted_to_user: { name: '林雅婷' }, permission: 'view' }],
+    };
+    expect(canSeeQuote(shared, 'sales_manager', '林雅婷')).toBe(true);
+  });
+
+  it('改派接單業務限業務主管，成交或流失後不可', () => {
+    expect(canReassignQuoteOwner(quote, 'sales_manager')).toBe(true);
+    expect(canReassignQuoteOwner(quote, 'sales')).toBe(false);
+    expect(canReassignQuoteOwner(quote, 'supervisor')).toBe(false);
+    expect(canReassignQuoteOwner({ ...quote, status: 'won' }, 'sales_manager')).toBe(false);
+    expect(canReassignQuoteOwner({ ...quote, status: 'lost' }, 'sales_manager')).toBe(false);
   });
 
   it('印務主管在待評估與已評估兩階段可改成本欄，議價中不可', () => {

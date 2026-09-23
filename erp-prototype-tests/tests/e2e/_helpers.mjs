@@ -69,7 +69,9 @@ export async function gotoInApp(page, path) {
   const roleBefore = await roleShown.innerText().catch(() => '');
   // 側欄群組的子項在群組第一次展開前不會渲染，先把收合群組逐一展開到目標出現
   const revealItem = async () => {
-    const item = page.locator(`.ant-menu-item[data-menu-id$="${path}"]`).first();
+    // data-menu-id 格式為「rc-menu-uuid-<流水>-<路徑>」：比對時帶上路徑前的連字號，
+    // 否則 /print-items 會誤中 /recipes/print-items（印件配方）
+    const item = page.locator(`.ant-menu-item[data-menu-id$="-${path}"]`).first();
     for (let i = 0; i < 12; i += 1) {
       if (await item.isVisible().catch(() => false)) return item;
       const title = page.locator('.ant-menu-submenu:not(.ant-menu-submenu-open) > .ant-menu-submenu-title').first();
