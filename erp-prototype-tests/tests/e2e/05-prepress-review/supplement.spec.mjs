@@ -50,7 +50,7 @@ test('5.8 換人分派審稿人員留調度軌跡', async ({ page }) => {
   // 活動紀錄留一筆改派，含原審稿人員、新審稿人員、操作者與時間
   await page.getByRole('tab', { name: /活動紀錄/ }).click();
   await expect(page.getByText(/將印件從 魏彣軒 轉派至 范湘瑜/)).toBeVisible();
-  await expect(page.getByText(/reason：魏彣軒手上案件堆積，改分給范湘瑜/)).toBeVisible();
+  await expect(page.getByText(/理由：魏彣軒手上案件堆積，改分給范湘瑜/)).toBeVisible();
 });
 
 // 5.9 起點：同 5.8 的印件。介面沒有停用審稿人員的入口，現行三位審稿人員（魏彣軒、范湘瑜、柯宥安）

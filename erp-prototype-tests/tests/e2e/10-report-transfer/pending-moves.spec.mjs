@@ -7,7 +7,7 @@ import { openAs, switchRole } from '../_helpers.mjs';
 
 test('10.2 待搬視圖只有生管進得去，欄位含可搬量（原編號 21）', async ({ page }) => {
   await openAs(page, '業務', '/production-floor/pending-moves');
-  await expect(page.getByText('轉交單建立限生管、印務、印務主管與主管操作')).toBeVisible();
+  await expect(page.getByText('轉交單建立限生管、印務與印務主管操作')).toBeVisible();
   await expect(page.locator('input[type="checkbox"]')).toHaveCount(0); // 非生管不出示可勾選列
 
   await switchRole(page, '生管');

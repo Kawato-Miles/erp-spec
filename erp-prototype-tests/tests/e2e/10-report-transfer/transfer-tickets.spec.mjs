@@ -11,14 +11,15 @@ test('10.3 轉交單列表、五個狀態與明細（原編號 23）', async ({ 
 
   await page.getByText('TT-20260830-002').click();
   const drawer = page.locator('.ant-drawer-body');
-  // 單頭固定八格：單別、原轉交單、來源站點、目的地、預計轉交日、貨已在現場、簽收照、備註
+  // 單頭固定八格：單別、原轉交單、來源站點、目的地、預計轉交日、貨已在現場、簽收照片、備註
   await expect(drawer.getByText('單別')).toBeVisible();
   await expect(drawer.getByText('原轉交單')).toBeVisible();
   await expect(drawer.getByText('來源站點')).toBeVisible();
   await expect(drawer.getByText('目的地', { exact: true })).toBeVisible();
   await expect(drawer.getByText('預計轉交日')).toBeVisible();
   await expect(drawer.getByText('貨已在現場')).toBeVisible();
-  await expect(drawer.getByText('簽收照', { exact: true })).toBeVisible();
+  await expect(drawer.getByText('簽收照片', { exact: true })).toBeVisible();
+  await expect(drawer.getByText('簽收照-TT005.jpg')).toBeVisible();
   await expect(drawer.getByText('備註', { exact: true })).toBeVisible();
   // 人與時間不在單頭，一律看歷程
   await expect(drawer.getByText(/^明細/)).toBeVisible();
@@ -68,9 +69,9 @@ test('10.6 待搬運的轉交單可改，開始搬運後鎖定（原編號 91）
 
   await editDialog.locator('.ant-input-number-input').fill('900');
   await page.getByRole('button', { name: '儲存修改' }).click();
-  await expect(page.getByText('已更新明細、數量與目的地，來源任務的可搬量即時重算')).toBeVisible();
+  await expect(page.getByText('已更新明細與數量，來源任務的可搬量即時重算')).toBeVisible();
 
-  // 廠務對同一張按「開始搬運」後，回生管視角看修改按鈕消失，只剩作廢（生管、印務、印務主管、主管可作廢）
+  // 廠務對同一張按「開始搬運」後，回生管視角看修改按鈕消失，只剩作廢（生管、印務、印務主管可作廢）
   await switchRole(page, '廠務');
   await gotoInApp(page, '/production-floor/transfers');
   await ticketRow.getByRole('button', { name: '開始搬運' }).click();
@@ -102,10 +103,25 @@ test('10.7 廠務回報開始搬運與抵達站點（原編號 92）', async ({ 
   await newTicketRow.getByRole('button', { name: '開始搬運' }).click();
   await expect(page.getByText(/已回報開始搬運，明細與數量鎖定/)).toBeVisible();
 
-  // 抵達站點：不附照被擋，附照後成功
+  // 抵達站點：不附簽收照片被擋；上傳鈕叫「上傳簽收照片」、可一次附多張，附了才送得出
   await newTicketRow.getByRole('button', { name: '抵達站點' }).click();
+  const deliverDialog = page.locator('.ant-modal-content').filter({ hasText: '回報抵達站點' });
+  await expect(deliverDialog.getByRole('button', { name: '上傳簽收照片' })).toBeVisible();
   await page.getByRole('button', { name: '抵達站點' }).last().click();
-  await expect(page.getByText('請先上傳卸貨現場照再抵達站點')).toBeVisible();
+  await expect(page.getByText('請先上傳簽收照片再抵達站點')).toBeVisible();
+  await deliverDialog.locator('input[type="file"]').setInputFiles([
+    { name: '簽收照片-1.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('photo-1') },
+    { name: '簽收照片-2.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('photo-2') },
+  ]);
+  await expect(deliverDialog.getByText('簽收照片-2.jpg')).toBeVisible();
+  await page.getByRole('button', { name: '抵達站點' }).last().click();
+  await expect(page.getByText(/已回報抵達站點/).last()).toBeVisible();
+
+  // 側板的簽收照片列出兩張，歷程寫明附了幾張
+  await page.getByText(ticketNo, { exact: true }).click();
+  const drawer = page.locator('.ant-drawer-body');
+  await expect(drawer.getByText('簽收照片-1.jpg、簽收照片-2.jpg')).toBeVisible();
+  await expect(drawer.getByText('回報抵達站點，附簽收照片 2 張')).toBeVisible();
 });
 
 test('10.10 歷程只追加，改不動的數字用人工註記說明（原編號 99）', async ({ page }) => {

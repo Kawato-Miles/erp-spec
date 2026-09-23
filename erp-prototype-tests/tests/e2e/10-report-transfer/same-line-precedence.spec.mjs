@@ -13,7 +13,7 @@ const FAKE_PHOTO = path.resolve(HERE, '../../../package.json');
 // 點收），讓軋盒成型拿到料——這一段沿用第十章全鏈測試的同一組動作。
 
 const dispatchAllTasks = async (page) => {
-  await openAs(page, '主管', '/production-floor/dispatch');
+  await openAs(page, '生管', '/production-floor/dispatch');
   const rows = page.locator('.ant-table-tbody tr.ant-table-row');
   const count = await rows.count();
   for (let i = 0; i < count; i += 1) {
@@ -64,7 +64,7 @@ const transferAndReceive = async (page, taskName) => {
   await page.getByRole('button', { name: '抵達站點' }).last().click();
   await expect(page.getByText(/已回報抵達站點/).last()).toBeVisible();
 
-  await switchRole(page, '主管');
+  await switchRole(page, '生管');
   await gotoInApp(page, '/production-floor/receiving');
   await page.locator('tr', { hasText: ticketNo }).getByRole('button', { name: '點收' }).click();
   await page.getByRole('button', { name: '確認點收' }).click();

@@ -9,9 +9,9 @@ const FAKE_PHOTO = path.resolve(HERE, '../../../package.json');
 
 // 情境目錄第十章：跨頁面的完整鏈路（報工 → 轉交 → 點收 → 再報工），驗到工單、印件、訂單三層狀態。
 
-// 前置：主管把 WO-2026-0815 四筆任務全部派入同一個工作包（指派師傅劉阿海）
+// 前置：生管把 WO-2026-0815 四筆任務全部派入同一個工作包（指派師傅劉阿海）
 const dispatchAllTasks = async (page) => {
-  await openAs(page, '主管', '/production-floor/dispatch');
+  await openAs(page, '生管', '/production-floor/dispatch');
   const rows = page.locator('.ant-table-tbody tr.ant-table-row');
   const count = await rows.count();
   for (let i = 0; i < count; i += 1) {
@@ -24,7 +24,7 @@ const dispatchAllTasks = async (page) => {
   await expect(page.getByText(/已建立工作包/)).toBeVisible();
 };
 
-// 主管在工作包頁對指定任務報一筆工（投入＝良品＝qty、不良 0）
+// 生管在工作包頁對指定任務報一筆工（投入＝良品＝qty、不良 0）
 const reportTask = async (page, taskName, qty) => {
   await gotoInApp(page, '/production-floor/work-packages');
   const pkgRow = page.locator('.ant-table-row', { hasText: '劉阿海' }).first();
@@ -38,7 +38,7 @@ const reportTask = async (page, taskName, qty) => {
   await expect(page.getByText('已送出 1 筆報工').last()).toBeVisible();
 };
 
-// 主管在待搬視圖對指定任務建轉交單（帶當下可搬全量）→ 廠務開始搬運並附照抵達站點 → 主管代點收
+// 生管在待搬視圖對指定任務建轉交單（帶當下可搬全量）→ 廠務開始搬運並附照抵達站點 → 生管代點收
 const transferAndReceive = async (page, taskName) => {
   await gotoInApp(page, '/production-floor/pending-moves');
   const moveRow = page.locator('tr', { hasText: taskName });
@@ -59,7 +59,7 @@ const transferAndReceive = async (page, taskName) => {
   await page.getByRole('button', { name: '抵達站點' }).last().click();
   await expect(page.getByText(/已回報抵達站點/).last()).toBeVisible();
 
-  await switchRole(page, '主管');
+  await switchRole(page, '生管');
   await gotoInApp(page, '/production-floor/receiving');
   const queueRow = page.locator('tr', { hasText: ticketNo });
   await queueRow.getByRole('button', { name: '點收' }).click();
@@ -73,10 +73,13 @@ test('10.14 最後一筆報工把工單、印件、訂單一路推到製作完�
 
   // 材料備料先報完（2,060）→ 該任務完成，但工單旗下還有任務未完成，不向上反映
   await reportTask(page, '牛皮紙 150g 備料', 2060);
+  // 看工單與訂單改切主管（唯讀可看全公司；生管的選單沒有工單管理與訂單管理），現場動作回生管做
+  await switchRole(page, '主管');
   await gotoInApp(page, '/work-orders');
   await page.getByText('WO-2026-0815', { exact: true }).click();
   await expect(page.getByText('工單已交付')).toHaveCount(0); // 已因首次報工轉製作中
   await expect(page.getByText('製作中').first()).toBeVisible();
+  await switchRole(page, '生管');
 
   await transferAndReceive(page, '牛皮紙 150g 備料');
   await reportTask(page, '五色印刷', 2060);
@@ -98,6 +101,7 @@ test('10.14 最後一筆報工把工單、印件、訂單一路推到製作完�
   ).toBeVisible();
 
   // 訂單詳情：印件列、訂單狀態與活動紀錄
+  await switchRole(page, '主管');
   await gotoInApp(page, '/orders');
   await page.getByText('ORD-2026-0815', { exact: true }).click();
   await expect(page.getByText('製作完成').first()).toBeVisible();
@@ -108,7 +112,7 @@ test('10.14 最後一筆報工把工單、印件、訂單一路推到製作完�
 test('10.11 一批貨從報工走到可出貨的全鏈（原編號 105）', async ({ page }) => {
   test.setTimeout(60_000);
   // 起點：鏈二 TT-20260830-002（裁切站待點收，來源 pt-0710-2 海報四色印刷）
-  await openAs(page, '主管', '/production-floor/receiving');
+  await openAs(page, '生管', '/production-floor/receiving');
   await page.locator('tr', { hasText: 'TT-20260830-002' }).getByRole('button', { name: '點收' }).click();
   await page.getByRole('button', { name: '確認點收' }).click();
   await expect(page.getByText(/已點收/).last()).toBeVisible();
@@ -128,7 +132,7 @@ test('10.11 一批貨從報工走到可出貨的全鏈（原編號 105）', asyn
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(page.getByText('已送出 1 筆報工').last()).toBeVisible();
 
-  // 該印件首次出現在品檢待驗清單，建轉交單到品檢站、廠務搬運、點收（主管代點收，FLOOR_MANAGER_ROLES 可代）
+  // 該印件首次出現在品檢待驗清單，建轉交單到品檢站、廠務搬運、點收（生管代點收，FLOOR_MANAGER_ROLES 可代）
   await transferAndReceive(page, '裁切成型');
 
   await switchRole(page, '品檢人員');

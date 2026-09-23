@@ -55,7 +55,19 @@ test('8.2 印務主管核可製程，工單轉製程審核完成（場內加工�
   // WO-2026-0907 為樣本。WO-2026-0906 專供排程硬擋情境（7.30／7.31：核可被擋、對話框列兩個日期）。
   await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0907');
 
+  // 點「核可製程」先跳確認框（文字與元件同待審核工單列表的「審核通過」），確認後才核可
   await page.getByRole('button', { name: '核可製程' }).click();
+  const confirmDialog = page.locator('.ant-modal-content').filter({ hasText: '核可後工單轉「製程審核完成」' });
+  await expect(confirmDialog).toBeVisible();
+  await expect(page.getByText('製程審核完成', { exact: true })).toHaveCount(0);
+  // 取消不核可：工單留在製程確認中
+  await confirmDialog.getByRole('button', { name: cjkName('取消') }).click();
+  await expect(confirmDialog).toHaveCount(0);
+  await expect(page.getByText('製程確認中', { exact: true }).first()).toBeVisible();
+
+  await page.getByRole('button', { name: '核可製程' }).click();
+  await page.locator('.ant-modal-content').filter({ hasText: '核可後工單轉「製程審核完成」' })
+    .getByRole('button', { name: cjkName('核可') }).click();
   await expect(page.getByText('製程已核可', { exact: true })).toBeVisible();
   await expect(page.getByText(/自動產生派單/)).toHaveCount(0);
   await expect(page.getByText('製程審核完成', { exact: true }).first()).toBeVisible();

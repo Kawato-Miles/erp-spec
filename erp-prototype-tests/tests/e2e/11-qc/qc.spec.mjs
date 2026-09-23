@@ -55,8 +55,8 @@ test('11.1 待驗清單依印件做出來的良品列出，不依轉交（原編
   await expect(qcHeader(page)).toContainText('已驗（通過／不通過）');
   await expect(qcHeader(page)).toContainText('待驗量');
   await expect(qcHeader(page)).toContainText('操作');
-  // 待驗量只看做出來的良品，貨在哪裡到轉交單管理查
-  await expect(page.getByText('待驗量＝做出來的良品 − 已驗量，只看做出來多少')).toBeVisible();
+  // 待驗量只看做出來的良品；頁首指點品檢人員看得到的「點收佇列」查貨在哪裡
+  await expect(page.getByText('待驗量＝做出來的良品 − 已驗量，只看做出來多少；貨在哪裡請到點收佇列查。')).toBeVisible();
 
   // 鏈一 PI-2026-0601：良品 5,000、已驗 5,000、待驗量 0，列留著、驗收鈕停用
   const done = pendingRow(page, 'PI-2026-0601');

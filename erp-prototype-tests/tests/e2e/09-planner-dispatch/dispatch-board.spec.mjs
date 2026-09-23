@@ -30,7 +30,7 @@ test('9.1 生管看待派任務清單，其他角色的可見範圍（原編號 
 
   // 印務主管也看得到本頁、沒有角色限制提示
   await switchRole(page, '印務主管');
-  await expect(page.getByText('派工限生管、印務、印務主管與主管操作')).toHaveCount(0);
+  await expect(page.getByText('派工限生管、印務與印務主管操作')).toHaveCount(0);
   await expect(page.getByRole('cell', { name: 'WO-2026-0815' }).first()).toBeVisible();
 });
 
@@ -60,6 +60,10 @@ test('9.6 生管在派工時系統補寫接收留痕（原編號 80）', async (
   await row.locator('input[type="checkbox"]').check({ force: true });
   await page.getByRole('button', { name: /派工（1）/ }).click();
   // MASTER_OPTIONS 順序：劉阿海、李榮發、陳金水，劉阿海是預設高亮的第 1 個選項
+  // 派工表單的日期欄存的是工作包的預計完成日，欄名叫「預計完成日」（不是任務預計完成日）
+  const dispatchForm = page.locator('.ant-modal-content').filter({ hasText: '確認派工' });
+  await expect(dispatchForm.locator('.ant-form-item-label', { hasText: /^預計完成日$/ })).toBeVisible();
+  await expect(dispatchForm.locator('.ant-form-item-label', { hasText: '任務預計完成日' })).toHaveCount(0);
   await page.locator('.ant-form-item', { hasText: '指派師傅' }).locator('.ant-select').click();
   await page.keyboard.press('Enter');
   await page.getByRole('button', { name: '確認派工' }).click();

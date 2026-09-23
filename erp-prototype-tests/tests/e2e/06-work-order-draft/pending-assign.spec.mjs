@@ -60,11 +60,11 @@ test('6.7 印務主管以印件為單位一次派完，缺工單就當場加開�
   await rowOf(page, 'PI-2026-0904').getByLabel('工單分派').click();
   const assignDialog = dialog(page);
 
-  // 審核主管預帶自己（吳國豪）、WO-2026-0904 預填周建宏、WO-2026-0905 尚未指派
+  // 審核主管預帶自己（吳國豪）、WO-2026-0904 預填周建宏、WO-2026-0905 尚未分派
   await expect(assignDialog).toContainText('吳國豪');
   await expect(assignDialog).toContainText('工單清單（2）');
   await expect(rowOf(assignDialog, 'WO-2026-0904')).toContainText('周建宏');
-  await expect(rowOf(assignDialog, 'WO-2026-0905')).toContainText('尚未指派');
+  await expect(rowOf(assignDialog, 'WO-2026-0905')).toContainText('尚未分派');
 
   // 加開一張工單：出現預備列（送出後才建立）
   await button(assignDialog, '加開一張工單').click();

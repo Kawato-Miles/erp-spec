@@ -172,7 +172,7 @@ export async function createTransferToQc(page) {
   await expect(page.getByText(/已建立 TT-/)).toBeVisible();
 }
 
-// 廠務回報開始搬運與抵達站點（抵達須附卸貨現場照）
+// 廠務回報開始搬運與抵達站點（抵達須附簽收照片至少一張）
 export async function moveTransferToQc(page) {
   await switchRoleSafe(page, '廠務');
   await gotoInAppSafe(page, '/production-floor/transfers');

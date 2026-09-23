@@ -85,3 +85,24 @@ test('9.11 現場三頁的印件內部完成日印合併格式', async ({ page }
   const urgentTasks = urgentPkg.locator('xpath=following-sibling::tr[1]');
   await expect(urgentTasks).toContainText('2026-09-04（未扣急件 2026-09-09）');
 });
+
+test('9.13 生管在工作包管理調整師傅，改了指派師傅按儲存即生效', async ({ page }) => {
+  // 起點資料：鏈二 WP-2026-0710-02（指派師傅李榮發）
+  await openAs(page, '生管', '/production-floor/work-packages');
+  const row = page.locator('tr', { hasText: 'WP-2026-0710-02' });
+  await expect(row).toContainText('李榮發');
+  await row.getByRole('button', { name: '調整師傅' }).click();
+
+  const dialog = page.locator('.ant-modal-content').filter({ hasText: '調整師傅：WP-2026-0710-02' });
+  await expect(dialog).toBeVisible();
+  // 指派師傅改成陳金水（MASTER_OPTIONS 順序：劉阿海、李榮發、陳金水）
+  await dialog.locator('.ant-form-item', { hasText: '指派師傅' }).locator('.ant-select').click();
+  await page.locator('.ant-select-dropdown:visible .ant-select-item-option', { hasText: '陳金水' }).click();
+  await dialog.getByRole('button', { name: /儲\s*存/ }).click();
+
+  await expect(page.getByText('WP-2026-0710-02 已更新')).toBeVisible();
+  // 對話框關閉後節點留在畫面結構裡、只是隱藏，驗隱藏而不驗節點數
+  await expect(dialog).toBeHidden();
+  await expect(row).toContainText('陳金水');
+  await expect(row).not.toContainText('李榮發');
+});

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { canReceiveTransfer } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/transfer-rules.js';
 
 // 情境 10.8「點收佇列依所屬產線過濾，不看角色」的判定驗算（畫面呈現另在 e2e 10.8 驗）。
-// 誰能點收只看人員的所屬產線含不含該站；生管、印務、印務主管與主管可代點收。
+// 誰能點收只看人員的所屬產線含不含該站；生管、印務與印務主管可代點收，主管唯讀不可代點收。
 // 現場人員的所屬產線（production-floor/_lib/mock-data.js MOCK_FLOOR_STAFF）：
 // 劉阿海＝印刷產線、後加工產線；李榮發＝印刷產線、裁切站；郭淑芬＝品檢站。
 

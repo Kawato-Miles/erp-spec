@@ -52,7 +52,7 @@ test('10.8（業務空佇列）業務看到空佇列與提示（原編號 93）'
   await expect(page.getByText('TT-20260830-002')).toHaveCount(0);
   await expect(page.getByText(/目前沒有輪到你點收的貨/)).toBeVisible();
   await expect(
-    page.getByText(/站上無人時生管、印務、印務主管或主管可代點收/),
+    page.getByText(/站上無人時生管、印務或印務主管可代點收/),
   ).toBeVisible();
 });
 
