@@ -18,7 +18,7 @@ import {
   waitModalsClosed,
 } from './_local.mjs';
 
-// 第一章「需求單」情境驗收（docs/scenario-catalog.md 1.1–1.9）。
+// 第一章「需求單」情境驗收（docs/scenario-catalog.md 1.1–1.12）。
 // 每條情境獨立一條測試：第一步 openAs 之後一律 gotoInApp 與 switchRole，
 // 同一條測試內完成的推狀態鏈就是情境本文寫的「前置」。
 
@@ -404,4 +404,60 @@ test('1.10 成交轉訂單印件的未扣急件內部完成日逐件帶入、空
   const catalogRow = page.locator('tr', { hasText: '型錄印件' });
   await expect(catalogRow).not.toContainText('2026-09-08');
   await expect(catalogRow.getByText('－').first()).toBeVisible();
+});
+
+test('1.12 需求單印件側板依五區顯示、印務只改成本版同版面', async ({ page }) => {
+  test.setTimeout(90_000);
+  const sections = ['基本資訊', '規格與製程', '審稿設定', '成本評估區', '參考附件'];
+  // 以側板文字的先後位置驗區塊順序與欄位歸屬：從「基本資訊」起算，避開頂部說明提示裡的欄位名
+  const layoutText = async (panel) => {
+    const text = await panel.innerText();
+    return text.slice(text.indexOf('基本資訊'));
+  };
+  const expectInOrder = (text, labels) => {
+    const positions = labels.map((label) => text.indexOf(label));
+    for (const [i, pos] of positions.entries()) {
+      expect(pos, `找不到「${labels[i]}」`).toBeGreaterThanOrEqual(0);
+    }
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  };
+
+  const title = '1.12 情境需求案';
+  await openAs(page, '業務', '/quote-prototype');
+  await createQuoteHeader(page, { title, estimators: ['吳國豪'] });
+
+  // 業務版：五個區塊標題依序出現；數量／單位／包裝說明與難易度、預計產線都在規格與製程區
+  const panel = drawer(page);
+  await clickOpen(button(page, '新增印件'), panel.getByLabel('項目名稱'));
+  let text = await layoutText(panel);
+  expectInOrder(text, sections);
+  expectInOrder(text, ['規格與製程', '數量', '單位', '包裝說明', '難易度', '預計產線', '審稿設定']);
+  expectInOrder(text, ['成本評估區', '成本估算（未稅）', '單價（未稅）', '小計（未稅）', '利潤率', '參考附件']);
+  // 新增模式不顯示印件編號
+  await expect(panel.getByText('印件編號', { exact: true })).toHaveCount(0);
+  await button(panel, '取消').click();
+  await waitModalsClosed(page);
+
+  await addItem(page, { name: '甲印件', difficulty: 3 });
+  await button(page, '送印務評估').click();
+  await expect(quoteCurrentStep(page)).toHaveText('評估成本');
+
+  // 印務只改成本版：同樣五個區塊標題依序出現，只有成本估算與預計產線可編輯
+  await switchRole(page, '印務主管');
+  await clickOpen(rowOf(page, '甲印件').getByRole('button').first(), panel.getByLabel('成本估算（未稅）'));
+  await expect(panel.getByText('僅能編輯成本估算（未稅）與預計產線，其餘欄位唯讀顯示。')).toBeVisible();
+  text = await layoutText(panel);
+  expectInOrder(text, sections);
+  expectInOrder(text, ['規格與製程', '數量', '單位', '包裝說明', '難易度', '預計產線', '審稿設定']);
+  expectInOrder(text, ['審稿設定', '是否免審稿', '印件檔案備註', '成本評估區']);
+  await expect(panel.getByLabel('成本估算（未稅）')).toBeEditable();
+  // 預計產線是多選下拉，搜尋框本身為 readonly，改驗未停用
+  await expect(panel.getByLabel('預計產線')).toBeEnabled();
+  // 其餘欄位唯讀：不是表單欄位、沒有可綁定的輸入框
+  for (const label of ['項目名稱', '印件屬性', '數量', '單位', '包裝說明', '難易度', '單價（未稅）']) {
+    await expect(panel.getByLabel(label, { exact: true })).toHaveCount(0);
+  }
+  await expect(panel.getByRole('button', { name: /選擇檔案/ })).toHaveCount(0);
+  // 整個側板只剩兩個未停用的輸入元件：成本估算與預計產線（兩個推得日期為停用輸入框）
+  await expect(panel.locator('input:not([disabled]), textarea:not([disabled])')).toHaveCount(2);
 });
