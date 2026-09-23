@@ -11,11 +11,11 @@ description: >
 
 OQ 是**待裁決佇列**：每張卡一個待確認的問題，拍板後決議寫回卡、封存出平層。平層只放未結案——平層數量＝真實的待辦壓力，一眼可信。
 
-**分工（單一正本）**：本 skill 管「OQ 怎麼流動」（五 mode 操作、去重、封存移檔、audience 判定、Notion 推送）。「一張 OQ 卡長什麼樣」——判斷表、一卡一議題鐵則、範圍宣告、互引規則、檔名與序號、段落紀律、稽核維度——正本在 wiki `08-open-questions/規範 - OQ`；frontmatter 欄位值域正本在 wiki-schema § 四。三層結構：骨架 `wiki/範本/範本 - OQ`（開卡 MUST 從骨架複製起手）、規範 `規範 - OQ`、範例 `08-open-questions/範例 - OQ`。
+**分工（單一正本）**：本 skill 管「OQ 怎麼流動」（各 mode 操作、去重、封存移檔、audience 判定、Notion 推送）。「一張 OQ 卡長什麼樣」——判斷表、一卡一議題鐵則、範圍宣告、互引規則、檔名與序號、段落紀律、稽核維度——正本在 wiki `08-open-questions/規範 - OQ`；frontmatter 欄位值域正本在 wiki-schema § 四。三層結構：骨架 `wiki/範本/範本 - OQ`（開卡 MUST 從骨架複製起手）、規範 `規範 - OQ`、範例 `08-open-questions/範例 - OQ`。
 
-## 〇、兩條流程軸線
+## 〇、流程軸線
 
-**1. 狀態流轉**：status 嚴格三值（open／answered／cancelled，值域正本 wiki-schema § 四）。open 在平層；轉 answered／cancelled 即封存。
+**1. 狀態流轉**：status 嚴格限 open／answered／cancelled（值域正本 wiki-schema § 四）。open 在平層；轉 answered／cancelled 即封存。
 
 **2. 內外部（audience，開卡時必判）**——判斷問句：「**誰能回答這個問題？**」
 
@@ -26,7 +26,7 @@ OQ 是**待裁決佇列**：每張卡一個待確認的問題，拍板後決議�
 
 **封存**：status 轉 answered／cancelled 時，檔案移 `08-open-questions/_archives/<拍板年份>/`。wiki link 按檔名解析，移目錄不斷鏈。封存卡只增不改（修改原則見規範 - OQ § 四）。
 
-## 一、五個 mode（輸入 → 步驟 → 輸出）
+## 一、各 mode（輸入 → 步驟 → 輸出）
 
 ### Mode A：查詢（討論前帶入）
 
@@ -57,8 +57,8 @@ OQ 是**待裁決佇列**：每張卡一個待確認的問題，拍板後決議�
 
 ### Mode E：批次整理（純報告＋Miles 確認後操作）
 
-掃平層全部卡，產三張清單：
-1. **狀態違規**：status 非三值、行內註解污染 → 列映射提案（resolved→answered 等），確認後修
+掃平層全部卡，產下列清單：
+1. **狀態違規**：status 不在值域內、行內註解污染 → 列映射提案（resolved→answered 等），確認後修
 2. **可封存**：平層上 status=answered／cancelled 的卡 → 確認後批次移檔
 3. **external 待推送**：audience=external 且未填 notion-url → 提醒 Miles 是否觸發推送
 另列：open 超過 30 天無進度、priority high 長期擱置、違反規範 - OQ 稽核維度的卡（一卡多議題、互引複述）。

@@ -23,7 +23,7 @@ description: >
 
 **拒絕場景（防線 1＋2 的試金石）**：被要求「總結既有 vault 內容存進 raw」MUST 拒絕——讀 vault → 自己編 → 存 raw 是自迭代。替代：對話中直接給總結（不寫 raw）、或做有外部來源的研究再存、或把合成寫進對應正本卡（讀 vault 合成的產出是正本卡，不是 raw）。
 
-## 一、三個 mode（輸入 → 步驟 → 輸出）
+## 一、各 mode（輸入 → 步驟 → 輸出）
 
 | Mode | 輸入 | 輸出 |
 |------|------|------|
@@ -31,21 +31,21 @@ description: >
 | **B 精練 raw → wiki** | 指定的 raw 卡 | cards diff 提案 →（Miles 批准後）正本卡寫入轉介 `wiki-amend`＋raw 卡 status=ingested＋log 條目（ingest-B） |
 | **C 批次掃描** | raw/ 全目錄 | 三狀態報告（待處理／處理中／已 ingest）＋同主題累積警示＋過期警告＋log 條目（ingest-C）；**不動檔** |
 
-### Mode A：寫入 raw（五步）
+### Mode A：寫入 raw
 
-1. **確認來源**：source 六選一（miles-dialogue／claude-research／claude-self-capture／prototype-dogfood／mes-study／miles-upload）＋captured-by 對應（miles／claude-on-task／claude-self）；claude-self-capture 先過防線 1。
+1. **確認來源**：source 擇一（miles-dialogue／claude-research／claude-self-capture／prototype-dogfood／mes-study／miles-upload）＋captured-by 對應（miles／claude-on-task／claude-self）；claude-self-capture 先過防線 1。
 2. **分析分流**：識別 module 與候選相關卡（grep）；**「明確未解問題」（「該怎麼處理 X」「Y 是否要 Z」句式）MUST 改走 oq-manage mode B、不寫 raw**；與既有 raw 同主題則建議合併。
 3. **寫卡**：依骨架 `memory/Sens_wiki/wiki/範本/範本 - Raw 素材.md`（複製起手）；檔名 `<YYYY-MM-DD>-<source-slug>-<主題繁中名詞>.md`；「原始素材」的粒度依 source：對話／觀察類（miles-dialogue／prototype-dogfood／claude-self-capture）一字不漏；claude-research／mes-study 文獻類可摘錄重點但 MUST 附 raw-source-link 並在卡內標明「摘錄重點，非全文轉錄」；miles-upload 走防線 2b 摘要式、「第一輪初步分析」寫觀察與候選升級路徑、「待精練」留空。
 4. **log 一筆**（納入(ingest-A)，動機免）。
-5. **回報精練建議**：不立即 ingest；提示「累積同主題 3 張跑 mode C／B」。
+5. **回報精練建議**：不立即 ingest；提示「同主題累積達 mode C 門檻時跑 mode C／B」。
 
-### Mode B：精練（六步）
+### Mode B：精練
 
 1. 讀目標 raw 卡＋其候選相關卡**全文**（不是摘要）。
-2. 對照 `00-meta/scope-boundary.md` 判升級路徑：04 規則／05 實體／06 狀態機／07 情境／11 審查與協作知識（審查方法、agent 協作協議類素材）／OQ（轉 oq-manage）／不進 vault（status=cancelled 附理由）。同主題累積 ≥ 3 張時一併判「這批合起來是否該寫進某張正本卡」，先把素材卡升 status=reviewed。
+2. 對照 `00-meta/scope-boundary.md` 判升級路徑：04 規則／05 實體／06 狀態機／07 情境／11 審查與協作知識（審查方法、agent 協作協議類素材）／OQ（轉 oq-manage）／不進 vault（status=cancelled 附理由）。同主題累積達 mode C 門檻時一併判「這批合起來是否該寫進某張正本卡」，先把素材卡升 status=reviewed。
 3. **提議 cards diff**（每張卡列 diff 預覽＋不適用部分附去處），等 Miles 逐項批准（防線 3）。Miles 說「再看看」→ status=reviewed；說「重新分析」→ 維持 raw 重跑。
 4. OQ 候選 → 觸發 oq-manage mode B（去重）。
-6. **Miles 說 OK 後**執行寫入：正本卡（03／04／05／06／07）的寫入動作 **MUST 轉介 `wiki-amend`**，依它的 § 〇 載入清單走六步，本 skill 不自行決定卡怎麼寫；本 skill 只負責 raw 卡 status=ingested＋ingested-at＋ingested-to、卡末「精練去處」填 wiki link、log 一筆（ingest-B，逐卡 `[[卡名]]`）。
+6. **Miles 說 OK 後**執行寫入：正本卡（03／04／05／06／07）的寫入動作 **MUST 轉介 `wiki-amend`**，依它的 § 〇 載入清單走完寫卡流程，本 skill 不自行決定卡怎麼寫；本 skill 只負責 raw 卡 status=ingested＋ingested-at＋ingested-to、卡末「精練去處」填 wiki link、log 一筆（ingest-B，逐卡 `[[卡名]]`）。
 
 ### Mode C：批次掃描（純報告）
 
@@ -63,7 +63,7 @@ description: >
 
 ## 三、raw 卡 frontmatter
 
-**骨架正本見 `memory/Sens_wiki/wiki/範本/範本 - Raw 素材.md`**（frontmatter 樣板＋正文四段與填寫提示）。寫 raw 卡 MUST 從骨架複製起手；骨架異動時與本 skill 同 commit 更新（治理見 `00-meta/卡片撰寫共用規範` § 一）。status 四值：raw / reviewed / ingested / cancelled；`ingested-at`／`ingested-to` 於 status=ingested 時填（mode B 步 6）。
+**骨架正本見 `memory/Sens_wiki/wiki/範本/範本 - Raw 素材.md`**（frontmatter 樣板＋正文各段與填寫提示）。寫 raw 卡 MUST 從骨架複製起手；骨架異動時與本 skill 同 commit 更新（治理見 `00-meta/卡片撰寫共用規範` § 一）。status 值域：raw / reviewed / ingested / cancelled；`ingested-at`／`ingested-to` 於 status=ingested 時填（mode B 步 6）。
 
 **captured-by 與 source 對應**：miles → miles-dialogue／prototype-dogfood／miles-upload；claude-on-task → claude-research／mes-study；claude-self → claude-self-capture（須確認）。
 

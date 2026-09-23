@@ -33,7 +33,7 @@ context: |
   Prototype 路徑：/Users/b-f-03-029/erp（實作 MUST 經 repo 內 skill prototype-from-prompt）；驗收測試在 Sens erp-prototype-tests/
 
   OpenSpec Specs（目錄結構見 openspec/specs/）：
-  - 涵蓋需求單 / 諮詢 / 訂單（含訂單帳務、訂單異動）/ 工單 / 生產管理 / 排程與工廠總覽 / 配方管理三份 / BOM 三類主檔 / 設備 / 審稿 / 品檢 / 出貨 / 派單 / 售後 / EC 等模組 specs，與業務情境等跨模組 specs（狀態列舉與欄位表歸 wiki、介面與互動歸 Prototype，spec 只承載系統行為；prototype 工程 specs 已於 2026-07-30 隨技術棧退場刪除）
+  - 涵蓋需求單 / 諮詢 / 訂單（含訂單帳務、訂單異動）/ 工單 / 生產管理 / 排程與工廠總覽 / 配方管理 / BOM 主檔 / 設備 / 審稿 / 品檢 / 出貨 / 派單 / 售後 / EC 等模組 specs，與業務情境等跨模組 specs（狀態列舉與欄位表歸 wiki、介面與互動歸 Prototype，spec 只承載系統行為；prototype 工程 specs 已於 2026-07-30 隨技術棧退場刪除）
 
   Notion 參考資源：
   - OQ Follow-up DB（對外確認版，現階段暫停推送）：https://www.notion.so/32c3886511fa808e9754ea1f18248d92
@@ -48,22 +48,22 @@ context: |
 
   變更管理工作流：
   - 建立 change 前：查詢 Vault 08-open-questions/ 列出相關未解 OQ（oq-manage skill）
-  - 建立 proposal 前：設計須先過 plan-design（五必含段）與 plan-audit（rubric 稽核）並經 Miles 拍板；量尺正本 wiki 11-review-knowledge/規劃品質評分準則.md
-  - specs/design 階段：依變動性質兩級分級（局部變動＝單稽核者 rubric；結構性變更＝加雙盲對抗推演；分級表見 CLAUDE.md § ERP 討論主動路由）
+  - 建立 proposal 前：設計須先過 plan-design（必含段）與 plan-audit（rubric 稽核）並經 Miles 拍板；量尺正本 wiki 11-review-knowledge/規劃品質評分準則.md
+  - specs/design 階段：依變動性質分級（局部變動＝單稽核者 rubric；結構性變更＝加雙盲對抗推演；分級表見 CLAUDE.md § ERP 討論主動路由）
   - Linear 交付：累積數個 archived change 後由 Miles 觸發 linear-delivery skill
 
 rules:
   explore:
     - "explore 開新需求時 MUST 跑輕量商業邏輯衝突檢查：讀對應領域 Vault 04-business-logic/ 卡 + 查相關 08-open-questions/ OQ，給「此方向與既有商業規則有無衝突」早期警示（附檔:行 + OQ 編號）"
     - "explore 衝突檢查產「衝突筆記」交後續 grill 需求對齊與 plan-design 承接（不重掃已發現衝突）；發現衝突時攤三選項（A 繞過用既有機制 / B 推翻改既有規則 / C 待釐清開 OQ），決策權在 Miles，MUST NOT 替 Miles 決定方向"
-    - "訪談三紀律：對 Miles 的釐清提問，決策類問題一次只問一題、每題附建議答案（讓 Miles 可一字拍板），該題有結論才問下一題；可自環境查得的事實（wiki / spec / Notion / git）MUST 自查、MUST NOT 拿來問 Miles——只有決策才問人"
+    - "訪談紀律：對 Miles 的釐清提問，決策類問題一次只問一題、每題附建議答案（讓 Miles 可一字拍板），該題有結論才問下一題；可自環境查得的事實（wiki / spec / Notion / git）MUST 自查、MUST NOT 拿來問 Miles——只有決策才問人"
   proposal:
     - 使用繁體中文撰寫
     - Capabilities 名稱使用英文 kebab-case
     - 引用 Notion 頁面時使用 [可讀名稱](URL) 格式
     - "商業背景必須引用 ERP_Vault 對應節點：建立 proposal 時必須在 ## Why 或 ## Background 段以相對路徑 link 引用 memory/Sens_wiki/wiki/erp/ 下對應的卡（如 04-business-logic/、05-entities/、03-roles/）"
     - "建立前先查詢 memory/Sens_wiki/wiki/erp/08-open-questions/（oq-manage skill），列出相關未解 OQ"
-    - "proposal 撰寫前置：設計已過 plan-design 五必含段 + plan-audit 稽核全過 + Miles 拍板；proposal 直接承接拍板後的設計方案，不重跑釐清"
+    - "proposal 撰寫前置：設計已過 plan-design 必含段 + plan-audit 稽核全過 + Miles 拍板；proposal 直接承接拍板後的設計方案，不重跑釐清"
     - "問寫分離：釐清（Phase 1）完成、進入 artifact 產出後 MUST NOT 回頭追問 Miles；產出中冒出的不確定項一律觸發 oq-manage mode B 開 OQ 卡並於 artifact 內標註「另案處理」，產出不中斷、Miles 事後一次裁決"
   specs:
     - 需求描述使用 SHALL/MUST 規範用語

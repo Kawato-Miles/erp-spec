@@ -8,7 +8,7 @@ last-reviewed: 2026-05-28
 
 > 「**規劃 ERP 前必跑稽核 + 修補既有卡**」的方法論正本。
 > 配套 skill：[[../../../../.claude/skills/erp-planning-pre-check/SKILL.md|erp-planning-pre-check]]
-> 配套分類：[[business-domain-taxonomy]]（6 領域）+ [[wiki-schema]]（frontmatter）
+> 配套分類：[[business-domain-taxonomy]]（領域）+ [[wiki-schema]]（frontmatter）
 > 受 Karpathy LLM Wiki Vault + YouTube /goal 影片啟發。
 
 ## 一、目的與適用範圍
@@ -27,11 +27,11 @@ last-reviewed: 2026-05-28
 
 ## 二、雙軸稽核框架
 
-### 軸 1：業務領域（6 領域 + 全域哨兵）
+### 軸 1：業務領域（各領域 + 全域哨兵）
 
 領域定義、觸發詞、邊界裁定、檢索規約的正本皆在 [[business-domain-taxonomy]]，本框架不複寫。載入方式：查該領域 tag（`領域/<領域名>`）+ `領域/全域` 哨兵卡，先出卡名清單、呈現後載入。
 
-### 軸 2：卡類型（6 類）
+### 軸 2：卡類型
 
 對應 Vault 既有目錄結構：
 
@@ -46,7 +46,7 @@ last-reviewed: 2026-05-28
 
 ### 雙軸量化矩陣
 
-每次稽核產出「領域 × 卡類型」矩陣，每格列「已涵蓋 N / 待修補 M / OQ K」三個明確數字。
+每次稽核產出「領域 × 卡類型」矩陣，每格列「已涵蓋 N / 待修補 M / OQ K」明確數字。
 
 範例（Billing & Cash 領域第一輪稽核）：
 
@@ -56,11 +56,11 @@ last-reviewed: 2026-05-28
 
 **禁「大致 OK」「再看看」等非量化結論**（受 YouTube /goal 影片啟發）。
 
-## 三、5 步驟 SOP（含閉環驗證）
+## 三、稽核 SOP（含閉環驗證）
 
 ### Step 1：識別本次涉及的業務領域
 
-- 依 [[business-domain-taxonomy]] 觸發詞與邊界裁定判定，從 6 領域中選 1-2 個（可多領域）
+- 依 [[business-domain-taxonomy]] 觸發詞與邊界裁定判定本次涉及的領域（可多領域）
 - 語意不確定（命中多領域或零命中）MUST 先向 Miles 確認，禁自行猜測
 
 ### Step 2：依檢索規約載入該領域卡
@@ -68,21 +68,21 @@ last-reviewed: 2026-05-28
 - 查該領域 tag + `領域/全域` 出卡名清單 → 清單呈現於對話 → 確認後載入（[[business-domain-taxonomy]] § 檢索規約）
 - 判準是相關性，不設張數預算；視稽核需要另載 OpenSpec 對應模組 spec
 
-### Step 3：逐卡類型稽核（6 類）
+### Step 3：逐卡類型稽核
 
 - 依雙軸矩陣逐格檢查
-- **量化產出**每格「已涵蓋 N / 待修補 M / OQ K」三個明確數字
+- **量化產出**每格「已涵蓋 N / 待修補 M / OQ K」明確數字
 
 ### Step 4：修補 / 標 OQ
 
 - 修補：**在既有卡內 edit 補入缺漏**（不新建抽象卡）
 - 缺漏項標 OQ（含「來源稽核軸（領域 × 卡類型）」標記）
-- 跨層影響傳播檢查（商業需求 ↔ 業務情境 ↔ spec 三層雙向追溯）
+- 跨層影響傳播檢查（商業需求 ↔ 業務情境 ↔ spec 雙向追溯）
 
 ### Step 5：閉環驗證（**禁 false completion**）
 
 - 回頭看 Step 3 量化矩陣，修補後格子是否真的從「待修補 M」轉「已涵蓋 N」
-- 未轉成功則回 Step 4 補做（最多 3 輪，超過 3 輪標 OQ 待後續處理）
+- 未轉成功則回 Step 4 補做（達 SKILL.md 回合預算上限時標 OQ 待後續處理）
 - 跨層影響重新檢查
 
 ## 四、修補規則
@@ -101,7 +101,7 @@ last-reviewed: 2026-05-28
 
 **日期**：YYYY-MM-DD
 **議題**：<本次要規劃的 ERP 功能>
-**識別領域**：<從 6 領域中選 1-2 個> + cross-domain
+**識別領域**：<本次涉及的領域> + cross-domain
 
 ### 雙軸量化矩陣
 
@@ -121,15 +121,15 @@ last-reviewed: 2026-05-28
 
 ### Step 5 閉環驗證結果
 - 修補後格子變化：<格子 A>「待修補 M=3 → 已涵蓋 N=8」/ <格子 B>「未轉成功，已標 OQ」
-- 跨層影響檢查：<商業需求 / 業務情境 / spec 三層追溯結果>
+- 跨層影響檢查：<商業需求 / 業務情境 / spec 追溯結果>
 
 ### 反模式識別
-- <若識別到稽核五大反模式之一，追加到 audit-failure-patterns.md>
+- <若識別到反模式清單任一項，追加到 audit-failure-patterns.md>
 ```
 
 ## 六、跨層影響稽核（商業需求 ↔ 業務情境 ↔ spec）
 
-三層雙向追溯規則：
+雙向追溯規則：
 
 | 層級 | 上游影響檢查 | 下游影響檢查 |
 |------|-------------|-------------|
@@ -153,7 +153,7 @@ last-reviewed: 2026-05-28
 > 避免「全 Vault 一次全跑」變 token 黑洞且結論失焦。
 
 - 單次稽核 ≤ 2-3 個領域（超過拆多次）
-- 單次 Step 4 修補回合 ≤ 3 輪（超過 3 輪未閉環則標 OQ 待後續）
+- Step 4 修補回合依 SKILL.md 回合預算（超過上限未閉環則標 OQ 待後續）
 - 一次稽核時間預算 60-120 分鐘
 - 跨領域議題優先拆 + 並行稽核（不同 sub-agent context）
 
@@ -161,7 +161,7 @@ last-reviewed: 2026-05-28
 
 > 累積稽核過程中發現的反模式 / 邊界爭議 / 分類錯誤案例。
 
-### 9.1 五大反模式追蹤
+### 9.1 反模式追蹤
 
 詳見 [[audit-failure-patterns]]。簡述：
 
@@ -169,8 +169,8 @@ last-reviewed: 2026-05-28
 |--------|------|------|
 | **Scope creep** | 範圍漂移（如「業務情境」吃掉「使用者角色」職責）| 嚴格依雙軸分類；發現越界回卡類型本職 |
 | **False completion** | 假完成（看似涵蓋卻漏 edge case）| Step 5 閉環驗證；跨層影響檢查 |
-| **Dead loops** | 死循環（OQ 反覆討論不收斂）| 對應 OQ 累積偏高時跑 vault-audit 維度 8；超過 3 輪標 OQ 等 Miles 決策 |
-| **Immeasurable targets** | 無法量化（卡空泛無 acceptance criteria）| 量化矩陣產出格式強制 N/M/K 三數字 |
+| **Dead loops** | 死循環（OQ 反覆討論不收斂）| 對應 OQ 累積偏高時跑 vault-audit 維度 8；超過 SKILL.md 回合預算上限標 OQ 等 Miles 決策 |
+| **Immeasurable targets** | 無法量化（卡空泛無 acceptance criteria）| 量化矩陣產出格式強制 N/M/K 數字 |
 | **Token exhaustion** | 成本過高（如「狀態機」跨模組稽核）| 拆多次稽核；分批執行 |
 
 ### 9.2 邊界爭議紀錄
@@ -185,18 +185,18 @@ last-reviewed: 2026-05-28
 
 | 規範 | 角色 |
 |------|------|
-| [[business-domain-taxonomy]] | 6 領域定義 + 觸發詞清單（本框架軸 1 的依據）|
+| [[business-domain-taxonomy]] | 領域定義 + 觸發詞清單（本框架軸 1 的依據）|
 | [[wiki-schema]] | frontmatter 領域 tag（`tags:`）格式規範（本框架的執行載體）|
 | [[erp_index]] | LLM 載入決策入口（本框架 Step 2 的對照表）|
-| `vault-audit` skill | Vault 整體健康稽核（11 維度）— 與本框架不同：vault-audit 是「日常 Vault 健康」、本框架是「規劃前準備」|
+| `vault-audit` skill | Vault 整體健康稽核（稽核維度）— 與本框架不同：vault-audit 是「日常 Vault 健康」、本框架是「規劃前準備」|
 | `vault-audit` skill | 知識庫 lint 與建議 — 與本框架互補 |
 | `oq-manage` skill | OQ 管理 — 本框架 Step 4 缺漏項標 OQ 走 oq-manage mode B |
 | `misjudgement-record` skill | 誤審記錄 — 本框架識別到誤審反模式時觸發 |
-| [[audit-failure-patterns]] | 稽核五大反模式追蹤卡（反模式登錄正本）|
+| [[audit-failure-patterns]] | 稽核反模式追蹤卡（反模式登錄正本）|
 
 ## 十一、來源
 
 - Miles 多輪反饋（第四 / 五 / 六輪拍板）
 - 業界研究：Tharstern / PrintVis / Printavo / DDD Bounded Context
 - Karpathy LLM Wiki Vault（型態 × 模組二維 + 00-meta/index.md 啟發）
-- YouTube Claude Code /goal 影片（執行者稽核者分離 + 閉環化 + 五大反模式）
+- YouTube Claude Code /goal 影片（執行者稽核者分離 + 閉環化 + 反模式清單）
