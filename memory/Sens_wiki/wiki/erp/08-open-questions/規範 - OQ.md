@@ -6,7 +6,7 @@ last-reviewed: 2026-07-29
 
 # OQ 卡撰寫規範（open-question 層）
 
-> 三層結構：動筆從 [[範本 - OQ]]（骨架）複製起手；合規樣貌對照 [[範例 - OQ]]（示範）；共用治理（撰寫流程／停下鐵則／撰寫紀律／修改既有卡原則）見 [[卡片撰寫共用規範]]——**本卡只寫 OQ 單元的特定標準**。
+> 分層結構：動筆從 [[範本 - OQ]]（骨架）複製起手；合規樣貌對照 [[範例 - OQ]]（示範）；共用治理（撰寫流程／停下鐵則／撰寫紀律／修改既有卡原則）見 [[卡片撰寫共用規範]]——**本卡只寫 OQ 單元的特定標準**。
 > 分工：本卡管「一張 OQ 卡長什麼樣」；`oq-manage` skill（`.claude/skills/oq-manage/SKILL.md`）管「OQ 怎麼流動」（五 mode 操作、去重、封存移檔、audience 判定、Notion 推送）；frontmatter 欄位定義與值域正本在 [[wiki-schema]] § 四。同一條規則只在一處宣告。
 > 本卡 type 為 meta，不屬平層 open 佇列（豁免「平層只放 status=open」語意鐵則，比照範例卡，見 [[卡片撰寫共用規範]] § 一 治理鐵則 4）。
 
@@ -78,7 +78,7 @@ last-reviewed: 2026-07-29
 
 ### 3.5 frontmatter
 
-欄位定義與值域正本在 [[wiki-schema]] § 四（status 嚴格三值禁行內註解、audience 判斷問句、`related-oq`／`related-vault` 一律完整檔名禁別名禁短名、`expected-resolution-at` 一律選填、開卡不代填時點）。本卡不複寫，動筆時照骨架填、對 schema 查。
+欄位定義與值域正本在 [[wiki-schema]] § 四（status 嚴格限值域、禁行內註解、audience 判斷問句、`related-oq`／`related-vault` 一律完整檔名禁別名禁短名、`expected-resolution-at` 一律選填、開卡不代填時點）。本卡不複寫，動筆時照骨架填、對 schema 查。
 
 ### 3.6 段落紀律
 
@@ -150,7 +150,7 @@ last-reviewed: 2026-07-29
 | 2 | **範圍宣告** | 問題描述明列涉及卡與流程；與相鄰 OQ 有互引＋分界句 |
 | 3 | **互引不複述** | 引用他卡處只有連結＋分界，無他卡內容複述 |
 | 4 | 檔名與序號 | 前綴命中 enum、序號未重用、簡述繁中名詞無問號 |
-| 5 | frontmatter 合規 | status 三值無行內註解；audience 已判；external 有 expected-resolution-at（L1-2 的 OQ 特化） |
+| 5 | frontmatter 合規 | status 在值域內、無行內註解；audience 已判；external 有 expected-resolution-at（L1-2 的 OQ 特化） |
 | 6 | 段落紀律 | 未拍板無決議段；候選方案兩案以上且附代價；矛盾型並列兩方出處 |
 | 7 | 位置正確 | open 在平層；answered／cancelled 已移封存區 |
 

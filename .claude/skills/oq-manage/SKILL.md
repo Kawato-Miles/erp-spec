@@ -11,7 +11,7 @@ description: >
 
 OQ 是**待裁決佇列**：每張卡一個待確認的問題，拍板後決議寫回卡、封存出平層。平層只放未結案——平層數量＝真實的待辦壓力，一眼可信。
 
-**分工（單一正本）**：本 skill 管「OQ 怎麼流動」（各 mode 操作、去重、封存移檔、audience 判定、Notion 推送）。「一張 OQ 卡長什麼樣」——判斷表、一卡一議題鐵則、範圍宣告、互引規則、檔名與序號、段落紀律、稽核維度——正本在 wiki `08-open-questions/規範 - OQ`；frontmatter 欄位值域正本在 wiki-schema § 四。三層結構：骨架 `wiki/範本/範本 - OQ`（開卡 MUST 從骨架複製起手）、規範 `規範 - OQ`、範例 `08-open-questions/範例 - OQ`。
+**分工（單一正本）**：本 skill 管「OQ 怎麼流動」（各 mode 操作、去重、封存移檔、audience 判定、Notion 推送）。「一張 OQ 卡長什麼樣」——判斷表、一卡一議題鐵則、範圍宣告、互引規則、檔名與序號、段落紀律、稽核維度——正本在 wiki `08-open-questions/規範 - OQ`；frontmatter 欄位值域正本在 wiki-schema § 四。分層結構：骨架 `wiki/範本/範本 - OQ`（開卡 MUST 從骨架複製起手）、規範 `規範 - OQ`、範例 `08-open-questions/範例 - OQ`。
 
 ## 〇、流程軸線
 

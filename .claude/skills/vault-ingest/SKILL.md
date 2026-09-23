@@ -45,7 +45,7 @@ description: >
 2. 對照 `00-meta/scope-boundary.md` 判升級路徑：04 規則／05 實體／06 狀態機／07 情境／11 審查與協作知識（審查方法、agent 協作協議類素材）／OQ（轉 oq-manage）／不進 vault（status=cancelled 附理由）。同主題累積達 mode C 門檻時一併判「這批合起來是否該寫進某張正本卡」，先把素材卡升 status=reviewed。
 3. **提議 cards diff**（每張卡列 diff 預覽＋不適用部分附去處），等 Miles 逐項批准（防線 3）。Miles 說「再看看」→ status=reviewed；說「重新分析」→ 維持 raw 重跑。
 4. OQ 候選 → 觸發 oq-manage mode B（去重）。
-6. **Miles 說 OK 後**執行寫入：正本卡（03／04／05／06／07）的寫入動作 **MUST 轉介 `wiki-amend`**，依它的 § 〇 載入清單走完寫卡流程，本 skill 不自行決定卡怎麼寫；本 skill 只負責 raw 卡 status=ingested＋ingested-at＋ingested-to、卡末「精練去處」填 wiki link、log 一筆（ingest-B，逐卡 `[[卡名]]`）。
+6. **Miles 說 OK 後**執行寫入：正本卡（03／04／05／06／07）的寫入動作 **MUST 轉介 `wiki-amend`**，依它的 § 〇 載入清單走完撰寫流程，本 skill 不自行決定卡怎麼寫；本 skill 只負責 raw 卡 status=ingested＋ingested-at＋ingested-to、卡末「精練去處」填 wiki link、log 一筆（ingest-B，逐卡 `[[卡名]]`）。
 
 ### Mode C：批次掃描（純報告）
 

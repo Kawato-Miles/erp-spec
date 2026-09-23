@@ -277,7 +277,7 @@ module:
 tags:
   - 領域/<領域名>   # 必填，可多值；oq-manage mode A 依領域 tag 查佇列
 oq-id: <前綴>-<NNN>
-status: open | answered | cancelled   # 嚴格三值，禁 resolved / closed / active 等自創值，禁行內註解
+status: open | answered | cancelled   # 嚴格限此值域，禁 resolved / closed / active 等自創值，禁行內註解
 priority: high | medium | low
 audience: internal | external
 # audience 判斷問句：「誰能回答這個問題？」
@@ -348,7 +348,7 @@ ingested-to:                                           # status=ingested 時填
 
 ## 六、Lint 規則
 
-**Lint 維度定義的正本在 `.claude/skills/vault-audit/SKILL.md`**（12 維度：編號、檢查方法、判定門檻、三層結構豁免），本節不重複維度清單——兩處並存曾造成維度編號分裂與豁免漏列。
+**Lint 維度定義的正本在 `.claude/skills/vault-audit/SKILL.md`**（稽核維度：編號、檢查方法、判定門檻、分層結構豁免），本節不重複維度清單——兩處並存曾造成維度編號分裂與豁免漏列。
 
 本 schema 承載 lint 所依據的**定義層**：type 與 status 值域（§ 一、§ 三）、領域 tag（§ 二B）、各 type 欄位定義（§ 四，含 § 4.0 依據鏈方向與「不繞回自己」）、目錄允許 type（§ 五）、命名規約（§ 七）、wiki link 規約（§ 八）、Anti-Pattern（§ 九）、內容職責邊界（§ 十一）。vault-audit 依這些定義判定，schema 異動時同輪檢查 skill 是否需同步。
 
@@ -403,7 +403,7 @@ ingested-to:                                           # status=ingested 時填
 - 範例：`_attachments/2026-05-21-廠商規格書-XX.pdf`
 - 大檔案（> 10 MB）建議考慮 git-lfs 或外部存放並只在 raw-source-link 留 URL（第一版不強制）
 
-### 範本與範例卡（三層結構）
+### 範本與範例卡（分層結構）
 
 - 骨架：`範本 - <單元名>.md`，一律置 `wiki/範本/`
 - 範例：`範例 - <單元名>.md`，置所屬單元資料夾
@@ -438,11 +438,11 @@ ingested-to:                                           # status=ingested 時填
 |------|------|------|
 | [[erp_index]] | 入口 + 架構概述 | 分層結構、連結方向的定義 |
 | [[scope-boundary]] | Vault 收 / 不收 | scope-boundary 決定什麼進 Vault，本 schema 決定怎麼寫 |
-| [[卡片撰寫共用規範]] | 三層結構治理＋共用撰寫流程／停下鐵則／紀律 | 本 schema 管欄位定義，共用規範管撰寫治理 |
+| [[卡片撰寫共用規範]] | 分層結構治理＋共用撰寫流程／停下鐵則／紀律 | 本 schema 管欄位定義，共用規範管撰寫治理 |
 | 各單元規範 `規範 - <單元名>`（實體／角色／狀態機／業務情境／商業邏輯） | 該單元撰寫規則與稽核維度 | 產出格式、判斷表、稽核維度的單元正本 |
 | `wiki/範本/` 骨架卡（範本 - <單元名>） | 寫新卡的起手樣板 | 樣板層；欄位定義與值域以本 schema § 四為準 |
 | 各資料夾範例卡（範例 - <單元名>） | 合規示範 | 稽核通過樣本，治理見 [[卡片撰寫共用規範]] § 一 |
-| `.claude/skills/vault-audit/SKILL.md` | 12 維度 lint 定義 | 本 schema 提供定義層，skill 提供檢查與判定（§ 六） |
+| `.claude/skills/vault-audit/SKILL.md` | 稽核維度 lint 定義 | 本 schema 提供定義層，skill 提供檢查與判定（§ 六） |
 
 ## 十一、卡類型內容職責邊界（2026-05-28 新增）
 

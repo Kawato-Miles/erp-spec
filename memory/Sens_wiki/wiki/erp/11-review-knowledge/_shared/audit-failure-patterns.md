@@ -8,11 +8,11 @@ last-reviewed: 2026-05-28
 
 # 稽核反模式追蹤卡（Audit Failure Patterns）
 
-> 累積 `erp-planning-pre-check` skill 稽核過程中識別到的五大反模式案例。
-> 受 YouTube /goal 影片啟發（執行者與稽核者分離 + 閉環化 + 五大反模式）。
+> 累積 `erp-planning-pre-check` skill 稽核過程中識別到的反模式案例。
+> 受 YouTube /goal 影片啟發（執行者與稽核者分離 + 閉環化 + 反模式清單）。
 > 與 `misjudgement-record` 互補：misjudgement 記三視角審查 agent 誤審；本卡記稽核盲點。
 
-## 一、五大反模式定義
+## 一、反模式定義
 
 ### 1. Scope creep（範圍漂移）
 
@@ -154,7 +154,7 @@ last-reviewed: 2026-05-28
 ### Skill 層
 
 - `erp-planning-pre-check` skill Anti-pattern 區明示 5 個反模式（v1.0 起內建）
-- `vault-audit` 12 維度可考慮加入「反模式累積率」維度（演化議題）
+- `vault-audit` 稽核維度可考慮加入「反模式累積率」維度（演化議題）
 
 ### 紀律層
 
@@ -170,7 +170,7 @@ last-reviewed: 2026-05-28
 
 ## 五、來源
 
-- YouTube Claude Code /goal 影片（五大反模式：scope creep / false completion / dead loops / immeasurable / token exhaustion）
+- YouTube Claude Code /goal 影片（反模式：scope creep / false completion / dead loops / immeasurable / token exhaustion）
 - VentureBeat：「separates the agent that works from the one that decides it's done」
 - explainx.ai Goal mode 完整分析
 - Karpathy LLM Wiki Vault（raw 不可變 + bookkeeping LLM 不疲勞）
