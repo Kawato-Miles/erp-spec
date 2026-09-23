@@ -4,17 +4,16 @@ import {
   CHAIN4,
   createDraftShipment,
   createShipment,
-  createShipmentDialog,
-  draftShipmentDialog,
   fakePhoto,
   fillItemQty,
   fillPlannedShipDate,
   gotoInAppSafe,
+  gotoShipmentList,
   newestShipmentNo,
+  openCreateShipmentFromOrder,
   pickAndPack,
   openShipmentPanel,
   pickNextStatus,
-  pickOrder,
   pickShippingMethod,
   setupShippableState,
   shipmentRow,
@@ -36,6 +35,9 @@ const listHeader = (page) => page.locator('.ant-table-thead').first();
 
 test('12.1 出貨單列表、預計出貨日欄與檢視側板（原編號 29）', async ({ page }) => {
   await openAs(page, '業務', '/qc-shipping/shipments');
+
+  // 出貨管理列表只列、只檢視：不提供新增入口（建單一律從訂單詳情的出貨單頁籤進）
+  await expect(page.getByRole('button', { name: '建立出貨單草稿' })).toHaveCount(0);
 
   // 母表含預計出貨日欄；草稿的明細數量標「（預計）」
   await expect(listHeader(page)).toContainText('預計出貨日');
@@ -98,11 +100,9 @@ test('12.2 業務建草稿再建立出貨單，額度在成立那一刻檢核並
   // 前置：品檢驗收讓 PI-2026-0820 取得可出貨額度 500
   await setupShippableState(page, { passed: 500 });
   await switchRoleSafe(page, '業務');
-  await gotoInAppSafe(page, '/qc-shipping/shipments');
 
-  // 一顆側板：新建時兩個頁籤（沒有進度）、標頭三顆按鈕
-  await page.getByRole('button', { name: '建立出貨單草稿' }).first().click();
-  const dialog = createShipmentDialog(page);
+  // 一顆側板（從訂單詳情的出貨單頁籤開）：新建時兩個頁籤（沒有進度）、標頭三顆按鈕
+  const dialog = await openCreateShipmentFromOrder(page);
   await expect(dialog.getByRole('tab', { name: '基本資訊' })).toBeVisible();
   await expect(dialog.getByRole('tab', { name: '出貨明細' })).toBeVisible();
   await expect(dialog.getByRole('tab', { name: '進度' })).toHaveCount(0);
@@ -111,7 +111,6 @@ test('12.2 業務建草稿再建立出貨單，額度在成立那一刻檢核並
   await expect(dialog.getByRole('button', { name: '建立出貨單' })).toBeVisible();
 
   // 出貨明細頁籤預設帶入訂單全部印件，數量預設為剩餘應出量（購買數量 500）
-  await pickOrder(page, dialog);
   await dialog.getByRole('tab', { name: '出貨明細' }).click();
   const itemRow = dialog.getByRole('row', { name: new RegExp(CHAIN4.printItemNo) });
   await expect(itemRow).toContainText('500');
@@ -134,19 +133,20 @@ test('12.2 業務建草稿再建立出貨單，額度在成立那一刻檢核並
   await fillPlannedShipDate(dialog);
   await dialog.getByRole('button', { name: '儲存草稿' }).click();
   await expect(page.getByText(/出貨單草稿已建立/).first()).toBeVisible();
+  await expect(dialog).toBeHidden();
+  await gotoShipmentList(page);
   const firstDraftNo = await newestShipmentNo(page);
   await expect(shipmentRow(page, firstDraftNo)).toContainText('草稿');
 
   // 再存一張草稿，同樣填 500：兩張草稿都不佔額度，可出貨額度仍是 500
   await createDraftShipment(page, { qty: 500 });
-  await page.getByRole('button', { name: '建立出貨單草稿' }).first().click();
-  const checkDialog = createShipmentDialog(page);
-  await pickOrder(page, checkDialog);
+  const checkDialog = await openCreateShipmentFromOrder(page);
   await checkDialog.getByRole('tab', { name: '出貨明細' }).click();
   await expect(
     checkDialog.getByRole('row', { name: new RegExp(CHAIN4.printItemNo) }),
   ).toContainText('500');
   await checkDialog.getByRole('button', { name: /取\s*消/ }).click();
+  await gotoShipmentList(page);
 
   // 回第一張草稿按「建立出貨單」：必填未齊時頁籤標「缺 N」、頂端列出缺的欄位
   const draftDialog = await openShipmentPanel(page, firstDraftNo);
@@ -552,14 +552,13 @@ test('12.10 訂單取消時草稿被刪除、未離廠的單自動作廢', async
 test('12.11 寄件資訊依訂單的帳務公司帶出', async ({ page }) => {
   await openAs(page, '業務', '/qc-shipping/shipments');
 
-  // 建單側板：唯讀、無編輯入口
-  await page.getByRole('button', { name: '建立出貨單草稿' }).first().click();
-  const dialog = createShipmentDialog(page);
-  await pickOrder(page, dialog);
+  // 建單側板：寄件資訊寫品牌名稱，唯讀、無編輯入口
+  const dialog = await openCreateShipmentFromOrder(page);
   await expect(dialog).toContainText('寄件資訊（依訂單的帳務公司帶出）');
   await expect(dialog).toContainText('感官文化印刷｜02 2736 6566｜新北市中和區建康路 168 號 3 樓');
   await expect(dialog.getByRole('textbox', { name: /寄件/ })).toHaveCount(0);
   await dialog.getByRole('button', { name: /取\s*消/ }).click();
+  await gotoShipmentList(page);
 
   // 既有那張單的側板顯示同一份寄件資訊
   await shipmentRow(page, CHAIN4.draftShipmentNo).getByText(CHAIN4.draftShipmentNo).click();
@@ -570,9 +569,7 @@ test('12.11 寄件資訊依訂單的帳務公司帶出', async ({ page }) => {
 
 test('12.12 收件三欄預設帶訂單聯絡人、可改', async ({ page }) => {
   await openAs(page, '業務', '/qc-shipping/shipments');
-  await page.getByRole('button', { name: '建立出貨單草稿' }).first().click();
-  const dialog = createShipmentDialog(page);
-  await pickOrder(page, dialog);
+  const dialog = await openCreateShipmentFromOrder(page);
 
   // 三欄預設帶訂單客戶的聯絡人資料
   await expect(dialog.locator('#receiver_name')).toHaveValue(CHAIN4.contactPerson);
@@ -584,6 +581,8 @@ test('12.12 收件三欄預設帶訂單聯絡人、可改', async ({ page }) => 
   await fillPlannedShipDate(dialog);
   await dialog.getByRole('button', { name: '儲存草稿' }).click();
   await expect(page.getByText(/出貨單草稿已建立/).first()).toBeVisible();
+  await expect(dialog).toBeHidden();
+  await gotoShipmentList(page);
   const draftNo = await newestShipmentNo(page);
   await shipmentRow(page, draftNo).getByText(draftNo).click();
   const drawer = detailDrawer(page);
@@ -728,4 +727,80 @@ test('12.16 列上只留檢視，訂單出貨頁籤與出貨管理共用同一�
   await expect(tabPanel.getByRole('tab', { name: '進度' })).toBeVisible();
   // 鎖定本訂單：側板不提供選訂單的下拉
   await expect(tabPanel.getByText('選擇訂單')).toHaveCount(0);
+});
+
+// 下拉選一個選項（限定在當前可見的那個下拉；伺服器忙碌時第一次點擊偶爾落空，整段重試）
+const pickFromSelect = async (page, select, label) => {
+  await expect(async () => {
+    await select.click({ force: true });
+    await page
+      .locator('.ant-select-dropdown:visible')
+      .last()
+      .locator('.ant-select-item-option')
+      .filter({ hasText: label })
+      .first()
+      .click({ timeout: 3000 });
+  }).toPass({ timeout: 15000 });
+};
+
+test('12.17 諮詢從訂單詳情的出貨單頁籤替自己負責的訂單建出貨單', async ({ page }) => {
+  // 起點：業務把鏈四 ORD-2026-0820 以「編輯（代理）」分享給諮詢張惠雯
+  await openAs(page, '業務', '/orders');
+  await clickIntoDetail(page, CHAIN4.orderNo, /orders\/detail/);
+  await page.locator('.ant-tabs-tab', { hasText: '分享' }).first().click();
+  await page.getByRole('button', { name: /新增分享成員/ }).click();
+  const addModal = page.locator('.ant-modal-content:visible').last();
+  await pickFromSelect(page, addModal.locator('.ant-select').nth(0), '張惠雯');
+  await pickFromSelect(page, addModal.locator('.ant-select').nth(1), '編輯（代理）');
+  await addModal.getByRole('button', { name: /新\s*增/ }).click();
+  await expect(page.getByText('已新增分享成員').last()).toBeVisible();
+
+  // 諮詢的側欄沒有品檢與出貨；從訂單詳情的出貨單頁籤建草稿
+  await switchRoleSafe(page, '諮詢');
+  await expect(page.locator('.ant-menu-submenu-title', { hasText: '品檢與出貨' })).toHaveCount(0);
+  const dialog = await openCreateShipmentFromOrder(page);
+  await fillPlannedShipDate(dialog);
+  await dialog.getByRole('button', { name: '儲存草稿' }).click();
+  await expect(page.getByText(/出貨單草稿已建立/).first()).toBeVisible();
+  await expect(dialog).toBeHidden();
+
+  // 新草稿列在這張訂單的出貨單頁籤，建單人是諮詢本人
+  const draftRow = page
+    .locator('tr.ant-table-row')
+    .filter({ hasText: /SH-\d{4}-\d{4}/ })
+    .filter({ hasText: '草稿' })
+    .filter({ hasNotText: CHAIN4.draftShipmentNo })
+    .first();
+  await draftRow.getByRole('button', { name: '檢視' }).click();
+  const panel = page.locator('.ant-drawer-content:visible').first();
+  await expect(panel).toContainText('張惠雯');
+  // 建單人在草稿上動得了：側板有儲存草稿與建立出貨單兩顆鈕
+  await expect(panel.getByRole('button', { name: '儲存草稿' })).toBeVisible();
+  await expect(panel.getByRole('button', { name: '建立出貨單' })).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  // 只有檢視層級的訂單（鏈二 ORD-2026-0710 的張惠雯是檢視）：沒有建單入口
+  await gotoInAppSafe(page, '/orders');
+  await clickIntoDetail(page, 'ORD-2026-0710', /orders\/detail/);
+  await page.getByRole('tab', { name: /出貨/ }).first().click();
+  await expect(page.getByRole('button', { name: '建立出貨單草稿' })).toHaveCount(0);
+});
+
+test('12.18 建出貨單時出貨方式不帶預設，收件資料照舊帶入', async ({ page }) => {
+  // 鏈一 ORD-2026-0601 的訂單出貨方式是專車配送（客戶的出貨偏好），建單時仍不預選
+  // 鏈一建立最早、不在訂單列表第一頁，直接開詳情頁
+  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0601');
+  await page.getByRole('tab', { name: /出貨/ }).first().click();
+  await page.getByRole('button', { name: '建立出貨單草稿' }).click();
+  const dialog = page.locator('.ant-drawer-content:visible').first();
+  await expect(dialog).toBeVisible();
+  const methodItem = dialog.locator('.ant-form-item').filter({ hasText: '出貨方式' }).first();
+  await expect(methodItem.locator('.ant-select-selection-item')).toHaveCount(0);
+  await expect(methodItem).toContainText('選擇出貨方式');
+  // 收件三欄與寄件資訊照舊帶入
+  await expect(dialog.locator('#receiver_name')).not.toHaveValue('');
+  await expect(dialog.locator('#receiver_address')).not.toHaveValue('');
+  await expect(dialog).toContainText('感官文化印刷｜');
+  // 鎖定本訂單：側板不提供選訂單的下拉
+  await expect(dialog.getByText('選擇訂單')).toHaveCount(0);
 });

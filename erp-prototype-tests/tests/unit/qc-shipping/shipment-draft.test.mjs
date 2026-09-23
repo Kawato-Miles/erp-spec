@@ -7,7 +7,6 @@ import {
   useQcShippingStore,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/store.js';
 import {
-  defaultMethodFromOrder,
   describeSender,
   isThirdPartyMethod,
   senderCompanyCodeOf,
@@ -114,28 +113,19 @@ describe('出貨方式一欄六值', () => {
   });
 });
 
-describe('建草稿時的出貨方式預設（訂單三值對六值）', () => {
-  it('訂單談自取或專車配送就直接帶入', () => {
-    expect(defaultMethodFromOrder('自取')).toBe('自取');
-    expect(defaultMethodFromOrder('專車配送')).toBe('專車配送');
-  });
-
-  it('訂單只寫第三方物流時留空，由業務選哪一家', () => {
-    expect(defaultMethodFromOrder('第三方物流')).toBeNull();
-  });
-
-  it('訂單沒填出貨方式時同樣留空', () => {
-    expect(defaultMethodFromOrder(null)).toBeNull();
-  });
-});
-
 describe('寄件資訊依訂單的帳務公司帶出', () => {
   it('SSP 帶出感官文化印刷', () => {
     expect(describeSender('SSP')).toContain('感官文化印刷');
   });
 
-  it('BRO 帶出理想印製', () => {
-    expect(describeSender('BRO')).toContain('理想印製');
+  it('BRO 帶出品牌名稱理想印制（「制」不是「製」）', () => {
+    expect(describeSender('BRO')).toContain('理想印制');
+    expect(describeSender('BRO')).not.toContain('理想印製');
+  });
+
+  it('寄件資訊寫品牌名稱，不寫帳務公司抬頭', () => {
+    expect(describeSender('SSP').startsWith('感官文化印刷｜')).toBe(true);
+    expect(describeSender('BRO').startsWith('理想印制｜')).toBe(true);
   });
 
   it('查無帳務公司時為空值（畫面顯示破折號）', () => {
@@ -267,7 +257,7 @@ describe('12.11 成立那一刻記下帳務公司代號，名稱電話地址仍�
     const order = useOrdersStore.getState().orders[0];
     expect(senderCompanyCodeOf(shipmentById(laterDraftId), order)).toBe('BRO');
     expect(describeSender(senderCompanyCodeOf(shipmentById(laterDraftId), order))).toContain(
-      '理想印製',
+      '理想印制',
     );
   });
 });

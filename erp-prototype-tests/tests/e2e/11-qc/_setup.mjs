@@ -6,7 +6,7 @@
 //
 // 記憶體狀態鐵則：只有 openAs 會整頁載入，之後一律 gotoInApp 與 switchRole。
 import { expect } from '@playwright/test';
-import { openAs, switchRole } from '../_helpers.mjs';
+import { clickIntoDetail, openAs, switchRole } from '../_helpers.mjs';
 
 /**
  * 切模擬角色（含重試）。共用工具的下拉是以鍵盤位移選項，下拉展開的時間差偶爾會少吃一次按鍵，
@@ -245,18 +245,25 @@ export const newestShipmentNo = async (page) =>
     await page.locator('tr.ant-table-row').first().locator('td').first().innerText()
   ).trim();
 
-/** 建單側板：選所屬訂單（下拉支援輸入搜尋，訂單樣本多時要先過濾） */
-export async function pickOrder(page, dialog, orderNo = CHAIN4.orderNo) {
-  const orderBox = dialog.getByRole('combobox').first();
-  await orderBox.click();
-  await orderBox.fill(orderNo);
-  await page
-    .locator('.ant-select-dropdown:visible')
-    .last()
-    .locator('.ant-select-item-option')
-    .filter({ hasText: orderNo })
-    .first()
-    .click();
+/** 回出貨管理列表，等列表本身畫出來（避免讀到前一頁殘留的表格列） */
+export async function gotoShipmentList(page) {
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await expect(page.getByPlaceholder('請輸入出貨單編號、訂單編號，或客戶名稱')).toBeVisible();
+}
+
+/**
+ * 從訂單詳情的「出貨單」頁籤打開建單側板（出貨單只能從這裡建，出貨管理列表沒有新增入口）。
+ * 側板鎖定這張訂單，不提供選訂單的下拉。呼叫前須已切為該訂單的建單人（接單業務或編輯（代理）成員）。
+ * @returns {Promise<import('@playwright/test').Locator>} 建單側板
+ */
+export async function openCreateShipmentFromOrder(page, orderNo = CHAIN4.orderNo) {
+  await gotoInAppSafe(page, '/orders');
+  await clickIntoDetail(page, orderNo, /orders\/detail/);
+  await page.getByRole('tab', { name: /出貨/ }).first().click();
+  await page.getByRole('button', { name: '建立出貨單草稿' }).click();
+  const dialog = shipmentPanel(page);
+  await expect(dialog).toBeVisible();
+  return dialog;
 }
 
 /** 建單側板：填預計出貨日（直接打字再按 Enter，避免日期面板互動不穩定） */
@@ -291,8 +298,9 @@ export async function fillItemQty(dialog, qty, printItemNo = CHAIN4.printItemNo)
 }
 
 /**
- * 業務建一張已成立的出貨單（呼叫前須已切為業務並在出貨管理頁）。
- * 一顆對話框走完：選訂單 → 填單頭 → 填出貨印件數量 → 按「建立出貨單」。
+ * 業務建一張已成立的出貨單（呼叫前須已切為業務）。
+ * 從訂單詳情的出貨單頁籤開側板 → 填單頭 → 填出貨印件數量 → 按「建立出貨單」，
+ * 完成後回到出貨管理頁（呼叫端接著在列表上操作）。
  * 這一顆按鈕在新建入口沒有直達未處理的路——系統先落一張草稿、同一個動作立刻把它推成未處理，
  * 所以列表只會多一張單（見情境 12.2）。
  * @returns {Promise<string>} 新單的出貨單編號
@@ -301,9 +309,7 @@ export async function createShipment(
   page,
   { qty, method = '新竹物流', date = '2026-09-10', orderNo = CHAIN4.orderNo } = {},
 ) {
-  await page.getByRole('button', { name: '建立出貨單草稿' }).first().click();
-  const dialog = shipmentPanel(page);
-  await pickOrder(page, dialog, orderNo);
+  const dialog = await openCreateShipmentFromOrder(page, orderNo);
   await fillPlannedShipDate(dialog, date);
   await pickShippingMethod(page, dialog, method);
   await fillItemQty(dialog, qty);
@@ -311,25 +317,25 @@ export async function createShipment(
   await expect(page.getByText(/出貨單已成立（未處理）/).first()).toBeVisible();
   // 側板關閉後仍留在 DOM（只是隱藏），故等它隱藏而不是等它消失
   await expect(dialog).toBeHidden();
+  await gotoShipmentList(page);
   return newestShipmentNo(page);
 }
 
 /**
- * 業務建一張草稿（呼叫前須已切為業務並在出貨管理頁）。
+ * 業務建一張草稿（呼叫前須已切為業務）；完成後回到出貨管理頁。
  * @returns {Promise<string>} 新草稿的出貨單編號
  */
 export async function createDraftShipment(
   page,
   { qty, date = '2026-09-10', orderNo = CHAIN4.orderNo } = {},
 ) {
-  await page.getByRole('button', { name: '建立出貨單草稿' }).first().click();
-  const dialog = shipmentPanel(page);
-  await pickOrder(page, dialog, orderNo);
+  const dialog = await openCreateShipmentFromOrder(page, orderNo);
   await fillPlannedShipDate(dialog, date);
   if (qty !== undefined) await fillItemQty(dialog, qty);
   await dialog.getByRole('button', { name: '儲存草稿' }).click();
   await expect(page.getByText(/出貨單草稿已建立/).first()).toBeVisible();
   await expect(dialog).toBeHidden();
+  await gotoShipmentList(page);
   return newestShipmentNo(page);
 }
 

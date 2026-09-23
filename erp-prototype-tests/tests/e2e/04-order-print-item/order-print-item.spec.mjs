@@ -395,3 +395,45 @@ test('4.14 唯讀呈現處的印件內部完成日合併未扣急件那一天', 
   // 一般件不帶括號：這一頁只有急件那一張工單出現「未扣急件」，其餘各列只印一組日期
   await expect(page.locator('.ant-table-tbody tr', { hasText: '未扣急件' })).toHaveCount(1);
 });
+
+test('4.15 訂單項目的欄名統一為印件屬性與稿件備註，急件提示用印件內部完成日的定義', async ({
+  page,
+}) => {
+  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=printItems');
+  const panel = page.getByRole('tabpanel');
+
+  // 訂單項目表：打樣／大貨那一欄叫「印件屬性」
+  await expect(panel.locator('.ant-table-thead').first()).toContainText('印件屬性');
+  await expect(panel.getByRole('columnheader', { name: '類型', exact: true })).toHaveCount(0);
+
+  // 新增印件對話框：同一欄叫「印件屬性」；急件選項的提示是新定義
+  await page.getByRole('button', { name: '新增印件' }).click();
+  const addModal = page.locator('.ant-modal-content:visible').last();
+  await expect(addModal.getByText('印件屬性', { exact: true })).toBeVisible();
+  await expect(addModal.getByText('生產類型')).toHaveCount(0);
+  await addModal
+    .locator('.ant-form-item-label', { hasText: '急件選項' })
+    .locator('.anticon-info-circle')
+    .first()
+    .hover();
+  await expect(page.locator('.ant-tooltip-inner:visible').last()).toContainText(
+    '印件內部完成日＝未扣急件內部完成日減這個天數，以工作天計',
+  );
+  await addModal.getByRole('button', { name: /取\s*消/ }).click();
+  await expect(addModal).toBeHidden();
+
+  // 複製原印件規格加開：說明文字不再提預計出貨日
+  await page.getByRole('button', { name: '複製原印件規格加開' }).click();
+  const copyModal = page.locator('.ant-modal-content:visible').last();
+  await expect(copyModal).toContainText('未扣急件內部完成日選填');
+  await expect(copyModal).not.toContainText('預計出貨日');
+  await copyModal.getByRole('button', { name: /取\s*消/ }).click();
+  await expect(copyModal).toBeHidden();
+
+  // 編輯印件側板：寫給審稿人員的那一欄叫「稿件備註」
+  const row = panel.locator('tr', { hasText: 'PI-2026-0710' });
+  await row.getByRole('button', { name: '編輯印件' }).click();
+  const drawer = page.locator('.ant-drawer-content-wrapper');
+  await expect(drawer.getByLabel('稿件備註')).toBeVisible();
+  await expect(drawer.getByText('印件檔案備註')).toHaveCount(0);
+});

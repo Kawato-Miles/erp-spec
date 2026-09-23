@@ -342,3 +342,11 @@ test('5.14 待審訂單模組母列顯示預計出貨日，子列預計出貨日
   await expect(itemRow.getByText('2026-10-08')).toBeVisible();
   await expect(itemRow.getByText('2026-10-07')).toBeVisible();
 });
+
+test('5.16 審稿清單寫給審稿人員的那一欄叫稿件備註', async ({ page }) => {
+  await openAs(page, '訂單管理人', '/prepress-review');
+  // 子列在母列展開後才看得到（同 5.14 的起點）
+  await expect(reviewRow(page, '量販促銷吊卡')).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: '稿件備註' }).first()).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: '印件檔案備註' })).toHaveCount(0);
+});

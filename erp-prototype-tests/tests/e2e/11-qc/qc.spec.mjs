@@ -10,6 +10,7 @@ import {
   inspectAtQc,
   inspectDialog,
   moveTransferToQc,
+  openCreateShipmentFromOrder,
   pendingRow,
   pickFailReason,
   receiveAtQc,
@@ -216,19 +217,7 @@ test('11.5 品質帳只有一份，驗完三處同時變（原編號 104）', as
 
   // 出貨建單的可出貨額度同步
   await switchRoleSafe(page, '業務');
-  await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await page.getByRole('button', { name: '建立出貨單草稿' }).first().click();
-  const dialog = page.locator('.ant-drawer-content:visible').first();
-  const orderBox = dialog.getByRole('combobox').first();
-  await orderBox.click();
-  await orderBox.fill(CHAIN4.orderNo);
-  await page
-    .locator('.ant-select-dropdown:visible')
-    .last()
-    .locator('.ant-select-item-option')
-    .filter({ hasText: CHAIN4.orderNo })
-    .first()
-    .click();
+  const dialog = await openCreateShipmentFromOrder(page);
   await dialog.getByRole('tab', { name: '出貨明細' }).click();
   await expect(
     dialog.getByRole('row', { name: new RegExp(CHAIN4.printItemNo) }),

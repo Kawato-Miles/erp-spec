@@ -14,7 +14,7 @@ test('6.5 訂單改派接單業務要選理由分類，離職交接連同分享�
   // 一、只選新負責人、不選理由分類：確認鈕停用
   await page.getByRole('button', { name: '改派' }).first().click();
   let panel = drawer(page);
-  await expect(panel).toContainText('改派業務負責人');
+  await expect(panel).toContainText('改派接單業務');
   await expect(panel).toContainText('改派理由分類（必選）');
   await expect(panel).toContainText('補述');
   await pickOption(page, panel.locator('.ant-select').nth(0), '李志豪');
@@ -39,7 +39,7 @@ test('6.5 訂單改派接單業務要選理由分類，離職交接連同分享�
   // 三、重整頁面（情境要求：模擬資料回到起點）後改選長假代理並填補述
   await reloadAs(page, '業務主管', switchRole);
   await expect(page.locator('body')).toContainText('分享（1）');
-  // 重整後停在重整前的頁籤，改派入口在「資訊」頁籤的業務負責人欄
+  // 重整後停在重整前的頁籤，改派入口在「資訊」頁籤的接單業務欄
   await openTab(page, '資訊');
   await page.getByRole('button', { name: '改派' }).first().click();
   panel = drawer(page);

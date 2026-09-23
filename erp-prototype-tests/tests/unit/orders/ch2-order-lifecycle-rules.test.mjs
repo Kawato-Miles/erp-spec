@@ -1,12 +1,15 @@
 // 情境目錄第二章「訂單成立與維護」中帶明確規則或算式的條目：金額重算、角色把關、
 // 終態鎖定。畫面操作的驗收見 tests/e2e/02-order-setup/。
 import { describe, it, expect } from 'vitest';
+import { useOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/_lib/store.js';
 import {
   canCancelOrder,
   canEditOrderNotes,
   canEditPrintItemOrderedQty,
   canEditPrintItemPrice,
   canManageSharing,
+  canOperateOrderShipments,
+  canReassignApprovalManager,
   canReassignOwner,
   isOrderTerminal,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/_lib/permissions.js';
@@ -92,5 +95,92 @@ describe('2.10 分享成員管理與改派負責人的角色把關', () => {
     expect(canReassignOwner('sales_manager')).toBe(true);
     expect(canReassignOwner('supervisor')).toBe(true);
     expect(canReassignOwner('sales')).toBe(false);
+  });
+});
+
+describe('2.11 審核業務主管改派的把關條件', () => {
+  it('業務主管與主管在草稿、待業務主管審核兩態可改派', () => {
+    for (const role of ['sales_manager', 'supervisor']) {
+      expect(canReassignApprovalManager({ status: '草稿' }, role)).toBe(true);
+      expect(canReassignApprovalManager({ status: '待業務主管審核' }, role)).toBe(true);
+    }
+  });
+
+  it('審核通過之後（含終態）一律不給改派', () => {
+    for (const status of ['審核通過', '報價待回簽', '製作中', '訂單完成', '已取消']) {
+      expect(canReassignApprovalManager({ status }, 'sales_manager')).toBe(false);
+      expect(canReassignApprovalManager({ status }, 'supervisor')).toBe(false);
+    }
+  });
+
+  it('業務、諮詢等其他角色沒有改派入口', () => {
+    for (const role of ['sales', 'consultant', 'order_manager', 'accountant']) {
+      expect(canReassignApprovalManager({ status: '草稿' }, role)).toBe(false);
+    }
+  });
+});
+
+describe('2.11 改派審核業務主管的寫入（store 再驗一次狀態）', () => {
+  const seed = (status) =>
+    useOrdersStore.setState({
+      orders: [
+        {
+          id: 'ord-test-approval',
+          order_no: 'ORD-TEST-2011',
+          status,
+          assigned_manager: '林雅婷',
+          shared_members: [{ name: '張惠雯', level: 'view' }],
+          activities: [],
+          print_items: [],
+        },
+      ],
+    });
+  const current = () => useOrdersStore.getState().orders[0];
+
+  it('草稿時換成新的審核業務主管，活動紀錄帶理由與補述，分享成員不動', () => {
+    seed('草稿');
+    useOrdersStore
+      .getState()
+      .reassignApprovalManager('ord-test-approval', '蔡佩珊', '長假代理', '林經理休假');
+    expect(current().assigned_manager).toBe('蔡佩珊');
+    expect(current().shared_members).toHaveLength(1);
+    expect(current().activities.at(-1).action).toBe('改派審核業務主管為 蔡佩珊（長假代理）：林經理休假');
+  });
+
+  it('審核通過之後寫入口也擋下，審核業務主管維持原值', () => {
+    seed('審核通過');
+    useOrdersStore.getState().reassignApprovalManager('ord-test-approval', '蔡佩珊', '其他', '');
+    expect(current().assigned_manager).toBe('林雅婷');
+    expect(current().activities).toHaveLength(0);
+  });
+});
+
+describe('12.17 出貨單建單人：接單業務或編輯（代理）成員，角色為業務或諮詢', () => {
+  const order = {
+    sales_person: '洪嘉駿',
+    shared_members: [
+      { name: '張惠雯', level: 'edit' },
+      { name: '李志豪', level: 'view' },
+    ],
+  };
+
+  it('接單業務與編輯（代理）成員可建', () => {
+    expect(canOperateOrderShipments(order, 'sales', '洪嘉駿')).toBe(true);
+    expect(canOperateOrderShipments(order, 'consultant', '張惠雯')).toBe(true);
+  });
+
+  it('只有檢視層級的分享成員、或不在名單上的人不可建', () => {
+    expect(canOperateOrderShipments(order, 'sales', '李志豪')).toBe(false);
+    expect(canOperateOrderShipments(order, 'consultant', '王小明')).toBe(false);
+  });
+
+  it('諮詢單轉來的訂單負責人就是諮詢，諮詢可建', () => {
+    expect(canOperateOrderShipments({ sales_person: '張惠雯' }, 'consultant', '張惠雯')).toBe(true);
+  });
+
+  it('業務與諮詢以外的角色一律不可建', () => {
+    for (const role of ['sales_manager', 'order_manager', 'picker', 'shipper']) {
+      expect(canOperateOrderShipments(order, role, '洪嘉駿')).toBe(false);
+    }
   });
 });

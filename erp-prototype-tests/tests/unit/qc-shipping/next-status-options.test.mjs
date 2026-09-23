@@ -121,6 +121,22 @@ describe('業務', () => {
   });
 });
 
+describe('諮詢（建單人權限比照業務，情境 12.17）', () => {
+  it('未離廠三態同樣只推得到已作廢，理由必填', () => {
+    ['未處理', '打包中', '待出貨'].forEach((status) => {
+      const option = onlyOption('consultant', shipmentOf(status));
+      expect(option.status).toBe('已作廢');
+      expect(option.required).toEqual(['reason']);
+    });
+  });
+
+  it('草稿與貨已離廠的單都沒有下一步', () => {
+    ['草稿', '運送中', '已送達', '異常', '已作廢'].forEach((status) => {
+      expect(statusesOf('consultant', shipmentOf(status))).toEqual([]);
+    });
+  });
+});
+
 describe('其他角色與缺件輸入', () => {
   it('印務、生管等角色在任何一格都沒有下一步（狀態欄唯讀）', () => {
     ['printing', 'planner', 'qc_inspector', null].forEach((role) => {

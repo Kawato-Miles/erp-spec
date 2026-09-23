@@ -6,7 +6,7 @@ import { switchRole, gotoInApp, clickIntoDetail, cjkName } from '../_helpers.mjs
 // 本函式不含 openAs／page.goto（同一情境內只允許第一步整頁載入）。
 //
 // 新增印件 Dialog 欄位（依 orders/_components/detail/ItemsTab.js「新增印件 Dialog」，
-// order-management spec § 新增印件欄位與必填檢核）：七項必填——印件名稱、生產類型
+// order-management spec § 新增印件欄位與必填檢核）：七項必填——印件名稱、印件屬性
 // （打樣印件／大貨印件）、購買數量、單位、單價、急件選項、難易度；免審稿（Switch，預設關）
 // 與預計出貨日等八項選填。本函式對七項必填一律帶預設值，呼叫端只需關心該情境要驗的那個欄位。
 export async function addPendingReviewItem(
