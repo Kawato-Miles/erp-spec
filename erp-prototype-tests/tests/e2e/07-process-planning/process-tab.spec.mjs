@@ -74,11 +74,17 @@ test('7.3 參考完稿圖唯讀，工單上不再上傳完稿（原編號 70）'
   await expect(workOrderInfo).not.toContainText('品檢需求');
   await expandPanel(page, '印件檔案');
   await expect(page.getByText('審稿後印件檔')).toBeVisible();
+  // 同一張卡另列所屬印件的印務印件檔案（PI-2026-0901 尚無，顯示無值符號），上傳入口掛在卡片標題列
+  await expect(descValue(page, '印務印件檔案')).toHaveText('－');
+  await expect(
+    panelBlock(page, '印件檔案').getByRole('button', { name: /上傳檔案/ }),
+  ).toBeVisible();
 
   // 編輯工單資訊抽屜分三段（公司對照表 C7）：確樣需求、製程說明、品檢需求。工單預排完成日不在裡面
   // ——它是旗下生產任務任務預計完成日的最大值，唯讀衍生（見 7.12）。
   // 製程說明與品檢需求的值仍寫回印件層、工單不存副本（見 7.25），只有編輯入口收在這一支抽屜裡；
-  // 也沒有上傳完稿檔的入口（上傳檔案存的是印務自己的工單附件，是另一顆獨立按鈕）
+  // 也沒有上傳完稿檔的入口（印件檔案面板的「上傳檔案」存的是所屬印件的印務印件檔案，
+  // 同印件其他工單共用，是另一顆獨立按鈕，見 7.36）
   await page.getByRole('button', { name: /編輯$/ }).first().click();
   const drawer = page.locator('.ant-drawer-body');
   await expect(drawer).not.toContainText('工單預排完成日');
