@@ -27,7 +27,7 @@
 ## 5. 驗證與提交
 
 - [x] 5.1 Sens 測試專案跑 `npm run impact` 判影響範圍，再跑 `npm run test:smoke` 與受影響章節，全部通過
-- [ ] 5.2 主對話對照 `prototype-from-prompt` skill 稽核交回的改動（檢查寫死色碼、像素值、強制覆寫樣式、全域樣式元件）
+- [x] 5.2 主對話對照 `prototype-from-prompt` skill 稽核交回的改動（檢查寫死色碼、像素值、強制覆寫樣式、全域樣式元件）
 - [x] 5.3 erp repo 與 Sens 各自提交，commit 訊息附測試結果
 
 ## 6. 交付
