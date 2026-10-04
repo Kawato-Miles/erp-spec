@@ -2,7 +2,7 @@
 type: meta
 module: 跨模組
 status: active
-last-reviewed: 2026-07-28
+last-reviewed: 2026-10-04
 ---
 
 # Vault Scope Boundary（收 / 不收）
@@ -87,26 +87,27 @@ ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」�
 
 ### 驗收測試（UAT / SIT / UT / 端對端 e2e）
 
-> 驗收知識的正本＝業務情境卡（`07-scenarios/`）的判準與下游規格 Scenario（OpenSpec 各模組 spec § Scenarios）。驗收執行（測試案例本身）屬下游產物，**不進 Vault**：
+> 驗收知識的骨架＝業務情境卡（`07-scenarios/`）的步驟與判準；每條驗收條目（OpenSpec 各模組 spec 的 Scenario）掛在某張情境卡的某一步或某個分支之下。驗收執行（測試案例本身）屬下游產物，**不進 Vault**：
 
 | 屬於 | 位置 |
 |------|------|
-| 端對端測試（Playwright e2e）含 UI 點擊步驟 / DOM 斷言 / console.error 斷言 | erp repo 測試（`apps/erp`）|
+| 端對端測試（Playwright e2e）含 UI 點擊步驟 / DOM 斷言 / console.error 斷言 | Sens `erp-prototype-tests/`（erp repo 不放測試檔）|
 | 單元測試（UT）/ 系統整合測試（SIT） | Prototype 測試碼 |
 | 含技術步驟的測試腳本（點某按鈕 → 斷言某 DOM 節點 → 檢查某 store 狀態） | 同上 |
 
-→ 界線判準：業務「在什麼前置下做什麼動作、應看到什麼可觀察結果」的判準＝驗收知識，由業務情境卡承載判準、下游規格以 Scenario（Given/When/Then）定行為契約；至於把這些判準寫成可執行的測試案例（無論 UAT、SIT、UT 或 e2e），屬下游驗收執行產物，留 Prototype，不進 Vault。
+→ 界線判準：業務「在什麼前置下做什麼動作、應看到什麼可觀察結果」的判準＝驗收知識。情境卡是骨架（步驟與判準），驗收條目是葉子（Given/When/Then 單點驗收），每條驗收條目 MUST 標所屬情境卡與步驟或分支；情境卡沒有的流程不得先寫驗收條目，要先補情境卡的步驟或副流程分支。把判準寫成可執行的測試案例（無論 UAT、SIT、UT 或 e2e），屬下游驗收執行產物，留 Prototype，不進 Vault。
 
-### 功能 step-by-step Requirement
+### 系統行為規格（OpenSpec）
 
-| 屬於 | 位置 |
-|------|------|
-| 模組功能 Requirement | OpenSpec 各模組 `spec.md § Requirements` |
-| change workflow（proposal / design / tasks） | OpenSpec changes/ |
-| delta spec / archive | OpenSpec |
-| **Data Model 技術欄位備忘**（id / FK / 時間戳記） | OpenSpec 各模組 spec § Data Model（**業務欄位正本已遷至 wiki 實體卡，此處僅保留技術參照**） |
+| 屬於 | 位置 | 內容邊界 |
+|------|------|---------|
+| Requirement（系統承諾） | OpenSpec 各模組 `spec.md § Requirements` | 只寫系統在什麼條件下承諾做什麼：觸發事件、轉換條件、系統自動動作、禁止副本等。業務規則（誰可以做、門檻、值域、為什麼）正本在 wiki，spec 以一句引用卡，不重述規則句 |
+| 驗收條目（Scenario） | 同上，掛在 Requirement 之下 | 每條標所屬情境卡與步驟或分支（見上段） |
+| change workflow（proposal / design / tasks） | OpenSpec changes/ | design 是技術設計（怎麼實作），不是商業設計 |
+| delta spec / archive | OpenSpec | |
+| **Data Model 技術欄位備忘**（id / FK / 時間戳記） | OpenSpec 各模組 spec § Data Model | **業務欄位正本已遷至 wiki 實體卡，此處僅保留技術參照** |
 
-→ 與驗收知識不衝突：step-by-step Requirement 是**實作步驟視角**（功能該怎麼被做出來、含實作分解），屬 OpenSpec；業務驗收知識是**業務驗收視角**（給定業務輸入是否得到正確的可觀察業務結果），由業務情境卡判準與下游規格 Scenario 承載。兩者描述對象不同層——前者答「怎麼實作」、後者答「業務驗收過了沒」。
+→ 與 wiki 的分界：wiki 答「業務要什麼」（規則、情境骨架、角色、欄位、狀態），OpenSpec 答「系統承諾什麼、怎麼驗」（系統承諾、驗收條目）。同一條規則只能有一個家：出現在 wiki 就不在 spec 重述。
 
 ### 過程決策評估
 
@@ -126,10 +127,11 @@ ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」�
 | 這是「業務概念」還是「實作細節」？ | 業務概念 | 進 Vault |
 | 這是「業務概念」還是「實作細節」？ | 實作細節 | 留程式碼 / 不進 |
 | 這是「UI 規範」嗎？ | 是 | 留 Prototype DESIGN.md |
-| 這是「演算法 / 計算公式」嗎？ | 是 | 留 src/utils/ |
-| 這是「step-by-step 功能 Requirement」嗎？ | 是 | 留 OpenSpec spec |
-| 這是「業務驗收判準」（在什麼前置下做什麼動作、應看到什麼可觀察業務結果）？ | 是 | 進 Vault：業務情境卡（`07-scenarios/`）承載判準，下游規格 Scenario 定行為契約 |
-| 這是「測試案例本身」（UAT / SIT / UT / e2e，把判準寫成可執行測試）？ | 是 | 留 Prototype（`tests/e2e/*.spec.ts` 等），屬下游驗收執行產物，不進 Vault |
+| 這是「演算法 / 計算公式的程式實作」嗎？ | 是 | 留 erp repo 對應模組實作（`apps/erp`）；業務計算口徑（算式）進 `04-business-logic/` |
+| 這是「系統承諾」（系統在什麼條件下自動做什麼、禁止什麼、狀態怎麼轉）？ | 是 | 留 OpenSpec spec Requirement；規則依據以一句引用 wiki 卡 |
+| 這是「業務規則」（誰可以做、門檻、值域、為什麼這樣定）？ | 是 | 進 Vault：`04-business-logic/`、`03-roles/`、`05-entities/` 對應卡；spec 不重述 |
+| 這是「業務驗收判準」（在什麼前置下做什麼動作、應看到什麼可觀察業務結果）？ | 是 | 進 Vault：業務情境卡（`07-scenarios/`）承載步驟與判準；單點驗收寫成 OpenSpec 驗收條目並標所屬情境卡步驟 |
+| 這是「測試案例本身」（UAT / SIT / UT / e2e，把判準寫成可執行測試）？ | 是 | 留 Sens `erp-prototype-tests/`（`tests/e2e/` 等），屬下游驗收執行產物，不進 Vault |
 | 這是「商業層的 WHAT/WHY」嗎？ | 是 | 進 Vault |
 | 這是「實體間關聯 / 角色責任 / 狀態機規則」嗎？ | 是 | 進 Vault |
 | 這是「未消化已驗證素材」（觀察 / 反饋 / 研究筆記）？ | 是 | 進 `raw/`（觸發 vault-ingest mode A） |
@@ -142,7 +144,9 @@ ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」�
 |--------|--------|
 | 在 Vault 寫「按鈕按下後應彈出 modal」 | 這是 UI 規範，屬 DESIGN.md |
 | 在 Vault 寫「report.passed_quantity = sum(QCRecord.passed)」 | 這是實作公式，屬程式碼 |
-| 在 Vault 寫「step 1: 點工單清單；step 2: 點異動 ...」 | 這是功能 step Requirement，屬 OpenSpec |
+| 在 Vault 寫「step 1: 點工單清單；step 2: 點異動 ...」 | 這是介面操作，屬 Prototype |
+| 在 OpenSpec Requirement 描述段重述「可維護者為負責人、編輯成員與印務主管」這類規則句 | 業務規則正本在 wiki，spec 以一句引用卡；重述會長出第二個家 |
+| 寫一條驗收條目，但沒有任何情境卡有這條流程 | 先補情境卡的步驟或副流程分支，再掛驗收條目 |
 | 把 `prepressReview.ts` 5 步驟演算法整段貼進 Vault | 實作細節，留程式碼 |
 | 把 Playwright e2e spec 完整步驟（UI 點擊 + DOM 斷言）貼進 Vault | 測試案例本身屬下游驗收執行產物，留 Prototype；Vault 只寫業務驗收判準（業務情境卡），不寫測試步驟 |
 

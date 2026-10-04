@@ -6,7 +6,7 @@
 
 紙張有兩層：公司向供應商買進的整張紙（供應商原料，重量計價尺寸表的每一列）與切好上機的紙（備料規格，每筆指向一列供應商原料、帶開料數）。後端 sens-print-core 於 2026-09-02 已把備料規格改為必指一列供應商原料並移除「適用設備」。wiki 已於 2026-09-07 落卡：[材料主檔](../../../memory/Sens_wiki/wiki/erp/05-entities/材料主檔.md) § 備料規格、[生產任務](../../../memory/Sens_wiki/wiki/erp/05-entities/生產任務.md) § 數量「備料規格」欄、[BOM結構](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md) § 拼版與張數、[部件配方](../../../memory/Sens_wiki/wiki/erp/05-entities/部件配方.md) 工序段材料欄、[數量換算規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/數量換算規則.md) § 三與 § 四。
 
-設計正本：[work-order-prep-spec-selection-design.md](../../../work-order-prep-spec-selection-design.md)（grill 十一題拍板、plan-audit 全過、wiki 十八檔已落卡）。相依 change `work-order-material-pricing-input` 已於 2026-09-07 歸檔，本 change 在其之上 MODIFIED。
+設計正本：[memory/erp/plans/_archives/2026/work-order-prep-spec-selection/work-order-prep-spec-selection-design.md](../../../work-order-prep-spec-selection-design.md)（grill 十一題拍板、plan-audit 全過、wiki 十八檔已落卡）。相依 change `work-order-material-pricing-input` 已於 2026-09-07 歸檔，本 change 在其之上 MODIFIED。
 
 ### Problem Statement
 

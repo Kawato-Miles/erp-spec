@@ -6,7 +6,7 @@
 
 工單分派後主責是該印務，但工單列表讓每位印務看到全公司所有工單；印務休假或協作也沒有把工單交給同事看或代為操作的正當通道。wiki 已於 2026-09-07 落卡：[印務](../../../memory/Sens_wiki/wiki/erp/03-roles/印務.md) § 職務範圍、[印務主管](../../../memory/Sens_wiki/wiki/erp/03-roles/印務主管.md)、[工單](../../../memory/Sens_wiki/wiki/erp/05-entities/工單.md) § 欄位「負責人」「分享成員」與 § 異動紀錄、[單據分享與職務代理](../../../memory/Sens_wiki/wiki/erp/07-scenarios/單據分享與職務代理.md)、[報工規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/報工規則.md) § 報工權限守門、[工單狀態](../../../memory/Sens_wiki/wiki/erp/06-state-machines/工單狀態.md) § 轉換條件。
 
-設計正本：[work-order-visibility-design.md](../../../work-order-visibility-design.md)（grill 五題＋五項補充拍板、plan-audit 五輪全過）。後端 sens-print-core 訂單側已有兩層分享、五類改派理由分類、離職交接清空分享；工單側全無，為新做。
+設計正本：[memory/erp/plans/_archives/2026/work-order-visibility/work-order-visibility-design.md](../../../work-order-visibility-design.md)（grill 五題＋五項補充拍板、plan-audit 五輪全過）。後端 sens-print-core 訂單側已有兩層分享、五類改派理由分類、離職交接清空分享；工單側全無，為新做。
 
 ### Problem Statement
 

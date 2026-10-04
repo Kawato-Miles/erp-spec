@@ -2,7 +2,7 @@
 
 生產階段的商業層（wiki）於 2026-07 至 2026-08 完成重構與拍板擴散，OpenSpec 與 Prototype 未同步，形成三方不一致。2026-08-06 以 wiki 為基準完成四段差異盤點，本 change 承接段 1 的 48 項差異。
 
-商業層設計已定案於 `production-stage-seg1-design.md`（過 plan-audit：0 項未通過；Miles 七項裁決已落 wiki 12 卡）。**本文件只寫實作層的技術決策**，商業規則、欄位、狀態列舉一律不重述，依據見該設計文件與 wiki 正本卡。
+商業層設計已定案於 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg1-design.md`（過 plan-audit：0 項未通過；Miles 七項裁決已落 wiki 12 卡）。**本文件只寫實作層的技術決策**，商業規則、欄位、狀態列舉一律不重述，依據見該設計文件與 wiki 正本卡。
 
 實作環境的既有約束：
 

@@ -2,7 +2,7 @@
 
 ## Context
 
-商業層設計正本：[work-order-prep-spec-selection-design.md](../../../work-order-prep-spec-selection-design.md)。
+商業層設計正本：[memory/erp/plans/_archives/2026/work-order-prep-spec-selection/work-order-prep-spec-selection-design.md](../../../work-order-prep-spec-selection-design.md)。
 
 現狀（erp repo `apps/erp/src/app/(prototype)/work-orders/`）：BOM 面板材料區按重量展成「規格 × 供應商原料列」（`optionLabel: '母版規格'`、`bom_ref.weight_entry_id`），主檔 mock 無備料層；材料費＝供應商原料單張價 × 任務目標數量。
 

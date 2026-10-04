@@ -39,4 +39,4 @@ answered-at: 2026-07-28
 
 ## 決議
 
-前提變更解題：2026-07-28 生產階段 high-level 重構設計拍板——「四個 change 依序」路線取消，改為 high-level 設計定案後 openspec 一次完整清整與對齊；work-order-management change 作廢。BOM 配方層納入清整範圍：工單管理模組（M1）「依 BOM 配方展開生產任務」為既定功能，配方主檔屬沿用主檔線（material／process／binding-master 沿用微調），不再有「落哪個 change」的分配問題。正本見 production-stage-high-level-design.md § 1。
+前提變更解題：2026-07-28 生產階段 high-level 重構設計拍板——「四個 change 依序」路線取消，改為 high-level 設計定案後 openspec 一次完整清整與對齊；work-order-management change 作廢。BOM 配方層納入清整範圍：工單管理模組（M1）「依 BOM 配方展開生產任務」為既定功能，配方主檔屬沿用主檔線（material／process／binding-master 沿用微調），不再有「落哪個 change」的分配問題。正本見 memory/erp/plans/_archives/2026/production-stage/production-stage-high-level-design.md § 1。

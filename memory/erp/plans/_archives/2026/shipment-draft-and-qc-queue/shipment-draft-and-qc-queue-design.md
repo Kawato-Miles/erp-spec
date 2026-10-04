@@ -1,6 +1,6 @@
 # 出貨單草稿態與品檢待驗清單改版——設計方案（BRD 層）
 
-> 用途：回補 plan-audit 稽核的收件文件。設計已於 2026-09-17 經 grill 七題拍板、Prototype 驗證、wiki 22 卡落卡（Sens 7ed8ec6）、OpenSpec change `shipment-draft-and-qc-queue`（Sens 777a232）。本文把已落卡的設計依 plan-design 收件模板重寫成一份，供稽核者對照 wiki 正本與 Prototype 驗證。第一輪稽核（[shipment-draft-and-qc-queue-audit-r1.md](shipment-draft-and-qc-queue-audit-r1.md)）打出 27 項缺口，Miles 2026-09-20 拍板依建議處理；本版為回補後供復審的版本，wiki 已同步落卡。
+> 用途：回補 plan-audit 稽核的收件文件。設計已於 2026-09-17 經 grill 七題拍板、Prototype 驗證、wiki 22 卡落卡（Sens 7ed8ec6）、OpenSpec change `shipment-draft-and-qc-queue`（Sens 777a232）。本文把已落卡的設計依 plan-design 收件模板重寫成一份，供稽核者對照 wiki 正本與 Prototype 驗證。第一輪稽核（[memory/erp/plans/_archives/2026/shipment-draft-and-qc-queue/shipment-draft-and-qc-queue-audit-r1.md](memory/erp/plans/_archives/2026/shipment-draft-and-qc-queue/shipment-draft-and-qc-queue-audit-r1.md)）打出 27 項缺口，Miles 2026-09-20 拍板依建議處理；本版為回補後供復審的版本，wiki 已同步落卡。
 > 分級判定：**結構性變更**——出貨單狀態機新增初始態「草稿」、待驗清單口徑跨品檢與轉交兩模組翻案、點收判定改依人員所屬產線。
 > 領域：履約與售後（出貨）、生產執行（品檢、轉交）。總覽基準：[[生產領域資料結構總覽]]（出貨單、品檢紀錄、轉交單、人員、產線的關聯正本）；[[履約與售後資料結構總覽]]（出貨單與售後服務的關聯正本，2026-09-20 建卡）；[[訂單領域資料結構總覽]] § 跨領域接縫（訂單–窗口聯絡人、訂單–帳務公司）。
 

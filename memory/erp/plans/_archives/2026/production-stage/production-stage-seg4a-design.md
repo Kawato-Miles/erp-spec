@@ -1,6 +1,6 @@
 # 段 4A 商業層設計：生產側副流程校正（v3，2026-08-12 復審修正版）
 
-> 依 `plan-design` 模板產出。上游：grill 拍板 `production-stage-seg4-grill.md`（§ 一～五共 18 條＋§ 六稽核裁決輪 19-29 條）、差異矩陣段 4 重驗與涵蓋盤點。範圍＝段 4A（副流程生產側）；審稿段重寫歸段 4B。
+> 依 `plan-design` 模板產出。上游：grill 拍板 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg4-grill.md`（§ 一～五共 18 條＋§ 六稽核裁決輪 19-29 條）、差異矩陣段 4 重驗與涵蓋盤點。範圍＝段 4A（副流程生產側）；審稿段重寫歸段 4B。
 > v2 變更：依 plan-audit 四稽核（rubric＋三雙盲鏡頭）裁決修正——**售後與補做統一案（拍板 25，結構性翻案）**、取消連鎖補出貨單層（拍板 19）、短出回彈放行（拍板 20）、上傳守衛移除（拍板 21）、分流判準統一（拍板 27）、派單成本回填（拍板 28）等。
 > 檔案級分工：4A 動 order-management／work-order／business-scenarios／shipment／dispatch-order／after-sales-ticket／qc／order-adjustment（僅 bubble-up 一處）；prepress-review spec 整檔歸 4B。
 
@@ -179,7 +179,7 @@
 
 ## 必含段④ grill 拍板紀錄段
 
-正本：`production-stage-seg4-grill.md`——§ 一～五（條 1-18，2026-08-12 第一輪）＋§ 六（條 19-29，稽核裁決輪）。4A 承接條目：5、6、11-18（第一輪，謄錄見 grill 檔）＋19-29（裁決輪全數，謄錄見 grill 檔 § 六，本設計逐節落實）。**翻案紀錄**：條 25 翻掉條 13（B3 加開印件承接）；條 21 移除差異 #39；條 20 翻掉段 3 [[出貨與送達]] L34 舊句；條 15＋本體五翻掉段 3 R2（shipment L23）。拍板間無其他矛盾。
+正本：`memory/erp/plans/_archives/2026/production-stage/production-stage-seg4-grill.md`——§ 一～五（條 1-18，2026-08-12 第一輪）＋§ 六（條 19-29，稽核裁決輪）。4A 承接條目：5、6、11-18（第一輪，謄錄見 grill 檔）＋19-29（裁決輪全數，謄錄見 grill 檔 § 六，本設計逐節落實）。**翻案紀錄**：條 25 翻掉條 13（B3 加開印件承接）；條 21 移除差異 #39；條 20 翻掉段 3 [[出貨與送達]] L34 舊句；條 15＋本體五翻掉段 3 R2（shipment L23）。拍板間無其他矛盾。
 
 **隱含假設清單**（設計者自補、Miles 未明說）：
 1. 「已棄用印件不可入出貨明細」實作形態＝可選清單直接排除（非選了再擋）——依目視化原則自補。

@@ -13,7 +13,7 @@ wiki 於 2026-07 至 2026-08 完成生產階段重構與拍板擴散，段 3（�
 - 轉交路徑來源放寬：[轉交單](../../../memory/Sens_wiki/wiki/erp/05-entities/轉交單.md)、[轉交單狀態](../../../memory/Sens_wiki/wiki/erp/06-state-machines/轉交單狀態.md)、[場內轉交與更正](../../../memory/Sens_wiki/wiki/erp/07-scenarios/場內轉交與更正.md)
 - 角色分工：[品檢人員](../../../memory/Sens_wiki/wiki/erp/03-roles/品檢人員.md)、[揀貨人員](../../../memory/Sens_wiki/wiki/erp/03-roles/揀貨人員.md)、[廠務](../../../memory/Sens_wiki/wiki/erp/03-roles/廠務.md)、[印務](../../../memory/Sens_wiki/wiki/erp/03-roles/印務.md)、[業務](../../../memory/Sens_wiki/wiki/erp/03-roles/業務.md)
 
-設計正本：`production-stage-seg3-design.md`（§ 七 G1–G23 openspec 修正方向、§ 7-2 P1–P8 prototype 修正方向、§ 八 20 條情境處置）；拍板紀錄：`production-stage-seg3-grill.md`（§ 一至 § 一之四）；後端 as-is：`production-stage-dispatch-waybill-asis.md`。
+設計正本：`memory/erp/plans/_archives/2026/production-stage/production-stage-seg3-design.md`（§ 七 G1–G23 openspec 修正方向、§ 7-2 P1–P8 prototype 修正方向、§ 八 20 條情境處置）；拍板紀錄：`memory/erp/plans/_archives/2026/production-stage/production-stage-seg3-grill.md`（§ 一至 § 一之四）；後端 as-is：`production-stage-dispatch-waybill-asis.md`。
 
 **前置條件**：設計已過 plan-audit 三輪（`production-stage-seg3-audit-r1/r2/r3.md`）、Miles 已拍板（D1–D3、R1–R8、G1–G4、N1）、wiki 已落卡（commit `ada40e0`）。openspec 現況已於 2026-08-11 以段 2 archive 後的 main specs 重驗（結果 append 於 `production-stage-alignment-diff-matrix.md` 檔末「段 3 openspec 側重驗」），本 change 依該次重驗的裁決調整範圍：G4 移除（段 2 已收斂）、G8 與 G10 縮小、G15 落點改 `prepress-review`、G20 一併收斂 `dispatch-order` 同檔互斥、段 2 合併引入的相斥四點併入對應 G 項。
 

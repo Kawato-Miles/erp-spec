@@ -1,6 +1,6 @@
 # 出貨單草稿態與品檢待驗清單改版——plan-audit 第一輪稽核紀錄
 
-> 稽核對象：[shipment-draft-and-qc-queue-design.md](shipment-draft-and-qc-queue-design.md)。分級：結構性變更。
+> 稽核對象：[memory/erp/plans/_archives/2026/shipment-draft-and-qc-queue/shipment-draft-and-qc-queue-design.md](memory/erp/plans/_archives/2026/shipment-draft-and-qc-queue/shipment-draft-and-qc-queue-design.md)。分級：結構性變更。
 > 稽核形態：rubric 稽核一路（讀全文）＋雙盲對抗推演三路（技術取向、資源流出把關、現場操作成本；各拿去論證版、互不知結果）。四路皆為 Opus 代理，2026-09-18 執行。
 > 附錄一至四為四路產出原文（未改寫）。§ 一至 § 三為主對話彙整：去重、對照原論證、分處置。
 

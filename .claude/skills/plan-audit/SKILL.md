@@ -8,7 +8,7 @@ description: >
 
 # plan-audit
 
-正本量尺：[規劃品質評分準則](../../memory/Sens_wiki/wiki/erp/11-review-knowledge/規劃品質評分準則.md)。本 skill 只管流程，檢核項內容、評分規則、稽核者紀律一律以準則卡為準，本檔不複寫。
+正本量尺：[規劃品質評分準則](../../../memory/Sens_wiki/wiki/erp/11-review-knowledge/規劃品質評分準則.md)。本 skill 只管流程，檢核項內容、評分規則、稽核者紀律一律以準則卡為準，本檔不複寫。
 
 ## 流程
 
@@ -41,6 +41,8 @@ dispatch prompt 必含：
 
 ### 步驟 4：評分表（稽核產出的唯一格式)
 
+評分表存 `memory/erp/plans/<主題>/audit-rN.md`（N＝輪次，與設計方案 `design.md` 同資料夾；落點規則見 `plan-design` § 產出落點）。
+
 | 欄位 | 標準 |
 |------|------|
 | 檢核項 | 準則卡 § 四編號（1-1 至 5-2）逐項列，不可跳項 |
@@ -53,6 +55,7 @@ dispatch prompt 必含：
 - 任一「未通過」→ 退回主對話修正 → 回步驟 3 復審（復審可只重驗未通過項＋受修正牽動項）。
 - 全過 → 評分表原樣呈 Miles 拍板，**不由協調者改寫或美化**。
 - 拍板後接 `wiki-amend` 落卡（推演打出漏洞的有效對抗情境一併回寫 `07-scenarios/`）→ `/opsx:propose`。
+- 落卡與 propose 都完成後，把 `memory/erp/plans/<主題>/` 整夾搬到 `memory/erp/plans/_archives/<年>/<主題>/`。平層只留進行中的主題。
 
 ## 誤判回饋
 

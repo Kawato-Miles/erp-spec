@@ -2,7 +2,7 @@
 
 ## Context
 
-商業層設計正本：[work-order-material-selection-design.md](../../../work-order-material-selection-design.md)（已過 plan-audit 三輪、Miles 拍板、wiki 11 卡已落）。本檔只補 Prototype 實作層的技術決策。
+商業層設計正本：[memory/erp/plans/_archives/2026/work-order-material-selection/work-order-material-selection-design.md](../../../work-order-material-selection-design.md)（已過 plan-audit 三輪、Miles 拍板、wiki 11 卡已落）。本檔只補 Prototype 實作層的技術決策。
 
 現狀（erp repo `apps/erp/src/app/(prototype)/work-orders/`）：材料選擇為三層級聯（`MATERIAL_GROUPS` → `MATERIALS` → `MATERIAL_SPECS`），止於材料規格；六種計價子類在 mock 已有 `pricing_method` 標示，但 `estimate-cost.js` 的材料費一律 `unit_price × sheetQty`；裝訂費無台數／頁數輸入。
 

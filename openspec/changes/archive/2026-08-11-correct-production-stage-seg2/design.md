@@ -1,6 +1,6 @@
 ## Context
 
-段 2 的商業層決策已全數定案於 `production-stage-seg2-design.md`（三輪 plan-audit 全過、拍板紀錄 `production-stage-seg2-alignment.md` § 一至 § 九），wiki 已落卡。本文件只處理 PRD 層與 prototype 實作的技術取捨，不重述商業決策。
+段 2 的商業層決策已全數定案於 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg2-design.md`（三輪 plan-audit 全過、拍板紀錄 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg2-alignment.md` § 一至 § 九），wiki 已落卡。本文件只處理 PRD 層與 prototype 實作的技術取捨，不重述商業決策。
 
 實作約束（沿段 1，handover § 二）：只動 erp repo（`/Users/b-f-03-029/erp`）`prototype/production-stage` 分支、不開 PR；實作經 repo 內 `prototype-from-prompt` skill（既有配方與真元件、禁自創 UI、禁手寫 hex 與 px、巢狀表用 `SubTableWrapper`）；只動 `apps/erp/src/app/(prototype)/`；dev server `http://localhost:3000`。
 

@@ -1,7 +1,7 @@
 # 生產階段 openspec 清整計畫
 
 > 狀態：執行中（2026-07-30 起）。決策經 grilling 逐題拍板，本檔為執行依據。
-> 依據：`production-stage-high-level-design.md`（設計正本，§ 1.3 清整對照）＋`factory-business-current-state-2026-07-22.md`（現況彙整）。
+> 依據：`memory/erp/plans/_archives/2026/production-stage/production-stage-high-level-design.md`（設計正本，§ 1.3 清整對照）＋`factory-business-current-state-2026-07-22.md`（現況彙整）。
 > 參考來源紀律：`12-insights/2026-06-15-生產階段現況校正與as-is-tobe對齊.md` 不列入 read-first 清單，一律以上述兩份 7 月底文件為準。
 
 ## 一、為什麼做

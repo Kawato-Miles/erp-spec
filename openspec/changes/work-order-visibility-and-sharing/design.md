@@ -2,7 +2,7 @@
 
 ## Context
 
-商業層設計正本：[work-order-visibility-design.md](../../../work-order-visibility-design.md)。現況：工單列表只有負責印務下拉篩選、預設全部；`permissions.js` 八支把關以 `isOwner` 為條件；工單無 `shared_members`；改派只換人不選理由。
+商業層設計正本：[memory/erp/plans/_archives/2026/work-order-visibility/work-order-visibility-design.md](../../../work-order-visibility-design.md)。現況：工單列表只有負責印務下拉篩選、預設全部；`permissions.js` 八支把關以 `isOwner` 為條件；工單無 `shared_members`；改派只換人不選理由。
 
 ## Goals / Non-Goals
 

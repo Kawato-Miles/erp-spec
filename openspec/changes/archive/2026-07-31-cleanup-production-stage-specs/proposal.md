@@ -7,7 +7,7 @@
 - `task-dispatch-board`（220 行）用介面名當 capability，`scheduling-center`（234 行）把待排區與外包追蹤混在一起，兩者的職責在本輪重新分配。
 - 出貨與派單兩個模組從未建立 spec（`SHP-006` 記錄出貨缺口）。
 
-生產階段尚未交付 Linear，交付前先清整。設計依據為 `production-stage-high-level-design.md`（六模組、實體與狀態機處置、端到端資料流、五指標與成本雙軌）與 `factory-business-current-state-2026-07-22.md`（15 步端到端流程、13 角色 R&R）。
+生產階段尚未交付 Linear，交付前先清整。設計依據為 `memory/erp/plans/_archives/2026/production-stage/production-stage-high-level-design.md`（六模組、實體與狀態機處置、端到端資料流、五指標與成本雙軌）與 `factory-business-current-state-2026-07-22.md`（15 步端到端流程、13 角色 R&R）。
 
 本 change 為兩批中的批一：生產核心（M1 工單管理、M2 派工與現場執行、M3 排程與工廠總覽），並併入 M6 配方管理的三處校對（M6 的缺口全部咬著 M1 的展開行為與工單草稿建立，分批會讓中間狀態互相打架）。批二（M4 品檢與出貨、M5 派單、外圍 spec 生產引用段落）另立 change。
 

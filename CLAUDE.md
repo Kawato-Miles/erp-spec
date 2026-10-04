@@ -127,12 +127,12 @@ Miles，印刷業 PM，負責下列產品：**ERP 系統**（生產排程 / 採�
   1. 查 Vault `memory/Sens_wiki/wiki/erp/08-open-questions/`，新增或解答本次涉及的 OQ（透過 `oq-manage` skill 模式 B / C）
   2. **掃描本次變動的 Vault / Spec 檔是否含 `[!question]` callout、`## Open Questions` section 或 inline OQ 措辭（「待確認」「待釐清」「需確認」「尚未確認」「待補」），發現則觸發 `oq-manage` mode D 遷出為獨立 OQ 卡後才能 commit**
   3. 更新對應 OpenSpec spec / Vault 卡（若有內容異動）
-  4. 確認 CLAUDE.md § Spec 規格檔清單是否需補充
+  4. 新增 spec 模組時，確認 `openspec/config.yaml` context 的模組清單是否需補充
   5. 確認 memory/ 相關檔案是否需更新
   6. **若本次有 ≥ 5 個 Vault 卡異動 → 主動建議 Miles 跑 `vault-audit`**（稽核維度自審）
   7. **若本次對話累積 ≥ 1 條可寫入 raw 的素材（Prototype 試用反饋 / Miles 觀察 / 研究筆記 / 對話 highlight）→ 觸發 `vault-ingest` mode A**（claude-self-capture 須 Miles 確認、claude-research 須附真實 raw-source-link）
   8. **若本次對話結束時累積 status=raw ≥ 10 張 → 主動建議 Miles 跑 `vault-ingest` mode C**（批次掃描 raw 待處理清單）
-  9. **設計確認後、進入 `/opsx:propose` 前 MUST 先更新 wiki 商業邏輯卡**（依 `erp-planning-pre-check` 產出的「propose 前須先更新的 wiki 卡清單」執行），確保 ERP_Vault 商業邏輯正本（04-business-logic / 05-entities / 06-state-machines / 07-scenarios）先於 OpenSpec 定案。wiki 是 BRD（商業邏輯正本），OpenSpec 是 PRD（實作規格），正確順序是先定 BRD 再寫 PRD（review-return-and-confirm-production 教訓：wiki 回補放 archive 後導致 spec 混入狀態列舉、重複維護）
+  9. **設計確認後、進入 `/opsx:propose` 前 MUST 先更新 wiki 商業邏輯卡**（依 `erp-planning-pre-check` 產出的「propose 前須先更新的 wiki 卡清單」執行），確保 ERP_Vault 商業邏輯正本（04-business-logic / 05-entities / 06-state-machines / 07-scenarios）先於 OpenSpec 定案。wiki 是 BRD（商業邏輯正本），OpenSpec 是 PRD（系統承諾與驗收條目），正確順序是先定 BRD 再寫 PRD；wiki 晚於 archive 才回補，spec 會混入狀態列舉、造成兩處重複維護
 - 判斷標準：本次對話是否決定了任何設計、欄位、流程、角色的新內容或修正 → 有則執行，無則跳過
 - Spec / BRD / 欄位 / 流程 / 角色有任何異動或設計方向確立時，主動收尾前依 § ERP 討論主動路由 § 變動性質分級觸發 `plan-audit` 稽核；純 OQ 文字更新或措辭修正跳過
 - 協作討論的觸發不限於正式寫 Spec：只要討論中有設計傾向出現，也應啟動；agent 先載入全部背景知識再進行
@@ -156,7 +156,7 @@ Miles，印刷業 PM，負責下列產品：**ERP 系統**（生產排程 / 採�
 | **批次掃描 raw** | 「看 raw」「掃 raw」「raw 待處理」/ 主動：status=raw 累積達主動收尾清單的建議門檻 | 觸發 `vault-ingest` mode C，產狀態清單 + 同主題累積警示 + 過期警告 |
 | **精練 raw 卡** | 「精練 [檔名]」「ingest 這張」「拆解 raw」 | 觸發 `vault-ingest` mode B（含 oq-manage mode B 協同觸發判斷；cards diff **須 Miles 確認**，正本卡寫入轉介 `wiki-amend`）|
 | **寫或改 wiki 正本卡（唯一入口）** | 「寫進 wiki」「更新 wiki」「對齊 wiki」「補一張情境卡」「寫業務情境」「補 [模組] 情境」/ 日常查詢的高價值答案要固化成正本卡 / 其他 skill 判完落點要動 03／04／05／06／07 任一張卡 | 觸發 `wiki-amend`：先過它的 § 〇 硬性載入清單（[[wiki/erp/00-meta/卡片撰寫共用規範]] § 二／§ 三／§ 四／§ 四之二 ＋ 該卡型 `規範 - <單元名>` ＋ 對應骨架 ＋ 範例卡），再判落點、撰寫、稽核、追加 wiki/log.md。**不再有繞過 skill 直接寫正本卡的路徑** |
-| **對外發布 / 迭代同步**（依這次更新同步 Notion / Linear）| 「依這次更新同步」「推迭代差異」「同步發布」「更新外部資料」「推 X 到 Notion / Linear」 | 算 delta（只取 archived change、active 不外露）→ 內部正本先到位 → 路由（業務情境卡對外推送若需要另做 skill（外部對接 wiki）；Linear → `linear-delivery`，中台 vs 業務平台 project 分流）→ 每面寫入前列清單給 Miles → 強制回填追蹤 |
+| **對外發布 / 迭代同步**（依這次更新同步 Notion / Linear）| 「依這次更新同步」「推迭代差異」「同步發布」「更新外部資料」「推 X 到 Notion / Linear」 | 算差異（依 wiki/log.md 與 Prototype 提交紀錄，見 `linear-delivery` 步驟 1）→ 內部正本先到位 → 路由（業務情境卡對外推送若需要另做 skill（外部對接 wiki）；Linear → `linear-delivery`，中台 vs 業務平台 project 分流）→ 每面寫入前列清單給 Miles → 強制回填追蹤 |
 | **使用工程紀律框架（mattpocock）** | 「brainstorm / 對齊」「跑 TDD」「除錯」「code review」（限 prototype / erp repo 實作階段） | 實作前 MUST 先 `grilling` 對齊需求（軟強制；PM 規格階段對齊走新規劃流的 grill 段，不重複）；再依動作調用 mattpocock skill——TDD→`tdd`、除錯→`diagnosing-bugs`、程式碼審查→`code-review`。工程紀律優先於速度 |
 
 #### 變動性質分級（主對話設計＋rubric 稽核）
@@ -222,7 +222,7 @@ config.yaml rules 會自動注入 OQ 查詢與 proposal 前置條件（設計已
 delta specs 合併回 main specs，歸檔 change。
 
 **⑤ 發布（Publish）** → 交付至 Linear
-累積數個 change 後，觸發 `linear-delivery` skill 將更新後的 main specs 交付至 Linear（對開發的唯一正本，內容自包含）。
+累積數個 change 後，觸發 `linear-delivery` skill 交付至 Linear（對開發的唯一正本，內容自包含）。取材 wiki 與 Prototype，不讀 OpenSpec（取材路徑見 § wiki 與 OpenSpec 分工）。
 
 ---
 
@@ -239,7 +239,6 @@ delta specs 合併回 main specs，歸檔 change。
 
 **結尾必加**：當前執行模型的署名（格式 `Co-Authored-By: {現行模型名} <noreply@anthropic.com>`，依系統提示中的實際模型填寫，不寫死版本）
 **每次修改 `memory/` 後，連同 CLAUDE.md 一起 commit，commit 完成後 hook 會自動 push。**
-→ Commit 格式範例見 `memory/erp/spec-iteration-workflow.md` § 迭代後 § Step 3
 
 ---
 
@@ -311,14 +310,16 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 ## wiki 與 OpenSpec 分工（唯一正本，勿在他處重述）
 
 - **wiki（BRD 層，memory/Sens_wiki/wiki/）= 商業需求單一正本**：商業目標 / 痛點 / 營運原則 / 業務規則與恆定約束（invariant）/ 角色分權動機 / 領域知識 / KPI / OQ / **業務可見欄位表**（實體卡 `05-entities/`）/ **狀態列舉**（狀態機卡 `06-state-machines/`）。回答 why、「什麼必須成立」、以及「介面上看到什麼資料」。
-- **OpenSpec（PRD 層，openspec/）= 系統行為規格單一正本**：功能 Requirement / 驗收 Scenario（Given/When/Then）/ 狀態轉換規則（guard 條件 + 觸發事件）/ 角色權限規格 / change 工作流。回答 how（系統在什麼條件下做什麼），驅動 Prototype 與 Linear 交付。**不再包含 Data Model 欄位表與狀態列舉**（已遷移至 wiki）。
+- **OpenSpec（PRD 層，openspec/）= 系統行為規格單一正本**：Requirement 只寫**系統承諾**（觸發事件、轉換條件、系統自動動作、禁止副本等「系統在什麼條件下承諾做什麼」）/ **驗收條目**（Scenario，Given/When/Then，每條標所屬 wiki 情境卡與步驟）/ change 工作流。回答「系統承諾什麼、怎麼驗」，驅動 Prototype 與 Linear 交付。**不包含 Data Model 欄位表、狀態列舉、業務規則句**（正本都在 wiki，spec 以一句引用卡）。
 - **單一正本鐵則（同一內容只有一個家）**：
   - **欄位正本歸 wiki**：實體卡 `05-entities/` 的「欄位（業務可見）」段。欄位的新增與修改是商業決策，直接在 wiki 維護，不經 OpenSpec change 工作流。
   - **狀態列舉正本歸 wiki**：狀態機卡 `06-state-machines/` 的「狀態列舉」段。狀態的新增與修改同上。
-  - **轉換規則正本歸 OpenSpec**：狀態在什麼條件下怎麼變（Requirement + Scenario），留在各模組 spec。
-  - **業務規則正本歸 wiki**：商業邏輯卡 `04-business-logic/`。
+  - **轉換規則正本歸 OpenSpec**：狀態在什麼條件下怎麼變（Requirement + 驗收條目），留在各模組 spec。
+  - **業務規則正本歸 wiki**：商業邏輯卡 `04-business-logic/`；誰可以做什麼歸角色卡 `03-roles/` 與實體卡的可否修改欄。spec 的 Requirement 描述段不重述規則句。
+  - **情境骨架正本歸 wiki**：業務情境卡 `07-scenarios/`（步驟、分支、判準）。驗收條目是骨架底下的葉子，情境卡沒有的流程先補卡再寫驗收條目；操作手冊的情境與 Linear 的 Use Case 都取情境卡。
   - **角色 R&R 正本歸 wiki**：角色卡 `03-roles/`。
-  - OpenSpec spec MUST NOT 複寫 wiki 欄位表或狀態列舉（改為引用 wiki 卡）。wiki 卡 MUST NOT 複寫 OpenSpec 的轉換規則或 Scenario。
+  - OpenSpec spec MUST NOT 複寫 wiki 欄位表、狀態列舉或業務規則句（改為引用 wiki 卡）。wiki 卡 MUST NOT 複寫 OpenSpec 的轉換規則或驗收條目。
+  - **Linear 取材路徑**：規則與 Use Case 只從 wiki（規則卡、角色卡、實體卡、情境卡），驗收的具名案例從 Prototype；OpenSpec 是 PM 內部工作版本，不外露也不取材。wiki 與 Prototype 對不上時停下呈報，不拼湊（細則見 `linear-delivery` 規範）。
 - **Prototype＝介面與互動正本（交付層）**：頁面結構與版型、操作動線、元件呈現以 Prototype 為準；mock 資料的值、API 形狀、權限的後端強制不在其權威範圍（此邊界僅此一處宣告，交付文件不另附邊界表）。交付到 Linear 時不設 Prototype 參照格，交付文件亦不文字重述操作動線。設計票（DE 票）不再產出，操作方式與介面由 Prototype 承載。
 - **引用方向**：OpenSpec change 的 Why 段以相對連結引 wiki 卡（下游引上游）。wiki 不承載與實作文件的對應（frontmatter 不設 `implemented-by`／`module` 等實作對應欄位，實作對應屬 PRD 層）。wiki 的 `source` 禁指 openspec/specs/（違者報錯）。
 - 細部「收 / 不收」邊界見 [scope-boundary](memory/Sens_wiki/wiki/erp/00-meta/scope-boundary.md)。**本分工僅此一處宣告；wiki 各卡與 .claude/rules 不得再重述。**
@@ -331,16 +332,16 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 
 > 商業需求 KM 中樞為 `memory/Sens_wiki/wiki/`（Vault），實作 / UI / 演算法不在此（見 [Vault scope-boundary](memory/Sens_wiki/wiki/erp/00-meta/scope-boundary.md)）。
 > AI 撰寫 OpenSpec change 時必須先讀 Vault 對應卡（見「商業層查詢」row），在 change proposal `## Why` / `## Background` 段以相對路徑或 wiki link 引用 Vault 節點。
-> **撰寫 OpenSpec change 的層級順序**：先讀 wiki 商業邏輯 + 欄位表 + 狀態列舉（ERP_Vault 商業需求正本，含實體卡欄位與狀態機卡列舉）→ 再 openspec 行為規格（Requirement / Scenario / 轉換規則）→ 最後 code。wiki 是商業需求正本（含欄位與狀態），openspec 是行為契約，順序不可顛倒。欄位或狀態的新增 / 修改先更新 wiki 卡，再視需要於 openspec 補對應 Requirement。
+> **撰寫 OpenSpec change 的層級順序**：先讀 wiki 商業邏輯 + 欄位表 + 狀態列舉（ERP_Vault 商業需求正本，含實體卡欄位與狀態機卡列舉）→ 再 openspec 系統承諾與驗收條目（Requirement / Scenario）→ 最後 code。wiki 是商業需求正本（含欄位與狀態），openspec 是行為契約，順序不可顛倒。欄位或狀態的新增 / 修改先更新 wiki 卡，再視需要於 openspec 補對應 Requirement。
 
 | Task 類型 | 必讀 | 視需要 |
 |----------|------|--------|
-| **商業層查詢**（商業目標 / 角色 / 商業邏輯 / 實體關聯 / 狀態機 / 跨模組情境）| 讀 wiki 總入口 [wiki/index.md](memory/Sens_wiki/wiki/index.md)，依 `[[business-domain-taxonomy]]` 檢索規約定位對應領域卡（判領域 → 領域 tag 查卡名清單 → 呈現 → 載入；入口即 router，不在此重列深路徑） | OpenSpec spec § Requirements（功能規格） |
+| **商業層查詢**（商業目標 / 角色 / 商業邏輯 / 實體關聯 / 狀態機 / 跨模組情境）| 讀 wiki 總入口 [wiki/index.md](memory/Sens_wiki/wiki/index.md)，依 `[[business-domain-taxonomy]]` 檢索規約定位對應領域卡（判領域 → 領域 tag 查卡名清單 → 呈現 → 載入；入口即 router，不在此重列深路徑） | OpenSpec spec § Requirements（系統承諾） |
 | **撰寫 OpenSpec change**（背景對齊）| Vault `04-business-logic/` + `05-entities/` + `03-roles/` 對應卡 → 引用至 proposal `## Why` | Notion 索引（`10-references/notion-index.md`） |
-| **撰寫 Spec / PRD** | 觸發 OpenSpec change 工作流（`/opsx:propose` 或 `/opsx:new`），背景資料由 Vault 對應卡引用 | 迭代時參考 `memory/erp/spec-iteration-workflow.md` |
-| 情境驗證 / 補情境 | Vault `07-scenarios/`（業務情境卡；分層：骨架 `wiki/範本/範本 - 業務情境`／規範 `規範 - 業務情境`／範例 `範例 - 業務情境`）+ 業務情境 spec（`openspec/specs/business-scenarios/spec.md`）| Vault `03-roles/`（角色責任分配）|
+| **撰寫 Spec / PRD** | 觸發 OpenSpec change 工作流（`/opsx:propose` 或 `/opsx:new`），背景資料由 Vault 對應卡引用 | — |
+| 情境驗證 / 補情境 | Vault `07-scenarios/`（業務情境卡；分層：骨架 `wiki/範本/範本 - 業務情境`／規範 `規範 - 業務情境`／範例 `範例 - 業務情境`）| Vault `03-roles/`（角色責任分配）、跨模組狀態追蹤表 `openspec/specs/business-scenarios/spec.md`（存量，隨 change 清；情境骨架以情境卡為準）|
 | 確認 / 解答 Open Question | Vault `08-open-questions/`（**內部正本**）+ 觸發 `oq-manage` skill | Notion OQ DB（對外確認版，見 § OQ 工作流）|
-| 業務情境 | Vault `07-scenarios/`（業務情境卡；分層：骨架 `wiki/範本/範本 - 業務情境`／規範 `規範 - 業務情境`／範例 `範例 - 業務情境`）| 各模組 spec § Scenarios（Acceptance Scenarios，Given/When/Then 工程驗收）、Vault `03-roles/` |
+| 業務情境 | Vault `07-scenarios/`（業務情境卡；分層：骨架 `wiki/範本/範本 - 業務情境`／規範 `規範 - 業務情境`／範例 `範例 - 業務情境`）| 各模組 spec 驗收條目（Scenario，Given/When/Then，標所屬情境卡步驟）、Vault `03-roles/` |
 | **審查方法論 / 框架查詢** | Vault `11-review-knowledge/`（入口 [審查知識路由](memory/Sens_wiki/wiki/erp/11-review-knowledge/審查知識路由.md)）| `plan-design`／`plan-audit` skill |
 | **Prototype 製作** | erp repo 內 skill `/Users/b-f-03-029/erp/.claude/skills/prototype-from-prompt/SKILL.md`（設計規範唯一入口）+ 對應 Spec + 狀態機 spec | Notion 測試案例 DB：https://www.notion.so/2b93886511fa817fbd65e7608726f036 |
 | Prototype 驗證 / 反饋 | `/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/` 對應模組 + Sens `erp-prototype-tests/`（`docs/scenario-catalog.md` 情境目錄、`npm test` 自動化驗收） | `erp-prototype-tests/docs/findings-20260908.md` |

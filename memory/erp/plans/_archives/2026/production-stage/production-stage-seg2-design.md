@@ -3,7 +3,7 @@
 > 範圍：報工（欄位口徑、五個管道、向上反映）→ 印件層產出彙整 → 耗料與料帳口徑 → 場內轉交（建單、搬運、送達、點收、作廢、更正）→ 單據與歷程紀錄 → 生產績效指標的連帶。轉交只做兩類路徑：產線 → 產線、產線 → 品檢站；涉及暫存區的三類路徑留段 3（見 § 五前言）。
 > 層級：BRD 商業層設計（送 `plan-audit` 稽核 → Miles 拍板 → `wiki-amend` 落卡 → `/opsx:propose`）
 > 變動性質判定：**結構性變更**（單一稽核者跑完整評分準則 ＋ 雙盲對抗式情境推演，含資源流出把關與現場操作成本兩個立場鏡頭）。理由：[[轉交單狀態]] 狀態機層級變動（三態改五態）＋動作者重分配（建單與作廢自系統與印務移至生管、新增點收動作由師傅與品檢人員承擔）。
-> 內容正本：`production-stage-seg2-alignment.md`（2026-08-10 Miles 逐題拍板；§ 七為空缺補齊的二次拍板、§ 八為稽核後的三次拍板，謄錄見 ④ 4-1 至 4-3）。差異盤點基準：`production-stage-alignment-diff-matrix.md` § 段 2（31 項差異＋14 條情境走查＋9 項 wiki 疑似缺漏）；矩陣為快照，與拍板紀錄衝突時以拍板紀錄為準。
+> 內容正本：`memory/erp/plans/_archives/2026/production-stage/production-stage-seg2-alignment.md`（2026-08-10 Miles 逐題拍板；§ 七為空缺補齊的二次拍板、§ 八為稽核後的三次拍板，謄錄見 ④ 4-1 至 4-3）。差異盤點基準：`production-stage-alignment-diff-matrix.md` § 段 2（31 項差異＋14 條情境走查＋9 項 wiki 疑似缺漏）；矩陣為快照，與拍板紀錄衝突時以拍板紀錄為準。
 > 實作約束：沿用段 1（只動 `erp` repo、經 `prototype-from-prompt` skill、`prototype/production-stage` 分支、不開 PR）。
 
 ---
@@ -253,7 +253,7 @@
 
 > 本節是本段的結構性變更所在。
 
-**本節的轉交範圍只有兩類路徑**（Miles 稽核後裁決，`production-stage-seg2-alignment.md` § 八 B2）：
+**本節的轉交範圍只有兩類路徑**（Miles 稽核後裁決，`memory/erp/plans/_archives/2026/production-stage/production-stage-seg2-alignment.md` § 八 B2）：
 
 | 路徑 | 明細鍵 | 本段是否做 |
 |------|--------|-----------|
@@ -896,7 +896,7 @@ OQ 結案（經 `oq-manage` mode C）：
 
 ### 4-1 逐題拍板（2026-08-10，Miles，照實謄錄）
 
-正本：`production-stage-seg2-alignment.md`。下表為該檔全部裁決的謄錄，不改寫。
+正本：`memory/erp/plans/_archives/2026/production-stage/production-stage-seg2-alignment.md`。下表為該檔全部裁決的謄錄，不改寫。
 
 | # | 問題 | 拍板 | 理由 |
 |---|------|------|------|
@@ -934,9 +934,9 @@ OQ 結案（經 `oq-manage` mode C）：
 | 32 | 介面驗證方式（T6） | 生管建單＝桌機 transfers 頁（正式通道、非代位）；廠務起搬與送達＝桌機頁按鈕代位、頁面加註「實際通道為 Slack 表單」；師傅點收＝行動版版型 | — |
 | 33 | 變動性質判定 | **結構性變更**——轉交單狀態機層級變動（三態改五態）＋動作者重分配（建單與作廢移生管、點收新增師傅）；plan-audit 加跑雙盲對抗式情境推演（資源流出把關、現場操作成本兩鏡頭） | — |
 
-機械修正（wiki 為準、不需裁決，`production-stage-seg2-alignment.md` § 四）逐項落點見「差異項消化對照表」，本表不重列。
+機械修正（wiki 為準、不需裁決，`memory/erp/plans/_archives/2026/production-stage/production-stage-seg2-alignment.md` § 四）逐項落點見「差異項消化對照表」，本表不重列。
 
-### 4-2 設計空缺補齊的拍板（`production-stage-seg2-alignment.md` § 七，2026-08-10 二次拍板）
+### 4-2 設計空缺補齊的拍板（`memory/erp/plans/_archives/2026/production-stage/production-stage-seg2-alignment.md` § 七，2026-08-10 二次拍板）
 
 本設計初稿產出後，Miles 就設計者自行標出的五個空缺逐題裁決：
 
@@ -950,7 +950,7 @@ OQ 結案（經 `oq-manage` mode C）：
 
 同段附帶的澄清（非新設計）：最後一道工序的判定依印件層工序依賴圖（相依可跨工單），無後續任務指向的節點即終點，其轉交目的地系統帶入品檢站。
 
-### 4-3 稽核後的拍板（`production-stage-seg2-alignment.md` § 八，2026-08-10 三次拍板）
+### 4-3 稽核後的拍板（`memory/erp/plans/_archives/2026/production-stage/production-stage-seg2-alignment.md` § 八，2026-08-10 三次拍板）
 
 rubric 評分表與三份雙盲對抗推演回收後，Miles 就五個爭點裁決：
 
@@ -962,7 +962,7 @@ rubric 評分表與三份雙盲對抗推演回收後，Miles 就五個爭點裁�
 | B4 | 已流出量的報工作廢 | 系統擋下；更正走人工 SOP（log 追源 → 實物盤點（系統外）→ 缺口走工單異動補做 → 錯誤報工加人工註記、數字不改）；該期指標失真接受；**產出更正單先不做、不開 OQ**；品質帳自我免疫為前提保障 | 1-6、③ 不支援段 |
 | B5 | 單據＋歷程紀錄原則 | 生產任務與轉交單的狀態與數量帳變化自動留痕（時間、操作人、觸發單據連結）；轉交單五節點各記操作人與時間；報工作廢留痕入商業層承諾；印務可加人工註記；詳情頁加歷程區塊；印件層兩本帳並排（齊套完成數不蓋帽＋完工良品數與缺口） | § 五之二、2-1、7-7 |
 
-### 4-3-1 復審後的拍板（`production-stage-seg2-alignment.md` § 九，2026-08-10 四次拍板）
+### 4-3-1 復審後的拍板（`memory/erp/plans/_archives/2026/production-stage/production-stage-seg2-alignment.md` § 九，2026-08-10 四次拍板）
 
 第二輪復審評分表回收後，Miles 就唯一需要裁量的爭點裁決：
 

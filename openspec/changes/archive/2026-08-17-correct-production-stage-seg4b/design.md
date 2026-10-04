@@ -2,7 +2,7 @@
 
 ## Context
 
-生產階段校正段 4B：審稿段。商業層設計正本 `production-stage-seg4b-design.md`（v2，plan-audit 單輪收斂），wiki 落卡八項已先行（2026-08-17）。prepress-review spec 以 delta 表達整檔重寫（17 MODIFIED／7 REMOVED／3 ADDED）。實作約束沿 handover：只動 erp repo `apps/erp/src/app/(prototype)/`、分支 `prototype/production-stage`、經 `prototype-from-prompt` skill、dev server `erp-verify`（3020）。舊 repo 已棄用，不參照不搬移。
+生產階段校正段 4B：審稿段。商業層設計正本 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg4b-design.md`（v2，plan-audit 單輪收斂），wiki 落卡八項已先行（2026-08-17）。prepress-review spec 以 delta 表達整檔重寫（17 MODIFIED／7 REMOVED／3 ADDED）。實作約束沿 handover：只動 erp repo `apps/erp/src/app/(prototype)/`、分支 `prototype/production-stage`、經 `prototype-from-prompt` skill、dev server `erp-verify`（3020）。舊 repo 已棄用，不參照不搬移。
 
 ## Goals / Non-Goals
 

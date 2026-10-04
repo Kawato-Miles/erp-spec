@@ -88,7 +88,7 @@ description: >
 
 ### Step 0：守門（先問下列問題，任一為「是」即不進 wiki）
 
-1. 是 UI 規範 / 視覺 token / step-by-step Requirement / 演算法？→ 不進 wiki（留 DESIGN.md / OpenSpec / code，依 [[scope-boundary]]）。
+1. 是 UI 規範 / 視覺 token / 介面操作步驟 / 演算法實作？→ 不進 wiki（留 Prototype / code，依 [[scope-boundary]]）。是系統承諾或驗收條目（Given／When／Then）？→ 屬 OpenSpec，不進 wiki。
 2. 是「不確定項」（待確認 / 待釐清 / 需確認 / 待補）？→ 不寫進任一位階卡，立即觸發 `oq-manage` mode B 開 `08-open-questions/` 獨立卡（最高層級硬規則）。
 3. 是 LLM 自編、無外部可驗證來源的內容？→ 不寫（Anti-Model-Collapse）；若是已驗證但未精練素材 → 走 `vault-ingest` 進 `raw/`。
 
@@ -129,7 +129,7 @@ description: >
 
 ### Step 4：追加 wiki/log.md
 
-在 `memory/Sens_wiki/wiki/log.md` 追加一筆——**新條目 MUST 插在檔首說明列下方（最新在上），禁用 `cat >>` 等檔尾追加指令**（2026-08-05 教訓：08-01 起六筆全被追加到檔尾、排序破損，經 Miles 授權一次性搬正）。格式如下（動作=納入、標籤=amend）：
+在 `memory/Sens_wiki/wiki/log.md` 追加一筆——**新條目 MUST 插在檔首說明列下方（最新在上），禁用 `cat >>` 等檔尾追加指令**（檔尾追加會破壞最新在上的排序）。格式如下（動作=納入、標籤=amend）：
 
 ```
 ## [YYYY-MM-DD HH:MM] 納入(amend) | <一句話簡述>
@@ -150,7 +150,20 @@ description: >
 
 **收斂掃描（必做）**：本次改動的每一句規則句，用 skill `obsidian-cli` 全庫搜尋關鍵詞，確認其餘出現處全部是引用或合法露出句、無第二份本體。發現第二份本體 → 回 Step 3 收斂；分不出哪份是本體 → 停下並排呈報。
 
-> **「完美是良善之敵」收尾紀律**：自審 PASS 即可進入 propose，殘餘 polish 進 follow-up。
+> **「完美是良善之敵」收尾紀律**：自審 PASS 後做完 Step 6 即可進入 propose，殘餘修飾（polish）進後續追蹤（follow-up）。
+
+### Step 6：下游更正（規則、情境步驟、欄位、狀態任一有實質異動時必做）
+
+wiki 是規則與情境骨架的正本，下游各載體從它派生。wiki 改了，下游沒跟著改，矛盾就留在下游。本步驟直接查受影響範圍、列出、修改，不只列清單。
+
+| 下游載體 | 怎麼找受影響處 | 怎麼改 |
+|---------|---------------|--------|
+| OpenSpec spec 的驗收條目 | 以情境卡名搜各模組 spec 的「**情境**:」標註，取出掛在被改步驟或分支底下的條目；規則變動另搜 Requirement 的「規則正本見 wiki 〈卡名〉」引用句。存量 spec 尚未標註，兩種搜尋之外再以被改規則與步驟的業務關鍵詞搜各模組 spec 全文 | 驗收條目的 GIVEN／THEN 對齊新步驟與新判準；引用句的卡名與段名對齊。新增或改變系統承諾本身時不在此直接改，走 OpenSpec change |
+| Linear 已交付票 | 依規則主題搜對應 project 的 Feature 票規則段與驗收段 | 列出要更正的票與條目，清單先給 Miles 過目，再依 `linear-delivery` 留言規則寫更正留言 |
+| 操作手冊 | 依情境卡名找手冊中取材該情境的頁（手冊寫法見 `memory/erp/manual-writing-rules.md`） | 列出要改的頁與段，清單先給 Miles 過目，再修改 |
+| Prototype | 依欄位、狀態、流程節點對映 `(prototype)/` 頁面 | 只列不改；修改走 change 與 `prototype-from-prompt` |
+
+下游更正的結果寫在對話回報與 commit 訊息，不寫 wiki/log.md（log 只記 wiki 事件）。找不到對應的驗收條目或手冊頁時，寫明「無下游」，不略過本步驟。
 
 ---
 

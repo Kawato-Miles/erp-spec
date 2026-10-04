@@ -51,5 +51,5 @@
 
 - [x] 7.1 `npx eslint .` 無錯誤
 - [x] 7.2 dev server 實測四頁與兩條動線（展開、沉澱），console 無錯誤
-- [x] 7.3 更新 `production-stage-high-level-design.md` § 5 的頁面清單狀態（實作頁面與規劃一致，另補「引用展開」獨立頁作為印件層入口的示範）
+- [x] 7.3 更新 `memory/erp/plans/_archives/2026/production-stage/production-stage-high-level-design.md` § 5 的頁面清單狀態（實作頁面與規劃一致，另補「引用展開」獨立頁作為印件層入口的示範）
 - [x] 7.4 commit 至分支 `prototype/production-stage` 並 push（不直推 main）

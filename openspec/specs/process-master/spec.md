@@ -18,7 +18,7 @@
 
 ---
 
-**範圍外（本輪掛點，不展開）**：多工單合併上機時的用量分攤屬拼版功能（本輪掛點，見 `production-stage-high-level-design.md` § 0.2）。時間計價的時間來源取 BOM 主檔的製作天數與工時、非排程演算法動態估算（排程為人腦決策＋負荷可視化，見 `production-overview`）。成品計價與工序面積的語意區分見 wiki [工序主檔](../../../memory/Sens_wiki/wiki/erp/05-entities/工序主檔.md)（成品計價＝產品總面積、滿版處理；工序面積＝工序處理面積、獨立輸入必填不回退成品尺寸）。工序廠商即外包承作方——生產任務的廠商類別由該廠商決定並唯讀（見 `work-order` § 生產任務結構與帶入規則）。
+**範圍外（本輪掛點，不展開）**：多工單合併上機時的用量分攤屬拼版功能（本輪掛點，見 `memory/erp/plans/_archives/2026/production-stage/production-stage-high-level-design.md` § 0.2）。時間計價的時間來源取 BOM 主檔的製作天數與工時、非排程演算法動態估算（排程為人腦決策＋負荷可視化，見 `production-overview`）。成品計價與工序面積的語意區分見 wiki [工序主檔](../../../memory/Sens_wiki/wiki/erp/05-entities/工序主檔.md)（成品計價＝產品總面積、滿版處理；工序面積＝工序處理面積、獨立輸入必填不回退成品尺寸）。工序廠商即外包承作方——生產任務的廠商類別由該廠商決定並唯讀（見 `work-order` § 生產任務結構與帶入規則）。
 
 ## Requirements
 

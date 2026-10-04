@@ -11,7 +11,7 @@ wiki 於 2026-07 至 2026-08 完成生產階段重構與拍板擴散，段 2（�
 - 角色分工：[生管](../../../memory/Sens_wiki/wiki/erp/03-roles/生管.md)、[廠務](../../../memory/Sens_wiki/wiki/erp/03-roles/廠務.md)、[師傅](../../../memory/Sens_wiki/wiki/erp/03-roles/師傅.md)、[品檢人員](../../../memory/Sens_wiki/wiki/erp/03-roles/品檢人員.md)
 - 有效對抗情境：[場內轉交與更正](../../../memory/Sens_wiki/wiki/erp/07-scenarios/場內轉交與更正.md)
 
-設計正本：`production-stage-seg2-design.md`（§ 八 openspec 修正方向 H1–H26）、拍板紀錄 `production-stage-seg2-alignment.md`（§ 一至 § 九）。
+設計正本：`memory/erp/plans/_archives/2026/production-stage/production-stage-seg2-design.md`（§ 八 openspec 修正方向 H1–H26）、拍板紀錄 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg2-alignment.md`（§ 一至 § 九）。
 
 ### Problem Statement
 

@@ -3,7 +3,7 @@
 > 範圍：品檢 → 齊套與完工判定 → 出貨 → 送達 → 訂單完成，＋五項附屬（SHP-017 落卡、A8 派單明細副本、A9 派單發稿敘述、A10 孤兒派單、認列工單遷回貨運單）
 > 層級：BRD 商業層設計（送 `plan-audit` 稽核 → Miles 拍板 → `wiki-amend` 落卡 → `/opsx:propose`）
 > 變動性質判定：**結構性變更**（grill 拍板 8）。理由：跨模組完成連動鏈（品檢 → 印件 → 訂單）＋出貨行為規格單一落點收斂，稽核為 rubric 全項＋雙盲對抗式情境推演。
-> 基準文件：`production-stage-seg3-grill.md`（拍板紀錄正本）、`production-stage-alignment-diff-matrix.md` § 段 3（35 項差異＋4 小節情境走查＋8 項 wiki 疑似缺漏）＋檔末「段 3 wiki 側重驗（2026-08-10）」
+> 基準文件：`memory/erp/plans/_archives/2026/production-stage/production-stage-seg3-grill.md`（拍板紀錄正本）、`production-stage-alignment-diff-matrix.md` § 段 3（35 項差異＋4 小節情境走查＋8 項 wiki 疑似缺漏）＋檔末「段 3 wiki 側重驗（2026-08-10）」
 > 行號基準：本文所有 wiki 行號皆為 2026-08-10 重驗後的現行行號。**openspec 行號一律不引**（拍板 2：openspec 現況重驗延到進 change 前、以段 2 收斂後 main spec 為基準），本文對 openspec 只寫「哪份規格哪個段落、往哪個方向改」。
 > 實作約束（沿用段 1、段 2）：只動 `erp` repo、經 `prototype-from-prompt` skill、`prototype/production-stage` 分支、不開 PR。
 
@@ -668,7 +668,7 @@ grill 紀錄 § 二 的 20 條，逐條給處置與檢核項。
 
 ## ④ grill 拍板紀錄段
 
-### 4-1 逐題拍板（2026-08-10，Miles，照實謄錄自 `production-stage-seg3-grill.md` § 一）
+### 4-1 逐題拍板（2026-08-10，Miles，照實謄錄自 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg3-grill.md` § 一）
 
 | # | 議題 | 拍板 |
 |---|------|------|
@@ -704,7 +704,7 @@ grill 紀錄 § 二 的 20 條，逐條給處置與檢核項。
 
 D1（品檢站 → 暫存區搬運）於稽核第一輪後重裁，現行拍板見 4-1-4；本表只列仍生效的條目。
 
-### 4-1-4 稽核第一輪後的裁決（Miles，2026-08-11，照實謄錄自 `production-stage-seg3-grill.md` § 一之三）
+### 4-1-4 稽核第一輪後的裁決（Miles，2026-08-11，照實謄錄自 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg3-grill.md` § 一之三）
 
 | # | 議題 | 拍板 |
 |---|------|------|
@@ -721,7 +721,7 @@ D1（品檢站 → 暫存區搬運）於稽核第一輪後重裁，現行拍板�
 
 本表兩條在第二輪被進一步澄清，設計正文一律以 4-1-5 為準：**R4 的攔截點**——「停止並排除」的原則不變，但攔截落在系統內的裝箱回報上（G2），不是現場停手不裝箱；**D1 的「轉交單維持兩類路徑不擴充」**——指的是不為品檢完成品新增路徑，既有「送品檢站」路徑的來源則依 G1 放寬到外發生產任務。
 
-### 4-1-5 稽核第二輪後的裁決（Miles，2026-08-11，照實謄錄自 `production-stage-seg3-grill.md` § 一之四）
+### 4-1-5 稽核第二輪後的裁決（Miles，2026-08-11，照實謄錄自 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg3-grill.md` § 一之四）
 
 | # | 議題 | 拍板 |
 |---|------|------|

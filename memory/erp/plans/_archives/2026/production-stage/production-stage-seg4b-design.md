@@ -1,6 +1,6 @@
 # 段 4B 商業層設計：審稿段重寫（2026-08-17）
 
-> 依 `plan-design` 模板產出。上游：grill 拍板 `production-stage-seg4-grill.md` 條 1-4、7-10（審稿段基準與範圍）、審稿段三方差異矩陣 #43-100（`production-stage-alignment-diff-matrix.md` L1005 起）、4A verify 歸 4B 殘留。
+> 依 `plan-design` 模板產出。上游：grill 拍板 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg4-grill.md` 條 1-4、7-10（審稿段基準與範圍）、審稿段三方差異矩陣 #43-100（`production-stage-alignment-diff-matrix.md` L1005 起）、4A verify 歸 4B 殘留。
 > 性質：**openspec prepress-review 整檔棄用重寫**（拍板 1：48 項債不逐項修）＋order-management／business-scenarios 審稿段修正＋prototype（erp repo）線下單必要流程衝突修正。基準＝wiki（拍板 2），wiki 與 prototype 衝突屬線下單必要流程者修 prototype、範圍外者不補。
 > 舊 repo sens-erp-prototype 已全面棄用——差異矩陣中「舊 repo」欄位僅供參照，不修不搬。
 
@@ -114,7 +114,7 @@
 
 ## 必含段④ grill 拍板紀錄段
 
-正本：`production-stage-seg4-grill.md`。4B 承接條目：
+正本：`memory/erp/plans/_archives/2026/production-stage/production-stage-seg4-grill.md`。4B 承接條目：
 
 | # | 問題 | 拍板 | 理由 |
 |---|------|------|------|

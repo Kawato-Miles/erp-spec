@@ -1,5 +1,5 @@
 > 實作範圍：erp repo（`/Users/b-f-03-029/erp`）分支 `prototype/production-stage`，經 `prototype-from-prompt` skill，不開 PR。
-> 商業依據：`production-stage-seg1-design.md`（節號如 1-4、4-3 指該文件）；行為規格：本 change 的 `specs/`。
+> 商業依據：`memory/erp/plans/_archives/2026/production-stage/production-stage-seg1-design.md`（節號如 1-4、4-3 指該文件）；行為規格：本 change 的 `specs/`。
 > 每批完成後由稽核者驗收（稽核禁給修改建議；判定為規格問題時停下、待規格定案再續作）。
 
 ## 1. 印件新欄位與製作討論串（設計 B）

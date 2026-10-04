@@ -2,7 +2,7 @@
 
 ## Context
 
-生產階段校正段 4A。商業層設計正本 `production-stage-seg4a-design.md`（v3，三輪 plan-audit 收斂、Miles 拍板），wiki 已於 2026-08-12 落卡三批次（25 卡）。本 change 把 openspec main specs（8 個 capability）與 erp repo prototype 對齊到 wiki 現行正本。實作約束沿 handover：只動 erp repo `apps/erp/src/app/(prototype)/`、分支 `prototype/production-stage`、不開 PR、實作經 repo 內 `prototype-from-prompt` skill、dev server 用 launch.json `erp-verify`（port 3020，3000 可能被占用）。
+生產階段校正段 4A。商業層設計正本 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg4a-design.md`（v3，三輪 plan-audit 收斂、Miles 拍板），wiki 已於 2026-08-12 落卡三批次（25 卡）。本 change 把 openspec main specs（8 個 capability）與 erp repo prototype 對齊到 wiki 現行正本。實作約束沿 handover：只動 erp repo `apps/erp/src/app/(prototype)/`、分支 `prototype/production-stage`、不開 PR、實作經 repo 內 `prototype-from-prompt` skill、dev server 用 launch.json `erp-verify`（port 3020，3000 可能被占用）。
 
 ## Goals / Non-Goals
 

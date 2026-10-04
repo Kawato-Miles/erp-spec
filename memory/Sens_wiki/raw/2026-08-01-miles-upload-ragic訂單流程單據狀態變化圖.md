@@ -18,14 +18,15 @@ topic-tag:
 related-vault:
   - "[[需求單狀態]]"
   - "[[訂單狀態]]"
-  - "[[印件狀態]]"
+  - "[[印件審稿狀態]]"
+  - "[[印件印製狀態]]"
   - "[[工單狀態]]"
   - "[[生產任務狀態]]"
   - "[[出貨單狀態]]"
   - "[[線下訂單流程]]"
 raw-source-link: Miles 2026-08-01 上傳「ragic 訂單流程.pdf」（Ragic 現行系統的業務流程－單據狀態變化圖，含 Miles Jian 與 Benson 的批註）
 attached-files:
-  - "_attachments/2026-08-01-ragic-訂單流程單據狀態變化圖.pdf"
+  - _attachments/2026-08-01-ragic-訂單流程單據狀態變化圖.pdf
 ---
 
 # Ragic 訂單流程單據狀態變化圖（現況）

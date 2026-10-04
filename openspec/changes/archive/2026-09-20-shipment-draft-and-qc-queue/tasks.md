@@ -65,7 +65,7 @@ mock 異動順序：`MOCK-DATA-CHAIN.md` 引言補「出貨單」「品檢」兩
 
 - [x] 5.1 主對話對照 skill 稽核（hex／px／important／createGlobalStyle；未動共用元件；無簡體字）並瀏覽器核對十一步與六步
 - [x] 5.2 wiki 22 卡落卡、OQ 三張（SHP-018 與 QC-007 封存、QC-008 開放）、log 兩筆
-- [x] 5.3 plan-audit 第一輪：rubric 一路＋雙盲對抗推演三路（紀錄 `shipment-draft-and-qc-queue-audit-r1.md`），27 項缺口 Miles 2026-09-20 拍板依建議處理；wiki 13 卡、QC-009、SHP-019、三份 delta 已回補
+- [x] 5.3 plan-audit 第一輪：rubric 一路＋雙盲對抗推演三路（紀錄 `memory/erp/plans/_archives/2026/shipment-draft-and-qc-queue/shipment-draft-and-qc-queue-audit-r1.md`），27 項缺口 Miles 2026-09-20 拍板依建議處理；wiki 13 卡、QC-009、SHP-019、三份 delta 已回補
 - [x] 5.6 plan-audit 復審（2026-09-21 無未通過；1-3、5-1 補字已修，4-4 依 QC-008、SHP-019 界線）——原文：plan-audit 復審：對第一輪未通過與部分通過項（1-1、1-2、1-4、1-5、4-2、4-4、5-1、5-2、5-3）重驗；5-2(a) 待履約與售後資料結構總覽卡建卡
 - [x] 5.7 建履約與售後資料結構總覽卡（三源互盲抽取、四項矛盾 Miles 2026-09-20 裁決、Sens 6096985）
 - [x] 5.8 archive 時手動同步 after-sales-ticket spec 正本邊界句「0..N 退款款項紀錄」→ 退款款項紀錄掛訂單、不掛售後單（非 Requirement，archive 不會自動合併）

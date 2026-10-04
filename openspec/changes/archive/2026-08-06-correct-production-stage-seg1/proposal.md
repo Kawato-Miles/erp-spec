@@ -12,7 +12,7 @@ wiki 於 2026-07 至 2026-08 完成生產階段的商業層重構與拍板擴散
 - 角色：[訂單管理人](../../../memory/Sens_wiki/wiki/erp/03-roles/訂單管理人.md)、[印務主管](../../../memory/Sens_wiki/wiki/erp/03-roles/印務主管.md)、[印務](../../../memory/Sens_wiki/wiki/erp/03-roles/印務.md)、[生管](../../../memory/Sens_wiki/wiki/erp/03-roles/生管.md)
 - 規則：[齊套邏輯](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)、[工序相依性規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/工序相依性規則.md)、[生產績效指標](../../../memory/Sens_wiki/wiki/erp/04-business-logic/領域知識/生產績效指標.md)
 
-設計正本：`production-stage-seg1-design.md`（已過 plan-audit：0 項未通過；Miles 七項裁決已於 2026-08-06 落 wiki 12 卡）。
+設計正本：`memory/erp/plans/_archives/2026/production-stage/production-stage-seg1-design.md`（已過 plan-audit：0 項未通過；Miles 七項裁決已於 2026-08-06 落 wiki 12 卡）。
 
 ### Problem Statement
 

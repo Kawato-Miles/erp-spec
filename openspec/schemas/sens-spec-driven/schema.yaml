@@ -33,7 +33,7 @@ artifacts:
 
   - id: specs
     generates: specs/**/*.md
-    description: 功能規格（Requirement + Scenario），定義系統外部可觀察行為
+    description: 系統承諾（Requirement）與驗收條目（Scenario），定義系統外部可觀察行為
     template: spec.md
     instruction: >
       建立 spec 檔案，定義系統應該做什麼。使用繁體中文撰寫。
@@ -70,6 +70,26 @@ artifacts:
       - 每個 Requirement MUST 至少一個 Scenario
 
 
+      **Requirement 只寫系統承諾（MUST，Sens 自訂規則）**：
+
+      描述段只寫系統在什麼條件下承諾做什麼：觸發事件、轉換條件、系統自動動作、
+      禁止副本、唯一事實來源等。業務規則（誰可以做、門檻、值域、為什麼這樣定）
+      正本在 wiki（04-business-logic／03-roles／05-entities 可否修改欄），
+      描述段以一句「規則正本見 wiki 〈卡名〉§ 〈段名〉」引用，MUST NOT 把規則句
+      重述一次（含表格形式）。判斷法：這句話刪掉 wiki 還在不在？在就不寫。
+
+
+      **Scenario 是驗收條目，MUST 標所屬情境卡步驟（Sens 自訂規則）**：
+
+      每條 Scenario 標題下第一行寫 `**情境**: 〈情境卡名〉 主流程第 N 步` 或
+      `**情境**: 〈情境卡名〉 副流程第 N 步分支（條件短名）`（條件短名取自該分支
+      「條件」欄，同一步有多條分支時靠它分辨）。情境卡名寫 wiki
+      07-scenarios/ 的檔名（不寫路徑，archive 合併後路徑會變）。GIVEN 是該步
+      的前置，THEN 是該步判準再往下切的單點結果。找不到任何情境卡有這條流程時
+      MUST NOT 先寫 Scenario：停下，回 wiki 補情境卡的步驟或副流程分支（經
+      wiki-amend skill），補完再寫。
+
+
       **Priority + Rationale（MUST，Sens 自訂規則）**：
 
       每個 Requirement 的描述段落之後、第一個 Scenario 之前，MUST 包含：
@@ -97,15 +117,20 @@ artifacts:
 
       ### Requirement: 訂單建立
 
-      系統 SHALL 支援三種訂單建立路徑（線下 / 線上 / 諮詢）。
+      需求單進入「成交」後，系統 SHALL 允許由該需求單建立訂單草稿，並帶入印件
+      規格與客戶資料；帶入哪些欄位，規則正本見 wiki 需求單 § 欄位（業務可見）。
 
       **Priority**: P0
 
-      **Rationale**: 統一三種管道的訂單入口，取代現有 EC + Ragic 雙平台。
+      **Rationale**: 成交後直接沿用需求單資料建單，避免轉單時重打規格漏帶。
 
       #### Scenario: 線下單由需求單轉入
 
-      - **WHEN** 業務在「成交」需求單點擊「轉訂單」
+      **情境**: 需求單報價成交 主流程第 6 步
+
+      - **GIVEN** 一張需求單處於「成交」
+
+      - **WHEN** 業務在該需求單點擊「轉訂單」
 
       - **THEN** 系統建立訂單草稿，自動帶入印件規格與客戶資料
 
@@ -115,8 +140,8 @@ artifacts:
       **欄位與狀態列舉不寫在 spec**：
 
       欄位正本在 wiki 實體卡（05-entities/），狀態列舉正本在 wiki 狀態機卡
-      （06-state-machines/）。spec 只寫行為規格（Requirement + Scenario +
-      轉換規則），MUST NOT 包含 Data Model 欄位表或狀態列舉表。
+      （06-state-machines/）。spec 只寫系統承諾（Requirement）與驗收條目
+      （Scenario），MUST NOT 包含 Data Model 欄位表或狀態列舉表。
 
 
       MODIFIED requirements 工作流：

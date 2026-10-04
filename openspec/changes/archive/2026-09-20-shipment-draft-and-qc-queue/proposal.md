@@ -59,7 +59,7 @@ Prototype 已於 erp repo 分支 `prototype/production-stage` 提交 0cff790f �
 - OpenSpec：五份 spec 各一個 delta（見上）。business-scenarios spec 的兩張推演表仍寫「點收後驗收」，該順序在新規則下仍合法、不改。
 - Prototype（erp repo，已完成）：出貨單草稿全鏈、一顆對話框兩頁籤三按鈕、六值出貨方式、重量、寄件與收件帶出、模擬物流商回報配達、品檢站桌機表格、待驗量取數改寫、點收依所屬產線、`MOCK-DATA-CHAIN.md` 鏈四改為草稿。
 - 測試（Sens erp-prototype-tests，已完成）：情境目錄 10.8、11.1 至 11.16、12.1 至 12.12；純函式六檔；畫面三章。
-- wiki：22 張正本卡與三張 OQ 已先行落卡；plan-audit 第一輪後再落 13 卡與 QC-009（封存）、SHP-019（開放）。稽核紀錄見 Sens 根目錄 `shipment-draft-and-qc-queue-audit-r1.md`。
+- wiki：22 張正本卡與三張 OQ 已先行落卡；plan-audit 第一輪後再落 13 卡與 QC-009（封存）、SHP-019（開放）。稽核紀錄見 Sens 根目錄 `memory/erp/plans/_archives/2026/shipment-draft-and-qc-queue/shipment-draft-and-qc-queue-audit-r1.md`。
 - **未決 OQ 界線**：打樣印件的待驗清單行為依賴 [QC-008](../../../memory/Sens_wiki/wiki/erp/08-open-questions/QC-008-打樣印件在齊套完成數規則下的待驗量算法.md)，拍板前該段行為不進實作與 archive；購買數量調降與草稿數量的對應依賴 [SHP-019](../../../memory/Sens_wiki/wiki/erp/08-open-questions/SHP-019-購買數量調降後出貨單草稿預計數量的處置.md)，拍板前維持「先不做」。
 - 另案待拍板：出貨單「預計出貨日」與印件層同名不同義是否正名；草稿欄位鎖定時點；草稿對業務主管與訂單管理人的可見範圍；刪除後建單人紀錄的呈現；轉交點收的現場裝置依據（CLAUDE.md 五介面清單與師傅卡不一致）。
 - 既有紅測試 6.1、6.13、7.10、7.16 屬工單成本呈現收斂 change，不在本批。

@@ -6,7 +6,7 @@
 
 材料主檔是三層加計價子表列的結構：材料規格之下還有一層承載單價參數的列（重量計價尺寸表、面積價格矩陣、數量級距表），見 [材料主檔](../../../memory/Sens_wiki/wiki/erp/05-entities/材料主檔.md) 與 [BOM結構](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md)。工單製程規劃目前只能選到材料規格層，選不到計價子表列；裝訂三種計價方法的台數與頁數輸入也沒有欄位承接。單價與計價乘數取不到，材料費與裝訂費算不出正確值，預估成本分項失真。
 
-設計正本：[work-order-material-selection-design.md](../../../work-order-material-selection-design.md)（grill 八題＋三輪裁決拍板、plan-audit 三輪稽核通過、wiki 11 卡已於 2026-08-27 落卡，含 [生產任務](../../../memory/Sens_wiki/wiki/erp/05-entities/生產任務.md) 四個計價輸入欄）。
+設計正本：[memory/erp/plans/_archives/2026/work-order-material-selection/work-order-material-selection-design.md](../../../work-order-material-selection-design.md)（grill 八題＋三輪裁決拍板、plan-audit 三輪稽核通過、wiki 11 卡已於 2026-08-27 落卡，含 [生產任務](../../../memory/Sens_wiki/wiki/erp/05-entities/生產任務.md) 四個計價輸入欄）。
 
 ### Problem Statement
 

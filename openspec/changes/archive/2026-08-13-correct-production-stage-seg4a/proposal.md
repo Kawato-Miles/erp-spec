@@ -12,7 +12,7 @@
 - 派單作廢與帳務口徑：[派單狀態](../../../memory/Sens_wiki/wiki/erp/06-state-machines/派單狀態.md)、[供應商報價規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/供應商報價規則.md)
 - 工單異動與打樣：[工單異動與生產任務調整](../../../memory/Sens_wiki/wiki/erp/07-scenarios/工單異動與生產任務調整.md)、[打樣流程](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/打樣流程.md)、[打樣決策與重新打樣](../../../memory/Sens_wiki/wiki/erp/07-scenarios/打樣決策與重新打樣.md)
 
-設計正本 `production-stage-seg4a-design.md`（v3，三輪 plan-audit 收斂）、拍板紀錄 `production-stage-seg4-grill.md`（30 條）。相關 OQ：PT-027／ORD-043／PI-007 open（不阻擋本 change）；PT-034、PT-044 已具名翻案（封存卡取代註記已落）。
+設計正本 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg4a-design.md`（v3，三輪 plan-audit 收斂）、拍板紀錄 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg4-grill.md`（30 條）。相關 OQ：PT-027／ORD-043／PI-007 open（不阻擋本 change）；PT-034、PT-044 已具名翻案（封存卡取代註記已落）。
 
 ### Problem Statement
 

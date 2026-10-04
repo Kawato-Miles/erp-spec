@@ -17,7 +17,7 @@
 
 ---
 
-**範圍外（本輪掛點，不展開）**：採購單位與銷售單位不一致時的換算（列表可見採購「噸」、銷售「噸／張／dm²」）屬採購與庫存模組，物料庫存量帳為本輪掛點（見 `production-stage-high-level-design.md` § 0.2）。材料規格的「自定義」命名約束與 `pricing_selection` 覆寫歷程屬實作參數。三種計價分支的計算公式正本見 wiki [BOM結構](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md)（按面積已收斂為「單獨面積」與「總面積」兩支，皆為單件或總面積 × 查表值 × 數量）。
+**範圍外（本輪掛點，不展開）**：採購單位與銷售單位不一致時的換算（列表可見採購「噸」、銷售「噸／張／dm²」）屬採購與庫存模組，物料庫存量帳為本輪掛點（見 `memory/erp/plans/_archives/2026/production-stage/production-stage-high-level-design.md` § 0.2）。材料規格的「自定義」命名約束與 `pricing_selection` 覆寫歷程屬實作參數。三種計價分支的計算公式正本見 wiki [BOM結構](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md)（按面積已收斂為「單獨面積」與「總面積」兩支，皆為單件或總面積 × 查表值 × 數量）。
 
 ## Requirements
 

@@ -1,6 +1,6 @@
 ## Context
 
-段 3 的商業層決策已全數定案於 `production-stage-seg3-design.md`（三輪 plan-audit 全過、拍板紀錄 `production-stage-seg3-grill.md` § 一至 § 一之四），wiki 已落卡（commit `ada40e0`，21 卡＋新情境卡 [品檢通過入庫](../../../memory/Sens_wiki/wiki/erp/07-scenarios/品檢通過入庫.md)）。本文件只處理 PRD 層與 prototype 實作的技術取捨，不重述商業決策。
+段 3 的商業層決策已全數定案於 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg3-design.md`（三輪 plan-audit 全過、拍板紀錄 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg3-grill.md` § 一至 § 一之四），wiki 已落卡（commit `ada40e0`，21 卡＋新情境卡 [品檢通過入庫](../../../memory/Sens_wiki/wiki/erp/07-scenarios/品檢通過入庫.md)）。本文件只處理 PRD 層與 prototype 實作的技術取捨，不重述商業決策。
 
 openspec 現況已於 2026-08-11 以段 2 archive 後的 main specs 重驗（結果 append 於 `production-stage-alignment-diff-matrix.md` 檔末）。範圍依該次重驗調整：G4 移除、G8 與 G10 縮小、G15 落點改 `prepress-review`、G20 一併收斂 `dispatch-order` 同檔互斥、段 2 引入的相斥四點（S1–S4）併入對應 G 項。
 

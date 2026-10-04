@@ -9,7 +9,7 @@
 - [配方展開規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/配方展開規則.md)：引用可調、部件對工單映射、一段拆材料與工序兩任務、機台留空、數量與放損來源、款式指向生效版、沉澱骨幹、重複沉澱改版共九條規則
 - [BOM結構](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md)：三主檔組成與計價引擎（成本計算沿用現行 EC 引擎、本 change 不重造）
 - [印務](../../../memory/Sens_wiki/wiki/erp/03-roles/印務.md)：款式與配方的維護者、引用展開與沉澱的執行者
-- 設計正本：`production-stage-high-level-design.md` § 1.1 M6、§ 1.2 M6 功能表、§ 2.1 實體總圖、§ 5 Prototype 頁面組
+- 設計正本：`memory/erp/plans/_archives/2026/production-stage/production-stage-high-level-design.md` § 1.1 M6、§ 1.2 M6 功能表、§ 2.1 實體總圖、§ 5 Prototype 頁面組
 
 相關未解 OQ（一項，不阻斷本 change）：[PT-023 材料用量帳與放損換算鏈正本歸屬](../../../memory/Sens_wiki/wiki/erp/08-open-questions/PT-023-材料用量帳與放損換算鏈正本歸屬.md)——本 change 依既有拍板以配方段用量倍率推算材料任務數量（拼版模數自動換算為掛點），該 OQ 拍板後再對齊。
 

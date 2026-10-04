@@ -14,8 +14,19 @@ description: >
 
 1. `erp-planning-pre-check` 已跑，領域卡與連帶影響清單在手。
 2. grill 需求對齊已完成，有逐題拍板紀錄（問題＋拍板＋理由）。缺拍板紀錄＝對齊沒做完，回頭補，不得憑印象代填。
-3. 讀正本量尺：[規劃品質評分準則](../../memory/Sens_wiki/wiki/erp/11-review-knowledge/規劃品質評分準則.md)——設計照它寫，稽核照它驗，先讀 § 一設計準則與 § 二收件條件。
-4. 讀該領域**資料結構總覽卡**（關聯與資料流唯一正本，如 [生產領域資料結構總覽](../../memory/Sens_wiki/wiki/erp/05-entities/生產領域資料結構總覽.md)）——設計涉及實體或關聯變動時，必含段①末尾 MUST 附「**總覽差異**」小節：本次動了哪幾條關聯（增／改／刪＋基數）。
+3. 讀正本量尺：[規劃品質評分準則](../../../memory/Sens_wiki/wiki/erp/11-review-knowledge/規劃品質評分準則.md)——設計照它寫，稽核照它驗，先讀 § 一設計準則與 § 二收件條件。
+4. 讀該領域**資料結構總覽卡**（關聯與資料流唯一正本，如 [生產領域資料結構總覽](../../../memory/Sens_wiki/wiki/erp/05-entities/生產領域資料結構總覽.md)）——設計涉及實體或關聯變動時，必含段①末尾 MUST 附「**總覽差異**」小節：本次動了哪幾條關聯（增／改／刪＋基數）。
+
+## 產出落點（規劃工作稿一主題一資料夾）
+
+設計方案是規劃段的工作稿，不是正本：拍板後本體由 `wiki-amend` 寫進 wiki 卡，系統承諾與驗收條目由 `/opsx:propose` 寫進 change。工作稿要留著給稽核、復審與拍板溯源用，所以有固定落點與收尾。
+
+| 檔 | 落點 |
+|----|------|
+| pre-check 報告、grill 拍板紀錄、設計方案、plan-audit 評分表（每輪一份） | `memory/erp/plans/<主題>/`，檔名各為 `precheck.md`、`grill.md`、`design.md`、`audit-rN.md` |
+| wiki 落卡與 `/opsx:propose` 都完成後 | 整個資料夾搬到 `memory/erp/plans/_archives/<年>/<主題>/`，由 plan-audit 步驟 5 執行 |
+
+不放 repo 根目錄、不放 openspec change 目錄（change 的 design.md 是技術設計，不是這份）。
 
 ## 產出結構（設計方案＝本體＋必含段）
 

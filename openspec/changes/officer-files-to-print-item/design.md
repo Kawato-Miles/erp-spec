@@ -1,6 +1,6 @@
 ## Context
 
-設計正本是 Sens 根目錄的 `officer-files-to-print-item-design.md`（plan-audit 三輪全過、Miles 拍板）。wiki 已落卡：欄位正本 [印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) § 基本資料；角色範圍 [印務](../../../memory/Sens_wiki/wiki/erp/03-roles/印務.md)、[印務主管](../../../memory/Sens_wiki/wiki/erp/03-roles/印務主管.md)。
+設計工作稿在 Sens 的 `memory/erp/plans/_archives/2026/officer-files-to-print-item/officer-files-to-print-item-design.md`（plan-audit 三輪全過、Miles 拍板）。wiki 已落卡：欄位正本 [印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) § 基本資料；角色範圍 [印務](../../../memory/Sens_wiki/wiki/erp/03-roles/印務.md)、[印務主管](../../../memory/Sens_wiki/wiki/erp/03-roles/印務主管.md)。
 
 Prototype 現況與設計的差距：
 

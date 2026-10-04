@@ -12,7 +12,7 @@
 - 免審：[免審決策樹](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/售前/免審決策樹.md)
 - 打樣銜接：[打樣後稿件問題重審](../../../memory/Sens_wiki/wiki/erp/07-scenarios/打樣後稿件問題重審.md)
 
-設計正本 `production-stage-seg4b-design.md`（v2，plan-audit 單輪收斂）、拍板紀錄 `production-stage-seg4-grill.md` 條 1-10。已封存拍板依據：AR-5（交期排序）、AR-6（技術性退件不排除）、AR-9（能力等級可為空）、AR-10（取代註記已落）、AR-11／AR-17（不設停滯提醒）、AR-14（逾期指標不做）、PI-006（免審輪次無審稿後檔案）。
+設計正本 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg4b-design.md`（v2，plan-audit 單輪收斂）、拍板紀錄 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg4-grill.md` 條 1-10。已封存拍板依據：AR-5（交期排序）、AR-6（技術性退件不排除）、AR-9（能力等級可為空）、AR-10（取代註記已落）、AR-11／AR-17（不設停滯提醒）、AR-14（逾期指標不做）、PI-006（免審輪次無審稿後檔案）。
 
 ### Problem Statement
 

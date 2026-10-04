@@ -27,7 +27,7 @@
 
 ## 一之三、稽核第一輪後的裁決（Miles，2026-08-11）
 
-> 稽核報告見 `production-stage-seg3-audit-r1.md`（整體未通過：通過 7／部分 7／未通過 6）。F1 拍板矛盾與 R 系列經 Miles 逐項裁決如下；本節取代一之二的 D1 舊拍板。
+> 稽核報告見 `memory/erp/plans/_archives/2026/production-stage/production-stage-seg3-audit-r1.md`（整體未通過：通過 7／部分 7／未通過 6）。F1 拍板矛盾與 R 系列經 Miles 逐項裁決如下；本節取代一之二的 D1 舊拍板。
 
 | # | 議題 | 拍板 |
 |---|------|------|
