@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-09-01
+last-reviewed: 2026-10-04
 ---
 
 # Wiki Schema（Formal）
@@ -22,7 +22,7 @@ last-reviewed: 2026-09-01
 | `service-blueprint` | 服務藍圖（公司提供什麼服務、商業行為的邊界） | `04-business-logic/服務藍圖/` |
 | `business-rule` | 商業規則（決策邏輯、領域知識、外部約束） | `04-business-logic/` 各子目錄 |
 | `entity` | 資料模型實體 | `05-entities/` |
-| `structure-overview` | 領域資料結構總覽（關聯與資料流唯一正本：ER 圖＋單據流＋資料流＋關聯明細表；一領域一張） | `05-entities/`（與該領域實體卡同層） |
+| `structure-overview` | 資料結構總覽（ER 圖＋單據流＋資料流＋關聯明細表；全系統一張為關聯唯一正本，領域各一張為領域視角） | `05-entities/`（與該領域實體卡同層） |
 | `state-machine` | 狀態機 | `06-state-machines/` |
 | `scenario` | 業務情境（目標完成過程；接力型／能力型／排程型） | `07-scenarios/` |
 | `open-question` | OQ 卡 | `08-open-questions/` |
@@ -226,7 +226,7 @@ last-reviewed: 2026-09-01
 ---
 type: structure-overview
 tags:
-  - 領域/<領域名>   # 單值；一領域一張，跨領域內容進「跨領域接口」段
+  - 領域/<領域名>   # 單值；一領域一張，跨領域內容進「跨領域接口」段（全系統總覽卡標領域/全域）
 source:                          # 三源抽取＋Miles 矛盾裁決紀錄（wiki/log.md 條目）
   - "<三源互盲抽取交叉比對＋裁決紀錄日期>"
 status: active
