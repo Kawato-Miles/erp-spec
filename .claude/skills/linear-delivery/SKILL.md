@@ -1,7 +1,7 @@
 ---
 name: linear-delivery
 description: >
-  把已定案的規格交付到 Linear（巢狀：project 薄目錄 + milestone 需求主題 + Feature 票 + Task 票），依規範檔撰寫、交付前由獨立評分者依規範檔評分，達合格分數才發布。對開發而言 Linear 為交付正本、wiki 為欄位與狀態正本、Prototype 為介面與互動正本；OpenSpec 為 PM 內部工作版本不外露。
+  把已定案的規格交付到 Linear（巢狀：project 薄目錄 + milestone 需求主題 + Feature 票 + Task 票），依規範檔撰寫、交付前由獨立評分者依規範檔評分，達合格分數才發布。對開發而言 Linear 為交付正本、wiki 為商業規則、欄位與狀態正本、Prototype 為介面、欄位、值域與操作正本；Feature 票只寫權限、實體關係、驗證規則、算式與具名驗收。
   觸發：Miles 說「交付到 Linear」「發布給開發」「把 X 模組交付給開發」「調整 Linear 上的 project / issue」「依評分稽核交付文件」。
   不適用：Vault 整體健康稽核（用 vault-audit）、規劃前 know-how 稽核（用 erp-planning-pre-check）。
   寫法規則、評分維度與門檻值見 references/規範 - Linear 交付.md。
@@ -63,12 +63,22 @@ description: >
 
 ### 步驟 1：抓已定案規格
 
-- 讀對應模組的 OpenSpec spec（Purpose、Requirements、轉換規則 Scenario）與 wiki 狀態機卡（`06-state-machines/`）。欄位不進交付內容（依「不寫欄位表」）。
+- 取材順序固定：先 wiki，再 Prototype，最後後端現況。各來源拿什麼見下表。
+
+| 來源 | 拿什麼 | 不拿什麼 |
+|------|-------|---------|
+| wiki 商業邏輯卡、實體卡、狀態機卡、角色卡、業務情境卡 | 概述與 Use Case、實體關係、算式、狀態條件、角色名 | 欄位表、狀態列舉以外的轉換敘述 |
+| Prototype（`/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/`）：該模組頁面、`_lib/permissions.js`、`mock-data.js`、`MOCK-DATA-CHAIN.md` | 權限表的動作與範圍、驗證規則的受理條件、驗收的具名案例（單號、品名、數量、單價、人名） | 欄位、值域、版面、按鈕文案 |
+| 後端現況（`sens-print-core`） | 已實作模組的權限範圍詞彙與分享機制，確認票上寫法與現況一致 | 代碼、判定式 |
+| 情境目錄 `erp-prototype-tests/docs/scenario-catalog.md` | 該模組哪些情境 Prototype 已走通、哪些標「未實作」；未實作者進另案段或先補 Prototype | — |
+
+- 交付前 Prototype 要先補齊該模組 wiki 已定義的逆流程（退回、收回、作廢、取消連鎖）。情境目錄第十六章標待辦者，先補 Prototype 再交付，不以票文代替畫面。
 - 用 `list_projects`、`list_issues` 確認目標 project 與 issue 的既有欄位，避免覆蓋。
-- 迭代交付只反映 `openspec/changes/archive/` 內的 change；未 archive 的 change 不交付。
+- 迭代交付的差異依 wiki/log.md 與 Prototype 的提交紀錄判定，每個模組在交付回報時記下「本次交付到哪個 Prototype 提交」，下次從那裡起算。
 - 核心邏輯與狀態機變動投中台 project；業務平台是視圖層，只沿用。
 - 開新 project 前確認該平台真有對應模組；平台上沒有的模組，內容以情境擴充段併入該平台既有 project。
 - 每條要寫進 Feature 票的規則，先標出它的 wiki 正本卡與領域標籤，判斷是否為沿用規則（依「沿用規則不寫」）。
+- 來源缺口的處理：wiki 有、Prototype 沒有的動作先補 Prototype；Prototype 有、wiki 沒有的行為先回 wiki 落卡（`wiki-amend`）；兩邊都沒有的開 OQ 標另案。
 
 ### 步驟 2：產出交付草稿
 
@@ -79,11 +89,12 @@ description: >
 
 | 順序 | 動作 |
 |------|------|
-| 1 | 先不寫 Task 票。把每張 Feature 票切成單一主線的功能節；節名有「與」或頓號時，檢查是否兩條主線 |
-| 2 | 列出全部規則短名表：一條規則只在一節，一個短名只指一處 |
-| 3 | 依短名表寫 Task 票的實作契約 |
+| 1 | 先定 Project 的 Scope：一條一張 Feature 票，每條寫「做完後使用者能做到什麼」 |
+| 2 | 每張 Feature 票切功能節，一節一個動作，節名受詞加動詞；節名有「與」或頓號時，檢查是否兩個動作 |
+| 3 | 列全票功能節名表：一條規則只在一節 |
+| 4 | 依功能節名表寫 Task 票的實作契約，括註節名 |
 
-跳過這個順序直接搬舊段落，Task 票會整段複寫規則本體、短名對不到父票，評分反覆失分。
+跳過這個順序直接搬舊段落，Task 票會整段複寫規則本體、括註對不到父票，評分反覆失分。
 
 ### 步驟 3：撰寫者自審
 
