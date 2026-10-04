@@ -1,7 +1,7 @@
 # 操作手冊修訂草稿與修正清單（2026-09-23）
 
 手冊基準：`production-stage-seg1-manual-artifact.html`（最後更新 2026-09-08）。
-Prototype 基準：erp repo 分支 prototype/production-stage（2026-09-23）。
+Prototype 基準：erp repo 分支 prototype/dispatch-and-shipping（2026-10-04 起，自 production-stage 6489e21d 開出；此前為 production-stage）。
 本批只產草稿與清單，手冊正本與 Artifact 都還沒改。
 
 | 檔案 | 內容 |

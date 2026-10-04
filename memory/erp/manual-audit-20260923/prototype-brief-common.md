@@ -28,7 +28,7 @@
 4. 既有紅燈若與本批無關，列出測試編號與原因，不要為了變綠去改無關測試。
 
 ## 提交
-- erp repo：在分支 prototype/production-stage 提交，不推送（主對話統一推送）。訊息格式 `fix: <繁中描述>` 或 `feat: <繁中描述>`，內文附測試結果（smoke、模組、unit），結尾一行 `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`。
+- erp repo：在分支 prototype/dispatch-and-shipping 提交（2026-10-04 起；production-stage 凍結待前端主管合 main），不推送（主對話統一推送）。訊息格式 `fix: <繁中描述>` 或 `feat: <繁中描述>`，內文附測試結果（smoke、模組、unit），結尾一行 `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`。
 - Sens repo：測試與情境目錄的改動另外提交，同格式，只加你改的檔（git add 指定路徑，不用 -A）。
 
 ## 回報格式
