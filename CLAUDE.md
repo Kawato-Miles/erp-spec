@@ -310,15 +310,15 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 ## wiki 與 OpenSpec 分工（唯一正本，勿在他處重述）
 
 - **wiki（BRD 層，memory/Sens_wiki/wiki/）= 商業需求單一正本**：商業目標 / 痛點 / 營運原則 / 業務規則與恆定約束（invariant）/ 角色分權動機 / 領域知識 / KPI / OQ / **業務可見欄位表**（實體卡 `05-entities/`）/ **狀態列舉**（狀態機卡 `06-state-machines/`）。回答 why、「什麼必須成立」、以及「介面上看到什麼資料」。
-- **OpenSpec（PRD 層，openspec/）= 系統行為規格單一正本**：Requirement 只寫**系統承諾**（觸發事件、轉換條件、系統自動動作、禁止副本等「系統在什麼條件下承諾做什麼」）/ **驗收條目**（Scenario，Given/When/Then，每條標所屬 wiki 情境卡與步驟）/ change 工作流。回答「系統承諾什麼、怎麼驗」，驅動 Prototype 與 Linear 交付。**不包含 Data Model 欄位表、狀態列舉、業務規則句**（正本都在 wiki，spec 以一句引用卡）。
+- **OpenSpec（PRD 層，openspec/）= 系統行為規格單一正本**：Requirement 只寫**系統承諾**（觸發事件後的系統自動動作、依狀態機卡條件自動推進、禁止副本、唯一事實來源等「系統承諾做什麼」）/ **驗收條目**（Scenario，Given/When/Then，每條標所屬 wiki 情境卡與步驟）/ change 工作流。回答「系統承諾什麼、怎麼驗」，驅動 Prototype 與 Linear 交付。**不包含 Data Model 欄位表、狀態列舉、業務規則句**（正本都在 wiki，spec 以一句引用卡）。
 - **單一正本鐵則（同一內容只有一個家）**：
   - **欄位正本歸 wiki**：實體卡 `05-entities/` 的「欄位（業務可見）」段。欄位的新增與修改是商業決策，直接在 wiki 維護，不經 OpenSpec change 工作流。
   - **狀態列舉正本歸 wiki**：狀態機卡 `06-state-machines/` 的「狀態列舉」段。狀態的新增與修改同上。
-  - **轉換規則正本歸 OpenSpec**：狀態在什麼條件下怎麼變（Requirement + 驗收條目），留在各模組 spec。
+  - **轉換條件正本歸 wiki**：狀態在什麼業務條件下、由誰的什麼動作推進，寫在狀態機卡 `06-state-machines/` 的「轉換條件與觸發事件」表。spec 只寫系統承諾的那一面：「系統於某事件自動推進到某狀態」並引用狀態機卡，不重述條件。
   - **業務規則正本歸 wiki**：商業邏輯卡 `04-business-logic/`；誰可以做什麼歸角色卡 `03-roles/` 與實體卡的可否修改欄。spec 的 Requirement 描述段不重述規則句。
   - **情境骨架正本歸 wiki**：業務情境卡 `07-scenarios/`（步驟、分支、判準）。驗收條目是骨架底下的葉子，情境卡沒有的流程先補卡再寫驗收條目；操作手冊的情境與 Linear 的 Use Case 都取情境卡。
   - **角色 R&R 正本歸 wiki**：角色卡 `03-roles/`。
-  - OpenSpec spec MUST NOT 複寫 wiki 欄位表、狀態列舉或業務規則句（改為引用 wiki 卡）。wiki 卡 MUST NOT 複寫 OpenSpec 的轉換規則或驗收條目。
+  - OpenSpec spec MUST NOT 複寫 wiki 欄位表、狀態列舉或業務規則句（改為引用 wiki 卡）。wiki 卡 MUST NOT 複寫 OpenSpec 的驗收條目。
   - **Linear 取材路徑**：規則與 Use Case 只從 wiki（規則卡、角色卡、實體卡、情境卡），驗收的具名案例從 Prototype；OpenSpec 是 PM 內部工作版本，不外露也不取材。wiki 與 Prototype 對不上時停下呈報，不拼湊（細則見 `linear-delivery` 規範）。
 - **Prototype＝介面與互動正本（交付層）**：頁面結構與版型、操作動線、元件呈現以 Prototype 為準；mock 資料的值、API 形狀、權限的後端強制不在其權威範圍（此邊界僅此一處宣告，交付文件不另附邊界表）。交付到 Linear 時不設 Prototype 參照格，交付文件亦不文字重述操作動線。設計票（DE 票）不再產出，操作方式與介面由 Prototype 承載。
 - **引用方向**：OpenSpec change 的 Why 段以相對連結引 wiki 卡（下游引上游）。wiki 不承載與實作文件的對應（frontmatter 不設 `implemented-by`／`module` 等實作對應欄位，實作對應屬 PRD 層）。wiki 的 `source` 禁指 openspec/specs/（違者報錯）。

@@ -81,8 +81,7 @@ ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」�
 | 屬於 | 位置 |
 |------|------|
 | 自動分配演算法步驟（5 步驟） | erp repo 對應模組實作（`apps/erp`）|
-| 計算公式（齊套計算實作） | erp repo 對應模組實作（`apps/erp`）|
-| 訂單計價公式 | erp repo 對應模組實作（`apps/erp`）|
+| 計算公式的程式實作（齊套計算、訂單計價等） | erp repo 對應模組實作（`apps/erp`）；業務計算口徑（算式、取整方式）進 `04-business-logic/` 規則卡 |
 | 排程演算法 | erp repo 對應模組實作（`apps/erp`）|
 
 ### 驗收測試（UAT / SIT / UT / 端對端 e2e）
@@ -101,7 +100,7 @@ ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」�
 
 | 屬於 | 位置 | 內容邊界 |
 |------|------|---------|
-| Requirement（系統承諾） | OpenSpec 各模組 `spec.md § Requirements` | 只寫系統在什麼條件下承諾做什麼：觸發事件、轉換條件、系統自動動作、禁止副本等。業務規則（誰可以做、門檻、值域、為什麼）正本在 wiki，spec 以一句引用卡，不重述規則句 |
+| Requirement（系統承諾） | OpenSpec 各模組 `spec.md § Requirements` | 只寫系統承諾做什麼：觸發事件後的系統自動動作、依狀態機卡條件自動推進、禁止副本等。業務規則（誰可以做、門檻、值域、為什麼）與狀態轉換條件正本在 wiki，spec 以一句引用卡，不重述規則句 |
 | 驗收條目（Scenario） | 同上，掛在 Requirement 之下 | 每條標所屬情境卡與步驟或分支（見上段） |
 | change workflow（proposal / design / tasks） | OpenSpec changes/ | design 是技術設計（怎麼實作），不是商業設計 |
 | delta spec / archive | OpenSpec | |
