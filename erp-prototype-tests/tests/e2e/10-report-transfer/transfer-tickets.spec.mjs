@@ -240,3 +240,49 @@ test('10.22 改目的站點後已建的轉交單不動，之後新建的單取�
   await expect(page.locator('tr', { hasText: secondNo })).toContainText('雙面覆霧膜｜覆膜機');
   await expect(page.locator('tr', { hasText: firstNo })).toContainText('品檢站');
 });
+
+test('10.23 已作廢或報廢的任務不可改目的站點（畫面：表單目的站點唯讀）', async ({ page }) => {
+  // 前置：業務取消鏈二訂單 ORD-2026-0710，旗下生產任務依有無實際投入分流——
+  // 已有報工的「海報四色印刷」轉報廢（同 10.17 的前置）
+  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710');
+  await page.getByRole('button', { name: '取消訂單' }).click();
+  await page
+    .locator('.ant-modal-confirm-btns')
+    .getByRole('button', { name: /確\s*定/ })
+    .click();
+  await expect(page.getByText(/生產任務 \d+ 筆報廢/)).toBeVisible();
+
+  // 負責印務周建宏打開 WO-2026-0710：報廢任務的編輯入口只剩「編輯備註」，不再帶目的站點
+  await switchRole(page, '印務');
+  await gotoInApp(page, '/work-orders');
+  await openWorkOrder(page, 'WO-2026-0710');
+  const scrappedRow = taskRows(page).filter({ hasText: '海報四色印刷' });
+  await expect(scrappedRow).toContainText('報廢');
+  await expect(scrappedRow.getByRole('button', { name: '編輯備註與目的站點' })).toHaveCount(0);
+  await scrappedRow.getByRole('button', { name: '編輯備註', exact: true }).click();
+
+  // 表單標題只開放備註；目的站點下拉唯讀
+  await expect(page.locator('.ant-modal-title').last()).toContainText('僅備註可改');
+  await expect(page.locator('.ant-modal-title').last()).not.toContainText('目的站點可改');
+  await expect(formField(page, '目的站點').locator('.ant-select')).toHaveClass(
+    /ant-select-disabled/,
+  );
+});
+
+test('10.25 已點收的轉交單不可作廢，送錯站由現場溝通後直接搬', async ({ page }) => {
+  await openAs(page, '生管', '/production-floor/transfers');
+
+  // 已點收的 TT-20260828-001：列上沒有作廢，也沒有建回運單的入口
+  const receivedRow = page.locator('tr', { hasText: 'TT-20260828-001' });
+  await expect(receivedRow).toContainText('已點收');
+  await expect(receivedRow.getByRole('button', { name: '作廢' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /回運/ })).toHaveCount(0);
+
+  // 已送達的 TT-20260830-002 仍可作廢；作廢對話框寫明已點收不可作廢、送錯站由現場溝通後直接搬
+  const arrivedRow = page.locator('tr', { hasText: 'TT-20260830-002' });
+  await arrivedRow.getByRole('button', { name: '作廢' }).click();
+  const voidDialog = page.locator('.ant-modal-content').filter({ hasText: '作廢轉交單' });
+  await expect(voidDialog).toContainText(
+    '已點收為終態不可作廢（貨若送錯站，現場溝通後由廠務直接搬到正確的站）',
+  );
+});

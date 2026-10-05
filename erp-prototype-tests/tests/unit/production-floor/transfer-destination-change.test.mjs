@@ -248,3 +248,14 @@ describe('10.24 下游到料量不比對站點，只增不減；入庫成品判�
     expect(hasStockedOutput(task, facts([ticket('t1', '已點收', '品檢站', 300)]))).toBe(true);
   });
 });
+
+describe('10.25 已點收的轉交單不可作廢，送錯站由現場溝通後直接搬', () => {
+  it('對已點收的單按作廢被擋下，提示指引現場溝通後直接搬；單子維持已點收', () => {
+    // 鏈二 TT-20260828-001（tt-004，已點收）
+    const result = floor().voidTransfer('tt-004', { reason: '目的地填錯', by: '許文傑' });
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('已點收為終態不可作廢');
+    expect(result.error).toContain('現場溝通後由廠務直接搬到正確的站');
+    expect(ticketById('tt-004').status).toBe('已點收');
+  });
+});
