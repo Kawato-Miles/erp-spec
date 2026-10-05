@@ -7,6 +7,7 @@
 // 記憶體狀態鐵則：只有 openAs 會整頁載入，之後一律 gotoInApp 與 switchRole。
 import { expect } from '@playwright/test';
 import { clickIntoDetail, openAs, switchRole } from '../_helpers.mjs';
+import { assignMover } from '../10-report-transfer/_ch10.mjs';
 
 /**
  * 切模擬角色（含重試）。共用工具的下拉是以鍵盤位移選項，下拉展開的時間差偶爾會少吃一次按鍵，
@@ -169,6 +170,7 @@ export async function createTransferToQc(page) {
   await expect(row).toHaveCount(1);
   await row.getByRole('checkbox').check();
   await page.getByRole('button', { name: /建立轉交單/ }).click();
+  await assignMover(page);
   await page.getByRole('button', { name: '建立 1 張單' }).click();
   await expect(page.getByText(/已建立 TT-/)).toBeVisible();
 }

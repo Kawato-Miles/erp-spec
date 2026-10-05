@@ -23,12 +23,12 @@ test('8.14 印務主管審核製程時任務列表帶出產線', async ({ page }
     timeout: 20_000,
   });
   // 工單詳情的生產任務列表
-  await expectCell(page, '雪銅紙 150g 菊全', '產線', '印刷產線');
-  await expectCell(page, '局部上光', '產線', '外發加工線');
+  await expectCell(page, '雪銅紙 150g 菊全', '產線', '數位產線');
+  await expectCell(page, '局部上光', '產線', '手工產線');
 
   await openWorkOrderFromList(page, 'WO-2026-0907');
-  await expectCell(page, '雪銅紙 150g 菊全', '產線', '印刷產線');
-  await expectCell(page, '型錄四色雙面印刷', '產線', '印刷產線');
+  await expectCell(page, '雪銅紙 150g 菊全', '產線', '數位產線');
+  await expectCell(page, '型錄四色雙面印刷', '產線', '數位產線');
 
   // 待審核工單列表展開兩張工單的子表
   await gotoInAppStable(page, '/work-orders/review-queue');
@@ -38,25 +38,41 @@ test('8.14 印務主管審核製程時任務列表帶出產線', async ({ page }
     const expand = row.locator('.ant-table-row-expand-icon');
     if ((await expand.getAttribute('class'))?.includes('collapsed')) await expand.click();
   }
-  await expectCell(page, '局部上光', '產線', '外發加工線');
-  await expectCell(page, '型錄四色雙面印刷', '產線', '印刷產線');
+  await expectCell(page, '局部上光', '產線', '手工產線');
+  await expectCell(page, '型錄四色雙面印刷', '產線', '數位產線');
 });
 
-test('8.15 工單詳情任務列表三個狀態欄；外發任務交付後交付狀態顯示「－」', async ({ page }) => {
+test('8.15 工單詳情任務列表現場執行欄序、轉交進度三數與完成量；外發任務交付後交付狀態顯示「－」', async ({ page }) => {
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0812');
   await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0812' })).toBeVisible({
     timeout: 20_000,
   });
-  for (const header of ['生產任務狀態', '轉交狀態', '交付狀態']) {
-    await expect(page.getByRole('columnheader', { name: header, exact: true }).first()).toBeVisible();
-  }
+  // 現場執行欄序：生產任務狀態、交付狀態、轉交狀態、轉交進度、完成量（Miles 2026-10-06 拍板）
+  const floorHeaders = await page
+    .locator('.ant-table-thead tr')
+    .last()
+    .locator('th')
+    .allInnerTexts();
+  const order = ['生產任務狀態', '交付狀態', '轉交狀態', '轉交進度', '完成量'].map((label) =>
+    floorHeaders.findIndex((text) => text.trim().startsWith(label)),
+  );
+  expect(order.every((i) => i >= 0)).toBe(true);
+  expect([...order].sort((a, b) => a - b)).toEqual(order);
+  // 轉交進度表頭帶數值說明
+  await expect(
+    page.locator('.ant-table-thead th').filter({ hasText: '轉交進度' }).first(),
+  ).toContainText('排進搬運／下游收下／良品');
 
   // WO-2026-0812 各列（情境目錄 8.15 表）
   await expectCell(page, '雪銅紙 150g 菊全', '生產任務狀態', '已完成');
   await expectCell(page, '雪銅紙 150g 菊全', '轉交狀態', '不適用');
   await expectCell(page, '證書四色印刷', '生產任務狀態', '已完成');
   await expectCell(page, '證書四色印刷', '轉交狀態', '待點收');
-  await expect(taskRows(page).filter({ hasText: '證書四色印刷' })).toContainText('已點收 480／良品 500');
+  const certRow = taskRows(page).filter({ hasText: '證書四色印刷' });
+  await expect(certRow).toContainText('轉交量 500／點收量 480／良品 500');
+  // 完成量只顯示當前報工累計，下行良品與不良品，不再顯示「515 / 515」式分母
+  await expectCell(page, '證書四色印刷', '完成量', '515良品 500／不良品 15');
+  await expect(certRow).not.toContainText('515 / 515');
   // 已完成屬生產任務終態，交付狀態顯示「－」（wiki 生產任務交付狀態推導條件第 1 條）
   await expectCell(page, '雪銅紙 150g 菊全', '交付狀態', '－');
   await expectCell(page, '證書四色印刷', '交付狀態', '－');
@@ -68,16 +84,17 @@ test('8.15 工單詳情任務列表三個狀態欄；外發任務交付後交付
     await expectCell(page, name, '生產任務狀態', '製作中');
     await expectCell(page, name, '轉交狀態', '轉交中');
     await expectCell(page, name, '交付狀態', '已接收');
+    // 已送達待點收不另設標記：點收量 0 與轉交量的差就看得出來
     const row = taskRows(page).filter({ hasText: name });
-    await expect(row).toContainText('有貨待點收');
-    await expect(row).toContainText(`已點收 0／良品 ${good}`);
+    await expect(row).toContainText(`轉交量 ${good}／點收量 0／良品 ${good}`);
+    await expect(row).not.toContainText('有貨待點收');
   }
 
   for (const name of ['證書裁切', '信封裁切', '內卡裁切', '三件配套裝袋']) {
     await expectCell(page, name, '生產任務狀態', '待處理');
     await expectCell(page, name, '轉交狀態', '待轉交');
     await expectCell(page, name, '交付狀態', '已接收');
-    await expect(taskRows(page).filter({ hasText: name })).not.toContainText('有貨待點收');
+    await expect(taskRows(page).filter({ hasText: name })).toContainText('轉交量 0／點收量 0／良品 0');
   }
 
   // 對照一：WO-2026-0906 的局部上光是外包廠任務，交付狀態不推導；雪銅紙備料為未交付
@@ -147,8 +164,8 @@ test('8.17 製程核可後印務主管或工單負責人改產線，不必收回
   await expect(page.getByText('製程審核完成', { exact: true }).first()).toBeVisible({
     timeout: 20_000,
   });
-  await changeProductionLine(page, '貼紙四色數位印刷', '打樣區');
-  await expectCell(page, '貼紙四色數位印刷', '產線', '打樣區');
+  await changeProductionLine(page, '貼紙四色數位印刷', '手工產線');
+  await expectCell(page, '貼紙四色數位印刷', '產線', '手工產線');
   await expect(page.getByText('製程審核完成', { exact: true }).first()).toBeVisible();
   // 不要求收回或重新送審
   await expect(page.getByText(/重新送審|收回工單/)).toHaveCount(0);
@@ -157,8 +174,8 @@ test('8.17 製程核可後印務主管或工單負責人改產線，不必收回
   // 負責印務周建宏改 WO-2026-0908 名片雙面四色印刷的產線
   await switchRole(page, '印務');
   await openWorkOrderFromList(page, 'WO-2026-0908');
-  await changeProductionLine(page, '名片雙面四色印刷', '打樣區');
-  await expectCell(page, '名片雙面四色印刷', '產線', '打樣區');
+  await changeProductionLine(page, '名片雙面四色印刷', '手工產線');
+  await expectCell(page, '名片雙面四色印刷', '產線', '手工產線');
   await expect(page.getByText('製程審核完成', { exact: true }).first()).toBeVisible();
   await expectHistory(page, '名片雙面四色印刷', '周建宏');
 });
@@ -183,7 +200,8 @@ async function expectHistory(page, taskName, actor) {
   const row = taskRows(page).filter({ hasText: taskName });
   const expand = row.locator('.ant-table-row-expand-icon');
   if ((await expand.getAttribute('class'))?.includes('collapsed')) await expand.click();
-  const entry = page.getByText(/產線由 印刷產線 改為 打樣區/).first();
+  const entry = page.getByText(/產線由 數位產線 改為 手工產線/).first();
   await expect(entry).toBeVisible();
-  await expect(page.locator('.ant-table-expanded-row').filter({ hasText: '產線由 印刷產線 改為 打樣區' }).first()).toContainText(actor);
+  await expect(page.locator('.ant-table-expanded-row').filter({ hasText: '產線由 數位產線 改為 手工產線' }).first()).toContainText(actor);
 }
+

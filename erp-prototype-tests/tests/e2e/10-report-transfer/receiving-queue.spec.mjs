@@ -10,8 +10,8 @@ import {
 
 // 情境目錄 10.8、10.9：點收佇列（/production-floor/receiving）依人員的所屬產線過濾；
 // 點收對話框逐條列出設定量、點收量預設帶設定量；點收即到料放行，到料量取點收量。
-// 起點資料：鏈二 TT-20260830-002（目的站點裁切站、已送達待點收、一條明細 1,190）、
-// 鏈外 TT-20260827-002（目的站點裁切站、已送達待點收、兩條明細 200 與 300）。
+// 起點資料：鏈二 TT-20260830-002（目的站點手工產線、已送達待點收、一條明細 1,190）、
+// 鏈外 TT-20260827-002（目的站點手工產線、已送達待點收、兩條明細 200 與 300）。
 
 test('10.8 點收佇列依所屬產線過濾，不看角色（原編號 93）', async ({ page }) => {
   test.setTimeout(180_000);
@@ -20,7 +20,7 @@ test('10.8 點收佇列依所屬產線過濾，不看角色（原編號 93）', 
   await createTransferToQc(page);
   await moveTransferToQc(page);
 
-  // 師傅劉阿海的所屬產線為印刷產線與後加工產線：裁切站的兩張與品檢站那一張都不在他的佇列
+  // 師傅劉阿海的所屬產線為數位產線與裝訂產線：手工產線的兩張與品檢站那一張都不在他的佇列
   await switchRoleSafe(page, '師傅');
   await gotoInAppSafe(page, '/production-floor/receiving');
   await expect(page.getByText('TT-20260830-002')).toHaveCount(0);
@@ -28,7 +28,7 @@ test('10.8 點收佇列依所屬產線過濾，不看角色（原編號 93）', 
   await expect(page.getByText(/目前沒有輪到你點收的貨/)).toBeVisible();
   await expect(page.getByText(/點收依所屬產線過濾/)).toBeVisible();
 
-  // 品檢人員郭淑芬的所屬產線只有品檢站：看得到品檢站那一張、看不到裁切站的兩張
+  // 品檢人員郭淑芬的所屬產線只有品檢站：看得到品檢站那一張、看不到手工產線的兩張
   await switchRoleSafe(page, '品檢人員');
   await gotoInAppSafe(page, '/production-floor/receiving');
   await expect(page.getByText('TT-20260830-002')).toHaveCount(0);
@@ -80,7 +80,7 @@ test('10.9 點收就是到料放行，下游可以開工（原編號 94）', asy
   // 生管代點收，點收量照實填 1,190（到料量取點收量）
   await receiveInQueue(page, 'TT-20260830-002', { 海報四色印刷: 1190 });
   await expect(
-    page.getByText(/已點收 TT-20260830-002；裁切｜POLAR 137 裁切機的到料量加 1,190，下游可開工/),
+    page.getByText(/已點收 TT-20260830-002；手工產線的到料量加 1,190，下游可開工/),
   ).toBeVisible();
 
   await gotoInApp(page, '/production-floor/work-packages');

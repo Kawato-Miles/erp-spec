@@ -136,7 +136,7 @@ export async function buildDeliveredSampleItem(page, name) {
   // 產線必填：打樣工單非由配方展開，沒有工序段可帶入，手動選一條
   await form.locator('.ant-select').filter({ hasText: '選產線' }).click();
   await page
-    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option[title="印刷產線"]')
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option[title="數位產線"]')
     .first()
     .click();
   await expect(page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')).toHaveCount(0);

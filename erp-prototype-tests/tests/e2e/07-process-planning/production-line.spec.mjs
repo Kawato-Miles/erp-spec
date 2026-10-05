@@ -40,13 +40,13 @@ test('7.38 生產任務產線自部件配方工序段帶入、必填、不隨計
   await openWorkOrder(page, 'WO-2026-0901');
 
   // 任務列表帶出產線
-  await expectCell(page, 'DM 四色雙面印刷', '產線', '印刷產線');
+  await expectCell(page, 'DM 四色雙面印刷', '產線', '數位產線');
 
-  // 打開 DM 四色雙面印刷的編輯表單：產線預設印刷產線，是單選、選項取產線標籤
+  // 打開 DM 四色雙面印刷的編輯表單：產線預設數位產線，是單選、選項取產線標籤
   await taskRows(page).filter({ hasText: 'DM 四色雙面印刷' }).getByRole('button', { name: '編輯' }).click();
-  await expect(formField(page, '產線')).toContainText('印刷產線');
+  await expect(formField(page, '產線')).toContainText('數位產線');
   const options = await productionLineOptions(page);
-  expect(options).toEqual(expect.arrayContaining(['印刷產線', '裁切站', '後加工產線', '打樣區', '外發加工線']));
+  expect(options).toEqual(['壓克力產線', '馬克杯產線', '杯墊產線', '數位產線', '裝訂產線', '手工產線']);
   await expect(formField(page, '產線').locator('.ant-select-multiple')).toHaveCount(0);
 
   // 改計畫設備成另一台印刷機後產線不跟著變
@@ -57,10 +57,10 @@ test('7.38 生產任務產線自部件配方工序段帶入、必填、不隨計
     .locator('.ant-select-item-option')
     .filter({ hasText: 'RYOBI 755 五色機' })
     .click();
-  await expect(formField(page, '產線')).toContainText('印刷產線');
+  await expect(formField(page, '產線')).toContainText('數位產線');
   await taskForm(page).getByRole('button', { name: '儲存' }).click();
   await expect(taskForm(page)).toHaveCount(0);
-  await expectCell(page, 'DM 四色雙面印刷', '產線', '印刷產線');
+  await expectCell(page, 'DM 四色雙面印刷', '產線', '數位產線');
 
   // 新增一筆不從配方帶入的工序任務（軋型不在配方 PS-2026-0901 的工序段內）：產線留空
   const before = await taskRows(page).count();
@@ -82,13 +82,13 @@ test('7.38 生產任務產線自部件配方工序段帶入、必填、不隨計
 
   // 選定產線後存得進去
   await switchFormTab(page, '任務內容與排程');
-  await pickProductionLine(page, '後加工產線');
+  await pickProductionLine(page, '裝訂產線');
   await expect(missingLink(page, '產線')).toHaveCount(0);
   await taskForm(page).getByRole('button', { name: '新增任務' }).click();
   await expect(taskForm(page)).toHaveCount(0);
   await expect(taskRows(page)).toHaveCount(before + 1);
   // 列以「任務名＋印件部位」定位：裁切成型、三摺加工兩列的工序分類標籤「裁摺軋型」也含「軋型」二字
-  await expectCell(page, '軋型全張', '產線', '後加工產線');
+  await expectCell(page, '軋型全張', '產線', '裝訂產線');
 });
 
 test('7.39 外發任務同樣必填產線；異動加開與品檢缺口補做的任務產線同樣自工序段帶入', async ({
@@ -105,14 +105,14 @@ test('7.39 外發任務同樣必填產線；異動加開與品檢缺口補做的
   await expect(taskForm(page)).toBeVisible();
   await expect(missingLink(page, '產線')).toBeVisible();
 
-  // 下拉選項含公司為外發新增的外發加工線
+  // 外發加工線已移除：外發任務沒有專屬產線，下拉只有六條產線標籤
   await switchFormTab(page, '任務內容與排程');
   const options = await productionLineOptions(page);
-  expect(options).toContain('外發加工線');
+  expect(options).not.toContain('外發加工線');
   await taskForm(page).getByRole('button', { name: '取消' }).click();
 
-  // WO-2026-0906 的局部上光（外包廠任務）顯示產線外發加工線
+  // WO-2026-0906 的局部上光（外包廠任務）產線填手工產線
   await gotoInApp(page, '/work-orders');
   await openWorkOrder(page, 'WO-2026-0906');
-  await expectCell(page, '局部上光', '產線', '外發加工線');
+  await expectCell(page, '局部上光', '產線', '手工產線');
 });

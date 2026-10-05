@@ -21,6 +21,7 @@ import {
   fillOrderNotes,
   addInstallment,
 } from './_flow-helpers.mjs';
+import { assignMover } from '../10-report-transfer/_ch10.mjs';
 
 // 主流程 smoke（驗收依據：docs/main-flow.md 的 31 站站表）。
 // 一件案子從需求單建單一路走到訂單製作完成，全程只在同一次瀏覽器連線內完成：
@@ -47,9 +48,9 @@ const reviewRow = (page, text) =>
 const CASE_NAME = '主流程 smoke 誠品週年慶';
 const ITEM_A = '主流程印件甲';
 const ITEM_B = '主流程印件乙';
-const PRINT_STATION = '名片印刷｜海德堡 SM52 四色機';
-// 生產任務的產線（必填）：兩筆任務都在印刷產線上做
-const PRODUCTION_LINE = '印刷產線';
+const PRINT_STATION = '數位產線';
+// 生產任務的產線（必填）：兩筆任務都在數位產線上做
+const PRODUCTION_LINE = '數位產線';
 // 印件部位刻意兩筆各異：工單製程規劃的清單以它分辨同一張工單的兩筆任務
 const PART_PREP = '全張備料';
 const PART_PRINT = '全張印刷';
@@ -625,6 +626,7 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
     const moveRow = page.locator('tbody tr.ant-table-row').filter({ hasText: woA }).first();
     await moveRow.locator('input[type="checkbox"]').check({ force: true });
     await button(page, '建立轉交單（1）').click();
+    await assignMover(page);
     await page.getByRole('button', { name: /建立 1 張單/ }).click();
     const text = await toastText(page, /TT-\d{8}-\d{3}/);
     ticketNo = text.match(/TT-\d{8}-\d{3}/)[0];

@@ -40,6 +40,41 @@ export async function openTicketDrawer(page, ticketNo) {
   return drawer;
 }
 
+/** 建單成立的提示：寫明已通知哪位指派廠務 */
+export const CREATED_TOAST = /已建立.*已通知廠務/;
+
+/**
+ * 建轉交單對話框的「指派廠務」（必選，候選為具轉交搬運回報權限的人員）。
+ * 在按「建立 N 張單」之前呼叫。
+ */
+export async function assignMover(page, name = '簡俊男') {
+  const dialog = dialogOf(page, '建立轉交單');
+  await dialog.locator('.ant-form-item').filter({ hasText: '指派廠務' }).locator('.ant-select').click();
+  await page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
+    .last()
+    .locator(`.ant-select-item-option[title="${name}"]`)
+    .click();
+}
+
+/**
+ * 在轉交單管理把某張單的主層列展開，回傳子層中某一條明細列（以來源生產任務名稱定位）。
+ * 再次點收與點收修改的操作在子層列上。
+ */
+export async function ticketDetailSubRow(page, ticketNo, taskName) {
+  await gotoInApp(page, '/production-floor/transfers');
+  const search = page.getByPlaceholder(/轉交單編號/).first();
+  await search.fill(ticketNo);
+  await search.press('Enter');
+  const main = page.locator('tr.ant-table-row', { hasText: ticketNo }).first();
+  const expand = main.locator('.ant-table-row-expand-icon');
+  if ((await expand.getAttribute('class'))?.includes('collapsed')) await expand.click();
+  return page
+    .locator('tr.ant-table-expanded-row')
+    .locator('tr.ant-table-row', { hasText: taskName })
+    .first();
+}
+
 /** 側板明細表中某一條明細（以來源生產任務名稱定位） */
 export const detailRowOf = (drawer, taskName) =>
   drawer.locator('.ant-drawer-body tr.ant-table-row', { hasText: taskName }).first();

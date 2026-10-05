@@ -29,7 +29,6 @@ const {
   defaultReceiveAgainQty,
   deriveTransferStatus,
   describeTransferProgress,
-  hasGoodsAwaitingReceipt,
 } = transferRules;
 
 const floorInitial = {
@@ -140,10 +139,8 @@ describe('10.27 首次點收逐條填實際量，點收量不得超過設定量'
     expect(calcDetailReceivedQty(envelope)).toBe(280);
   });
 
-  it('點收後兩筆任務的轉交進度照實顯示，有貨待點收標記消失', () => {
+  it('點收後兩筆任務的轉交進度照實顯示轉交量、點收量與良品數', () => {
     const tickets0 = floor().transferTickets;
-    expect(hasGoodsAwaitingReceipt('pt-0812-4', tickets0)).toBe(true);
-    expect(hasGoodsAwaitingReceipt('pt-0812-6', tickets0)).toBe(true);
 
     floor().receiveTransfer('tt-016', {
       by: '許文傑',
@@ -151,10 +148,8 @@ describe('10.27 首次點收逐條填實際量，點收量不得超過設定量'
       quantities: { 'pt-0812-6': 200, 'pt-0812-4': 280 },
     });
     const tickets = floor().transferTickets;
-    expect(describeTransferProgress(taskById('pt-0812-4'), tickets)).toBe('已點收 280／良品 300');
-    expect(describeTransferProgress(taskById('pt-0812-6'), tickets)).toBe('已點收 200／良品 200');
-    expect(hasGoodsAwaitingReceipt('pt-0812-4', tickets)).toBe(false);
-    expect(hasGoodsAwaitingReceipt('pt-0812-6', tickets)).toBe(false);
+    expect(describeTransferProgress(taskById('pt-0812-4'), tickets)).toBe('轉交量 300／點收量 280／良品 300');
+    expect(describeTransferProgress(taskById('pt-0812-6'), tickets)).toBe('轉交量 200／點收量 200／良品 200');
   });
 
   it('未填的明細預設帶設定量', () => {
@@ -164,7 +159,7 @@ describe('10.27 首次點收逐條填實際量，點收量不得超過設定量'
     expect(calcDetailReceivedQty(detailOf(ticket, 'pt-0812-4'))).toBe(300);
   });
 
-  it('所屬產線含裁切站的人員本人點收時不留代點收標記', () => {
+  it('所屬產線含手工產線的人員本人點收時不留代點收標記', () => {
     floor().receiveTransfer('tt-016', { by: '李榮發', proxy: false });
     const ticket = ticketByNo('TT-20260827-002');
     ticket.details.forEach((d) => {
@@ -310,7 +305,7 @@ describe('10.30 收貨人點錯數修改點收紀錄並填原因，低於下游�
       input_qty: setQty,
       good_qty: setQty,
       produced_qty: setQty,
-      downstream_station_key: 'POLAR 137 裁切機',
+      downstream_station_key: '手工產線',
       depends_on: [],
       history: [],
     };
@@ -351,8 +346,8 @@ describe('10.30 收貨人點錯數修改點收紀錄並填原因，低於下游�
           id: 'tt-test-a',
           ticket_no: 'TT-TEST-A',
           status: '已點收',
-          target_station_key: 'POLAR 137 裁切機',
-          target_station: '裁切｜POLAR 137 裁切機',
+          target_station_key: '手工產線',
+          target_station: '手工產線',
           details: [
             {
               task_id: 'pt-test-a',
@@ -474,11 +469,11 @@ describe('10.17（純函式）來源任務報廢或作廢時，已送達的單�
 });
 
 describe('10.38 搬運中作廢重開沿用原單目的地、重走搬運，沒有「貨已在現場」', () => {
-  // 鏈二 TT-20260830-003（tt-006，搬運中，目的地 POLAR 137 裁切機，海報四色印刷 800）
+  // 鏈二 TT-20260830-003（tt-006，搬運中，目的地手工產線，海報四色印刷 800）
   beforeEach(() => {
     floor().syncTaskDestination('pt-0710-2', {
-      fromKey: 'POLAR 137 裁切機',
-      toKey: '覆膜機',
+      fromKey: '手工產線',
+      toKey: '裝訂產線',
       actor: '周建宏',
     });
   });
@@ -498,7 +493,7 @@ describe('10.38 搬運中作廢重開沿用原單目的地、重走搬運，沒�
       actor: '許文傑',
     });
     expect(reopened.ok).toBe(true);
-    expect(reopened.ticket.target_station_key).toBe('POLAR 137 裁切機');
+    expect(reopened.ticket.target_station_key).toBe('手工產線');
     expect(reopened.ticket.status).toBe('待搬運');
     expect(reopened.ticket.actual_date ?? null).toBeNull();
     expect(reopened.ticket).not.toHaveProperty('onsite_flag');

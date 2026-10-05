@@ -11,7 +11,7 @@
 - 廠商類別不是自有工廠，或生產任務狀態屬「終態」時，系統 SHALL 顯示「－」、SHALL NOT 推導。
 - 工單「製程審核完成 → 工單已交付」的判定 SHALL 取旗下有效生產任務（不含已作廢、報廢）的交付時間，轉換正本見 wiki [工單狀態](../../../memory/Sens_wiki/wiki/erp/06-state-machines/工單狀態.md)。
 
-工單詳情的生產任務列表 SHALL 帶出「生產任務狀態」「轉交狀態」「交付狀態」三欄、「有貨待點收」標記與轉交進度文字；轉交狀態的推導見 [production-execution spec § 生產任務轉交狀態推導](../production-execution/spec.md)。
+工單詳情的生產任務列表 SHALL 帶出「生產任務狀態」「轉交狀態」「交付狀態」三欄與轉交進度文字「轉交量 N／點收量 M／良品 K」，SHALL NOT 另設貨已送達、待點收的標記；轉交狀態的推導見 [production-execution spec § 生產任務轉交狀態推導](../production-execution/spec.md)。
 
 **Priority**: P1
 

@@ -2,13 +2,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
 import { openAs, switchRole, gotoInApp } from '../_helpers.mjs';
+import { assignMover, CREATED_TOAST } from './_ch10.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 // 借用專案既有檔案當簽收照上傳素材，Upload 的 beforeUpload 一律回 false（只暫存不上傳）
 const FAKE_PHOTO = path.resolve(HERE, '../../../package.json');
 
 // 情境目錄 10.19：同站下一台機台的任務要等上一道報出良品才有報工入口。
-// 起點資料：鏈三 WO-2026-0815 的「軋盒成型」（不需轉交，與下游糊盒機同屬手工線後加工產線）
+// 起點資料：鏈三 WO-2026-0815 的「軋盒成型」（不需轉交，與下游糊盒機同屬手工線裝訂產線）
 // 與「糊盒成型」。前置：把四筆任務派入同一個工作包，並把備料、五色印刷兩道跑完（各報工、轉交、
 // 點收），讓軋盒成型拿到料——這一段沿用第十章全鏈測試的同一組動作。
 
@@ -51,8 +52,9 @@ const transferAndReceive = async (page, taskName) => {
   const moveRow = page.locator('tr', { hasText: taskName });
   await moveRow.locator('input[type="checkbox"]').check({ force: true });
   await page.getByRole('button', { name: /建立轉交單（1）/ }).click();
+  await assignMover(page);
   await page.getByRole('button', { name: /建立 1 張單/ }).click();
-  const toast = page.getByText(/已建立.*交由廠務搬運/);
+  const toast = page.getByText(CREATED_TOAST);
   await expect(toast).toBeVisible();
   const ticketNo = (await toast.innerText()).match(/TT-\d{8}-\d{3}/)[0];
 

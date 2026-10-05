@@ -91,7 +91,7 @@ test('7.11 新增生產任務一開就選主檔，新任務排在最後（原編
   await formField(page, '預計生產').locator('input').fill('3000');
   // 產線必填：騎馬釘裝訂不在這張工單的工序段內、帶不出產線，由印務選
   await switchFormTab(page, '任務內容與排程');
-  await pickProductionLine(page, '後加工產線');
+  await pickProductionLine(page, '裝訂產線');
   await taskForm(page).getByRole('button', { name: '新增任務' }).click();
   await expect(taskForm(page)).toHaveCount(0);
 

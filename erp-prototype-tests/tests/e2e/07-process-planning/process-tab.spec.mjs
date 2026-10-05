@@ -55,7 +55,7 @@ test('7.1 新增任務時前置相依不自動帶值（原編號 49）', async (
   await formField(page, '預計生產').locator('input').fill('3000');
   // 產線必填：印務自建的 WO-2026-0901 沒有展開來源、帶不出產線，由印務選
   await switchFormTab(page, '任務內容與排程');
-  await pickProductionLine(page, '印刷產線');
+  await pickProductionLine(page, '數位產線');
   await taskForm(page).getByRole('button', { name: '新增任務' }).click();
   await expect(taskForm(page)).toHaveCount(0);
   const rows = taskRows(page);
@@ -383,7 +383,7 @@ test('7.23 生產任務的任務預計完成日晚於印件內部完成日時軟
   await formField(page, '預計生產').locator('input').fill('3000');
   // 產線必填：騎馬釘裝訂帶不出產線，由印務選
   await switchFormTab(page, '任務內容與排程');
-  await pickProductionLine(page, '後加工產線');
+  await pickProductionLine(page, '裝訂產線');
   await taskForm(page).getByRole('button', { name: '新增任務' }).click();
 
   // 存檔照樣成功（表單關閉、任務進清單），另出現一句提示寫明晚於印件內部完成日、已存檔
@@ -626,7 +626,7 @@ test('7.35 生產任務表的欄寬與展開列依內容配比，兩個事實時
   }
 
   // 展開「書芯印刷（單黑雙面）」：欄名寬度依內容配，不是每一格同寬
-  // 以完整任務名定位：產線欄緊接印件部位，道林紙列的「書芯」「印刷產線」兩格文字相連也含「書芯印刷」
+  // 以完整任務名定位：產線欄緊接印件部位，道林紙列的「書芯」「數位產線」兩格文字相連也含「書芯印刷」
   await taskRows(page)
     .filter({ hasText: '書芯印刷（單黑雙面）' })
     .first()

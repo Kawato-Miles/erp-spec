@@ -2,7 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
 import { openAs, switchRole, gotoInApp } from '../_helpers.mjs';
-import { confirmDialog, dialogOf } from './_ch10.mjs';
+import { confirmDialog, dialogOf, assignMover, CREATED_TOAST } from './_ch10.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 // 借用專案既有檔案當簽收照上傳素材，Upload 的 beforeUpload 一律回 false（只暫存不上傳）
@@ -47,8 +47,9 @@ const transferAndReceive = async (page, taskName, { checkReceiveQty = false } = 
   const moveRow = page.locator('tr', { hasText: taskName });
   await moveRow.locator('input[type="checkbox"]').check({ force: true });
   await page.getByRole('button', { name: /建立轉交單（1）/ }).click();
+  await assignMover(page);
   await page.getByRole('button', { name: /建立 1 張單/ }).click();
-  const toast = page.getByText(/已建立.*交由廠務搬運/);
+  const toast = page.getByText(CREATED_TOAST);
   await expect(toast).toBeVisible();
   const ticketNo = (await toast.innerText()).match(/TT-\d{8}-\d{3}/)[0];
 
@@ -117,7 +118,7 @@ test('10.14 最後一筆報工把工單、印件、訂單一路推到製作完�
 
 test('10.11 一批貨從報工走到可出貨的全鏈（原編號 105）', async ({ page }) => {
   test.setTimeout(60_000);
-  // 起點：鏈二 TT-20260830-002（裁切站待點收，來源 pt-0710-2 海報四色印刷）
+  // 起點：鏈二 TT-20260830-002（手工產線待點收，來源 pt-0710-2 海報四色印刷）
   // 生管代點收：點收對話框逐條填量（帶設定量 1,190）
   await openAs(page, '生管', '/production-floor/receiving');
   await page.locator('tr', { hasText: 'TT-20260830-002' }).getByRole('button', { name: '點收' }).click();
@@ -128,7 +129,7 @@ test('10.11 一批貨從報工走到可出貨的全鏈（原編號 105）', asyn
   await confirmDialog(receiveDialog);
   await expect(page.getByText(/已點收/).last()).toBeVisible();
 
-  // 裁切站到料量由 0 變成點收量，裁切成型任務可以報工了
+  // 手工產線到料量由 0 變成點收量，裁切成型任務可以報工了
   await gotoInApp(page, '/production-floor/work-packages');
   const pkgRow = page.locator('.ant-table-row', { hasText: '李榮發' }).first();
   await pkgRow.getByRole('button', { name: '報工' }).click();

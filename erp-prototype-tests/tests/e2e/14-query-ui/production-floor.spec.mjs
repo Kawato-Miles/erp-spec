@@ -69,7 +69,7 @@ test('14.10 生產管理五頁的角色可見範圍（原編號 180）', async (
   await expect(async () => {
     const items = await readGroupItems();
     expect(items.sort()).toEqual(
-      ['生產任務管理', '工作包管理', '轉交管理', '轉交單管理', '點收佇列'].sort(),
+      ['生產任務管理', '工作包管理', '待轉交任務', '轉交單管理', '點收佇列'].sort(),
     );
   }).toPass({ timeout: 10_000 });
 
@@ -77,7 +77,7 @@ test('14.10 生產管理五頁的角色可見範圍（原編號 180）', async (
   await expect(async () => {
     const items = await readGroupItems();
     expect(items.sort()).toEqual(
-      ['生產任務管理', '工作包管理', '轉交管理', '轉交單管理', '點收佇列'].sort(),
+      ['生產任務管理', '工作包管理', '待轉交任務', '轉交單管理', '點收佇列'].sort(),
     );
   }).toPass({ timeout: 10_000 });
 
@@ -111,7 +111,7 @@ test('14.12 手機寬度下五頁可完整操作（原編號 182）', async ({ p
   // 系統之後怎麼變：側邊欄自動收合為圖示列
   await expect(page.locator('.ant-layout-sider-collapsed')).toHaveCount(1);
 
-  const pageLabels = ['生產任務管理', '工作包管理', '轉交管理', '轉交單管理', '點收佇列'];
+  const pageLabels = ['生產任務管理', '工作包管理', '待轉交任務', '轉交單管理', '點收佇列'];
   const groupIcon = page.locator('.ant-menu-submenu', { hasText: '生產管理' }).first();
 
   // 情境：生管依序打開五頁。側邊欄收合為圖示列時，AntD 選單改用滑鼠停留浮出的子選單彈層導頁

@@ -56,32 +56,32 @@ const workOrderOf = (no) => store().workOrders.find((o) => o.work_order_no === n
 const taskOf = (no, name) => workOrderOf(no).tasks.find((t) => t.name === name);
 
 describe('7.38 生產任務產線自部件配方工序段帶入、必填、不隨計畫設備變動', () => {
-  it('起點資料：鏈五 WO-2026-0901 的 DM 四色雙面印刷產線為印刷產線，選項取產線標籤', () => {
+  it('起點資料：鏈五 WO-2026-0901 的 DM 四色雙面數位產線為數位產線，選項取產線標籤', () => {
     const task = MOCK_WORK_ORDERS.find((o) => o.work_order_no === 'WO-2026-0901').tasks.find(
       (t) => t.name === 'DM 四色雙面印刷',
     );
-    expect(task.production_line).toBe('印刷產線');
-    expect(PRODUCTION_LINE_OPTIONS).toContain('印刷產線');
+    expect(task.production_line).toBe('數位產線');
+    expect(PRODUCTION_LINE_OPTIONS).toContain('數位產線');
   });
 
   it('配方 PS-2026-0901 展開出的每一筆任務都帶入所屬工序段的產線', () => {
     const recipe = MOCK_PRINT_ITEM_RECIPES.find((r) => r.recipe_no === 'PS-2026-0901');
     const [draft] = planWorkOrders(recipe.components, recipe.item_segments, 3000, MOCK_RECIPES);
-    // 第 1 段同時掛材料與平版印刷，拆成兩筆任務，兩筆都歸印刷產線
+    // 第 1 段同時掛材料與平版印刷，拆成兩筆任務，兩筆都歸數位產線
     expect(draft.tasks.map((t) => [t.task_type, t.production_line])).toEqual([
-      ['材料', '印刷產線'],
-      ['工序', '印刷產線'],
-      ['工序', '裁切站'],
-      ['工序', '後加工產線'],
+      ['材料', '數位產線'],
+      ['工序', '數位產線'],
+      ['工序', '手工產線'],
+      ['工序', '裝訂產線'],
     ]);
   });
 
   it('新增任務時依所選主檔項目找到工序段，產線預設為該段的產線', async () => {
     const resolveDefaultProductionLine = ruleOf(await loadLineRules(), 'resolveDefaultProductionLine');
     const segments = MOCK_RECIPES.find((r) => r.recipe_no === 'BR-2026-0901').segments;
-    expect(resolveDefaultProductionLine({ process_id: 'pc-101' }, segments)).toBe('印刷產線');
-    expect(resolveDefaultProductionLine({ material_spec_id: 'ms-1011' }, segments)).toBe('印刷產線');
-    expect(resolveDefaultProductionLine({ process_id: 'pc-301' }, segments)).toBe('裁切站');
+    expect(resolveDefaultProductionLine({ process_id: 'pc-101' }, segments)).toBe('數位產線');
+    expect(resolveDefaultProductionLine({ material_spec_id: 'ms-1011' }, segments)).toBe('數位產線');
+    expect(resolveDefaultProductionLine({ process_id: 'pc-301' }, segments)).toBe('手工產線');
   });
 
   it('改計畫設備後產線不跟著變動', () => {
@@ -90,7 +90,7 @@ describe('7.38 生產任務產線自部件配方工序段帶入、必填、不�
     });
     const task = taskOf('WO-2026-0901', 'DM 四色雙面印刷');
     expect(task.planned_equipment).toBe('RYOBI 755 五色機');
-    expect(task.production_line).toBe('印刷產線');
+    expect(task.production_line).toBe('數位產線');
   });
 
   it('所引用的工序段沒有產線時留空', async () => {
@@ -118,7 +118,7 @@ describe('7.38 生產任務產線自部件配方工序段帶入、必填、不�
       error: '產線為必填',
     });
     expect(validateProductionLine({ ...draft, production_line: '' }).ok).toBe(false);
-    expect(validateProductionLine({ ...draft, production_line: '印刷產線' })).toEqual({
+    expect(validateProductionLine({ ...draft, production_line: '數位產線' })).toEqual({
       ok: true,
       error: null,
     });
@@ -138,31 +138,39 @@ describe('7.39 外發任務同樣必填產線；異動加開與品檢缺口補�
       ok: false,
       error: '產線為必填',
     });
-    expect(validateProductionLine({ ...outsourced, production_line: '外發加工線' }).ok).toBe(true);
+    expect(validateProductionLine({ ...outsourced, production_line: '手工產線' }).ok).toBe(true);
   });
 
-  it('產線選項含公司為外發新增的外發加工線；WO-2026-0906 的局部上光產線為外發加工線', () => {
-    expect(PRODUCTION_LINE_OPTIONS).toContain('外發加工線');
+  it('產線選項只有六條產線標籤、不含外發加工線；WO-2026-0906 外發的局部上光產線填手工產線', () => {
+    expect(PRODUCTION_LINE_OPTIONS).toEqual([
+      '壓克力產線',
+      '馬克杯產線',
+      '杯墊產線',
+      '數位產線',
+      '裝訂產線',
+      '手工產線',
+    ]);
+    expect(PRODUCTION_LINE_OPTIONS).not.toContain('外發加工線');
     const task = taskOf('WO-2026-0906', '局部上光');
     expect(task.unit_class).toBe('外包廠');
-    expect(task.production_line).toBe('外發加工線');
+    expect(task.production_line).toBe('手工產線');
   });
 
-  it('工單異動加開的燙金任務產線預設為工序段的後加工產線', async () => {
+  it('工單異動加開的燙金任務產線預設為工序段的裝訂產線', async () => {
     const resolveDefaultProductionLine = ruleOf(await loadLineRules(), 'resolveDefaultProductionLine');
     const segments = [
-      { seq: 1, process_id: 'pc-101', material_spec_id: 'ms-1011', production_line: '印刷產線' },
-      { seq: 2, process_id: 'pc-401', material_spec_id: null, production_line: '後加工產線' },
+      { seq: 1, process_id: 'pc-101', material_spec_id: 'ms-1011', production_line: '數位產線' },
+      { seq: 2, process_id: 'pc-401', material_spec_id: null, production_line: '裝訂產線' },
     ];
     expect(resolveDefaultProductionLine({ process_group_id: 'pg-04', process_id: 'pc-401' }, segments)).toBe(
-      '後加工產線',
+      '裝訂產線',
     );
   });
 
   it('品檢缺口補做的裝訂任務產線預設為工序段的裝訂產線', async () => {
     const resolveDefaultProductionLine = ruleOf(await loadLineRules(), 'resolveDefaultProductionLine');
     const segments = [
-      { seq: 1, process_id: 'pc-101', material_spec_id: 'ms-1031', production_line: '印刷產線' },
+      { seq: 1, process_id: 'pc-101', material_spec_id: 'ms-1031', production_line: '數位產線' },
       { seq: 2, process_id: null, binding_id: 'bd-04', production_line: '裝訂產線' },
     ];
     expect(resolveDefaultProductionLine({ binding_id: 'bd-04' }, segments)).toBe('裝訂產線');
@@ -229,28 +237,28 @@ describe('8.17 製程核可後印務主管或工單負責人改產線，不必�
 
   it('印務主管吳國豪改 WO-2026-0910 貼紙四色數位印刷的產線：直接儲存、工單維持製程審核完成、歷程記原值與新值', () => {
     expect(typeof store().updateTaskProductionLine, '尚未實作 updateTaskProductionLine').toBe('function');
-    const result = store().updateTaskProductionLine('wo-2026-0910', 'pt-0910-2', '打樣區', {
+    const result = store().updateTaskProductionLine('wo-2026-0910', 'pt-0910-2', '手工產線', {
       by: '吳國豪',
     });
     expect(result.ok).toBe(true);
     expect(workOrderOf('WO-2026-0910').status).toBe('製程審核完成');
     const task = taskOf('WO-2026-0910', '貼紙四色數位印刷');
-    expect(task.production_line).toBe('打樣區');
+    expect(task.production_line).toBe('手工產線');
     const last = task.history.at(-1);
     expect(last.actor).toBe('吳國豪');
     expect(last.at).toBeTruthy();
-    expect(last.event).toContain('產線由 印刷產線 改為 打樣區');
+    expect(last.event).toContain('產線由 數位產線 改為 手工產線');
   });
 
   it('負責印務周建宏改 WO-2026-0908 名片雙面四色印刷的產線：同樣不要求重審、歷程記修改人', () => {
     expect(typeof store().updateTaskProductionLine, '尚未實作 updateTaskProductionLine').toBe('function');
-    const result = store().updateTaskProductionLine('wo-2026-0908', 'pt-0908-2', '打樣區', {
+    const result = store().updateTaskProductionLine('wo-2026-0908', 'pt-0908-2', '手工產線', {
       by: '周建宏',
     });
     expect(result.ok).toBe(true);
     expect(workOrderOf('WO-2026-0908').status).toBe('製程審核完成');
     const last = taskOf('WO-2026-0908', '名片雙面四色印刷').history.at(-1);
     expect(last.actor).toBe('周建宏');
-    expect(last.event).toContain('產線由 印刷產線 改為 打樣區');
+    expect(last.event).toContain('產線由 數位產線 改為 手工產線');
   });
 });

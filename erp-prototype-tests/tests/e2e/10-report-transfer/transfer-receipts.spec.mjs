@@ -13,6 +13,7 @@ import {
   openTicketDrawer,
   receiveInQueue,
   reportRowOf,
+  ticketDetailSubRow,
 } from './_ch10.mjs';
 
 // 情境目錄 10.27～10.30、10.33～10.36、10.38、10.39：逐條點收、再次點收、點收修改、
@@ -30,13 +31,13 @@ const certWorkOrderTaskRow = async (page, taskName) => {
 
 test('10.27 首次點收逐條填實際量，點收量不得超過設定量', async ({ page }) => {
   test.setTimeout(120_000);
-  // 點收前：兩筆任務都亮「有貨待點收」
+  // 點收前：兩筆任務的轉交進度點收量為 0，不另設送達待收的標記
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0812');
-  await expect(taskRows(page).filter({ hasText: '信封四色印刷' }).first()).toContainText('有貨待點收');
-  await expect(taskRows(page).filter({ hasText: '內卡四色印刷' }).first()).toContainText('有貨待點收');
+  await expect(taskRows(page).filter({ hasText: '信封四色印刷' }).first()).toContainText('轉交量 300／點收量 0／良品 300');
+  await expect(taskRows(page).filter({ hasText: '內卡四色印刷' }).first()).toContainText('轉交量 200／點收量 0／良品 200');
 
-  // 生管代裁切站點收：對話框逐條列出設定量，點收量預設帶設定量
+  // 生管代手工產線點收：對話框逐條列出設定量，點收量預設帶設定量
   await switchRole(page, '生管');
   await gotoInApp(page, '/production-floor/receiving');
   await page.locator('tr', { hasText: 'TT-20260827-002' }).getByRole('button', { name: '點收' }).click();
@@ -64,14 +65,13 @@ test('10.27 首次點收逐條填實際量，點收量不得超過設定量', as
   await expect(detailRowOf(drawer, '信封四色印刷')).toContainText('280');
   await closeDrawer(page);
 
-  // 工單任務列表：轉交進度照實顯示，「有貨待點收」標記消失
+  // 工單任務列表：轉交進度照實顯示轉交量、點收量與良品數
   await switchRole(page, '印務');
   const envelopeRow = await certWorkOrderTaskRow(page, '信封四色印刷');
-  await expect(envelopeRow).toContainText('已點收 280／良品 300');
+  await expect(envelopeRow).toContainText('轉交量 300／點收量 280／良品 300');
   await expect(envelopeRow).not.toContainText('有貨待點收');
   const cardRow = taskRows(page).filter({ hasText: '內卡四色印刷' }).first();
-  await expect(cardRow).toContainText('已點收 200／良品 200');
-  await expect(cardRow).not.toContainText('有貨待點收');
+  await expect(cardRow).toContainText('轉交量 200／點收量 200／良品 200');
 });
 
 test('10.28 短少照實點收，已送達的單不可作廢', async ({ page }) => {
@@ -111,8 +111,9 @@ test('10.28 短少照實點收，已送達的單不可作廢', async ({ page }) 
 test('10.29 貨補到後對同一明細再次點收，累計不超過設定量', async ({ page }) => {
   test.setTimeout(120_000);
   await openAs(page, '生管', '/production-floor/transfers');
-  const drawer = await openTicketDrawer(page, 'TT-20260827-001');
-  await detailRowOf(drawer, '證書四色印刷').getByRole('button', { name: '再次點收' }).click();
+  // 再次點收在轉交單管理主層展開後的子層明細列上
+  const subRow = await ticketDetailSubRow(page, 'TT-20260827-001', '證書四色印刷');
+  await subRow.getByRole('button', { name: '再次點收' }).click();
   const dialog = dialogOf(page, '再次點收');
   const qtyInput = dialog.locator('.ant-input-number-input').first();
   // 預設帶 20（設定量 500 減點收累計 480）
@@ -124,6 +125,9 @@ test('10.29 貨補到後對同一明細再次點收，累計不超過設定量',
 
   await qtyInput.fill('20');
   await confirmDialog(dialog);
+  // 子層第三格是點收累計（來源任務、設定量、點收累計、簽收照片）
+  await expect(subRow.locator('td').nth(2)).toHaveText('500');
+  const drawer = await openTicketDrawer(page, 'TT-20260827-001');
   await expect(detailRowOf(drawer, '證書四色印刷')).toContainText('500');
   // 單頭維持已點收；歷程新增一筆再次點收（點收量 20、點收人）
   await expect(drawer).toContainText('已點收');
@@ -139,11 +143,11 @@ test('10.29 貨補到後對同一明細再次點收，累計不超過設定量',
 test('10.30 收貨人點錯數修改點收紀錄並填原因，低於下游已報工量或超過設定量時擋下', async ({ page }) => {
   test.setTimeout(120_000);
   await openAs(page, '生管', '/production-floor/transfers');
-  const drawer = await openTicketDrawer(page, 'TT-20260827-001');
-  const detail = detailRowOf(drawer, '證書四色印刷');
+  // 點收修改在轉交單管理主層展開後的子層明細列上
+  const subRow = await ticketDetailSubRow(page, 'TT-20260827-001', '證書四色印刷');
 
   // 改成 490、不填原因：擋下送出
-  await detail.getByRole('button', { name: '修改' }).click();
+  await subRow.getByRole('button', { name: '修改' }).click();
   let dialog = dialogOf(page, '修改');
   await dialog.locator('.ant-input-number-input').first().fill('490');
   await confirmDialog(dialog);
@@ -152,13 +156,16 @@ test('10.30 收貨人點錯數修改點收紀錄並填原因，低於下游已�
   // 填原因「重點數量」後送出成立：點收累計 490，歷程記修改前後值與原因
   await formItemOf(dialog, '修改原因').locator('input, textarea').first().fill('重點數量');
   await confirmDialog(dialog);
+  await expect(subRow.locator('td').nth(2)).toHaveText('490');
+  const drawer = await openTicketDrawer(page, 'TT-20260827-001');
   await expect(detailRowOf(drawer, '證書四色印刷')).toContainText('490');
   await expect(drawer).toContainText('已點收');
   await expect(drawer).toContainText(/480.*490/);
   await expect(drawer).toContainText('重點數量');
 
   // 再試改成 510：擋下並提示累計 510 超過設定量 500
-  await detailRowOf(drawer, '證書四色印刷').getByRole('button', { name: '修改' }).click();
+  await closeDrawer(page);
+  await subRow.getByRole('button', { name: '修改' }).click();
   dialog = dialogOf(page, '修改');
   await dialog.locator('.ant-input-number-input').first().fill('510');
   await formItemOf(dialog, '修改原因').locator('input, textarea').first().fill('重點數量');
@@ -177,7 +184,7 @@ test('10.33 短少改報工與補做再報工的轉交狀態走法', async ({ pa
 
   let certRow = await certWorkOrderTaskRow(page, '證書四色印刷');
   await expect(certRow).toContainText('已轉交');
-  await expect(certRow).toContainText('已點收 480／良品 480');
+  await expect(certRow).toContainText('轉交量 500／點收量 480／良品 480');
 
   // 轉交可申請上限 −20：生管的待搬視圖不出現證書四色印刷
   await switchRole(page, '生管');
@@ -200,11 +207,11 @@ test('10.33 短少改報工與補做再報工的轉交狀態走法', async ({ pa
 
   // 收貨人對原明細再次點收 20 → 已轉交
   await switchRole(page, '生管');
-  const drawer = await openTicketDrawer(page, 'TT-20260827-001');
-  await detailRowOf(drawer, '證書四色印刷').getByRole('button', { name: '再次點收' }).click();
+  const subRow = await ticketDetailSubRow(page, 'TT-20260827-001', '證書四色印刷');
+  await subRow.getByRole('button', { name: '再次點收' }).click();
   await confirmDialog(dialogOf(page, '再次點收'));
-  await expect(detailRowOf(drawer, '證書四色印刷')).toContainText('500');
-  await closeDrawer(page);
+  // 子層第三格是點收累計（來源任務、設定量、點收累計、簽收照片）
+  await expect(subRow.locator('td').nth(2)).toHaveText('500');
 
   await switchRole(page, '印務');
   certRow = await certWorkOrderTaskRow(page, '證書四色印刷');
@@ -309,7 +316,7 @@ test('10.36 已完成任務作廢擋下改走修改；修改跌破目標退回�
 
 test('10.38 搬運中作廢重開沿用原單目的地、重走搬運，沒有「貨已在現場」', async ({ page }) => {
   test.setTimeout(180_000);
-  // 印務先把海報四色印刷的目的站點改為「雙面覆霧膜｜覆膜機」
+  // 印務先把海報四色印刷的目的站點改為「裝訂產線」
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0710');
   await taskRows(page)
@@ -320,7 +327,7 @@ test('10.38 搬運中作廢重開沿用原單目的地、重走搬運，沒有�
   await page
     .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
     .last()
-    .locator('.ant-select-item-option', { hasText: '雙面覆霧膜｜覆膜機' })
+    .locator('.ant-select-item-option', { hasText: '裝訂產線' })
     .click();
   await taskForm(page).getByRole('button', { name: '儲存' }).click();
   await expect(page.getByText(/已更新目的站點/)).toBeVisible();
@@ -343,7 +350,7 @@ test('10.38 搬運中作廢重開沿用原單目的地、重走搬運，沒有�
   await gotoInApp(page, '/production-floor/pending-moves');
   await expect(page.locator('tr', { hasText: '海報四色印刷' })).toContainText('800');
 
-  // 重開新單：畫面沒有「貨已在現場」勾選；新單目的地沿用原單 POLAR 137 裁切機，停在待搬運
+  // 重開新單：畫面沒有「貨已在現場」勾選；新單目的地沿用原單手工產線，停在待搬運
   await gotoInApp(page, '/production-floor/transfers');
   await page.locator('tr', { hasText: 'TT-20260830-003' }).getByRole('button', { name: '重開' }).click();
   const reopen = dialogOf(page, '重開');
@@ -354,9 +361,9 @@ test('10.38 搬運中作廢重開沿用原單目的地、重走搬運，沒有�
   await expect(toast).toBeVisible();
   const newNo = (await toast.innerText()).match(/TT-\d{8}-\d{3}/)[0];
   const newRow = page.locator('tr', { hasText: newNo });
-  await expect(newRow).toContainText('POLAR 137 裁切機');
+  await expect(newRow).toContainText('手工產線');
   await expect(newRow).toContainText('待搬運');
-  await expect(newRow).not.toContainText('覆膜機');
+  await expect(newRow).not.toContainText('裝訂產線');
 });
 
 test('10.39 轉交狀態兩條邊界：轉交點收量多於良品時點收不擋、落在轉交中', async ({ page }) => {
@@ -368,20 +375,20 @@ test('10.39 轉交狀態兩條邊界：轉交點收量多於良品時點收不�
   await expect(reportRowOf(reports, '2026-08-25 16:30')).toContainText('480');
   await closeDrawer(page);
 
-  // 貨找回了：生管代裁切站對 TT-20260827-001 那條明細再次點收 20，系統不以良品數擋下
+  // 貨找回了：生管代手工產線對 TT-20260827-001 那條明細再次點收 20，系統不以良品數擋下
   await switchRole(page, '生管');
-  const drawer = await openTicketDrawer(page, 'TT-20260827-001');
-  await detailRowOf(drawer, '證書四色印刷').getByRole('button', { name: '再次點收' }).click();
+  const subRow = await ticketDetailSubRow(page, 'TT-20260827-001', '證書四色印刷');
+  await subRow.getByRole('button', { name: '再次點收' }).click();
   const again = dialogOf(page, '再次點收');
   await again.locator('.ant-input-number-input').first().fill('20');
   await confirmDialog(again);
-  await expect(detailRowOf(drawer, '證書四色印刷')).toContainText('500');
-  await closeDrawer(page);
+  // 子層第三格是點收累計（來源任務、設定量、點收累計、簽收照片）
+  await expect(subRow.locator('td').nth(2)).toHaveText('500');
 
   await switchRole(page, '印務');
   let certRow = await certWorkOrderTaskRow(page, '證書四色印刷');
   await expect(certRow).toContainText('轉交中');
-  await expect(certRow).toContainText('已點收 500／良品 480');
+  await expect(certRow).toContainText('轉交量 500／點收量 500／良品 480');
 
   // 印務再把報工良品改回 500 → 已轉交
   reports = await openPackageReports(page, 'WP-2026-0812-01');
@@ -389,5 +396,5 @@ test('10.39 轉交狀態兩條邊界：轉交點收量多於良品時點收不�
   await closeDrawer(page);
   certRow = await certWorkOrderTaskRow(page, '證書四色印刷');
   await expect(certRow).toContainText('已轉交');
-  await expect(certRow).toContainText('已點收 500／良品 500');
+  await expect(certRow).toContainText('轉交量 500／點收量 500／良品 500');
 });
