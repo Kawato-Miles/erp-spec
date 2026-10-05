@@ -17,7 +17,7 @@ const selectVisibleOption = (page, label) =>
     .first();
 
 test('14.1 工單列表查詢與篩選（原編號 1）', async ({ page }) => {
-  // 起點資料：工單列表的十二張工單
+  // 起點資料：工單列表的十三張工單
   await openAs(page, '生管', '/work-orders');
   const table = page.locator('.ant-table-tbody').first();
 
@@ -28,14 +28,15 @@ test('14.1 工單列表查詢與篩選（原編號 1）', async ({ page }) => {
   await expect(table).toContainText('WO-2026-0710');
   await expect(table).not.toContainText('WO-2026-0601');
 
-  // 清空後以狀態為製作中篩選：現行 12 張工單裡狀態為製作中的唯一一張是 WO-2026-0710
+  // 清空後以狀態為製作中篩選：現行 13 張工單裡狀態為製作中的是鏈二 WO-2026-0710 與鏈外 WO-2026-0812
   await searchInput.fill('');
   await searchInput.press('Enter');
   await page.locator('.ant-select', { hasText: '全部狀態' }).click();
   await selectVisibleOption(page, '製作中').click();
   const rows = page.locator('.ant-table-tbody .ant-table-row');
-  await expect(rows).toHaveCount(1);
-  await expect(rows.first()).toContainText('WO-2026-0710');
+  await expect(rows).toHaveCount(2);
+  await expect(table).toContainText('WO-2026-0710');
+  await expect(table).toContainText('WO-2026-0812');
 
   // 再加上負責印務與交期區間：多個條件為交集，WO-2026-0710（製作中、負責印務周建宏、
   // 交期 2026-09-15）在交集內應仍看得到
@@ -177,7 +178,7 @@ test('14.11 清單上的編號可以直接點開詳情（原編號 181）', asyn
 });
 
 test('14.14 工單列表只帶自己負責與被分享的（原編號 187）', async ({ page }) => {
-  // 起點資料：工單列表的十二張工單，WO-2026-0905 尚未指派印務、WO-2026-0907 與 WO-2026-0910
+  // 起點資料：工單列表的十三張工單，WO-2026-0905 尚未指派印務、WO-2026-0907 與 WO-2026-0910
   // 的負責印務為蔡明修；本條的印務為周建宏、印務主管為吳國豪。
   // 先直連他人工單 WO-2026-0907 的網址（情境第一步就是直連，故當本測試唯一一次 openAs）：
   // 頁面看得完整，但負責人動作一律停用，停用理由不寫出負責人姓名。

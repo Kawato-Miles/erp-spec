@@ -4,7 +4,7 @@ import { activityItem, button, drawer, openByNo, openScenario, openTab, panelSec
 
 test('2.7 三類備註各自獨立編輯，訂單完成後仍可改（商業需求覆蓋矩陣 B）', async ({ page }) => {
   test.setTimeout(90_000);
-  // 鏈一 ORD-2026-0601（訂單完成）：交貨備註原有內容，訂單須知與付款備註原為空
+  // 鏈一 ORD-2026-0601（訂單完成）：三格備註原有內容（已過審核的線下單四格備註齊備）
   await openScenario(page, '業務', '/orders', { openAs, switchRole });
   await openByNo(page, 'ORD-2026-0601');
   await openTab(page, '資訊');
@@ -22,12 +22,12 @@ test('2.7 三類備註各自獨立編輯，訂單完成後仍可改（商業需�
   await button(panel, '確認').click();
   await expect(page.getByText('已更新訂單備註').last()).toBeVisible();
 
-  // 動其中一欄不影響其餘兩欄：訂單須知與付款備註仍為空
+  // 動其中一欄不影響其餘兩欄：訂單須知與付款備註維持原值
   await expect(page.locator('body')).toContainText('2.7 交貨備註改版：專車配送並事先電話確認');
   await button(panelSection(page, '訂單備註'), '編輯').click();
   const panel2 = drawer(page);
-  await expect(panel2.locator('textarea').nth(0)).toHaveValue('');
-  await expect(panel2.locator('textarea').nth(2)).toHaveValue('');
+  await expect(panel2.locator('textarea').nth(0)).toHaveValue('會員卡色差以打樣卡為準');
+  await expect(panel2.locator('textarea').nth(2)).toHaveValue('出貨後匯款，請提供後五碼');
   await button(panel2, '取消').click();
 
   // 訂單完成後三欄仍可編輯（只有已取消才鎖）

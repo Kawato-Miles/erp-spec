@@ -58,7 +58,15 @@ describe('可報工判定（canReportTask）', () => {
     );
     expect(pending).toBeTruthy();
     // 點收才算到料（已送達是搬運方的單方宣稱，放行由要動手做的人說了算）
-    const received = { ...pending, status: '已點收' };
+    // 點收逐條寫入點收紀錄（點收量照設定量），到料量取點收紀錄合計（情境目錄 10.27、10.31）
+    const received = {
+      ...pending,
+      status: '已點收',
+      details: pending.details.map((d) => ({
+        ...d,
+        receipts: [{ id: `${d.task_id}-r1`, qty: d.qty, received_by: '李榮發', received_at: '2026-10-05 10:00', proxy_received: false }],
+      })),
+    };
     const tickets = MOCK_TRANSFER_TICKETS.map((t) => (t.id === pending.id ? received : t));
     expect(canReportTask(task, { tasks: MOCK_FLOOR_TASKS, tickets })).toBe(true);
   });

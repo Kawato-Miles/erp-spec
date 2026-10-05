@@ -205,3 +205,143 @@ export async function buildDraftOrder(page, { openAs, switchRole, gotoInApp }, {
   await expect(orderHeader(page)).toContainText('草稿');
   return orderNo;
 }
+
+// ─── 送審條件相關（情境 2.1、2.2、2.14～2.17；change order-review-gate-invoice-draft-transfer-receipt）───
+
+/** 填 AntD DatePicker：填入 YYYY-MM-DD 文字後按 Enter 確認（不開日曆面板點格子） */
+export async function pickDate(input, value) {
+  await input.click();
+  await input.fill(value);
+  await input.press('Enter');
+}
+
+export const submitButton = (page) => button(page, '送主管審核');
+
+/**
+ * 送審缺項文字。畫面約定（tasks 4.1 實作依此）：條件不齊時「送主管審核」停用，
+ * 操作列旁出現一段含「尚缺」的文字，缺項依序以頓號分隔
+ * （訂單須知、交貨備註、付款備註、收款條件備註、至少一期收款項目）。
+ */
+export const reviewMissing = (page) => page.getByText(/尚缺/).first();
+
+/** 業務在資訊頁籤的「訂單備註」側板填指定欄位（訂單須知 order_note、交貨備註 delivery_note、付款備註 payment_note） */
+export async function editOrderNotes(page, values) {
+  await openTab(page, '資訊');
+  const panel = drawer(page);
+  await clickOpen(button(panelSection(page, '訂單備註'), '編輯'), panel.locator('#delivery_note'));
+  for (const [key, value] of Object.entries(values)) {
+    await panel.locator(`#${key}`).fill(value);
+  }
+  await button(panel, '確認').click();
+  await expect(page.getByText('已更新訂單備註').last()).toBeVisible();
+  await waitModalsClosed(page);
+}
+
+/** 業務在資訊頁籤的「發票與收款」側板填收款條件備註 */
+export async function editPaymentTermsNote(page, text) {
+  await openTab(page, '資訊');
+  const panel = drawer(page);
+  await clickOpen(button(panelSection(page, '發票與收款'), '編輯'), panel.locator('#payment_terms_note'));
+  await panel.locator('#payment_terms_note').fill(text);
+  await button(panel, '確認').click();
+  await expect(page.getByText('已更新發票與收款').last()).toBeVisible();
+  await waitModalsClosed(page);
+}
+
+/** 業務在金額與發票頁籤新增一期收款項目 */
+export async function addInstallment(
+  page,
+  { description, amount, paidDate = '2026-10-30', issueDate = '2026-10-20' },
+) {
+  await openTab(page, '金額與發票');
+  const modal = dialog(page);
+  await clickOpen(button(page, '新增收款項目'), modal.getByLabel('描述'));
+  await modal.getByLabel('描述').fill(description);
+  await modal.getByLabel('預計金額（含稅）').fill(String(amount));
+  await pickOption(page, modal.getByLabel('預計收款方式'), '銀行轉帳');
+  await pickDate(modal.getByLabel('預計收款日'), paidDate);
+  await pickDate(modal.getByLabel('預計開立發票日'), issueDate);
+  await modal.getByRole('button', { name: spaced('建立期次') }).click();
+  await expect(page.getByText(`已新增收款項目「${description}」`).last()).toBeVisible();
+  await waitModalsClosed(page);
+}
+
+/** 業務在金額與發票頁籤取消一期收款項目並填原因 */
+export async function cancelInstallment(page, description, reason) {
+  await openTab(page, '金額與發票');
+  const row = page.locator('tr', { hasText: description }).first();
+  const modal = dialog(page);
+  await clickOpen(row.getByRole('button', { name: '取消收款項目' }), modal.getByLabel(/原因/));
+  await modal.getByLabel(/原因/).fill(reason);
+  await modal.getByRole('button', { name: spaced('確認取消') }).click();
+  await expect(page.getByText('已取消收款項目').last()).toBeVisible();
+  await waitModalsClosed(page);
+}
+
+/**
+ * 前置：ORD-2026-0814 補齊送審條件（同情境 2.1 起點資料的前置）——
+ * 補填交貨備註與收款條件備註，新增兩期收款項目（訂金 3,938、尾款 9,188）。
+ * 呼叫前頁面須已停在 ORD-2026-0814 詳情、身分為業務。
+ */
+export const ORDER_0814_INSTALLMENTS = [
+  { description: '訂金', amount: 3938, paidDate: '2026-10-20', issueDate: '2026-10-15' },
+  { description: '尾款', amount: 9188, paidDate: '2026-11-20', issueDate: '2026-11-15' },
+];
+export const ORDER_0814_DELIVERY_NOTE = '宅配至青硯文具倉庫，收貨前電話聯絡許小姐';
+export const ORDER_0814_TERMS_NOTE = '訂金 30% 回簽後匯款、尾款出貨前結清';
+
+export async function completeReviewConditions0814(page) {
+  await editOrderNotes(page, { delivery_note: ORDER_0814_DELIVERY_NOTE });
+  await editPaymentTermsNote(page, ORDER_0814_TERMS_NOTE);
+  for (const item of ORDER_0814_INSTALLMENTS) await addInstallment(page, item);
+}
+
+/** 前置：補齊送審條件後送主管審核，停在待業務主管審核（審核業務主管林雅婷） */
+export async function submit0814ForReview(page) {
+  await completeReviewConditions0814(page);
+  await submitButton(page).click();
+  await expect(orderHeader(page)).toContainText('待業務主管審核');
+}
+
+/**
+ * 前置：需求單轉來的草稿單補齊送審條件（四格備註各填一段、新增一期收款項目），
+ * 讓沿用 buildDraftOrder 的情境在送審條件上線後照樣送得出審核。
+ */
+export async function fillReviewConditions(page, { amount }) {
+  await editOrderNotes(page, {
+    order_note: '印刷色差以打樣為準',
+    delivery_note: '自取',
+    payment_note: '匯款後請提供後五碼',
+  });
+  await editPaymentTermsNote(page, '訂金 30%，驗收後 30 天內付清');
+  await addInstallment(page, { description: '全額', amount });
+}
+
+/**
+ * 業務在訂單項目頁籤刪除一件印件。畫面約定（tasks 4.2 實作依此）：印件列操作欄有一顆
+ * 「刪除印件」圖示鈕，按下出確認對話框，確認後印件列消失。
+ */
+export async function deletePrintItemRow(page, name) {
+  await openTab(page, '訂單項目');
+  const row = page.locator('tbody tr.ant-table-row').filter({ hasText: name }).first();
+  const modal = dialog(page);
+  await clickOpen(row.getByRole('button', { name: '刪除印件' }), modal);
+  await modal.getByRole('button', { name: /刪\s*除|確\s*認/ }).last().click();
+  await waitModalsClosed(page);
+  await expect(page.locator('tbody tr.ant-table-row').filter({ hasText: name })).toHaveCount(0);
+}
+
+/**
+ * 業務在訂單項目頁籤刪除一筆其他費用列（情境 2.15 應收總額 0 段）。畫面約定：費用列操作欄
+ * 有一顆「刪除項目」圖示鈕，按下出確認對話框。規則正本 wiki [[明細時點分界]] § 階段一
+ * （其他費用含新增與刪除，終態前皆可）。
+ */
+export async function deleteFeeRow(page, description) {
+  await openTab(page, '訂單項目');
+  const row = page.locator('tbody tr.ant-table-row').filter({ hasText: description }).first();
+  const modal = dialog(page);
+  await clickOpen(row.getByRole('button', { name: '刪除項目' }), modal);
+  await modal.getByRole('button', { name: /刪\s*除|確\s*認/ }).last().click();
+  await waitModalsClosed(page);
+  await expect(page.locator('tbody tr.ant-table-row').filter({ hasText: description })).toHaveCount(0);
+}

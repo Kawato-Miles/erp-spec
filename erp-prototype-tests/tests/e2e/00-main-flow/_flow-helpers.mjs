@@ -172,3 +172,45 @@ export const field = (scope, label) => scope.getByLabel(label);
 /** 需求單詳情頁進度條目前所在的那一格 */
 export const quoteCurrentStep = (page) =>
   page.locator('.ant-steps-item-process .ant-steps-item-title');
+
+// ─── 送審條件（change order-review-gate-invoice-draft-transfer-receipt）───
+// 線下單送主管審核前須四格備註皆有值、至少一期未取消的收款項目；第 6 站送審前由業務補齊。
+
+/** 詳情頁某個分區（PanelBlock）的標題列：以 level 5 標題定位，取最近一個含按鈕的祖先容器 */
+const panelSection = (page, heading) =>
+  page.getByRole('heading', { name: heading, level: 5 }).locator('xpath=ancestor::div[.//button][1]');
+
+/** 填 AntD DatePicker：填入 YYYY-MM-DD 文字後按 Enter 確認 */
+async function pickDate(input, value) {
+  await input.click();
+  await input.fill(value);
+  await input.press('Enter');
+}
+
+/** 業務在資訊頁籤的「訂單備註」側板填訂單須知、交貨備註、付款備註 */
+export async function fillOrderNotes(page, values) {
+  await openTab(page, '資訊');
+  const panel = drawer(page);
+  await clickOpen(button(panelSection(page, '訂單備註'), '編輯'), panel.locator('#delivery_note'));
+  for (const [key, value] of Object.entries(values)) {
+    await panel.locator(`#${key}`).fill(value);
+  }
+  await button(panel, '確認').click();
+  await expect(page.getByText('已更新訂單備註').last()).toBeVisible();
+  await waitModalsClosed(page);
+}
+
+/** 業務在金額與發票頁籤新增一期收款項目 */
+export async function addInstallment(page, { description, amount, paidDate, issueDate }) {
+  await openTab(page, '金額與發票');
+  const modal = dialog(page);
+  await clickOpen(button(page, '新增收款項目'), modal.getByLabel('描述'));
+  await modal.getByLabel('描述').fill(description);
+  await modal.getByLabel('預計金額（含稅）').fill(String(amount));
+  await pickOption(page, modal.getByLabel('預計收款方式'), '銀行轉帳');
+  await pickDate(modal.getByLabel('預計收款日'), paidDate);
+  await pickDate(modal.getByLabel('預計開立發票日'), issueDate);
+  await modal.getByRole('button', { name: spaced('建立期次') }).click();
+  await expect(page.getByText(`已新增收款項目「${description}」`).last()).toBeVisible();
+  await waitModalsClosed(page);
+}

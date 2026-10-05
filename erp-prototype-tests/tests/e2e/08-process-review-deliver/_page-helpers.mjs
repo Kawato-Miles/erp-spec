@@ -105,3 +105,66 @@ export async function checkTasks(page, taskNames) {
     await taskRow(page, name).getByRole('checkbox').check();
   }
 }
+
+/**
+ * 表格中某一列、某一欄的文字（欄以表頭葉節點的文字定位，含群組表頭的跨欄與跨列）。
+ * 第七、八、九章共用：工單詳情的生產任務列表與待審核列表的子表都是群組表頭，
+ * 欄位順序會隨改版調整，只用列文字比對會把同一列其他欄的同名值（如「－」「已完成」）算進來。
+ * 列以「含 rowText 的資料列、且列內沒有巢狀表格」定位，表頭取該列所屬的那一張表；
+ * 同一段文字同時出現在母表與子表時（例：母表的印件名稱含子表的任務名），只取表頭有該欄的那一張表的列。
+ * 找不到列或欄時回 null。
+ */
+export function cellText(page, rowText, header) {
+  return page.evaluate(
+    ([text, headerText]) => {
+      const candidates = [...document.querySelectorAll('tr.ant-table-row')].filter(
+        (tr) => tr.textContent.includes(text) && !tr.querySelector('.ant-table'),
+      );
+      // 只看該列所屬那一張表自己的表頭（第一個 thead），不把展開列裡子表的表頭算進來
+      const hasHeader = (tr) =>
+        [...(tr.closest('.ant-table')?.querySelector('thead')?.querySelectorAll('th') ?? [])].some(
+          (th) => th.textContent.trim() === headerText,
+        );
+      const rows = candidates.filter(hasHeader);
+      const row = rows.find((tr) => tr.offsetParent !== null) ?? rows[0];
+      if (!row) return null;
+      const table = row.closest('.ant-table');
+      const thead = table?.querySelector('thead');
+      if (!thead) return null;
+      const grid = [];
+      [...thead.querySelectorAll(':scope > tr')].forEach((tr, ri) => {
+        grid[ri] = grid[ri] ?? [];
+        let ci = 0;
+        [...tr.children].forEach((th) => {
+          while (grid[ri][ci]) ci += 1;
+          for (let r = 0; r < (th.rowSpan || 1); r += 1) {
+            grid[ri + r] = grid[ri + r] ?? [];
+            for (let c = 0; c < (th.colSpan || 1); c += 1) grid[ri + r][ci + c] = th;
+          }
+          ci += th.colSpan || 1;
+        });
+      });
+      const leaf = grid[grid.length - 1] ?? [];
+      const index = leaf.findIndex((th) => th && th.textContent.trim() === headerText);
+      if (index < 0) return null;
+      let ci = 0;
+      for (const td of row.children) {
+        const span = td.colSpan || 1;
+        if (index >= ci && index < ci + span) return td.textContent.trim();
+        ci += span;
+      }
+      return null;
+    },
+    [rowText, header],
+  );
+}
+
+/** 斷言某列某欄的文字（逾時內重讀，等畫面重繪完成） */
+export async function expectCell(page, rowText, header, expected) {
+  await expect
+    .poll(() => cellText(page, rowText, header), {
+      message: `「${rowText}」列的「${header}」欄`,
+      timeout: 15_000,
+    })
+    .toBe(expected);
+}

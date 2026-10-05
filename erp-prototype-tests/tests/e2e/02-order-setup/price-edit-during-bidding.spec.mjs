@@ -1,6 +1,14 @@
 import { test, expect } from '@playwright/test';
 import { openAs, gotoInApp, switchRole } from '../_helpers.mjs';
-import { button, buildDraftOrder, goInApp, openTab, orderHeader, rowOf } from './_local.mjs';
+import {
+  button,
+  buildDraftOrder,
+  fillReviewConditions,
+  goInApp,
+  openTab,
+  orderHeader,
+  rowOf,
+} from './_local.mjs';
 
 test('2.4 比價期間直接改印件單價、重出報價單（商業需求覆蓋矩陣 B）', async ({ page }) => {
   test.setTimeout(180_000);
@@ -10,6 +18,8 @@ test('2.4 比價期間直接改印件單價、重出報價單（商業需求覆�
     { openAs, switchRole, gotoInApp },
     { caseName: '2.4 比價改單價', itemName, qty: '100', unitPrice: '50' },
   );
+  // 前置：補齊送審條件（四格備註、一期收款項目），訂單才送得出審核
+  await fillReviewConditions(page, { amount: 5250 });
   await button(page, '送主管審核').click();
   await switchRole(page, '業務主管');
   await goInApp(page, '/orders/approval-queue', gotoInApp);

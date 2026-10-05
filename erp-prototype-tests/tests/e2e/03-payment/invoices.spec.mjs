@@ -1,17 +1,31 @@
 import { test, expect } from '@playwright/test';
 import { openAs, cjkName } from '../_helpers.mjs';
-import { dialog, openTab, toastText, waitModalsClosed } from './_local.mjs';
+import {
+  button,
+  dialog,
+  entryButton,
+  expectEntries,
+  installmentRow,
+  openTab,
+  toastText,
+  waitModalsClosed,
+} from './_local.mjs';
 
-// 情境目錄第三章 3.4-3.7：開立發票、品項調平、作廢重開、折讓減額。
+// 情境目錄第三章 3.4-3.7：直接開立發票、品項調平、作廢重開、折讓減額。
+// 收款項目列上的發票入口：該期沒有未作廢發票時「建立草稿」「直接開立發票」並列，有草稿時只剩「送出開立」，
+// 已開立時兩者都不顯示（change order-review-gate-invoice-draft-transfer-receipt）。
 // 起點資料：鏈二 ORD-2026-0710 的尾款期 BI-0710-2（預計金額含稅 47,425、開發票狀態未開立）。
 // 作廢發票限申報期限內（兩個月一期，最晚到下一期第一個月 14 日），原型以瀏覽器當天日期判斷；
 // 涉及作廢的情境一律固定瀏覽器日期，測試結果不隨實際日期漂移。
 
-test('3.4 以收款項目一鍵開立發票', async ({ page }) => {
+test('3.4 以收款項目直接開立發票', async ({ page }) => {
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=paymentPlan');
 
-  const targetRow = page.locator('tr', { hasText: '尾款 70%' });
-  await targetRow.getByRole('button', { name: '開立發票' }).click();
+  // 開立前：該期列上「建立草稿」與「直接開立發票」兩個入口並列
+  const targetRow = installmentRow(page, '尾款 70%');
+  await expectEntries(targetRow, ['建立草稿', '直接開立發票']);
+
+  await entryButton(targetRow, '直接開立發票').click();
   const modal = dialog(page);
   await expect(modal).toBeVisible();
 
@@ -36,9 +50,9 @@ test('3.4 以收款項目一鍵開立發票', async ({ page }) => {
   await toastText(page, /已開立發票/);
   await waitModalsClosed(page);
 
-  // 送出後發票轉開立、該期開發票狀態轉已開立，這一期不再有開立入口
-  await expect(page.locator('tr', { hasText: '尾款 70%' })).toContainText('已開立');
-  await expect(page.locator('tr', { hasText: '尾款 70%' }).getByRole('button', { name: '開立發票' })).toHaveCount(0);
+  // 送出後發票轉開立、該期開發票狀態轉已開立，這一期的兩個入口都不再顯示
+  await expect(installmentRow(page, '尾款 70%')).toContainText('已開立');
+  await expectEntries(installmentRow(page, '尾款 70%'), []);
 });
 
 test('3.5 客戶指定品名或要求攤開明細時改品項', async ({ page }) => {
@@ -134,15 +148,15 @@ test('3.6 已開立的發票作廢重開', async ({ page }) => {
   await toastText(page, /已作廢發票/);
   await waitModalsClosed(page);
 
-  // 原發票轉作廢並留作廢原因、退出對帳；該期開發票狀態先回已作廢
+  // 原發票轉作廢並留作廢原因、退出對帳；該期開發票狀態先回已作廢，
+  // 同一期再度出現「建立草稿」與「直接開立發票」兩個入口
   await expect(invoiceRow).toContainText('作廢');
-  // 收款項目表以「款項」欄頭錨定，避免與款項紀錄區核銷分配欄同一期次描述文字混淆
-  const installmentTable = page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '款項', exact: true }) });
-  const installmentRow = installmentTable.locator('tr', { hasText: '訂金 30%' });
-  await expect(installmentRow).toContainText('已作廢');
+  const installmentRowOf = () => installmentRow(page, '訂金 30%');
+  await expect(installmentRowOf()).toContainText('已作廢');
+  await expectEntries(installmentRowOf(), ['建立草稿', '直接開立發票']);
 
-  // 回收款項目區對同一期重新開立一張
-  await installmentRow.getByRole('button', { name: '開立發票' }).click();
+  // 第一輪：按「直接開立發票」重新開立
+  await entryButton(installmentRowOf(), '直接開立發票').click();
   const issueModal = dialog(page);
   await expect(issueModal).toBeVisible();
   await issueModal.getByRole('button', { name: cjkName('確認') }).click();
@@ -150,10 +164,46 @@ test('3.6 已開立的發票作廢重開', async ({ page }) => {
   await waitModalsClosed(page);
 
   // 重開後期次轉已開立；作廢張金額不受牽動（仍在發票列表上顯示 NT$ 20,300、已作廢）
-  await expect(installmentRow).toContainText('已開立');
+  await expect(installmentRowOf()).toContainText('已開立');
+  await expectEntries(installmentRowOf(), []);
   const voidedInvoiceRow = invoiceTable.locator('tr', { hasText: 'SSP-26081201' });
   await expect(voidedInvoiceRow).toContainText('NT$ 20,300');
   await expect(voidedInvoiceRow).toContainText('作廢');
+
+  // 第二輪：把剛重開的那張再作廢，改按「建立草稿」存成草稿後再送出開立
+  const reissuedRow = invoiceTable
+    .locator('tbody tr.ant-table-row')
+    .filter({ hasText: 'NT$ 20,300' })
+    .filter({ hasNotText: 'SSP-26081201' })
+    .filter({ hasNotText: '作廢' })
+    .first();
+  await reissuedRow.getByRole('button', { name: '作廢發票' }).click();
+  const voidAgain = dialog(page);
+  await expect(voidAgain).toBeVisible();
+  // 作廢原因含中文時最多 6 字（藍新平台限制，見 wiki 發票法規硬約束-ezPay-MIG）
+  await voidAgain.getByLabel(/作廢原因/).fill('換開立月份');
+  await voidAgain.getByRole('button', { name: cjkName('確認作廢') }).click();
+  await toastText(page, /已作廢發票/);
+  await waitModalsClosed(page);
+  await expectEntries(installmentRowOf(), ['建立草稿', '直接開立發票']);
+
+  await entryButton(installmentRowOf(), '建立草稿').click();
+  const draftModal = dialog(page);
+  await expect(draftModal).toBeVisible();
+  await button(draftModal, '儲存草稿').click();
+  await toastText(page, /已建立發票草稿|已儲存草稿/);
+  await waitModalsClosed(page);
+  await expect(installmentRowOf()).toContainText('已作廢'); // 草稿期間開發票狀態維持原值
+  await expectEntries(installmentRowOf(), ['送出開立']);
+
+  await entryButton(installmentRowOf(), '送出開立').click();
+  const submitModal = dialog(page);
+  await expect(submitModal).toBeVisible();
+  await submitModal.getByRole('button', { name: cjkName('確認') }).click();
+  await toastText(page, /已開立發票/);
+  await waitModalsClosed(page);
+  await expect(installmentRowOf()).toContainText('已開立');
+  await expectEntries(installmentRowOf(), []);
 });
 
 test('3.6b 過了申報期限的發票不可作廢、改開折讓單', async ({ page }) => {

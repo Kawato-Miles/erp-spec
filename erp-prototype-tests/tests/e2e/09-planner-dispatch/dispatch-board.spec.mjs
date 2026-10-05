@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { openAs, gotoInApp, switchRole } from '../_helpers.mjs';
+// 表頭定位取欄的工具放在第八章（工單詳情的生產任務列表是群組表頭），9.2 的最後一步回工單詳情看交付狀態
+import { expectCell, openWorkOrderFromList } from '../08-process-review-deliver/_page-helpers.mjs';
 
 // 情境目錄第九章：生管在「生產任務管理」頁（/production-floor/dispatch）接收與派工。
 // 起點資料：鏈三 WO-2026-0815 的四筆待派任務（皆待處理、已交付、待接收、無工作包）：
@@ -51,6 +53,15 @@ test('9.2 生管對已交付產線的任務按「接收工作」（原編號 14�
   }
   await page.getByRole('button', { name: /接收工作（\d+）/ }).click();
   await expect(page.getByText('已接收工作 3 筆生產任務（接收工作欄已留痕）')).toBeVisible();
+
+  // 回 WO-2026-0815 工單詳情看任務列表：接收過的任務交付狀態由已交付轉已接收，生產任務狀態仍為待處理
+  //（工單端的任務名稱是「牛皮紙 150g 菊全」，現場頁顯示的是「牛皮紙 150g 備料」）
+  await switchRole(page, '印務');
+  await openWorkOrderFromList(page, 'WO-2026-0815');
+  for (const name of ['牛皮紙 150g 菊全', '五色印刷', '軋盒成型', '糊盒成型']) {
+    await expectCell(page, name, '交付狀態', '已接收');
+    await expectCell(page, name, '生產任務狀態', '待處理');
+  }
 });
 
 test('9.6 生管在派工時系統補寫接收留痕（原編號 80）', async ({ page }) => {

@@ -9,7 +9,7 @@ import { MOCK_WORK_ORDERS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(protot
 import { MOCK_FLOOR_TASKS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/mock-data.js';
 
 // 情境 11.1（待驗清單列出條件與欄位）、11.14（多部件取良品最小值）、11.15（不需轉交照樣列出）、
-// 11.16（更正沖銷後回升）、11.17（不良品不進待驗量）、11.19（良品縮回 0 仍留在清單上）、
+// 11.16（更正沖銷後回升）、11.17（不良品不進待驗量）、
 // 11.20（打樣印件同一套算法、重打只算本週期）、11.21（外發報工後即進清單）
 // 的數字驗算；畫面呈現另在 e2e 第十一章驗。
 //
@@ -327,26 +327,12 @@ describe('11.17 不良品不進待驗量，齊套完成數照樣含它', () => {
   });
 });
 
-describe('11.19 良品縮回 0 但已驗過的印件仍留在清單上', () => {
+describe('11.1 唯一的計入完成度任務轉報廢、又沒有任何品檢紀錄的印件不列出', () => {
+  // 11.19 已改寫為「報工修改或作廢會讓待驗量變負時擋下」，見 report-edit-void-pending-guard.test.mjs；
+  // 原本「轉報廢後待驗量顯示 −500」的期望依 qc 規格差異檔 § 待驗清單（不讓待驗量出現負數）刪除。
   const printItems = [printItemOf('PI-TEST-SCRAP', '報廢樣本')];
-  const qcRecords = [qcRecordOf('PI-TEST-SCRAP', 500, 0, '2026-09-18 10:00')];
 
-  it('唯一的計入完成度任務轉報廢後該列仍列出，待驗量為 −500', () => {
-    const rows = calcPendingInspections({
-      printItems,
-      orders: [],
-      workOrders: [
-        workOrderOf('PI-TEST-SCRAP', [taskOf('pt-only', 500, 0, { status: '報廢' })]),
-      ],
-      qcRecords,
-    });
-    expect(rows).toHaveLength(1);
-    expect(rows[0].kitting_good_qty).toBe(0);
-    expect(rows[0].inspected_pass).toBe(500);
-    expect(rows[0].pending_qty).toBe(-500);
-  });
-
-  it('待驗量不大於 0 又沒有任何品檢紀錄的印件才不列', () => {
+  it('齊套良品為 0 且無品檢紀錄時不列', () => {
     const rows = calcPendingInspections({
       printItems,
       orders: [],

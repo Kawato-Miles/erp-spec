@@ -1,11 +1,21 @@
 import { expect, test } from '@playwright/test';
 import { openAs } from '../_helpers.mjs';
-import { checkTasks, cjkName, taskRow } from './_page-helpers.mjs';
+import { cellText, checkTasks, cjkName, expectCell, taskRow } from './_page-helpers.mjs';
 
 // 開發伺服器首次編譯各路由要數秒，測試逾時放寬
 test.describe.configure({ timeout: 120_000 });
 
 // 第八章 製程審核與交付產線：逐筆交付產線（8.3）與存成部件配方（8.10）
+
+// 交付狀態格的滑鼠提示：交付時間與交付操作人（work-order 規格差異檔 § 生產任務交付時間與交付狀態：
+// 每一筆生產任務各寫入交付時間與操作人）
+async function expectDeliveredBy(page, taskName, operator) {
+  await expectCell(page, taskName, '交付狀態', '已交付');
+  await taskRow(page, taskName).getByText('已交付', { exact: true }).hover();
+  const tip = page.locator('.ant-tooltip:visible').last();
+  await expect(tip).toContainText('交付時間');
+  await expect(tip).toContainText(operator);
+}
 
 test('8.3 印務逐筆把生產任務交付產線（原編號 7）', async ({ page }) => {
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0908');
@@ -22,7 +32,9 @@ test('8.3 印務逐筆把生產任務交付產線（原編號 7）', async ({ pa
   await firstConfirm.getByRole('button', { name: /交付產線/ }).click();
 
   await expect(page.getByText('已交付產線 1 個生產任務').first()).toBeVisible();
-  await expect(taskRow(page, '一級卡 300g 名片八開')).toContainText('已交付');
+  // 該筆寫入交付時間與操作人（印務），交付狀態由未交付轉已交付；其餘兩筆仍是未交付
+  await expectDeliveredBy(page, '一級卡 300g 名片八開', '周建宏');
+  expect(await cellText(page, '名片雙面四色印刷', '交付狀態')).toBe('未交付');
   await expect(page.getByText('製程審核完成', { exact: true }).first()).toBeVisible();
 
   // 再把其餘全部交付：工單自動轉「工單已交付」，並提示印件與訂單的推進結果
@@ -35,6 +47,8 @@ test('8.3 印務逐筆把生產任務交付產線（原編號 7）', async ({ pa
   await secondConfirm.getByRole('button', { name: /交付產線/ }).click();
 
   await expect(page.getByText('已交付產線 2 個生產任務').first()).toBeVisible();
+  await expectDeliveredBy(page, '名片雙面四色印刷', '周建宏');
+  await expectDeliveredBy(page, '名片裁切分盒', '周建宏');
   await expect(
     page.getByText(
       /印件「名片」印製狀態轉「工單已交付」；訂單仍有其他印件未到齊，狀態取最落後者不推進/,

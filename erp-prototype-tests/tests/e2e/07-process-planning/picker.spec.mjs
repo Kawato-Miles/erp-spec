@@ -6,6 +6,7 @@ import {
   openWorkOrder,
   pickBomRow,
   pickPickerFilter,
+  pickProductionLine,
   pickerRows,
   readOnlyPair,
   switchFormTab,
@@ -88,6 +89,9 @@ test('7.11 新增生產任務一開就選主檔，新任務排在最後（原編
   await page.keyboard.press('Enter');
   await switchFormTab(page, '數量與放損');
   await formField(page, '預計生產').locator('input').fill('3000');
+  // 產線必填：騎馬釘裝訂不在這張工單的工序段內、帶不出產線，由印務選
+  await switchFormTab(page, '任務內容與排程');
+  await pickProductionLine(page, '後加工產線');
   await taskForm(page).getByRole('button', { name: '新增任務' }).click();
   await expect(taskForm(page)).toHaveCount(0);
 
@@ -199,7 +203,7 @@ test('7.15 選擇器一列等於一個計價層級的選項（原編號 175）',
   await picker.locator('.ant-tabs-tab', { hasText: '材料' }).click();
   await pickBomRow(page, { tab: '材料', keyword: '一級卡', index: 1 });
   const form = taskForm(page);
-  await expect(form.locator('.ant-select')).toHaveCount(3); // 計畫設備、目的站點、前置相依
+  await expect(form.locator('.ant-select')).toHaveCount(4); // 計畫設備、目的站點、前置相依、產線
   // 材料型任務名稱等於材料名加規格名加備料名稱
   await expect(formField(page, '任務名稱').locator('input')).toHaveValue('一級卡 300g 名片八開');
   await expect(readOnlyPair(page, '備料')).toContainText('名片八開');

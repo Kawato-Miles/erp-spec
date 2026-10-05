@@ -69,3 +69,51 @@ export async function waitModalsClosed(page) {
 export async function openTab(page, label) {
   await page.locator('.ant-tabs-tab', { hasText: label }).first().click();
 }
+
+// ── 發票草稿（3.13～3.23）共用定位 ──
+// 收款項目表以「款項」欄頭錨定、發票主表以「發票號碼」欄頭錨定，兩張表的期次描述與單號文字會互相重複。
+export const installmentTable = (page) =>
+  page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '款項', exact: true }) });
+export const invoiceTable = (page) =>
+  page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '發票號碼' }) });
+export const installmentRow = (page, description) =>
+  installmentTable(page).locator('tbody tr.ant-table-row').filter({ hasText: description }).first();
+
+// 收款項目列上的發票入口（圖示按鈕，可及名稱即入口文字）
+export const INVOICE_ENTRIES = ['建立草稿', '直接開立發票', '送出開立'];
+export const entryButton = (row, label) => row.getByRole('button', { name: label, exact: true });
+
+/** 斷言這一期列上「只」出現指定的發票入口，其餘入口不渲染 */
+export async function expectEntries(row, labels) {
+  for (const label of INVOICE_ENTRIES) {
+    await expect(entryButton(row, label)).toHaveCount(labels.includes(label) ? 1 : 0);
+  }
+}
+
+/** 三方對帳區「發票淨額（含稅）」主數字 */
+export const netInvoicedValue = (page) =>
+  page.getByText('發票淨額（含稅）', { exact: true }).first().locator('xpath=following-sibling::div[1]');
+
+/** 抽屜（側板） */
+export const drawer = (page) => page.locator('.ant-drawer-content:visible').last();
+
+/** 詳情頁 PanelBlock 標題列（含編輯鈕） */
+export const panelSection = (page, heading) =>
+  page.getByRole('heading', { name: heading, level: 5 }).locator('xpath=ancestor::div[.//button][1]');
+
+/** 訂單詳情標頭（含狀態標籤） */
+export const orderHeader = (page) =>
+  page.getByRole('main').getByRole('heading', { level: 4 }).first().locator('xpath=..');
+
+/** 站內從訂單列表搜尋單號進詳情，再切到「金額與發票」（記憶體資料保留） */
+export async function openOrderInApp(page, orderNo, gotoInApp) {
+  await gotoInApp(page, '/orders');
+  const search = page.getByRole('textbox', { name: /請輸入訂單編號/ });
+  await search.fill(orderNo);
+  await search.press('Enter');
+  await expect(async () => {
+    await page.getByText(orderNo, { exact: true }).first().click();
+    await expect(page).toHaveURL(/orders\/detail/, { timeout: 5000 });
+  }).toPass({ intervals: [500, 1000, 2000], timeout: 30_000 });
+  await openTab(page, '金額與發票');
+}

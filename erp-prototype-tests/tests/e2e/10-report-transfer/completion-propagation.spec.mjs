@@ -7,7 +7,9 @@ import { clickIntoDetail, gotoInApp, openAs, switchRole, taskRows } from '../_he
 // 前置：生管把 WO-2026-0815 四筆任務全部派入同一個工作包（指派師傅劉阿海），回到共同起點。
 const dispatchAllTasks = async (page) => {
   await openAs(page, '生管', '/production-floor/dispatch');
-  const rows = page.locator('.ant-table-tbody tr.ant-table-row');
+  // 待派清單也有其他工單的任務（鏈外 WO-2026-0812 的裁切與配套裝袋），只勾 WO-2026-0815 的四筆
+  const rows = page.locator('.ant-table-tbody tr.ant-table-row', { hasText: 'WO-2026-0815' });
+  await expect(rows).toHaveCount(4);
   const count = await rows.count();
   for (let i = 0; i < count; i += 1) {
     await rows.nth(i).locator('input[type="checkbox"]').check({ force: true });

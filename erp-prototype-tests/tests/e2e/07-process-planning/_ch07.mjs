@@ -107,3 +107,16 @@ export async function pickPickerFilter(page, picker, label) {
     ).toHaveCount(0, { timeout: 3000 });
   }).toPass({ intervals: [500, 1000, 2000], timeout: 30_000 });
 }
+
+/**
+ * 任務表單「產線」下拉選一個值（只在展開中的那個下拉裡取選項）。
+ * 產線為必填：工序段帶不出產線的新任務（印務自建工單、不在配方工序段內的主檔）要先選才存得進去。
+ */
+export async function pickProductionLine(page, line) {
+  await formField(page, '產線').locator('.ant-select').click({ timeout: 20_000 });
+  await page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
+    .last()
+    .locator(`.ant-select-item-option[title="${line}"]`)
+    .click();
+}

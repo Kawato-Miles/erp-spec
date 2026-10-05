@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { openAs, switchRole, gotoInApp } from '../_helpers.mjs';
 
-// 情境目錄第十章：10.17 來源生產任務報廢或作廢時擋下在途轉交單的點收。
+// 情境目錄第十章：10.17 來源生產任務報廢或作廢時擋下在途轉交單的點收；生管看得到已送達單的作廢操作。
+// 再次點收與點收修改一併擋下的情形以純函式驗（tests/unit/production-floor/transfer-receipts.test.mjs）。
 //
 // store 層雖有 voidTask／scrapTask 兩支動作（work-orders/_lib/store.js），但整個 prototype
 // 沒有任何畫面把它們掛上按鈕——唯一能在畫面上把一筆有實際投入的場內生產任務推進「報廢」的
@@ -47,4 +48,20 @@ test('10.17 來源生產任務報廢或作廢時擋下在途轉交單的點收',
   await switchRole(page, '印務');
   await switchRole(page, '生管');
   await expect(page.locator('tr', { hasText: 'TT-20260830-002' })).toBeVisible();
+
+  // 生管看得到這張已送達單的作廢操作（來源任務已轉報廢，是已送達單唯一能作廢的情形），作廢後轉已作廢
+  await gotoInApp(page, '/production-floor/transfers');
+  const transferRow = page.locator('tr', { hasText: 'TT-20260830-002' });
+  await expect(transferRow).toContainText('已送達');
+  await transferRow.getByRole('button', { name: '作廢' }).click();
+  await page.locator('.ant-form-item', { hasText: '作廢原因' }).locator('.ant-select').click();
+  await page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
+    .last()
+    .locator('.ant-select-item-option', { hasText: '來源任務已報廢或作廢' })
+    .click();
+  await page.getByRole('button', { name: '作廢這張單' }).click();
+  await expect(page.getByText(/TT-20260830-002 已作廢/)).toBeVisible();
+  await expect(transferRow).toContainText('已作廢');
+  // 已送達而來源任務有效的單不給作廢，見 10.28
 });

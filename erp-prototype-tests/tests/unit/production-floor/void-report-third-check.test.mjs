@@ -3,9 +3,10 @@ import { usePrintItemsStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 import { useProductionFloorStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/store.js';
 import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/store.js';
 
-// 情境 10.20「已被品檢驗過的良品不可作廢報工」的判定驗算。
-// 報工作廢的第三道前置檢核：作廢後該印件做出來的良品不可低於已驗量，違反即整筆擋下。
-// 與既有兩道（量已被下游點收、下游已開工）並列，任一命中即擋。
+// 情境 10.20「已被品檢驗過的良品不可作廢報工，也不可調降良品」的判定驗算。
+// 報工修改與作廢共用的一道檢核：改後或作廢後該印件做出來的良品不可低於已驗量，違反即整筆擋下。
+// 與另外幾道（量已被下游點收或在途、下游已開工）並列，任一命中即擋（見 10.35）。
+// 報工修改 editWorkReport 的契約見 report-edit-and-void.test.mjs 檔頭。
 //
 // 合成資料的理由：鏈四 PT-0820-9 精裝裝訂是同一種情形，但該筆任務已完成，作廢會先被
 // 「已完成的任務不可作廢報工」擋下，走不到這一道檢核。本檔的任務刻意停在製作中。
@@ -94,14 +95,14 @@ const voidIt = () =>
 const taskGoodQty = () => useProductionFloorStore.getState().tasks[0].good_qty;
 const reportStatus = () => useProductionFloorStore.getState().workReports[0].status;
 
-describe('10.20 已被品檢驗過的良品不可作廢報工', () => {
+describe('10.20 已被品檢驗過的良品不可作廢報工，也不可調降良品', () => {
   it('品檢已驗收通過 500 時作廢整筆擋下，訊息帶出已驗量與該做的下一步', () => {
     seed([qcRecordOf(500, 0, '2026-09-18 10:00')]);
     const result = voidIt();
     expect(result.ok).toBe(false);
-    expect(result.error).toBe(
-      '該印件已驗收 500 件，作廢後做出來的良品會少於已驗量，請先請品檢人員補更正紀錄',
-    );
+    // 修改與作廢共用同一句訊息（情境目錄 10.20）：只驗規格要求的已驗量與下一步
+    expect(result.error).toContain('該印件已驗收 500 件');
+    expect(result.error).toContain('請先請品檢人員補更正紀錄');
     // 擋下就是整筆不寫：報工紀錄與任務累計都留在原樣
     expect(reportStatus()).toBe('已送出');
     expect(taskGoodQty()).toBe(500);
@@ -112,6 +113,20 @@ describe('10.20 已被品檢驗過的良品不可作廢報工', () => {
     const result = voidIt();
     expect(result.ok).toBe(false);
     expect(result.error).toContain('已驗收 500 件');
+  });
+
+  it('把良品改為 400 的修改同樣整筆擋下，訊息帶出已驗量與該做的下一步', () => {
+    seed([qcRecordOf(500, 0, '2026-09-18 10:00')]);
+    const result = useProductionFloorStore.getState().editWorkReport(REPORT_ID, {
+      good_qty: 400,
+      reason: '誤報',
+      by: '陳金水',
+    });
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('該印件已驗收 500 件');
+    expect(result.error).toContain('請先請品檢人員補更正紀錄');
+    expect(useProductionFloorStore.getState().workReports[0].good_qty).toBe(500);
+    expect(taskGoodQty()).toBe(500);
   });
 
   it('品檢人員補一筆通過 −500 的更正紀錄後，同一筆報工作廢成立', () => {

@@ -14,7 +14,9 @@ const FAKE_PHOTO = path.resolve(HERE, '../../../package.json');
 
 const dispatchAllTasks = async (page) => {
   await openAs(page, '生管', '/production-floor/dispatch');
-  const rows = page.locator('.ant-table-tbody tr.ant-table-row');
+  // 待派清單也有其他工單的任務（鏈外 WO-2026-0812 的裁切與配套裝袋），只勾 WO-2026-0815 的四筆
+  const rows = page.locator('.ant-table-tbody tr.ant-table-row', { hasText: 'WO-2026-0815' });
+  await expect(rows).toHaveCount(4);
   const count = await rows.count();
   for (let i = 0; i < count; i += 1) {
     await rows.nth(i).locator('input[type="checkbox"]').check({ force: true });

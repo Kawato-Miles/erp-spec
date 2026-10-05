@@ -1,9 +1,24 @@
 import { test, expect } from '@playwright/test';
-import { openAs, cjkName } from '../_helpers.mjs';
-import { dialog, pickOption, pickDate, toastText, waitModalsClosed } from './_local.mjs';
+import { openAs, gotoInApp, cjkName } from '../_helpers.mjs';
+import {
+  button,
+  dialog,
+  drawer,
+  installmentRow,
+  invoiceTable,
+  openOrderInApp,
+  openTab,
+  orderHeader,
+  panelSection,
+  pickOption,
+  pickDate,
+  toastText,
+  waitModalsClosed,
+} from './_local.mjs';
 
-// 情境目錄第三章 3.1-3.3：收款項目規劃（新增／編輯／取消）與超上限拆多期。
-// 起點資料：鏈二 ORD-2026-0710（應收總額 67,725，已有兩期：訂金 30% 20,300、尾款 70% 47,425）。
+// 情境目錄第三章 3.1-3.3：收款項目規劃（新增／編輯／取消）與超上限拆多期；3.13 線下單草稿態即可規劃收款項目。
+// 起點資料：鏈二 ORD-2026-0710（應收總額 67,725，已有兩期：訂金 30% 20,300、尾款 70% 47,425）；
+// 只有發票草稿的期次用鏈外 ORD-2026-0812 第 2 期（掛草稿 INV-0812-2）；3.13 用鏈外 ORD-2026-0814（草稿、尚無收款項目）。
 // 帳務頁籤走 /orders/detail?id=<單號>&tab=paymentPlan 直接開啟（「金額與發票」頁籤）。
 
 test('3.1 業務規劃收款項目分期', async ({ page }) => {
@@ -52,6 +67,23 @@ test('3.1 業務規劃收款項目分期', async ({ page }) => {
   // 已開立發票的期次（訂金 30%）取消鈕停用，並提示先作廢該張發票
   const paidRow = page.locator('tr', { hasText: '訂金 30%' });
   await expect(paidRow.getByRole('button', { name: '取消收款項目' })).toBeDisabled();
+
+  // 只有發票草稿的期次照樣取消得了、不必先作廢；草稿隨之從發票區消失
+  await openOrderInApp(page, 'ORD-2026-0812', gotoInApp);
+  // 前置：三期各掛一張草稿（INV-0812-1～3），第 2 期那張在發票區
+  const draftRows = () => invoiceTable(page).locator('tbody tr.ant-table-row').filter({ hasText: '草稿' });
+  await expect(draftRows()).toHaveCount(3);
+  const draftOnlyRow = installmentRow(page, '期中款 20%');
+  await expect(draftOnlyRow.getByRole('button', { name: '取消收款項目' })).toBeEnabled();
+  await draftOnlyRow.getByRole('button', { name: '取消收款項目' }).click();
+  const draftCancelModal = dialog(page);
+  await expect(draftCancelModal).toBeVisible();
+  await draftCancelModal.getByLabel(/原因/).fill('客戶改為一次付清');
+  await draftCancelModal.getByRole('button', { name: cjkName('確認取消') }).click();
+  await toastText(page, /已取消收款項目/);
+  await waitModalsClosed(page);
+  await expect(installmentRow(page, '期中款 20%')).toContainText('已取消');
+  await expect(draftRows()).toHaveCount(2);
 });
 
 test('3.2 收款項目合計與應收總額不符時顯示差額提示', async ({ page }) => {
@@ -112,4 +144,70 @@ test('3.3 預開發票單張超上限時規劃階段拆多期', async ({ page })
   for (const description of ['內部核銷第一期', '內部核銷第二期', '內部核銷第三期']) {
     await expect(page.getByRole('cell', { name: description, exact: true })).toBeVisible();
   }
+});
+
+test('3.13 線下單草稿態即可規劃收款項目，待審期間可改且變更次數累加', async ({ page }) => {
+  test.setTimeout(120_000);
+  // 起點資料：鏈外 ORD-2026-0814（草稿，應收總額 13,126，尚無收款項目；缺交貨備註與收款條件備註）
+  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0814&tab=paymentPlan');
+  await expect(orderHeader(page)).toContainText('草稿');
+
+  const installmentPanel = page.locator('div', { has: page.getByText('收款項目', { exact: true }) }).first();
+  for (const [description, amount, paidDate, issueDate] of [
+    ['訂金', '3938', '2026-10-20', '2026-10-15'],
+    ['尾款', '9188', '2026-11-20', '2026-11-15'],
+  ]) {
+    await installmentPanel.getByRole('button', { name: cjkName('新增收款項目') }).click();
+    const modal = dialog(page);
+    await expect(modal).toBeVisible();
+    await modal.getByLabel('描述').fill(description);
+    await modal.getByLabel('預計金額（含稅）').fill(amount);
+    await pickOption(page, modal.getByLabel('預計收款方式'), '銀行轉帳');
+    await pickDate(modal.getByLabel('預計收款日'), paidDate);
+    await pickDate(modal.getByLabel('預計開立發票日'), issueDate);
+    await modal.getByRole('button', { name: cjkName('建立期次') }).click();
+    await toastText(page, new RegExp(`已新增收款項目「${description}」`));
+    await waitModalsClosed(page);
+  }
+
+  // 兩期皆未開立、未收；合計 13,126 等於應收總額，不出現差額提示
+  for (const description of ['訂金', '尾款']) {
+    const row = installmentRow(page, description);
+    await expect(row).toContainText('未開立');
+    await expect(row).toContainText('未收');
+  }
+  await expect(page.getByText('收款項目合計與應收總額不一致')).toHaveCount(0);
+
+  // 補齊交貨備註與收款條件備註後送主管審核
+  await openTab(page, '資訊');
+  await button(panelSection(page, '訂單備註'), '編輯').click();
+  const notePanel = drawer(page);
+  await notePanel.locator('textarea').nth(1).fill('3.13 分兩批自取，名片先交');
+  await button(notePanel, '確認').click();
+  await expect(page.getByText('已更新訂單備註').last()).toBeVisible();
+  await button(panelSection(page, '發票與收款'), '編輯').click();
+  const billingPanel = drawer(page);
+  await billingPanel.locator('#payment_terms_note').fill('3.13 訂金三成回簽後匯款、尾款交貨後 30 天');
+  await button(billingPanel, '確認').click();
+  await expect(page.getByText('已更新發票與收款').last()).toBeVisible();
+
+  await button(page, '送主管審核').click();
+  await expect(orderHeader(page)).toContainText('待業務主管審核');
+
+  // 待審期間改第二期的預計收款日：直接儲存、訂單維持待業務主管審核
+  await openTab(page, '金額與發票');
+  await installmentRow(page, '尾款').getByRole('button', { name: '編輯' }).click();
+  const editModal = dialog(page);
+  await expect(editModal).toBeVisible();
+  await pickDate(editModal.getByLabel('預計收款日'), '2026-11-30');
+  await editModal.getByRole('button', { name: cjkName('儲存變更') }).click();
+  await toastText(page, /已更新收款項目「尾款」/);
+  await waitModalsClosed(page);
+  await expect(orderHeader(page)).toContainText('待業務主管審核');
+
+  // 原始預計收款日維持首次儲存的值，變更次數加 1
+  const tailRow = installmentRow(page, '尾款');
+  await expect(tailRow).toContainText('2026-11-30');
+  await expect(tailRow).toContainText('2026-11-20');
+  await expect(tailRow.locator('td').filter({ hasText: /^1$/ })).toHaveCount(1);
 });

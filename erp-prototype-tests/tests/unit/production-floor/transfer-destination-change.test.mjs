@@ -16,6 +16,7 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 const floorInitial = {
   tasks: useProductionFloorStore.getState().tasks,
   transferTickets: useProductionFloorStore.getState().transferTickets,
+  workReports: useProductionFloorStore.getState().workReports,
 };
 const workOrdersInitial = useWorkOrdersStore.getState().workOrders;
 
@@ -171,7 +172,7 @@ describe('10.23 已作廢或報廢的任務不可改目的站點，已完成仍�
   });
 });
 
-describe('10.24 下游到料量不比對站點，只增不減；入庫成品判定仍只看品檢站', () => {
+describe('10.24 下游到料量不比對站點、點收修改後不得低於下游已報工量；入庫成品判定仍只看品檢站', () => {
   // 合成資料：前置「印刷」需轉交、目的站點裁切機；下游「裁切」在 POLAR 137 裁切機
   const upstream = {
     id: 'pt-test-up',
@@ -191,11 +192,21 @@ describe('10.24 下游到料量不比對站點，只增不減；入庫成品判�
     depends_on: ['pt-test-up'],
     bom_unit_usage: 1,
   };
+  // 已點收的單帶一筆點收紀錄（點收量等於設定量）：到料量取點收紀錄合計（情境目錄 10.31）
   const ticket = (id, status, stationKey, qty) => ({
     id,
     status,
     target_station_key: stationKey,
-    details: [{ task_id: 'pt-test-up', qty }],
+    details: [
+      {
+        task_id: 'pt-test-up',
+        qty,
+        receipts:
+          status === '已點收'
+            ? [{ id: `${id}-r1`, qty, received_by: '李榮發', received_at: '2026-10-05 10:00', proxy_received: false }]
+            : [],
+      },
+    ],
   });
 
   it('送錯站（或改站前在舊站）點收的量照樣計入下游到料量', () => {
@@ -237,6 +248,54 @@ describe('10.24 下游到料量不比對站點，只增不減；入庫成品判�
     const result = resolvePrecedence(task, [task], tickets);
     expect(result.blocking).toHaveLength(0);
     expect(result.workableQty).toBe(400);
+  });
+
+  it('點收修改後不得低於下游已報工量：下游已報 450 時，把 300 那筆改為 200 被擋、改為 250 成立', () => {
+    // 前置在裁切機點收 300、在覆膜機點收 200（合計 500）；下游裁切已報工生產數量 450
+    useProductionFloorStore.setState({
+      tasks: [
+        { ...upstream, input_qty: 1000, produced_qty: 1000, history: [] },
+        { ...downstream, status: '製作中', target_qty: 1000, input_qty: 450, good_qty: 450, produced_qty: 450, history: [] },
+      ],
+      workReports: [
+        {
+          id: 'wr-test-down',
+          task_id: 'pt-test-down',
+          input_qty: 450,
+          good_qty: 450,
+          defect_qty: 0,
+          status: '有效',
+          reporter: '李榮發',
+          edit_logs: [],
+        },
+      ],
+      transferTickets: [
+        { ...ticket('t1', '已點收', 'POLAR 137 裁切機', 300), ticket_no: 'TT-TEST-1', history: [] },
+        { ...ticket('t2', '已點收', '覆膜機', 200), ticket_no: 'TT-TEST-2', history: [] },
+      ],
+    });
+    useWorkOrdersStore.setState({ workOrders: [] });
+
+    const lowered = floor().editTransferReceipt('t1', {
+      taskId: 'pt-test-up',
+      receiptId: 't1-r1',
+      qty: 200,
+      reason: '重點數量',
+      by: '李榮發',
+    });
+    expect(lowered.ok).toBe(false);
+    expect(lowered.error).toContain('已報工 450');
+    expect(calcArrivedQty('pt-test-up', floor().transferTickets)).toBe(500);
+
+    const ok = floor().editTransferReceipt('t1', {
+      taskId: 'pt-test-up',
+      receiptId: 't1-r1',
+      qty: 250,
+      reason: '重點數量',
+      by: '李榮發',
+    });
+    expect(ok.ok).toBe(true);
+    expect(calcArrivedQty('pt-test-up', floor().transferTickets)).toBe(450);
   });
 
   it('入庫成品判定仍比對站點：只有進了品檢站的量才算', () => {

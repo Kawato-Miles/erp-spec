@@ -25,6 +25,8 @@ async function addProductionTask(page, { bomTab, keyword, part, destination, pla
   const form = dialog(page);
   await form.getByPlaceholder('例：書冊內頁').fill(part);
   await pickOption(page, form.locator('.ant-select').filter({ hasText: '選目的站點' }), destination);
+  // 產線必填：工單非由配方展開，沒有工序段可帶入，產線留空待印務選定
+  await pickOption(page, form.locator('.ant-select').filter({ hasText: '選產線' }), '印刷產線');
   await form.locator('.ant-tabs-tab', { hasText: '數量與放損' }).click();
   const pane = form.locator('.ant-tabs-tabpane-active');
   // 計入完成度打開後，這一頁的第一個數字欄變成「每份工單需生產數量」，預計生產排在它後面

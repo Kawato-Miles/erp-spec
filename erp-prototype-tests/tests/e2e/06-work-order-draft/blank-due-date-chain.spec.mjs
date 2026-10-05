@@ -71,6 +71,8 @@ test('6.13 交期一路留空時五個畫面照實留白、不當機', async ({ 
     form.locator('.ant-select').filter({ hasText: '選目的站點' }),
     '海報印刷｜海德堡 SM102 四色機',
   );
+  // 產線必填：工單非由配方展開，沒有工序段可帶入，產線留空待印務選定
+  await pickOption(page, form.locator('.ant-select').filter({ hasText: '選產線' }), '印刷產線');
   // 任務預計完成日刻意填一個很晚的日期：沒有基準就不做比對，標籤與提示都不該出現
   const endDate = form
     .locator('.ant-form-item')

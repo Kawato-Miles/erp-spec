@@ -18,6 +18,8 @@ import {
   rowOf,
   toastText,
   waitModalsClosed,
+  fillOrderNotes,
+  addInstallment,
 } from './_flow-helpers.mjs';
 
 // 主流程 smoke（驗收依據：docs/main-flow.md 的 31 站站表）。
@@ -46,6 +48,8 @@ const CASE_NAME = '主流程 smoke 誠品週年慶';
 const ITEM_A = '主流程印件甲';
 const ITEM_B = '主流程印件乙';
 const PRINT_STATION = '名片印刷｜海德堡 SM52 四色機';
+// 生產任務的產線（必填）：兩筆任務都在印刷產線上做
+const PRODUCTION_LINE = '印刷產線';
 // 印件部位刻意兩筆各異：工單製程規劃的清單以它分辨同一張工單的兩筆任務
 const PART_PREP = '全張備料';
 const PART_PRINT = '全張印刷';
@@ -71,6 +75,8 @@ async function addProductionTask(
 
   const form = dialog(page);
   await form.getByPlaceholder('例：書冊內頁').fill(part);
+  // 產線必填：工單非由配方展開，沒有工序段可帶入，產線留空待印務選定
+  await pickOption(page, form.locator('.ant-select').filter({ hasText: '選產線' }), PRODUCTION_LINE);
   if (!needsTransfer) {
     // 需轉交預設為是；標為否之後目的站點停用並清空（做完即放行下游、不建轉交單）
     await form.locator('button[role="switch"]').first().click();
@@ -273,7 +279,21 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
     await expect(page.getByText(ITEM_B, { exact: true }).first()).toBeVisible();
   });
 
-  await test.step('第 6 站 業務 送業務主管審核', async () => {
+  await test.step('第 6 站 業務 補齊送審條件後送業務主管審核', async () => {
+    // 送審條件：四格備註皆有值、至少一期未取消的收款項目。收款條件備註已自需求單帶入，
+    // 其餘三格與收款項目在送審前由業務補齊（金額不必等於應收總額）。
+    await expect(button(page, '送主管審核')).toBeDisabled();
+    await fillOrderNotes(page, {
+      order_note: '印刷色差以打樣為準',
+      delivery_note: '自取',
+      payment_note: '匯款後請提供後五碼',
+    });
+    await addInstallment(page, {
+      description: '全額',
+      amount: 10500,
+      paidDate: '2026-10-30',
+      issueDate: '2026-10-20',
+    });
     await button(page, '送主管審核').click();
     await expect(orderHeader(page)).toContainText('待業務主管審核');
     // 球交給業務主管：主管審核工作台出現這張單

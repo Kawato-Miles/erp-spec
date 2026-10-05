@@ -2,6 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
 import { openAs, switchRole, gotoInApp } from '../_helpers.mjs';
+import { confirmDialog, dialogOf } from './_ch10.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 // 借用專案既有檔案當簽收照上傳素材，Upload 的 beforeUpload 一律回 false（只暫存不上傳）
@@ -12,7 +13,9 @@ const FAKE_PHOTO = path.resolve(HERE, '../../../package.json');
 // 前置：生管把 WO-2026-0815 四筆任務全部派入同一個工作包（指派師傅劉阿海）
 const dispatchAllTasks = async (page) => {
   await openAs(page, '生管', '/production-floor/dispatch');
-  const rows = page.locator('.ant-table-tbody tr.ant-table-row');
+  // 待派清單也有其他工單的任務（鏈外 WO-2026-0812 的裁切與配套裝袋），只勾 WO-2026-0815 的四筆
+  const rows = page.locator('.ant-table-tbody tr.ant-table-row', { hasText: 'WO-2026-0815' });
+  await expect(rows).toHaveCount(4);
   const count = await rows.count();
   for (let i = 0; i < count; i += 1) {
     await rows.nth(i).locator('input[type="checkbox"]').check({ force: true });
@@ -39,7 +42,7 @@ const reportTask = async (page, taskName, qty) => {
 };
 
 // 生管在待搬視圖對指定任務建轉交單（帶當下可搬全量）→ 廠務開始搬運並附照抵達站點 → 生管代點收
-const transferAndReceive = async (page, taskName) => {
+const transferAndReceive = async (page, taskName, { checkReceiveQty = false } = {}) => {
   await gotoInApp(page, '/production-floor/pending-moves');
   const moveRow = page.locator('tr', { hasText: taskName });
   await moveRow.locator('input[type="checkbox"]').check({ force: true });
@@ -63,7 +66,10 @@ const transferAndReceive = async (page, taskName) => {
   await gotoInApp(page, '/production-floor/receiving');
   const queueRow = page.locator('tr', { hasText: ticketNo });
   await queueRow.getByRole('button', { name: '點收' }).click();
-  await page.getByRole('button', { name: '確認點收' }).click();
+  const dialog = dialogOf(page, '點收');
+  // 10.11：點收對話框逐條填量，每條明細都有點收量欄、預設帶設定量
+  if (checkReceiveQty) await expect(dialog.locator('.ant-input-number-input').first()).not.toHaveValue('');
+  await confirmDialog(dialog);
   await expect(page.getByText(/已點收/).last()).toBeVisible();
 };
 
@@ -112,9 +118,14 @@ test('10.14 最後一筆報工把工單、印件、訂單一路推到製作完�
 test('10.11 一批貨從報工走到可出貨的全鏈（原編號 105）', async ({ page }) => {
   test.setTimeout(60_000);
   // 起點：鏈二 TT-20260830-002（裁切站待點收，來源 pt-0710-2 海報四色印刷）
+  // 生管代點收：點收對話框逐條填量（帶設定量 1,190）
   await openAs(page, '生管', '/production-floor/receiving');
   await page.locator('tr', { hasText: 'TT-20260830-002' }).getByRole('button', { name: '點收' }).click();
-  await page.getByRole('button', { name: '確認點收' }).click();
+  const receiveDialog = dialogOf(page, '點收');
+  await expect(
+    receiveDialog.locator('tr', { hasText: '海報四色印刷' }).locator('.ant-input-number-input'),
+  ).toHaveValue(/^1,?190$/);
+  await confirmDialog(receiveDialog);
   await expect(page.getByText(/已點收/).last()).toBeVisible();
 
   // 裁切站到料量由 0 變成點收量，裁切成型任務可以報工了
@@ -133,7 +144,7 @@ test('10.11 一批貨從報工走到可出貨的全鏈（原編號 105）', asyn
   await expect(page.getByText('已送出 1 筆報工').last()).toBeVisible();
 
   // 該印件首次出現在品檢待驗清單，建轉交單到品檢站、廠務搬運、點收（生管代點收，FLOOR_MANAGER_ROLES 可代）
-  await transferAndReceive(page, '裁切成型');
+  await transferAndReceive(page, '裁切成型', { checkReceiveQty: true });
 
   await switchRole(page, '品檢人員');
   await gotoInApp(page, '/qc-shipping/inspection');
