@@ -133,6 +133,13 @@ export async function buildDeliveredSampleItem(page, name) {
   const form = dlg(page);
   await form.getByPlaceholder('例：書冊內頁').fill('打樣備料');
   await form.locator('button[role="switch"]').first().click(); // 需轉交關閉：做完即放行、不建轉交單
+  // 產線必填：打樣工單非由配方展開，沒有工序段可帶入，手動選一條
+  await form.locator('.ant-select').filter({ hasText: '選產線' }).click();
+  await page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option[title="印刷產線"]')
+    .first()
+    .click();
+  await expect(page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')).toHaveCount(0);
   await form.locator('.ant-tabs-tab', { hasText: '數量與放損' }).click();
   const qtyPane = form.locator('.ant-tabs-tabpane-active');
   // 提交審核要求至少一筆任務計入完成度：只有一筆任務時這筆就得是那一筆，打開「計入完成度」
