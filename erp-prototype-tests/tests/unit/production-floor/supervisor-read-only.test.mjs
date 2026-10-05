@@ -1,32 +1,69 @@
 import { describe, expect, it } from 'vitest';
 import {
-  canConfirmTaskReceipt,
-  canMaintainWorkPackage,
   canManuallyCompleteTask,
+  canOperateFloorUnit,
   canReportWork,
   canVoidWorkReport,
   checkReportPermission,
   FLOOR_MANAGER_ROLES,
+  FLOOR_PERMISSIONS as P,
+  floorUnitsOf,
+  hasFloorPermission,
+  isFloorReadOnly,
   REPORT_SOURCES,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/permissions.js';
 import { canReceiveTransfer } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/transfer-rules.js';
+import {
+  isTaskInMyLines,
+  isTicketInMyLines,
+} from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/unit-scope.js';
 
-// 情境 9.12「主管在生產管理各頁唯讀」的判定驗算（畫面另在 e2e 9.12 驗）。
-// 主管（Supervisor）看全公司、不動單據（wiki Supervisor 角色卡）；生產管理五模組的
-// 同權角色只有生管、印務、印務主管。
+// 情境 9.12「主管在生產管理五個產線單元唯讀看全貌」的判定驗算（畫面另在 e2e 9.12 驗）。
+// 規則正本：wiki 印件生產流程 § 生產管理單元的權限範圍（主管對五個產線單元只有唯讀檢視）、
+// wiki Supervisor（生產管理各頁唯讀看全貌）。現場代行角色仍只有生管、印務、印務主管。
 
 const pkg = { id: 'wp-demo', master: '劉阿海' };
-const ticket = { id: 'tt-demo', status: '已送達', target_station_key: 'POLAR 137 裁切機', details: [] };
+const ticket = { id: 'tt-demo', status: '已送達', target_station_key: '手工產線', details: [] };
 const who = { role: 'supervisor', currentUser: '王大明' };
 
-describe('9.12 主管在生產管理唯讀', () => {
-  it('同權角色清單不含主管', () => {
-    expect(FLOOR_MANAGER_ROLES).toEqual(['production_planner', 'print_officer', 'print_manager']);
+const LINE_UNITS = [
+  P.TASKS_LINE,
+  P.PACKAGES_LINE,
+  P.PENDING_MOVES_LINE,
+  P.TRANSFERS_LINE,
+  P.RECEIVING_LINE,
+];
+
+describe('9.12 主管在生產管理五個產線單元唯讀看全貌', () => {
+  it('主管拿到五個產線單元、沒有負責單元', () => {
+    expect(floorUnitsOf('supervisor').map((u) => u.label)).toEqual([
+      '所有生產任務',
+      '所有工作包',
+      '待轉交任務',
+      '所有轉交單',
+      '點收佇列',
+    ]);
+    expect(hasFloorPermission('supervisor', P.TASKS_OWN)).toBe(false);
   });
 
-  it('主管不能接收工作、派工維護工作包、手動完成', () => {
-    expect(canConfirmTaskReceipt('supervisor')).toBe(false);
-    expect(canMaintainWorkPackage('supervisor')).toBe(false);
+  it('五個單元都只有檢視：單元操作一律不開放', () => {
+    expect(isFloorReadOnly('supervisor')).toBe(true);
+    LINE_UNITS.forEach((key) => expect(canOperateFloorUnit('supervisor', key)).toBe(false));
+    // 對照：生管持同樣的單元、可以操作
+    LINE_UNITS.forEach((key) => expect(canOperateFloorUnit('production_planner', key)).toBe(true));
+  });
+
+  it('看全貌：六條產線與品檢站的單據都在主管的範圍內', () => {
+    ['壓克力產線', '馬克杯產線', '杯墊產線', '數位產線', '裝訂產線', '手工產線'].forEach(
+      (line) => expect(isTaskInMyLines({ production_line: line }, '王大明')).toBe(true),
+    );
+    expect(isTicketInMyLines({ target_station_key: '品檢站', details: [] }, [], '王大明')).toBe(
+      true,
+    );
+  });
+
+  it('同權角色清單不含主管，主管不能手動完成', () => {
+    expect(FLOOR_MANAGER_ROLES).toEqual(['production_planner', 'print_officer', 'print_manager']);
     expect(canManuallyCompleteTask('supervisor')).toBe(false);
   });
 
@@ -38,7 +75,7 @@ describe('9.12 主管在生產管理唯讀', () => {
     expect(canVoidWorkReport({ reporter: '劉阿海' }, 'supervisor', '王大明', {})).toBe(false);
   });
 
-  it('主管不能代點收；生管照舊可代點收', () => {
+  it('主管看得到點收佇列但不能點收；所屬產線含手工產線的生管可點收並留代點收標記', () => {
     expect(canReceiveTransfer(ticket, who).allowed).toBe(false);
     const planner = canReceiveTransfer(ticket, { role: 'production_planner', currentUser: '許文傑' });
     expect(planner.allowed).toBe(true);

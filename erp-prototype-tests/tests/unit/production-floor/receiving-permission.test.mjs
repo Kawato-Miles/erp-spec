@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { canReceiveTransfer } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/transfer-rules.js';
 
-// 情境 10.8「點收佇列依所屬產線過濾，不看角色」的判定驗算（畫面呈現另在 e2e 10.8 驗）。
-// 誰能點收只看人員的所屬產線含不含該站；生管、印務與印務主管可代點收，主管唯讀不可代點收。
+// 情境 10.8「點收佇列依所屬產線過濾」的判定驗算（畫面呈現另在 e2e 10.8 驗）。
+// 誰能點收只看人員的所屬產線含不含該站（看得到就能做，2026-10-06 拍板）；
+// 生管、印務與印務主管點收時留代點收標記；生管依人（許文傑不含品檢站），印務與印務主管六條產線加品檢站全選。
 // 現場人員的所屬產線（production-floor/_lib/mock-data.js MOCK_FLOOR_STAFF）：
 // 劉阿海＝數位產線、裝訂產線；李榮發＝數位產線、手工產線；郭淑芬＝品檢站。
 // 目的站點以產線標籤為鍵（2026-10-06 拍板）。
@@ -46,7 +47,7 @@ describe('10.8 點收依所屬產線過濾', () => {
     );
   });
 
-  it('生管兩站都可代點收，並標為代點收', () => {
+  it('生管許文傑的所屬產線含手工產線：點得了手工產線並標為代點收；品檢站不在他的所屬產線', () => {
     const cut = canReceiveTransfer(CUT_STATION, {
       role: 'production_planner',
       currentUser: '許文傑',
@@ -56,16 +57,26 @@ describe('10.8 點收依所屬產線過濾', () => {
       currentUser: '許文傑',
     });
     expect(cut).toMatchObject({ allowed: true, proxy: true });
-    expect(qc).toMatchObject({ allowed: true, proxy: true });
+    expect(qc.allowed).toBe(false);
   });
 
-  it('印務與印務主管同樣可代點收', () => {
+  it('生管鄭宇翔只負責手工與壓克力：點得了手工產線、點不了數位產線', () => {
     expect(
-      canReceiveTransfer(QC_STATION, { role: 'print_officer', currentUser: '周建宏' }).allowed,
+      canReceiveTransfer(CUT_STATION, { role: 'production_planner', currentUser: '鄭宇翔' }).allowed,
     ).toBe(true);
     expect(
-      canReceiveTransfer(QC_STATION, { role: 'print_manager', currentUser: '吳國豪' }).allowed,
+      canReceiveTransfer(ticketTo('數位產線'), { role: 'production_planner', currentUser: '鄭宇翔' })
+        .allowed,
+    ).toBe(false);
+  });
+
+  it('印務與印務主管六條產線加品檢站全選：手工產線與品檢站都點得了，並標為代點收', () => {
+    expect(
+      canReceiveTransfer(CUT_STATION, { role: 'print_officer', currentUser: '周建宏' }).allowed,
     ).toBe(true);
+    expect(
+      canReceiveTransfer(QC_STATION, { role: 'print_manager', currentUser: '吳國豪' }),
+    ).toMatchObject({ allowed: true, proxy: true });
   });
 
   it('不在現場人員名冊上的角色（業務）一律點不了', () => {

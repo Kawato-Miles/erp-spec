@@ -8,66 +8,90 @@ import {
   switchRoleSafe,
 } from '../11-qc/_setup.mjs';
 
-// 情境目錄 10.8、10.9：點收佇列（/production-floor/receiving）依人員的所屬產線過濾；
-// 點收對話框逐條列出設定量、點收量預設帶設定量；點收即到料放行，到料量取點收量。
-// 起點資料：鏈二 TT-20260830-002（目的站點手工產線、已送達待點收、一條明細 1,190）、
-// 鏈外 TT-20260827-002（目的站點手工產線、已送達待點收、兩條明細 200 與 300）。
+// 情境目錄 10.8、10.9：點收佇列（/production-floor/receiving）以轉交單為列，不分所有與我的，
+// 只列目的站在目前人員所屬產線的已送達與已點收的單（點收後列留著），看得到就能點收與修改。
+// 點收對話框每條明細一列，點收數量預設帶搬運數量；點收即到料放行，到料量取點收數量。
+// 起點資料：鏈二 TT-20260830-002（目的站點手工產線、已送達、一條明細 1,190）、
+// 鏈外 TT-20260827-002（目的站點手工產線、已送達、兩條明細 200 與 300）；其餘十三張已點收。
 
-test('10.8 點收佇列依所屬產線過濾，不看角色（原編號 93）', async ({ page }) => {
+test('10.8 點收佇列以轉交單為列，依所屬產線過濾（原編號 93）', async ({ page }) => {
   test.setTimeout(180_000);
-  // 前置：生管對鏈四 PT-0820-9 建一張到品檢站的轉交單，廠務開始搬運並抵達站點
+  // 前置：生管對鏈四 PT-0820-9 建一張到品檢站的轉交單，負責廠務開始搬運並抵達站點
   await openAs(page, '生管', '/production-floor/pending-moves');
   await createTransferToQc(page);
   await moveTransferToQc(page);
 
-  // 師傅劉阿海的所屬產線為數位產線與裝訂產線：手工產線的兩張與品檢站那一張都不在他的佇列
+  // 師傅劉阿海：所屬產線為數位產線與裝訂產線，手工產線的兩張與品檢站那一張都不在
   await switchRoleSafe(page, '師傅');
   await gotoInAppSafe(page, '/production-floor/receiving');
   await expect(page.getByText('TT-20260830-002')).toHaveCount(0);
   await expect(page.getByText('TT-20260827-002')).toHaveCount(0);
-  await expect(page.getByText(/目前沒有輪到你點收的貨/)).toBeVisible();
-  await expect(page.getByText(/點收依所屬產線過濾/)).toBeVisible();
+  await expect(page.getByText('品檢站', { exact: true })).toHaveCount(0);
+  // 沒有勾選欄與批次點收
+  await expect(page.locator('input[type="checkbox"]')).toHaveCount(0);
 
-  // 品檢人員郭淑芬的所屬產線只有品檢站：看得到品檢站那一張、看不到手工產線的兩張
+  // 品檢人員郭淑芬：只看得到品檢站那一張，有點收
   await switchRoleSafe(page, '品檢人員');
   await gotoInAppSafe(page, '/production-floor/receiving');
   await expect(page.getByText('TT-20260830-002')).toHaveCount(0);
   await expect(page.getByText('TT-20260827-002')).toHaveCount(0);
-  await expect(page.getByText('品檢站').first()).toBeVisible();
-  await expect(page.locator('tr.ant-table-row')).toHaveCount(1);
+  const rows = page.locator('tbody > tr.ant-table-row');
+  const count = await rows.count();
+  for (let i = 0; i < count; i += 1) await expect(rows.nth(i)).toContainText('品檢站');
+  // 剛送達的那一張（已送達）有點收；鏈四既有送品檢站的單已點收，操作為修改
+  await expect(rows.filter({ hasText: '已送達' })).toHaveCount(1);
+  await expect(rows.filter({ hasText: '已送達' }).getByRole('button', { name: '點收' })).toBeVisible();
 
-  // 生管三張都看得到，畫面提示他正以代點收身分操作
+  // 生管許文傑：所屬產線含手工產線、不含品檢站；兩張已送達的手工產線單有點收，已點收的單有修改
   await switchRoleSafe(page, '生管');
   await gotoInAppSafe(page, '/production-floor/receiving');
-  await expect(page.getByText(/你正以生管.*身分點收/)).toBeVisible();
-  await expect(page.locator('tr.ant-table-row')).toHaveCount(3);
+  await expect(page.locator('tr.ant-table-row').filter({ hasText: '品檢站' })).toHaveCount(0);
+  for (const no of ['TT-20260830-002', 'TT-20260827-002']) {
+    await expect(page.locator('tr.ant-table-row', { hasText: no }).getByRole('button', { name: '點收' })).toBeVisible();
+  }
+  await expect(
+    page.locator('tr.ant-table-row', { hasText: 'TT-20260831-008' }).getByRole('button', { name: '修改' }),
+  ).toBeVisible();
 
-  // 點收對話框逐條列出明細與設定量，點收量欄預設帶設定量、可改
-  const row = page.locator('tr', { hasText: 'TT-20260830-002' });
+  // 點收狀態篩選：只看未點收剩兩張已送達的單；只看已點收不含 TT-20260830-002
+  const statusSelect = page.locator('.ant-col', { hasText: '點收狀態' }).locator('.ant-select');
+  await statusSelect.click();
+  await page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last().locator('.ant-select-item-option', { hasText: '只看未點收' }).click();
+  await expect(rows).toHaveCount(2);
+  await statusSelect.click();
+  await page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last().locator('.ant-select-item-option', { hasText: '只看已點收' }).click();
+  await expect(page.locator('tr.ant-table-row', { hasText: 'TT-20260830-002' })).toHaveCount(0);
+  await page.getByRole('button', { name: /清空/ }).click();
+
+  // 點收對話框每條明細一列，點收數量預設帶搬運數量、可改
+  const row = page.locator('tr.ant-table-row', { hasText: 'TT-20260830-002' });
   await row.getByRole('button', { name: '點收' }).click();
   let dialog = dialogOf(page, '點收');
+  for (const header of ['印件', '生產任務', '搬運數量', '點收數量', '簽收照片']) {
+    await expect(dialog.getByRole('columnheader', { name: header })).toBeVisible();
+  }
   const posterInput = dialog.locator('tr', { hasText: '海報四色印刷' }).locator('.ant-input-number-input');
   await expect(posterInput).toHaveValue(/^1,?190$/);
   await expect(posterInput).toBeEditable();
   await confirmDialog(dialog);
   await expect(page.getByText(/已點收 TT-20260830-002/)).toBeVisible();
-  await expect(row).toHaveCount(0); // 點收後脫離「已送達待點收」佇列
+  // 點收後列留著：狀態改已點收、操作改為修改
+  await expect(row).toContainText('已點收');
+  await expect(row.getByRole('button', { name: '修改' })).toBeVisible();
 
   // TT-20260827-002 的點收對話框列出內卡 200 與信封 300 兩條
-  await page.locator('tr', { hasText: 'TT-20260827-002' }).getByRole('button', { name: '點收' }).click();
+  await page.locator('tr.ant-table-row', { hasText: 'TT-20260827-002' }).getByRole('button', { name: '點收' }).click();
   dialog = dialogOf(page, '點收');
   await expect(dialog.locator('tr', { hasText: '內卡四色印刷' }).locator('.ant-input-number-input')).toHaveValue(/^200$/);
   await expect(dialog.locator('tr', { hasText: '信封四色印刷' }).locator('.ant-input-number-input')).toHaveValue(/^300$/);
 });
 
-// 業務的選單沒有「點收佇列」（品檢與出貨群組只含品檢站／出貨管理），無路可達，獨立成一條測試。
-test('10.8（業務空佇列）業務看到空佇列與提示（原編號 93）', async ({ page }) => {
+// 業務的選單沒有點收佇列，無路可達，以整頁載入驗：業務沒有所屬產線，佇列是空的
+test('10.8（業務空佇列）業務沒有所屬產線，點收佇列是空的並提示依所屬產線過濾（原編號 93）', async ({ page }) => {
   await openAs(page, '業務', '/production-floor/receiving');
   await expect(page.getByText('TT-20260830-002')).toHaveCount(0);
-  await expect(page.getByText(/目前沒有輪到你點收的貨/)).toBeVisible();
-  await expect(
-    page.getByText(/站上無人時生管、印務或印務主管可代點收/),
-  ).toBeVisible();
+  await expect(page.getByText(/目前沒有送到你所屬產線的貨/)).toBeVisible();
+  await expect(page.getByRole('button', { name: '點收' })).toHaveCount(0);
 });
 
 test('10.9 點收就是到料放行，下游可以開工（原編號 94）', async ({ page }) => {

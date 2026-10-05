@@ -61,7 +61,8 @@ test('10.17 來源生產任務報廢或作廢時擋下在途轉交單的點收',
     .locator('.ant-select-item-option', { hasText: '來源任務已報廢或作廢' })
     .click();
   await page.getByRole('button', { name: '作廢這張單' }).click();
-  await expect(page.getByText(/TT-20260830-002 已作廢/)).toBeVisible();
+  // 母層列本身也含單號與「已作廢」，只認提示訊息
+  await expect(page.locator('.ant-message').getByText(/TT-20260830-002 已作廢/)).toBeVisible();
   await expect(transferRow).toContainText('已作廢');
   // 已送達而來源任務有效的單不給作廢，見 10.28
 });

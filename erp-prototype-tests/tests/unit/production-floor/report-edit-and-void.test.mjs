@@ -13,7 +13,7 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 //     → { ok, error? }；只開放生產數量、良品數、不良品數三欄，修改原因必填；
 //     成立時每改一欄在該筆報工 edit_logs 追加一筆
 //     { field: '生產數量'｜'良品數'｜'不良品數', before, after, edited_by, edited_at, reason }，
-//     生產任務歷程追加一筆「良品數 500 → 480」並以 ref 關聯該筆報工。
+//     生產任務歷程追加一筆「報工修改（原因）」，前後值 changes 列良品數 500 → 480，並以 ref 關聯該筆報工。
 //   修改與作廢共用擋下條件；擋下訊息列出佔用的單據與提示（未送達的單「先作廢尚未送達的單」、
 //   已送達的單「先照實點收」），並帶出人工程序。
 
@@ -128,7 +128,9 @@ describe('10.34 報工修改三欄可改、原因必填、留修改紀錄、調�
     const task = taskById('pt-0812-2');
     expect(task.good_qty).toBe(480);
     const last = task.history.at(-1);
-    expect(last.event).toContain('良品數 500 → 480');
+    // 歷程每筆比照報工紀錄列格式：事件一句、前後值逐欄列出（Miles 2026-10-06 拍板）
+    expect(last.event).toContain('報工修改（搬運遺失）');
+    expect(last.changes).toContainEqual({ field: '良品數', before: 500, after: 480 });
     expect(last.ref).toBe('wr-0018');
     expect(last.actor).toBe('周建宏');
   });
@@ -207,7 +209,13 @@ describe('10.35 報工修改與作廢共用擋下條件：在途與已點收量�
       ],
       tickets: [receivedTicket('pt-test-a', 200)],
     });
-    const result = floor().editWorkReport('wr-test-a2', { good_qty: 0, reason: '誤報', by: '周建宏' });
+    // 良品改 0、改記為不良品 150（生產數量大於 0 時良品與不良品不可同時為 0，見 10.48）
+    const result = floor().editWorkReport('wr-test-a2', {
+      good_qty: 0,
+      defect_qty: 150,
+      reason: '誤報',
+      by: '周建宏',
+    });
     expect(result.ok).toBe(false);
     expect(listedTickets(result)).toContain('TT-TEST-RECV');
     expect(taskById('pt-test-a').good_qty).toBe(300);

@@ -18,7 +18,7 @@
 //       比照 canEditTaskDestination（wiki 生產任務 § 產線欄「比照目的站點」）。
 //   work-orders/_lib/store.js
 //     updateTaskProductionLine(id, taskId, line, { by }) → { ok, error }
-//       不動工單狀態、不要求重新送審，任務歷程追加一筆「產線由 原值 改為 新值」。
+//       不動工單狀態、不要求重新送審，任務歷程追加一筆「產線變更」，前後值 changes 記原值與新值。
 //   recipes/_lib/expansion.js
 //     planWorkOrders 展開的每一筆任務帶 production_line（取自該工序段）。
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -247,7 +247,8 @@ describe('8.17 製程核可後印務主管或工單負責人改產線，不必�
     const last = task.history.at(-1);
     expect(last.actor).toBe('吳國豪');
     expect(last.at).toBeTruthy();
-    expect(last.event).toContain('產線由 數位產線 改為 手工產線');
+    expect(last.event).toBe('產線變更');
+    expect(last.changes).toEqual([{ field: '產線', before: '數位產線', after: '手工產線' }]);
   });
 
   it('負責印務周建宏改 WO-2026-0908 名片雙面四色印刷的產線：同樣不要求重審、歷程記修改人', () => {
@@ -259,6 +260,6 @@ describe('8.17 製程核可後印務主管或工單負責人改產線，不必�
     expect(workOrderOf('WO-2026-0908').status).toBe('製程審核完成');
     const last = taskOf('WO-2026-0908', '名片雙面四色印刷').history.at(-1);
     expect(last.actor).toBe('周建宏');
-    expect(last.event).toContain('產線由 數位產線 改為 手工產線');
+    expect(last.changes).toEqual([{ field: '產線', before: '數位產線', after: '手工產線' }]);
   });
 });

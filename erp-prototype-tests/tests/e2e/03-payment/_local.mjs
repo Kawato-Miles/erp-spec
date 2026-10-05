@@ -70,7 +70,7 @@ export async function openTab(page, label) {
   await page.locator('.ant-tabs-tab', { hasText: label }).first().click();
 }
 
-// ── 發票草稿（3.13～3.23）共用定位 ──
+// ── 發票草稿與開立失敗（3.13～3.23）共用定位 ──
 // 收款項目表以「款項」欄頭錨定、發票主表以「發票號碼」欄頭錨定，兩張表的期次描述與單號文字會互相重複。
 export const installmentTable = (page) =>
   page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '款項', exact: true }) });
@@ -79,16 +79,25 @@ export const invoiceTable = (page) =>
 export const installmentRow = (page, description) =>
   installmentTable(page).locator('tbody tr.ant-table-row').filter({ hasText: description }).first();
 
-// 收款項目列上的發票入口（圖示按鈕，可及名稱即入口文字）
-export const INVOICE_ENTRIES = ['建立草稿', '直接開立發票', '送出開立'];
+// 收款項目列上的發票入口（圖示按鈕，可及名稱即入口文字）：只有「開立發票」一個（2026-10-06 拍板）。
+// 舊的三個入口（建立草稿、直接開立發票、送出開立）一律不得渲染。
+export const INVOICE_ENTRIES = ['開立發票'];
+const REMOVED_ENTRIES = ['建立草稿', '直接開立發票', '送出開立'];
 export const entryButton = (row, label) => row.getByRole('button', { name: label, exact: true });
 
-/** 斷言這一期列上「只」出現指定的發票入口，其餘入口不渲染 */
+/** 斷言這一期列上「只」出現指定的發票入口，其餘入口與已移除的舊入口不渲染 */
 export async function expectEntries(row, labels) {
   for (const label of INVOICE_ENTRIES) {
     await expect(entryButton(row, label)).toHaveCount(labels.includes(label) ? 1 : 0);
   }
+  for (const label of REMOVED_ENTRIES) {
+    await expect(entryButton(row, label)).toHaveCount(0);
+  }
 }
+
+/** 開立視窗內的兩顆動作鈕 */
+export const saveDraftButton = (modal) => modal.getByRole('button', { name: /儲\s*存\s*草\s*稿/ });
+export const issueButton = (modal) => modal.getByRole('button', { name: /^開\s*立$/ });
 
 /** 三方對帳區「發票淨額（含稅）」主數字 */
 export const netInvoicedValue = (page) =>

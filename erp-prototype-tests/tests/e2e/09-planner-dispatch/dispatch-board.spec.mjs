@@ -3,7 +3,7 @@ import { openAs, gotoInApp, switchRole } from '../_helpers.mjs';
 // 表頭定位取欄的工具放在第八章（工單詳情的生產任務列表是群組表頭），9.2 的最後一步回工單詳情看交付狀態
 import { expectCell, openWorkOrderFromList } from '../08-process-review-deliver/_page-helpers.mjs';
 
-// 情境目錄第九章：生管在「生產任務管理」頁（/production-floor/dispatch）接收與派工。
+// 情境目錄第九章：生管在「所有生產任務」（/production-floor/dispatch）接收、打包派工與取消工作包。
 // 起點資料：鏈三 WO-2026-0815 的四筆待派任務（皆待處理、已交付、待接收、無工作包）：
 // 牛皮紙 150g 備料、五色印刷、軋盒成型、糊盒成型。任務編號（PT-0815-*）不在畫面上顯示，
 // 一律以任務名稱、工單編號等使用者看得到的文字選取列。
@@ -16,12 +16,28 @@ const selectFilterOption = async (page, labelText, optionIndex) => {
   await page.keyboard.press('Enter');
 };
 
-test('9.1 生管看待派任務清單，其他角色的可見範圍（原編號 13）', async ({ page }) => {
+test('9.1 生管在所有生產任務看範圍內全部任務，其他角色的可見範圍（原編號 13）', async ({ page }) => {
   await openAs(page, '生管', '/production-floor/dispatch');
+  await expect(page.getByText('所有生產任務').first()).toBeVisible();
   await expect(page.getByRole('cell', { name: 'WO-2026-0815' }).first()).toBeVisible();
 
-  // 篩選：任務類別＝工序（TASK_TYPE_META 順序：材料、工序、裝訂，工序是第 2 個選項）
-  // → 材料型任務（牛皮紙 150g 備料）被篩掉，工序任務（五色印刷）留下
+  // 未打包的列排在前面，可勾選
+  const pendingRow = page.locator('tr.ant-table-row', { hasText: '牛皮紙 150g 備料' }).first();
+  await expect(pendingRow.locator('input[type="checkbox"]')).toHaveCount(1);
+
+  // 全部任務含已打包與終態：以搜尋框找鏈二。已打包的列顯示工作包編號與師傅、不出勾選框，有取消工作包
+  const search = page.getByPlaceholder(/工單編號/).first();
+  await search.fill('WO-2026-0710');
+  await search.press('Enter');
+  const packedRow = page.locator('tr.ant-table-row', { hasText: 'WP-2026-0710-01' }).first();
+  await expect(packedRow).toContainText('師傅 劉阿海');
+  await expect(packedRow.locator('input[type="checkbox"]')).toHaveCount(0);
+  await expect(packedRow.getByRole('button', { name: '取消工作包' })).toBeVisible();
+  await page.getByRole('button', { name: /清空/ }).click();
+
+  // 篩選：派工狀態＝未派工，再加任務類別＝工序 → 材料型任務（牛皮紙 150g 備料）被篩掉，工序任務（五色印刷）留下
+  await selectFilterOption(page, '派工狀態', 0);
+  await expect(page.locator('tr.ant-table-row', { hasText: 'WP-2026-0710-01' })).toHaveCount(0);
   await selectFilterOption(page, '任務類別', 1);
   await expect(page.getByText('牛皮紙 150g 備料')).toHaveCount(0);
   await expect(page.getByText('五色印刷', { exact: true })).toBeVisible();
@@ -30,9 +46,9 @@ test('9.1 生管看待派任務清單，其他角色的可見範圍（原編號 
   await expect(page.getByRole('columnheader', { name: '前置', exact: true })).toHaveCount(0);
   await expect(page.getByRole('columnheader', { name: '下游生產任務' })).toHaveCount(0);
 
-  // 印務主管也看得到本頁、沒有角色限制提示
+  // 印務主管六條產線加品檢站全選，也看得到本單元、沒有權限提示
   await switchRole(page, '印務主管');
-  await expect(page.getByText('派工限生管、印務與印務主管操作')).toHaveCount(0);
+  await expect(page.getByText(/打包派工限持有/)).toHaveCount(0);
   await expect(page.getByRole('cell', { name: 'WO-2026-0815' }).first()).toBeVisible();
 });
 
@@ -45,8 +61,13 @@ test('9.2 生管對已交付產線的任務按「接收工作」（原編號 14�
   await expect(row.getByText('已接收')).toBeVisible();
   await expect(row.getByText('許文傑')).toBeVisible();
 
-  // 批次接收：勾選其餘任務後按批次接收工作（.ant-table-measure-row 是 AntD 量寬度用的隱藏列，排除掉）
+  // 批次接收：以搜尋框篩出 WO-2026-0815 的四筆，勾選其餘任務後按批次接收工作
+  //（.ant-table-measure-row 是 AntD 量寬度用的隱藏列，排除掉）
+  const search = page.getByPlaceholder(/工單編號/).first();
+  await search.fill('WO-2026-0815');
+  await search.press('Enter');
   const rows = page.locator('.ant-table-tbody tr.ant-table-row');
+  await expect(rows).toHaveCount(4);
   const count = await rows.count();
   for (let i = 0; i < count; i += 1) {
     await rows.nth(i).locator('input[type="checkbox"]').check({ force: true });
@@ -131,7 +152,7 @@ test('9.8 派工視窗上方列出這次要派的任務內容（原編號 82）'
   await expect(dialog.getByRole('columnheader', { name: '預計完成' })).toBeVisible();
   await expect(dialog.getByRole('columnheader', { name: '投產目標' })).toBeVisible();
   await expect(dialog.locator('.ant-table-tbody tr')).toHaveCount(2);
-  await page.getByRole('button', { name: '取消' }).click();
+  await page.getByRole('button', { name: '取消', exact: true }).click();
 
   // 改只勾另一筆任務再開一次，內容表換成新選取的任務
   await row1.locator('input[type="checkbox"]').uncheck();

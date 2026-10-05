@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { openAs, gotoInApp, cjkName } from '../_helpers.mjs';
-import { dialog, pickOption, pickDate, toastText, waitModalsClosed } from './_local.mjs';
+import { dialog, issueButton, pickOption, pickDate, toastText, waitModalsClosed } from './_local.mjs';
 
 // 情境目錄 3.11：三方對帳與跨訂單四張清單。
 // 起點資料：鏈一 ORD-2026-0601（已收訖）、鏈二 ORD-2026-0710（尾款未開立未收）、
@@ -59,7 +59,8 @@ test('3.11b 應收款項與待開發票清單隨訂單操作即時更新', async
   await installmentTable.locator('tr', { hasText: '尾款 70%' }).getByRole('button', { name: '開立發票' }).click();
   let modal = dialog(page);
   await expect(modal).toBeVisible();
-  await modal.getByRole('button', { name: cjkName('確認') }).click();
+  // 開立對話框只有「儲存草稿」與「開立」兩顆送出鈕（發票草稿拍板）
+  await issueButton(modal).click();
   await toastText(page, /已開立發票/);
   await waitModalsClosed(page);
 

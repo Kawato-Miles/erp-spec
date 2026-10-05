@@ -14,51 +14,81 @@ import {
   receiveInQueue,
   reportRowOf,
   assignMover, CREATED_TOAST,
+  subCell,
 } from './_ch10.mjs';
 
-// 情境目錄第十章：轉交單管理頁（/production-floor/transfers）與工作包報工紀錄的人工註記。
+// 情境目錄第十章：轉交單單元（所有轉交單 /production-floor/transfers、我的轉交單 /transfers/mine）與工作包報工紀錄的人工註記。
 
-test('10.3 轉交單列表、五個狀態與明細（原編號 23）', async ({ page }) => {
+test('10.3 轉交單子母表、五個狀態與明細（原編號 23）', async ({ page }) => {
   await openAs(page, '生管', '/production-floor/transfers');
-  // 主層一列一張轉交單，帶指派廠務欄；展開子層一列一條明細
-  await expect(page.getByRole('columnheader', { name: '指派廠務' }).first()).toBeVisible();
+  // 母層欄位依序：轉交單號、狀態、目的站、負責廠務、預計轉交日、實際轉交日、建單、操作；沒有廠內執行者欄
+  const mainHeaders = page.locator('.ant-table-thead').first().locator('th');
+  await expect(mainHeaders.filter({ hasText: /\S/ })).toHaveText([
+    '轉交單號',
+    '狀態',
+    '目的站',
+    '負責廠務',
+    '預計轉交日',
+    '實際轉交日',
+    '建單',
+    '操作',
+  ]);
+  await expect(page.getByRole('columnheader', { name: '廠內執行者' })).toHaveCount(0);
+  // 依建單時間新到舊：第一列是建單最晚的 TT-20260831-008（2026-08-31 16:30）
+  const firstRow = page.locator('tbody > tr.ant-table-row').first();
+  await expect(firstRow).toContainText('TT-20260831-008');
+
   const mainRow = page.locator('tr.ant-table-row', { hasText: 'TT-20260830-002' }).first();
   await expect(mainRow).toContainText('簡俊男');
   await mainRow.locator('.ant-table-row-expand-icon').click();
   const subTable = page.locator('tr.ant-table-expanded-row').first();
-  for (const header of ['來源任務', '設定量', '點收累計', '簽收照片']) {
-    await expect(subTable.getByRole('columnheader', { name: header })).toBeVisible();
-  }
+  const subHeaders = subTable.locator('thead th');
+  await expect(subHeaders).toHaveText([
+    '完稿縮圖',
+    '訂單',
+    '印件',
+    '工單',
+    '生產任務',
+    '搬運數量',
+    '點收數量',
+    '最近點收',
+    '簽收照片',
+  ]);
   const subRow = subTable.locator('tr.ant-table-row', { hasText: '海報四色印刷' }).first();
-  await expect(subRow).toContainText('1,190');
-  await expect(subRow).toContainText('簽收照-TT005.jpg');
-  // 已送達、尚未點收的單，子層沒有再次點收與修改
+  await expect(subCell(subRow, '訂單')).toHaveText('ORD-2026-0710');
+  await expect(subCell(subRow, '印件')).toContainText('印件內部完成日');
+  await expect(subCell(subRow, '生產任務')).toContainText('任務預計完成日');
+  await expect(subCell(subRow, '搬運數量')).toHaveText('1,190');
+  await expect(subCell(subRow, '點收數量')).toHaveText('－');
+  await expect(subCell(subRow, '最近點收')).toHaveText('－');
+  await expect(subCell(subRow, '簽收照片')).toContainText('簽收照-TT005.jpg');
+  // 已送達、尚未點收的單，子層沒有操作欄
   await expect(subTable.getByRole('columnheader', { name: '操作' })).toHaveCount(0);
 
-  // 篩選列：狀態、目的地、建單時間區間、實際轉交日區間；轉交單只有一種，沒有單別篩選
+  // 篩選列：狀態、目的站、負責廠務、建單時間區間；沒有單別與實際轉交日區間
   const filters = page.locator('.ant-col');
   await expect(filters.filter({ hasText: '狀態' }).first()).toContainText('全部狀態');
-  await expect(filters.filter({ hasText: '目的地' }).first()).toContainText('全部目的地');
+  await expect(filters.filter({ hasText: '目的站' }).first()).toContainText('全部目的站');
+  await expect(filters.filter({ hasText: '負責廠務' }).first()).toContainText('全部負責廠務');
+  await expect(page.getByText('實際轉交日區間')).toHaveCount(0);
   await expect(page.getByText('全部單別')).toHaveCount(0);
-  await expect(page.getByText('TT-20260830-002')).toBeVisible();
 
-  await page.getByText('TT-20260830-002').click();
+  await page.getByText('TT-20260830-002', { exact: true }).first().click();
   const drawer = page.locator('.ant-drawer-body');
-  // 單頭六格：來源站點、目的地、預計轉交日、備註、指派廠務、廠內執行者（不設單別、原轉交單與「貨已在現場」）
-  await expect(drawer.getByText('單別')).toHaveCount(0);
-  await expect(drawer.getByText('原轉交單')).toHaveCount(0);
+  // 單頭五格：來源站點、目的站、預計轉交日、負責廠務、備註（不設廠內執行者、單別、原轉交單與「貨已在現場」）
+  await expect(drawer.locator('.ant-descriptions-item-label')).toHaveText([
+    '來源站點',
+    '目的站',
+    '預計轉交日',
+    '負責廠務',
+    '備註',
+  ]);
+  await expect(drawer.getByText('廠內執行者')).toHaveCount(0);
   await expect(drawer.getByText('貨已在現場')).toHaveCount(0);
-  await expect(drawer.getByText('來源站點')).toBeVisible();
-  await expect(drawer.getByText('目的地', { exact: true })).toBeVisible();
-  await expect(drawer.getByText('預計轉交日')).toBeVisible();
-  await expect(drawer.getByText('備註', { exact: true })).toBeVisible();
-  await expect(drawer.getByText('指派廠務', { exact: true })).toBeVisible();
-  await expect(drawer.getByText('廠內執行者', { exact: true })).toBeVisible();
-  await expect(drawer.locator('.ant-descriptions-item-label')).toHaveCount(6);
-  // 明細逐條列出生產任務、設定量、點收累計與簽收照片檔名；人與時間不在單頭，一律看歷程
+  // 明細逐條列出生產任務、搬運數量、點收數量與簽收照片檔名；人與時間不在單頭，一律看歷程
   await expect(drawer.getByText(/^明細/)).toBeVisible();
-  await expect(drawer.getByRole('columnheader', { name: '設定量' })).toBeVisible();
-  await expect(drawer.getByRole('columnheader', { name: '點收累計' })).toBeVisible();
+  await expect(drawer.getByRole('columnheader', { name: '搬運數量' })).toBeVisible();
+  await expect(drawer.getByRole('columnheader', { name: '點收數量' })).toBeVisible();
   await expect(drawer.getByRole('columnheader', { name: '簽收照片' })).toBeVisible();
   await expect(detailRowOf(page.locator('.ant-drawer-content:visible').last(), '海報四色印刷')).toContainText(
     '簽收照-TT005.jpg',
@@ -66,19 +96,19 @@ test('10.3 轉交單列表、五個狀態與明細（原編號 23）', async ({ 
   await expect(drawer.getByText(/^歷程/)).toBeVisible();
   await closeDrawer(page);
 
-  // 鏈外 TT-20260827-001：那一條設定量 500、點收累計 480
+  // 鏈外 TT-20260827-001：那一條搬運數量 500、點收數量 480
   let sample = await openTicketDrawer(page, 'TT-20260827-001');
   const certDetail = detailRowOf(sample, '證書四色印刷');
   await expect(certDetail).toContainText('500');
   await expect(certDetail).toContainText('480');
   await closeDrawer(page);
 
-  // 鏈外 TT-20260827-002：兩條各列一張簽收照片、點收累計 0
+  // 鏈外 TT-20260827-002：兩條各列一張簽收照片、尚未點收（點收數量「－」）
   sample = await openTicketDrawer(page, 'TT-20260827-002');
   await expect(detailRowOf(sample, '內卡四色印刷')).toContainText('簽收照-TT016-內卡.jpg');
   await expect(detailRowOf(sample, '信封四色印刷')).toContainText('簽收照-TT016-信封.jpg');
-  await expect(detailRowOf(sample, '內卡四色印刷').locator('td').filter({ hasText: /^0$/ })).toHaveCount(1);
-  await expect(detailRowOf(sample, '信封四色印刷').locator('td').filter({ hasText: /^0$/ })).toHaveCount(1);
+  await expect(detailRowOf(sample, '內卡四色印刷').locator('td').filter({ hasText: /^－$/ })).toHaveCount(1);
+  await expect(detailRowOf(sample, '信封四色印刷').locator('td').filter({ hasText: /^－$/ })).toHaveCount(1);
 });
 
 test('10.6 待搬運的轉交單可改，開始搬運後鎖定（原編號 91）', async ({ page }) => {
@@ -126,19 +156,21 @@ test('10.6 待搬運的轉交單可改，開始搬運後鎖定（原編號 91）
   await page.getByRole('button', { name: '儲存修改' }).click();
   await expect(page.getByText('已更新明細與數量，來源任務的可搬量即時重算')).toBeVisible();
 
-  // 廠務對同一張按「開始搬運」：剩下的動作只有抵達站點（廠務）與作廢（生管、印務、印務主管）
+  // 負責廠務簡俊男在我的轉交單對同一張按「開始搬運」：剩下的動作只有抵達站點（我的轉交單）與作廢（所有轉交單）
   await switchRole(page, '廠務');
-  await gotoInApp(page, '/production-floor/transfers');
+  await gotoInApp(page, '/production-floor/transfers/mine');
   await ticketRow.getByRole('button', { name: '開始搬運' }).click();
   await expect(page.getByText(/已回報開始搬運/).last()).toBeVisible();
   await expect(ticketRow.getByRole('button', { name: '抵達站點' })).toBeVisible();
 
   await switchRole(page, '生管');
+  await gotoInApp(page, '/production-floor/transfers');
   await expect(ticketRow.getByRole('button', { name: '編輯' })).toHaveCount(0);
   await expect(ticketRow.getByRole('button', { name: '作廢' })).toBeVisible();
 
-  // 廠務附照回報抵達站點後轉已送達：作廢也不再出現
+  // 負責廠務附照回報抵達站點後轉已送達：作廢也不再出現
   await switchRole(page, '廠務');
+  await gotoInApp(page, '/production-floor/transfers/mine');
   await ticketRow.getByRole('button', { name: '抵達站點' }).click();
   const deliverDialog = dialogOf(page, '回報抵達站點');
   await deliverDialog.locator('input[type="file"]').first().setInputFiles(FAKE_PHOTO('裁切成型到站照.jpg'));
@@ -147,11 +179,12 @@ test('10.6 待搬運的轉交單可改，開始搬運後鎖定（原編號 91）
   await expect(ticketRow).toContainText('已送達');
 
   await switchRole(page, '生管');
+  await gotoInApp(page, '/production-floor/transfers');
   await expect(ticketRow.getByRole('button', { name: '作廢' })).toHaveCount(0);
   await expect(ticketRow.getByRole('button', { name: '編輯' })).toHaveCount(0);
 });
 
-test('10.7 廠務回報開始搬運與抵達站點（原編號 92）', async ({ page }) => {
+test('10.7 負責廠務回報開始搬運與抵達站點（原編號 92）', async ({ page }) => {
   // 前置：生管在待搬視圖對 PT-0820-9 精裝裝訂建一張待搬運的轉交單（驗開始搬運）
   await openAs(page, '生管', '/production-floor/pending-moves');
   const moveRow = page.locator('tr', { hasText: '精裝裝訂' });
@@ -164,9 +197,10 @@ test('10.7 廠務回報開始搬運與抵達站點（原編號 92）', async ({ 
   // 轉交單列表不顯示來源任務名稱，改用剛建立的單號定位這一列
   const ticketNo = (await toast.innerText()).match(/TT-\d{8}-\d{3}/)[0];
 
+  // 廠務簡俊男是這兩張單的負責廠務，在我的轉交單回報
   await switchRole(page, '廠務');
-  await gotoInApp(page, '/production-floor/transfers');
-  // 頁面頂部提示：實際通道為 Slack 表單，本頁兩顆按鈕是補登與代位入口
+  await gotoInApp(page, '/production-floor/transfers/mine');
+  // 頁面頂部提示：實際通道為 Slack 表單，本頁兩顆按鈕是補登入口
   await expect(page.getByText(/實際通道為 Slack 表單/)).toBeVisible();
 
   const newTicketRow = page.locator('tr', { hasText: ticketNo });
@@ -200,6 +234,8 @@ test('10.7 廠務回報開始搬運與抵達站點（原編號 92）', async ({ 
   await expect(detailRowOf(drawer, '海報四色印刷')).toContainText('簽收照片-1.jpg');
   await expect(detailRowOf(drawer, '海報四色印刷')).toContainText('簽收照片-2.jpg');
   await expect(drawer.getByText('回報抵達站點，附簽收照片：海報四色印刷 2 張')).toBeVisible();
+  // 側板單頭沒有廠內執行者，回報者即負責廠務
+  await expect(drawer.getByText('廠內執行者')).toHaveCount(0);
 });
 
 test('10.10 歷程只追加，改不動的數字用人工註記說明（原編號 99）', async ({ page }) => {
@@ -262,16 +298,17 @@ test('10.13 用建單時間查卡在搬運那一段的轉交單（原編號 118�
   await expect(page.getByText('TT-20260830-002')).toHaveCount(0); // 建單時間晚於區間，篩掉
   await expect(page.getByText('TT-20260830-003')).toHaveCount(0);
 
-  // 清空條件後改試實際轉交日區間：只有已送達之後才有實際轉交日，
-  // 該區間不會把待搬運與搬運中的卡點單（TT-20260830-003）藏起來
+  // 清空條件後把狀態選搬運中：只剩 TT-20260830-003；篩選列沒有實際轉交日區間
   await page.getByRole('button', { name: /清空/ }).click();
-  const actualInputs = page.locator('.ant-col', { hasText: '實際轉交日區間' }).locator('input');
-  await actualInputs.nth(0).fill('2020-01-01');
-  await actualInputs.nth(1).fill('2020-01-02');
-  await page.keyboard.press('Enter');
-  await expect(page.getByText('TT-20260830-002')).toHaveCount(0); // 已送達、實際轉交日不在區間
-  await expect(page.getByText('TT-20260828-001')).toHaveCount(0); // 已點收、實際轉交日不在區間
-  await expect(page.getByText('TT-20260830-003')).toBeVisible(); // 搬運中，無實際轉交日不受篩選影響
+  await expect(page.getByText('實際轉交日區間')).toHaveCount(0);
+  await page.locator('.ant-col', { hasText: '狀態' }).first().locator('.ant-select').click();
+  await page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
+    .last()
+    .locator('.ant-select-item-option', { hasText: '搬運中' })
+    .click();
+  await expect(page.locator('tbody > tr.ant-table-row')).toHaveCount(1);
+  await expect(page.getByText('TT-20260830-003')).toBeVisible();
 });
 
 test('10.22 改目的站點後已建的轉交單不動，之後新建的單取新站', async ({ page }) => {
@@ -325,7 +362,7 @@ test('10.22 改目的站點後已建的轉交單不動，之後新建的單取�
     .locator('.ant-select-item-option', { hasText: '目的地填錯' })
     .click();
   await page.getByRole('button', { name: '作廢這張單' }).click();
-  await expect(page.getByText(`${firstNo} 已作廢`, { exact: false })).toBeVisible();
+  await expect(page.locator('.ant-message').getByText(`${firstNo} 已作廢`, { exact: false })).toBeVisible();
 
   await gotoInApp(page, '/production-floor/pending-moves');
   const movedRow = page.locator('tr', { hasText: '精裝裝訂' });
@@ -375,6 +412,10 @@ test('10.23 已作廢或報廢的任務不可改目的站點（畫面：表單�
 test('10.25 已點收的轉交單不可作廢，送錯站由現場溝通後直接搬', async ({ page }) => {
   await openAs(page, '生管', '/production-floor/transfers');
 
+  // 轉交單依建單時間新到舊、每頁 10 張：舊單在後頁，先以單號搜尋縮到這一張
+  const ticketSearch = page.getByPlaceholder('請輸入轉交單編號、印件名稱／編號、來源任務，或負責廠務');
+  await ticketSearch.fill('TT-20260828-001');
+  await ticketSearch.press('Enter');
   // 已點收的 TT-20260828-001：列上沒有作廢，也沒有建回運單的入口
   const receivedRow = page.locator('tr', { hasText: 'TT-20260828-001' });
   await expect(receivedRow).toContainText('已點收');
@@ -383,6 +424,8 @@ test('10.25 已點收的轉交單不可作廢，送錯站由現場溝通後直�
 
   // 搬運中的 TT-20260830-003 仍可作廢（已送達的單來源任務有效時不給作廢，見 10.28）；
   // 作廢對話框寫明已點收不可作廢、送錯站由現場溝通後直接搬
+  await ticketSearch.fill('TT-20260830-003');
+  await ticketSearch.press('Enter');
   const movingRow = page.locator('tr', { hasText: 'TT-20260830-003' });
   await movingRow.getByRole('button', { name: '作廢' }).click();
   const voidDialog = page.locator('.ant-modal-content').filter({ hasText: '作廢轉交單' });
@@ -391,10 +434,10 @@ test('10.25 已點收的轉交單不可作廢，送錯站由現場溝通後直�
   );
 });
 
-test('10.40 建轉交單指定廠務，系統只通知被指派者；待搬運可改指派，實際搬運者另記廠內執行者', async ({
+test('10.40 建轉交單選負責廠務，系統只通知負責廠務；開始搬運與抵達由負責廠務回報', async ({
   page,
 }) => {
-  test.setTimeout(150_000);
+  test.setTimeout(180_000);
   // 起點：鏈四 PT-0820-9 精裝裝訂（目的站點品檢站，可搬量 500）。頁名為「待轉交任務」
   await openAs(page, '生管', '/production-floor/pending-moves');
   await expect(page.getByText('待轉交任務').first()).toBeVisible();
@@ -402,13 +445,13 @@ test('10.40 建轉交單指定廠務，系統只通知被指派者；待搬運�
   await moveRow.locator('input[type="checkbox"]').check({ force: true });
   await page.getByRole('button', { name: /建立轉交單（1）/ }).click();
 
-  // 不選指派廠務就建單：擋下並提示
+  // 不選負責廠務就建單：擋下並提示
   await page.getByRole('button', { name: /建立 1 張單/ }).click();
-  await expect(noticeOf(page, '請指派一位廠務')).toBeVisible();
+  await expect(noticeOf(page, '請選一位負責廠務')).toBeVisible();
 
   // 候選只有具轉交搬運回報權限的人員（兩位廠務），不含師傅、品檢人員與生管
   const dialog = dialogOf(page, '建立轉交單');
-  await dialog.locator('.ant-form-item').filter({ hasText: '指派廠務' }).locator('.ant-select').click();
+  await dialog.locator('.ant-form-item').filter({ hasText: '負責廠務' }).locator('.ant-select').click();
   const options = page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last().locator('.ant-select-item-option');
   await expect(options).toHaveCount(2);
   await expect(options.nth(0)).toHaveAttribute('title', '簡俊男');
@@ -417,53 +460,67 @@ test('10.40 建轉交單指定廠務，系統只通知被指派者；待搬運�
 
   await assignMover(page, '邱志明');
   await page.getByRole('button', { name: /建立 1 張單/ }).click();
-  const toast = page.getByText(/已建立.*已通知廠務 邱志明/);
+  const toast = page.getByText(/已建立.*已通知負責廠務 邱志明/);
   await expect(toast).toBeVisible();
   const ticketNo = (await toast.innerText()).match(/TT-\d{8}-\d{3}/)[0];
 
-  // 列表與側板都看得到指派廠務；歷程記建單時的指派
+  // 所有轉交單的列表與側板都看得到負責廠務；歷程記建單時的負責廠務
   await gotoInApp(page, '/production-floor/transfers');
   const ticketRow = page.locator('tr.ant-table-row', { hasText: ticketNo }).first();
   await expect(ticketRow).toContainText('邱志明');
   let drawer = await openTicketDrawer(page, ticketNo);
-  await expect(drawer).toContainText('指派廠務 邱志明');
+  await expect(drawer).toContainText('負責廠務 邱志明');
+  await expect(drawer.getByText('廠內執行者')).toHaveCount(0);
   await closeDrawer(page);
 
-  // 廠務簡俊男（模擬角色）不是被指派者：通知鈴沒有這張單
+  // 廠務簡俊男不是負責廠務：通知鈴沒有這張單，我的轉交單也不列這張
   await switchRole(page, '廠務');
   const bell = page.locator('header, .ant-layout-header').first().getByText('notifications', { exact: true });
   await bell.click();
   await expect(page.locator('.ant-popover:visible')).not.toContainText(ticketNo);
   await page.keyboard.press('Escape');
+  await gotoInApp(page, '/production-floor/transfers/mine');
+  await expect(page.locator('tr.ant-table-row', { hasText: ticketNo })).toHaveCount(0);
 
-  // 生管在待搬運時改指派為簡俊男：系統通知新的被指派者，歷程記原指派與新指派
+  // 生管在待搬運時改負責廠務為簡俊男：系統通知新的負責廠務，歷程記改前與改後
   await switchRole(page, '生管');
   await gotoInApp(page, '/production-floor/transfers');
   await ticketRow.getByRole('button', { name: '編輯' }).click();
   const editDialog = dialogOf(page, '修改轉交單');
-  await editDialog.locator('.ant-form-item').filter({ hasText: '指派廠務' }).locator('.ant-select').click();
+  await editDialog.locator('.ant-form-item').filter({ hasText: '負責廠務' }).locator('.ant-select').click();
   await page
     .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
     .last()
     .locator('.ant-select-item-option[title="簡俊男"]')
     .click();
   await page.getByRole('button', { name: '儲存修改' }).click();
-  await expect(page.getByText(/改指派廠務 簡俊男（已通知）/)).toBeVisible();
+  await expect(page.getByText(/改負責廠務為 簡俊男（已通知）/)).toBeVisible();
   await expect(ticketRow).toContainText('簡俊男');
 
+  // 簡俊男的通知鈴出現這張單，我的轉交單列出這張並有開始搬運
   await switchRole(page, '廠務');
   await bell.click();
-  await expect(page.locator('.ant-popover:visible')).toContainText(`轉交單 ${ticketNo} 指派你搬運`);
+  await expect(page.locator('.ant-popover:visible')).toContainText(`轉交單 ${ticketNo} 由你負責搬運`);
   await page.keyboard.press('Escape');
-
-  // 廠務回報開始搬運：廠內執行者記實際回報的人；搬運中的單不再有編輯（改指派）入口
-  await ticketRow.getByRole('button', { name: '開始搬運' }).click();
+  await gotoInApp(page, '/production-floor/transfers/mine');
+  const mineRow = page.locator('tr.ant-table-row', { hasText: ticketNo }).first();
+  await mineRow.getByRole('button', { name: '開始搬運' }).click();
   await expect(page.getByText(/已回報開始搬運/).last()).toBeVisible();
+
+  // 歷程的操作人為負責廠務簡俊男，側板沒有廠內執行者欄
   drawer = await openTicketDrawer(page, ticketNo);
-  await expect(drawer).toContainText('改指派廠務：邱志明 → 簡俊男');
-  const executorCell = drawer.locator('.ant-descriptions-item-label', { hasText: '廠內執行者' });
-  await expect(executorCell.locator('xpath=following-sibling::*[1]')).toHaveText('簡俊男');
+  await expect(drawer).toContainText('改負責廠務：邱志明 → 簡俊男');
+  const startEntry = drawer.locator('.ant-timeline-item', { hasText: '回報開始搬運' }).first();
+  await expect(startEntry).toContainText('簡俊男');
+  await expect(drawer.getByText('廠內執行者')).toHaveCount(0);
   await closeDrawer(page);
+
+  // 廠務邱志明的我的轉交單不列這張
+  await switchRole(page, '廠務（邱志明）');
+  await expect(page.locator('tr.ant-table-row', { hasText: ticketNo })).toHaveCount(0);
+
+  // 搬運中的單不再有編輯入口，負責廠務不能再改
   await switchRole(page, '生管');
-  await expect(ticketRow.getByRole('button', { name: '編輯' })).toHaveCount(0);
+  await gotoInApp(page, '/production-floor/transfers');
+  await expect(page.locator('tr.ant-table-row', { hasText: ticketNo }).first().getByRole('button', { name: '編輯' })).toHaveCount(0);
 });

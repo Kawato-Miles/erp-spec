@@ -1,19 +1,20 @@
 import { test, expect } from '@playwright/test';
 import { openAs, cjkName } from '../_helpers.mjs';
 import {
-  button,
   dialog,
   entryButton,
   expectEntries,
   installmentRow,
+  issueButton,
   openTab,
+  saveDraftButton,
   toastText,
   waitModalsClosed,
 } from './_local.mjs';
 
 // 情境目錄第三章 3.4-3.7：直接開立發票、品項調平、作廢重開、折讓減額。
-// 收款項目列上的發票入口：該期沒有未作廢發票時「建立草稿」「直接開立發票」並列，有草稿時只剩「送出開立」，
-// 已開立時兩者都不顯示（change order-review-gate-invoice-draft-transfer-receipt）。
+// 收款項目列上的發票入口只有「開立發票」：該期沒有未作廢發票或只有草稿時顯示，已開立或開立失敗時不顯示；
+// 視窗內「儲存草稿」與「開立」兩顆按鈕（change order-review-gate-invoice-draft-transfer-receipt，2026-10-06 拍板）。
 // 起點資料：鏈二 ORD-2026-0710 的尾款期 BI-0710-2（預計金額含稅 47,425、開發票狀態未開立）。
 // 作廢發票限申報期限內（兩個月一期，最晚到下一期第一個月 14 日），原型以瀏覽器當天日期判斷；
 // 涉及作廢的情境一律固定瀏覽器日期，測試結果不隨實際日期漂移。
@@ -21,13 +22,16 @@ import {
 test('3.4 以收款項目直接開立發票', async ({ page }) => {
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=paymentPlan');
 
-  // 開立前：該期列上「建立草稿」與「直接開立發票」兩個入口並列
+  // 開立前：該期列上只有「開立發票」一個入口
   const targetRow = installmentRow(page, '尾款 70%');
-  await expectEntries(targetRow, ['建立草稿', '直接開立發票']);
+  await expectEntries(targetRow, ['開立發票']);
 
-  await entryButton(targetRow, '直接開立發票').click();
+  await entryButton(targetRow, '開立發票').click();
   const modal = dialog(page);
   await expect(modal).toBeVisible();
+  // 視窗內兩顆動作鈕：儲存草稿與開立
+  await expect(saveDraftButton(modal)).toBeVisible();
+  await expect(issueButton(modal)).toBeVisible();
 
   // 來源收款期次唯讀顯示；金額三欄由品項推算、唯讀不可手填
   await expect(modal.getByText(/來源收款期次：尾款 70%.*含稅 NT\$ 47,425/)).toBeVisible();
@@ -46,11 +50,11 @@ test('3.4 以收款項目直接開立發票', async ({ page }) => {
   await expect(modal.getByText('稅額', { exact: true }).locator('xpath=following-sibling::div[1]')).toHaveText('NT$ 2,258');
   await expect(modal.getByText('發票金額（含稅）').locator('xpath=following-sibling::div[1]')).toHaveText('NT$ 47,425');
 
-  await modal.getByRole('button', { name: cjkName('確認') }).click();
+  await issueButton(modal).click();
   await toastText(page, /已開立發票/);
   await waitModalsClosed(page);
 
-  // 送出後發票轉開立、該期開發票狀態轉已開立，這一期的兩個入口都不再顯示
+  // 開立後發票轉開立、該期開發票狀態轉已開立，這一期不再顯示「開立發票」
   await expect(installmentRow(page, '尾款 70%')).toContainText('已開立');
   await expectEntries(installmentRow(page, '尾款 70%'), []);
 });
@@ -59,7 +63,7 @@ test('3.5 客戶指定品名或要求攤開明細時改品項', async ({ page })
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=paymentPlan');
 
   const targetRow = page.locator('tr', { hasText: '尾款 70%' });
-  await targetRow.getByRole('button', { name: '開立發票' }).click();
+  await targetRow.getByRole('button', { name: '開立發票', exact: true }).click();
   const modal = dialog(page);
   await expect(modal).toBeVisible();
 
@@ -79,13 +83,13 @@ test('3.5 客戶指定品名或要求攤開明細時改品項', async ({ page })
 
   // 合計 30,000+5,000=35,000 對不上目標值 45,167，差額提示擋下送出
   await expect(modal.getByText(/品項明細與期次金額差/)).toBeVisible();
-  await expect(modal.getByRole('button', { name: cjkName('確認') })).toBeDisabled();
+  await expect(issueButton(modal)).toBeDisabled();
 
   // 調平：把第二列單價改成把差額補齊（45,167-30,000=15,167）
   await priceInputs.nth(1).fill('15167');
   await expect(modal.getByText(/品項明細與期次金額差/)).toHaveCount(0);
 
-  await modal.getByRole('button', { name: cjkName('確認') }).click();
+  await issueButton(modal).click();
   await toastText(page, /已開立發票/);
   await waitModalsClosed(page);
 
@@ -98,7 +102,7 @@ test('3.5b 品項單價帶兩位小數、小計照實帶小數', async ({ page }
 
   const installmentTable = page.locator('.ant-table-wrapper', { has: page.getByRole('columnheader', { name: '款項', exact: true }) });
   const targetRow = installmentTable.locator('tr', { hasText: '尾款 70%' });
-  await targetRow.getByRole('button', { name: '開立發票' }).click();
+  await targetRow.getByRole('button', { name: '開立發票', exact: true }).click();
   const modal = dialog(page);
   await expect(modal).toBeVisible();
 
@@ -118,7 +122,7 @@ test('3.5b 品項單價帶兩位小數、小計照實帶小數', async ({ page }
   await expect(modal.getByText('稅額', { exact: true }).locator('xpath=following-sibling::div[1]')).toHaveText('NT$ 2,258');
   await expect(modal.getByText('發票金額（含稅）').locator('xpath=following-sibling::div[1]')).toHaveText('NT$ 47,425');
 
-  await modal.getByRole('button', { name: cjkName('確認') }).click();
+  await issueButton(modal).click();
   await toastText(page, /已開立發票/);
   await waitModalsClosed(page);
 
@@ -149,17 +153,17 @@ test('3.6 已開立的發票作廢重開', async ({ page }) => {
   await waitModalsClosed(page);
 
   // 原發票轉作廢並留作廢原因、退出對帳；該期開發票狀態先回已作廢，
-  // 同一期再度出現「建立草稿」與「直接開立發票」兩個入口
+  // 同一期再度出現「開立發票」
   await expect(invoiceRow).toContainText('作廢');
   const installmentRowOf = () => installmentRow(page, '訂金 30%');
   await expect(installmentRowOf()).toContainText('已作廢');
-  await expectEntries(installmentRowOf(), ['建立草稿', '直接開立發票']);
+  await expectEntries(installmentRowOf(), ['開立發票']);
 
-  // 第一輪：按「直接開立發票」重新開立
-  await entryButton(installmentRowOf(), '直接開立發票').click();
+  // 第一輪：按「開立發票」重新開立
+  await entryButton(installmentRowOf(), '開立發票').click();
   const issueModal = dialog(page);
   await expect(issueModal).toBeVisible();
-  await issueModal.getByRole('button', { name: cjkName('確認') }).click();
+  await issueButton(issueModal).click();
   await toastText(page, /已開立發票/);
   await waitModalsClosed(page);
 
@@ -170,7 +174,7 @@ test('3.6 已開立的發票作廢重開', async ({ page }) => {
   await expect(voidedInvoiceRow).toContainText('NT$ 20,300');
   await expect(voidedInvoiceRow).toContainText('作廢');
 
-  // 第二輪：把剛重開的那張再作廢，改按「建立草稿」存成草稿後再送出開立
+  // 第二輪：把剛重開的那張再作廢，視窗內先按「儲存草稿」，再從同一期按「開立發票」帶入草稿後開立
   const reissuedRow = invoiceTable
     .locator('tbody tr.ant-table-row')
     .filter({ hasText: 'NT$ 20,300' })
@@ -185,21 +189,21 @@ test('3.6 已開立的發票作廢重開', async ({ page }) => {
   await voidAgain.getByRole('button', { name: cjkName('確認作廢') }).click();
   await toastText(page, /已作廢發票/);
   await waitModalsClosed(page);
-  await expectEntries(installmentRowOf(), ['建立草稿', '直接開立發票']);
+  await expectEntries(installmentRowOf(), ['開立發票']);
 
-  await entryButton(installmentRowOf(), '建立草稿').click();
+  await entryButton(installmentRowOf(), '開立發票').click();
   const draftModal = dialog(page);
   await expect(draftModal).toBeVisible();
-  await button(draftModal, '儲存草稿').click();
-  await toastText(page, /已建立發票草稿|已儲存草稿/);
+  await saveDraftButton(draftModal).click();
+  await toastText(page, /已儲存草稿/);
   await waitModalsClosed(page);
   await expect(installmentRowOf()).toContainText('已作廢'); // 草稿期間開發票狀態維持原值
-  await expectEntries(installmentRowOf(), ['送出開立']);
+  await expectEntries(installmentRowOf(), ['開立發票']);
 
-  await entryButton(installmentRowOf(), '送出開立').click();
+  await entryButton(installmentRowOf(), '開立發票').click();
   const submitModal = dialog(page);
   await expect(submitModal).toBeVisible();
-  await submitModal.getByRole('button', { name: cjkName('確認') }).click();
+  await issueButton(submitModal).click();
   await toastText(page, /已開立發票/);
   await waitModalsClosed(page);
   await expect(installmentRowOf()).toContainText('已開立');

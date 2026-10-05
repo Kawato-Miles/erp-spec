@@ -71,6 +71,27 @@
 - **THEN** 該筆 SHALL 寫入交付時間，工單 SHALL 維持「製程審核完成」
 - **AND** 印務交付另一筆後，工單 SHALL 推進至「工單已交付」
 
+
+### Requirement: 工單詳情的生產任務歷程與指派師傅
+
+工單詳情 SHALL 呈現旗下生產任務的歷程，取數與呈現 SHALL 與生產任務側板同一份（承諾正本見 [production-execution spec § 生產任務與轉交單歷程紀錄](../production-execution/spec.md)），事件範圍的正本見 wiki [生產任務](../../../memory/Sens_wiki/wiki/erp/05-entities/生產任務.md) § 歷程紀錄。系統 SHALL 承諾：
+
+- 生產任務展開列 SHALL 提供該任務的「歷程」區塊；工單詳情的頁籤 SHALL 名為「歷程」，列出旗下全部生產任務的歷程並標明各筆屬於哪一筆任務，SHALL NOT 再以「報工紀錄」為頁籤名。
+- 生產任務的指派師傅 SHALL 唯讀推導自所屬工作包的指派師傅，未打包時 SHALL 為空；工單詳情與生產任務表單 SHALL NOT 提供指派師傅的輸入。換師傅走工作包取消後重新打包（見 [production-execution spec § 生產管理單元的權限與可見範圍](../production-execution/spec.md)）。
+
+**Priority**: P1
+
+**Rationale**: 報工只是生產任務歷程的一類事件；工單詳情與生產任務側板各記一份，兩邊遲早對不上，印務查帳時不知道該信哪一邊。指派師傅是工作包的屬性，任務上另存一份就會出現任務與工作包說的師傅不同人。
+
+#### Scenario: 工單詳情的歷程頁籤列出旗下任務的歷程
+
+**情境**: 場內轉交與更正 副流程第 6 步之後分支（報工要修改或作廢）
+
+- **GIVEN** 一張工單旗下兩筆生產任務，各有一筆報工，其中一筆報工被修改過
+- **WHEN** 印務開啟工單詳情
+- **THEN** 頁籤 SHALL 名為「歷程」，SHALL 依新到舊列出兩筆任務的報工與報工修改，各筆標明所屬任務
+- **AND** 展開其中一筆任務時，展開列的歷程 SHALL 只列該任務的事件，內容 SHALL 與生產任務側板相同
+
 ## MODIFIED Requirements
 
 ### Requirement: 生產任務結構與帶入規則

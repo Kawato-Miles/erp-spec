@@ -42,7 +42,8 @@ describe('10.22 改目的站點後已建的轉交單不動，之後新建的單�
     const last = task.history.at(-1);
     expect(last.actor).toBe('周建宏');
     expect(last.at).toBeTruthy();
-    expect(last.event).toContain('目的站點由 品檢站 改為 裝訂產線');
+    expect(last.event).toContain('目的站點變更');
+    expect(last.changes).toEqual([{ field: '目的站點', before: '品檢站', after: '裝訂產線' }]);
   });
 
   it('改站前建的單維持原目的地；改站後新建的單取新目的站點，呼叫端帶的目的地不被採用', () => {
@@ -104,9 +105,9 @@ describe('10.22 改目的站點後已建的轉交單不動，之後新建的單�
       .getState()
       .workOrders.find((o) => o.work_order_no === 'WO-2026-0901')
       .tasks.find((t) => t.id === 'pt-0901-1');
-    expect(woTask.history.at(-1).event).toContain(
-      '目的站點由 數位產線 改為 手工產線',
-    );
+    expect(woTask.history.at(-1).changes).toEqual([
+      { field: '目的站點', before: '數位產線', after: '手工產線' },
+    ]);
   });
 
   it('轉交單不再帶單別與原轉交單連結', () => {

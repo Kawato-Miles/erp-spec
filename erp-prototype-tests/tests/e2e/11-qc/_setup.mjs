@@ -32,12 +32,20 @@ export async function switchRoleSafe(page, roleLabel, attempts = 3) {
  */
 export async function gotoInAppSafe(page, path) {
   // data-menu-id 格式為「rc-menu-uuid-<流水>-<路徑>」：帶上路徑前的連字號，/print-items 才不會誤中 /recipes/print-items
-  const item = page.locator(`.ant-menu-item[data-menu-id$="-${path}"]`).first();
+  // 生產管理的產線單元與負責單元（路徑加 /mine）擇一：角色只拿到負責單元時（例如廠務的我的轉交單）改點那一項
+  const floorAlt = path.startsWith('/production-floor/') && !path.endsWith('/mine') ? `${path}/mine` : null;
+  const item = page
+    .locator(
+      floorAlt
+        ? `.ant-menu-item[data-menu-id$="-${path}"], .ant-menu-item[data-menu-id$="-${floorAlt}"]`
+        : `.ant-menu-item[data-menu-id$="-${path}"]`,
+    )
+    .first();
   const closedGroups = page.locator(
     '.ant-menu-submenu:not(.ant-menu-submenu-open) > .ant-menu-submenu-title',
   );
   const esc = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const urlPattern = new RegExp(`${esc}/?(\\?|$)`);
+  const urlPattern = new RegExp(`${esc}(/mine)?/?(\\?|$)`);
 
   for (let attempt = 1; attempt <= 4; attempt += 1) {
     for (let i = 0; i < 12; i += 1) {

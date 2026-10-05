@@ -1,32 +1,12 @@
 import { expect } from '@playwright/test';
-import { gotoInApp, ROLE_USERS } from '../_helpers.mjs';
+import { gotoInApp, switchRole } from '../_helpers.mjs';
 
 // 本章測試共用的頁面操作（只在第八章使用，未收進 _helpers.mjs）
 
-// 切模擬角色（本章專用）：共用工具的 switchRole 連續送鍵時，AntD 下拉會漏掉大部分按鍵，
-// 跨多個位置切換（例如業務切回印務）會停在錯的角色。這裡改成逐鍵確認目前反白的選項再送出。
+// 切模擬角色：沿用共用工具的 switchRole（逐鍵確認反白選項、可重試）。模擬角色下拉改為同角色多人並帶所屬產線後，
+// 選項文字不再等於「角色（人名）」、選項數也超過舊版逐鍵上限，本章不再自帶一份。
 export async function switchRoleReliable(page, roleLabel) {
-  const wanted = `${roleLabel}（${ROLE_USERS[roleLabel]}）`;
-  const select = page.locator('header, .ant-layout-header').first().locator('.ant-select').first();
-  const shown = select.locator('.ant-select-selection-item');
-  if ((await shown.innerText()).trim() === wanted) return;
-  await select.click();
-  // 反白中的選項直接由畫面上讀（清單為虛擬捲動，選項元素會隨捲動增減，故不用 locator 等待）
-  const activeOption = () =>
-    page.evaluate(
-      () =>
-        document
-          .querySelector('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
-          ?.querySelector('.ant-select-item-option-active')
-          ?.textContent?.trim() ?? '',
-    );
-  for (let i = 0; i < 24; i += 1) {
-    if ((await activeOption()) === wanted) break;
-    await page.keyboard.press('ArrowDown');
-    await page.waitForTimeout(60);
-  }
-  await page.keyboard.press('Enter');
-  await expect(shown).toHaveText(wanted);
+  await switchRole(page, roleLabel);
 }
 
 // AntD 會在兩個中文字的按鈕文字中間插一個空白（核可 → 核 可），

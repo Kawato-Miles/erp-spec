@@ -27,7 +27,7 @@ export const noticeOf = (page, text) =>
     .filter({ hasText: text })
     .first();
 
-/** 在轉交單管理打開某張單的側板 */
+/** 在轉交單（所有轉交單或我的轉交單，依角色）打開某張單的側板 */
 export async function openTicketDrawer(page, ticketNo) {
   await gotoInApp(page, '/production-floor/transfers');
   // 列表一頁十筆，較早的單（如 TT-20260827-001）落在第二頁；先用搜尋框以單號篩出再點
@@ -40,16 +40,16 @@ export async function openTicketDrawer(page, ticketNo) {
   return drawer;
 }
 
-/** 建單成立的提示：寫明已通知哪位指派廠務 */
-export const CREATED_TOAST = /已建立.*已通知廠務/;
+/** 建單成立的提示：寫明已通知哪位負責廠務 */
+export const CREATED_TOAST = /已建立.*已通知負責廠務/;
 
 /**
- * 建轉交單對話框的「指派廠務」（必選，候選為具轉交搬運回報權限的人員）。
+ * 建轉交單對話框的「負責廠務」（必選，候選為具轉交搬運回報權限的人員）。
  * 在按「建立 N 張單」之前呼叫。
  */
 export async function assignMover(page, name = '簡俊男') {
   const dialog = dialogOf(page, '建立轉交單');
-  await dialog.locator('.ant-form-item').filter({ hasText: '指派廠務' }).locator('.ant-select').click();
+  await dialog.locator('.ant-form-item').filter({ hasText: '負責廠務' }).locator('.ant-select').click();
   await page
     .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
     .last()
@@ -58,7 +58,7 @@ export async function assignMover(page, name = '簡俊男') {
 }
 
 /**
- * 在轉交單管理把某張單的主層列展開，回傳子層中某一條明細列（以來源生產任務名稱定位）。
+ * 在轉交單把某張單的母層列展開，回傳子層中某一條明細列（以生產任務名稱定位）。
  * 再次點收與點收修改的操作在子層列上。
  */
 export async function ticketDetailSubRow(page, ticketNo, taskName) {
@@ -86,7 +86,7 @@ export async function closeDrawer(page) {
 
 /**
  * 在點收佇列對某張單按點收，逐條填點收量後送出。
- * @param {Object} quantities { 任務名稱: 點收量 }；沒列的明細沿用預設的設定量
+ * @param {Object} quantities { 任務名稱: 點收數量 }；沒列的明細沿用預設的搬運數量
  * @returns 點收對話框（送出前的那一個）
  */
 export async function receiveInQueue(page, ticketNo, quantities = {}) {
@@ -100,7 +100,7 @@ export async function receiveInQueue(page, ticketNo, quantities = {}) {
   return dialog;
 }
 
-/** 在工作包管理打開某個工作包的報工紀錄側板 */
+/** 在生產任務單元打開某個工作包的報工紀錄側板 */
 export async function openPackageReports(page, packageNo) {
   await gotoInApp(page, '/production-floor/work-packages');
   await page.getByText(packageNo, { exact: true }).first().click();
@@ -126,3 +126,10 @@ export async function editReport(page, row, { input, good, defect, reason }) {
   await confirmDialog(dialog);
   return dialog;
 }
+
+/**
+ * 轉交單子層明細列的欄序（2026-10-06 拍板）：完稿縮圖、訂單、印件、工單、生產任務、搬運數量、點收數量、
+ * 最近點收、簽收照片、操作。回傳某一欄的儲存格。
+ */
+const SUB_COLUMNS = ['完稿縮圖', '訂單', '印件', '工單', '生產任務', '搬運數量', '點收數量', '最近點收', '簽收照片', '操作'];
+export const subCell = (subRow, column) => subRow.locator('td').nth(SUB_COLUMNS.indexOf(column));

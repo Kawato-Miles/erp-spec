@@ -18,7 +18,7 @@ import {
 
 // 情境目錄第三章 3.1-3.3：收款項目規劃（新增／編輯／取消）與超上限拆多期；3.13 線下單草稿態即可規劃收款項目。
 // 起點資料：鏈二 ORD-2026-0710（應收總額 67,725，已有兩期：訂金 30% 20,300、尾款 70% 47,425）；
-// 只有發票草稿的期次用鏈外 ORD-2026-0812 第 2 期（掛草稿 INV-0812-2）；3.13 用鏈外 ORD-2026-0814（草稿、尚無收款項目）。
+// 只有發票草稿的期次用鏈外 ORD-2026-0812 第 3 期（掛草稿 INV-0812-3）；3.13 用鏈外 ORD-2026-0814（草稿、尚無收款項目）。
 // 帳務頁籤走 /orders/detail?id=<單號>&tab=paymentPlan 直接開啟（「金額與發票」頁籤）。
 
 test('3.1 業務規劃收款項目分期', async ({ page }) => {
@@ -68,12 +68,12 @@ test('3.1 業務規劃收款項目分期', async ({ page }) => {
   const paidRow = page.locator('tr', { hasText: '訂金 30%' });
   await expect(paidRow.getByRole('button', { name: '取消收款項目' })).toBeDisabled();
 
-  // 只有發票草稿的期次照樣取消得了、不必先作廢；草稿隨之從發票區消失
+  // 只有發票草稿的期次照樣取消得了、不必先作廢；草稿隨之消失（草稿本來就不列在發票區）
   await openOrderInApp(page, 'ORD-2026-0812', gotoInApp);
-  // 前置：三期各掛一張草稿（INV-0812-1～3），第 2 期那張在發票區
-  const draftRows = () => invoiceTable(page).locator('tbody tr.ant-table-row').filter({ hasText: '草稿' });
-  await expect(draftRows()).toHaveCount(3);
-  const draftOnlyRow = installmentRow(page, '期中款 20%');
+  // 前置：第 1、3 期各掛一張草稿、第 2 期掛開立失敗；發票區只列開立失敗那一張
+  const invoiceRows = () => invoiceTable(page).locator('tbody tr.ant-table-row');
+  await expect(invoiceRows()).toHaveCount(1);
+  const draftOnlyRow = installmentRow(page, '尾款 40%');
   await expect(draftOnlyRow.getByRole('button', { name: '取消收款項目' })).toBeEnabled();
   await draftOnlyRow.getByRole('button', { name: '取消收款項目' }).click();
   const draftCancelModal = dialog(page);
@@ -82,8 +82,9 @@ test('3.1 業務規劃收款項目分期', async ({ page }) => {
   await draftCancelModal.getByRole('button', { name: cjkName('確認取消') }).click();
   await toastText(page, /已取消收款項目/);
   await waitModalsClosed(page);
-  await expect(installmentRow(page, '期中款 20%')).toContainText('已取消');
-  await expect(draftRows()).toHaveCount(2);
+  await expect(installmentRow(page, '尾款 40%')).toContainText('已取消');
+  await expect(installmentRow(page, '尾款 40%').getByRole('button', { name: '開立發票', exact: true })).toHaveCount(0);
+  await expect(invoiceRows()).toHaveCount(1);
 });
 
 test('3.2 收款項目合計與應收總額不符時顯示差額提示', async ({ page }) => {

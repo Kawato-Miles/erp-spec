@@ -123,8 +123,9 @@ async function planWorkOrder(page, workOrderNo, { prepNeedsTransfer }) {
 
 // 在工作包報一筆工（投入＝良品＝qty、不良 0）。
 // 對話框逐列同時顯示工單編號與任務名稱，兩者一起用才認得出是哪一張工單的哪一筆任務。
+// 師傅只有「我的工作包」（負責範圍）；生管沒有這一頁，gotoInApp 會改走「所有工作包」代報
 async function reportInPackage(page, packageNo, workOrderNo, taskName, qty) {
-  await goInApp(page, '/production-floor/work-packages', gotoInApp);
+  await goInApp(page, '/production-floor/work-packages/mine', gotoInApp);
   await rowOf(page, packageNo).getByRole('button', { name: '報工' }).click();
   const box = page.locator('.ant-modal-body').last();
   const taskLine = box
@@ -585,6 +586,9 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
     // 球交給生管：待派清單出現六筆
     await switchRole(page, '生管');
     await goInApp(page, '/production-floor/dispatch', gotoInApp);
+    // 所有生產任務列出範圍內全部任務（含終態、分頁 10 筆），先以印件名稱共同字首縮到本次六筆
+    await page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或任務名稱').fill('主流程印件');
+    await page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或任務名稱').press('Enter');
     for (const wo of [woA, woB1, woB2]) {
       await expect(page.locator('tbody tr.ant-table-row').filter({ hasText: wo })).toHaveCount(2);
     }
@@ -638,7 +642,8 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
 
   await test.step('第 29 站 廠務 開始搬運、抵達站點', async () => {
     await switchRole(page, '廠務');
-    await goInApp(page, '/production-floor/transfers', gotoInApp);
+    // 廠務只有「我的轉交單」（負責範圍）；開始搬運與抵達站點在這一頁回報
+    await goInApp(page, '/production-floor/transfers/mine', gotoInApp);
     const ticketRow = rowOf(page, ticketNo);
     await ticketRow.getByRole('button', { name: '開始搬運' }).click();
     await expect(page.getByText(/已回報開始搬運/).last()).toBeVisible();

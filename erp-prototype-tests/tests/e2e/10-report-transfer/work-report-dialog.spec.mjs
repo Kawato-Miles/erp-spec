@@ -62,7 +62,9 @@ test('10.5 報工權限綁在工作歸屬上（原編號 89）', async ({ page }
   // 仍在別人的包（WP-2026-0710-01，指派師傅劉阿海）上看得到報工入口。
   // 取有可報工任務的那一包來驗——報不了的工一律不給入口（WP-2026-0710-02 的唯一任務
   // 前置尚未到料，全頁只有這一包報得動）
+  // 師傅停在「我的工作包」（負責範圍）；生管改走「所有工作包」（產線範圍）
   await switchRole(page, '生管');
+  await gotoInApp(page, '/production-floor/work-packages');
   await expect(
     page.locator('tr', { hasText: 'WP-2026-0710-01' }).getByRole('button', { name: '報工' }),
   ).toBeVisible();

@@ -42,7 +42,8 @@ const reportTask = async (page, taskName, qty) => {
 };
 
 // 生管在待搬視圖對指定任務建轉交單（帶當下可搬全量）→ 廠務開始搬運並附照抵達站點 → 生管代點收
-const transferAndReceive = async (page, taskName, { checkReceiveQty = false } = {}) => {
+// receiver：點收者。點收佇列只列目的站在所屬產線的單，目的站是品檢站時由品檢人員點收（生管許文傑的所屬產線不含品檢站）
+const transferAndReceive = async (page, taskName, { checkReceiveQty = false, receiver = '生管' } = {}) => {
   await gotoInApp(page, '/production-floor/pending-moves');
   const moveRow = page.locator('tr', { hasText: taskName });
   await moveRow.locator('input[type="checkbox"]').check({ force: true });
@@ -63,7 +64,7 @@ const transferAndReceive = async (page, taskName, { checkReceiveQty = false } = 
   await page.getByRole('button', { name: '抵達站點' }).last().click();
   await expect(page.getByText(/已回報抵達站點/).last()).toBeVisible();
 
-  await switchRole(page, '生管');
+  await switchRole(page, receiver);
   await gotoInApp(page, '/production-floor/receiving');
   const queueRow = page.locator('tr', { hasText: ticketNo });
   await queueRow.getByRole('button', { name: '點收' }).click();
@@ -144,8 +145,8 @@ test('10.11 一批貨從報工走到可出貨的全鏈（原編號 105）', asyn
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(page.getByText('已送出 1 筆報工').last()).toBeVisible();
 
-  // 該印件首次出現在品檢待驗清單，建轉交單到品檢站、廠務搬運、點收（生管代點收，FLOOR_MANAGER_ROLES 可代）
-  await transferAndReceive(page, '裁切成型', { checkReceiveQty: true });
+  // 該印件首次出現在品檢待驗清單，建轉交單到品檢站、廠務搬運、品檢人員點收（點收佇列依目的站所屬產線）
+  await transferAndReceive(page, '裁切成型', { checkReceiveQty: true, receiver: '品檢人員' });
 
   await switchRole(page, '品檢人員');
   await gotoInApp(page, '/qc-shipping/inspection');
