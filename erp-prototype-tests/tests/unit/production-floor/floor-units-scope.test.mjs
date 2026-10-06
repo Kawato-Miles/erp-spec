@@ -5,6 +5,7 @@ import {
   MOCK_WORK_PACKAGES,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/mock-data.js';
 import {
+  canAddManualNote,
   FLOOR_PERMISSIONS as P,
   floorUnitsOf,
   hasFloorPermission,
@@ -107,5 +108,27 @@ describe('14.28 兩種範圍的判定', () => {
     const liu = calcReceivingQueue(MOCK_TRANSFER_TICKETS, { role: 'master', currentUser: '劉阿海' });
     liu.forEach((row) => expect(['數位產線', '裝訂產線']).toContain(row.ticket.target_station_key));
     expect(liu.some((row) => row.ticket.ticket_no === 'TT-20260830-002')).toBe(false);
+  });
+});
+
+// 10.10 人工註記的新增權限歸單元的產線範圍權限，不看角色（wiki 報工紀錄、轉交單 § 人工註記）：
+// 報工上的註記｜管理工作包（產線）；轉交單上的註記｜管理轉交單（產線）；主管唯讀不給。
+describe('人工註記的新增權限依單元產線權限', () => {
+  it('持有管理工作包（產線）與管理轉交單（產線）的生管、印務、印務主管可新增', () => {
+    for (const role of ['production_planner', 'print_officer', 'print_manager']) {
+      expect(canAddManualNote(role, P.PACKAGES_LINE)).toBe(true);
+      expect(canAddManualNote(role, P.TRANSFERS_LINE)).toBe(true);
+    }
+  });
+
+  it('主管持有產線單元但唯讀 → 不可新增', () => {
+    expect(canAddManualNote('supervisor', P.PACKAGES_LINE)).toBe(false);
+    expect(canAddManualNote('supervisor', P.TRANSFERS_LINE)).toBe(false);
+  });
+
+  it('只持負責範圍的師傅、廠務，以及沒有生產管理權限的業務 → 不可新增', () => {
+    expect(canAddManualNote('master', P.PACKAGES_LINE)).toBe(false);
+    expect(canAddManualNote('facility_staff', P.TRANSFERS_LINE)).toBe(false);
+    expect(canAddManualNote('sales', P.PACKAGES_LINE)).toBe(false);
   });
 });

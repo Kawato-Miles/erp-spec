@@ -150,7 +150,7 @@ test('9.8 派工視窗上方列出這次要派的任務內容（原編號 82）'
   await expect(dialog.getByRole('columnheader', { name: '印件部位' })).toBeVisible();
   await expect(dialog.getByRole('columnheader', { name: '任務', exact: true })).toBeVisible();
   await expect(dialog.getByRole('columnheader', { name: '預計完成' })).toBeVisible();
-  await expect(dialog.getByRole('columnheader', { name: '投產目標' })).toBeVisible();
+  await expect(dialog.getByRole('columnheader', { name: '目標數量' })).toBeVisible();
   await expect(dialog.locator('.ant-table-tbody tr')).toHaveCount(2);
   await page.getByRole('button', { name: '取消', exact: true }).click();
 

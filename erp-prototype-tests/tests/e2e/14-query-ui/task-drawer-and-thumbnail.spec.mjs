@@ -32,9 +32,9 @@ test('14.29 生產任務側板分基本資料、數量、轉交進度、歷程�
   for (const label of ['工單編號', '印件', '工作包', '指派師傅', '生產任務狀態', '交付狀態', '轉交狀態', '接收工作']) {
     await expect(drawer.getByText(label, { exact: true }).first()).toBeVisible();
   }
-  // 數量三數無分母：完成 515、良品 500、不良品 15
+  // 數量三數無分母：生產數量 515、良品 500、不良品 15
   const qty = drawer.locator('.ant-descriptions').nth(1);
-  await expect(qty).toContainText('完成');
+  await expect(qty).toContainText('生產數量');
   await expect(qty).toContainText('515');
   await expect(qty).toContainText('500');
   await expect(qty).toContainText('15');

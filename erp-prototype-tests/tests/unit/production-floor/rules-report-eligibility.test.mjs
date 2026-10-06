@@ -3,7 +3,10 @@ import {
   MOCK_FLOOR_TASKS,
   MOCK_TRANSFER_TICKETS,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/mock-data.js';
-import { canReportTask } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/report-rules.js';
+import {
+  canReportTask,
+  describeReportWaiting,
+} from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/report-rules.js';
 import { resolvePrecedence } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/precedence.js';
 
 // 10.1／10.18 可報工判定（report-rules.canReportTask）：介面入口顯不顯示報工，取這一支。
@@ -129,5 +132,29 @@ describe('可報工判定（canReportTask）', () => {
   it('任務或前置資料缺漏時一律不可報工（不給入口比給錯入口安全）', () => {
     expect(canReportTask(null, ctx)).toBe(false);
     expect(canReportTask(undefined)).toBe(false);
+  });
+});
+
+// 10.1 報工入口因前置未到料而隱藏時的提示（report-rules.describeReportWaiting）：
+// 說出在等哪張工單、哪一筆生產任務的貨；前置清單取 precedence.resolvePrecedence，與入口判定同一份資料。
+describe('前置未到料提示（describeReportWaiting）', () => {
+  const ctx = { tasks: MOCK_FLOOR_TASKS, tickets: MOCK_TRANSFER_TICKETS };
+  const taskOf = (id) => MOCK_FLOOR_TASKS.find((t) => t.id === id);
+
+  it('待處理且前置未到料 → 指出在等哪張工單、哪一筆生產任務的貨', () => {
+    expect(describeReportWaiting(taskOf('pt-0710-3'), ctx)).toBe(
+      '前置未到料：等 WO-2026-0710／海報四色印刷 的貨',
+    );
+  });
+
+  it('前置已到料、或沒有前置 → 不出提示', () => {
+    expect(describeReportWaiting(taskOf('pt-0710-2'), ctx)).toBeNull();
+  });
+
+  it('已完成、已作廢、報廢的任務本來就沒有報工入口 → 不出提示', () => {
+    const task = taskOf('pt-0710-3');
+    for (const status of ['已完成', '已作廢', '報廢']) {
+      expect(describeReportWaiting({ ...task, status }, ctx)).toBeNull();
+    }
   });
 });

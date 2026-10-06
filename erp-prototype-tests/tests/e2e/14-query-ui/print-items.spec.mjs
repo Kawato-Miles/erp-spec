@@ -133,7 +133,7 @@ test('14.7 印件詳情的工單與生產任務頁籤（原編號 58）',
     await page.locator('.ant-table-row-expand-icon').first().click();
 
     // 生產任務子表四個欄群共十欄：任務（序號、種類、任務名同一行）、印件部位、
-    // 印務規劃（設備／承作、投產目標、預估成本、預計完成、前置）、現場執行（狀態、交付狀態、完成量），
+    // 印務規劃（設備／承作、目標數量、預估成本、預計完成、前置）、現場執行（狀態、交付狀態、生產數量），
     // 沒有獨立的順序欄
     const expandedRows = page.locator('tr.ant-table-expanded-row');
     await expect(expandedRows.first()).toBeVisible();
@@ -141,13 +141,13 @@ test('14.7 印件詳情的工單與生產任務頁籤（原編號 58）',
       '任務',
       '印件部位',
       '設備／承作',
-      '投產目標',
+      '目標數量',
       '預估成本',
       '預計完成',
       '前置',
       '狀態',
       '交付狀態',
-      '完成量',
+      '生產數量',
     ]) {
       await expect(expandedRows.first().locator('.ant-table-thead')).toContainText(label);
     }

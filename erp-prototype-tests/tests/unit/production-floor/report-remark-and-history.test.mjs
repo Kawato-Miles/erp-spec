@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { resolveTaskHistory } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/history.js';
+import { resolveTaskHistory, sortHistoryDesc } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/history.js';
 import {
   GOOD_DEFECT_BOTH_ZERO_ERROR,
   isGoodAndDefectBothZero,
@@ -134,6 +134,19 @@ describe('10.43 生產任務歷程統合報工、轉交、點收、交付與接�
     expect(arrived).toMatchObject({ actor: '簡俊男', ref: 'TT-20260827-001', ref_kind: '轉交單' });
     expect(arrived.attachments.map((a) => a.name)).toEqual(['簽收照-TT015.jpg']);
     expect(history.some((e) => e.event.startsWith('開始搬運'))).toBe(true);
+  });
+
+  it('既有 mock：點收類推進來源任務歷程，證書四色印刷最上一筆為李榮發點收 480，共九筆', () => {
+    const history = sortHistoryDesc(historyOf('pt-0812-2'));
+    expect(history).toHaveLength(9);
+    expect(history[0]).toMatchObject({
+      at: '2026-08-27 10:30',
+      actor: '李榮發',
+      event: '轉交 480（搬運數量 500）已由 手工產線 點收',
+      ref: 'TT-20260827-001',
+      ref_kind: '轉交單',
+    });
+    expect(history[1].event).toMatch(/^抵達 手工產線/);
   });
 
   it('負責廠務回報抵達站點：來源任務歷程記一筆，附該條明細的簽收照片與轉交單號', () => {

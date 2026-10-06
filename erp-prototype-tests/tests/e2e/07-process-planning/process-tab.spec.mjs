@@ -179,22 +179,22 @@ test('7.9 生產任務清單依印件部位分群的三層表格（原編號 161
   await expect(groupRows(page).first()).toContainText('3 項');
   await expect(taskRows(page)).toHaveCount(3);
 
-  // 母表格四個欄群：任務、印件部位、印務規劃（設備／承作、投產目標、預估成本、預計完成、前置）、
-  // 現場執行（狀態、交付狀態、完成量）。預估成本欄取任務小計（不含顏色）
+  // 母表格四個欄群：任務、印件部位、印務規劃（設備／承作、目標數量、預估成本、預計完成、前置）、
+  // 現場執行（狀態、交付狀態、生產數量）。預估成本欄取任務小計（不含顏色）
   const headers = page.locator('.ant-table-thead th');
   for (const label of [
     '任務',
     '印件部位',
     '印務規劃',
     '設備／承作',
-    '投產目標',
+    '目標數量',
     '預估成本',
     '預計完成',
     '前置',
     '現場執行',
     '狀態',
     '交付狀態',
-    '完成量',
+    '生產數量',
   ]) {
     await expect(headers.filter({ hasText: label })).not.toHaveCount(0);
   }

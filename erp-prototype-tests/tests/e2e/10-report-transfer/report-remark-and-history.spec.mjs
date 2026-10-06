@@ -133,10 +133,16 @@ test('10.43 生產任務歷程統合報工、轉交、點收、交付與接收�
   const drawer = await openTaskDrawer(page, '證書四色印刷', 'WO-2026-0812');
   const history = drawer.locator('.ant-timeline');
   const items = history.locator('.ant-timeline-item');
-  await expect(items.first()).toContainText('抵達 手工產線（搬運數量 500），附簽收照片 1 張');
-  await expect(items.first()).toContainText('2026-08-27 09:50｜簡俊男');
-  await expect(items.first().getByRole('img')).toHaveCount(1);
+  // 點收類推進來源任務歷程：最上一筆為李榮發點收 480，下一筆為抵達（附簽收照片）
+  await expect(items).toHaveCount(9);
+  await expect(items.first()).toContainText('轉交 480（搬運數量 500）已由 手工產線 點收');
+  await expect(items.first()).toContainText('2026-08-27 10:30｜李榮發');
   await expect(items.first().getByText('TT-20260827-001')).toBeVisible();
+  const arrived = items.nth(1);
+  await expect(arrived).toContainText('抵達 手工產線（搬運數量 500），附簽收照片 1 張');
+  await expect(arrived).toContainText('2026-08-27 09:50｜簡俊男');
+  await expect(arrived.getByRole('img')).toHaveCount(1);
+  await expect(arrived.getByText('TT-20260827-001')).toBeVisible();
   const report = items.filter({ hasText: '報工：投入 515' }).first();
   await expect(report.getByRole('img')).toHaveCount(1);
   await expect(history).toContainText('開始搬運 500（目的地 手工產線）');

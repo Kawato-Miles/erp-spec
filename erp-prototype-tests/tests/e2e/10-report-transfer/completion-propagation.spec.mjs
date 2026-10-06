@@ -98,7 +98,9 @@ test('10.15 完成判定一律取生產數量（投入）累計（原編號 159�
 
   await pkgRow.getByLabel('展開行').click();
   const subRow = pkgRow.locator('xpath=following-sibling::tr[1]');
-  const taskSubRow = subRow.locator('tr', { hasText: '牛皮紙 150g 備料' });
+  const taskSubRow = subRow
+    .locator('tr')
+    .filter({ has: page.locator('td', { hasText: /^材料\s*牛皮紙 150g 備料$/ }) });
   await expect(taskSubRow.getByText('待處理')).toHaveCount(0); // 已有報工，脫離待處理
   await expect(taskSubRow).toContainText('500 / 2,060');
 
@@ -140,7 +142,9 @@ test('10.16 生管手動把做不滿的任務標為完成（原編號 160，正�
 
   // 生管對製作中的任務點「手動完成」（沿用同一列展開狀態，不再點一次展開圖示以免收合回去）
   await switchRole(page, '生管');
-  const taskSubRow = subRow.locator('tr', { hasText: '牛皮紙 150g 備料' });
+  const taskSubRow = subRow
+    .locator('tr')
+    .filter({ has: page.locator('td', { hasText: /^材料\s*牛皮紙 150g 備料$/ }) });
   await taskSubRow.getByRole('button', { name: '手動完成' }).click();
   await expect(page.getByText(/已手動完成（目標數量與放損率不變、已報工數不動，歷程已留痕）/)).toBeVisible();
   await expect(taskSubRow.getByText('已完成')).toBeVisible();

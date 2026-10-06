@@ -42,18 +42,18 @@ test('8.14 印務主管審核製程時任務列表帶出產線', async ({ page }
   await expectCell(page, '型錄四色雙面印刷', '產線', '數位產線');
 });
 
-test('8.15 工單詳情任務列表現場執行欄序、轉交進度三數與完成量；外發任務交付後交付狀態顯示「－」', async ({ page }) => {
+test('8.15 工單詳情任務列表現場執行欄序、轉交進度三數與生產數量；外發任務交付後交付狀態顯示「－」', async ({ page }) => {
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0812');
   await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0812' })).toBeVisible({
     timeout: 20_000,
   });
-  // 現場執行欄序：生產任務狀態、交付狀態、轉交狀態、轉交進度、完成量（Miles 2026-10-06 拍板）
+  // 現場執行欄序：生產任務狀態、交付狀態、轉交狀態、轉交進度、生產數量（Miles 2026-10-06 拍板）
   const floorHeaders = await page
     .locator('.ant-table-thead tr')
     .last()
     .locator('th')
     .allInnerTexts();
-  const order = ['生產任務狀態', '交付狀態', '轉交狀態', '轉交進度', '完成量'].map((label) =>
+  const order = ['生產任務狀態', '交付狀態', '轉交狀態', '轉交進度', '生產數量'].map((label) =>
     floorHeaders.findIndex((text) => text.trim().startsWith(label)),
   );
   expect(order.every((i) => i >= 0)).toBe(true);
@@ -70,8 +70,8 @@ test('8.15 工單詳情任務列表現場執行欄序、轉交進度三數與完
   await expectCell(page, '證書四色印刷', '轉交狀態', '待點收');
   const certRow = taskRows(page).filter({ hasText: '證書四色印刷' });
   await expect(certRow).toContainText('轉交量 500／點收量 480／良品 500');
-  // 完成量只顯示當前報工累計，下行良品與不良品，不再顯示「515 / 515」式分母
-  await expectCell(page, '證書四色印刷', '完成量', '515良品 500／不良品 15');
+  // 生產數量只顯示當前報工累計，下行良品與不良品，不再顯示「515 / 515」式分母
+  await expectCell(page, '證書四色印刷', '生產數量', '515良品 500／不良品 15');
   await expect(certRow).not.toContainText('515 / 515');
   // 已完成屬生產任務終態，交付狀態顯示「－」（wiki 生產任務交付狀態推導條件第 1 條）
   await expectCell(page, '雪銅紙 150g 菊全', '交付狀態', '－');

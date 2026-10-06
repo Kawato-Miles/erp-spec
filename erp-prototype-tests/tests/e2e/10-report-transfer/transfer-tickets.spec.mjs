@@ -259,13 +259,10 @@ test('10.10 歷程只追加，改不動的數字用人工註記說明（原編�
   const reports = await openPackageReports(page, 'WP-2026-0601-01');
   const reportRow = reportRowOf(reports, '2026-06-15 17:20');
 
-  // 先試作廢：因任務已完成被擋下
-  await reportRow.getByRole('button', { name: '作廢' }).click();
-  await page.locator('.ant-form-item', { hasText: '作廢原因' }).locator('.ant-select').click();
-  await page.keyboard.press('Enter');
-  await page.getByRole('button', { name: '作廢這筆報工' }).click();
-  await expect(page.getByText(/報工不可作廢；更正走人工程序/)).toBeVisible();
-  await page.keyboard.press('Escape');
+  // 任務已完成：作廢鈕不渲染，更正只剩修改
+  await expect(reportRow.getByRole('button', { name: '作廢' })).toHaveCount(0);
+  // 人工註記的權限歸「管理工作包（產線）」：生管持有，看得到加註記
+  await expect(reportRow.getByRole('button', { name: '加註記' })).toHaveCount(1);
 
   // 再試把良品調降：因量已被下游點收被擋下，提示帶出人工程序
   await editReport(page, reportRow, { good: 5000, reason: '誤報' });
@@ -274,7 +271,7 @@ test('10.10 歷程只追加，改不動的數字用人工註記說明（原編�
   await expect(blocked).toContainText('人工註記');
   await page.keyboard.press('Escape');
 
-  // 兩者都被擋下後由印務加人工註記（人工註記歸印務，見 wiki 報工紀錄 § 修改、作廢與註記），數字不變
+  // 修改被擋下後由印務加人工註記（權限歸管理工作包（產線），見 wiki 報工紀錄 § 修改、作廢與註記），數字不變
   await closeDrawer(page);
   await switchRole(page, '印務');
   const officerReports = await openPackageReports(page, 'WP-2026-0601-01');

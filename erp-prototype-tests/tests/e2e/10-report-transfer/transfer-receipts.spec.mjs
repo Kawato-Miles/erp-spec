@@ -272,18 +272,13 @@ test('10.35 報工修改與作廢共用擋下條件：在途與已點收量、�
   await expect(voidBlocked).toContainText('先照實點收');
 });
 
-test('10.36 已完成任務作廢擋下改走修改；修改跌破目標退回製作中；已完成後再報工維持已完成', async ({ page }) => {
+test('10.36 已完成任務不渲染作廢鈕、改走修改；修改跌破目標退回製作中；已完成後再報工維持已完成', async ({ page }) => {
   test.setTimeout(120_000);
-  // 印務對證書四色印刷（已完成）那筆報工按作廢：被擋下，「修改」仍可用
+  // 證書四色印刷（已完成）那筆報工：作廢鈕不渲染，「修改」仍可用
   await openAs(page, '印務', '/production-floor/work-packages');
   const reports = await openPackageReports(page, 'WP-2026-0812-01');
   const row = reportRowOf(reports, '2026-08-25 16:30');
-  await row.getByRole('button', { name: '作廢' }).click();
-  await page.locator('.ant-form-item', { hasText: '作廢原因' }).locator('.ant-select').click();
-  await page.keyboard.press('Enter');
-  await page.getByRole('button', { name: '作廢這筆報工' }).click();
-  await expect(noticeOf(page, /已完成.*報工不可作廢/)).toBeVisible();
-  await page.keyboard.press('Escape');
+  await expect(row.getByRole('button', { name: '作廢' })).toHaveCount(0);
   await expect(row.getByRole('button', { name: '修改' })).toBeEnabled();
   await closeDrawer(page);
 
