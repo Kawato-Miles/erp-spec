@@ -425,11 +425,13 @@
 
 ## 9. 封存後收尾
 
-- [ ] 9.1 確認 `floor-transfer-no-return` 已先封存，再封存本 change
-- [ ] 9.2 依 design.md § Migration Plan 手動清理主規格中被取代的句子（production-execution 報工、報工前置檢查；work-order 任務交付；order-billing 發票開立；order-management 印件印製維度狀態機）
-- [ ] 9.3 主規格指向 `印件狀態.md` 的連結逐處改指 `印件審稿狀態.md` 或 `印件印製狀態.md`；完成條件：`grep -rn "印件狀態.md" openspec/specs/` 無輸出
+- [x] 9.1 確認 `floor-transfer-no-return` 已先封存，再封存本 change。結果：已封存於 `archive/2026-10-05-floor-transfer-no-return`
+- [x] 9.2 依 design.md § Migration Plan 手動清理主規格中被取代的句子（production-execution 報工、報工前置檢查；work-order 任務交付；order-billing 發票開立；order-management 印件印製維度狀態機）
+- [x] 9.3 主規格指向 `印件狀態.md` 的連結逐處改指 `印件審稿狀態.md` 或 `印件印製狀態.md`；完成條件：`grep -rn "印件狀態.md" openspec/specs/` 無輸出
 
 ## 10. 後端交付（由 Linear 另行處理）
+
+本節由 Linear 交付承接，不在本 change 內勾選；封存時保留未勾。
 
 - [ ] 10.1 發票新增草稿態、開立失敗原因欄；寫入當下檢查一個收款項目同一時間至多一張未作廢發票
 - [ ] 10.2 線下單送審條件與核准重檢；訂單成立前刪除印件
