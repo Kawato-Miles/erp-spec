@@ -2,7 +2,7 @@
 type: meta
 module: 跨模組
 status: active
-last-reviewed: 2026-10-04
+last-reviewed: 2026-10-06
 ---
 
 # Vault Scope Boundary（收 / 不收）
@@ -81,7 +81,7 @@ ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」�
 | 屬於 | 位置 |
 |------|------|
 | 自動分配演算法步驟（5 步驟） | erp repo 對應模組實作（`apps/erp`）|
-| 計算公式的程式實作（齊套計算、訂單計價等） | erp repo 對應模組實作（`apps/erp`）；業務計算口徑（算式、取整方式）進 `04-business-logic/` 規則卡 |
+| 計算公式的程式實作（齊套計算、訂單計價等） | erp repo 對應模組實作（`apps/erp`）；業務計算口徑進 Vault：欄位定義（含算式與同一筆資料內的檢核）進 `05-entities/` 實體卡，跨單據或跨實體的判定進 `04-business-logic/` 規則卡 |
 | 排程演算法 | erp repo 對應模組實作（`apps/erp`）|
 
 ### 驗收測試（UAT / SIT / UT / 端對端 e2e）
@@ -126,7 +126,7 @@ ERP 的管轄範圍到「派工指令送到工廠」和「師傅回報完工」�
 | 這是「業務概念」還是「實作細節」？ | 業務概念 | 進 Vault |
 | 這是「業務概念」還是「實作細節」？ | 實作細節 | 留程式碼 / 不進 |
 | 這是「UI 規範」嗎？ | 是 | 留 Prototype DESIGN.md |
-| 這是「演算法 / 計算公式的程式實作」嗎？ | 是 | 留 erp repo 對應模組實作（`apps/erp`）；業務計算口徑（算式）進 `04-business-logic/` |
+| 這是「演算法 / 計算公式的程式實作」嗎？ | 是 | 留 erp repo 對應模組實作（`apps/erp`）；業務計算口徑進 Vault：欄位算式與同一筆資料內的檢核進 `05-entities/`，跨單據或跨實體的判定進 `04-business-logic/` |
 | 這是「系統承諾」（系統在什麼條件下自動做什麼、禁止什麼、狀態怎麼轉）？ | 是 | 留 OpenSpec spec Requirement；規則依據以一句引用 wiki 卡 |
 | 這是「業務規則」（誰可以做、門檻、值域、為什麼這樣定）？ | 是 | 進 Vault：`04-business-logic/`、`03-roles/`、`05-entities/` 對應卡；spec 不重述 |
 | 這是「業務驗收判準」（在什麼前置下做什麼動作、應看到什麼可觀察業務結果）？ | 是 | 進 Vault：業務情境卡（`07-scenarios/`）承載步驟與判準；單點驗收寫成 OpenSpec 驗收條目並標所屬情境卡步驟 |
