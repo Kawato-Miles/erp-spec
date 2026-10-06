@@ -216,34 +216,42 @@ export async function setupArrivedAtQc(page) {
 
 // ── 第十二章共用：出貨單 ──
 
-// 出貨單側板（建單、單頭與明細編輯、狀態推進共用同一顆）
+// 出貨單側板（建單、單頭與明細編輯、檢視共用同一顆；狀態推進改在列上動作鈕開的對話框）
 export const shipmentPanel = (page) => page.locator('.ant-drawer-content:visible').first();
+
+// 列上動作鈕開出來的對話框（共用 PanelDialog，最後一顆可見的 Modal）
+export const actionDialog = (page) => page.locator('.ant-modal-content:visible').last();
+
+// 列上動作鈕開出來的確認框（antd modal.confirm）
+export const confirmBox = (page) => page.locator('.ant-modal-confirm:visible').last();
 
 // 建單側板與既有單的側板是同一顆，兩個別名保留給讀得出意圖的呼叫端
 export const createShipmentDialog = shipmentPanel;
 export const draftShipmentDialog = shipmentPanel;
 
-/** 列上唯一那顆「檢視」圖示鈕：開這張單的側板 */
+/** 列上的「檢視」圖示鈕：開這張單的唯讀側板 */
 export async function openShipmentPanel(page, keyword) {
   await shipmentRow(page, keyword).getByRole('button', { name: '檢視' }).click();
   await expect(shipmentPanel(page)).toBeVisible();
   return shipmentPanel(page);
 }
 
-/** 側板進度頁籤：選一個下一步（狀態欄只列這個角色在這一格推得動的） */
-export async function pickNextStatus(page, panel, label) {
-  await panel.getByRole('tab', { name: '進度' }).click();
-  const select = panel.getByLabel(/推進到/);
-  await expect(async () => {
-    await select.click({ force: true });
-    await page
-      .locator('.ant-select-dropdown:visible')
-      .last()
-      .locator('.ant-select-item-option')
-      .filter({ hasText: label })
-      .first()
-      .click({ timeout: 3000 });
-  }).toPass({ timeout: 15000 });
+/** 列上的「編輯」圖示鈕：開這張單的編輯模式側板（只有建單人看得到這顆鈕） */
+export async function openShipmentEdit(page, keyword) {
+  await shipmentRow(page, keyword).getByRole('button', { name: '編輯' }).click();
+  await expect(shipmentPanel(page)).toBeVisible();
+  return shipmentPanel(page);
+}
+
+/**
+ * 按列上某顆動作鈕（開始揀貨、裝箱回報、出貨確認、交付確認、送達確認、異常、作廢、刪除、
+ * 模擬物流商回報配達），回它開出來的對話框。確認框（開始揀貨、刪除、模擬配達）用 confirmBox 另取。
+ */
+export async function clickRowAction(page, keyword, name) {
+  await shipmentRow(page, keyword).getByRole('button', { name, exact: true }).click();
+  const dialog = actionDialog(page);
+  await expect(dialog).toBeVisible();
+  return dialog;
 }
 
 // 出貨單列表中某一列（以出貨單編號或客戶名稱認列）
@@ -355,13 +363,11 @@ export async function createDraftShipment(
  * @param {{ actualQty: number, boxes?: number, perBoxQty?: number }} options
  */
 export async function pickAndPack(page, shipmentNo, { actualQty, boxes = 10, perBoxQty = 50 }) {
-  // 兩步都在側板的進度頁籤推：狀態欄選下一步 → 填該步要填的欄位 → 送出進度
-  const first = await openShipmentPanel(page, shipmentNo);
-  await pickNextStatus(page, first, '打包中');
-  await first.getByRole('button', { name: '送出進度' }).click();
+  // 兩步都在列上：「開始揀貨」彈確認框 → 「裝箱回報」開對話框填該步要填的欄位
+  await shipmentRow(page, shipmentNo).getByRole('button', { name: '開始揀貨' }).click();
+  await confirmBox(page).getByRole('button', { name: '開始揀貨' }).click();
   await expect(page.getByText(/已開始揀貨/).first()).toBeVisible();
-  const dialog = await openShipmentPanel(page, shipmentNo);
-  await pickNextStatus(page, dialog, '待出貨');
+  const dialog = await clickRowAction(page, shipmentNo, '裝箱回報');
   await dialog.getByLabel(/實際裝箱數量/).fill(String(actualQty));
   // 「箱數」非 exact 比對時會命中「實際裝箱數量」（子字串含「箱數」），須精確比對
   await dialog.getByLabel('箱數', { exact: true }).fill(String(boxes));
@@ -378,6 +384,6 @@ export async function pickAndPack(page, shipmentNo, { actualQty, boxes = 10, per
       .click({ timeout: 3000 });
   }).toPass({ timeout: 20000 });
   await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('裝箱照.jpg'));
-  await dialog.getByRole('button', { name: '送出進度' }).click();
+  await dialog.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(page.getByText(/裝箱回報完成/).first()).toBeVisible();
 }

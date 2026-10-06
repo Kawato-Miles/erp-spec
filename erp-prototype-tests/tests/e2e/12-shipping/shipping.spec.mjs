@@ -13,7 +13,10 @@ import {
   openCreateShipmentFromOrder,
   pickAndPack,
   openShipmentPanel,
-  pickNextStatus,
+  openShipmentEdit,
+  clickRowAction,
+  actionDialog,
+  confirmBox,
   pickShippingMethod,
   setupShippableState,
   shipmentRow,
@@ -23,7 +26,8 @@ import {
 // 多數情境要先驗收取得額度、再建單走到出貨，鏈長故放寬逾時
 test.describe.configure({ timeout: 180_000 });
 
-// 出貨單側板（三頁籤：基本資訊、出貨明細、進度），出貨模組列表頁點單號或檢視鈕打開
+// 出貨單側板（三頁籤：基本資訊、出貨明細、進度），出貨模組列表頁點單號或檢視鈕打開；
+// 狀態推進改在列上動作鈕開的對話框，側板的進度頁籤純唯讀
 const detailDrawer = (page) => page.locator('.ant-drawer-content').last();
 
 const closeDrawer = async (page) => {
@@ -149,7 +153,7 @@ test('12.2 業務建草稿再建立出貨單，額度在成立那一刻檢核並
   await gotoShipmentList(page);
 
   // 回第一張草稿按「建立出貨單」：必填未齊時頁籤標「缺 N」、頂端列出缺的欄位
-  const draftDialog = await openShipmentPanel(page, firstDraftNo);
+  const draftDialog = await openShipmentEdit(page, firstDraftNo);
   await draftDialog.getByRole('button', { name: '建立出貨單' }).click();
   await expect(draftDialog.getByRole('tab', { name: '基本資訊' })).toContainText('缺 1');
   await expect(draftDialog).toContainText('尚缺 1 項');
@@ -226,7 +230,7 @@ test('12.2（草稿等待期間印件被棄用）編輯草稿時當場提示，�
 
   // 回出貨管理編輯那張草稿：當場列出是哪幾條已棄用，並指出這張草稿請直接刪除
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  const dialog = await openShipmentPanel(page, CHAIN4.draftShipmentNo);
+  const dialog = await openShipmentEdit(page, CHAIN4.draftShipmentNo);
   await dialog.getByRole('tab', { name: '出貨明細' }).click();
   await expect(dialog).toContainText('本單有 1 條印件已棄用');
   await expect(dialog).toContainText(CHAIN4.printItemNo);
@@ -249,15 +253,21 @@ test('12.3 揀貨人員開始揀貨並回報裝箱（原編號 31）', async ({ 
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
 
-  // 列上只有一顆檢視鈕：狀態推進都在側板的進度頁籤
-  await expect(shipmentRow(page, shipmentNo).getByRole('button', { name: '檢視' })).toBeVisible();
-  const first = await openShipmentPanel(page, shipmentNo);
-  await pickNextStatus(page, first, '打包中');
-  await first.getByRole('button', { name: '送出進度' }).click();
+  // 列上：檢視之外長出「開始揀貨」；按下去先彈確認框，確認後轉打包中
+  const row = shipmentRow(page, shipmentNo);
+  await expect(row.getByRole('button', { name: '檢視' })).toBeVisible();
+  await row.getByRole('button', { name: '開始揀貨' }).click();
+  const confirm = confirmBox(page);
+  await expect(confirm).toContainText(`開始揀貨：${shipmentNo}`);
+  await confirm.getByRole('button', { name: '開始揀貨' }).click();
+  await expect(page.getByText(/已開始揀貨/).first()).toBeVisible();
   await expect(shipmentRow(page, shipmentNo)).toContainText('打包中');
 
-  const dialog = await openShipmentPanel(page, shipmentNo);
-  await pickNextStatus(page, dialog, '待出貨');
+  // 打包中：列上換成「裝箱回報」，對話框上方唯讀顯示裝箱指示與出貨明細
+  const dialog = await clickRowAction(page, shipmentNo, '裝箱回報');
+  await expect(dialog).toContainText(`裝箱回報：${shipmentNo}`);
+  await expect(dialog).toContainText('裝箱指示');
+  await expect(dialog).toContainText(CHAIN4.printItemNo);
   await dialog.getByLabel(/實際裝箱數量/).fill('500');
   await dialog.getByLabel('箱數', { exact: true }).fill('10');
   await dialog.getByLabel(/每箱幾個/).fill('50');
@@ -269,11 +279,11 @@ test('12.3 揀貨人員開始揀貨並回報裝箱（原編號 31）', async ({ 
     .first()
     .click();
   await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('裝箱照.jpg'));
-  await dialog.getByRole('button', { name: '送出進度' }).click();
+  await dialog.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(page.getByText(/裝箱回報完成，出貨單轉「待出貨」/)).toBeVisible();
   await expect(shipmentRow(page, shipmentNo)).toContainText('待出貨');
 
-  // 回頭看側板：裝箱回報段改為唯讀顯示回報內容
+  // 回頭看側板：進度頁籤的裝箱回報段唯讀顯示回報內容
   const after = await openShipmentPanel(page, shipmentNo);
   await after.getByRole('tab', { name: '進度' }).click();
   await expect(after).toContainText('實際裝箱數量');
@@ -288,12 +298,10 @@ test('12.4 裝箱回報要填每箱幾個，差異看得見（原編號 128）',
 
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  const picking = await openShipmentPanel(page, shipmentNo);
-  await pickNextStatus(page, picking, '打包中');
-  await picking.getByRole('button', { name: '送出進度' }).click();
+  await shipmentRow(page, shipmentNo).getByRole('button', { name: '開始揀貨' }).click();
+  await confirmBox(page).getByRole('button', { name: '開始揀貨' }).click();
   await expect(shipmentRow(page, shipmentNo)).toContainText('打包中');
-  const dialog = await openShipmentPanel(page, shipmentNo);
-  await pickNextStatus(page, dialog, '待出貨');
+  const dialog = await clickRowAction(page, shipmentNo, '裝箱回報');
 
   // 每箱幾個未填即送出應被擋下（必填）
   await dialog.getByLabel(/實際裝箱數量/).fill('480');
@@ -306,11 +314,11 @@ test('12.4 裝箱回報要填每箱幾個，差異看得見（原編號 128）',
     .first()
     .click();
   await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('裝箱照.jpg'));
-  await dialog.getByRole('button', { name: '送出進度' }).click();
+  await dialog.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(dialog).toBeVisible();
 
   await dialog.getByLabel(/每箱幾個/).fill('48');
-  await dialog.getByRole('button', { name: '送出進度' }).click();
+  await dialog.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(page.getByText(/實際裝箱數量 480.*出貨明細數量 500/)).toBeVisible();
 
   // 明細數量與實際裝箱數量並排呈現，差異一眼看得出來
@@ -349,19 +357,18 @@ test('12.6 出貨確認填托運單號與重量，三種方式各走各的分流
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
 
-  // 自取：狀態欄只有已送達（交付確認）一個下一步，交付當下一次完成出貨與送達
-  const pickupDialog = await openShipmentPanel(page, pickupNo);
-  await pickNextStatus(page, pickupDialog, '已送達（交付確認）');
+  // 自取：列上鈕名是「交付確認」（不是出貨確認），交付當下一次完成出貨與送達
+  await expect(shipmentRow(page, pickupNo).getByRole('button', { name: '出貨確認' })).toHaveCount(0);
+  const pickupDialog = await clickRowAction(page, pickupNo, '交付確認');
   await pickupDialog.locator('input[type="file"]').setInputFiles(fakePhoto('點交照.jpg'));
-  await pickupDialog.getByRole('button', { name: '送出進度' }).click();
+  await pickupDialog.getByRole('button', { name: '確認交付' }).click();
   await expect(page.getByText(/一次完成出貨與送達確認/).first()).toBeVisible();
 
   // 第三方：出貨確認填托運單號與重量，轉運送中
-  const shipDialog = await openShipmentPanel(page, carrierNo);
-  await pickNextStatus(page, shipDialog, '運送中（交寄拋單）');
+  const shipDialog = await clickRowAction(page, carrierNo, '出貨確認');
   await shipDialog.getByLabel('托運單號（追蹤碼）').fill('SF-2026091700123');
   await shipDialog.getByLabel('重量（公斤，選填）').fill('8.2');
-  await shipDialog.getByRole('button', { name: '送出進度' }).click();
+  await shipDialog.getByRole('button', { name: '確認出貨' }).click();
   await expect(page.getByText(/已交寄拋單（運送中）；托運單號已記錄/)).toBeVisible();
   await expect(shipmentRow(page, carrierNo)).toContainText('SF-2026091700123');
 
@@ -369,17 +376,17 @@ test('12.6 出貨確認填托運單號與重量，三種方式各走各的分流
   const weightPanel = await openShipmentPanel(page, carrierNo);
   await weightPanel.getByRole('tab', { name: '進度' }).click();
   await expect(weightPanel).toContainText('8.2');
+  await closeDrawer(page);
 
-  // 運送中的第三方單：側板上有一顆標明是模擬的物流商回報配達（主路徑），
-  // 狀態欄另有備援的手動補登配達時間
-  await expect(
-    weightPanel.getByRole('button', { name: /模擬物流商回報配達/ }),
-  ).toBeVisible();
-  await expect(weightPanel.getByLabel(/推進到/)).toBeVisible();
+  // 運送中的第三方單：列上有一顆標明是模擬的物流商回報配達（主路徑），
+  // 另有備援的「送達確認」（手動補登配達時間）
+  const carrierRow = shipmentRow(page, carrierNo);
+  await expect(carrierRow.getByRole('button', { name: '模擬物流商回報配達' })).toBeVisible();
+  await expect(carrierRow.getByRole('button', { name: '送達確認' })).toBeVisible();
 
   // 走主路徑：確認人員記為物流商同步（模擬）
-  await weightPanel.getByRole('button', { name: /模擬物流商回報配達/ }).click();
-  const syncDialog = page.locator('.ant-modal-confirm').last();
+  await carrierRow.getByRole('button', { name: '模擬物流商回報配達' }).click();
+  const syncDialog = confirmBox(page);
   // 配達的定義寫在視窗上：到店與配送中都不算
   await expect(syncDialog).toContainText('配達指物流商的簽收或取件完成，到店與配送中都不算');
   await syncDialog.getByRole('button', { name: '模擬回報配達' }).click();
@@ -407,61 +414,56 @@ test('12.7 三種出貨方式的憑證形式各自不同（原編號 129）', as
   await gotoInAppSafe(page, '/qc-shipping/shipments');
 
   // 第三方物流：出貨確認須填托運單號才推得動
-  let dialog = await openShipmentPanel(page, carrierNo);
-  await pickNextStatus(page, dialog, '運送中（交寄拋單）');
+  let dialog = await clickRowAction(page, carrierNo, '出貨確認');
   await expect(dialog).toContainText('出貨確認即對物流商拋單');
-  await dialog.getByRole('button', { name: '送出進度' }).click();
+  await dialog.getByRole('button', { name: '確認出貨' }).click();
   await expect(dialog.getByText('交寄拋單須填托運單號')).toBeVisible();
   await dialog.getByLabel('托運單號（追蹤碼）').fill('HCT-1');
-  await dialog.getByRole('button', { name: '送出進度' }).click();
+  await dialog.getByRole('button', { name: '確認出貨' }).click();
   await expect(page.getByText(/已交寄拋單（運送中）/).first()).toBeVisible();
 
   // 專車配送：發車確認不附件即可轉運送中
-  dialog = await openShipmentPanel(page, vanNo);
-  await pickNextStatus(page, dialog, '運送中（發車確認）');
-  await dialog.getByRole('button', { name: '送出進度' }).click();
+  dialog = await clickRowAction(page, vanNo, '出貨確認');
+  await expect(dialog).toContainText('確認發車即轉「運送中」');
+  await dialog.getByRole('button', { name: '確認出貨' }).click();
   await expect(page.getByText(/專車已發車（運送中）/)).toBeVisible();
 
   // 自取：交付確認須附現場點交照，一次完成出貨與送達
-  dialog = await openShipmentPanel(page, pickupNo);
-  await pickNextStatus(page, dialog, '已送達（交付確認）');
-  await dialog.getByRole('button', { name: '送出進度' }).click();
+  dialog = await clickRowAction(page, pickupNo, '交付確認');
+  await dialog.getByRole('button', { name: '確認交付' }).click();
   await expect(dialog.getByText('請附現場點交照')).toBeVisible();
   await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('點交照.jpg'));
-  await dialog.getByRole('button', { name: '送出進度' }).click();
+  await dialog.getByRole('button', { name: '確認交付' }).click();
   await expect(page.getByText(/一次完成出貨與送達確認（現場點交照已留存）/)).toBeVisible();
 
-  // 專車只有送達確認一條路，側板上沒有模擬配達那顆鈕；送達確認要附司機交付照
-  dialog = await openShipmentPanel(page, vanNo);
-  await dialog.getByRole('tab', { name: '進度' }).click();
-  await expect(dialog.getByRole('button', { name: /模擬物流商回報配達/ })).toHaveCount(0);
-  await pickNextStatus(page, dialog, '已送達（送達確認）');
-  await dialog.getByRole('button', { name: '送出進度' }).click();
+  // 專車只有送達確認一條路，列上沒有模擬配達那顆鈕；送達確認要附司機交付照
+  await expect(shipmentRow(page, vanNo).getByRole('button', { name: '模擬物流商回報配達' })).toHaveCount(0);
+  dialog = await clickRowAction(page, vanNo, '送達確認');
+  await dialog.getByRole('button', { name: '確認送達' }).click();
   await expect(dialog.getByText('請附司機交付照')).toBeVisible();
   await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('司機交付照.jpg'));
-  await dialog.getByRole('button', { name: '送出進度' }).click();
+  await dialog.getByRole('button', { name: '確認送達' }).click();
   await expect(page.getByText(/送達確認完成/)).toBeVisible();
 
   // 第三方的送達備援：手動回填物流商配達時間，欄位說明寫明要回填的是簽收或取件完成的時間
-  dialog = await openShipmentPanel(page, carrierNo);
-  await pickNextStatus(page, dialog, '已送達（備援：手動補登配達時間）');
+  dialog = await clickRowAction(page, carrierNo, '送達確認');
   await expect(dialog).toContainText('簽收或取件完成');
   await expect(dialog).toContainText('到店與配送中都不算配達');
   const deliveredTime = dialog.getByLabel('物流商配達時間（備援：手動補登）');
   await deliveredTime.click();
   await deliveredTime.fill('2026-09-17 10:00');
   await deliveredTime.press('Enter');
-  await dialog.getByRole('button', { name: '送出進度' }).click();
+  await dialog.getByRole('button', { name: '確認送達' }).click();
   await expect(page.getByText(/送達確認完成/).first()).toBeVisible();
 
-  // 兩條路先寫入者成立：人工補登一成立，這張單離開運送中，模擬配達按鈕與狀態欄的下一步
-  // 一併退場（守衛本身與「此單已收尾，請重新整理」以純函式驗，
-  // 見 tests/unit/qc-shipping/shipment-draft.test.mjs）
-  await expect(shipmentRow(page, carrierNo)).toContainText('已送達');
-  const settled = await openShipmentPanel(page, carrierNo);
-  await settled.getByRole('tab', { name: '進度' }).click();
-  await expect(settled.getByRole('button', { name: /模擬物流商回報配達/ })).toHaveCount(0);
-  await expect(settled).toContainText('這個角色在這一格沒有可推的下一步');
+  // 兩條路先寫入者成立：人工補登一成立，這張單離開運送中，模擬配達鈕與其他動作鈕一併退場
+  //（守衛本身與「此單已收尾，請重新整理」以純函式驗，見 tests/unit/qc-shipping/shipment-draft.test.mjs）
+  const settledRow = shipmentRow(page, carrierNo);
+  await expect(settledRow).toContainText('已送達');
+  await expect(settledRow.getByRole('button', { name: '模擬物流商回報配達' })).toHaveCount(0);
+  await expect(settledRow.getByRole('button', { name: '送達確認' })).toHaveCount(0);
+  await expect(settledRow.getByRole('button', { name: '異常' })).toHaveCount(0);
+  await expect(settledRow.getByRole('button')).toHaveCount(1);
 });
 
 test('12.8 累計送達達到購買數量，印件與訂單一起收尾（原編號 130）', async ({ page }) => {
@@ -476,18 +478,14 @@ test('12.8 累計送達達到購買數量，印件與訂單一起收尾（原編
 
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  const shipDialog = await openShipmentPanel(page, shipmentNo);
-  await pickNextStatus(page, shipDialog, '運送中（交寄拋單）');
+  const shipDialog = await clickRowAction(page, shipmentNo, '出貨確認');
   await shipDialog.getByLabel('托運單號（追蹤碼）').fill('SF-2026091700999');
-  await shipDialog.getByRole('button', { name: '送出進度' }).click();
+  await shipDialog.getByRole('button', { name: '確認出貨' }).click();
   await expect(page.getByText(/已交寄拋單（運送中）/).first()).toBeVisible();
 
   // 經模擬物流商回報配達同樣觸發收尾：印件轉已送達、訂單轉訂單完成
-  const syncPanel = await openShipmentPanel(page, shipmentNo);
-  await syncPanel.getByRole('tab', { name: '進度' }).click();
-  await syncPanel.getByRole('button', { name: /模擬物流商回報配達/ }).click();
-  const syncDialog = page.locator('.ant-modal-confirm').last();
-  await syncDialog.getByRole('button', { name: '模擬回報配達' }).click();
+  await shipmentRow(page, shipmentNo).getByRole('button', { name: '模擬物流商回報配達' }).click();
+  await confirmBox(page).getByRole('button', { name: '模擬回報配達' }).click();
   const notice = page.locator('.ant-message-notice-content').last();
   await expect(notice).toBeVisible();
   const noticeText = await notice.innerText();
@@ -502,13 +500,16 @@ test('12.8 累計送達達到購買數量，印件與訂單一起收尾（原編
 
 test('12.9 業務刪除不再需要的草稿', async ({ page }) => {
   await openAs(page, '業務', '/qc-shipping/shipments');
-  // 刪除草稿收在側板最下方的危險區
+  // 刪除在列上：草稿列長出「刪除」鈕，側板裡沒有危險區
+  const draftRow = shipmentRow(page, CHAIN4.draftShipmentNo);
   const panel = await openShipmentPanel(page, CHAIN4.draftShipmentNo);
-  await expect(panel).toContainText('危險區');
-  await panel.getByRole('button', { name: '刪除草稿' }).click();
+  await expect(panel).not.toContainText('危險區');
+  await expect(panel.getByRole('button', { name: '刪除草稿' })).toHaveCount(0);
+  await closeDrawer(page);
+  await draftRow.getByRole('button', { name: '刪除' }).click();
 
   // 二次確認：說明草稿未佔額度、未推進狀態，因此不填理由（沒有理由輸入欄）
-  const confirm = page.locator('.ant-modal-confirm').last();
+  const confirm = confirmBox(page);
   await expect(confirm).toContainText(`刪除出貨單草稿：${CHAIN4.draftShipmentNo}`);
   await expect(confirm).toContainText('不需填理由');
   await expect(confirm.locator('textarea, input[type="text"]')).toHaveCount(0);
@@ -584,8 +585,7 @@ test('12.12 收件三欄預設帶訂單聯絡人、可改', async ({ page }) => 
   await expect(dialog).toBeHidden();
   await gotoShipmentList(page);
   const draftNo = await newestShipmentNo(page);
-  await shipmentRow(page, draftNo).getByText(draftNo).click();
-  const drawer = detailDrawer(page);
+  const drawer = await openShipmentEdit(page, draftNo);
   await expect(drawer.locator('#receiver_name')).toHaveValue('倉儲收貨組');
   await expect(drawer.locator('#receiver_phone')).toHaveValue(CHAIN4.contactPhone);
   await expect(drawer.locator('#receiver_address')).toHaveValue(CHAIN4.contactAddress);
@@ -609,117 +609,127 @@ test('12.12 收件三欄預設帶訂單聯絡人、可改', async ({ page }) => 
   await expect(page.getByText('已切換窗口聯絡人').last()).toBeVisible();
 
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await shipmentRow(page, draftNo).getByText(draftNo).click();
-  const drawerAfter = detailDrawer(page);
+  const drawerAfter = await openShipmentEdit(page, draftNo);
   await expect(drawerAfter.locator('#receiver_name')).toHaveValue('倉儲收貨組');
   await expect(drawerAfter.locator('#receiver_phone')).toHaveValue(CHAIN4.contactPhone);
   await expect(drawerAfter).not.toContainText('備用聯絡人（示範資料）');
 });
 
-test('12.15 出貨單側板的狀態欄只列合法的下一步，依角色與出貨方式過濾', async ({ page }) => {
+test('12.15 列上動作鈕只長出合法的下一步，依角色、狀態與出貨方式過濾', async ({ page }) => {
   await setupShippableState(page, { passed: 500 });
   await switchRoleSafe(page, '業務');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   const carrierNo = await createShipment(page, { qty: 100, method: '新竹物流' });
   const pickupNo = await createShipment(page, { qty: 100, method: '自取' });
 
-  // 業務在未離廠三態只推得動已作廢，且預設停在基本資訊頁籤
+  // 業務在未離廠三態：檢視、編輯、作廢三顆；沒有揀貨鈕。檢視側板預設停在基本資訊、沒有狀態下拉
+  const salesRow = shipmentRow(page, carrierNo);
+  await expect(salesRow.getByRole('button', { name: '檢視' })).toBeVisible();
+  await expect(salesRow.getByRole('button', { name: '編輯' })).toBeVisible();
+  await expect(salesRow.getByRole('button', { name: '作廢' })).toBeVisible();
+  await expect(salesRow.getByRole('button', { name: '開始揀貨' })).toHaveCount(0);
+  await expect(salesRow.getByRole('button')).toHaveCount(3);
   const salesPanel = await openShipmentPanel(page, carrierNo);
   await expect(salesPanel.locator('.ant-tabs-tab-active')).toContainText('基本資訊');
   await salesPanel.getByRole('tab', { name: '進度' }).click();
-  await salesPanel.getByLabel(/推進到/).click();
-  let options = page.locator('.ant-select-dropdown:visible').last();
-  await expect(options).toContainText('已作廢');
-  await expect(options.locator('.ant-select-item-option', { hasText: '打包中' })).toHaveCount(0);
-  await page.keyboard.press('Escape');
-  await page.keyboard.press('Escape');
+  await expect(salesPanel.getByLabel(/推進到/)).toHaveCount(0);
+  await expect(salesPanel.getByRole('button', { name: '送出進度' })).toHaveCount(0);
+  await expect(salesPanel).toContainText('目前為「未處理」');
+  await closeDrawer(page);
 
-  // 揀貨人員開側板預設停在進度；未處理只列打包中
+  // 揀貨人員開側板預設停在進度；未處理列上只有檢視與開始揀貨
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
+  const pickerRow = shipmentRow(page, carrierNo);
+  await expect(pickerRow.getByRole('button', { name: '開始揀貨' })).toBeVisible();
+  await expect(pickerRow.getByRole('button', { name: '裝箱回報' })).toHaveCount(0);
+  await expect(pickerRow.getByRole('button')).toHaveCount(2);
   const pickerPanel = await openShipmentPanel(page, carrierNo);
   await expect(pickerPanel.locator('.ant-tabs-tab-active')).toContainText('進度');
-  await pickerPanel.getByLabel(/推進到/).click();
-  options = page.locator('.ant-select-dropdown:visible').last();
-  await expect(options).toContainText('打包中');
-  await expect(options.locator('.ant-select-item-option')).toHaveCount(1);
-  await page.keyboard.press('Escape');
-  await pickNextStatus(page, pickerPanel, '打包中');
-  await pickerPanel.getByRole('button', { name: '送出進度' }).click();
+  await closeDrawer(page);
+  await pickerRow.getByRole('button', { name: '開始揀貨' }).click();
+  await confirmBox(page).getByRole('button', { name: '開始揀貨' }).click();
   await expect(shipmentRow(page, carrierNo)).toContainText('打包中');
 
-  // 打包中只列待出貨，且該步要填的五個欄位出現在裝箱回報那一段
-  const packPanel = await openShipmentPanel(page, carrierNo);
-  await pickNextStatus(page, packPanel, '待出貨');
-  await expect(packPanel.getByLabel(/實際裝箱數量/)).toBeVisible();
-  await expect(packPanel.getByLabel('箱數', { exact: true })).toBeVisible();
-  await expect(packPanel.getByLabel(/每箱幾個/)).toBeVisible();
-  await expect(packPanel.locator('#box_spec')).toBeVisible();
-  await packPanel.getByLabel(/實際裝箱數量/).fill('100');
-  await packPanel.getByLabel('箱數', { exact: true }).fill('2');
-  await packPanel.getByLabel(/每箱幾個/).fill('50');
-  await packPanel.locator('#box_spec').click({ force: true });
+  // 打包中只有裝箱回報，對話框要填的五個欄位都在
+  await expect(shipmentRow(page, carrierNo).getByRole('button', { name: '開始揀貨' })).toHaveCount(0);
+  const packDialog = await clickRowAction(page, carrierNo, '裝箱回報');
+  await expect(packDialog.getByLabel(/實際裝箱數量/)).toBeVisible();
+  await expect(packDialog.getByLabel('箱數', { exact: true })).toBeVisible();
+  await expect(packDialog.getByLabel(/每箱幾個/)).toBeVisible();
+  await expect(packDialog.locator('#box_spec')).toBeVisible();
+  await packDialog.getByLabel(/實際裝箱數量/).fill('100');
+  await packDialog.getByLabel('箱數', { exact: true }).fill('2');
+  await packDialog.getByLabel(/每箱幾個/).fill('50');
+  await packDialog.locator('#box_spec').click({ force: true });
   await page
     .locator('.ant-select-dropdown:visible')
     .last()
     .locator('.ant-select-item-option')
     .first()
     .click();
-  await packPanel.locator('input[type="file"]').setInputFiles(fakePhoto('裝箱照.jpg'));
-  await packPanel.getByRole('button', { name: '送出進度' }).click();
+  await packDialog.locator('input[type="file"]').setInputFiles(fakePhoto('裝箱照.jpg'));
+  await packDialog.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(shipmentRow(page, carrierNo)).toContainText('待出貨');
   await pickAndPack(page, pickupNo, { actualQty: 100, boxes: 2, perBoxQty: 50 });
 
-  // 出貨人員在待出貨依出貨方式分流：第三方到運送中、自取直接到已送達
+  // 出貨人員在待出貨依出貨方式分流：第三方是出貨確認、自取是交付確認；都沒有送達確認與異常
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  const carrierPanel = await openShipmentPanel(page, carrierNo);
-  await carrierPanel.getByLabel(/推進到/).click();
-  options = page.locator('.ant-select-dropdown:visible').last();
-  await expect(options).toContainText('運送中（交寄拋單）');
-  await expect(options.locator('.ant-select-item-option')).toHaveCount(1);
-  await page.keyboard.press('Escape');
-  await page.keyboard.press('Escape');
+  const carrierRow = shipmentRow(page, carrierNo);
+  await expect(carrierRow.getByRole('button', { name: '出貨確認' })).toBeVisible();
+  await expect(carrierRow.getByRole('button', { name: '交付確認' })).toHaveCount(0);
+  await expect(carrierRow.getByRole('button', { name: '送達確認' })).toHaveCount(0);
+  await expect(carrierRow.getByRole('button', { name: '異常' })).toHaveCount(0);
+  await expect(carrierRow.getByRole('button')).toHaveCount(2);
+  const pickupRow = shipmentRow(page, pickupNo);
+  await expect(pickupRow.getByRole('button', { name: '交付確認' })).toBeVisible();
+  await expect(pickupRow.getByRole('button', { name: '出貨確認' })).toHaveCount(0);
 
-  const pickupPanel = await openShipmentPanel(page, pickupNo);
-  await pickupPanel.getByLabel(/推進到/).click();
-  options = page.locator('.ant-select-dropdown:visible').last();
-  await expect(options).toContainText('已送達（交付確認）');
-  await expect(options.locator('.ant-select-item-option', { hasText: '運送中' })).toHaveCount(0);
-  await page.keyboard.press('Escape');
-  await page.keyboard.press('Escape');
-
-  // 印務主管看同一張單：沒有可推的下一步，狀態欄改為唯讀說明句
+  // 印務主管看同一張單：列上只剩檢視，側板進度頁籤純唯讀
   await switchRoleSafe(page, '印務主管');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await expect(shipmentRow(page, carrierNo).getByRole('button')).toHaveCount(1);
   const readOnlyPanel = await openShipmentPanel(page, carrierNo);
   await readOnlyPanel.getByRole('tab', { name: '進度' }).click();
-  await expect(readOnlyPanel).toContainText('這個角色在這一格沒有可推的下一步');
+  await expect(readOnlyPanel).toContainText('目前為「待出貨」');
   await expect(readOnlyPanel.getByRole('button', { name: '送出進度' })).toHaveCount(0);
 });
 
-test('12.16 列上只留檢視，訂單出貨頁籤與出貨管理共用同一顆側板', async ({ page }) => {
+test('12.16 列上動作鈕直接開該動作的填寫畫面，訂單出貨頁籤與出貨管理共用同一組鈕與同一顆側板', async ({
+  page,
+}) => {
   await openAs(page, '業務', '/qc-shipping/shipments');
 
-  // 出貨管理：列上只有一顆檢視圖示鈕
+  // 出貨管理：草稿列長出檢視、編輯、刪除三顆
   const draftRow = shipmentRow(page, CHAIN4.draftShipmentNo);
   await expect(draftRow.getByRole('button', { name: '檢視' })).toHaveCount(1);
-  await expect(draftRow.getByRole('button')).toHaveCount(1);
+  await expect(draftRow.getByRole('button', { name: '編輯' })).toHaveCount(1);
+  await expect(draftRow.getByRole('button', { name: '刪除' })).toHaveCount(1);
+  await expect(draftRow.getByRole('button')).toHaveCount(3);
 
-  // 側板裡改草稿的收件人與預計出貨印件數量，缺出貨方式時整張擋下並標出所在頁籤
-  const panel = await openShipmentPanel(page, CHAIN4.draftShipmentNo);
+  // 檢視是唯讀：沒有儲存草稿鈕、沒有危險區
+  const viewPanel = await openShipmentPanel(page, CHAIN4.draftShipmentNo);
+  await expect(viewPanel.getByRole('button', { name: '儲存草稿' })).toHaveCount(0);
+  await expect(viewPanel).not.toContainText('危險區');
+  await closeDrawer(page);
+
+  // 編輯開編輯模式的側板：改草稿的收件人後儲存
+  const panel = await openShipmentEdit(page, CHAIN4.draftShipmentNo);
   await panel.locator('#receiver_name').fill('倉儲收貨組');
   await panel.getByRole('button', { name: '儲存草稿' }).click();
   await expect(page.getByText(/草稿已更新/).first()).toBeVisible();
 
-  // 訂單詳情的出貨頁籤：同一顆側板、同樣只有一顆檢視鈕，建單入口鎖定本訂單
+  // 訂單詳情的出貨頁籤：同一組鈕、同一顆側板，建單入口鎖定本訂單
   await gotoInAppSafe(page, '/orders');
   await clickIntoDetail(page, CHAIN4.orderNo, /orders\/detail/);
   await page.getByRole('tab', { name: /出貨/ }).first().click();
   await expect(page.getByRole('button', { name: '建立出貨單草稿' })).toBeVisible();
   const tabRow = page.locator('tr.ant-table-row').filter({ hasText: CHAIN4.draftShipmentNo });
   await expect(tabRow.getByRole('button', { name: '檢視' })).toHaveCount(1);
-  await tabRow.getByRole('button', { name: '檢視' }).click();
+  await expect(tabRow.getByRole('button', { name: '編輯' })).toHaveCount(1);
+  await expect(tabRow.getByRole('button', { name: '刪除' })).toHaveCount(1);
+  await tabRow.getByRole('button', { name: '編輯' }).click();
   const tabPanel = page.locator('.ant-drawer-content:visible').first();
   await expect(tabPanel).toBeVisible();
   // 兩個入口看到的是同一張單：剛才改的收件人在這裡也看得到
@@ -771,10 +781,11 @@ test('12.17 諮詢從訂單詳情的出貨單頁籤替自己負責的訂單建�
     .filter({ hasText: '草稿' })
     .filter({ hasNotText: CHAIN4.draftShipmentNo })
     .first();
-  await draftRow.getByRole('button', { name: '檢視' }).click();
+  await expect(draftRow.getByRole('button', { name: '檢視' })).toHaveCount(1);
+  await draftRow.getByRole('button', { name: '編輯' }).click();
   const panel = page.locator('.ant-drawer-content:visible').first();
   await expect(panel).toContainText('張惠雯');
-  // 建單人在草稿上動得了：側板有儲存草稿與建立出貨單兩顆鈕
+  // 建單人在草稿上動得了：列上有編輯鈕，編輯側板有儲存草稿與建立出貨單兩顆鈕
   await expect(panel.getByRole('button', { name: '儲存草稿' })).toBeVisible();
   await expect(panel.getByRole('button', { name: '建立出貨單' })).toBeVisible();
   await page.keyboard.press('Escape');
