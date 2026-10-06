@@ -8,7 +8,8 @@
 // 本檔先於實作寫成（tasks 2.8、2.13），下列函式尚未存在，跑起來應為紅：
 //   work-orders/_lib/delivery-status.js（新檔）
 //     deriveDeliveryStatus(task, floorTasks = []) → '未交付'｜'已交付'｜'已接收'｜null
-//       null 代表畫面顯示「－」（廠商類別不是自有工廠，或生產任務狀態屬終態）。
+//       null 代表畫面顯示「－」（廠商類別為外包廠或中國廠商，或生產任務狀態屬終態；加工廠與自有工廠
+//       同樣推導，見 8.18 task-unit-and-plant-delivery.test.mjs，2026-10-06 拍板 D3）。
 //       接收工作取現場任務池那一筆的 received_confirmed_at（以 source_task_id 或 id 對回）。
 //     isWorkOrderFullyDelivered(workOrder) → 布林：旗下有效任務（不含已作廢、報廢）的交付時間皆有值。
 //   work-orders/_lib/store.js

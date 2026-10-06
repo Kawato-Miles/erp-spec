@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs, switchRole } from '../_helpers.mjs';
+import { attachReportPhotos, gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 import { openPackageReports } from './_ch10.mjs';
 
 // 情境目錄 10.44：師傅不能修改或作廢別人提交的報工（純函式另見
@@ -23,6 +23,7 @@ test('10.44 師傅不能修改或作廢別人提交的報工', async ({ page }) 
   const inputs = line.locator('input');
   await inputs.nth(0).fill('100');
   await inputs.nth(1).fill('100');
+  await attachReportPhotos(page);
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(page.getByText('已送出 1 筆報工').last()).toBeVisible();
 
@@ -35,6 +36,8 @@ test('10.44 師傅不能修改或作廢別人提交的報工', async ({ page }) 
 
   // 劉阿海在我的工作包：生管代報那筆沒有修改與作廢；自己提交的照樣有
   await switchRole(page, '師傅');
+  // 切角色後頁面還停在所有工作包（師傅沒有這個單元的操作）：先進我的工作包再開報工紀錄
+  await gotoInApp(page, '/production-floor/work-packages/mine');
   drawer = await openPackageReports(page, 'WP-2026-0710-01');
   proxyRow = drawer.locator('tr.ant-table-row', { hasText: '許文傑' }).first();
   await expect(proxyRow).toBeVisible();

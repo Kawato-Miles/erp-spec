@@ -97,7 +97,7 @@ const reportByOfficer = (taskId, qty) =>
     input_qty: qty,
     good_qty: qty,
     defect_qty: 0,
-    photos: [],
+    photos: ['外發報工.jpg'], // 報工至少附一張現場照片（資料層一併把關）
     channel: REPORT_CHANNELS.PRINT_OFFICER_WORK_ORDER,
     reporter: '周建宏',
   });

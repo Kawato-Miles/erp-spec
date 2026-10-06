@@ -5,7 +5,11 @@ import {
   MOCK_WORK_REPORTS,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/mock-data.js';
 import { calcWorkOrderActualCost } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/actual-cost.js';
-import { calcCostMetrics, calcMetrics } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/metrics.js';
+import {
+  calcCostMetrics,
+  calcMetrics,
+  calcQualityMetrics,
+} from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/metrics.js';
 import { sumCost } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/estimate-cost.js';
 
 // 15.2 五個指標與工單成本對照走同一支算式（原編號 102，併入原編號 25）
@@ -116,3 +120,33 @@ describe('15.2 五個指標與工單成本對照走同一支算式', () => {
     expect(metrics.costAttainment).toBe(cost.costAttainment);
   });
 });
+
+// 15.2（2026-10-06 改版）：良率與折損率直接以數值計算，不依 BOM 單位用量換算（wiki 生產績效指標、
+// 數量換算規則；change production-dispatch-report-transfer-convergence production-overview § 五指標）。
+// 等 tasks 4.3 拿掉 metrics.calcQualityMetrics 的單位用量換算。
+describe('15.2 良率與折損率直接以數值計算、不換算單位', () => {
+  const period = { from: '2026-08-01', to: '2026-09-30', today: '2026-09-05' };
+  const report = {
+    id: 'wr-test-metric',
+    task_id: 'pt-test-metric',
+    input_qty: 1051,
+    good_qty: 1021,
+    defect_qty: 30,
+    status: '有效',
+    reported_at: '2026-09-02 10:00',
+  };
+
+  it('某批投入 1,051、良品 1,021、不良品 30：良品數 1,021、不良品數 30 直接進分子', () => {
+    const m = calcQualityMetrics([report], [{ id: 'pt-test-metric' }], period);
+    expect(m.inputQty).toBe(1051);
+    expect(m.goodQty).toBe(1021);
+    expect(m.defectQty).toBe(30);
+  });
+
+  it('任務帶了單位用量也不換算：結果與沒帶時相同', () => {
+    const plain = calcQualityMetrics([report], [{ id: 'pt-test-metric' }], period);
+    const scaled = calcQualityMetrics([report], [{ id: 'pt-test-metric', bom_unit_usage: 4 }], period);
+    expect(scaled).toEqual(plain);
+  });
+});
+

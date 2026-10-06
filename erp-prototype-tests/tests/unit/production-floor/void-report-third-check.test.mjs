@@ -8,8 +8,8 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 // 與另外幾道（量已被下游點收或在途、下游已開工）並列，任一命中即擋（見 10.35）。
 // 報工修改 editWorkReport 的契約見 report-edit-and-void.test.mjs 檔頭。
 //
-// 合成資料的理由：鏈四 PT-0820-9 精裝裝訂是同一種情形，但該筆任務已完成，作廢會先被
-// 「已完成的任務不可作廢報工」擋下，走不到這一道檢核。本檔的任務刻意停在製作中。
+// 合成資料：一件印件底下唯一計入完成度的精裝裝訂任務。2026-10-06 改版後已完成的任務同樣可作廢報工
+//（拿掉「已完成的任務不可作廢報工」的特例），任務已完成時照同一道已驗量檢核判定。
 
 const PRINT_ITEM_NO = 'PI-TEST-VOID';
 const TASK_ID = 'pt-test-void';
@@ -156,7 +156,7 @@ describe('10.20 已被品檢驗過的良品不可作廢報工，也不可調降�
   });
 });
 
-describe('10.20（既有檢核）已完成的生產任務先被擋在前一道', () => {
+describe('10.20 已完成的生產任務照同一道已驗量檢核判定（不另設任務已完成的擋下）', () => {
   beforeEach(() => {
     seed([qcRecordOf(500, 0, '2026-09-18 10:00')]);
     useProductionFloorStore.setState((s) => ({
@@ -164,9 +164,10 @@ describe('10.20（既有檢核）已完成的生產任務先被擋在前一道',
     }));
   });
 
-  it('任務已完成時擋下的是狀態那一道，訊息指向人工程序', () => {
+  it('任務已完成時擋下的是已驗量那一道，顯示該印件已驗收 500 件，不提任務已完成', () => {
     const result = voidIt();
     expect(result.ok).toBe(false);
-    expect(result.error).toContain('該生產任務已完成，報工不可作廢');
+    expect(result.error).toContain('500');
+    expect(result.error).not.toContain('該生產任務已完成，報工不可作廢');
   });
 });

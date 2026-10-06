@@ -328,15 +328,16 @@ test('11.8 待驗量由做出來的良品推導，轉交與點收都不改變它
   await expect(pendingRow(page)).toContainText('500');
   await expect(pendingRow(page)).toContainText('0 ／ 0');
 
-  // 貨在哪裡到轉交單管理查：該張單的目的站點與明細數量都在那裡
+  // 貨在哪裡到轉交單管理查：該張單的目的產線（品檢線）、明細的目的站點（品檢站）與數量都在那裡
   await switchRoleSafe(page, '生管');
   await gotoInAppSafe(page, '/production-floor/transfers');
   const ticketRow = page.getByRole('row', { name: /已點收/ }).first();
-  await expect(ticketRow).toContainText('品檢站');
-  // 轉交單為子母表：搬運數量與點收數量在子層明細列，展開母層後讀
+  await expect(ticketRow).toContainText('品檢線');
+  // 轉交單為子母表：目的站點、搬運數量與點收數量在子層明細列，展開母層後讀
   const expand = ticketRow.locator('.ant-table-row-expand-icon');
   if ((await expand.getAttribute('class'))?.includes('collapsed')) await expand.click();
   await expect(page.locator('tr.ant-table-expanded-row').first()).toContainText('500');
+  await expect(page.locator('tr.ant-table-expanded-row').first()).toContainText('品檢站');
 });
 
 test('11.9 分次驗收與待驗量歸零後的防呆（原編號 122）', async ({ page }) => {

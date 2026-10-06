@@ -67,7 +67,7 @@ describe('10.41 報工時填備註，修改報工時可改；歷程顯示備註�
       input_qty: 100,
       good_qty: 100,
       defect_qty: 0,
-      photos: [],
+      photos: ['現場.jpg'],
       remark: '   ',
       channel: '師傅自助',
       reporter: '劉阿海',
@@ -102,13 +102,15 @@ describe('10.41 報工時填備註，修改報工時可改；歷程顯示備註�
 describe('10.42 生產數量大於 0 時，良品數與不良品數不可同時為 0', () => {
   it('純函式：投入 300、良品 0、不良品 0 擋下；不良品 300 或良品 1 都放行', () => {
     expect(isGoodAndDefectBothZero({ input_qty: 300, good_qty: 0, defect_qty: 0 })).toBe(true);
-    expect(validateReportRow({}, { input_qty: 300, good_qty: 0, defect_qty: 0 })).toContain(
+    // 現場照片必填（10.49），這裡各附一張，只驗良品與不良品同時為 0 這一條
+    const photos = ['現場照-001.jpg'];
+    expect(validateReportRow({}, { input_qty: 300, good_qty: 0, defect_qty: 0, photos })).toContain(
       GOOD_DEFECT_BOTH_ZERO_ERROR,
     );
     expect(
-      validateReportRow({}, { input_qty: 300, good_qty: 0, defect_qty: 300, defect_reason: '色差' }),
+      validateReportRow({}, { input_qty: 300, good_qty: 0, defect_qty: 300, defect_reason: '色差', photos }),
     ).toEqual([]);
-    expect(validateReportRow({}, { input_qty: 300, good_qty: 1, defect_qty: 0 })).toEqual([]);
+    expect(validateReportRow({}, { input_qty: 300, good_qty: 1, defect_qty: 0, photos })).toEqual([]);
   });
 
   it('修改報工把良品與不良品都改成 0：擋下並提示，數字不動', () => {
@@ -173,9 +175,10 @@ describe('10.43 生產任務歷程統合報工、轉交、點收、交付與接�
           ticket_no: 'TT-TEST-PENDING',
           status: '待搬運',
           assigned_mover: '邱志明',
-          target_station_key: '手工產線',
-          target_station: '手工產線',
-          details: [{ task_id: 'pt-0710-2', task_name: '海報四色印刷', qty: 200 }],
+          destination_line: '手工產線',
+          details: [
+            { task_id: 'pt-0710-2', task_name: '海報四色印刷', destination_station_key: '裁切站', qty: 200 },
+          ],
           history: [],
         },
       ],

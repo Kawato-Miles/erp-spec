@@ -24,6 +24,7 @@ const floor = () => useProductionFloorStore.getState();
 const inboxOf = (name) => useNotificationStore.getState().inboxOf(name);
 const create = (assignedMover) =>
   floor().createTransferTickets({
+    plannedDate: '2026-10-07',
     picks: [{ task_id: 'pt-0820-9', qty: 200 }],
     actor: '許文傑',
     assignedMover,

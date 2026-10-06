@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
-import { openAs, switchRole, gotoInApp } from '../_helpers.mjs';
+import { openAs, switchRole, gotoInApp, attachReportPhotos } from '../_helpers.mjs';
 import { assignMover, CREATED_TOAST } from './_ch10.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -37,6 +37,7 @@ const reportTask = async (page, taskName, qty) => {
   const inputs = dialog.locator('tr', { hasText: taskName }).locator('input');
   await inputs.nth(0).fill(String(qty));
   await inputs.nth(1).fill(String(qty));
+  await attachReportPhotos(page);
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(page.getByText('已送出 1 筆報工').last()).toBeVisible();
 };

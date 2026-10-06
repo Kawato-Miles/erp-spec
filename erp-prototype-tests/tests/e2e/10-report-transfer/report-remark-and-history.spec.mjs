@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { gotoInApp, openAs, switchRole } from '../_helpers.mjs';
+import { gotoInApp, openAs, switchRole, attachReportPhotos } from '../_helpers.mjs';
 import { openWorkOrderFromList } from '../08-process-review-deliver/_page-helpers.mjs';
 import {
   closeDrawer,
@@ -9,8 +9,7 @@ import {
   formItemOf,
   noticeOf,
   openPackageReports,
-  reportRowOf,
-} from './_ch10.mjs';
+  reportRowOf, ticketDetailSubRow, editMoveQty } from './_ch10.mjs';
 
 // 情境目錄 10.41～10.43：報工備註、良品與不良品同時為 0 擋下、生產任務歷程統合（Miles 2026-10-06 拍板）。
 
@@ -57,6 +56,7 @@ test('10.41 報工時可填備註，修改報工時可改；報工紀錄與歷�
   await line.locator('.ant-select').click();
   await page.locator('.ant-select-dropdown:visible .ant-select-item-option[title="色差"]').click();
   await line.locator('textarea').fill('換版後第二批，色偏已調回');
+  await attachReportPhotos(page);
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(page.getByText('已送出 1 筆報工').last()).toBeVisible();
 
@@ -99,6 +99,7 @@ test('10.42 生產數量大於 0 時，良品數與不良品數不可同時為 0
   const dialog = page.locator('.ant-modal-content:visible').last();
   const line = dialog.locator('tbody tr.ant-table-row').first();
   await line.locator('input.ant-input-number-input').nth(0).fill('300');
+  await attachReportPhotos(page);
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(line).toContainText('生產數量大於 0 時，良品數與不良品數不可同時為 0');
   await expect(noticeOf(page, '整批未送出')).toBeVisible();
@@ -189,4 +190,21 @@ test('10.43 生產任務歷程統合報工、轉交、點收、交付與接收�
   await top.getByText('TT-20260830-003').click();
   await expect(page).toHaveURL(/production-floor\/transfers/);
   await expect(page.locator('.ant-drawer-content:visible').last()).toContainText('TT-20260830-003');
+  await closeDrawer(page);
+
+  // 搬運數量修改記入來源任務歷程：TT-20260830-003 那條明細 800 改為 790 並填原因
+  const subRow = await ticketDetailSubRow(page, 'TT-20260830-003', '海報四色印刷');
+  await editMoveQty(page, subRow, { qty: 790, reason: '裝車時少十張' });
+  const posterAfter = await openTaskDrawer(page, '海報四色印刷', 'WO-2026-0710');
+  const latest = posterAfter.locator('.ant-timeline-item').first();
+  await expect(latest).toContainText('800');
+  await expect(latest).toContainText('790');
+  await expect(latest).toContainText('裝車時少十張');
+  await closeDrawer(page);
+
+  // 點收紀錄作廢記入來源任務歷程：鏈一材料備料（TT-20260615-001 一筆點收 100 已作廢）
+  const prepDrawer = await openTaskDrawer(page, '銅西卡 250g 備料', 'WO-2026-0601');
+  await expect(prepDrawer).toContainText('點收紀錄作廢：100（點錯單，這一落是別張單的貨）');
+  // 任何一筆都不帶人工註記，也不帶代點收字樣
+  await expect(prepDrawer.getByText(/人工註記|代點收/)).toHaveCount(0);
 });

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { clickIntoDetail, gotoInApp, openAs, switchRole, taskRows } from '../_helpers.mjs';
+import { clickIntoDetail, gotoInApp, openAs, switchRole, taskRows, attachReportPhotos } from '../_helpers.mjs';
 
 // 情境目錄第十章：報工向上反映鏈（工單 → 印件 → 訂單）與完成判定。
 // 起點資料：鏈三 WO-2026-0815（工單已交付、四筆任務待派工，客戶好日子烘焙坊，訂單 ORD-2026-0815）。
@@ -34,6 +34,7 @@ test('10.12 首次報工把上游三層一起推進，已收尾的不被拉回�
   const inputs = taskRow.locator('input');
   await inputs.nth(0).fill('500'); // 生產數量
   await inputs.nth(1).fill('500'); // 良品
+  await attachReportPhotos(page);
   await page.getByRole('button', { name: '送出報工' }).click();
 
   await expect(page.getByText('已送出 1 筆報工')).toBeVisible();
@@ -93,6 +94,7 @@ test('10.15 完成判定一律取生產數量（投入）累計（原編號 159�
   let inputs = taskRow.locator('input');
   await inputs.nth(0).fill('500');
   await inputs.nth(1).fill('500');
+  await attachReportPhotos(page);
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(page.getByText('已送出 1 筆報工')).toBeVisible();
 
@@ -111,6 +113,7 @@ test('10.15 完成判定一律取生產數量（投入）累計（原編號 159�
   inputs = taskRow.locator('input');
   await inputs.nth(0).fill('1560');
   await inputs.nth(1).fill('1560');
+  await attachReportPhotos(page);
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(page.getByText('已送出 1 筆報工').last()).toBeVisible();
   await expect(taskSubRow).toContainText('2,060 / 2,060');
@@ -127,6 +130,7 @@ test('10.16 生管手動把做不滿的任務標為完成（原編號 160，正�
   const inputs = taskRow.locator('input');
   await inputs.nth(0).fill('1500');
   await inputs.nth(1).fill('1500');
+  await attachReportPhotos(page);
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(page.getByText('已送出 1 筆報工')).toBeVisible();
 

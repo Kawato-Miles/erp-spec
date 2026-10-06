@@ -9,11 +9,14 @@ import {
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/report-rules.js';
 import { resolvePrecedence } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/precedence.js';
 
-// 10.1／10.18 可報工判定（report-rules.canReportTask）：介面入口顯不顯示報工，取這一支。
-// 兩個條件同時成立才算可報工：
-//   一、狀態為「待處理」或「製作中」（已完成不用再報，已作廢與報廢不能再收數字）
-//   二、沒有前置，或前置到料量大於 0——需轉交的前置看轉交單已點收量、不需轉交的前置看該前置
-//       報工的累計良品
+// 10.1／10.18／9.19／10.48 可報工判定（report-rules.canReportTask）：介面入口顯不顯示報工，取這一支。
+// 報工前提（wiki 報工規則 § 報工前提；change production-dispatch-report-transfer-convergence
+// production-execution § 報工前提、§ 已完成任務不可新增報工）三個條件同時成立才算可報工：
+//   一、任務已交付：以交付時間（delivered_at）有沒有值判定，不看交付狀態；不看接收與打包
+//   二、狀態為「待處理」或「製作中」（已完成不能新增報工，已作廢與報廢不能再收數字）
+//   三、沒有前置，或前置到料量大於 0——需轉交的前置看轉交單有效點收量、不需轉交的前置看該前置
+//       報工的累計良品；跨任務直接比數值、不做單位換算
+// 新契約（等 tasks 4.1、4.3 實作）：describeReportWaiting 對交付時間無值的任務回「任務尚未交付」。
 // 起點資料：鏈二 pt-0710-2 海報四色印刷（製作中、無未到料前置）、pt-0710-3 裁切成型
 //（待處理，前置轉交單皆未點收）、pt-0710-1 雪銅紙 150g 備料（已完成）。
 describe('可報工判定（canReportTask）', () => {
@@ -32,7 +35,7 @@ describe('可報工判定（canReportTask）', () => {
     expect(canReportTask(task, ctx)).toBe(false);
   });
 
-  it('已完成的任務不可報工：補報一律走印務入口', () => {
+  it('已完成的任務不可報工：已完成不能新增報工，數字錯改原本那筆', () => {
     const task = taskOf('pt-0710-1');
     expect(task.status).toBe('已完成');
     expect(canReportTask(task, ctx)).toBe(false);
@@ -42,6 +45,22 @@ describe('可報工判定（canReportTask）', () => {
     const task = taskOf('pt-0710-2');
     expect(canReportTask({ ...task, status: '已作廢' }, ctx)).toBe(false);
     expect(canReportTask({ ...task, status: '報廢' }, ctx)).toBe(false);
+  });
+
+  it('交付時間無值的任務不可報工（任務還沒交付）', () => {
+    const task = taskOf('pt-0710-2');
+    expect(task.delivered_at).toBeTruthy();
+    expect(canReportTask({ ...task, delivered_at: null }, ctx)).toBe(false);
+    expect(canReportTask({ ...task, status: '待處理', delivered_at: null, depends_on: [] }, { tasks: [], tickets: [] })).toBe(false);
+  });
+
+  it('9.19 沒接收、沒打包、沒有前置的已交付任務 → 可報工（鏈三牛皮紙 150g 備料）', () => {
+    const task = taskOf('pt-0815-1');
+    expect(task.delivered_at).toBeTruthy();
+    expect(task.received_confirmed_at).toBeNull();
+    expect(task.package_id).toBeNull();
+    expect(task.depends_on).toEqual([]);
+    expect(canReportTask(task, ctx)).toBe(true);
   });
 
   it('待處理且沒有任何前置 → 可報工', () => {
@@ -67,7 +86,7 @@ describe('可報工判定（canReportTask）', () => {
       status: '已點收',
       details: pending.details.map((d) => ({
         ...d,
-        receipts: [{ id: `${d.task_id}-r1`, qty: d.qty, received_by: '李榮發', received_at: '2026-10-05 10:00', proxy_received: false }],
+        receipts: [{ id: `${d.task_id}-r1`, qty: d.qty, received_by: '李榮發', received_at: '2026-10-05 10:00', remark: '', status: '有效' }],
       })),
     };
     const tickets = MOCK_TRANSFER_TICKETS.map((t) => (t.id === pending.id ? received : t));
@@ -99,24 +118,24 @@ describe('可報工判定（canReportTask）', () => {
       expect(canReportTask(downstream, ctx)).toBe(false);
     });
 
-    it('前置累計良品大於 0 → 可報工，可做量等於良品換算後的量', () => {
+    it('前置累計良品大於 0 → 可報工，可做量等於前置累計良品（直接比數值）', () => {
       const tasks = withGood(1200);
       const { blocking, workableQty } = resolvePrecedence(
         downstream,
         tasks,
         MOCK_TRANSFER_TICKETS,
       );
-      // 兩道的投入與產出同單位（bom_unit_usage 為 1），可做量即上一道的累計良品
-      expect(downstream.bom_unit_usage).toBe(1);
+      // 數量一律當數值，任務不帶 BOM 單位用量（Miles 2026-10-06 拍板）
+      expect('bom_unit_usage' in downstream).toBe(false);
       expect(workableQty).toBe(1200);
       expect(blocking).toEqual([]);
       expect(canReportTask(downstream, { tasks, tickets: MOCK_TRANSFER_TICKETS })).toBe(true);
     });
 
-    it('前置累計良品的換算依本任務的單位用量（每 1 件產出耗用 4 單位投入 → 可做量取整除）', () => {
+    it('不做單位換算：即使任務帶了單位用量，可做量仍等於前置累計良品 1,000', () => {
       const tasks = withGood(1000);
       const scaled = { ...downstream, bom_unit_usage: 4 };
-      expect(resolvePrecedence(scaled, tasks, MOCK_TRANSFER_TICKETS).workableQty).toBe(250);
+      expect(resolvePrecedence(scaled, tasks, MOCK_TRANSFER_TICKETS).workableQty).toBe(1000);
     });
 
     it('不需轉交的前置不因為沒有轉交單就放行（沒有料的機台開不了工）', () => {
@@ -145,6 +164,10 @@ describe('前置未到料提示（describeReportWaiting）', () => {
     expect(describeReportWaiting(taskOf('pt-0710-3'), ctx)).toBe(
       '前置未到料：等 WO-2026-0710／海報四色印刷 的貨',
     );
+  });
+
+  it('交付時間無值 → 提示「任務尚未交付」', () => {
+    expect(describeReportWaiting({ ...taskOf('pt-0710-2'), delivered_at: null }, ctx)).toBe('任務尚未交付');
   });
 
   it('前置已到料、或沒有前置 → 不出提示', () => {

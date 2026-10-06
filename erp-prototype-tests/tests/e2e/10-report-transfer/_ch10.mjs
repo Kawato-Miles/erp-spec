@@ -59,7 +59,7 @@ export async function assignMover(page, name = '簡俊男') {
 
 /**
  * 在轉交單把某張單的母層列展開，回傳子層中某一條明細列（以生產任務名稱定位）。
- * 再次點收與點收修改的操作在子層列上。
+ * 點收、點收修改、點收紀錄作廢與搬運數量修改的操作在子層列上。
  */
 export async function ticketDetailSubRow(page, ticketNo, taskName) {
   await gotoInApp(page, '/production-floor/transfers');
@@ -128,8 +128,45 @@ export async function editReport(page, row, { input, good, defect, reason }) {
 }
 
 /**
- * 轉交單子層明細列的欄序（2026-10-06 拍板）：完稿縮圖、訂單、印件、工單、生產任務、搬運數量、點收數量、
- * 最近點收、簽收照片、操作。回傳某一欄的儲存格。
+ * 轉交單子層明細列的欄序（2026-10-06 拍板）：完稿縮圖、訂單、印件、工單、生產任務、目的站點、搬運數量、
+ * 點收數量、最近點收、簽收照片、操作。回傳某一欄的儲存格。
  */
-const SUB_COLUMNS = ['完稿縮圖', '訂單', '印件', '工單', '生產任務', '搬運數量', '點收數量', '最近點收', '簽收照片', '操作'];
+const SUB_COLUMNS = ['完稿縮圖', '訂單', '印件', '工單', '生產任務', '目的站點', '搬運數量', '點收數量', '最近點收', '簽收照片', '操作'];
 export const subCell = (subRow, column) => subRow.locator('td').nth(SUB_COLUMNS.indexOf(column));
+
+/**
+ * 作廢一張點收前的轉交單：作廢原因為文字輸入（2026-10-06 拍板 T8，不用下拉）。
+ * @param row 轉交單母層列
+ */
+export async function voidTicket(page, row, reason) {
+  await row.getByRole('button', { name: '作廢' }).click();
+  const dialog = dialogOf(page, '作廢轉交單');
+  if (reason != null) {
+    await formItemOf(dialog, '作廢原因').locator('textarea, input').first().fill(reason);
+  }
+  await confirmDialog(dialog);
+  return dialog;
+}
+
+/**
+ * 對某條明細按「搬運數量修改」（開始搬運之後的更正，2026-10-06 拍板 Q22），填改後的搬運數量與修改原因。
+ * @param subRow 轉交單子層明細列（ticketDetailSubRow 取得）
+ */
+export async function editMoveQty(page, subRow, { qty, reason }) {
+  await subRow.getByRole('button', { name: '搬運數量修改' }).click();
+  const dialog = dialogOf(page, '搬運數量修改');
+  if (qty != null) await formItemOf(dialog, '搬運數量').locator('input').first().fill(String(qty));
+  if (reason != null) await formItemOf(dialog, '修改原因').locator('textarea, input').first().fill(reason);
+  await confirmDialog(dialog);
+  return dialog;
+}
+
+/** 對某條明細的某一筆點收紀錄按「作廢點收紀錄」並填作廢原因 */
+export async function voidReceipt(page, subRow, reason) {
+  await subRow.getByRole('button', { name: '作廢點收紀錄' }).click();
+  const dialog = dialogOf(page, '作廢點收紀錄');
+  if (reason != null) await formItemOf(dialog, '作廢原因').locator('textarea, input').first().fill(reason);
+  await confirmDialog(dialog);
+  return dialog;
+}
+

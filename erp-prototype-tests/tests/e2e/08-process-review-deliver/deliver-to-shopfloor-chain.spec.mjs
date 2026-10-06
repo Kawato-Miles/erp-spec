@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { openAs } from '../_helpers.mjs';
+import { openAs, attachReportPhotos } from '../_helpers.mjs';
 import {
   cjkName,
   gotoInAppStable,
@@ -75,6 +75,7 @@ test('8.5 交付產線後的欄位一路帶到現場報工（原編號 112）', 
   await expect(materialRow).toContainText('628');
   await materialRow.locator('.ant-input-number-input').nth(0).fill('700');
   await materialRow.locator('.ant-input-number-input').nth(1).fill('700');
+  await attachReportPhotos(page);
   await reportDialog.getByRole('button', { name: cjkName('送出報工') }).click();
   await expect(page.getByText('已送出 1 筆報工')).toBeVisible();
   await waitModalsClosed(page);

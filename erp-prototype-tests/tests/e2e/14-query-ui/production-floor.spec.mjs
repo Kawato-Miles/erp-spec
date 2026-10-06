@@ -83,6 +83,13 @@ test('14.10 生產管理各單元的角色預設權限（原編號 180）', asyn
   await expect(async () => expect(await readGroupItems()).toEqual(['我的轉交單'])).toPass({ timeout: 10_000 });
   await switchRole(page, '品檢人員');
   await expect(async () => expect(await readGroupItems()).toEqual(['點收佇列'])).toPass({ timeout: 10_000 });
+  // 品檢人員的所屬產線為品檢線（模擬角色下拉帶出，2026-10-06 拍板 L4）
+  const header = page.locator('header, .ant-layout-header').first();
+  await header.locator('.ant-select').first().click();
+  await expect(
+    page.locator('.ant-select-dropdown:visible').last().locator('.ant-select-item-option', { hasText: '品檢人員（郭淑芬）' }),
+  ).toContainText('品檢線');
+  await page.keyboard.press('Escape');
 
   // 主管：五個產線單元（唯讀檢視，見 9.12）
   await switchRole(page, '主管');
@@ -129,7 +136,7 @@ test('14.12 手機寬度下生產管理各單元可完整操作（原編號 182�
   }
 });
 
-test('14.28 生產管理權限分產線與負責兩種範圍，看得到就能做', async ({ page }) => {
+test('14.28 生產管理權限分產線與負責兩種範圍，能做的操作由單元定義；我的生產任務可報工、修改與作廢自己的報工，點收佇列與所有轉交單功能相同', async ({ page }) => {
   test.setTimeout(180_000);
   // 暖機：先整頁載入會用到的路由，避免開發伺服器首次編譯時退回整頁導航、記憶體狀態歸零
   await warmUp(page, [
@@ -148,13 +155,14 @@ test('14.28 生產管理權限分產線與負責兩種範圍，看得到就能�
   await page.keyboard.press('Escape');
 
   // 生管許文傑的所有生產任務看得到鏈三（數位產線）
-  await expect(page.locator('tr.ant-table-row', { hasText: '牛皮紙 150g 備料' })).toHaveCount(1);
+  await expect(page.locator('tr.ant-table-row', { has: page.getByText('牛皮紙 150g 備料', { exact: true }) })).toHaveCount(1);
 
-  // 生管鄭宇翔（手工、壓克力）：只剩手工產線的任務，三筆裁切可勾選打包
+  // 生管鄭宇翔（手工、壓克力）：只剩手工產線的任務（含加工廠的證書局部上光），三筆裁切可勾選打包
   await switchRole(page, '生管（鄭宇翔）');
-  await expect(page.locator('tr.ant-table-row', { hasText: '牛皮紙 150g 備料' })).toHaveCount(0);
+  await expect(page.locator('tr.ant-table-row', { has: page.getByText('牛皮紙 150g 備料', { exact: true }) })).toHaveCount(0);
   const cutRow = page.locator('tr.ant-table-row', { hasText: '證書裁切' }).first();
   await expect(cutRow.locator('input[type="checkbox"]')).toHaveCount(1);
+  await expect(page.locator('tr.ant-table-row', { hasText: '證書局部上光' })).toHaveCount(1);
   // 待轉交任務不列精裝裝訂（裝訂產線）
   await gotoInApp(page, '/production-floor/pending-moves');
   await expect(page.locator('tr', { hasText: '精裝裝訂' })).toHaveCount(0);
@@ -170,4 +178,28 @@ test('14.28 生產管理權限分產線與負責兩種範圍，看得到就能�
   await expect(page.locator('tr.ant-table-row', { hasText: 'TT-20260830-003' })).toHaveCount(1);
   await switchRole(page, '廠務（邱志明）');
   await expect(page.locator('tr.ant-table-row', { hasText: /TT-/ })).toHaveCount(0);
+
+  // 師傅劉阿海的我的生產任務：有報工入口；沒有勾選、打包、接收工作與取消工作包
+  await switchRole(page, '師傅');
+  await gotoInApp(page, '/production-floor/dispatch/mine');
+  const myRow = page.locator('tr.ant-table-row', { hasText: '信封四色印刷' }).first();
+  await expect(myRow.getByRole('button', { name: '報工' })).toHaveCount(1);
+  await expect(page.locator('main .ant-table .ant-checkbox-input')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /接收工作|取消工作包|派工/ })).toHaveCount(0);
+  // 自己提交的報工有修改與作廢（從該任務的報工紀錄看）
+  await myRow.getByRole('button', { name: /檢視歷程|報工紀錄/ }).first().click();
+  const drawer = page.locator('.ant-drawer-content:visible').last();
+  await expect(drawer.getByRole('button', { name: /修\s*改/ }).first()).toBeVisible();
+  await expect(drawer.getByRole('button', { name: /作\s*廢/ }).first()).toBeVisible();
+  await page.getByRole('button', { name: '關閉' }).last().click();
+
+  // 生管許文傑在所有轉交單也能點收（與點收佇列相同）
+  await switchRole(page, '生管');
+  await gotoInApp(page, '/production-floor/transfers');
+  const search = page.getByPlaceholder(/轉交單編號/).first();
+  await search.fill('TT-20260830-002');
+  await search.press('Enter');
+  await expect(
+    page.locator('tr.ant-table-row', { hasText: 'TT-20260830-002' }).getByRole('button', { name: '點收' }),
+  ).toBeVisible();
 });

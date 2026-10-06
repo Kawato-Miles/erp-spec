@@ -4,9 +4,11 @@ import { useProductionFloorStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/
 import * as transferRules from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/transfer-rules.js';
 import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/store.js';
 
-// 情境目錄 10.34～10.37：報工修改、修改與作廢共用擋下條件、已完成任務的修改與再報工、報廢任務的報工修改。
-// 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt
-// production-execution delta § 報工修改、作廢與留痕、§ 生產任務狀態轉換 的 THEN。
+// 情境目錄 10.34～10.37：報工修改、修改與作廢共用擋下條件、已完成任務的修改與作廢、報廢任務的報工修改。
+// 期望值取自 openspec change production-dispatch-report-transfer-convergence
+// production-execution delta § 報工修改、作廢與留痕、§ 已完成任務不可新增報工、§ 生產任務狀態轉換 的 THEN。
+// 2026-10-06 改版：拿掉人工程序與人工註記提示（擋下只指出卡在哪一筆，之後走逐層更正，見 10.56）；
+// 已完成任務可作廢報工、不能新增報工；修改原因自由填寫，不驗固定字樣。
 //
 // 本檔先於實作撰寫（tasks 2.6），報工修改的契約由 task 6.4 補上：
 //   store.editWorkReport(reportId, { input_qty?, good_qty?, defect_qty?, reason, by })
@@ -15,7 +17,7 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 //     { field: '生產數量'｜'良品數'｜'不良品數', before, after, edited_by, edited_at, reason }，
 //     生產任務歷程追加一筆「報工修改（原因）」，前後值 changes 列良品數 500 → 480，並以 ref 關聯該筆報工。
 //   修改與作廢共用擋下條件；擋下訊息列出佔用的單據與提示（未送達的單「先作廢尚未送達的單」、
-//   已送達的單「先照實點收」），並帶出人工程序。
+//   已送達的單「先照實點收」），不帶人工程序與人工註記。
 
 const { deriveTransferStatus } = transferRules;
 
@@ -46,6 +48,8 @@ const seed = ({ task, reports, tickets = [], extraTasks = [] }) => {
     tasks: [
       {
         work_order_no: 'WO-TEST',
+        // 已交付（交付時間有值）：報工前提，未交付的任務不收新報工（10.48）
+        delivered_at: '2026-10-01 09:00',
         depends_on: [],
         history: [],
         package_id: 'wp-test',
@@ -77,16 +81,16 @@ const receivedTicket = (taskId, qty) => ({
   id: 'tt-test-recv',
   ticket_no: 'TT-TEST-RECV',
   status: '已點收',
-  target_station_key: 'POLAR 137 裁切機',
-  target_station: '裁切｜POLAR 137 裁切機',
+  destination_line: '手工產線',
   details: [
     {
       task_id: taskId,
       task_name: '合成印刷',
+      destination_station_key: '裁切站',
       qty,
       sign_photos: ['合成照.jpg'],
       receipts: [
-        { id: 'tt-test-recv-r1', qty, received_by: '李榮發', received_at: '2026-10-05 10:00', proxy_received: false },
+        { id: 'tt-test-recv-r1', qty, received_by: '李榮發', received_at: '2026-10-05 10:00', remark: '', status: '有效' },
       ],
     },
   ],
@@ -106,7 +110,7 @@ describe('10.34 報工修改三欄可改、原因必填、留修改紀錄、調�
   it('良品改為 480 成立（不低於已點收 480、不低於已驗量 0），留修改紀錄並記入任務歷程', () => {
     const result = floor().editWorkReport('wr-0018', {
       good_qty: 480,
-      reason: '搬運遺失',
+      reason: '現場清點後更正',
       by: '周建宏',
     });
     expect(result.ok).toBe(true);
@@ -121,7 +125,7 @@ describe('10.34 報工修改三欄可改、原因必填、留修改紀錄、調�
       before: 500,
       after: 480,
       edited_by: '周建宏',
-      reason: '搬運遺失',
+      reason: '現場清點後更正',
     });
     expect(report.edit_logs[0].edited_at).toBeTruthy();
 
@@ -129,14 +133,14 @@ describe('10.34 報工修改三欄可改、原因必填、留修改紀錄、調�
     expect(task.good_qty).toBe(480);
     const last = task.history.at(-1);
     // 歷程每筆比照報工紀錄列格式：事件一句、前後值逐欄列出（Miles 2026-10-06 拍板）
-    expect(last.event).toContain('報工修改（搬運遺失）');
+    expect(last.event).toContain('報工修改（現場清點後更正）');
     expect(last.changes).toContainEqual({ field: '良品數', before: 500, after: 480 });
     expect(last.ref).toBe('wr-0018');
     expect(last.actor).toBe('周建宏');
   });
 
   it('改回 500 屬調升、不被擋，修改紀錄再新增一筆', () => {
-    floor().editWorkReport('wr-0018', { good_qty: 480, reason: '搬運遺失', by: '周建宏' });
+    floor().editWorkReport('wr-0018', { good_qty: 480, reason: '現場清點後更正', by: '周建宏' });
     const result = floor().editWorkReport('wr-0018', {
       good_qty: 500,
       reason: '貨已找回',
@@ -154,12 +158,51 @@ describe('10.34 報工修改三欄可改、原因必填、留修改紀錄、調�
       good_qty: 480,
       reporter: '別人',
       defect_reason: '其他',
-      reason: '搬運遺失',
+      reason: '現場清點後更正',
       by: '周建宏',
     });
     const report = reportById('wr-0018');
     expect(report.reporter).toBe('劉阿海');
     expect(report.defect_reason).toBe(floorInitial.workReports.find((r) => r.id === 'wr-0018').defect_reason);
+  });
+});
+
+describe('10.34（2026-10-06 補）修改把良品改記為不良品、生產數量不變、修改原因自由填寫', () => {
+  // 合成資料：一筆需轉交的生產任務只有一筆報工 200／200／0，沒有任何轉交單、下游未動工、未被品檢驗過
+  const seedLoss = () =>
+    seed({
+      task: { id: 'pt-test-loss', name: '合成印刷', status: '製作中', needs_transfer: true, target_qty: 1000, input_qty: 200, good_qty: 200, produced_qty: 200 },
+      reports: [{ id: 'wr-test-loss', input_qty: 200, good_qty: 200, defect_qty: 0 }],
+    });
+
+  it('良品 200 改 0、不良品 0 改 200：修改成立，生產數量維持 200，修改紀錄各記一筆', () => {
+    seedLoss();
+    const result = floor().editWorkReport('wr-test-loss', {
+      good_qty: 0,
+      defect_qty: 200,
+      reason: '這一批整批不能用',
+      by: '周建宏',
+    });
+    expect(result.ok).toBe(true);
+    const report = reportById('wr-test-loss');
+    expect([report.input_qty, report.good_qty, report.defect_qty]).toEqual([200, 0, 200]);
+    expect(report.edit_logs).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ field: '良品數', before: 200, after: 0, reason: '這一批整批不能用' }),
+        expect.objectContaining({ field: '不良品數', before: 0, after: 200, reason: '這一批整批不能用' }),
+      ]),
+    );
+    const task = taskById('pt-test-loss');
+    expect(task.input_qty).toBe(200);
+    expect(task.good_qty).toBe(0);
+  });
+
+  it('只把良品改為 0、不良品維持 0：擋下（良品數與不良品數不可同時為 0），數字不變', () => {
+    seedLoss();
+    const result = floor().editWorkReport('wr-test-loss', { good_qty: 0, reason: '這一批整批不能用', by: '周建宏' });
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('不可同時為 0');
+    expect(reportById('wr-test-loss').good_qty).toBe(200);
   });
 });
 
@@ -172,7 +215,9 @@ describe('10.35 報工修改與作廢共用擋下條件：在途與已點收量�
     expect(result.error).toContain('先作廢尚未送達的單');
     expect(result.error).toContain('TT-20260830-002');
     expect(result.error).toContain('先照實點收');
-    expect(result.error).toContain('工單異動加開生產任務');
+    // 擋下只指出卡在哪一筆，不再帶人工程序與人工註記（之後由下往上逐層更正，見 10.56）
+    expect(result.error).not.toContain('人工註記');
+    expect(result.error).not.toContain('工單異動加開');
     expect(reportById('wr-0006').good_qty).toBe(1000);
     expect(taskById('pt-0710-2').good_qty).toBe(1990);
   });
@@ -312,27 +357,56 @@ describe('10.35 報工修改與作廢共用擋下條件：在途與已點收量�
   });
 });
 
-describe('10.36 已完成任務不渲染作廢鈕、改走修改；修改跌破目標退回製作中；已完成後再報工維持已完成', () => {
-  it('證書四色印刷（已完成）那筆報工：作廢被擋下，修改仍可用', () => {
-    const voided = floor().voidWorkReport('wr-0018', { reason: '誤報', by: '周建宏' });
+describe('10.36 已完成任務可修改與作廢報工；跌破目標退回製作中；已完成任務不能新增報工', () => {
+  it('證書四色印刷（已完成）那筆報工：作廢不因任務已完成擋下，而是被 TT-20260827-001 已點收的 480 擋下；修改仍可用', () => {
+    const voided = floor().voidWorkReport('wr-0018', { reason: '整筆不該存在', by: '周建宏' });
     expect(voided.ok).toBe(false);
-    expect(voided.error).toContain('已完成');
-    const edited = floor().editWorkReport('wr-0018', { good_qty: 480, reason: '搬運遺失', by: '周建宏' });
+    expect(voided.error).toContain('TT-20260827-001');
+    expect(voided.error).not.toContain('已完成');
+    const edited = floor().editWorkReport('wr-0018', { good_qty: 480, defect_qty: 35, reason: '現場清點後更正', by: '周建宏' });
     expect(edited.ok).toBe(true);
   });
 
-  it('已完成任務再報工生產數量 20、良品 20 照收：生產數量累計 535，任務維持已完成', () => {
-    const result = floor().submitWorkReport('pt-0812-2', {
+  it('已完成任務新增報工被擋下：證書四色印刷再報生產數量 20 不寫入，累計維持 515', () => {
+    const before = floor().workReports.length;
+    floor().submitWorkReport('pt-0812-2', {
       input_qty: 20,
       good_qty: 20,
       defect_qty: 0,
+      photos: ['補報.jpg'],
       channel: '印務於工單詳情頁',
       reporter: '周建宏',
     });
-    expect(result).toBeTruthy();
+    expect(floor().workReports).toHaveLength(before);
     const task = taskById('pt-0812-2');
-    expect(task.input_qty).toBe(535);
+    expect(task.input_qty).toBe(515);
     expect(task.status).toBe('已完成');
+  });
+
+  it('已完成任務沒有被佔用時可作廢報工：目標 515、兩筆 310 與 205，作廢 205 那一筆 → 累計 310、退回製作中、之後可新增報工', () => {
+    seed({
+      task: { id: 'pt-test-done', name: '合成信封印刷', status: '已完成', needs_transfer: true, target_qty: 515, input_qty: 515, good_qty: 500, produced_qty: 515 },
+      reports: [
+        { id: 'wr-test-done1', input_qty: 310, good_qty: 300, defect_qty: 10 },
+        { id: 'wr-test-done2', input_qty: 205, good_qty: 200, defect_qty: 5 },
+      ],
+    });
+    const voided = floor().voidWorkReport('wr-test-done2', { reason: '整筆不該存在', by: '許文傑' });
+    expect(voided.ok).toBe(true);
+    const task = taskById('pt-test-done');
+    expect(task.input_qty).toBe(310);
+    expect(task.status).toBe('製作中');
+    const before = floor().workReports.length;
+    floor().submitWorkReport('pt-test-done', {
+      input_qty: 205,
+      good_qty: 200,
+      defect_qty: 5,
+      photos: ['重報.jpg'],
+      channel: '生產管理頁面代報',
+      reporter: '許文傑',
+    });
+    expect(floor().workReports).toHaveLength(before + 1);
+    expect(taskById('pt-test-done').status).toBe('已完成');
   });
 
   it('純函式：裁切任務目標 1,020、累計 1,020 已完成，一筆生產數量 300 改為 280 → 累計 1,000、退回製作中、仍屬原工作包；再報工 20 → 已完成', () => {
@@ -359,6 +433,7 @@ describe('10.36 已完成任務不渲染作廢鈕、改走修改；修改跌破�
       input_qty: 20,
       good_qty: 20,
       defect_qty: 0,
+      photos: ['補量.jpg'],
       channel: '生產管理頁面代報',
       reporter: '許文傑',
     });

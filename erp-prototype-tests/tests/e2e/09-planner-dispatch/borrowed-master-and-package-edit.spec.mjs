@@ -23,7 +23,10 @@ test('9.15 師傅被借調到別線時照樣看得到並報得了工，點收範
   // 劉阿海：我的生產任務列出證書裁切
   await switchRole(page, '師傅');
   await gotoInApp(page, '/production-floor/dispatch/mine');
-  await expect(page.locator('tr.ant-table-row', { hasText: '證書裁切' }).first()).toBeVisible();
+  const myTaskRow = page.locator('tr.ant-table-row', { hasText: '證書裁切' }).first();
+  await expect(myTaskRow).toBeVisible();
+  // 我的生產任務開放報工（2026-10-06 拍板 R6）
+  await expect(myTaskRow.getByRole('button', { name: '報工' })).toHaveCount(1);
 
   // 我的工作包列出這個工作包，證書裁切有報工入口
   await gotoInApp(page, '/production-floor/work-packages/mine');

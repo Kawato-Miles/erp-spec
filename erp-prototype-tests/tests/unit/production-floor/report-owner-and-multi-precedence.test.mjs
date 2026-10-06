@@ -83,19 +83,20 @@ describe('10.45 多前置取最小值；前置未到料時提示指出在等哪�
     name: '騎馬釘裝訂',
     status: '待處理',
     depends_on: [cover.id, inner.id],
-    bom_unit_usage: 1,
+    delivered_at: '2026-10-01 09:00',
   };
   const tasks = [cover, inner, binding];
   const received = (id, taskId, qty) => ({
     id,
     status: '已點收',
-    target_station_key: '裝訂產線',
+    destination_line: '裝訂產線',
     details: [
       {
         task_id: taskId,
+        destination_station_key: '後加工站',
         qty,
         receipts: [
-          { id: `${id}-r1`, qty, received_by: '陳金水', received_at: '2026-10-05 10:00', proxy_received: false },
+          { id: `${id}-r1`, qty, received_by: '陳金水', received_at: '2026-10-05 10:00', remark: '', status: '有效' },
         ],
       },
     ],

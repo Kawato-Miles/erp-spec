@@ -69,7 +69,7 @@ test('6.13 交期一路留空時五個畫面照實留白、不當機', async ({ 
   await pickOption(
     page,
     form.locator('.ant-select').filter({ hasText: '選目的站點' }),
-    '數位產線',
+    '印刷站',
   );
   // 產線必填：工單非由配方展開，沒有工序段可帶入，產線留空待印務選定
   await pickOption(page, form.locator('.ant-select').filter({ hasText: '選產線' }), '數位產線');

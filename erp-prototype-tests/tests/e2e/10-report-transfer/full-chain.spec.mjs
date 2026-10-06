@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
-import { openAs, switchRole, gotoInApp } from '../_helpers.mjs';
+import { openAs, switchRole, gotoInApp, attachReportPhotos } from '../_helpers.mjs';
 import { confirmDialog, dialogOf, assignMover, CREATED_TOAST } from './_ch10.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -37,11 +37,12 @@ const reportTask = async (page, taskName, qty) => {
   const inputs = taskRow.locator('input');
   await inputs.nth(0).fill(String(qty));
   await inputs.nth(1).fill(String(qty));
+  await attachReportPhotos(page);
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(page.getByText('已送出 1 筆報工').last()).toBeVisible();
 };
 
-// 生管在待搬視圖對指定任務建轉交單（帶當下可搬全量）→ 廠務開始搬運並附照抵達站點 → 生管代點收
+// 生管在待搬視圖對指定任務建轉交單（帶當下可搬全量）→ 廠務開始搬運並附照抵達站點 → 生管點收
 // receiver：點收者。點收佇列只列目的站在所屬產線的單，目的站是品檢站時由品檢人員點收（生管許文傑的所屬產線不含品檢站）
 const transferAndReceive = async (page, taskName, { checkReceiveQty = false, receiver = '生管' } = {}) => {
   await gotoInApp(page, '/production-floor/pending-moves');
@@ -103,6 +104,7 @@ test('10.14 最後一筆報工把工單、印件、訂單一路推到製作完�
   const inputs = taskRow.locator('input');
   await inputs.nth(0).fill('2000');
   await inputs.nth(1).fill('2000');
+  await attachReportPhotos(page);
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(
     page.getByText(/工單全部完成向上反映：印件「牛皮紙手提袋」印製狀態轉「製作完成」；訂單 ORD-2026-0815 轉「製作完成」/),
@@ -120,7 +122,7 @@ test('10.14 最後一筆報工把工單、印件、訂單一路推到製作完�
 test('10.11 一批貨從報工走到可出貨的全鏈（原編號 105）', async ({ page }) => {
   test.setTimeout(60_000);
   // 起點：鏈二 TT-20260830-002（手工產線待點收，來源 pt-0710-2 海報四色印刷）
-  // 生管代點收：點收對話框逐條填量（帶設定量 1,190）
+  // 生管點收：點收對話框逐條填量（帶設定量 1,190）
   await openAs(page, '生管', '/production-floor/receiving');
   await page.locator('tr', { hasText: 'TT-20260830-002' }).getByRole('button', { name: '點收' }).click();
   const receiveDialog = dialogOf(page, '點收');
@@ -142,6 +144,7 @@ test('10.11 一批貨從報工走到可出貨的全鏈（原編號 105）', asyn
   await inputs.nth(2).fill('10');
   await taskRow.locator('.ant-select').last().click();
   await page.keyboard.press('Enter');
+  await attachReportPhotos(page);
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(page.getByText('已送出 1 筆報工').last()).toBeVisible();
 

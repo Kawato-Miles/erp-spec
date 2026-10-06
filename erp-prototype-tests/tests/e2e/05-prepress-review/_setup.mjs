@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { switchRole, gotoInApp, clickIntoDetail, cjkName } from '../_helpers.mjs';
+import { switchRole, gotoInApp, clickIntoDetail, cjkName, attachReportPhotos } from '../_helpers.mjs';
 
 // 第五章共用前置：在鏈六 ORD-2026-0903（訂單管理人黃聖雯）的訂單項目分頁按「新增印件」
 // 造一件測試用印件。呼叫端須已完成 openAs 並站在 /orders/detail?id=ORD-2026-0903&tab=printItems，
@@ -208,6 +208,7 @@ export async function buildDeliveredSampleItem(page, name) {
   const inputs = taskRow.locator('input');
   await inputs.nth(0).fill('10');
   await inputs.nth(1).fill('10');
+  await attachReportPhotos(page);
   await page.getByRole('button', { name: cjkName('送出報工') }).click();
   await expect(page.getByText(/已送出 1 筆報工/).last()).toBeVisible();
 

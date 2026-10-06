@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs } from '../_helpers.mjs';
+import { openAs, attachReportPhotos } from '../_helpers.mjs';
 
 // 情境目錄 10.18：師傅對單一任務報工。
 // 起點資料：鏈二 WP-2026-0710-01（指派師傅劉阿海）的「海報四色印刷」（製作中、目標 3,090、
@@ -36,6 +36,7 @@ test('10.18 師傅對單一任務報工', async ({ page }) => {
   const inputs = rows.first().locator('input');
   await inputs.nth(0).fill('500'); // 生產數量（投入）
   await inputs.nth(1).fill('500'); // 良品
+  await attachReportPhotos(page);
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(page.getByText('已送出 1 筆報工').last()).toBeVisible();
 

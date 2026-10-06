@@ -89,7 +89,7 @@ test('9.11 現場三頁的印件內部完成日印合併格式', async ({ page }
   await expect(urgentTasks).toContainText('2026-09-04（未扣急件 2026-09-09）');
 });
 
-test('9.13 工作包的師傅不可改，換人走取消工作包後重新打包', async ({ page }) => {
+test('9.13 工作包的師傅不可改，換人走取消工作包後重新打包；取消即刪除，報工不帶工作包連結', async ({ page }) => {
   test.setTimeout(120_000);
   // 起點資料：鏈二 WP-2026-0710-02（指派師傅李榮發，旗下裁切成型）
   await openAs(page, '生管', '/production-floor/work-packages');
@@ -119,6 +119,15 @@ test('9.13 工作包的師傅不可改，換人走取消工作包後重新打包
   await page.locator('.ant-modal-confirm-btns').getByRole('button', { name: '取消工作包' }).click();
   await expect(page.getByText(/已取消工作包 WP-2026-0710-02/)).toBeVisible();
   await expect(taskRow).not.toContainText('WP-2026-0710-02');
+
+  // 取消即刪除（2026-10-06 拍板 D2）：所有工作包不再列出 WP-2026-0710-02（模擬角色切換器沒有李榮發，
+  // 我的工作包那一半以純函式驗）；裁切成型的狀態不變（仍為待處理），指派師傅變空
+  await expect(taskRow).toContainText('待處理');
+  await gotoInApp(page, '/production-floor/work-packages');
+  await expect(page.locator('tr.ant-table-row', { hasText: 'WP-2026-0710-02' })).toHaveCount(0);
+  await gotoInApp(page, '/production-floor/dispatch');
+  await search.fill('WO-2026-0710');
+  await search.press('Enter');
 
   // 重新打包給陳金水
   // 等確認框收起再勾，避免點到正在淡出的遮罩

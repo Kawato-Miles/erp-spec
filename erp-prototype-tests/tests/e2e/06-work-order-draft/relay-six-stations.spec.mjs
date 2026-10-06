@@ -78,7 +78,7 @@ test('6.1 一件印件從放行到上產線的六站接力（原編號 72）', a
     bomTab: '材料',
     keyword: '雪銅紙',
     part: '全張',
-    destination: '數位產線',
+    destination: '印刷站',
     plannedQty: 2000,
   });
   await addProductionTask(page, {

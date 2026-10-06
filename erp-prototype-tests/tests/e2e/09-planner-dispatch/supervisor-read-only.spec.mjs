@@ -3,6 +3,7 @@ import { gotoInApp, openAs } from '../_helpers.mjs';
 
 // 情境目錄 9.12：主管在生產管理五個產線單元唯讀看全貌（wiki 印件生產流程 § 生產管理單元的權限範圍、
 // wiki Supervisor）。五頁都列全部產線的單據、頁首提示唯讀、沒有任何操作入口；檢視歷程照樣看得到。
+// 2026-10-06 改版：操作清單拿掉再次點收與人工註記，補點收修改、點收紀錄作廢、搬運數量修改。
 
 const READ_ONLY_NOTICE = '主管在生產管理只有唯讀檢視';
 
@@ -22,8 +23,9 @@ const OPERATIONS = [
   /開始搬運/,
   /抵達站點/,
   /^點\s*收$/,
-  /再次點收/,
-  /加註記/,
+  /點收修改/,
+  /作廢點收紀錄/,
+  /搬運數量修改/,
 ];
 
 async function expectNoOperations(page) {

@@ -61,19 +61,21 @@ describe('9.15 師傅被借調到別線時照樣看得到並報得了工，點�
     expect(myTasks.map((t) => t.name)).toContain('證書裁切');
   });
 
-  it('劉阿海在我的工作包對證書裁切報得了工', () => {
+  it('劉阿海在我的工作包與我的生產任務都對證書裁切報得了工', () => {
     const pkg = packToLiu();
     const task = taskOf('pt-0812-3');
     expect(canOperateFloorUnit('master', P.PACKAGES_OWN)).toBe(true);
-    expect(
-      checkReportPermission({
-        source: REPORT_SOURCES.FLOOR,
-        role: 'master',
-        currentUser: '劉阿海',
-        task,
-        pkg,
-      }).allowed,
-    ).toBe(true);
+    for (const source of [REPORT_SOURCES.MY_PACKAGES, REPORT_SOURCES.MY_TASKS]) {
+      expect(
+        checkReportPermission({
+          source,
+          role: 'master',
+          currentUser: '劉阿海',
+          task,
+          pkg,
+        }),
+      ).toMatchObject({ allowed: true, channel: '師傅自助' });
+    }
     expect(canReportTask(task, { tasks: floor().tasks, tickets: floor().transferTickets })).toBe(true);
   });
 
@@ -84,7 +86,7 @@ describe('9.15 師傅被借調到別線時照樣看得到並報得了工，點�
       currentUser: '劉阿海',
     });
     expect(queue.some((row) => row.ticket.ticket_no === 'TT-20260830-002')).toBe(false);
-    queue.forEach((row) => expect(row.ticket.target_station_key).not.toBe('手工產線'));
+    queue.forEach((row) => expect(row.ticket.destination_line).not.toBe('手工產線'));
   });
 });
 
@@ -210,7 +212,8 @@ describe('9.17 工單取消後任務轉終態、留在所有生產任務且不�
   });
 });
 
-describe('9.18 加工廠與外包任務交付產線後不進所有生產任務', () => {
+describe('9.18 外包任務交付產線後不進所有生產任務；加工廠任務照常進', () => {
+  // 改寫（Miles 2026-10-06 拍板 D1）：所有生產任務列已交付的自有工廠與加工廠任務，外包廠與中國廠商不進
   const delivered = [
     { id: 'a', name: '海報四色印刷', unit_class: '自有工廠' },
     { id: 'b', name: '燙金', unit_class: '加工廠' },
@@ -218,12 +221,8 @@ describe('9.18 加工廠與外包任務交付產線後不進所有生產任務',
     { id: 'd', name: '精裝', unit_class: '中國廠商' },
   ];
 
-  it('只有自有工廠的任務轉進生管的所有生產任務', () => {
-    expect(floorDeliverableTasks(delivered).map((t) => t.id)).toEqual(['a']);
-  });
-
-  it('加工廠任務不進所有生產任務', () => {
-    expect(floorDeliverableTasks([delivered[1]])).toEqual([]);
+  it('自有工廠與加工廠的任務都轉進生管的所有生產任務', () => {
+    expect(floorDeliverableTasks(delivered).map((t) => t.id)).toEqual(['a', 'b']);
   });
 
   it('外包廠與中國廠商任務不進所有生產任務', () => {

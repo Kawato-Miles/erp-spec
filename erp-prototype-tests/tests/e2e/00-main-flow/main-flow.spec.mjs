@@ -48,7 +48,10 @@ const reviewRow = (page, text) =>
 const CASE_NAME = '主流程 smoke 誠品週年慶';
 const ITEM_A = '主流程印件甲';
 const ITEM_B = '主流程印件乙';
-const PRINT_STATION = '數位產線';
+// 目的站點是產線底下的站點（Miles 2026-10-06 拍板；站點清單為假資料，待 PT-067 取代）：
+// 備料送到數位產線的印刷站，轉交單單頭記目的產線、明細記目的站點
+const PRINT_STATION = '印刷站';
+const PRINT_STATION_LINE = '數位產線';
 // 生產任務的產線（必填）：兩筆任務都在數位產線上做
 const PRODUCTION_LINE = '數位產線';
 // 印件部位刻意兩筆各異：工單製程規劃的清單以它分辨同一張工單的兩筆任務
@@ -121,6 +124,13 @@ async function planWorkOrder(page, workOrderNo, { prepNeedsTransfer }) {
   });
 }
 
+// 報工對話框的一列：填生產數量與良品數（不良 0），並上傳現場照片（照片必填，Miles 2026-10-06 拍板 R9）
+async function fillReportLine(taskLine, qty) {
+  await taskLine.locator('input.ant-input-number-input').nth(0).fill(String(qty));
+  await taskLine.locator('input.ant-input-number-input').nth(1).fill(String(qty));
+  await taskLine.locator('input[type="file"]').first().setInputFiles(fakeFile('現場照.jpg', 'image/jpeg'));
+}
+
 // 在工作包報一筆工（投入＝良品＝qty、不良 0）。
 // 對話框逐列同時顯示工單編號與任務名稱，兩者一起用才認得出是哪一張工單的哪一筆任務。
 // 師傅只有「我的工作包」（負責範圍）；生管沒有這一頁，gotoInApp 會改走「所有工作包」代報
@@ -133,17 +143,33 @@ async function reportInPackage(page, packageNo, workOrderNo, taskName, qty) {
     .filter({ hasText: workOrderNo })
     .filter({ hasText: taskName })
     .first();
-  await taskLine.locator('input').nth(0).fill(String(qty));
-  await taskLine.locator('input').nth(1).fill(String(qty));
+  await fillReportLine(taskLine, qty);
+  await button(page, '送出報工').click();
+}
+
+// 師傅在「我的生產任務」對指派給自己的一筆任務報工（Miles 2026-10-06 拍板 R3、R6：我的生產任務可報工）
+async function reportInMyTasks(page, workOrderNo, taskName, qty) {
+  await goInApp(page, '/production-floor/dispatch/mine', gotoInApp);
+  const row = page
+    .locator('tbody tr.ant-table-row')
+    .filter({ hasText: workOrderNo })
+    .filter({ hasText: taskName })
+    .first();
+  await row.getByRole('button', { name: '報工' }).click();
+  const box = page.locator('.ant-modal-body').last();
+  const taskLine = box.locator('tbody tr').filter({ hasText: taskName }).first();
+  await fillReportLine(taskLine, qty);
   await button(page, '送出報工').click();
 }
 
 // 上傳用的假檔（Upload 的 beforeUpload 一律回 false，只暫存不上傳）
-const fakeFile = (name, mimeType = 'application/pdf') => ({
-  name,
-  mimeType,
-  buffer: Buffer.from(`fake ${name}`),
-});
+function fakeFile(name, mimeType = 'application/pdf') {
+  return {
+    name,
+    mimeType,
+    buffer: Buffer.from(`fake ${name}`),
+  };
+}
 
 // 審稿人員在待審清單對一件印件完成審核。
 // 合格路徑要交完稿縮圖（整批一張）與審稿後印件檔（逐件一份），缺件不可送出；
@@ -630,14 +656,26 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
     const moveRow = page.locator('tbody tr.ant-table-row').filter({ hasText: woA }).first();
     await moveRow.locator('input[type="checkbox"]').check({ force: true });
     await button(page, '建立轉交單（1）').click();
+    // 建單對話框依目的產線分組；預計轉交日必填（Miles 2026-10-06 拍板 T7），這裡明填一天
+    const createDialog = dialog(page);
+    await expect(createDialog).toContainText(PRINT_STATION_LINE);
+    const dateInput = createDialog.locator('.ant-form-item', { hasText: '預計轉交日' }).locator('input').first();
+    await dateInput.click();
+    await dateInput.fill('2026-10-07');
+    await dateInput.press('Enter');
     await assignMover(page);
     await page.getByRole('button', { name: /建立 1 張單/ }).click();
     const text = await toastText(page, /TT-\d{8}-\d{3}/);
     ticketNo = text.match(/TT-\d{8}-\d{3}/)[0];
     await waitModalsClosed(page);
-    // 球交給廠務：轉交單列表出現這張單、狀態待搬運
+    // 球交給廠務：轉交單列表出現這張單、狀態待搬運；單頭記目的產線、明細記目的站點
     await goInApp(page, '/production-floor/transfers', gotoInApp);
-    await expect(rowOf(page, ticketNo)).toBeVisible();
+    const ticketRow = rowOf(page, ticketNo);
+    await expect(ticketRow).toBeVisible();
+    await expect(ticketRow).toContainText(PRINT_STATION_LINE);
+    await expect(ticketRow).toContainText('2026-10-07');
+    await expandRow(page, ticketNo);
+    await expect(page.locator('.ant-table-expanded-row').last()).toContainText(PRINT_STATION);
   });
 
   await test.step('第 29 站 廠務 開始搬運、抵達站點', async () => {
@@ -658,18 +696,25 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
     await switchRole(page, '生管');
     await goInApp(page, '/production-floor/receiving', gotoInApp);
     await rowOf(page, ticketNo).getByRole('button', { name: '點收' }).click();
-    await button(dialog(page), '確認點收').click();
+    // 點收只有一個動作：對話框逐條明細填實際收到的量（明細帶目的站點），可填備註；點收人記實際操作人
+    const receiveDialog = dialog(page);
+    await expect(receiveDialog).toContainText(PRINT_STATION);
+    await receiveDialog.locator('tbody tr').filter({ hasText: TASK_PREP }).locator('.ant-input-number-input').first().fill('100');
+    await button(receiveDialog, '確認點收').click();
     await expect(page.getByText(/已點收/).last()).toBeVisible();
     await waitModalsClosed(page);
+    // 點收後列留在佇列上，之後貨再補到時照樣用同一個「點收」動作再點收一筆
+    await expect(rowOf(page, ticketNo)).toContainText('已點收');
+    await expect(rowOf(page, ticketNo).getByRole('button', { name: '點收' })).toBeVisible();
     // 甲的印刷任務到料，可做量放行
     await goInApp(page, '/production-floor/work-packages', gotoInApp);
     await expandRow(page, packageNo);
     await expect(page.locator('.ant-table-expanded-row').last()).toContainText(TASK_PRINT);
   });
 
-  await test.step('第 31 站 師傅 報甲印刷完成', async () => {
+  await test.step('第 31 站 師傅 在我的生產任務報甲印刷完成', async () => {
     await switchRole(page, '師傅');
-    await reportInPackage(page, packageNo, woA, TASK_PRINT, 100);
+    await reportInMyTasks(page, woA, TASK_PRINT, 100);
     await expect(page.getByText(/已送出 1 筆報工/).last()).toBeVisible();
     await waitModalsClosed(page);
     await switchRole(page, '印務');
@@ -700,8 +745,7 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
       await rowOf(page, taskName).getByLabel('報工').click();
       const box = page.locator('.ant-modal-body').last();
       const taskLine = box.locator('tbody tr').filter({ hasText: taskName }).first();
-      await taskLine.locator('input').nth(0).fill('100');
-      await taskLine.locator('input').nth(1).fill('100');
+      await fillReportLine(taskLine, 100);
       await button(page, '送出報工').click();
       await waitModalsClosed(page);
     }

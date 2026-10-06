@@ -219,3 +219,19 @@ export const taskRows = (page) =>
   page.locator(
     '.ant-table-tbody tr.ant-table-row:not(.grouped-table-group-row):not(.ant-table-expanded-row)',
   );
+
+/**
+ * 報工對話框送出前，為每一列附一張現場照片（報工照片必填，Miles 2026-10-06 拍板 R9）。
+ * 只動目前顯示中的報工對話框；沒填數量的列一併附照不影響檢核。
+ */
+export async function attachReportPhotos(page) {
+  const inputs = page.locator('.ant-modal-content:visible').last().locator('.ant-modal-body input[type="file"]');
+  const count = await inputs.count();
+  for (let i = 0; i < count; i += 1) {
+    await inputs.nth(i).setInputFiles({
+      name: `現場照-${i + 1}.jpg`,
+      mimeType: 'image/jpeg',
+      buffer: Buffer.from(`現場照-${i + 1}`),
+    });
+  }
+}

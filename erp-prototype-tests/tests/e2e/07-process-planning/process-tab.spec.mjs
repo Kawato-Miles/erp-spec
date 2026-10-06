@@ -656,3 +656,23 @@ test('7.35 生產任務表的欄寬與展開列依內容配比，兩個事實時
   // 報工紀錄卡的時間戳照舊帶到分
   await expect(expandedRow).toContainText('2026-08-28 16:30');
 });
+
+// 7.40（2026-10-06 新增）：生產任務的單位取 BOM 主檔項目的單位欄，只顯示、不換算。
+// 起點：鏈外 WO-2026-0812 的三件配套裝袋引用工序主檔手工包裝（pc-502，主檔單位「個」）；
+// 雪銅紙 150g 菊全引用材料規格（單位「張」）。純函式另見 tests/unit/work-orders/task-unit-and-plant-delivery.test.mjs。
+test('7.40 生產任務的單位取 BOM 主檔項目的單位欄，只顯示、不換算', async ({ page }) => {
+  await openAs(page, '印務', '/work-orders');
+  await openWorkOrder(page, 'WO-2026-0812');
+  const unitOf = async (taskName) => {
+    const row = taskRows(page).filter({ hasText: taskName }).first();
+    const expand = row.locator('.ant-table-row-expand-icon');
+    if ((await expand.getAttribute('class'))?.includes('collapsed')) await expand.click();
+    // 展開列緊接在任務列之後（同 9.x 的工作包子表取法）
+    return row.locator('xpath=following-sibling::tr[1]');
+  };
+  const bagging = await unitOf('三件配套裝袋');
+  await expect(bagging).toContainText('單位');
+  await expect(bagging.locator('xpath=.//*[normalize-space(.)="個"]').first()).toBeVisible();
+  const paper = await unitOf('雪銅紙 150g 菊全');
+  await expect(paper.locator('xpath=.//*[normalize-space(.)="張"]').first()).toBeVisible();
+});

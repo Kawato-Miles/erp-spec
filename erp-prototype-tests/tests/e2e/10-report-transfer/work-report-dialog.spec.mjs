@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { openAs, switchRole, gotoInApp } from '../_helpers.mjs';
 
-// 情境目錄第十章：三個報工入口（工作包管理／工單詳情頁／印件詳情頁）共用同一顆報工對話框。
+// 情境目錄第十章：五個報工入口（我的工作包、我的生產任務、所有工作包、所有生產任務、工單詳情）共用同一顆報工對話框；
+// 印件詳情沒有報工入口（2026-10-06 拍板 R3）。
 // 起點資料：鏈二 WP-2026-0710-01 的「海報四色印刷」任務、WO-2026-0710、PI-2026-0710（負責人周建宏）。
 // 工單／印件詳情頁沒有側欄選單項，一律先進列表頁（gotoInApp）再點列上連結（router.push，非整頁重載）。
 
@@ -28,48 +29,84 @@ const expectNineColumns = async (dialog) => {
   await expect(dialog.getByRole('columnheader', { name: '運轉設備' })).toHaveCount(0);
 };
 
-test('10.4 三個報工入口用同一組欄位（原編號 87）', async ({ page }) => {
-  // 入口一：師傅在工作包頁開報工
+const PHOTO = { name: '現場照.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('現場照') };
+
+test('10.4 五個報工入口用同一組欄位，提交管道三值；印件詳情沒有報工入口；照片必填（原編號 87）', async ({ page }) => {
+  test.setTimeout(150_000);
+  // 入口一：師傅在我的工作包開報工
   await openAs(page, '師傅', '/production-floor/work-packages');
   await page
     .locator('tr', { hasText: 'WP-2026-0710-01' })
     .getByRole('button', { name: '報工' })
     .click();
-  await expectNineColumns(page.locator('.ant-modal-body'));
-  await page.getByRole('button', { name: '取消' }).click();
+  const dialog = page.locator('.ant-modal-body');
+  await expectNineColumns(dialog);
+  // 照片必填：不附照片送出被擋下
+  const line = dialog.locator('tbody tr').filter({ hasText: '海報四色印刷' }).first();
+  await line.locator('input.ant-input-number-input').nth(0).fill('100');
+  await line.locator('input.ant-input-number-input').nth(1).fill('100');
+  await page.getByRole('button', { name: /送出報工/ }).click();
+  await expect(page.getByText(/現場照片/).first()).toBeVisible();
+  await line.locator('input[type="file"]').first().setInputFiles(PHOTO);
+  await page.getByRole('button', { name: /送出報工/ }).click();
+  await expect(page.getByText(/已送出 1 筆報工/).last()).toBeVisible();
 
-  // 入口二：印務在工單詳情頁點報工（製程 Tab 逐列圖示，2026-09-04 拍板收進 Tab、非頁首按鈕）
+  // 入口二：師傅在我的生產任務開報工
+  await gotoInApp(page, '/production-floor/dispatch/mine');
+  await page.locator('tr.ant-table-row', { hasText: '海報四色印刷' }).first().getByRole('button', { name: '報工' }).click();
+  await expectNineColumns(page.locator('.ant-modal-body'));
+  await page.getByRole('button', { name: '取消', exact: true }).click();
+
+  // 入口三、四：生管在所有工作包與所有生產任務代報
+  await switchRole(page, '生管');
+  await gotoInApp(page, '/production-floor/work-packages');
+  await page.locator('tr', { hasText: 'WP-2026-0710-01' }).getByRole('button', { name: '報工' }).click();
+  await expectNineColumns(page.locator('.ant-modal-body'));
+  await page.getByRole('button', { name: '取消', exact: true }).click();
+  await gotoInApp(page, '/production-floor/dispatch');
+  const search = page.getByPlaceholder(/工單編號/).first();
+  await search.fill('WO-2026-0710');
+  await search.press('Enter');
+  await page.locator('tr.ant-table-row', { hasText: '海報四色印刷' }).first().getByRole('button', { name: '報工' }).click();
+  await expectNineColumns(page.locator('.ant-modal-body'));
+  await page.getByRole('button', { name: '取消', exact: true }).click();
+
+  // 入口五：印務在工單詳情頁點報工（製程 Tab 逐列圖示）
   await switchRole(page, '印務');
   await gotoInApp(page, '/work-orders');
   await page.getByText('WO-2026-0710', { exact: true }).click();
   await page.getByRole('button', { name: '報工', exact: true }).first().click();
   await expectNineColumns(page.locator('.ant-modal-body'));
-  await page.getByRole('button', { name: '取消' }).click();
+  await page.getByRole('button', { name: '取消', exact: true }).click();
 
-  // 入口三：印務在印件詳情頁點報工（列表點的是印件名稱連結，印件編號欄只是純文字）
+  // 印件詳情頁沒有報工入口（頁首與工單與生產任務區塊皆無）
   await gotoInApp(page, '/print-items');
   await page.getByText('品牌形象海報 A2', { exact: true }).click();
-  await page.getByRole('button', { name: '報工', exact: true }).click();
-  await expectNineColumns(page.locator('.ant-modal-body'));
+  await expect(page.getByText('PI-2026-0710').first()).toBeVisible();
+  await expect(page.getByRole('button', { name: /報\s*工/ })).toHaveCount(0);
 });
 
-test('10.5 報工權限綁在工作歸屬上（原編號 89）', async ({ page }) => {
-  // 師傅只看得到自己被指派的工作包（報工管道限自己被指派的那幾包）
+test('10.5 報工權限綁在工作歸屬上：工單詳情看負責或編輯分享、所有〇〇看所屬產線、我的〇〇看指派（原編號 89）', async ({ page }) => {
+  // 我的〇〇看指派：師傅只看得到自己被指派的工作包
   await openAs(page, '師傅', '/production-floor/work-packages');
   await expect(page.getByText('WP-2026-0710-02')).toHaveCount(0); // 李榮發的包看不到
 
-  // 生管、印務、印務主管與主管可在本頁代報全廠：生管不是任何一包的指派師傅，
-  // 仍在別人的包（WP-2026-0710-01，指派師傅劉阿海）上看得到報工入口。
-  // 取有可報工任務的那一包來驗——報不了的工一律不給入口（WP-2026-0710-02 的唯一任務
-  // 前置尚未到料，全頁只有這一包報得動）
-  // 師傅停在「我的工作包」（負責範圍）；生管改走「所有工作包」（產線範圍）
+  // 所有〇〇看所屬產線：生管許文傑（數位、裝訂、手工）在別人的包（WP-2026-0710-01，指派師傅劉阿海）上看得到報工入口
   await switchRole(page, '生管');
   await gotoInApp(page, '/production-floor/work-packages');
   await expect(
     page.locator('tr', { hasText: 'WP-2026-0710-01' }).getByRole('button', { name: '報工' }),
   ).toBeVisible();
 
-  // 印務只在自己主責的工單看得到報工入口：WO-2026-0710 負責人為周建宏（印務本人）
+  // 生管鄭宇翔（手工、壓克力）的所有生產任務沒有數位產線的五色印刷，有手工產線的證書裁切
+  await switchRole(page, '生管（鄭宇翔）');
+  await gotoInApp(page, '/production-floor/dispatch');
+  await expect(page.locator('tr.ant-table-row', { hasText: '五色印刷' })).toHaveCount(0);
+  await expect(
+    page.locator('tr.ant-table-row', { hasText: '證書裁切' }).first().getByRole('button', { name: '報工' }),
+  ).toHaveCount(1);
+
+  // 工單詳情看負責或編輯分享：WO-2026-0710 負責人為周建宏（印務本人）
   await switchRole(page, '印務');
   await gotoInApp(page, '/work-orders');
   await page.getByText('WO-2026-0710', { exact: true }).click();

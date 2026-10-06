@@ -4,33 +4,35 @@ import { useProductionFloorStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/
 import * as transferRules from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/transfer-rules.js';
 import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/store.js';
 
-// 情境目錄 10.17（純函式段）、10.26～10.31、10.38：轉交單逐條上傳簽收照片、逐條點收、
-// 再次點收、點收修改、到料量取轉交點收量、已送達不可作廢、作廢重開重走搬運。
-// 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt
-// production-execution delta § 場內轉交、§ 轉交單改單與更正、§ 生產任務與轉交單歷程紀錄 的 THEN。
+// 情境目錄 10.17（純函式段）、10.26～10.31、10.38：轉交單逐條上傳簽收照片、點收單一動作、
+// 再點收一筆、點收修改、到料量取轉交點收量、點收前可作廢、作廢重開重走搬運。
+// 期望值取自 openspec change production-dispatch-report-transfer-convergence
+// production-execution delta § 場內轉交、§ 點收紀錄的修改與作廢、§ 轉交單改單與更正、
+// § 生產任務與轉交單歷程紀錄 的 THEN。
 //
-// 2026-10-06 第三輪拍板：明細欄名改「搬運數量」「點收數量」；點收數量不擋超過搬運數量（推翻第二輪）；
-// 開始搬運與抵達站點的回報者即負責廠務（單上不設廠內執行者與確認操作人）；
-// 點收佇列的「修改」為整張單一個對話框（store.editTicketReceipts）。
-// 資料層契約：
+// 2026-10-06 拍板（T1～T3、Q25、Q27）：點收只有一個動作，每次點收對各條明細新增一筆點收紀錄、
+// 不分首次與再次；第一筆寫入時單頭轉已點收，之後只新增紀錄、狀態不變；點收量大於 0；
+// 不設代點收標記，點收人記實際操作的人；點收紀錄可修改（點收量與備註）或作廢；
+// 點收前（待搬運、搬運中、已送達）的單都可作廢，已點收不可作廢。
+// 資料層契約（新契約等 tasks 5.3～5.5 實作）：
 //   store.deliverTransfer(ticketId, { by, photosByTask: { [task_id]: string[] } })
-//     任一條明細沒有照片即整筆擋下，錯誤訊息列出缺照明細（任務名稱與搬運數量）；成立時照片寫入該條明細 sign_photos
-//   store.receiveTransfer(ticketId, { by, proxy, quantities: { [task_id]: number } })
-//     未給的明細預設帶搬運數量；每條明細 receipts 追加一筆 { qty, received_by, received_at, proxy_received }
-//   store.receiveTransferAgain(ticketId, { taskId, qty, by, proxy })
-//   store.editTransferReceipt(ticketId, { taskId, receiptId, qty, reason, by })
-//   store.editTicketReceipts(ticketId, { quantities: { [task_id]: 改後點收數量 }, reason, by })
-//   transfer-rules.calcDetailReceivedQty(detail)          點收數量
-//   transfer-rules.defaultReceiveAgainQty(detail)         再次點收預設量＝搬運數量 − 點收數量
-//   transfer-rules.canVoidTransfer(ticket, tasks)         作廢操作要不要渲染
-//   transfer-rules.calcArrivedQty(taskId, tickets)        到料量＝點收紀錄合計
+//   store.receiveTransfer(ticketId, { by, quantities: { [task_id]: number }, remarks?: { [task_id]: string } })
+//     已送達與已點收的單都走這一支；quantities 有列的明細各新增一筆點收紀錄
+//     { id, qty, remark, received_by, received_at, status: '有效' }；已送達的單每條明細都要列到且大於 0，
+//     任一條未填或為 0 時整筆擋下、不寫入任何紀錄（訊息含「點收量須大於 0」；10.59）；已點收的單只對列到的明細新增紀錄。
+//     store 不再有 receiveTransferAgain。
+//   store.editTransferReceipt(ticketId, { taskId, receiptId, qty, remark?, reason, by })
+//   store.voidTransferReceipt(ticketId, { taskId, receiptId, reason, by })  → { ok, error? }
+//   store.editTicketReceipts(ticketId, { quantities, reason, by })
+//   transfer-rules.calcDetailReceivedQty(detail)          點收數量＝有效點收紀錄合計
+//   transfer-rules.canVoidTransfer(ticket, tasks)         作廢操作要不要渲染：點收前一律可作廢
+//   transfer-rules.calcArrivedQty(taskId, tickets)        到料量＝有效點收紀錄合計
 
 const {
   calcArrivedQty,
   calcDetailReceivedQty,
   calcMovableQty,
   canVoidTransfer,
-  defaultReceiveAgainQty,
   deriveTransferStatus,
   describeTransferProgress,
 } = transferRules;
@@ -107,12 +109,11 @@ describe('10.26 抵達站點逐條明細上傳簽收照片，任一條不足擋�
   });
 });
 
-describe('10.27 首次點收逐條填實際量，點收數量不擋超過搬運數量', () => {
+describe('10.27 點收單一動作：逐條填實際量，第一筆轉已點收，點收量大於 0、不擋超過搬運數量', () => {
   // 鏈外 TT-20260827-002（tt-016，已送達）：內卡四色印刷 200、信封四色印刷 300
   it('內卡填 210 照收：點收數量 210 超過搬運數量 200 不擋，單轉已點收', () => {
     const result = floor().receiveTransfer('tt-016', {
       by: '許文傑',
-      proxy: true,
       quantities: { 'pt-0812-6': 210, 'pt-0812-4': 300 },
     });
     expect(result.ok).toBe(true);
@@ -124,11 +125,11 @@ describe('10.27 首次點收逐條填實際量，點收數量不擋超過搬運�
     );
   });
 
-  it('內卡 200、信封 280 送出成立：單轉已點收，兩條各寫一筆點收紀錄並留代點收標記', () => {
+  it('內卡 200、信封 280 並在信封備註「少一落，待查」送出：兩條各寫一筆點收紀錄，點收人記實際操作人、不留代點收標記', () => {
     const result = floor().receiveTransfer('tt-016', {
       by: '許文傑',
-      proxy: true,
       quantities: { 'pt-0812-6': 200, 'pt-0812-4': 280 },
+      remarks: { 'pt-0812-4': '少一落，待查' },
     });
     expect(result.ok).toBe(true);
     const ticket = ticketByNo('TT-20260827-002');
@@ -137,19 +138,29 @@ describe('10.27 首次點收逐條填實際量，點收數量不擋超過搬運�
     const envelope = detailOf(ticket, 'pt-0812-4');
     expect(card.receipts).toHaveLength(1);
     expect(envelope.receipts).toHaveLength(1);
-    expect(card.receipts[0]).toMatchObject({ qty: 200, received_by: '許文傑', proxy_received: true });
-    expect(envelope.receipts[0]).toMatchObject({ qty: 280, received_by: '許文傑', proxy_received: true });
+    expect(card.receipts[0]).toMatchObject({ qty: 200, received_by: '許文傑', status: '有效' });
+    expect(envelope.receipts[0]).toMatchObject({ qty: 280, received_by: '許文傑', remark: '少一落，待查' });
+    [card, envelope].forEach((d) => expect(d.receipts[0]).not.toHaveProperty('proxy_received'));
     expect(card.receipts[0].received_at).toBeTruthy();
     expect(calcDetailReceivedQty(card)).toBe(200);
     expect(calcDetailReceivedQty(envelope)).toBe(280);
   });
 
-  it('點收後兩筆任務的轉交進度照實顯示轉交量、點收量與良品數', () => {
-    const tickets0 = floor().transferTickets;
+  it('點收量填 0 時整筆擋下，提示點收量須大於 0，不寫入點收紀錄、單維持已送達', () => {
+    const result = floor().receiveTransfer('tt-016', {
+      by: '許文傑',
+      quantities: { 'pt-0812-6': 0, 'pt-0812-4': 300 },
+    });
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('點收量須大於 0');
+    const ticket = ticketByNo('TT-20260827-002');
+    expect(ticket.status).toBe('已送達');
+    ticket.details.forEach((d) => expect(d.receipts).toHaveLength(0));
+  });
 
+  it('點收後兩筆任務的轉交進度照實顯示轉交量、點收量與良品數', () => {
     floor().receiveTransfer('tt-016', {
       by: '許文傑',
-      proxy: true,
       quantities: { 'pt-0812-6': 200, 'pt-0812-4': 280 },
     });
     const tickets = floor().transferTickets;
@@ -157,43 +168,46 @@ describe('10.27 首次點收逐條填實際量，點收數量不擋超過搬運�
     expect(describeTransferProgress(taskById('pt-0812-6'), tickets)).toBe('轉交量 200／點收量 200／良品 200');
   });
 
-  it('未填的明細預設帶搬運數量', () => {
-    expect(floor().receiveTransfer('tt-016', { by: '許文傑', proxy: true }).ok).toBe(true);
+  it('已送達的單有明細沒填時整次點收擋下，不把空白補成搬運數量（Q29，細節見 10.59）', () => {
+    const result = floor().receiveTransfer('tt-016', { by: '許文傑' });
+    expect(result.ok).toBe(false);
     const ticket = ticketByNo('TT-20260827-002');
-    expect(calcDetailReceivedQty(detailOf(ticket, 'pt-0812-6'))).toBe(200);
-    expect(calcDetailReceivedQty(detailOf(ticket, 'pt-0812-4'))).toBe(300);
+    expect(ticket.status).toBe('已送達');
+    ticket.details.forEach((d) => expect(calcDetailReceivedQty(d)).toBe(0));
   });
 
-  it('所屬產線含手工產線的人員本人點收時不留代點收標記', () => {
-    floor().receiveTransfer('tt-016', { by: '李榮發', proxy: false });
-    const ticket = ticketByNo('TT-20260827-002');
-    ticket.details.forEach((d) => {
-      expect(d.receipts[0]).toMatchObject({ received_by: '李榮發', proxy_received: false });
-    });
+  it('不分首次與再次：store 只有點收一支，沒有再次點收', () => {
+    expect(floor().receiveTransferAgain).toBeUndefined();
   });
 });
 
-describe('10.28 短少照實點收，已送達的單不可作廢', () => {
+describe('10.28 已送達的單可作廢重建，或照實點收', () => {
   // 鏈二 TT-20260830-002（tt-005，已送達，海報四色印刷搬運數量 1,190）
-  it('來源任務有效時，已送達的單不提供作廢；資料層作廢也被擋下、單維持已送達', () => {
+  it('來源任務有效時，已送達的單照樣提供作廢；作廢原因以文字填寫，作廢後轉已作廢、搬運數量退回來源任務', () => {
     const ticket = ticketByNo('TT-20260830-002');
-    expect(canVoidTransfer(ticket, floor().tasks)).toBe(false);
-    const result = floor().voidTransfer('tt-005', { reason: '數量填錯', by: '許文傑' });
-    expect(result.ok).toBe(false);
-    expect(ticketByNo('TT-20260830-002').status).toBe('已送達');
+    expect(canVoidTransfer(ticket, floor().tasks)).toBe(true);
+    const result = floor().voidTransfer('tt-005', { reason: '數量不對，依實際數量重建', by: '許文傑' });
+    expect(result.ok).toBe(true);
+    const after = ticketByNo('TT-20260830-002');
+    expect(after.status).toBe('已作廢');
+    expect(after.void_reason).toBe('數量不對，依實際數量重建');
+    expect(calcMovableQty(taskById('pt-0710-2'), floor().transferTickets)).toBe(1190);
   });
 
-  it('待搬運與搬運中仍可作廢，已點收不可作廢', () => {
+  it('待搬運、搬運中、已送達都可作廢，已點收不可作廢', () => {
     const tasks = floor().tasks;
     expect(canVoidTransfer(ticketByNo('TT-20260830-003'), tasks)).toBe(true); // 搬運中
     expect(canVoidTransfer({ ...ticketByNo('TT-20260830-003'), status: '待搬運' }, tasks)).toBe(true);
+    expect(canVoidTransfer(ticketByNo('TT-20260830-002'), tasks)).toBe(true); // 已送達
     expect(canVoidTransfer(ticketByNo('TT-20260828-001'), tasks)).toBe(false); // 已點收
+    const result = floor().voidTransfer('tt-004', { reason: '想作廢', by: '許文傑' });
+    expect(result.ok).toBe(false);
+    expect(ticketByNo('TT-20260828-001').status).toBe('已點收');
   });
 
   it('現場只點到 1,150：照實點收成立，明細點收數量 1,150，到料量 1,150', () => {
     const result = floor().receiveTransfer('tt-005', {
       by: '許文傑',
-      proxy: true,
       quantities: { 'pt-0710-2': 1150 },
     });
     expect(result.ok).toBe(true);
@@ -203,27 +217,22 @@ describe('10.28 短少照實點收，已送達的單不可作廢', () => {
     expect(calcArrivedQty('pt-0710-2', floor().transferTickets)).toBe(1150);
   });
 
-  it('結果樣本 TT-20260827-001：搬運數量 500、點收數量 480，差額 20 留在明細，證書四色印刷停在待點收', () => {
+  it('結果樣本 TT-20260827-001：搬運數量 500、點收數量 480（備註「少一落，待查」），證書四色印刷停在待點收', () => {
     const ticket = ticketByNo('TT-20260827-001');
     const detail = detailOf(ticket, 'pt-0812-2');
     expect(detail.qty).toBe(500);
+    expect(detail.receipts[0].remark).toBe('少一落，待查');
     expect(calcDetailReceivedQty(detail)).toBe(480);
     expect(deriveTransferStatus(taskById('pt-0812-2'), floor().transferTickets)).toBe('待點收');
   });
 });
 
-describe('10.29 貨補到後對同一明細再次點收，點收數量可超過搬運數量', () => {
+describe('10.29 貨補到後對同一明細再點收一筆，點收數量可超過搬運數量', () => {
   // 鏈外 TT-20260827-001（tt-015，已點收；證書四色印刷搬運數量 500、點收數量 480）
-  it('再次點收的點收量預設帶 20（搬運數量減點收數量）', () => {
-    expect(defaultReceiveAgainQty(detailOf(ticketByNo('TT-20260827-001'), 'pt-0812-2'))).toBe(20);
-  });
-
   it('填 30 照收：點收數量 510 超過搬運數量 500 不擋，新增一筆點收紀錄', () => {
-    const result = floor().receiveTransferAgain('tt-015', {
-      taskId: 'pt-0812-2',
-      qty: 30,
+    const result = floor().receiveTransfer('tt-015', {
       by: '許文傑',
-      proxy: true,
+      quantities: { 'pt-0812-2': 30 },
     });
     expect(result.ok).toBe(true);
     const detail = detailOf(ticketByNo('TT-20260827-001'), 'pt-0812-2');
@@ -231,22 +240,21 @@ describe('10.29 貨補到後對同一明細再次點收，點收數量可超過�
     expect(calcDetailReceivedQty(detail)).toBe(510);
   });
 
-  it('填 20 成立：新增一筆點收紀錄、累計 500、單頭維持已點收，歷程記再次點收', () => {
-    const result = floor().receiveTransferAgain('tt-015', {
-      taskId: 'pt-0812-2',
-      qty: 20,
+  it('填 20 成立：新增一筆點收紀錄、累計 500、單頭維持已點收，歷程記一筆點收', () => {
+    const result = floor().receiveTransfer('tt-015', {
       by: '許文傑',
-      proxy: true,
+      quantities: { 'pt-0812-2': 20 },
     });
     expect(result.ok).toBe(true);
     const ticket = ticketByNo('TT-20260827-001');
     const detail = detailOf(ticket, 'pt-0812-2');
     expect(detail.receipts).toHaveLength(2);
-    expect(detail.receipts[1]).toMatchObject({ qty: 20, received_by: '許文傑', proxy_received: true });
+    expect(detail.receipts[1]).toMatchObject({ qty: 20, received_by: '許文傑', status: '有效' });
     expect(calcDetailReceivedQty(detail)).toBe(500);
     expect(ticket.status).toBe('已點收');
     const last = ticket.history.at(-1);
-    expect(last.event).toContain('再次點收');
+    expect(last.event).toContain('點收');
+    expect(last.event).not.toContain('再次點收');
     expect(last.event).toContain('20');
     expect(last.actor).toBe('許文傑');
     expect(last.at).toBeTruthy();
@@ -268,14 +276,16 @@ describe('10.30 收貨人點錯數修改點收數量並填原因，低於下游�
     expect(calcDetailReceivedQty(detailOf(ticketByNo('TT-20260827-001'), 'pt-0812-2'))).toBe(480);
   });
 
-  it('改成 490 成立：點收數量 490、證書裁切的到料量 490，歷程記修改前後值、修改人與原因', () => {
+  it('改成 490 並補備註成立：點收數量 490、證書裁切的到料量 490，歷程記點收量與備註的修改前後值、修改人與原因', () => {
     const result = floor().editTransferReceipt('tt-015', {
       taskId: 'pt-0812-2',
       receiptId: 'tt-015-r1',
       qty: 490,
+      remark: '第二落在門邊',
       reason: '重點數量',
       by: '許文傑',
     });
+    expect(detailOf(ticketByNo('TT-20260827-001'), 'pt-0812-2').receipts[0].remark).toBe('第二落在門邊');
     expect(result.ok).toBe(true);
     const ticket = ticketByNo('TT-20260827-001');
     expect(calcDetailReceivedQty(detailOf(ticket, 'pt-0812-2'))).toBe(490);
@@ -285,6 +295,7 @@ describe('10.30 收貨人點錯數修改點收數量並填原因，低於下游�
     expect(last.event).toContain('480');
     expect(last.event).toContain('490');
     expect(last.event).toContain('重點數量');
+    expect(last.event).toContain('第二落在門邊');
     expect(last.actor).toBe('許文傑');
   });
 
@@ -341,7 +352,7 @@ describe('10.30 收貨人點錯數修改點收數量並填原因，低於下游�
       input_qty: setQty,
       good_qty: setQty,
       produced_qty: setQty,
-      downstream_station_key: '手工產線',
+      downstream_station_key: '裁切站',
       depends_on: [],
       history: [],
     };
@@ -357,7 +368,6 @@ describe('10.30 收貨人點錯數修改點收數量並填原因，低於下游�
       produced_qty: downstreamInput,
       planned_equipment: 'POLAR 137 裁切機',
       depends_on: ['pt-test-a'],
-      bom_unit_usage: 1,
       history: [],
     };
     useProductionFloorStore.setState({
@@ -382,12 +392,12 @@ describe('10.30 收貨人點錯數修改點收數量並填原因，低於下游�
           id: 'tt-test-a',
           ticket_no: 'TT-TEST-A',
           status: '已點收',
-          target_station_key: '手工產線',
-          target_station: '手工產線',
+          destination_line: '手工產線',
           details: [
             {
               task_id: 'pt-test-a',
               task_name: '甲',
+              destination_station_key: '裁切站',
               qty: setQty,
               sign_photos: ['合成照.jpg'],
               receipts: receipts.map((qty, i) => ({
@@ -395,7 +405,8 @@ describe('10.30 收貨人點錯數修改點收數量並填原因，低於下游�
                 qty,
                 received_by: '李榮發',
                 received_at: '2026-10-05 10:00',
-                proxy_received: false,
+                remark: '',
+                status: '有效',
               })),
             },
           ],
@@ -446,6 +457,22 @@ describe('10.30 收貨人點錯數修改點收數量並填原因，低於下游�
     expect(result.error).toContain('已報工 190');
     expect(calcDetailReceivedQty(floor().transferTickets[0].details[0])).toBe(200);
   });
+
+  it('純函式：點收紀錄作廢低於下游已報工量時擋下：甲只有一筆 200、乙已報工 190，作廢被擋、紀錄維持有效、單頭維持已點收', () => {
+    seedUpDown({ receipts: [200], setQty: 200, downstreamInput: 190 });
+    const result = floor().voidTransferReceipt('tt-test-a', {
+      taskId: 'pt-test-a',
+      receiptId: 'tt-test-a-r1',
+      reason: '點錯單',
+      by: '李榮發',
+    });
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('乙');
+    expect(result.error).toContain('已報工 190');
+    const ticket = floor().transferTickets[0];
+    expect(ticket.status).toBe('已點收');
+    expect(ticket.details[0].receipts[0].status).toBe('有效');
+  });
 });
 
 describe('10.31 到料量取轉交點收量，含再次點收與修改後的值', () => {
@@ -454,9 +481,29 @@ describe('10.31 到料量取轉交點收量，含再次點收與修改後的值'
     expect(calcArrivedQty('pt-0812-2', floor().transferTickets)).toBe(480);
   });
 
-  it('再次點收 20 後為 500', () => {
-    floor().receiveTransferAgain('tt-015', { taskId: 'pt-0812-2', qty: 20, by: '許文傑', proxy: true });
+  it('再點收一筆 20 後為 500', () => {
+    floor().receiveTransfer('tt-015', { by: '許文傑', quantities: { 'pt-0812-2': 20 } });
     expect(calcArrivedQty('pt-0812-2', floor().transferTickets)).toBe(500);
+  });
+
+  it('不含已作廢的點收紀錄：鏈一 TT-20260615-001 有效 5,100、另一筆 100 已作廢，到料量 5,100', () => {
+    const detail = detailOf(ticketByNo('TT-20260615-001'), 'pt-0601-1');
+    expect(detail.receipts.map((r) => r.status)).toEqual(['有效', '已作廢']);
+    expect(calcDetailReceivedQty(detail)).toBe(5100);
+    expect(calcArrivedQty('pt-0601-1', floor().transferTickets)).toBe(5100);
+  });
+
+  it('再點收 20 後作廢那一筆：到料量自 500 降回 480', () => {
+    floor().receiveTransfer('tt-015', { by: '許文傑', quantities: { 'pt-0812-2': 20 } });
+    const added = detailOf(ticketByNo('TT-20260827-001'), 'pt-0812-2').receipts[1];
+    const result = floor().voidTransferReceipt('tt-015', {
+      taskId: 'pt-0812-2',
+      receiptId: added.id,
+      reason: '點錯單',
+      by: '許文傑',
+    });
+    expect(result.ok).toBe(true);
+    expect(calcArrivedQty('pt-0812-2', floor().transferTickets)).toBe(480);
   });
 
   it('點收紀錄由 480 改為 490 時為 490', () => {
@@ -471,7 +518,7 @@ describe('10.31 到料量取轉交點收量，含再次點收與修改後的值'
   });
 });
 
-describe('10.17（純函式）來源任務報廢或作廢時，已送達的單生管可作廢，已點收的單再次點收與點收修改一併擋下', () => {
+describe('10.17（純函式）來源任務報廢或作廢時，擋下點收、點收修改、點收紀錄作廢與搬運數量修改；點收前的單生管可作廢', () => {
   const markDead = (taskId, status) =>
     useProductionFloorStore.setState((s) => ({
       tasks: s.tasks.map((t) => (t.id === taskId ? { ...t, status } : t)),
@@ -490,16 +537,32 @@ describe('10.17（純函式）來源任務報廢或作廢時，已送達的單�
     expect(canVoidTransfer(ticketByNo('TT-20260830-002'), floor().tasks)).toBe(true);
   });
 
-  it('來源任務已報廢的已點收單（TT-20260828-001）：再次點收與點收修改都被擋下，點收紀錄不變', () => {
+  it('來源任務已報廢的已點收單（TT-20260828-001）：點收、點收修改、點收紀錄作廢與搬運數量修改都被擋下，點收紀錄不變', () => {
     markDead('pt-0710-1', '報廢');
-    const again = floor().receiveTransferAgain('tt-004', {
-      taskId: 'pt-0710-1',
-      qty: 0,
+    const again = floor().receiveTransfer('tt-004', {
       by: '許文傑',
-      proxy: true,
+      quantities: { 'pt-0710-1': 10 },
     });
     expect(again.ok).toBe(false);
     expect(again.error).toContain('來源任務');
+
+    const voidReceipt = floor().voidTransferReceipt('tt-004', {
+      taskId: 'pt-0710-1',
+      receiptId: 'tt-004-r1',
+      reason: '點錯單',
+      by: '許文傑',
+    });
+    expect(voidReceipt.ok).toBe(false);
+    expect(voidReceipt.error).toContain('來源任務');
+
+    const qtyEdit = floor().editTransferQty('tt-004', {
+      taskId: 'pt-0710-1',
+      qty: 3000,
+      reason: '搬運數量更正',
+      by: '許文傑',
+    });
+    expect(qtyEdit.ok).toBe(false);
+    expect(qtyEdit.error).toContain('來源任務');
 
     const edit = floor().editTransferReceipt('tt-004', {
       taskId: 'pt-0710-1',
@@ -520,8 +583,8 @@ describe('10.38 搬運中作廢重開沿用原單目的地、重走搬運，沒�
   // 鏈二 TT-20260830-003（tt-006，搬運中，目的地手工產線，海報四色印刷 800）
   beforeEach(() => {
     floor().syncTaskDestination('pt-0710-2', {
-      fromKey: '手工產線',
-      toKey: '裝訂產線',
+      fromKey: '裁切站',
+      toKey: '後加工站',
       actor: '周建宏',
     });
   });
@@ -541,10 +604,71 @@ describe('10.38 搬運中作廢重開沿用原單目的地、重走搬運，沒�
       actor: '許文傑',
     });
     expect(reopened.ok).toBe(true);
-    expect(reopened.ticket.target_station_key).toBe('手工產線');
+    expect(reopened.ticket.destination_line).toBe('手工產線');
+    reopened.ticket.details.forEach((d) => expect(d.destination_station_key).toBe('裁切站'));
     expect(reopened.ticket.status).toBe('待搬運');
     expect(reopened.ticket.actual_date ?? null).toBeNull();
     expect(reopened.ticket).not.toHaveProperty('onsite_flag');
     reopened.ticket.history.forEach((h) => expect(h.event).not.toContain('貨已在現場'));
+  });
+});
+
+describe('10.59 點收時每條明細都要填且大於 0，任一條未填或為 0 擋下整次點收；已點收後可只對單條明細再點收', () => {
+  // 鏈外 TT-20260827-002（tt-016，已送達）：內卡四色印刷 200（pt-0812-6）、信封四色印刷 300（pt-0812-4）
+  const receiptsOf = (ticket) => ticket.details.flatMap((d) => d.receipts ?? []);
+
+  it('只填一條、另一條沒填：整次擋下，不寫入任何點收紀錄，單頭維持已送達，空白不補成搬運數量', () => {
+    const result = floor().receiveTransfer('tt-016', { by: '許文傑', quantities: { 'pt-0812-6': 200 } });
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('點收量須大於 0');
+    expect(result.error).toContain('信封四色印刷');
+    const ticket = ticketByNo('TT-20260827-002');
+    expect(ticket.status).toBe('已送達');
+    expect(receiptsOf(ticket)).toHaveLength(0);
+    expect(calcArrivedQty('pt-0812-4', floor().transferTickets)).toBe(0);
+  });
+
+  it('一條填 0 或留空字串：同樣整次擋下，已填的那一條也不寫入', () => {
+    [0, '', null].forEach((blank) => {
+      const result = floor().receiveTransfer('tt-016', {
+        by: '許文傑',
+        quantities: { 'pt-0812-6': 200, 'pt-0812-4': blank },
+      });
+      expect(result.ok).toBe(false);
+      const ticket = ticketByNo('TT-20260827-002');
+      expect(ticket.status).toBe('已送達');
+      expect(receiptsOf(ticket)).toHaveLength(0);
+    });
+  });
+
+  it('兩條都填大於 0：整次成立，單頭轉已點收，兩條各新增一筆點收紀錄', () => {
+    const result = floor().receiveTransfer('tt-016', {
+      by: '許文傑',
+      quantities: { 'pt-0812-6': 200, 'pt-0812-4': 280 },
+    });
+    expect(result.ok).toBe(true);
+    const ticket = ticketByNo('TT-20260827-002');
+    expect(ticket.status).toBe('已點收');
+    expect(receiptsOf(ticket)).toHaveLength(2);
+  });
+
+  it('已點收之後可只對單條明細再點收：只新增那一條的紀錄，單頭維持已點收；填 0 仍擋下', () => {
+    floor().receiveTransfer('tt-016', { by: '許文傑', quantities: { 'pt-0812-6': 200, 'pt-0812-4': 280 } });
+    const zero = floor().receiveTransfer('tt-016', { by: '許文傑', quantities: { 'pt-0812-4': 0 } });
+    expect(zero.ok).toBe(false);
+    const again = floor().receiveTransfer('tt-016', { by: '許文傑', quantities: { 'pt-0812-4': 20 } });
+    expect(again.ok).toBe(true);
+    const ticket = ticketByNo('TT-20260827-002');
+    expect(ticket.status).toBe('已點收');
+    expect(detailOf(ticket, 'pt-0812-4').receipts).toHaveLength(2);
+    expect(detailOf(ticket, 'pt-0812-6').receipts).toHaveLength(1);
+    expect(calcDetailReceivedQty(detailOf(ticket, 'pt-0812-4'))).toBe(300);
+  });
+
+  it('不提供單條明細作廢：資料層沒有針對明細的作廢入口，只有點收紀錄作廢與整張單作廢', () => {
+    const entries = Object.keys(floor()).filter(
+      (k) => typeof floor()[k] === 'function' && /(void|cancel|remove)/i.test(k) && /detail/i.test(k),
+    );
+    expect(entries).toEqual([]);
   });
 });

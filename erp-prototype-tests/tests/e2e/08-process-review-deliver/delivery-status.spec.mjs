@@ -205,3 +205,14 @@ async function expectHistory(page, taskName, actor) {
   await expect(page.locator('.ant-table-expanded-row').filter({ hasText: '產線由 數位產線 改為 手工產線' }).first()).toContainText(actor);
 }
 
+// 8.18（2026-10-06 新增）：加工廠任務交付後照常推導已交付、已接收（拍板 D3）。
+// 起點：鏈外 WO-2026-0812 的證書局部上光（加工廠、2026-08-22 交付、許文傑已接收）。
+test('8.18 加工廠任務交付後照常推導已交付、已接收', async ({ page }) => {
+  await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0812');
+  await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0812' })).toBeVisible({
+    timeout: 20_000,
+  });
+  await expectCell(page, '證書局部上光', '交付狀態', '已接收');
+  // 對照：外包廠任務交付後仍顯示「－」（WO-2026-0906 的局部上光尚未交付，交付後的推導以純函式驗）
+});
+

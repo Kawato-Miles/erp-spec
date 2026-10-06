@@ -10,12 +10,13 @@ import { closeDrawer } from './_ch10.mjs';
 
 const WAITING_HINT = '前置未到料：等 WO-2026-0710／海報四色印刷 的貨';
 
-test('10.1 前置未到料的任務沒有報工入口；到料點收後入口出現（原編號 18）', async ({ page }) => {
+test('10.1 前置未到料：沒有報工入口，送出時擋下並指出在等哪張工單的哪一筆任務；到料點收後入口出現（原編號 18）', async ({ page }) => {
+  test.setTimeout(90_000);
   await openAs(page, '生管', '/production-floor/work-packages');
   let pkgRow = page.locator('.ant-table-row', { hasText: 'WP-2026-0710-02' });
   await pkgRow.getByLabel('展開行').click();
   let subRow = pkgRow.locator('xpath=following-sibling::tr[1]');
-  // 可做量＝各前置到料量的最小值（已換算產出單位），與目標數量並排：0／3,000
+  // 可做量＝各前置到料量的最小值（直接比數值、不換算單位），與目標數量並排：0／3,000
   await expect(subRow.getByText('0／3,000')).toBeVisible();
 
   // 報不了的工不給入口：該任務列的操作欄只有檢視歷程
@@ -32,6 +33,15 @@ test('10.1 前置未到料的任務沒有報工入口；到料點收後入口出
   const drawer = page.locator('.ant-drawer-content:visible').last();
   await expect(drawer).toContainText(WAITING_HINT);
   await closeDrawer(page);
+
+  // 所有生產任務：裁切成型那一列同樣沒有報工入口，提示在等誰（2026-10-06 所有生產任務也開放報工）
+  await gotoInApp(page, '/production-floor/dispatch');
+  const search = page.getByPlaceholder(/工單編號/).first();
+  await search.fill('WO-2026-0710');
+  await search.press('Enter');
+  const floorRow = page.locator('tr.ant-table-row', { hasText: '裁切成型' }).first();
+  await expect(floorRow.getByRole('button', { name: '報工' })).toHaveCount(0);
+  await expect(floorRow).toContainText(WAITING_HINT);
 
   // 點收才算到料（已送達是搬運方的單方宣稱）
   await gotoInApp(page, '/production-floor/receiving');

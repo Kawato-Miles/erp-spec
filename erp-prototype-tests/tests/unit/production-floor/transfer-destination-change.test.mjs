@@ -10,6 +10,8 @@ import { hasStockedOutput } from '/Users/b-f-03-029/erp/apps/erp/src/app/(protot
 import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/store.js';
 
 // 情境目錄 10.22～10.24：場內轉交規則改版（取消回運單、目的站點可改、到料量不比對站點）。
+// 2026-10-06 改版（L1～L6）：目的站點是產線底下的站點（假資料，待 PT-067）；
+// 轉交單單頭記目的產線（destination_line），明細記目的站點（destination_station_key）。
 // 起點資料：鏈四 WO-2026-0820（已完成，負責印務周建宏）的 PT-0820-9 精裝裝訂
 //（已完成，目的站點品檢站，良品 500、尚未開轉交單）；鏈五 WO-2026-0901（草稿，尚未交付產線）。
 
@@ -33,72 +35,77 @@ describe('10.22 改目的站點後已建的轉交單不動，之後新建的單�
   it('已交付產線的任務：現場那一份目的站點跟著換，任務歷程記原站、新站與修改人', () => {
     floor().syncTaskDestination('pt-0820-9', {
       fromKey: '品檢站',
-      toKey: '裝訂產線',
+      toKey: '後加工站',
       actor: '周建宏',
     });
     const task = floorTask('pt-0820-9');
-    expect(task.downstream_station_key).toBe('裝訂產線');
-    expect(task.downstream_station).toBe('裝訂產線');
+    expect(task.downstream_station_key).toBe('後加工站');
+    expect(task.downstream_station).toBe('後加工站');
     const last = task.history.at(-1);
     expect(last.actor).toBe('周建宏');
     expect(last.at).toBeTruthy();
     expect(last.event).toContain('目的站點變更');
-    expect(last.changes).toEqual([{ field: '目的站點', before: '品檢站', after: '裝訂產線' }]);
+    expect(last.changes).toEqual([{ field: '目的站點', before: '品檢站', after: '後加工站' }]);
   });
 
   it('改站前建的單維持原目的地；改站後新建的單取新目的站點，呼叫端帶的目的地不被採用', () => {
     const { created: before } = floor().createTransferTickets({
+      plannedDate: '2026-10-07',
       picks: [{ task_id: 'pt-0820-9', qty: 200 }],
       actor: '許文傑',
       assignedMover: '簡俊男',
     });
-    expect(before[0].target_station_key).toBe('品檢站');
+    expect(before[0].destination_line).toBe('品檢線');
+    expect(before[0].details[0].destination_station_key).toBe('品檢站');
 
-    floor().syncTaskDestination('pt-0820-9', { fromKey: '品檢站', toKey: '裝訂產線', actor: '周建宏' });
-    expect(ticketById(before[0].id).target_station_key).toBe('品檢站');
+    floor().syncTaskDestination('pt-0820-9', { fromKey: '品檢站', toKey: '後加工站', actor: '周建宏' });
+    expect(ticketById(before[0].id).details[0].destination_station_key).toBe('品檢站');
 
     const { created: after } = floor().createTransferTickets({
+      plannedDate: '2026-10-07',
       // 資料層不接受覆寫目的地：即使帶了舊站點鍵，新單仍取任務當下的目的站點
       picks: [{ task_id: 'pt-0820-9', qty: 100, station_key: '品檢站' }],
       actor: '許文傑',
       assignedMover: '簡俊男',
     });
-    expect(after[0].target_station_key).toBe('裝訂產線');
-    expect(after[0].target_station).toBe('裝訂產線');
+    expect(after[0].destination_line).toBe('裝訂產線');
+    expect(after[0].details[0].destination_station_key).toBe('後加工站');
   });
 
   it('改單不改目的地；作廢重開的新單沿用原單目的地', () => {
     const { created } = floor().createTransferTickets({
+      plannedDate: '2026-10-07',
       picks: [{ task_id: 'pt-0820-9', qty: 200 }],
       actor: '許文傑',
       assignedMover: '簡俊男',
     });
     const ticket = created[0];
-    floor().syncTaskDestination('pt-0820-9', { fromKey: '品檢站', toKey: '裝訂產線', actor: '周建宏' });
+    floor().syncTaskDestination('pt-0820-9', { fromKey: '品檢站', toKey: '後加工站', actor: '周建宏' });
 
     const edit = floor().updateTransferTicket(ticket.id, {
       details: [{ ...ticket.details[0], qty: 150 }],
-      stationKey: '裝訂產線',
+      stationKey: '後加工站',
       actor: '許文傑',
     });
     expect(edit.ok).toBe(true);
-    expect(ticketById(ticket.id).target_station_key).toBe('品檢站');
+    expect(ticketById(ticket.id).details[0].destination_station_key).toBe('品檢站');
 
     floor().voidTransfer(ticket.id, { reason: '數量填錯', by: '許文傑' });
     const reopened = floor().reopenTransferTicket(ticket.id, {
       details: [{ ...ticket.details[0], qty: 150 }],
-      stationKey: '裝訂產線',
+      stationKey: '後加工站',
       onsite: false,
       actor: '許文傑',
     });
     expect(reopened.ok).toBe(true);
-    expect(reopened.ticket.target_station_key).toBe('品檢站');
+    expect(reopened.ticket.destination_line).toBe('品檢線');
+    expect(reopened.ticket.details[0].destination_station_key).toBe('品檢站');
   });
 
   it('尚未交付產線的任務：歷程記在工單端那一本，交付時隨任務帶到現場', () => {
     floor().syncTaskDestination('pt-0901-1', {
-      fromKey: '數位產線',
-      toKey: '手工產線',
+      fromKey: '印刷站',
+      toKey: '裁切站',
       actor: '周建宏',
     });
     const woTask = useWorkOrdersStore
@@ -106,12 +113,13 @@ describe('10.22 改目的站點後已建的轉交單不動，之後新建的單�
       .workOrders.find((o) => o.work_order_no === 'WO-2026-0901')
       .tasks.find((t) => t.id === 'pt-0901-1');
     expect(woTask.history.at(-1).changes).toEqual([
-      { field: '目的站點', before: '數位產線', after: '手工產線' },
+      { field: '目的站點', before: '印刷站', after: '裁切站' },
     ]);
   });
 
   it('轉交單不再帶單別與原轉交單連結', () => {
     const { created } = floor().createTransferTickets({
+      plannedDate: '2026-10-07',
       picks: [{ task_id: 'pt-0820-9', qty: 100 }],
       actor: '許文傑',
       assignedMover: '簡俊男',
@@ -178,14 +186,14 @@ describe('10.23 已作廢或報廢的任務不可改目的站點，已完成仍�
 });
 
 describe('10.24 下游到料量不比對站點、點收修改後不得低於下游已報工量；入庫成品判定仍只看品檢站', () => {
-  // 合成資料：前置「印刷」需轉交、目的站點手工產線；下游「裁切」計畫設備 POLAR 137 裁切機
+  // 合成資料：前置「印刷」需轉交、目的站點手工產線的裁切站；下游「裁切」計畫設備 POLAR 137 裁切機
   const upstream = {
     id: 'pt-test-up',
     work_order_no: 'WO-TEST',
     name: '印刷',
     status: '已完成',
     needs_transfer: true,
-    downstream_station_key: '手工產線',
+    downstream_station_key: '裁切站',
     good_qty: 1000,
   };
   const downstream = {
@@ -195,20 +203,21 @@ describe('10.24 下游到料量不比對站點、點收修改後不得低於下�
     status: '待處理',
     planned_equipment: 'POLAR 137 裁切機',
     depends_on: ['pt-test-up'],
-    bom_unit_usage: 1,
   };
   // 已點收的單帶一筆點收紀錄（點收量等於設定量）：到料量取點收紀錄合計（情境目錄 10.31）
+  const LINE_OF = { 裁切站: '手工產線', 後加工站: '裝訂產線', 品檢站: '品檢線' };
   const ticket = (id, status, stationKey, qty) => ({
     id,
     status,
-    target_station_key: stationKey,
+    destination_line: LINE_OF[stationKey],
     details: [
       {
         task_id: 'pt-test-up',
+        destination_station_key: stationKey,
         qty,
         receipts:
           status === '已點收'
-            ? [{ id: `${id}-r1`, qty, received_by: '李榮發', received_at: '2026-10-05 10:00', proxy_received: false }]
+            ? [{ id: `${id}-r1`, qty, received_by: '李榮發', received_at: '2026-10-05 10:00', remark: '', status: '有效' }]
             : [],
       },
     ],
@@ -216,8 +225,8 @@ describe('10.24 下游到料量不比對站點、點收修改後不得低於下�
 
   it('送錯站（或改站前在舊站）點收的量照樣計入下游到料量', () => {
     const tickets = [
-      ticket('t1', '已點收', '手工產線', 300),
-      ticket('t2', '已點收', '裝訂產線', 200),
+      ticket('t1', '已點收', '裁切站', 300),
+      ticket('t2', '已點收', '後加工站', 200),
     ];
     expect(calcArrivedQty('pt-test-up', tickets)).toBe(500);
     const result = resolvePrecedence(downstream, [upstream, downstream], tickets);
@@ -226,7 +235,7 @@ describe('10.24 下游到料量不比對站點、點收修改後不得低於下�
   });
 
   it('只有送錯站那一張已點收時，下游照樣放行', () => {
-    const tickets = [ticket('t2', '已點收', '裝訂產線', 200)];
+    const tickets = [ticket('t2', '已點收', '後加工站', 200)];
     const result = resolvePrecedence(downstream, [upstream, downstream], tickets);
     expect(result.blocking).toHaveLength(0);
     expect(result.workableQty).toBe(200);
@@ -234,9 +243,9 @@ describe('10.24 下游到料量不比對站點、點收修改後不得低於下�
 
   it('未點收（已送達、搬運中、已作廢）的單不計入', () => {
     const tickets = [
-      ticket('t1', '已送達', '手工產線', 300),
-      ticket('t2', '搬運中', '手工產線', 200),
-      ticket('t3', '已作廢', '手工產線', 100),
+      ticket('t1', '已送達', '裁切站', 300),
+      ticket('t2', '搬運中', '裁切站', 200),
+      ticket('t3', '已作廢', '裁切站', 100),
     ];
     expect(calcArrivedQty('pt-test-up', tickets)).toBe(0);
     expect(resolvePrecedence(downstream, [upstream, downstream], tickets).blocking).toHaveLength(1);
@@ -249,14 +258,14 @@ describe('10.24 下游到料量不比對站點、點收修改後不得低於下�
       depends_on_external: [{ task_id: 'pt-test-up', work_order_no: 'WO-TEST', name: '外發燙金' }],
     };
     // 下游在手工產線，貨點收在裝訂產線：舊口徑會永遠不放行
-    const tickets = [ticket('t1', '已點收', '精裝線', 400)];
+    const tickets = [ticket('t1', '已點收', '後加工站', 400)];
     const result = resolvePrecedence(task, [task], tickets);
     expect(result.blocking).toHaveLength(0);
     expect(result.workableQty).toBe(400);
   });
 
   it('點收修改後不得低於下游已報工量：下游已報 450 時，把 300 那筆改為 200 被擋、改為 250 成立', () => {
-    // 前置在手工產線點收 300、在裝訂產線點收 200（合計 500）；下游裁切已報工生產數量 450
+    // 前置在裁切站點收 300、在後加工站點收 200（合計 500）；下游裁切已報工生產數量 450
     useProductionFloorStore.setState({
       tasks: [
         { ...upstream, input_qty: 1000, produced_qty: 1000, history: [] },
@@ -275,8 +284,8 @@ describe('10.24 下游到料量不比對站點、點收修改後不得低於下�
         },
       ],
       transferTickets: [
-        { ...ticket('t1', '已點收', '手工產線', 300), ticket_no: 'TT-TEST-1', history: [] },
-        { ...ticket('t2', '已點收', '裝訂產線', 200), ticket_no: 'TT-TEST-2', history: [] },
+        { ...ticket('t1', '已點收', '裁切站', 300), ticket_no: 'TT-TEST-1', history: [] },
+        { ...ticket('t2', '已點收', '後加工站', 200), ticket_no: 'TT-TEST-2', history: [] },
       ],
     });
     useWorkOrdersStore.setState({ workOrders: [] });
@@ -307,8 +316,8 @@ describe('10.24 下游到料量不比對站點、點收修改後不得低於下�
     const qcRecords = [{ print_item_no: 'PI-TEST', passed_qty: 100, failed_qty: 0 }];
     const facts = (tickets) => ({ transferTickets: tickets, floorTasks: [], qcRecords, printItemNo: 'PI-TEST' });
     const task = { id: 'pt-test-up' };
-    expect(calcReceivedQtyAt('pt-test-up', '品檢站', [ticket('t1', '已點收', '裝訂產線', 300)])).toBe(0);
-    expect(hasStockedOutput(task, facts([ticket('t1', '已點收', '裝訂產線', 300)]))).toBe(false);
+    expect(calcReceivedQtyAt('pt-test-up', '品檢站', [ticket('t1', '已點收', '後加工站', 300)])).toBe(0);
+    expect(hasStockedOutput(task, facts([ticket('t1', '已點收', '後加工站', 300)]))).toBe(false);
     expect(hasStockedOutput(task, facts([ticket('t1', '已點收', '品檢站', 300)]))).toBe(true);
   });
 });
@@ -318,7 +327,7 @@ describe('10.25 已點收的轉交單不可作廢，送錯站由現場溝通後�
     // 鏈二 TT-20260828-001（tt-004，已點收）
     const result = floor().voidTransfer('tt-004', { reason: '目的地填錯', by: '許文傑' });
     expect(result.ok).toBe(false);
-    expect(result.error).toContain('已點收為終態不可作廢');
+    expect(result.error).toContain('已點收不可作廢');
     expect(result.error).toContain('現場溝通後由廠務直接搬到正確的站');
     expect(ticketById('tt-004').status).toBe('已點收');
   });
