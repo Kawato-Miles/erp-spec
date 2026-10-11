@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
+  canManuallyCompleteTask,
   checkReportPermission,
   REPORT_SOURCES,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/permissions.js';
@@ -10,7 +11,7 @@ import {
 import { useProductionFloorStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/store.js';
 import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/store.js';
 
-// 情境目錄 9.19、9.20、10.46～10.50：報工前提、五個入口、已完成不能新增、照片必填與數值比較、整筆作廢重報。
+// 情境目錄 9.19、9.20、9.22、10.46～10.50：報工前提、五個入口、已完成不能新增、照片必填與數值比較、整筆作廢重報。
 // 期望值取自 openspec change production-dispatch-report-transfer-convergence production-execution delta
 // § 報工前提、§ 已完成任務不可新增報工、§ 報工、§ 報工權限守門、§ 報工修改、作廢與留痕 的 THEN；
 // 規則正本 wiki 報工規則、報工紀錄；情境卡 生產任務接收與派工、師傅報工與修改。
@@ -145,6 +146,50 @@ describe('9.20 加工廠任務接收後不打包，印務從工單詳情或所�
     expect(result).toBeTruthy();
     expect(plant().status).toBe('製作中');
     expect(plant().received_confirmed_at).toBeTruthy();
+  });
+});
+
+describe('9.22 沒打包的加工廠任務在所有生產任務也能手動完成', () => {
+  // 鏈外證書局部上光（pt-0812-9）：加工廠、手工產線、未打包；待處理、尚未報工
+  const plant = () => taskById('pt-0812-9');
+  const partialReport = () =>
+    floor().submitWorkReport('pt-0812-9', {
+      input_qty: 300,
+      good_qty: 298,
+      defect_qty: 2,
+      defect_reason: '刮傷',
+      photos: PHOTO,
+      channel: '印務於工單詳情頁',
+      reporter: '周建宏',
+    });
+
+  it('手動完成限生管、印務與印務主管，師傅與主管不可用', () => {
+    expect(canManuallyCompleteTask('production_planner')).toBe(true);
+    expect(canManuallyCompleteTask('print_officer')).toBe(true);
+    expect(canManuallyCompleteTask('print_manager')).toBe(true);
+    expect(canManuallyCompleteTask('master')).toBe(false);
+    expect(canManuallyCompleteTask('supervisor')).toBe(false);
+  });
+
+  it('待處理（還沒報工）的任務不可手動完成，任務與歷程維持原狀', () => {
+    const historyBefore = (plant().history ?? []).length;
+    const result = floor().manuallyCompleteTask('pt-0812-9', { by: '許文傑' });
+    expect(result.ok).toBe(false);
+    expect(plant().status).toBe('待處理');
+    expect((plant().history ?? []).length).toBe(historyBefore);
+  });
+
+  it('報工 300（目標 513）轉製作中後，不用打包即可手動完成：轉已完成、投入與目標數量不變、仍無工作包、歷程多一筆', () => {
+    partialReport();
+    expect(plant().status).toBe('製作中');
+    const historyBefore = (plant().history ?? []).length;
+    const result = floor().manuallyCompleteTask('pt-0812-9', { by: '許文傑' });
+    expect(result.ok).toBe(true);
+    expect(plant()).toMatchObject({ status: '已完成', input_qty: 300, target_qty: 513, package_id: null });
+    const last = plant().history.at(-1);
+    expect(plant().history).toHaveLength(historyBefore + 1);
+    expect(last.event).toContain('手動完成');
+    expect(last.actor).toBe('許文傑');
   });
 });
 

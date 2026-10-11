@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 
-// 情境目錄 9.19～9.21（2026-10-06 新增）：報工前提不含接收與打包；加工廠任務不打包也能報工；
+// 情境目錄 9.19～9.22（2026-10-06 新增）：報工前提不含接收與打包；加工廠任務不打包也能報工；
 // 跨產線工作包只對自己產線範圍的任務開放報工、修改與作廢。
 // 依據：wiki 生產任務接收與派工 副流程第 3 步之前分支、第 3 步分支（任務屬加工廠）；
 // 生產管理單元可見範圍 主流程第 4 步分支（工作包旗下任務跨產線）。
@@ -109,4 +109,41 @@ test('9.21 跨產線工作包只能對自己產線範圍的任務報工、修改
   await expect(printRow).toBeVisible();
   await expect(printRow.getByRole('button', { name: '報工' })).toHaveCount(0);
   await expect(printRow.getByRole('button', { name: /修\s*改|作\s*廢/ })).toHaveCount(0);
+});
+
+test('9.22 沒打包的加工廠任務在所有生產任務也能手動完成', async ({ page }) => {
+  test.setTimeout(120_000);
+  // 起點：鏈外證書局部上光（加工廠、手工產線、未打包、待處理）
+  await openAs(page, '生管（鄭宇翔）', '/production-floor/dispatch');
+  const search = page.getByPlaceholder(/工單編號/).first();
+  await search.fill('證書局部上光');
+  await search.press('Enter');
+  const row = page.locator('tr.ant-table-row', { hasText: '證書局部上光' }).first();
+  await expect(row).toContainText('待處理');
+  // 還沒報工的待處理任務沒有手動完成入口
+  await expect(row.getByRole('button', { name: '手動完成' })).toHaveCount(0);
+
+  // 在所有生產任務代報 300（目標 513）：轉製作中，出現手動完成入口
+  await row.getByRole('button', { name: '報工', exact: true }).click();
+  await fillReportLine(page, '證書局部上光', { input: 300, good: 298, defect: 2 });
+  const box = page.locator('.ant-modal-body').last();
+  await box.locator('tbody tr').filter({ hasText: '證書局部上光' }).locator('.ant-select').first().click();
+  await page.locator('.ant-select-dropdown:visible .ant-select-item-option', { hasText: '刮傷' }).click();
+  await page.getByRole('button', { name: /送出報工/ }).click();
+  await expect(page.getByText(/已送出 1 筆報工/).last()).toBeVisible();
+  await expect(row).toContainText('製作中');
+  await expect(row.getByRole('button', { name: '手動完成' })).toHaveCount(1);
+
+  // 按手動完成：轉已完成，入口消失；工作包欄仍為「－」
+  await row.getByRole('button', { name: '手動完成' }).click();
+  await expect(page.getByText(/已手動完成（目標數量與放損率不變、已報工數不動，歷程已留痕）/).last()).toBeVisible();
+  await expect(row).toContainText('已完成');
+  await expect(row.getByRole('button', { name: '手動完成' })).toHaveCount(0);
+
+  // 主管在生產管理五個產線單元唯讀：同一列沒有手動完成
+  await switchRole(page, '主管');
+  await gotoInApp(page, '/production-floor/dispatch');
+  await search.fill('證書局部上光');
+  await search.press('Enter');
+  await expect(page.locator('tr.ant-table-row', { hasText: '證書局部上光' }).first().getByRole('button', { name: '手動完成' })).toHaveCount(0);
 });
