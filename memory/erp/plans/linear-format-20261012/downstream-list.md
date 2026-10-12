@@ -79,3 +79,4 @@ unit：quote-rules.test.mjs L115-167；ch2-order-lifecycle-rules.test.mjs L27、
 | 7 | 進入議價按鈕名稱 | — | 情境目錄「送出報價」、Prototype「報價」 | F1 已裁決，情境目錄待改 |
 | 8 | 需求單編號格式 | 情境卡例子 QR-2026-0512 | Prototype Q 加日期加兩碼 | 新議題，無 OQ |
 | 9 | 狀態機轉換條件缺「單價未填不可成交」「沒有印件不可評估完成或成交」 | 狀態機卡沒有 | 情境目錄與 Prototype 都有 | 新議題 |
+| 10 | 需求單欄位名稱：wiki 實體卡「詢問來源」、Prototype「詢價來源」 | 名稱不一致 | 新議題 |

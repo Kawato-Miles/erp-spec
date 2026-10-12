@@ -5,7 +5,7 @@ module:
 tags:
   - 領域/售前
 oq-id: QR-007
-status: open
+status: answered
 priority: medium
 audience: internal
 raised-at: 2026-09-08
@@ -16,6 +16,8 @@ related-vault:
   - "[[需求單狀態]]"
 related-oq:
   - "[[QR-003-需求單欄位修改規則與規格雛形落差]]"
+answered-at: 2026-10-12
+answered-by: Miles
 ---
 
 # QR-007 流失原因值域 wiki 七選一與後端六值不一致，以哪邊為準
@@ -30,7 +32,7 @@ related-oq:
 
 ## 待解答
 
-- [ ] 流失原因值域以 wiki 七值為準（後端補 migration 改列舉）、以後端六值為準（wiki 改寫欄位表）、還是合併成一組新值域？
+- [x] 流失原因值域以 wiki 七值為準（後端補 migration 改列舉）、以後端六值為準（wiki 改寫欄位表）、還是合併成一組新值域？→ 採後端六值，見決議
 
 ## 候選方案
 
@@ -40,3 +42,15 @@ related-oq:
 
 不受影響項：流失原因必填、流失後鎖定、重新啟動清空原因這些規則任一方向皆不動。
 裁決後要同步的位置：[[需求單]] 欄位表流失原因列；後端 LostReason 列舉；Prototype `quote-prototype/_lib/constants.js` 的 LOST_REASON。
+
+## 決議
+
+**採 B：流失原因值域以後端六值為準。** 六值為價格因素、交期因素、規格不符、無回覆、改找他家、其他。
+
+理由：後端、正式前端與 Prototype 已用同一組六值，只改 wiki 欄位表就能三方一致，不必改程式碼、不必對映既有資料。A 案要後端改列舉並對映舊值，C 案兩邊都要改，兩案都比 B 多做事而沒有更好的歸因分類。
+
+代價：[[QR-003-需求單欄位修改規則與規格雛形落差]] 在 2026-07-31 拍板的七值退場，「客戶預算刪減」「客戶取消專案」兩類歸入「其他」。
+
+拍板：Miles，2026-10-12（Sens memory/erp/plans/linear-format-20261012/grill-decisions.md G1）。
+
+落地去處：[[需求單]] 欄位表流失原因列已改為六選一；後端列舉與 Prototype 的流失原因常數已是六值，無須修改。
