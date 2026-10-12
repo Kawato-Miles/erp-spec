@@ -6,12 +6,13 @@ import {
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/permissions.js';
 import {
   canReportTask,
+  reportWriteBlockOf,
   validateReportRow,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/report-rules.js';
 import { useProductionFloorStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/store.js';
 import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/store.js';
 
-// 情境目錄 9.19、9.20、9.22、10.46～10.50：報工前提、五個入口、已完成不能新增、照片必填與數值比較、整筆作廢重報。
+// 情境目錄 9.19、9.20、9.22、10.46～10.50、10.60：報工前提、五個入口、已完成不能新增、照片必填與數值比較、整筆作廢重報。
 // 期望值取自 openspec change production-dispatch-report-transfer-convergence production-execution delta
 // § 報工前提、§ 已完成任務不可新增報工、§ 報工、§ 報工權限守門、§ 報工修改、作廢與留痕 的 THEN；
 // 規則正本 wiki 報工規則、報工紀錄；情境卡 生產任務接收與派工、師傅報工與修改。
@@ -392,5 +393,45 @@ describe('10.50 整筆報到錯的任務作廢後重報', () => {
     });
     expect(taskById('pt-0815-2').input_qty).toBe(200);
     expect(taskById('pt-0815-2').history.length).toBe(printHistory + 1);
+  });
+});
+
+// 10.60 已作廢或報廢的任務不能新增報工（wiki 報工規則 § 報工前提第 3 項）。
+// 起點：鏈二 WO-2026-0710 的海報四色印刷 pt-0710-2（製作中、已有報工累計生產 2,000、良品 1,990、不良 10）。
+// mock 沒有初始就報廢或已作廢的現場任務，合成資料把它的狀態推到報廢（前置：印務周建宏在工單異動作廢這筆任務、
+// 生管許文傑確認，因已有報工轉報廢）。畫面五個入口的隱藏另見 e2e 10-report-transfer/scrap-void-no-report.spec.mjs。
+describe('10.60 已作廢或報廢的任務不能新增報工', () => {
+  const NEW_REPORT = {
+    input_qty: 100,
+    good_qty: 100,
+    defect_qty: 0,
+    photos: PHOTO,
+    channel: '生產管理頁面代報',
+    reporter: '許文傑',
+  };
+  const setStatus = (status) =>
+    useProductionFloorStore.setState({
+      tasks: floor().tasks.map((t) => (t.id === 'pt-0710-2' ? { ...t, status } : t)),
+    });
+
+  it('起點對照：製作中的海報四色印刷有報工入口，累計 2,000／1,990／10', () => {
+    const task = taskById('pt-0710-2');
+    expect(task.status).toBe('製作中');
+    expect(task.input_qty).toBe(2000);
+    expect(task.good_qty).toBe(1990);
+    expect(task.input_qty - task.good_qty).toBe(10);
+    expect(canReportTask(task, ctx())).toBe(true);
+    expect(reportWriteBlockOf(task)).toBeNull();
+  });
+
+  it.each(['報廢', '已作廢'])('任務「%s」：入口判定為不可報工、直接呼叫寫入被擋下且不寫入', (status) => {
+    setStatus(status);
+    const before = floor().workReports.length;
+    const task = taskById('pt-0710-2');
+    expect(canReportTask(task, ctx())).toBe(false);
+    expect(reportWriteBlockOf(task)).toBe(`狀態「${status}」的生產任務不能報工`);
+    expect(floor().submitWorkReport('pt-0710-2', NEW_REPORT)).toBeNull();
+    expect(floor().workReports.length).toBe(before);
+    expect(taskById('pt-0710-2')).toMatchObject({ status, input_qty: 2000, good_qty: 1990 });
   });
 });

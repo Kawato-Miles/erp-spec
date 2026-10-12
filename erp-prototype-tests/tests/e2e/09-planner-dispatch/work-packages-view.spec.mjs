@@ -4,21 +4,47 @@ import { gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 // 情境目錄第九章：生管在「工作包管理」頁（/production-floor/work-packages）看工作包主表與子表。
 // 起點資料：九筆工作包（WP-2026-0601-01/02、WP-2026-0710-01/02、WP-2026-0820-01～05）。
 
-test('9.3 一包一設備：派工由生管在工作包頁執行（原編號 15）', async ({ page }) => {
-  await openAs(page, '生管', '/production-floor/work-packages');
-  const pkg01Row = page.locator('tr', { hasText: 'WP-2026-0710-01' });
-  const pkg02Row = page.locator('tr', { hasText: 'WP-2026-0710-02' });
-  // 展開 WP-2026-0710-01：旗下任務全落在海德堡 SM102 四色機
-  await pkg01Row.getByLabel('展開行').click();
-  const subTable01 = pkg01Row.locator('xpath=following-sibling::tr[1]');
-  await expect(subTable01).toContainText('海德堡 SM102 四色機');
-  await expect(subTable01).not.toContainText('POLAR 137 裁切機');
+test('9.3 工作包是純分組、不設設備：生管合批不受計畫設備限制（原編號 15）', async ({ page }) => {
+  test.setTimeout(120_000);
+  // 起點資料：鏈外 WO-2026-0812 的證書裁切（POLAR 137 裁切機、手工產線）與三件配套裝袋（貼標工作站、裝訂產線），
+  // 兩筆已交付、已接收、未派工；生管許文傑所屬產線含手工與裝訂。期望值取自情境目錄 9.3 的裁決。
+  await openAs(page, '生管', '/production-floor/dispatch');
+  const search = page.getByPlaceholder(/工單編號/).first();
+  await search.fill('WO-2026-0812');
+  await search.press('Enter');
+  const cutRow = page.locator('tr.ant-table-row', { hasText: '證書裁切' }).first();
+  const bagRow = page.locator('tr.ant-table-row', { hasText: '三件配套裝袋' }).first();
+  await expect(cutRow).toContainText('POLAR 137 裁切機');
+  await expect(bagRow).toContainText('貼標工作站');
+  await expect(async () => {
+    for (const row of [cutRow, bagRow]) {
+      const box = row.locator('input[type="checkbox"]');
+      if (!(await box.isChecked())) await row.locator('.ant-checkbox').first().click();
+    }
+    await expect(cutRow.locator('input[type="checkbox"]')).toBeChecked({ timeout: 2000 });
+    await expect(bagRow.locator('input[type="checkbox"]')).toBeChecked({ timeout: 2000 });
+  }).toPass({ timeout: 15000 });
 
-  // 展開 WP-2026-0710-02：旗下任務落在 POLAR 137 裁切機（另一台設備、另一包）
-  await pkg02Row.getByLabel('展開行').click();
-  const subTable02 = pkg02Row.locator('xpath=following-sibling::tr[1]');
-  await expect(subTable02).toContainText('POLAR 137 裁切機');
-  await expect(subTable02).not.toContainText('海德堡 SM102 四色機');
+  // 兩筆計畫設備不同，系統不擋：照常打包並指派一名師傅
+  await page.getByRole('button', { name: /派工（2）/ }).click();
+  const packDialog = page.locator('.ant-modal-content').filter({ hasText: '派工內容' });
+  await packDialog.locator('.ant-form-item', { hasText: '指派師傅' }).locator('.ant-select').click();
+  await page.locator('.ant-select-dropdown:visible .ant-select-item-option', { hasText: '劉阿海' }).click();
+  await page.getByRole('button', { name: '確認派工' }).click();
+  const created = page.locator('.ant-message-notice', { hasText: /已建立工作包 WP-.*指派 劉阿海/ }).first();
+  await expect(created).toBeVisible();
+  const packageNo = (await created.textContent()).match(/WP-[\w-]+/)[0];
+
+  // 展開新工作包：主表沒有設備欄；包內子表列出兩筆任務各自的計畫設備
+  await gotoInApp(page, '/production-floor/work-packages');
+  await expect(page.getByRole('columnheader', { name: '設備' })).toHaveCount(0);
+  const pkgRow = page.locator('tr', { hasText: packageNo }).first();
+  await pkgRow.getByLabel('展開行').click();
+  const subTable = pkgRow.locator('xpath=following-sibling::tr[1]');
+  await expect(subTable).toContainText('證書裁切');
+  await expect(subTable).toContainText('POLAR 137 裁切機');
+  await expect(subTable).toContainText('三件配套裝袋');
+  await expect(subTable).toContainText('貼標工作站');
 });
 
 test('9.4 工作包主表四欄與現場進度（原編號 16）', async ({ page }) => {

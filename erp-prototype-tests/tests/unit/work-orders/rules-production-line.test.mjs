@@ -1,6 +1,6 @@
-// 情境目錄 7.38、7.39、8.17：生產任務的產線欄（帶入、必填、核可後可改）。
+// 情境目錄 7.38、7.39、8.17、8.19：生產任務的產線欄（帶入、必填、核可後可改）。
 // 畫面操作的驗收在 tests/e2e/07-process-planning/production-line.spec.mjs 與
-// tests/e2e/08-process-review-deliver/delivery-status.spec.mjs。
+// tests/e2e/08-process-review-deliver/delivery-status.spec.mjs（8.17、8.19）。
 //
 // 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的
 // work-order 規格差異檔 § 生產任務結構與帶入規則（Scenario 的 THEN）。
@@ -261,5 +261,54 @@ describe('8.17 製程核可後印務主管或工單負責人改產線，不必�
     const last = taskOf('WO-2026-0908', '名片雙面四色印刷').history.at(-1);
     expect(last.actor).toBe('周建宏');
     expect(last.changes).toEqual([{ field: '產線', before: '數位產線', after: '手工產線' }]);
+  });
+});
+
+describe('8.19 製程確認中只有工單負責人或編輯（代理）成員能改產線與目的站點，印務主管要等核可後', () => {
+  // 起點資料：鏈外 WO-2026-0907（製程確認中，負責印務蔡明修）的型錄四色雙面印刷（數位產線、品檢站）
+  const TASK = '型錄四色雙面印刷';
+
+  it('起點資料：WO-2026-0907 為製程確認中、負責印務蔡明修、審核者吳國豪，任務產線為數位產線、目的站點為品檢站', () => {
+    const wo = workOrderOf('WO-2026-0907');
+    expect(wo.status).toBe('製程確認中');
+    expect(wo.owner).toBe('蔡明修');
+    expect(wo.reviewer).toBe('吳國豪');
+    const task = taskOf('WO-2026-0907', TASK);
+    expect(task.production_line).toBe('數位產線');
+    expect(task.destination_station_key).toBe('品檢站');
+  });
+
+  it('印務主管吳國豪在製程確認中不可改產線與目的站點；負責印務蔡明修兩者都可改', () => {
+    const wo = workOrderOf('WO-2026-0907');
+    const task = taskOf('WO-2026-0907', TASK);
+    expect(permissions.canEditTaskProductionLine(wo, task, 'print_manager', '吳國豪')).toBe(false);
+    expect(permissions.canEditTaskDestination(wo, task, 'print_manager', '吳國豪')).toBe(false);
+    expect(permissions.canEditTaskProductionLine(wo, task, 'print_officer', '蔡明修')).toBe(true);
+    expect(permissions.canEditTaskDestination(wo, task, 'print_officer', '蔡明修')).toBe(true);
+    // 非負責、非編輯成員的印務同樣不可改
+    expect(permissions.canEditTaskProductionLine(wo, task, 'print_officer', '周建宏')).toBe(false);
+  });
+
+  it('蔡明修把產線改為裝訂產線：直接儲存、工單維持製程確認中，歷程記原值、新值、修改人與時間', () => {
+    const result = store().updateTaskProductionLine('wo-2026-0907', 'pt-0907-2', '裝訂產線', {
+      by: '蔡明修',
+    });
+    expect(result.ok).toBe(true);
+    expect(workOrderOf('WO-2026-0907').status).toBe('製程確認中');
+    const task = taskOf('WO-2026-0907', TASK);
+    expect(task.production_line).toBe('裝訂產線');
+    const last = task.history.at(-1);
+    expect(last.event).toBe('產線變更');
+    expect(last.actor).toBe('蔡明修');
+    expect(last.at).toBeTruthy();
+    expect(last.changes).toEqual([{ field: '產線', before: '數位產線', after: '裝訂產線' }]);
+  });
+
+  it('核可後（製程審核完成）印務主管才可改：WO-2026-0910 的吳國豪可改，與製程確認中對照', () => {
+    const wo = workOrderOf('WO-2026-0910');
+    expect(wo.status).toBe('製程審核完成');
+    expect(
+      permissions.canEditTaskProductionLine(wo, taskOf('WO-2026-0910', '貼紙四色數位印刷'), 'print_manager', '吳國豪'),
+    ).toBe(true);
   });
 });

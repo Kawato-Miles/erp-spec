@@ -216,3 +216,46 @@ test('8.18 加工廠任務交付後照常推導已交付、已接收', async ({ 
   // 對照：外包廠任務交付後仍顯示「－」（WO-2026-0906 的局部上光尚未交付，交付後的推導以純函式驗）
 });
 
+
+// 8.19（2026-10-12 新增）：製程確認中只有工單負責人或編輯（代理）成員能改產線與目的站點，印務主管要等核可後。
+// 起點：鏈外 WO-2026-0907（製程確認中，負責印務蔡明修）的型錄四色雙面印刷（數位產線、品檢站）。
+const lineAndDestinationFields = (page) => {
+  const form = page.locator('.ant-modal:visible').last();
+  return {
+    form,
+    line: form.locator('.ant-form-item').filter({ has: page.getByText('產線', { exact: true }) }).first().locator('.ant-select'),
+    destination: form.locator('.ant-form-item').filter({ has: page.getByText('目的站點', { exact: true }) }).first().locator('.ant-select'),
+  };
+};
+
+test('8.19 製程確認中印務主管吳國豪改不了產線與目的站點', async ({ page }) => {
+  await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0907');
+  await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0907' })).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(page.getByText('製程確認中', { exact: true }).first()).toBeVisible();
+  await expectCell(page, '型錄四色雙面印刷', '產線', '數位產線');
+
+  // 編輯入口只剩備註：沒有「編輯備註與目的站點」
+  await expect(page.getByRole('button', { name: '編輯備註與目的站點' })).toHaveCount(0);
+  await taskRows(page).filter({ hasText: '型錄四色雙面印刷' }).getByRole('button', { name: /編輯/ }).first().click({ timeout: 20_000 });
+  const { form, line, destination } = lineAndDestinationFields(page);
+  await expect(form).toBeVisible();
+  await expect(line).toHaveClass(/ant-select-disabled/);
+  await expect(destination).toHaveClass(/ant-select-disabled/);
+});
+
+// 目錄情境的後半（切成負責印務蔡明修改產線）無法在畫面上演：模擬角色切換器的印務只有周建宏，
+// 沒有蔡明修，所以這一半只在純函式測試驗（tests/unit/work-orders/rules-production-line.test.mjs 的 8.19）。
+// 這裡只驗對照組：非負責印務（周建宏）打開同一張單，同樣改不了產線。
+test('8.19 製程確認中非負責印務（周建宏）同樣改不了產線與目的站點', async ({ page }) => {
+  await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0907');
+  await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0907' })).toBeVisible({
+    timeout: 20_000,
+  });
+  await taskRows(page).filter({ hasText: '型錄四色雙面印刷' }).getByRole('button', { name: /編輯/ }).first().click({ timeout: 20_000 });
+  const { form, line, destination } = lineAndDestinationFields(page);
+  await expect(form).toBeVisible();
+  await expect(line).toHaveClass(/ant-select-disabled/);
+  await expect(destination).toHaveClass(/ant-select-disabled/);
+});
