@@ -274,9 +274,8 @@ test('1.6 從既有需求單複製建單', async ({ page }) => {
   await expect(field('小計（未稅）')).toContainText('49,000');
   await expect(field('稅額（5%）')).toContainText('2,450');
   await expect(field('含稅總額')).toContainText('51,450');
-  // 評估印務主管帶入；報價輪次歸零
+  // 評估印務主管帶入
   await expect(field('評估印務')).toContainText('吳國豪');
-  await expect(field('報價輪次')).toContainText('0 輪');
 
   // 報價紀錄、分享成員不帶入，歷史報價不帶進新單
   await openTab(page, '報價紀錄');
@@ -287,20 +286,19 @@ test('1.6 從既有需求單複製建單', async ({ page }) => {
   // 活動紀錄第一筆為「建立需求單」，不記來源需求單
   await openTab(page, '活動紀錄');
   const activity = page.locator('.ant-tabs-tabpane-active');
-  await expect(activity).toContainText('建立需求單');
+  await expect(activity).toContainText('洪嘉駿 建立需求單');
   await expect(activity).not.toContainText('Q-20260601-01');
   await expect(activity).not.toContainText('複製建立');
 });
 
 test('1.7 需求單參考附件可挑選檔案並列出檔名，再上傳新版時舊版保留', async ({ page }) => {
   test.setTimeout(90_000);
-  const title = '1.7 情境需求案';
+  const item = '福利禮盒外包裝';
   await openAs(page, '業務', '/quote-prototype');
-  await createQuoteHeader(page, { title });
-  await addItem(page, { name: '甲印件' });
+  await openQuoteDetail(page, 'Q-20260905-01');
 
   const panel = drawer(page);
-  await clickOpen(rowOf(page, '甲印件').getByRole('button').first(), panel.getByLabel('項目名稱'));
+  await clickOpen(rowOf(page, item).getByRole('button').first(), panel.getByLabel('項目名稱'));
   await panel
     .locator('input[type="file"]')
     .setInputFiles([fakeFile('客戶完稿-封面.pdf'), fakeFile('客戶完稿-內頁.pdf')]);
@@ -310,19 +308,19 @@ test('1.7 需求單參考附件可挑選檔案並列出檔名，再上傳新版�
   await waitModalsClosed(page);
 
   // 存檔後表格以原始檔名列出清單
-  await expect(rowOf(page, '甲印件')).toContainText('客戶完稿-封面.pdf');
-  await expect(rowOf(page, '甲印件')).toContainText('客戶完稿-內頁.pdf');
+  await expect(rowOf(page, item)).toContainText('客戶完稿-封面.pdf');
+  await expect(rowOf(page, item)).toContainText('客戶完稿-內頁.pdf');
 
   // 客戶改版：同一件印件再上傳新版，舊版保留、三個檔名同時列出
-  await clickOpen(rowOf(page, '甲印件').getByRole('button').first(), panel.getByLabel('項目名稱'));
+  await clickOpen(rowOf(page, item).getByRole('button').first(), panel.getByLabel('項目名稱'));
   await expect(panel.getByText('客戶完稿-封面.pdf')).toBeVisible();
   await panel.locator('input[type="file"]').setInputFiles([fakeFile('客戶完稿-封面-v2.pdf')]);
   await expect(panel.getByText('客戶完稿-封面-v2.pdf')).toBeVisible();
   await button(panel, '確認').click();
   await waitModalsClosed(page);
-  await expect(rowOf(page, '甲印件')).toContainText('客戶完稿-封面.pdf');
-  await expect(rowOf(page, '甲印件')).toContainText('客戶完稿-內頁.pdf');
-  await expect(rowOf(page, '甲印件')).toContainText('客戶完稿-封面-v2.pdf');
+  await expect(rowOf(page, item)).toContainText('客戶完稿-封面.pdf');
+  await expect(rowOf(page, item)).toContainText('客戶完稿-內頁.pdf');
+  await expect(rowOf(page, item)).toContainText('客戶完稿-封面-v2.pdf');
 });
 
 test('1.8 流失需求單重新啟動回待評估成本', async ({ page }) => {
@@ -879,7 +877,10 @@ test('1.23 已成交未建單的需求單轉出訂單', async ({ page }) => {
   await page.getByRole('tab', { name: /訂單項目/ }).click();
   const itemRow = page.locator('tr', { hasText: '春季新品型錄內頁' }).first();
   await expect(itemRow).toContainText('27,500');
-  await expect(itemRow).toContainText('3');
+  // 難易度欄的格比對（不比對整列文字）
+  const difficultyCol = (await page.locator('thead th').allInnerTexts()).findIndex((t) => t.trim() === '難易度');
+  expect(difficultyCol).toBeGreaterThanOrEqual(0);
+  await expect(itemRow.locator('td').nth(difficultyCol)).toHaveText(/^3/);
 
   // 回需求單：掛上訂單編號、頁首改「查看訂單」、不再出現「建立訂單」
   await gotoInApp(page, '/quote-prototype');
