@@ -1,6 +1,6 @@
 // 第十一章（品檢）與第十二章（出貨與送達）共用的前置鏈與版面工具。
 //
-// 待驗清單只看製作事實：待驗量＝做出來的良品 − 已驗量（通過與不通過的代數和），不看轉交、不看點收。
+// 待驗清單只看製作事實：待驗量＝做出來的良品 − 已驗量（各筆修正後的通過與不通過加總），不看轉交、不看點收。
 // 鏈四 PI-2026-0820 的精裝裝訂已報工良品 500、不良品 0，因此起點即有待驗量 500——品檢的前置不再
 // 需要建轉交單、搬運與點收。轉交那一段只有第十章與 11.8（驗「轉交不改變待驗量」）才推。
 //
@@ -123,9 +123,29 @@ export const expandedRecords = (page, printItemNo = CHAIN4.printItemNo) =>
 export const inspectDialog = (page) =>
   page.locator('.ant-modal-content').filter({ hasText: '驗收：' }).first();
 
-// 補更正紀錄對話框
+// 修正品檢紀錄對話框
 export const correctDialog = (page) =>
-  page.locator('.ant-modal-content').filter({ hasText: '補更正紀錄：' }).first();
+  page.locator('.ant-modal-content').filter({ hasText: '修正品檢紀錄：' }).first();
+
+// 修正品檢缺口處置對話框（印件詳情品檢頁籤，印務與印務主管）
+export const dispositionCorrectDialog = (page) =>
+  page.locator('.ant-modal-content').filter({ hasText: '修正處置：' }).first();
+
+/**
+ * 品檢站：展開某件印件、對最新一筆品檢紀錄按修正，回修正對話框。呼叫前角色須為品檢人員且已在品檢站。
+ */
+export async function openCorrectDialog(page, printItemNo = CHAIN4.printItemNo) {
+  const row = pendingRow(page, printItemNo);
+  const expander = row.getByLabel('展開行');
+  if ((await expander.getAttribute('aria-expanded')) !== 'true') await expander.click();
+  await expandedRecords(page, printItemNo)
+    .getByRole('button', { name: '修正', exact: true })
+    .first()
+    .click();
+  const dialog = correctDialog(page);
+  await expect(dialog).toBeVisible();
+  return dialog;
+}
 
 /**
  * 選不通過原因。選項清單為虛擬捲動的分組清單，對話框變高時下拉會開在視窗外緣、

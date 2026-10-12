@@ -248,7 +248,7 @@ test('10.34 報工修正三欄可改、原因必填、留修改紀錄、調升�
   await expect(noticeOf(page, /修正原因/)).toBeVisible();
 
   // 填原因（自由填寫）後送出成立
-  await formItemOf(dialog, '修正原因').locator('input, textarea').first().fill('現場清點後更正');
+  await formItemOf(dialog, '修正原因').locator('input, textarea').first().fill('現場清點後修正');
   await confirmDialog(dialog);
   await expect(row).toContainText('480');
 
@@ -281,7 +281,7 @@ test('10.35 報工修正與作廢共用擋下條件：在途與已點收量、�
   await expect(blocked).toContainText('先作廢尚未送達的單');
   await expect(blocked).toContainText('TT-20260830-002');
   await expect(blocked).toContainText('先照實點收');
-  // 不再帶人工程序與人工註記（改走逐層更正，見 10.56）
+  // 不再帶人工程序與人工註記（改走逐層修正，見 10.56）
   await expect(blocked).not.toContainText('人工註記');
   await expect(blocked).not.toContainText('工單異動加開');
   await page.keyboard.press('Escape');

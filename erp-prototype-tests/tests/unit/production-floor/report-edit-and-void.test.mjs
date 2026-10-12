@@ -7,7 +7,7 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 // 情境目錄 10.34～10.37：報工修正、修正與作廢共用擋下條件、已完成任務的修正與作廢、報廢任務的報工修正。
 // 期望值取自 openspec change production-dispatch-report-transfer-convergence
 // production-execution delta § 報工修正、作廢與留痕、§ 已完成任務不可新增報工、§ 生產任務狀態轉換 的 THEN。
-// 2026-10-06 改版：拿掉人工程序與人工註記提示（擋下只指出卡在哪一筆，之後走逐層更正，見 10.56）；
+// 2026-10-06 改版：拿掉人工程序與人工註記提示（擋下只指出卡在哪一筆，之後走逐層修正，見 10.56）；
 // 已完成任務可作廢報工、不能新增報工；修正原因自由填寫，不驗固定字樣。
 //
 // 本檔先於實作撰寫（tasks 2.6），報工修正的契約由 task 6.4 補上：
@@ -110,7 +110,7 @@ describe('10.34 報工修正三欄可改、原因必填、留修改紀錄、調�
   it('良品改為 480 成立（不低於已點收 480、不低於已驗量 0），留修改紀錄並記入任務歷程', () => {
     const result = floor().editWorkReport('wr-0018', {
       good_qty: 480,
-      reason: '現場清點後更正',
+      reason: '現場清點後修正',
       by: '周建宏',
     });
     expect(result.ok).toBe(true);
@@ -125,7 +125,7 @@ describe('10.34 報工修正三欄可改、原因必填、留修改紀錄、調�
       before: 500,
       after: 480,
       edited_by: '周建宏',
-      reason: '現場清點後更正',
+      reason: '現場清點後修正',
     });
     expect(report.edit_logs[0].edited_at).toBeTruthy();
 
@@ -133,14 +133,14 @@ describe('10.34 報工修正三欄可改、原因必填、留修改紀錄、調�
     expect(task.good_qty).toBe(480);
     const last = task.history.at(-1);
     // 歷程每筆比照報工紀錄列格式：事件一句、前後值逐欄列出（Miles 2026-10-06 拍板）
-    expect(last.event).toContain('報工修正（現場清點後更正）');
+    expect(last.event).toContain('報工修正（現場清點後修正）');
     expect(last.changes).toContainEqual({ field: '良品數', before: 500, after: 480 });
     expect(last.ref).toBe('wr-0018');
     expect(last.actor).toBe('周建宏');
   });
 
   it('改回 500 屬調升、不被擋，修改紀錄再新增一筆', () => {
-    floor().editWorkReport('wr-0018', { good_qty: 480, reason: '現場清點後更正', by: '周建宏' });
+    floor().editWorkReport('wr-0018', { good_qty: 480, reason: '現場清點後修正', by: '周建宏' });
     const result = floor().editWorkReport('wr-0018', {
       good_qty: 500,
       reason: '貨已找回',
@@ -158,7 +158,7 @@ describe('10.34 報工修正三欄可改、原因必填、留修改紀錄、調�
       good_qty: 480,
       reporter: '別人',
       defect_reason: '其他',
-      reason: '現場清點後更正',
+      reason: '現場清點後修正',
       by: '周建宏',
     });
     const report = reportById('wr-0018');
@@ -215,7 +215,7 @@ describe('10.35 報工修正與作廢共用擋下條件：在途與已點收量�
     expect(result.error).toContain('先作廢尚未送達的單');
     expect(result.error).toContain('TT-20260830-002');
     expect(result.error).toContain('先照實點收');
-    // 擋下只指出卡在哪一筆，不再帶人工程序與人工註記（之後由下往上逐層更正，見 10.56）
+    // 擋下只指出卡在哪一筆，不再帶人工程序與人工註記（之後由下往上逐層修正，見 10.56）
     expect(result.error).not.toContain('人工註記');
     expect(result.error).not.toContain('工單異動加開');
     expect(reportById('wr-0006').good_qty).toBe(1000);
@@ -363,7 +363,7 @@ describe('10.36 已完成任務可修正與作廢報工；跌破目標退回製�
     expect(voided.ok).toBe(false);
     expect(voided.error).toContain('TT-20260827-001');
     expect(voided.error).not.toContain('已完成');
-    const edited = floor().editWorkReport('wr-0018', { good_qty: 480, defect_qty: 35, reason: '現場清點後更正', by: '周建宏' });
+    const edited = floor().editWorkReport('wr-0018', { good_qty: 480, defect_qty: 35, reason: '現場清點後修正', by: '周建宏' });
     expect(edited.ok).toBe(true);
   });
 

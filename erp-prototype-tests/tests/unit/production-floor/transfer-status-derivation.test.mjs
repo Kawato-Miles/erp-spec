@@ -7,7 +7,7 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 // 情境目錄 10.32、10.33、10.39：生產任務轉交狀態推導。
 // 狀態列舉與推導條件正本：wiki 生產任務轉交狀態；數量算式正本：wiki 生產任務 § 數量。
 // 期望值取自 openspec change production-dispatch-report-transfer-convergence
-// production-execution delta § 生產任務轉交狀態推導、§ 轉交單改單與更正 各 Scenario 的 THEN。
+// production-execution delta § 生產任務轉交狀態推導、§ 轉交單改單與修正 各 Scenario 的 THEN。
 //
 // 本檔先於實作撰寫（tasks 2.6、2.14），下列純函式與動作由 tasks 6.2、6.4、6.5、6.6 依此契約補上：
 //   transfer-rules.deriveTransferStatus(task, tickets)
@@ -18,7 +18,7 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 //   store.editWorkReport(reportId, { input_qty?, good_qty?, defect_qty?, reason, by })
 //   store.receiveTransfer(ticketId, { by, quantities })      點收單一動作，已點收的單再點收一筆也走這一支
 //   store.editTransferQty(ticketId, { taskId, qty, reason, by })
-//     搬運數量修正（新契約，等 tasks 5.6 實作）：開始搬運後只能經這一支更正；修正原因必填；
+//     搬運數量修正（新契約，等 tasks 5.6 實作）：開始搬運後只能經這一支修正；修正原因必填；
 //     改後大於 0、不得低於該明細的點收數量；調升受轉交可申請上限管制（先還回本單原佔用）；
 //     每次記一筆搬運數量修正並寫入轉交單歷程；不改單頭狀態。
 // 搬運量沿用既有 calcOccupiedQty，轉交可申請上限沿用既有 calcMovableQty。

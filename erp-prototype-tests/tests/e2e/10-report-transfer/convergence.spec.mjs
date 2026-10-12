@@ -21,7 +21,7 @@ import {
 // 情境目錄 10.46、10.48、10.49、10.51～10.53、10.55、10.58（2026-10-06 新增）的畫面段。
 // 10.47、10.50、10.54、10.56、10.57 只以純函式驗（tests/unit/production-floor/），見情境目錄各節。
 // 期望值取自 openspec change production-dispatch-report-transfer-convergence production-execution delta 的 THEN；
-// 依據為 wiki 師傅報工與修改、場內轉交與更正、生產數量錯誤的逐層更正、生產管理單元可見範圍。
+// 依據為 wiki 師傅報工與修改、場內轉交與修正、生產數量錯誤的逐層修正、生產管理單元可見範圍。
 // 修改原因與作廢原因一律自由填寫，測試不驗固定字樣。
 
 // 報工對話框的一列：填數量並附照片後送出
@@ -227,7 +227,7 @@ test('10.53 點收前（待搬運、搬運中、已送達）可作廢、原因�
   await expect(page.locator('tr', { hasText: '海報四色印刷' })).toContainText('1,190');
 });
 
-test('10.55 搬運數量修正更正：大於 0 且不得低於點收數量、原因必填、留紀錄', async ({ page }) => {
+test('10.55 搬運數量修正：大於 0 且不得低於點收數量、原因必填、留紀錄', async ({ page }) => {
   test.setTimeout(120_000);
   // 鏈外 TT-20260827-001（已點收；搬運數量 500、點收 480）
   await openAs(page, '生管', '/production-floor/transfers');

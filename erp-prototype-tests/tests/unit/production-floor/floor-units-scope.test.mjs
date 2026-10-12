@@ -20,7 +20,7 @@ import {
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/unit-scope.js';
 
 // 情境目錄 14.28「生產管理權限分產線與負責兩種範圍」的判定驗算（畫面另在 e2e 14.10、14.28 驗）。
-// 規則正本：Miles 2026-10-06 第三輪拍板（單元拆分與權限更正版）；角色預設權限表在 permissions.ROLE_FLOOR_PERMISSIONS。
+// 規則正本：Miles 2026-10-06 第三輪拍板（單元拆分與權限修正版）；角色預設權限表在 permissions.ROLE_FLOOR_PERMISSIONS。
 
 const labelsOf = (role) => floorUnitsOf(role).map((u) => u.label);
 const LINE_UNITS = ['所有生產任務', '所有工作包', '待轉交任務', '所有轉交單', '點收佇列'];
@@ -112,7 +112,7 @@ describe('14.28 兩種範圍的判定', () => {
   });
 });
 
-// 10.10 拿掉人工註記（Miles 2026-10-06 拍板）：報工與轉交單都不再提供人工註記，改不動的數字走逐層更正。
+// 10.10 拿掉人工註記（Miles 2026-10-06 拍板）：報工與轉交單都不再提供人工註記，改不動的數字走逐層修正。
 describe('10.10 不設人工註記', () => {
   it('權限表沒有新增人工註記這一支', () => {
     expect(permissions.canAddManualNote).toBeUndefined();

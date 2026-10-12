@@ -7,7 +7,7 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 // 情境目錄 10.17（純函式段）、10.26～10.31、10.38：轉交單逐條上傳簽收照片、點收單一動作、
 // 再點收一筆、點收修正、到料量取點收量、點收前可作廢、作廢重開重走搬運。
 // 期望值取自 openspec change production-dispatch-report-transfer-convergence
-// production-execution delta § 場內轉交、§ 點收紀錄的修正與作廢、§ 轉交單改單與更正、
+// production-execution delta § 場內轉交、§ 點收紀錄的修正與作廢、§ 轉交單改單與修正、
 // § 生產任務與轉交單歷程紀錄 的 THEN。
 //
 // 2026-10-06 拍板（T1～T3、Q25、Q27）：點收只有一個動作，每次點收對各條明細新增一筆點收紀錄、
@@ -558,7 +558,7 @@ describe('10.17（純函式）來源任務報廢或作廢時，擋下點收、�
     const qtyEdit = floor().editTransferQty('tt-004', {
       taskId: 'pt-0710-1',
       qty: 3000,
-      reason: '搬運數量更正',
+      reason: '搬運數量修正',
       by: '許文傑',
     });
     expect(qtyEdit.ok).toBe(false);

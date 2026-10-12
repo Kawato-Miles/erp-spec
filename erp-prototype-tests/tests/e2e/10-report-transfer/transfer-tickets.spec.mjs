@@ -22,7 +22,7 @@ import {
 
 // 情境目錄第十章：轉交單單元（所有轉交單 /production-floor/transfers、我的轉交單 /transfers/mine）。
 // 2026-10-06 改版：單頭記目的產線、明細記目的站點（站點為假資料，待 PT-067）；點收單一動作；點收前可作廢、原因為文字；
-// 開始搬運後搬運數量經修改更正；不設人工註記。
+// 開始搬運後搬運數量經搬運數量修正；不設人工註記。
 
 test('10.3 轉交單子母表、五個狀態與明細（原編號 23）', async ({ page }) => {
   await openAs(page, '生管', '/production-floor/transfers');
@@ -128,7 +128,7 @@ test('10.3 轉交單子母表、五個狀態與明細（原編號 23）', async 
   await expect(detailRowOf(sample, '信封四色印刷').locator('td').filter({ hasText: /^－$/ })).toHaveCount(1);
 });
 
-test('10.6 待搬運的轉交單可改，開始搬運後明細鎖定、搬運數量只能經修改更正（原編號 91）', async ({ page }) => {
+test('10.6 待搬運的轉交單可改，開始搬運後明細鎖定、搬運數量只能經搬運數量修正（原編號 91）', async ({ page }) => {
   test.setTimeout(150_000);
   // 前置：生管點收 TT-20260830-002、代報「裁切成型」的工（良品累計 1,180，可搬量 1,180）
   await openAs(page, '生管', '/production-floor/receiving');

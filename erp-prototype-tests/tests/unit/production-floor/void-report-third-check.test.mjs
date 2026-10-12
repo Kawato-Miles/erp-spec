@@ -102,13 +102,13 @@ describe('10.20 已被品檢驗過的良品不可作廢報工，也不可調降�
     expect(result.ok).toBe(false);
     // 修正與作廢共用同一句訊息（情境目錄 10.20）：只驗規格要求的已驗量與下一步
     expect(result.error).toContain('該印件已驗收 500 件');
-    expect(result.error).toContain('請先請品檢人員補更正紀錄');
+    expect(result.error).toContain('請先請品檢人員修正品檢紀錄');
     // 擋下就是整筆不寫：報工紀錄與任務累計都留在原樣
     expect(reportStatus()).toBe('已送出');
     expect(taskGoodQty()).toBe(500);
   });
 
-  it('已驗量取通過與不通過的代數和，不只看通過那一本', () => {
+  it('已驗量取各筆修正後的通過與不通過加總，不只看通過那一本', () => {
     seed([qcRecordOf(480, 20, '2026-09-18 10:00')]);
     const result = voidIt();
     expect(result.ok).toBe(false);
@@ -124,13 +124,14 @@ describe('10.20 已被品檢驗過的良品不可作廢報工，也不可調降�
     });
     expect(result.ok).toBe(false);
     expect(result.error).toContain('該印件已驗收 500 件');
-    expect(result.error).toContain('請先請品檢人員補更正紀錄');
+    expect(result.error).toContain('請先請品檢人員修正品檢紀錄');
     expect(useProductionFloorStore.getState().workReports[0].good_qty).toBe(500);
     expect(taskGoodQty()).toBe(500);
   });
 
-  it('品檢人員補一筆通過 −500 的更正紀錄後，同一筆報工作廢成立', () => {
-    seed([qcRecordOf(500, 0, '2026-09-18 10:00'), qcRecordOf(-500, 0, '2026-09-18 11:00')]);
+  it('品檢人員把那筆品檢紀錄修正為通過 0 後，同一筆報工作廢成立', () => {
+    // 修正後原紀錄就地改值（通過 500 改為 0），累計取修正後的值，不再有負數紀錄
+    seed([qcRecordOf(0, 0, '2026-09-18 10:00')]);
     const result = voidIt();
     expect(result.ok).toBe(true);
     expect(reportStatus()).toBe('已作廢');

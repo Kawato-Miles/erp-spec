@@ -149,7 +149,7 @@ export async function voidTicket(page, row, reason) {
 }
 
 /**
- * 對某條明細按「搬運數量修正」（開始搬運之後的更正，2026-10-06 拍板 Q22），填改後的搬運數量與修改原因。
+ * 對某條明細按「搬運數量修正」（開始搬運之後的修正，2026-10-06 拍板 Q22），填改後的搬運數量與修改原因。
  * @param subRow 轉交單子層明細列（ticketDetailSubRow 取得）
  */
 export async function editMoveQty(page, subRow, { qty, reason }) {

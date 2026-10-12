@@ -8,13 +8,13 @@ import {
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/transfer-rules.js';
 import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/store.js';
 
-// 情境目錄 10.56「逐層更正主流程：五色印刷良品 500 改 480 的四層接力」、
-// 10.57「逐層更正副流程：上游已完成或還在做、貨在途、整筆遺失、工單已完成」。
-// 依據：wiki 生產數量錯誤的逐層更正 主流程第 0～4 步與副流程；
+// 情境目錄 10.56「逐層修正主流程：五色印刷良品 500 改 480 的四層接力」、
+// 10.57「逐層修正副流程：上游已完成或還在做、貨在途、整筆遺失、工單已完成」。
+// 依據：wiki 生產數量錯誤的逐層修正 主流程第 0～4 步與副流程；
 // 期望值取自 openspec change production-dispatch-report-transfer-convergence production-execution delta
-// § 生產數量錯誤的逐層更正、§ 報工修正、作廢與留痕、§ 點收紀錄的修正與作廢、§ 轉交單改單與更正 的 THEN。
+// § 生產數量錯誤的逐層修正、§ 報工修正、作廢與留痕、§ 點收紀錄的修正與作廢、§ 轉交單改單與修正 的 THEN。
 //
-// 起點以鏈三 WO-2026-0815 推到 wiki 例子的處境（MOCK-DATA-CHAIN § 逐層更正與點收紀錄作廢的情境樣本：
+// 起點以鏈三 WO-2026-0815 推到 wiki 例子的處境（MOCK-DATA-CHAIN § 逐層修正與點收紀錄作廢的情境樣本：
 // 鏈三的 mock 起點不動，本檔在前置把報工與 TT-20260901-001 寫進記憶體）：
 //   五色印刷（pt-0815-2）報工 500／500／0；TT-20260901-001 搬運數量 500、目的產線裝訂產線、
 //   目的站點後加工站、點收 500；軋盒成型（pt-0815-3）陳金水報工 500／500／0。
@@ -127,7 +127,7 @@ const editReceipt = () =>
 const editMoveQty = () =>
   floor().editTransferQty('tt-test-0901-1', { taskId: PRINT, qty: 480, reason: '實際只搬了 480', by: '周建宏' });
 
-describe('10.56 逐層更正主流程：五色印刷良品 500 改 480 的四層接力', () => {
+describe('10.56 逐層修正主流程：五色印刷良品 500 改 480 的四層接力', () => {
   beforeEach(() => seedExample());
 
   it('第 0 步：印務直接改上游報工被擋下，指出卡在 TT-20260901-001 的點收 500；數字不改，也不自動改點收與下游報工', () => {
@@ -184,7 +184,7 @@ describe('10.56 逐層更正主流程：五色印刷良品 500 改 480 的四層
   });
 });
 
-describe('10.57 逐層更正副流程', () => {
+describe('10.57 逐層修正副流程', () => {
   const runFourSteps = () => {
     expect(editBox().ok).toBe(true);
     expect(editReceipt().ok).toBe(true);
