@@ -99,12 +99,12 @@ test('4.19 可刪到零件、差額提示不擋刪除、出貨單草稿自動移
   // 前置：在出貨單頁籤存一張出貨單草稿，預計出貨印件含名片與貼紙（移除預設帶入的 DM）
   await page.getByRole('tab', { name: /出貨/ }).first().click();
   await page.getByRole('button', { name: '建立出貨單草稿' }).click();
-  const panel = drawer(page);
+  // 出貨單改為對話框：單頭固定在上方，下方是出貨明細與歷程頁籤（新建時只有出貨明細）
+  const panel = page.locator('.ant-modal-content:visible').last();
   await expect(panel).toBeVisible();
   await panel.getByRole('tab', { name: /出貨明細/ }).click();
   await panel.getByRole('row', { name: /PI-2026-0842/ }).getByRole('button', { name: '自本張出貨單移除' }).click();
   await expect(panel.getByRole('row', { name: /PI-2026-0842/ })).toHaveCount(0);
-  await panel.getByRole('tab', { name: '基本資訊' }).click();
   await pickDate(panel.locator('#planned_ship_date'), '2026-10-30');
   await panel.getByRole('button', { name: '儲存草稿' }).click();
   await expect(page.getByText(/出貨單草稿已建立/).first()).toBeVisible();

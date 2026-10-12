@@ -236,8 +236,10 @@ export async function setupArrivedAtQc(page) {
 
 // ── 第十二章共用：出貨單 ──
 
-// 出貨單側板（建單、單頭與明細編輯、檢視共用同一顆；狀態推進改在列上動作鈕開的對話框）
-export const shipmentPanel = (page) => page.locator('.ant-drawer-content:visible').first();
+// 出貨單對話框（建單、單頭與明細編輯、檢視共用同一顆，比照工單新增生產任務對話框；
+// 上方固定單頭、下方分出貨明細與歷程兩個頁籤）。狀態推進在列上動作鈕開的另一種對話框裡，
+// 兩種對話框不會同時開著，所以共用同一個定位器
+export const shipmentPanel = (page) => page.locator('.ant-modal-content:visible').last();
 
 // 列上動作鈕開出來的對話框（共用 PanelDialog，最後一顆可見的 Modal）
 export const actionDialog = (page) => page.locator('.ant-modal-content:visible').last();
@@ -245,18 +247,18 @@ export const actionDialog = (page) => page.locator('.ant-modal-content:visible')
 // 列上動作鈕開出來的確認框（antd modal.confirm）
 export const confirmBox = (page) => page.locator('.ant-modal-confirm:visible').last();
 
-// 建單側板與既有單的側板是同一顆，兩個別名保留給讀得出意圖的呼叫端
+// 建單對話框與既有單的對話框是同一顆，兩個別名保留給讀得出意圖的呼叫端
 export const createShipmentDialog = shipmentPanel;
 export const draftShipmentDialog = shipmentPanel;
 
-/** 列上的「檢視」圖示鈕：開這張單的唯讀側板 */
+/** 列上的「檢視」圖示鈕：開這張單的唯讀對話框 */
 export async function openShipmentPanel(page, keyword) {
   await shipmentRow(page, keyword).getByRole('button', { name: '檢視' }).click();
   await expect(shipmentPanel(page)).toBeVisible();
   return shipmentPanel(page);
 }
 
-/** 列上的「編輯」圖示鈕：開這張單的編輯模式側板（只有建單人看得到這顆鈕） */
+/** 列上的「編輯」圖示鈕：開這張單的編輯模式對話框（只有建單人看得到這顆鈕） */
 export async function openShipmentEdit(page, keyword) {
   await shipmentRow(page, keyword).getByRole('button', { name: '編輯' }).click();
   await expect(shipmentPanel(page)).toBeVisible();
@@ -291,9 +293,9 @@ export async function gotoShipmentList(page) {
 }
 
 /**
- * 從訂單詳情的「出貨單」頁籤打開建單側板（出貨單只能從這裡建，出貨管理列表沒有新增入口）。
- * 側板鎖定這張訂單，不提供選訂單的下拉。呼叫前須已切為該訂單的建單人（接單業務或編輯（代理）成員）。
- * @returns {Promise<import('@playwright/test').Locator>} 建單側板
+ * 從訂單詳情的「出貨單」頁籤打開建單對話框（出貨單只能從這裡建，出貨管理列表沒有新增入口）。
+ * 對話框鎖定這張訂單，不提供選訂單的下拉。呼叫前須已切為該訂單的建單人（接單業務或編輯（代理）成員）。
+ * @returns {Promise<import('@playwright/test').Locator>} 建單對話框
  */
 export async function openCreateShipmentFromOrder(page, orderNo = CHAIN4.orderNo) {
   await gotoInAppSafe(page, '/orders');
@@ -305,7 +307,7 @@ export async function openCreateShipmentFromOrder(page, orderNo = CHAIN4.orderNo
   return dialog;
 }
 
-/** 建單側板：填預計出貨日（直接打字再按 Enter，避免日期面板互動不穩定） */
+/** 建單對話框：填預計出貨日（直接打字再按 Enter，避免日期面板互動不穩定） */
 export async function fillPlannedShipDate(dialog, date = '2026-09-10') {
   const input = dialog.locator('#planned_ship_date');
   await input.click();
@@ -313,7 +315,7 @@ export async function fillPlannedShipDate(dialog, date = '2026-09-10') {
   await input.press('Enter');
 }
 
-/** 建單側板：選出貨方式（六值一欄） */
+/** 建單對話框：選出貨方式（六值一欄） */
 export async function pickShippingMethod(page, dialog, method) {
   await dialog.locator('#method').click({ force: true });
   await expect(async () => {
@@ -327,7 +329,7 @@ export async function pickShippingMethod(page, dialog, method) {
   }).toPass({ timeout: 15000 });
 }
 
-/** 建單側板：到出貨明細頁籤把某件印件的數量填成指定值 */
+/** 建單對話框：到出貨明細頁籤把某件印件的數量填成指定值 */
 export async function fillItemQty(dialog, qty, printItemNo = CHAIN4.printItemNo) {
   await dialog.getByRole('tab', { name: /出貨明細/ }).click();
   await dialog
@@ -338,7 +340,7 @@ export async function fillItemQty(dialog, qty, printItemNo = CHAIN4.printItemNo)
 
 /**
  * 業務建一張已成立的出貨單（呼叫前須已切為業務）。
- * 從訂單詳情的出貨單頁籤開側板 → 填單頭 → 填出貨印件數量 → 按「建立出貨單」，
+ * 從訂單詳情的出貨單頁籤開對話框 → 填單頭 → 填出貨印件數量 → 按「建立出貨單」，
  * 完成後回到出貨管理頁（呼叫端接著在列表上操作）。
  * 這一顆按鈕在新建入口沒有直達未處理的路——系統先落一張草稿、同一個動作立刻把它推成未處理，
  * 所以列表只會多一張單（見情境 12.2）。
@@ -378,22 +380,8 @@ export async function createDraftShipment(
   return newestShipmentNo(page);
 }
 
-/**
- * 揀貨人員把一張未處理的出貨單走到待出貨（開始揀貨 → 裝箱回報）。
- * @param {{ actualQty: number, boxes?: number, perBoxQty?: number }} options
- */
-export async function pickAndPack(page, shipmentNo, { actualQty, boxes = 10, perBoxQty = 50 }) {
-  // 兩步都在列上：「開始揀貨」彈確認框 → 「裝箱回報」開對話框填該步要填的欄位
-  await shipmentRow(page, shipmentNo).getByRole('button', { name: '開始揀貨' }).click();
-  await confirmBox(page).getByRole('button', { name: '開始揀貨' }).click();
-  await expect(page.getByText(/已開始揀貨/).first()).toBeVisible();
-  const dialog = await clickRowAction(page, shipmentNo, '裝箱回報');
-  await dialog.getByLabel(/實際裝箱數量/).fill(String(actualQty));
-  // 「箱數」非 exact 比對時會命中「實際裝箱數量」（子字串含「箱數」），須精確比對
-  await dialog.getByLabel('箱數', { exact: true }).fill(String(boxes));
-  await dialog.getByLabel(/每箱幾個/).fill(String(perBoxQty));
-  // AntD 舊的下拉選單即使關閉仍留在 DOM（只是隱藏），選項清單須限定在當前可見的那個下拉；
-  // 點開後選項沒出現就再點一次（伺服器忙碌時第一次點擊偶爾落空）
+/** 箱規下拉選第一個選項（舊的下拉即使關閉仍留在 DOM，選項清單須限定在當前可見的那個；點開後沒出現就再點一次） */
+export async function pickBoxSpec(page, dialog) {
   await expect(async () => {
     await dialog.locator('#box_spec').click({ force: true });
     await page
@@ -403,6 +391,39 @@ export async function pickAndPack(page, shipmentNo, { actualQty, boxes = 10, per
       .first()
       .click({ timeout: 3000 });
   }).toPass({ timeout: 20000 });
+}
+
+/**
+ * 裝箱回報（或修正）對話框：逐條明細填揀貨數量與每箱幾個。欄位用 aria-label「揀貨數量 <印件編號>」「每箱幾個 <印件編號>」認。
+ * @param {Array<{ printItemNo?: string, pickedQty?: number, perBoxQty?: number }>} lines
+ */
+export async function fillPackingLines(dialog, lines) {
+  for (const line of lines) {
+    const no = line.printItemNo ?? CHAIN4.printItemNo;
+    if (line.pickedQty !== undefined) {
+      await dialog.getByLabel(`揀貨數量 ${no}`, { exact: true }).fill(String(line.pickedQty));
+    }
+    if (line.perBoxQty !== undefined) {
+      await dialog.getByLabel(`每箱幾個 ${no}`, { exact: true }).fill(String(line.perBoxQty));
+    }
+  }
+}
+
+/**
+ * 揀貨人員把一張未處理的出貨單走到待出貨（開始揀貨 → 裝箱回報）。
+ * 預設單一明細（PI-2026-0820）；多條明細時用 lines 逐條給。
+ * @param {{ pickedQty?: number, perBoxQty?: number, boxes?: number, lines?: Array }} options
+ */
+export async function pickAndPack(page, shipmentNo, { pickedQty, perBoxQty = 50, boxes = 10, lines } = {}) {
+  // 兩步都在列上：「開始揀貨」彈確認框 → 「裝箱回報」開對話框填該步要填的欄位
+  await shipmentRow(page, shipmentNo).getByRole('button', { name: '開始揀貨' }).click();
+  await confirmBox(page).getByRole('button', { name: '開始揀貨' }).click();
+  await expect(page.getByText(/已開始揀貨/).first()).toBeVisible();
+  const dialog = await clickRowAction(page, shipmentNo, '裝箱回報');
+  await fillPackingLines(dialog, lines ?? [{ pickedQty, perBoxQty }]);
+  // 「箱數」非 exact 比對時會命中「每箱幾個」之類含「箱」的標籤，須精確比對
+  await dialog.getByLabel('箱數', { exact: true }).fill(String(boxes));
+  await pickBoxSpec(page, dialog);
   await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('裝箱照.jpg'));
   await dialog.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(page.getByText(/裝箱回報完成/).first()).toBeVisible();

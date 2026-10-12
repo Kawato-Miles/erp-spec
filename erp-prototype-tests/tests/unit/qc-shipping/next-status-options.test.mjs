@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { nextStatusOptions } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/next-status-options.js';
 
-// 情境 12.15「出貨單側板的狀態欄只列合法的下一步，依角色與出貨方式過濾」的驗算
+// 情境 12.15「列上動作鈕（原出貨單側板的狀態欄）只列合法的下一步，依角色與出貨方式過濾」的驗算
 //（畫面呈現另在 e2e 12.15 驗）。
 //
 // 狀態欄是側板裡唯一會推進單據的控制項，可選值錯一格就會讓現場推出一個狀態機不允許的轉換，
@@ -23,19 +23,20 @@ describe('揀貨人員', () => {
     expect(option.required).toEqual([]);
   });
 
-  it('打包中只推得到待出貨，要填實際裝箱數量、箱數、每箱幾個、箱規與裝箱照', () => {
+  it('打包中只推得到待出貨，要逐條填揀貨數量與每箱幾個，再填箱數、箱規與裝箱照', () => {
     const option = onlyOption('picker', shipmentOf('打包中'));
     expect(option.status).toBe('待出貨');
     expect(option.required).toEqual([
-      'actual_qty',
-      'boxes',
+      'picked_qty',
       'per_box_qty',
+      'boxes',
       'box_spec',
       'packing_photos',
     ]);
   });
 
   it('待出貨之後的每一格都不是揀貨人員的球', () => {
+    // 待出貨期間的「修正」不是狀態轉換，不在這份清單裡（列上鈕另判，見 12.20）
     ['待出貨', '運送中', '已送達', '異常', '已作廢', '草稿'].forEach((status) => {
       expect(statusesOf('picker', shipmentOf(status))).toEqual([]);
     });
@@ -57,11 +58,12 @@ describe('出貨人員在待出貨依出貨方式分流', () => {
     expect(option.optional).toEqual(['weight_kg']);
   });
 
-  it('第三方物流到運送中，托運單號必填、重量選填', () => {
+  it('第三方物流為拋單到運送中，不填物流單號（由物流商回傳）、重量選填', () => {
     ['順豐', '新竹物流', '超商', '其他'].forEach((method) => {
       const option = onlyOption('shipper', shipmentOf('待出貨', method));
       expect(option.status).toBe('運送中');
-      expect(option.required).toEqual(['tracking_no']);
+      expect(option.label).toContain('拋單');
+      expect(option.required).toEqual([]);
       expect(option.optional).toEqual(['weight_kg']);
     });
   });
