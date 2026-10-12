@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { openAs, switchRole, gotoInApp } from '../_helpers.mjs';
 import { voidTicket } from './_ch10.mjs';
 
-// 情境目錄第十章：10.17 來源生產任務報廢或作廢時擋下點收、點收修改、點收紀錄作廢與搬運數量修改；
+// 情境目錄第十章：10.17 來源生產任務報廢或作廢時擋下點收、點收修正、點收紀錄作廢與搬運數量修正；
 // 生管看得到點收前的單的作廢操作（作廢原因為文字）。已點收單的各項擋下以純函式驗
 //（tests/unit/production-floor/transfer-receipts.test.mjs）。
 //
@@ -20,7 +20,7 @@ import { voidTicket } from './_ch10.mjs';
 // 路徑進得去畫面，屬於摸不到的死碼。本測試改驗證畫面上實際會發生的事（狀態格顯示「來源任務
 // 已無效」、操作格顯示「已擋下」、單子留在佇列不消失），不驗那段死碼裡的訊息文字。
 
-test('10.17 來源生產任務報廢或作廢時擋下點收、點收修改、點收紀錄作廢與搬運數量修改', async ({ page }) => {
+test('10.17 來源生產任務報廢或作廢時擋下點收、點收修正、點收紀錄作廢與搬運數量修正', async ({ page }) => {
   test.setTimeout(60_000);
   // 前置：業務取消鏈二訂單 ORD-2026-0710，來源生產任務「海報四色印刷」（PT-0710-2，
   // 已有報工投入）依連鎖規則轉「報廢」；TT-20260830-002（來源即此任務）維持「已送達」不動
@@ -44,7 +44,7 @@ test('10.17 來源生產任務報廢或作廢時擋下點收、點收修改、�
   await expect(ticketRow.getByText('已送達', { exact: true })).toBeVisible();
   await expect(ticketRow.getByText('來源任務已無效', { exact: true })).toBeVisible();
   await expect(ticketRow.getByText('已擋下', { exact: true })).toBeVisible();
-  await expect(ticketRow.getByRole('button', { name: '點收' })).toHaveCount(0);
+  await expect(ticketRow.getByRole('button', { name: '點收', exact: true })).toHaveCount(0);
 
   // 系統不自動作廢那張轉交單：切到印務再切回生管重看佇列，單子仍原樣留著、不會憑空消失
   await switchRole(page, '印務');

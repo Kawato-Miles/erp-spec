@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 
 // 情境目錄 9.19～9.22（2026-10-06 新增）：報工前提不含接收與打包；加工廠任務不打包也能報工；
-// 跨產線工作包只對自己產線範圍的任務開放報工、修改與作廢。
+// 跨產線工作包只對自己產線範圍的任務開放報工、修正與作廢。
 // 依據：wiki 生產任務接收與派工 副流程第 3 步之前分支、第 3 步分支（任務屬加工廠）；
 // 生產管理單元可見範圍 主流程第 4 步分支（工作包旗下任務跨產線）。
 // 期望值取自 openspec change production-dispatch-report-transfer-convergence production-execution delta
@@ -11,7 +11,7 @@ import { gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 
 const PHOTO = { name: '現場照.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('現場照') };
 
-// 報工對話框的一列：填生產數量、良品數、不良品數並上傳現場照片
+// 報工對話框的一列：填生產數量、良品數、不良品數並上傳報工照片
 async function fillReportLine(page, taskName, { input, good, defect = 0 }) {
   const box = page.locator('.ant-modal-body').last();
   const line = box.locator('tbody tr').filter({ hasText: taskName }).first();
@@ -80,7 +80,7 @@ test('9.20 加工廠任務接收後不打包，印務從工單詳情或所有生
   await expect(floorRow.getByRole('button', { name: '報工' })).toHaveCount(1);
 });
 
-test('9.21 跨產線工作包只能對自己產線範圍的任務報工、修改與作廢', async ({ page }) => {
+test('9.21 跨產線工作包只能對自己產線範圍的任務報工、修正與作廢', async ({ page }) => {
   test.setTimeout(150_000);
   // 前置：生管許文傑把證書裁切（手工產線）與五色印刷（數位產線）打成一包給劉阿海
   await openAs(page, '生管', '/production-floor/dispatch');
@@ -108,7 +108,7 @@ test('9.21 跨產線工作包只能對自己產線範圍的任務報工、修改
   await expect(cutRow.getByRole('button', { name: '報工' })).toHaveCount(1);
   await expect(printRow).toBeVisible();
   await expect(printRow.getByRole('button', { name: '報工' })).toHaveCount(0);
-  await expect(printRow.getByRole('button', { name: /修\s*改|作\s*廢/ })).toHaveCount(0);
+  await expect(printRow.getByRole('button', { name: /修\s*正|作\s*廢/ })).toHaveCount(0);
 });
 
 test('9.22 沒打包的加工廠任務在所有生產任務也能手動完成', async ({ page }) => {

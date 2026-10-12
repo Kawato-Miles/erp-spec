@@ -2,12 +2,12 @@ import { test, expect } from '@playwright/test';
 import { attachReportPhotos, gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 import { openPackageReports } from './_ch10.mjs';
 
-// 情境目錄 10.44：師傅不能修改或作廢別人提交的報工（純函式另見
+// 情境目錄 10.44：師傅不能修正或作廢別人提交的報工（純函式另見
 // tests/unit/production-floor/report-owner-and-multi-precedence.test.mjs）。
 // 起點資料：鏈二 WP-2026-0710-01（指派師傅劉阿海）的海報四色印刷（製作中，已有劉阿海提交的報工）。
 // 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的 production-execution delta Scenario THEN。
 
-test('10.44 師傅不能修改或作廢別人提交的報工', async ({ page }) => {
+test('10.44 師傅不能修正或作廢別人提交的報工', async ({ page }) => {
   test.setTimeout(150_000);
   // 生管許文傑在所有工作包代報一筆
   await openAs(page, '生管', '/production-floor/work-packages');
@@ -27,22 +27,22 @@ test('10.44 師傅不能修改或作廢別人提交的報工', async ({ page }) 
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(page.getByText('已送出 1 筆報工').last()).toBeVisible();
 
-  // 生管看得到自己代報那筆的修改與作廢
+  // 生管看得到自己代報那筆的修正與作廢
   let drawer = await openPackageReports(page, 'WP-2026-0710-01');
   let proxyRow = drawer.locator('tr.ant-table-row', { hasText: '許文傑' }).first();
-  await expect(proxyRow.getByRole('button', { name: '修改' })).toHaveCount(1);
-  await expect(proxyRow.getByRole('button', { name: '作廢' })).toHaveCount(1);
+  await expect(proxyRow.getByRole('button', { name: '修正', exact: true })).toHaveCount(1);
+  await expect(proxyRow.getByRole('button', { name: '作廢', exact: true })).toHaveCount(1);
   await page.keyboard.press('Escape');
 
-  // 劉阿海在我的工作包：生管代報那筆沒有修改與作廢；自己提交的照樣有
+  // 劉阿海在我的工作包：生管代報那筆沒有修正與作廢；自己提交的照樣有
   await switchRole(page, '師傅');
   // 切角色後頁面還停在所有工作包（師傅沒有這個單元的操作）：先進我的工作包再開報工紀錄
   await gotoInApp(page, '/production-floor/work-packages/mine');
   drawer = await openPackageReports(page, 'WP-2026-0710-01');
   proxyRow = drawer.locator('tr.ant-table-row', { hasText: '許文傑' }).first();
   await expect(proxyRow).toBeVisible();
-  await expect(proxyRow.getByRole('button', { name: '修改' })).toHaveCount(0);
-  await expect(proxyRow.getByRole('button', { name: '作廢' })).toHaveCount(0);
+  await expect(proxyRow.getByRole('button', { name: '修正', exact: true })).toHaveCount(0);
+  await expect(proxyRow.getByRole('button', { name: '作廢', exact: true })).toHaveCount(0);
   const ownRow = drawer.locator('tr.ant-table-row', { hasText: '劉阿海' }).first();
-  await expect(ownRow.getByRole('button', { name: '修改' })).toHaveCount(1);
+  await expect(ownRow.getByRole('button', { name: '修正', exact: true })).toHaveCount(1);
 });

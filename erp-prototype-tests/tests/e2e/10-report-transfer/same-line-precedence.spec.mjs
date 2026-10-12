@@ -71,7 +71,7 @@ const transferAndReceive = async (page, taskName) => {
 
   await switchRole(page, '生管');
   await gotoInApp(page, '/production-floor/receiving');
-  await page.locator('tr', { hasText: ticketNo }).getByRole('button', { name: '點收' }).click();
+  await page.locator('tr', { hasText: ticketNo }).getByRole('button', { name: '點收', exact: true }).click();
   await page.getByRole('button', { name: '確認點收' }).click();
   await expect(page.getByText(/已點收/).last()).toBeVisible();
 };

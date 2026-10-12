@@ -3,7 +3,7 @@ import { gotoInApp, openAs } from '../_helpers.mjs';
 
 // 情境目錄 9.12：主管在生產管理五個產線單元唯讀看全貌（wiki 印件生產流程 § 生產管理單元的權限範圍、
 // wiki Supervisor）。五頁都列全部產線的單據、頁首提示唯讀、沒有任何操作入口；檢視歷程照樣看得到。
-// 2026-10-06 改版：操作清單拿掉再次點收與人工註記，補點收修改、點收紀錄作廢、搬運數量修改。
+// 2026-10-06 改版：操作清單拿掉再次點收與人工註記，補修正點收紀錄、作廢點收紀錄、搬運數量修正。
 
 const READ_ONLY_NOTICE = '主管在生產管理只有唯讀檢視';
 
@@ -14,7 +14,7 @@ const OPERATIONS = [
   /取消工作包/,
   /^報\s*工$/,
   /整包報工/,
-  /^修\s*改$/,
+  /^修\s*正$/,
   /^作\s*廢$/,
   /手動完成/,
   /建立.*張單/,
@@ -23,9 +23,9 @@ const OPERATIONS = [
   /開始搬運/,
   /抵達站點/,
   /^點\s*收$/,
-  /點收修改/,
+  /修正點收紀錄/,
   /作廢點收紀錄/,
-  /搬運數量修改/,
+  /搬運數量修正/,
 ];
 
 async function expectNoOperations(page) {
@@ -67,7 +67,7 @@ test('9.12 主管在生產管理五個產線單元唯讀看全貌', async ({ pag
   await expect(page.locator('.ant-drawer-content:visible').last()).toContainText('歷程（');
   await page.getByRole('button', { name: '關閉' }).last().click();
 
-  // 所有工作包：展開後子層也沒有報工、手動完成；工作包側板的報工紀錄沒有修改與作廢
+  // 所有工作包：展開後子層也沒有報工、手動完成；工作包側板的報工紀錄沒有修正與作廢
   await gotoInApp(page, '/production-floor/work-packages');
   await expect(page.getByText(READ_ONLY_NOTICE).first()).toBeVisible();
   const pkgRow = page.locator('.ant-table-row', { hasText: 'WP-2026-0710-01' }).first();

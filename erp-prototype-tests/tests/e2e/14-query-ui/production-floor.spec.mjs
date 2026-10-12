@@ -136,7 +136,7 @@ test('14.12 手機寬度下生產管理各單元可完整操作（原編號 182�
   }
 });
 
-test('14.28 生產管理權限分產線與負責兩種範圍，能做的操作由單元定義；我的生產任務可報工、修改與作廢自己的報工，點收佇列與所有轉交單功能相同', async ({ page }) => {
+test('14.28 生產管理權限分產線與負責兩種範圍，能做的操作由單元定義；我的生產任務可報工、修正與作廢自己的報工，點收佇列與所有轉交單功能相同', async ({ page }) => {
   test.setTimeout(180_000);
   // 暖機：先整頁載入會用到的路由，避免開發伺服器首次編譯時退回整頁導航、記憶體狀態歸零
   await warmUp(page, [
@@ -169,7 +169,7 @@ test('14.28 生產管理權限分產線與負責兩種範圍，能做的操作�
   // 點收佇列列出兩張目的站為手工產線的已送達單並可點收
   await gotoInApp(page, '/production-floor/receiving');
   for (const no of ['TT-20260830-002', 'TT-20260827-002']) {
-    await expect(page.locator('tr.ant-table-row', { hasText: no }).getByRole('button', { name: '點收' })).toBeVisible();
+    await expect(page.locator('tr.ant-table-row', { hasText: no }).getByRole('button', { name: '點收', exact: true })).toBeVisible();
   }
 
   // 廠務簡俊男的我的轉交單列出既有轉交單；邱志明的一張都沒有
@@ -186,10 +186,10 @@ test('14.28 生產管理權限分產線與負責兩種範圍，能做的操作�
   await expect(myRow.getByRole('button', { name: '報工' })).toHaveCount(1);
   await expect(page.locator('main .ant-table .ant-checkbox-input')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /接收工作|取消工作包|派工/ })).toHaveCount(0);
-  // 自己提交的報工有修改與作廢（從該任務的報工紀錄看）
+  // 自己提交的報工有修正與作廢（從該任務的報工紀錄看）
   await myRow.getByRole('button', { name: /檢視歷程|報工紀錄/ }).first().click();
   const drawer = page.locator('.ant-drawer-content:visible').last();
-  await expect(drawer.getByRole('button', { name: /修\s*改/ }).first()).toBeVisible();
+  await expect(drawer.getByRole('button', { name: /修\s*正/ }).first()).toBeVisible();
   await expect(drawer.getByRole('button', { name: /作\s*廢/ }).first()).toBeVisible();
   await page.getByRole('button', { name: '關閉' }).last().click();
 
@@ -200,6 +200,6 @@ test('14.28 生產管理權限分產線與負責兩種範圍，能做的操作�
   await search.fill('TT-20260830-002');
   await search.press('Enter');
   await expect(
-    page.locator('tr.ant-table-row', { hasText: 'TT-20260830-002' }).getByRole('button', { name: '點收' }),
+    page.locator('tr.ant-table-row', { hasText: 'TT-20260830-002' }).getByRole('button', { name: '點收', exact: true }),
   ).toBeVisible();
 });

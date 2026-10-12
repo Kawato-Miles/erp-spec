@@ -74,12 +74,12 @@ test('10.46 五個報工入口與三值提交管道；印件詳情沒有報工�
 
   // 報工紀錄的提交管道：師傅自助兩筆、生產管理頁面代報兩筆、印務於工單詳情頁一筆
   const reports = await openPackageReports(page, 'WP-2026-0710-01');
-  // 以「生產數量」那一格的全文定位（欄序：報工時間、報工人員、提交管道、狀態、生產數量）：
+  // 以「生產數量」那一格的全文定位（欄序：完稿縮圖、報工照片、報工時間、報工人員、提交管道、狀態、生產數量）：
   // 整列的文字各格相連（如「1111０」），用數字前後非數字的正規式會比對到報工時間裡的月份
   const channelOf = (qty) =>
     reports
       .locator('tr.ant-table-row')
-      .filter({ has: page.locator('td:nth-child(5)', { hasText: new RegExp(`^${qty}$`) }) })
+      .filter({ has: page.locator('td:nth-child(7)', { hasText: new RegExp(`^${qty}$`) }) })
       .first();
   await expect(channelOf(10)).toContainText('師傅自助');
   await expect(channelOf(11)).toContainText('師傅自助');
@@ -95,7 +95,7 @@ test('10.46 五個報工入口與三值提交管道；印件詳情沒有報工�
   await expect(page.getByRole('button', { name: /報\s*工/ })).toHaveCount(0);
 });
 
-test('10.48 未交付擋下；已完成任務擋下新增報工，既有報工仍可修改與作廢', async ({ page }) => {
+test('10.48 未交付擋下；已完成任務擋下新增報工，既有報工仍可修正與作廢', async ({ page }) => {
   test.setTimeout(120_000);
   // 錨例 WO-2026-0908（製程審核完成，三筆任務交付時間無值）：沒有報工入口，提示任務尚未交付
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0908');
@@ -116,11 +116,11 @@ test('10.48 未交付擋下；已完成任務擋下新增報工，既有報工�
     page.locator('tr.ant-table-row', { hasText: '證書四色印刷' }).first().getByRole('button', { name: '報工' }),
   ).toHaveCount(0);
 
-  // 既有報工的修改與作廢仍可用
+  // 既有報工的修正與作廢仍可用
   const reports = await openPackageReports(page, 'WP-2026-0812-01');
   const row = reports.locator('tr.ant-table-row', { hasText: '2026-08-25 16:30' }).first();
-  await expect(row.getByRole('button', { name: '修改' })).toBeVisible();
-  await expect(row.getByRole('button', { name: '作廢' })).toBeVisible();
+  await expect(row.getByRole('button', { name: '修正', exact: true })).toBeVisible();
+  await expect(row.getByRole('button', { name: '作廢', exact: true })).toBeVisible();
 });
 
 test('10.49 照片必填；良品＋不良品不大於生產數量，直接比數值、不換算', async ({ page }) => {
@@ -142,7 +142,7 @@ test('10.49 照片必填；良品＋不良品不大於生產數量，直接比�
   await page.getByRole('button', { name: /送出報工/ }).click();
   await expect(noticeOf(page, /不可超過生產數量/)).toBeVisible();
 
-  // 數量改對、不附照片：擋下並提示現場照片必填（重開對話框，避免沿用剛附的照片）
+  // 數量改對、不附照片：擋下並提示報工照片必填（重開對話框，避免沿用剛附的照片）
   await page.getByRole('button', { name: '取消', exact: true }).click();
   await page.locator('tr.ant-table-row', { hasText: '信封四色印刷' }).first().getByRole('button', { name: '報工' }).click();
   const line2 = page.locator('.ant-modal-body').last().locator('tbody tr').filter({ hasText: '信封四色印刷' }).first();
@@ -153,7 +153,7 @@ test('10.49 照片必填；良品＋不良品不大於生產數量，直接比�
   await line2.locator('.ant-select').last().click();
   await page.keyboard.press('Enter');
   await page.getByRole('button', { name: /送出報工/ }).click();
-  await expect(noticeOf(page, /現場照片/)).toBeVisible();
+  await expect(noticeOf(page, /報工照片/)).toBeVisible();
 
   // 附兩張照片後送出成立
   await line2.locator('input[type="file"]').first().setInputFiles([FAKE_PHOTO('信封-一.jpg'), FAKE_PHOTO('信封-二.jpg')]);
@@ -166,7 +166,7 @@ test('10.51 點收單一動作：每次新增一筆，第一筆轉已點收，�
   // 鏈外 TT-20260827-002（已送達；內卡 200、信封 300）：生管第一次點收內卡 200、信封 280
   await openAs(page, '生管', '/production-floor/receiving');
   const row = page.locator('tr.ant-table-row', { hasText: 'TT-20260827-002' });
-  await row.getByRole('button', { name: '點收' }).click();
+  await row.getByRole('button', { name: '點收', exact: true }).click();
   let dialog = dialogOf(page, '點收');
   await dialog.locator('tr', { hasText: '內卡四色印刷' }).locator('.ant-input-number-input').fill('200');
   await dialog.locator('tr', { hasText: '信封四色印刷' }).locator('.ant-input-number-input').fill('280');
@@ -174,7 +174,7 @@ test('10.51 點收單一動作：每次新增一筆，第一筆轉已點收，�
   await expect(row).toContainText('已點收');
 
   // 第二次點收：同一個動作，只填信封 20（內卡留空不新增）
-  await row.getByRole('button', { name: '點收' }).click();
+  await row.getByRole('button', { name: '點收', exact: true }).click();
   dialog = dialogOf(page, '點收');
   await dialog.locator('tr', { hasText: '內卡四色印刷' }).locator('.ant-input-number-input').fill('');
   await dialog.locator('tr', { hasText: '信封四色印刷' }).locator('.ant-input-number-input').fill('20');
@@ -182,9 +182,9 @@ test('10.51 點收單一動作：每次新增一筆，第一筆轉已點收，�
   await expect(row).toContainText('已點收');
 
   const envelope = await ticketDetailSubRow(page, 'TT-20260827-002', '信封四色印刷');
-  await expect(subCell(envelope, '點收數量')).toHaveText('300');
+  await expect(subCell(envelope, '點收量')).toHaveText('300');
   const card = await ticketDetailSubRow(page, 'TT-20260827-002', '內卡四色印刷');
-  await expect(subCell(card, '點收數量')).toHaveText('200');
+  await expect(subCell(card, '點收量')).toHaveText('200');
 });
 
 test('10.52 點收紀錄作廢：作廢的那一筆仍看得到、不計入點收數量', async ({ page }) => {
@@ -198,7 +198,7 @@ test('10.52 點收紀錄作廢：作廢的那一筆仍看得到、不計入點�
   await expect(drawer).toContainText('陳金水');
   await closeDrawer(page);
   const subRow = await ticketDetailSubRow(page, 'TT-20260615-001', '銅西卡 250g 備料');
-  await expect(subCell(subRow, '點收數量')).toHaveText('5,100');
+  await expect(subCell(subRow, '點收量')).toHaveText('5,100');
 });
 
 test('10.53 點收前（待搬運、搬運中、已送達）可作廢、原因為文字；已點收不可作廢', async ({ page }) => {
@@ -210,9 +210,9 @@ test('10.53 點收前（待搬運、搬運中、已送達）可作廢、原因�
     return page.locator('tr.ant-table-row', { hasText: no }).first();
   };
   // 已點收的 TT-20260828-001 沒有作廢
-  await expect((await rowOf('TT-20260828-001')).getByRole('button', { name: '作廢' })).toHaveCount(0);
+  await expect((await rowOf('TT-20260828-001')).getByRole('button', { name: '作廢', exact: true })).toHaveCount(0);
   // 搬運中的 TT-20260830-003 有作廢
-  await expect((await rowOf('TT-20260830-003')).getByRole('button', { name: '作廢' })).toHaveCount(1);
+  await expect((await rowOf('TT-20260830-003')).getByRole('button', { name: '作廢', exact: true })).toHaveCount(1);
   // 已送達的 TT-20260830-002 有作廢：沒填原因擋下；以文字填原因後作廢成立
   const arrived = await rowOf('TT-20260830-002');
   await voidTicket(page, arrived, null);
@@ -227,7 +227,7 @@ test('10.53 點收前（待搬運、搬運中、已送達）可作廢、原因�
   await expect(page.locator('tr', { hasText: '海報四色印刷' })).toContainText('1,190');
 });
 
-test('10.55 搬運數量修改更正：大於 0 且不得低於點收數量、原因必填、留紀錄', async ({ page }) => {
+test('10.55 搬運數量修正更正：大於 0 且不得低於點收數量、原因必填、留紀錄', async ({ page }) => {
   test.setTimeout(120_000);
   // 鏈外 TT-20260827-001（已點收；搬運數量 500、點收 480）
   await openAs(page, '生管', '/production-floor/transfers');
@@ -240,7 +240,7 @@ test('10.55 搬運數量修改更正：大於 0 且不得低於點收數量、�
   await expect(noticeOf(page, /請填搬運數量/)).toBeVisible();
   await page.keyboard.press('Escape');
   await editMoveQty(page, subRow, { qty: 480 });
-  await expect(noticeOf(page, /修改原因/)).toBeVisible();
+  await expect(noticeOf(page, /修正原因/)).toBeVisible();
   await page.keyboard.press('Escape');
   await editMoveQty(page, subRow, { qty: 480, reason: '實際只搬了這些' });
   await expect(subCell(subRow, '搬運數量')).toHaveText('480');

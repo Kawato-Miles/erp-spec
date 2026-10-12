@@ -46,7 +46,7 @@ test('10.4 五個報工入口用同一組欄位，提交管道三值；印件詳
   await line.locator('input.ant-input-number-input').nth(0).fill('100');
   await line.locator('input.ant-input-number-input').nth(1).fill('100');
   await page.getByRole('button', { name: /送出報工/ }).click();
-  await expect(page.getByText(/現場照片/).first()).toBeVisible();
+  await expect(page.getByText(/報工照片/).first()).toBeVisible();
   await line.locator('input[type="file"]').first().setInputFiles(PHOTO);
   await page.getByRole('button', { name: /送出報工/ }).click();
   await expect(page.getByText(/已送出 1 筆報工/).last()).toBeVisible();

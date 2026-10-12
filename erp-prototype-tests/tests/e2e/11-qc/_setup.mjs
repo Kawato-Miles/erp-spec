@@ -102,7 +102,7 @@ export const CHAIN4 = {
   contactAddress: '台北市內湖區文德路 168 號 3 樓',
 };
 
-// 假圖檔（現場照片欄位一律必附，附件內容不影響驗收）
+// 假圖檔（報工照片欄位一律必附，附件內容不影響驗收）
 export const fakePhoto = (name) => ({
   name,
   mimeType: 'image/jpeg',
@@ -201,7 +201,7 @@ export async function moveTransferToQc(page) {
 export async function receiveAtQc(page) {
   await switchRoleSafe(page, '品檢人員');
   await gotoInAppSafe(page, '/production-floor/receiving');
-  await page.getByRole('button', { name: '點收' }).first().click();
+  await page.getByRole('button', { name: '點收', exact: true }).first().click();
   await page.getByRole('button', { name: '確認點收' }).click();
   await expect(page.getByText(/已點收 TT-/)).toBeVisible();
 }

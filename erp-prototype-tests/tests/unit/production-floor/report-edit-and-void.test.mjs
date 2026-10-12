@@ -4,19 +4,19 @@ import { useProductionFloorStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/
 import * as transferRules from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/transfer-rules.js';
 import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/store.js';
 
-// 情境目錄 10.34～10.37：報工修改、修改與作廢共用擋下條件、已完成任務的修改與作廢、報廢任務的報工修改。
+// 情境目錄 10.34～10.37：報工修正、修正與作廢共用擋下條件、已完成任務的修正與作廢、報廢任務的報工修正。
 // 期望值取自 openspec change production-dispatch-report-transfer-convergence
-// production-execution delta § 報工修改、作廢與留痕、§ 已完成任務不可新增報工、§ 生產任務狀態轉換 的 THEN。
+// production-execution delta § 報工修正、作廢與留痕、§ 已完成任務不可新增報工、§ 生產任務狀態轉換 的 THEN。
 // 2026-10-06 改版：拿掉人工程序與人工註記提示（擋下只指出卡在哪一筆，之後走逐層更正，見 10.56）；
-// 已完成任務可作廢報工、不能新增報工；修改原因自由填寫，不驗固定字樣。
+// 已完成任務可作廢報工、不能新增報工；修正原因自由填寫，不驗固定字樣。
 //
-// 本檔先於實作撰寫（tasks 2.6），報工修改的契約由 task 6.4 補上：
+// 本檔先於實作撰寫（tasks 2.6），報工修正的契約由 task 6.4 補上：
 //   store.editWorkReport(reportId, { input_qty?, good_qty?, defect_qty?, reason, by })
-//     → { ok, error? }；只開放生產數量、良品數、不良品數三欄，修改原因必填；
+//     → { ok, error? }；只開放生產數量、良品數、不良品數三欄，修正原因必填；
 //     成立時每改一欄在該筆報工 edit_logs 追加一筆
 //     { field: '生產數量'｜'良品數'｜'不良品數', before, after, edited_by, edited_at, reason }，
-//     生產任務歷程追加一筆「報工修改（原因）」，前後值 changes 列良品數 500 → 480，並以 ref 關聯該筆報工。
-//   修改與作廢共用擋下條件；擋下訊息列出佔用的單據與提示（未送達的單「先作廢尚未送達的單」、
+//     生產任務歷程追加一筆「報工修正（原因）」，前後值 changes 列良品數 500 → 480，並以 ref 關聯該筆報工。
+//   修正與作廢共用擋下條件；擋下訊息列出佔用的單據與提示（未送達的單「先作廢尚未送達的單」、
 //   已送達的單「先照實點收」），不帶人工程序與人工註記。
 
 const { deriveTransferStatus } = transferRules;
@@ -97,12 +97,12 @@ const receivedTicket = (taskId, qty) => ({
   history: [],
 });
 
-describe('10.34 報工修改三欄可改、原因必填、留修改紀錄、調升不擋', () => {
+describe('10.34 報工修正三欄可改、原因必填、留修改紀錄、調升不擋', () => {
   // 鏈外 WO-2026-0812 證書四色印刷那筆報工 wr-0018（投入 515、良品 500、不良 15；TT-20260827-001 已點收 480）
-  it('未填修改原因時擋下送出，數字不變', () => {
+  it('未填修正原因時擋下送出，數字不變', () => {
     const result = floor().editWorkReport('wr-0018', { good_qty: 480, reason: '', by: '周建宏' });
     expect(result.ok).toBe(false);
-    expect(result.error).toContain('修改原因');
+    expect(result.error).toContain('修正原因');
     expect(reportById('wr-0018').good_qty).toBe(500);
     expect(reportById('wr-0018').edit_logs).toHaveLength(0);
   });
@@ -133,7 +133,7 @@ describe('10.34 報工修改三欄可改、原因必填、留修改紀錄、調�
     expect(task.good_qty).toBe(480);
     const last = task.history.at(-1);
     // 歷程每筆比照報工紀錄列格式：事件一句、前後值逐欄列出（Miles 2026-10-06 拍板）
-    expect(last.event).toContain('報工修改（現場清點後更正）');
+    expect(last.event).toContain('報工修正（現場清點後更正）');
     expect(last.changes).toContainEqual({ field: '良品數', before: 500, after: 480 });
     expect(last.ref).toBe('wr-0018');
     expect(last.actor).toBe('周建宏');
@@ -167,7 +167,7 @@ describe('10.34 報工修改三欄可改、原因必填、留修改紀錄、調�
   });
 });
 
-describe('10.34（2026-10-06 補）修改把良品改記為不良品、生產數量不變、修改原因自由填寫', () => {
+describe('10.34（2026-10-06 補）修改把良品改記為不良品、生產數量不變、修正原因自由填寫', () => {
   // 合成資料：一筆需轉交的生產任務只有一筆報工 200／200／0，沒有任何轉交單、下游未動工、未被品檢驗過
   const seedLoss = () =>
     seed({
@@ -206,7 +206,7 @@ describe('10.34（2026-10-06 補）修改把良品改記為不良品、生產數
   });
 });
 
-describe('10.35 報工修改與作廢共用擋下條件：在途與已點收量、下游已動工、已驗量', () => {
+describe('10.35 報工修正與作廢共用擋下條件：在途與已點收量、下游已動工、已驗量', () => {
   it('海報四色印刷第二筆報工良品改為 900：改後 1,890 低於在途與已送達的 1,990，擋下並列出兩張單與各自提示', () => {
     // 鏈二 PT-0710-2（良品 1,990：TT-20260830-002 已送達 1,190、TT-20260830-003 搬運中 800）
     const result = floor().editWorkReport('wr-0006', { good_qty: 900, reason: '誤報', by: '周建宏' });
@@ -357,7 +357,7 @@ describe('10.35 報工修改與作廢共用擋下條件：在途與已點收量�
   });
 });
 
-describe('10.36 已完成任務可修改與作廢報工；跌破目標退回製作中；已完成任務不能新增報工', () => {
+describe('10.36 已完成任務可修正與作廢報工；跌破目標退回製作中；已完成任務不能新增報工', () => {
   it('證書四色印刷（已完成）那筆報工：作廢不因任務已完成擋下，而是被 TT-20260827-001 已點收的 480 擋下；修改仍可用', () => {
     const voided = floor().voidWorkReport('wr-0018', { reason: '整筆不該存在', by: '周建宏' });
     expect(voided.ok).toBe(false);

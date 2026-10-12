@@ -10,9 +10,9 @@ import {
 import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/store.js';
 
 // 情境目錄 10.51～10.55、10.58：點收單一動作、點收紀錄作廢與退回已送達、點收前作廢、
-// 批次建單任一超額全擋、搬運數量修改更正、以站點為目的地的轉交單。
+// 批次建單任一超額全擋、搬運數量修正更正、以站點為目的地的轉交單。
 // 期望值取自 openspec change production-dispatch-report-transfer-convergence production-execution delta
-// § 場內轉交、§ 點收紀錄的修改與作廢、§ 生管批次建轉交單、§ 轉交單改單與更正 的 THEN；
+// § 場內轉交、§ 點收紀錄的修正與作廢、§ 生管批次建轉交單、§ 轉交單改單與更正 的 THEN；
 // 情境卡 場內轉交與更正、生產數量錯誤的逐層更正。
 //
 // 資料層契約（新契約等 tasks 5.1～5.6 實作）：
@@ -22,7 +22,7 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 //     → { created, rejected, error? }；依目的產線分組成單、明細各記站點；預計轉交日必填；
 //     任一張超額即全部擋下（created 為空、rejected 指出超額的明細與當下可搬量）
 //   store.updateTransferTicket(ticketId, { details, plannedDate, note, actor })  待搬運改單、先還回本單原佔用
-//   store.editTransferQty(ticketId, { taskId, qty, reason, by })  開始搬運之後的搬運數量修改
+//   store.editTransferQty(ticketId, { taskId, qty, reason, by })  開始搬運之後的搬運數量修正
 //   store.receiveTransfer(ticketId, { by, quantities, remarks? })  點收單一動作
 //   store.voidTransferReceipt(ticketId, { taskId, receiptId, reason, by })  點收紀錄作廢
 //   store.voidTransfer(ticketId, { reason, by })  點收前的單都可作廢、原因為文字
@@ -205,7 +205,7 @@ describe('10.54 一次勾多筆建單任一張超額即全部擋下', () => {
   });
 });
 
-describe('10.55 搬運數量修改更正：待搬運先還回本單原佔用；開始搬運後經修改、原因必填、大於 0 且不得低於點收數量', () => {
+describe('10.55 搬運數量修正更正：待搬運先還回本單原佔用；開始搬運後經修改、原因必填、大於 0 且不得低於點收數量', () => {
   const pendingTicket = (id, qty, status = '待搬運', receipts = []) => ({
     id,
     ticket_no: id.toUpperCase(),
@@ -361,10 +361,10 @@ describe('10.51 點收單一動作：每次新增一筆，第一筆轉已點收�
     expect(calcDetailReceivedQty(envelope)).toBe(300);
   });
 
-  it('點收量須大於 0：再點收填 0 擋下、不新增紀錄', () => {
+  it('點收數量須大於 0：再點收填 0 擋下、不新增紀錄', () => {
     const result = floor().receiveTransfer('tt-015', { by: '許文傑', quantities: { 'pt-0812-2': 0 } });
     expect(result.ok).toBe(false);
-    expect(result.error).toContain('點收量須大於 0');
+    expect(result.error).toContain('點收數量須大於 0');
     expect(ticketById('tt-015').details[0].receipts).toHaveLength(1);
   });
 });

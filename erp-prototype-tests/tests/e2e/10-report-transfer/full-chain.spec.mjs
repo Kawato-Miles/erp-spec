@@ -68,7 +68,7 @@ const transferAndReceive = async (page, taskName, { checkReceiveQty = false, rec
   await switchRole(page, receiver);
   await gotoInApp(page, '/production-floor/receiving');
   const queueRow = page.locator('tr', { hasText: ticketNo });
-  await queueRow.getByRole('button', { name: '點收' }).click();
+  await queueRow.getByRole('button', { name: '點收', exact: true }).click();
   const dialog = dialogOf(page, '點收');
   // 10.11：點收對話框逐條填量，每條明細都有點收量欄、預設帶設定量
   if (checkReceiveQty) await expect(dialog.locator('.ant-input-number-input').first()).not.toHaveValue('');
@@ -124,7 +124,7 @@ test('10.11 一批貨從報工走到可出貨的全鏈（原編號 105）', asyn
   // 起點：鏈二 TT-20260830-002（手工產線待點收，來源 pt-0710-2 海報四色印刷）
   // 生管點收：點收對話框逐條填量（帶設定量 1,190）
   await openAs(page, '生管', '/production-floor/receiving');
-  await page.locator('tr', { hasText: 'TT-20260830-002' }).getByRole('button', { name: '點收' }).click();
+  await page.locator('tr', { hasText: 'TT-20260830-002' }).getByRole('button', { name: '點收', exact: true }).click();
   const receiveDialog = dialogOf(page, '點收');
   await expect(
     receiveDialog.locator('tr', { hasText: '海報四色印刷' }).locator('.ant-input-number-input'),

@@ -4,9 +4,9 @@ import { useProductionFloorStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/
 import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/store.js';
 
 // 情境 10.20「已被品檢驗過的良品不可作廢報工，也不可調降良品」的判定驗算。
-// 報工修改與作廢共用的一道檢核：改後或作廢後該印件做出來的良品不可低於已驗量，違反即整筆擋下。
+// 報工修正與作廢共用的一道檢核：改後或作廢後該印件做出來的良品不可低於已驗量，違反即整筆擋下。
 // 與另外幾道（量已被下游點收或在途、下游已開工）並列，任一命中即擋（見 10.35）。
-// 報工修改 editWorkReport 的契約見 report-edit-and-void.test.mjs 檔頭。
+// 報工修正 editWorkReport 的契約見 report-edit-and-void.test.mjs 檔頭。
 //
 // 合成資料：一件印件底下唯一計入完成度的精裝裝訂任務。2026-10-06 改版後已完成的任務同樣可作廢報工
 //（拿掉「已完成的任務不可作廢報工」的特例），任務已完成時照同一道已驗量檢核判定。
@@ -100,7 +100,7 @@ describe('10.20 已被品檢驗過的良品不可作廢報工，也不可調降�
     seed([qcRecordOf(500, 0, '2026-09-18 10:00')]);
     const result = voidIt();
     expect(result.ok).toBe(false);
-    // 修改與作廢共用同一句訊息（情境目錄 10.20）：只驗規格要求的已驗量與下一步
+    // 修正與作廢共用同一句訊息（情境目錄 10.20）：只驗規格要求的已驗量與下一步
     expect(result.error).toContain('該印件已驗收 500 件');
     expect(result.error).toContain('請先請品檢人員補更正紀錄');
     // 擋下就是整筆不寫：報工紀錄與任務累計都留在原樣

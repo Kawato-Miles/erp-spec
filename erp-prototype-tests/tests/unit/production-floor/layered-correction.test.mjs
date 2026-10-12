@@ -12,13 +12,13 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 // 10.57「逐層更正副流程：上游已完成或還在做、貨在途、整筆遺失、工單已完成」。
 // 依據：wiki 生產數量錯誤的逐層更正 主流程第 0～4 步與副流程；
 // 期望值取自 openspec change production-dispatch-report-transfer-convergence production-execution delta
-// § 生產數量錯誤的逐層更正、§ 報工修改、作廢與留痕、§ 點收紀錄的修改與作廢、§ 轉交單改單與更正 的 THEN。
+// § 生產數量錯誤的逐層更正、§ 報工修正、作廢與留痕、§ 點收紀錄的修正與作廢、§ 轉交單改單與更正 的 THEN。
 //
 // 起點以鏈三 WO-2026-0815 推到 wiki 例子的處境（MOCK-DATA-CHAIN § 逐層更正與點收紀錄作廢的情境樣本：
 // 鏈三的 mock 起點不動，本檔在前置把報工與 TT-20260901-001 寫進記憶體）：
 //   五色印刷（pt-0815-2）報工 500／500／0；TT-20260901-001 搬運數量 500、目的產線裝訂產線、
 //   目的站點後加工站、點收 500；軋盒成型（pt-0815-3）陳金水報工 500／500／0。
-// 修改原因一律自由填寫，測試不驗固定字樣。
+// 修正原因一律自由填寫，測試不驗固定字樣。
 // 資料層契約：store.editWorkReport、store.editTransferReceipt、store.editTransferQty（新，見
 // transfer-convergence.test.mjs 檔頭）、store.voidTransfer、store.receiveTransfer。
 
@@ -162,7 +162,7 @@ describe('10.56 逐層更正主流程：五色印刷良品 500 改 480 的四層
     expect(ticket001().status).toBe('已點收');
     expect(calcTransferReceivedQty(PRINT, floor().transferTickets)).toBe(480);
 
-    // 第 3 步：周建宏（代行生管）改搬運數量 500 → 480，記一筆搬運數量修改
+    // 第 3 步：周建宏（代行生管）改搬運數量 500 → 480，記一筆搬運數量修正
     const step3 = editMoveQty();
     expect(step3.ok).toBe(true);
     expect(calcOccupiedQty(PRINT, floor().transferTickets)).toBe(480);
@@ -192,7 +192,7 @@ describe('10.57 逐層更正副流程', () => {
     expect(editPrint().ok).toBe(true);
   };
 
-  it('上游已完成：第 4 步成立後良品數、轉交量、轉交點收量皆 480，轉交狀態已轉交', () => {
+  it('上游已完成：第 4 步成立後良品數、搬運量、點收量皆 480，轉交狀態已轉交', () => {
     seedExample({ printStatus: '已完成', printTarget: 500 });
     runFourSteps();
     expect(deriveTransferStatus(taskById(PRINT), floor().transferTickets)).toBe('已轉交');

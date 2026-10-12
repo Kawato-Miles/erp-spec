@@ -14,12 +14,12 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 
 // 情境目錄 9.19、9.20、9.22、10.46～10.50、10.60：報工前提、五個入口、已完成不能新增、照片必填與數值比較、整筆作廢重報。
 // 期望值取自 openspec change production-dispatch-report-transfer-convergence production-execution delta
-// § 報工前提、§ 已完成任務不可新增報工、§ 報工、§ 報工權限守門、§ 報工修改、作廢與留痕 的 THEN；
+// § 報工前提、§ 已完成任務不可新增報工、§ 報工、§ 報工權限守門、§ 報工修正、作廢與留痕 的 THEN；
 // 規則正本 wiki 報工規則、報工紀錄；情境卡 生產任務接收與派工、師傅報工與修改。
 //
 // 資料層契約（新契約等 tasks 4.1～4.4 實作）：
 //   report-rules.canReportTask(task, { tasks, tickets })：交付時間有值、待處理或製作中、前置到料量大於 0
-//   report-rules.validateReportRow(task, row)：沒附現場照片（row.photos 為空）時回「現場照片必填」；
+//   report-rules.validateReportRow(task, row)：沒附報工照片（row.photos 為空）時回「報工照片必填」；
 //     良品＋不良品大於生產數量時回「良品數＋不良品數不可超過生產數量」，直接比數值、不依單位用量換算
 //   store.submitWorkReport(taskId, report)：任務交付時間無值或任務已完成時不寫入（資料層最後防線）；
 //     報工紀錄不記所屬工作包（不帶 work_package_id）
@@ -292,7 +292,7 @@ describe('10.48 未交付擋下；已完成任務擋下新增報工，修改跌�
 describe('10.49 照片必填；良品＋不良品不大於生產數量，直接比數值、不換算', () => {
   const task = { id: 'pt-test-print', name: '合成印刷' };
 
-  it('沒附現場照片時擋下，提示現場照片必填', () => {
+  it('沒附報工照片時擋下，提示報工照片必填', () => {
     const errors = validateReportRow(task, {
       input_qty: 205,
       good_qty: 200,
@@ -300,7 +300,7 @@ describe('10.49 照片必填；良品＋不良品不大於生產數量，直接�
       defect_reason: '套印不準',
       photos: [],
     });
-    expect(errors.join('、')).toContain('現場照片');
+    expect(errors.join('、')).toContain('報工照片');
   });
 
   it('附上兩張照片後檢核通過，store 寫入報工並保存兩張照片', () => {

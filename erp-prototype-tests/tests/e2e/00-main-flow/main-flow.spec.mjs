@@ -124,7 +124,7 @@ async function planWorkOrder(page, workOrderNo, { prepNeedsTransfer }) {
   });
 }
 
-// 報工對話框的一列：填生產數量與良品數（不良 0），並上傳現場照片（照片必填，Miles 2026-10-06 拍板 R9）
+// 報工對話框的一列：填生產數量與良品數（不良 0），並上傳報工照片（照片必填，Miles 2026-10-06 拍板 R9）
 async function fillReportLine(taskLine, qty) {
   await taskLine.locator('input.ant-input-number-input').nth(0).fill(String(qty));
   await taskLine.locator('input.ant-input-number-input').nth(1).fill(String(qty));
@@ -695,7 +695,7 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
   await test.step('第 30 站 生管 印刷站點收', async () => {
     await switchRole(page, '生管');
     await goInApp(page, '/production-floor/receiving', gotoInApp);
-    await rowOf(page, ticketNo).getByRole('button', { name: '點收' }).click();
+    await rowOf(page, ticketNo).getByRole('button', { name: '點收', exact: true }).click();
     // 點收只有一個動作：對話框逐條明細填實際收到的量（明細帶目的站點），可填備註；點收人記實際操作人
     const receiveDialog = dialog(page);
     await expect(receiveDialog).toContainText(PRINT_STATION);
@@ -705,7 +705,7 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
     await waitModalsClosed(page);
     // 點收後列留在佇列上，之後貨再補到時照樣用同一個「點收」動作再點收一筆
     await expect(rowOf(page, ticketNo)).toContainText('已點收');
-    await expect(rowOf(page, ticketNo).getByRole('button', { name: '點收' })).toBeVisible();
+    await expect(rowOf(page, ticketNo).getByRole('button', { name: '點收', exact: true })).toBeVisible();
     // 甲的印刷任務到料，可做量放行
     await goInApp(page, '/production-floor/work-packages', gotoInApp);
     await expandRow(page, packageNo);

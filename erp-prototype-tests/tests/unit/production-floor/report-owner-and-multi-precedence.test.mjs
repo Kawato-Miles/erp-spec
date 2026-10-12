@@ -19,10 +19,10 @@ import {
 
 // 情境目錄 10.44、10.45 的判定驗算。
 // 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的 production-execution delta
-// Scenario THEN（師傅不能修改或作廢別人提交的報工；前置未到料擋報工；多前置取最小值），
+// Scenario THEN（師傅不能修正或作廢別人提交的報工；前置未到料擋報工；多前置取最小值），
 // 以及 wiki 業務情境卡「師傅報工與修改」。
 
-describe('10.44 師傅不能修改或作廢別人提交的報工', () => {
+describe('10.44 師傅不能修正或作廢別人提交的報工', () => {
   // 起點：WP-2026-0812-01 的指派師傅為劉阿海；旗下證書四色印刷的報工 wr-0018 由劉阿海提交，
   // 另一筆同任務的報工改由生管許文傑代報提交
   const pkg = MOCK_WORK_PACKAGES.find((p) => p.package_no === 'WP-2026-0812-01');
@@ -37,11 +37,11 @@ describe('10.44 師傅不能修改或作廢別人提交的報工', () => {
   });
 
   it('生管代報的那筆：劉阿海不可修改、不可作廢', () => {
-    expect(canEditWorkReport(byPlanner, 'master', '劉阿海', task)).toBe(false);
-    expect(canVoidWorkReport(byPlanner, 'master', '劉阿海', task)).toBe(false);
+    expect(canEditWorkReport(byPlanner, 'master', '劉阿海', task, { pkg })).toBe(false);
+    expect(canVoidWorkReport(byPlanner, 'master', '劉阿海', task, { pkg })).toBe(false);
   });
 
-  it('生管、印務、印務主管可修改或作廢這筆報工', () => {
+  it('生管、印務、印務主管可修正或作廢這筆報工', () => {
     const cases = [
       ['production_planner', '許文傑'],
       ['print_officer', '周建宏'],
@@ -53,11 +53,11 @@ describe('10.44 師傅不能修改或作廢別人提交的報工', () => {
     }
   });
 
-  it('劉阿海自己提交的那筆照樣可修改與作廢；別的師傅不行', () => {
-    expect(canEditWorkReport(own, 'master', '劉阿海', task)).toBe(true);
-    expect(canVoidWorkReport(own, 'master', '劉阿海', task)).toBe(true);
-    expect(canEditWorkReport(own, 'master', '李榮發', task)).toBe(false);
-    expect(canVoidWorkReport(own, 'master', '李榮發', task)).toBe(false);
+  it('劉阿海自己提交的那筆照樣可修正與作廢；別的師傅不行', () => {
+    expect(canEditWorkReport(own, 'master', '劉阿海', task, { pkg })).toBe(true);
+    expect(canVoidWorkReport(own, 'master', '劉阿海', task, { pkg })).toBe(true);
+    expect(canEditWorkReport(own, 'master', '李榮發', task, { pkg })).toBe(false);
+    expect(canVoidWorkReport(own, 'master', '李榮發', task, { pkg })).toBe(false);
   });
 });
 

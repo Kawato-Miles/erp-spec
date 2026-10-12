@@ -12,16 +12,16 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 // 本檔先於實作撰寫（tasks 2.6、2.14），下列純函式與動作由 tasks 6.2、6.4、6.5、6.6 依此契約補上：
 //   transfer-rules.deriveTransferStatus(task, tickets)
 //     → '不適用'｜'待轉交'｜'轉交中'｜'待點收'｜'已轉交'｜'－'
-//   transfer-rules.calcTransferReceivedQty(taskId, tickets)  轉交點收量＝各明細有效點收紀錄 receipts[].qty 合計
+//   transfer-rules.calcTransferReceivedQty(taskId, tickets)  點收量＝各明細有效點收紀錄 receipts[].qty 合計
 //   transfer-rules.hasGoodsAwaitingReceipt(taskId, tickets)   已送達待點收判定（函式保留；畫面不呈現，2026-10-06 拍板）
-//   transfer-rules.describeTransferProgress(task, tickets)    轉交進度文字「轉交量 N／點收量 M／良品 K」
+//   transfer-rules.describeTransferProgress(task, tickets)    轉交進度文字「N／M」（搬運量／點收量）
 //   store.editWorkReport(reportId, { input_qty?, good_qty?, defect_qty?, reason, by })
 //   store.receiveTransfer(ticketId, { by, quantities })      點收單一動作，已點收的單再點收一筆也走這一支
 //   store.editTransferQty(ticketId, { taskId, qty, reason, by })
-//     搬運數量修改（新契約，等 tasks 5.6 實作）：開始搬運後只能經這一支更正；修改原因必填；
+//     搬運數量修正（新契約，等 tasks 5.6 實作）：開始搬運後只能經這一支更正；修正原因必填；
 //     改後大於 0、不得低於該明細的點收數量；調升受轉交可申請上限管制（先還回本單原佔用）；
-//     每次記一筆搬運數量修改並寫入轉交單歷程；不改單頭狀態。
-// 轉交量沿用既有 calcOccupiedQty，轉交可申請上限沿用既有 calcMovableQty。
+//     每次記一筆搬運數量修正並寫入轉交單歷程；不改單頭狀態。
+// 搬運量沿用既有 calcOccupiedQty，轉交可申請上限沿用既有 calcMovableQty。
 
 const {
   calcMovableQty,
@@ -80,7 +80,7 @@ describe('10.32 生產任務轉交狀態推導：推導條件逐格', () => {
     expect(deriveTransferStatus(taskOf({ status: '已作廢', good_qty: 200 }), tickets)).toBe('－');
   });
 
-  it('轉交點收量取點收紀錄合計，不取設定量', () => {
+  it('點收量取點收紀錄合計，不取設定量', () => {
     const tickets = [ticketOf('t1', '已點收', 500, [480])];
     expect(calcTransferReceivedQty(TASK_ID, tickets)).toBe(480);
     expect(calcOccupiedQty(TASK_ID, tickets)).toBe(500);
@@ -92,7 +92,7 @@ describe('10.32 生產任務轉交狀態推導：各走法', () => {
     const task = taskOf({ status: '已完成', good_qty: 1000 });
     const firstReceived = [ticketOf('t1', '已點收', 500, [500]), ticketOf('t2', '搬運中', 500)];
     expect(deriveTransferStatus(task, firstReceived)).toBe('待點收');
-    expect(describeTransferProgress(task, firstReceived)).toBe('轉交量 1,000／點收量 500／良品 1,000');
+    expect(describeTransferProgress(task, firstReceived)).toBe('1,000／500');
 
     const bothReceived = [ticketOf('t1', '已點收', 500, [500]), ticketOf('t2', '已點收', 500, [500])];
     expect(deriveTransferStatus(task, bothReceived)).toBe('已轉交');
@@ -104,7 +104,7 @@ describe('10.32 生產任務轉交狀態推導：各走法', () => {
     expect(deriveTransferStatus(taskOf({ status: '已完成', good_qty: 200 }), tickets)).toBe('已轉交');
   });
 
-  it('在途作廢：唯一一張搬運中的單作廢後轉交量 0，回到待轉交', () => {
+  it('在途作廢：唯一一張搬運中的單作廢後搬運量 0，回到待轉交', () => {
     const task = taskOf({ good_qty: 300 });
     expect(deriveTransferStatus(task, [ticketOf('t1', '搬運中', 300)])).toBe('轉交中');
     const voided = [ticketOf('t1', '已作廢', 300)];
@@ -128,12 +128,12 @@ describe('10.32 生產任務轉交狀態推導：各走法', () => {
 });
 
 describe('10.39 轉交狀態兩條邊界（純函式）', () => {
-  it('任務已完成但良品多於轉交量時停在轉交中；補建 100 並點收後轉已轉交', () => {
+  it('任務已完成但良品多於搬運量時停在轉交中；補建 100 並點收後轉已轉交', () => {
     // 合成：良品 1,000，已建單合計 900 且已全數點收；印務在印件層短出結案把任務推到已完成
     const task = taskOf({ status: '已完成', good_qty: 1000 });
     const before = [ticketOf('t1', '已點收', 900, [900])];
     expect(deriveTransferStatus(task, before)).toBe('轉交中');
-    expect(describeTransferProgress(task, before)).toBe('轉交量 900／點收量 900／良品 1,000');
+    expect(describeTransferProgress(task, before)).toBe('900／900');
 
     const after = [...before, ticketOf('t2', '已點收', 100, [100])];
     expect(deriveTransferStatus(task, after)).toBe('已轉交');
@@ -144,11 +144,11 @@ describe('10.39 轉交狀態兩條邊界（純函式）', () => {
     expect(deriveTransferStatus(task, [ticketOf('t1', '已點收', 900, [900])])).toBe('轉交中');
   });
 
-  it('轉交點收量多於良品時落在轉交中，進度文字照實顯示', () => {
+  it('點收量多於良品時落在轉交中，進度文字照實顯示', () => {
     const task = taskOf({ status: '已完成', good_qty: 480 });
     const tickets = [ticketOf('t1', '已點收', 500, [480, 20])];
     expect(deriveTransferStatus(task, tickets)).toBe('轉交中');
-    expect(describeTransferProgress(task, tickets)).toBe('轉交量 500／點收量 500／良品 480');
+    expect(describeTransferProgress(task, tickets)).toBe('500／500');
     expect(deriveTransferStatus({ ...task, good_qty: 500 }, tickets)).toBe('已轉交');
   });
 });
@@ -180,14 +180,14 @@ describe('10.33 短少確定找不到：先改搬運數量、再改報工，轉�
 
   const ticket015 = () => tickets().find((t) => t.id === 'tt-015');
 
-  it('起點：良品 500、轉交點收量 480，待點收，轉交可申請上限 0', () => {
+  it('起點：良品 500、點收量 480，待點收，轉交可申請上限 0', () => {
     expect(certTask().good_qty).toBe(500);
     expect(calcTransferReceivedQty('pt-0812-2', tickets())).toBe(480);
     expect(deriveTransferStatus(certTask(), tickets())).toBe('待點收');
     expect(calcMovableQty(certTask(), tickets())).toBe(0);
   });
 
-  it('搬運數量修改沒填原因、改到點收數量 480 以下、或改為 0 都擋下，數字不變', () => {
+  it('搬運數量修正沒填原因、改到點收數量 480 以下、或改為 0 都擋下，數字不變', () => {
     const noReason = floor().editTransferQty('tt-015', { taskId: 'pt-0812-2', qty: 480, reason: '', by: '許文傑' });
     expect(noReason.ok).toBe(false);
     expect(noReason.error).toContain('原因');
@@ -205,7 +205,7 @@ describe('10.33 短少確定找不到：先改搬運數量、再改報工，轉�
     expect(ticket015().details[0].qty).toBe(500);
   });
 
-  it('生管把搬運數量改為 480（原因自由填寫）→ 轉交量 480、單頭維持已點收，歷程記改前 500、改後 480', () => {
+  it('生管把搬運數量改為 480（原因自由填寫）→ 搬運量 480、單頭維持已點收，歷程記改前 500、改後 480', () => {
     const result = floor().editTransferQty('tt-015', {
       taskId: 'pt-0812-2',
       qty: 480,
@@ -223,7 +223,7 @@ describe('10.33 短少確定找不到：先改搬運數量、再改報工，轉�
     expect(last.actor).toBe('許文傑');
   });
 
-  it('再由印務把報工良品 500 改 480、不良品 15 改 35（生產數量 515 不變）→ 轉交量 480／點收量 480／良品 480，已轉交、上限 0', () => {
+  it('再由印務把報工良品 500 改 480、不良品 15 改 35（生產數量 515 不變）→ 搬運量 480／點收量 480／良品 480，已轉交、上限 0', () => {
     floor().editTransferQty('tt-015', { taskId: 'pt-0812-2', qty: 480, reason: '現場清點只有 480', by: '許文傑' });
     const edit = floor().editWorkReport('wr-0018', {
       good_qty: 480,
@@ -234,7 +234,7 @@ describe('10.33 短少確定找不到：先改搬運數量、再改報工，轉�
     expect(edit.ok).toBe(true);
     expect(certTask().good_qty).toBe(480);
     expect(certTask().input_qty).toBe(515);
-    expect(describeTransferProgress(certTask(), tickets())).toBe('轉交量 480／點收量 480／良品 480');
+    expect(describeTransferProgress(certTask(), tickets())).toBe('480／480');
     expect(deriveTransferStatus(certTask(), tickets())).toBe('已轉交');
     expect(calcMovableQty(certTask(), tickets())).toBe(0);
   });
@@ -249,7 +249,7 @@ describe('10.39 轉交狀態兩條邊界（鏈外 WO-2026-0812 證書四色印�
     floor().editWorkReport('wr-0018', { good_qty: 480, defect_qty: 35, reason: '現場清點只有 480', by: '周建宏' });
   });
 
-  it('貨找回後再點收一筆 20：系統不以良品數擋下，落在轉交中，「轉交量 500／點收量 500／良品 480」', () => {
+  it('貨找回後再點收一筆 20：系統不以良品數擋下，落在轉交中，「500／500」', () => {
     expect(deriveTransferStatus(certTask(), tickets())).toBe('已轉交');
     const again = floor().receiveTransfer('tt-015', {
       by: '許文傑',
@@ -257,7 +257,7 @@ describe('10.39 轉交狀態兩條邊界（鏈外 WO-2026-0812 證書四色印�
     });
     expect(again.ok).toBe(true);
     expect(deriveTransferStatus(certTask(), tickets())).toBe('轉交中');
-    expect(describeTransferProgress(certTask(), tickets())).toBe('轉交量 500／點收量 500／良品 480');
+    expect(describeTransferProgress(certTask(), tickets())).toBe('500／500');
   });
 
   it('印務把報工良品改回 500 後轉已轉交', () => {
@@ -270,6 +270,6 @@ describe('10.39 轉交狀態兩條邊界（鏈外 WO-2026-0812 證書四色印�
     });
     expect(edit.ok).toBe(true);
     expect(deriveTransferStatus(certTask(), tickets())).toBe('已轉交');
-    expect(describeTransferProgress(certTask(), tickets())).toBe('轉交量 500／點收量 500／良品 500');
+    expect(describeTransferProgress(certTask(), tickets())).toBe('500／500');
   });
 });

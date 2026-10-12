@@ -20,8 +20,8 @@ import {
   voidTicket,
 } from './_ch10.mjs';
 
-// 情境目錄 10.27～10.30、10.33～10.36、10.38、10.39、10.59：點收單一動作、再點收一筆、點收修改與點收紀錄作廢、
-// 點收前可作廢、搬運數量修改、報工修改與作廢共用擋下條件、作廢重開重走搬運。
+// 情境目錄 10.27～10.30、10.33～10.36、10.38、10.39、10.59：點收單一動作、再點收一筆、點收修正與點收紀錄作廢、
+// 點收前可作廢、搬運數量修正、報工修正與作廢共用擋下條件、作廢重開重走搬運。
 // 2026-10-06 改版：不分首次與再次點收、不設代點收；修改原因自由填寫、不驗固定字樣。
 // 純函式段（10.26、10.31、10.32、10.37 與各節的合成資料）在 tests/unit/production-floor/。
 // 起點資料：鏈外 WO-2026-0812（TT-20260827-001 已點收 480／搬運數量 500；TT-20260827-002 已送達，
@@ -39,13 +39,13 @@ test('10.27 點收單一動作：逐條填實際量，第一筆轉已點收；�
   // 點收前：兩筆任務的轉交進度點收量為 0，不另設送達待收的標記
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0812');
-  await expect(taskRows(page).filter({ hasText: '信封四色印刷' }).first()).toContainText('轉交量 300／點收量 0／良品 300');
-  await expect(taskRows(page).filter({ hasText: '內卡四色印刷' }).first()).toContainText('轉交量 200／點收量 0／良品 200');
+  await expect(taskRows(page).filter({ hasText: '信封四色印刷' }).first()).toContainText('300／0');
+  await expect(taskRows(page).filter({ hasText: '內卡四色印刷' }).first()).toContainText('200／0');
 
   // 生管在點收佇列點收：對話框每條明細一列（帶目的站點），點收數量可改、可填備註
   await switchRole(page, '生管');
   await gotoInApp(page, '/production-floor/receiving');
-  await page.locator('tr.ant-table-row', { hasText: 'TT-20260827-002' }).getByRole('button', { name: '點收' }).click();
+  await page.locator('tr.ant-table-row', { hasText: 'TT-20260827-002' }).getByRole('button', { name: '點收', exact: true }).click();
   const dialog = dialogOf(page, '點收');
   await expect(dialog).toContainText('裁切站');
   const cardLine = dialog.locator('tr', { hasText: '內卡四色印刷' });
@@ -53,10 +53,10 @@ test('10.27 點收單一動作：逐條填實際量，第一筆轉已點收；�
   const cardInput = cardLine.locator('.ant-input-number-input');
   const envelopeInput = envelopeLine.locator('.ant-input-number-input');
 
-  // 內卡清空（輸入框最小只收 1，填 0 會被框成 1；填 0 的擋下由資料層把關，見 10.59 純函式）：擋下，提示請填點收量
+  // 內卡清空（輸入框最小只收 1，填 0 會被框成 1；填 0 的擋下由資料層把關，見 10.59 純函式）：擋下，提示請填點收數量
   await cardInput.fill('');
   await confirmDialog(dialog);
-  await expect(noticeOf(page, /請填點收量/)).toBeVisible();
+  await expect(noticeOf(page, /請填點收數量/)).toBeVisible();
 
   // 內卡 200、信封改填 280 並備註「少一落，待查」後送出成立
   await cardInput.fill('200');
@@ -75,13 +75,13 @@ test('10.27 點收單一動作：逐條填實際量，第一筆轉已點收；�
   await expect(drawer.getByText(/代點收/)).toHaveCount(0);
   await closeDrawer(page);
 
-  // 工單任務列表：轉交進度照實顯示轉交量、點收量與良品數
+  // 工單任務列表：轉交進度照實顯示搬運量與點收量
   await switchRole(page, '印務');
   const envelopeRow = await certWorkOrderTaskRow(page, '信封四色印刷');
-  await expect(envelopeRow).toContainText('轉交量 300／點收量 280／良品 300');
+  await expect(envelopeRow).toContainText('300／280');
   await expect(envelopeRow).not.toContainText('有貨待點收');
   const cardRow = taskRows(page).filter({ hasText: '內卡四色印刷' }).first();
-  await expect(cardRow).toContainText('轉交量 200／點收量 200／良品 200');
+  await expect(cardRow).toContainText('200／200');
 });
 
 test('10.28 已送達的單可作廢重建，或照實點收', async ({ page }) => {
@@ -90,8 +90,8 @@ test('10.28 已送達的單可作廢重建，或照實點收', async ({ page }) 
   await openAs(page, '生管', '/production-floor/transfers');
   const arrivedRow = page.locator('tr', { hasText: 'TT-20260830-002' });
   await expect(arrivedRow).toContainText('已送達');
-  await expect(arrivedRow.getByRole('button', { name: '作廢' })).toHaveCount(1);
-  await arrivedRow.getByRole('button', { name: '作廢' }).click();
+  await expect(arrivedRow.getByRole('button', { name: '作廢', exact: true })).toHaveCount(1);
+  await arrivedRow.getByRole('button', { name: '作廢', exact: true }).click();
   const voidDialog = dialogOf(page, '作廢轉交單');
   await expect(formItemOf(voidDialog, '作廢原因').locator('textarea, input').first()).toBeEditable();
   await expect(formItemOf(voidDialog, '作廢原因').locator('.ant-select')).toHaveCount(0);
@@ -135,7 +135,7 @@ test('10.29 貨補到後對同一明細再點收一筆，點收數量可超過�
   const dialog = dialogOf(page, '點收');
   await dialog.locator('.ant-input-number-input').first().fill('20');
   await confirmDialog(dialog);
-  await expect(subCell(subRow, '點收數量')).toHaveText('500');
+  await expect(subCell(subRow, '點收量')).toHaveText('500');
   // 最近點收改為這一筆（點收人許文傑）
   await expect(subCell(subRow, '最近點收')).toContainText('許文傑');
   const drawer = await openTicketDrawer(page, 'TT-20260827-001');
@@ -152,13 +152,13 @@ test('10.29 貨補到後對同一明細再點收一筆，點收數量可超過�
   await expect(certRow).toContainText('已轉交');
 });
 
-test('10.30 收貨人點錯數修改點收數量與備註並填原因；點收紀錄可作廢', async ({ page }) => {
+test('10.30 收貨人點錯數修正點收數量與備註並填原因；點收紀錄可作廢', async ({ page }) => {
   test.setTimeout(120_000);
-  // 點收佇列的「修改」：每條明細帶目前的點收數量與備註，另多一格必填的修改原因
+  // 點收佇列的「修正點收紀錄」：每條明細帶目前的點收數量與備註，另多一格必填的修改原因
   await openAs(page, '生管', '/production-floor/receiving');
   const row = page.locator('tr.ant-table-row', { hasText: 'TT-20260827-001' });
-  await row.getByRole('button', { name: '修改' }).click();
-  const dialog = dialogOf(page, '修改');
+  await row.getByRole('button', { name: '修正點收紀錄' }).click();
+  const dialog = dialogOf(page, '修正');
   const certLine = dialog.locator('tr', { hasText: '證書四色印刷' });
   const certInput = certLine.locator('.ant-input-number-input');
   await expect(certInput).toHaveValue(/^480$/); // 帶目前的點收數量
@@ -167,13 +167,13 @@ test('10.30 收貨人點錯數修改點收數量與備註並填原因；點收�
   // 改成 490、不填原因：擋下送出
   await certInput.fill('490');
   await confirmDialog(dialog);
-  await expect(noticeOf(page, /修改原因/)).toBeVisible();
+  await expect(noticeOf(page, /修正原因/)).toBeVisible();
 
   // 改備註、填原因「重點數量」後送出成立：點收數量 490，列留在佇列上
   await certLine.locator('textarea, input:not(.ant-input-number-input)').first().fill('第二落在門邊');
-  await formItemOf(dialog, '修改原因').locator('textarea').first().fill('重點數量');
+  await formItemOf(dialog, '修正原因').locator('textarea').first().fill('重點數量');
   await confirmDialog(dialog);
-  await expect(noticeOf(page, /已修改 TT-20260827-001/)).toBeVisible();
+  await expect(noticeOf(page, /已修正 TT-20260827-001/)).toBeVisible();
   await expect(row).toContainText('已點收');
 
   // 歷程記點收量與備註的修改前後值與原因；證書裁切的到料量隨之改為 490（見 10.31）
@@ -185,9 +185,8 @@ test('10.30 收貨人點錯數修改點收數量與備註並填原因；點收�
   await expect(drawer).toContainText('重點數量');
   await closeDrawer(page);
 
-  // 子層明細列另有「作廢點收紀錄」：沒填原因擋下（作廢成立的走法以純函式驗，見 10.52）
-  const subRow = await ticketDetailSubRow(page, 'TT-20260827-001', '證書四色印刷');
-  await voidReceipt(page, subRow, null);
+  // 母層列另有「作廢點收紀錄」（2026-10-12 由子層移到母層）：勾選一筆、沒填原因擋下（作廢成立的走法以純函式驗，見 10.52）
+  await voidReceipt(page, row, null, { taskName: '證書四色印刷' });
   await expect(noticeOf(page, /作廢原因/)).toBeVisible();
 });
 
@@ -197,7 +196,7 @@ test('10.33 短少確定找不到：先改搬運數量、再改報工，轉交�
   await openAs(page, '生管', '/production-floor/transfers');
   const subRow = await ticketDetailSubRow(page, 'TT-20260827-001', '證書四色印刷');
 
-  // 搬運數量修改：改為 470 擋下（不得低於點收數量 480）、改為 0 擋下；改為 480 並填原因成立
+  // 搬運數量修正：改為 470 擋下（不得低於點收數量 480）、改為 0 擋下；改為 480 並填原因成立
   await editMoveQty(page, subRow, { qty: 470, reason: '現場清點只有 480' });
   await expect(noticeOf(page, /480/)).toBeVisible();
   await page.keyboard.press('Escape');
@@ -221,7 +220,7 @@ test('10.33 短少確定找不到：先改搬運數量、再改報工，轉交�
 
   const certRow = await certWorkOrderTaskRow(page, '證書四色印刷');
   await expect(certRow).toContainText('已轉交');
-  await expect(certRow).toContainText('轉交量 480／點收量 480／良品 480');
+  await expect(certRow).toContainText('480／480');
 
   // 轉交可申請上限 0：生管的待轉交任務不出現證書四色印刷
   await switchRole(page, '生管');
@@ -229,15 +228,15 @@ test('10.33 短少確定找不到：先改搬運數量、再改報工，轉交�
   await expect(page.locator('tr', { hasText: '證書四色印刷' })).toHaveCount(0);
 });
 
-test('10.34 報工修改三欄可改、原因必填、留修改紀錄、調升不擋', async ({ page }) => {
+test('10.34 報工修正三欄可改、原因必填、留修改紀錄、調升不擋', async ({ page }) => {
   test.setTimeout(120_000);
   await openAs(page, '印務', '/production-floor/work-packages');
   const reports = await openPackageReports(page, 'WP-2026-0812-01');
   const row = reportRowOf(reports, '2026-08-25 16:30');
 
   // 修改對話框開放生產數量、良品數、不良品數三欄與備註
-  await row.getByRole('button', { name: '修改' }).click();
-  const dialog = dialogOf(page, '修改');
+  await row.getByRole('button', { name: '修正', exact: true }).click();
+  const dialog = dialogOf(page, '修正');
   await expect(dialog.locator('.ant-input-number')).toHaveCount(3);
   await expect(formItemOf(dialog, '生產數量')).toBeVisible();
   await expect(formItemOf(dialog, '良品數')).toBeVisible();
@@ -246,10 +245,10 @@ test('10.34 報工修改三欄可改、原因必填、留修改紀錄、調升�
   // 只把良品改為 480、不填原因：擋下送出
   await formItemOf(dialog, '良品數').locator('input').fill('480');
   await confirmDialog(dialog);
-  await expect(noticeOf(page, /修改原因/)).toBeVisible();
+  await expect(noticeOf(page, /修正原因/)).toBeVisible();
 
   // 填原因（自由填寫）後送出成立
-  await formItemOf(dialog, '修改原因').locator('input, textarea').first().fill('現場清點後更正');
+  await formItemOf(dialog, '修正原因').locator('input, textarea').first().fill('現場清點後更正');
   await confirmDialog(dialog);
   await expect(row).toContainText('480');
 
@@ -258,7 +257,7 @@ test('10.34 報工修改三欄可改、原因必填、留修改紀錄、調升�
   await expect(row).toContainText('500');
   await closeDrawer(page);
 
-  // 任務歷程新增一筆報工修改，前後值列良品數 500 → 480
+  // 任務歷程新增一筆報工修正，前後值列良品數 500 → 480
   await gotoInApp(page, '/production-floor/work-packages');
   const pkgRow = page.locator('.ant-table-row', { hasText: 'WP-2026-0812-01' });
   await pkgRow.getByLabel('展開行').click();
@@ -271,7 +270,7 @@ test('10.34 報工修改三欄可改、原因必填、留修改紀錄、調升�
   await expect(history).toContainText('良品數：500 → 480');
 });
 
-test('10.35 報工修改與作廢共用擋下條件：在途與已點收量、下游已動工、已驗量；擋下時指出卡在哪一筆', async ({ page }) => {
+test('10.35 報工修正與作廢共用擋下條件：在途與已點收量、下游已動工、已驗量；擋下時指出卡在哪一筆', async ({ page }) => {
   test.setTimeout(120_000);
   // 海報四色印刷第二筆報工（投入 1,000、良品 1,000）的良品改為 900：改後 1,890 低於 1,990，擋下並列出兩張單
   await openAs(page, '印務', '/production-floor/work-packages');
@@ -293,7 +292,7 @@ test('10.35 報工修改與作廢共用擋下條件：在途與已點收量、�
   // 切角色後頁面還停在所有工作包（師傅沒有這個單元的操作）：先進我的工作包再開報工紀錄
   await gotoInApp(page, '/production-floor/work-packages/mine');
   const envelopeReports = await openPackageReports(page, 'WP-2026-0812-01');
-  await reportRowOf(envelopeReports, '2026-08-26 15:40').getByRole('button', { name: '作廢' }).click();
+  await reportRowOf(envelopeReports, '2026-08-26 15:40').getByRole('button', { name: '作廢', exact: true }).click();
   // 作廢原因為文字欄、自由填寫（wiki 報工紀錄 § 作廢原因）
   await page.locator('.ant-form-item', { hasText: '作廢原因' }).locator('textarea, input').first().fill('誤報');
   await page.getByRole('button', { name: '作廢這筆報工' }).click();
@@ -302,17 +301,17 @@ test('10.35 報工修改與作廢共用擋下條件：在途與已點收量、�
   await expect(voidBlocked).toContainText('先照實點收');
 });
 
-test('10.36 已完成任務可修改與作廢報工；修改或作廢跌破目標退回製作中；已完成任務擋下新增報工', async ({ page }) => {
+test('10.36 已完成任務可修正與作廢報工；修正或作廢跌破目標退回製作中；已完成任務擋下新增報工', async ({ page }) => {
   test.setTimeout(120_000);
-  // 證書四色印刷（已完成）那筆報工：修改與作廢都在
+  // 證書四色印刷（已完成）那筆報工：修正與作廢都在
   await openAs(page, '印務', '/production-floor/work-packages');
   const reports = await openPackageReports(page, 'WP-2026-0812-01');
   const row = reportRowOf(reports, '2026-08-25 16:30');
-  await expect(row.getByRole('button', { name: '作廢' })).toHaveCount(1);
-  await expect(row.getByRole('button', { name: '修改' })).toBeEnabled();
+  await expect(row.getByRole('button', { name: '作廢', exact: true })).toHaveCount(1);
+  await expect(row.getByRole('button', { name: '修正', exact: true })).toBeEnabled();
 
   // 作廢不因任務已完成擋下，而是被 TT-20260827-001 已點收的 480 擋下
-  await row.getByRole('button', { name: '作廢' }).click();
+  await row.getByRole('button', { name: '作廢', exact: true }).click();
   // 作廢原因為文字欄、自由填寫（wiki 報工紀錄 § 作廢原因）
   await page.locator('.ant-form-item', { hasText: '作廢原因' }).locator('textarea, input').first().fill('整筆不該存在');
   await page.getByRole('button', { name: '作廢這筆報工' }).click();
@@ -353,7 +352,7 @@ test('10.38 搬運中作廢重開沿用原單目的地、重走搬運，沒有�
   await voidTicket(page, movingRow, '數量填錯');
   await expect(page.locator('.ant-message').getByText(/TT-20260830-003 已作廢/)).toBeVisible();
 
-  // 作廢成立當下明細退出轉交量：海報四色印刷的可搬量由 0 回到 800
+  // 作廢成立當下明細退出搬運量：海報四色印刷的可搬量由 0 回到 800
   await gotoInApp(page, '/production-floor/pending-moves');
   await expect(page.locator('tr', { hasText: '海報四色印刷' })).toContainText('800');
 
@@ -375,7 +374,7 @@ test('10.38 搬運中作廢重開沿用原單目的地、重走搬運，沒有�
   await expect(subCell(newSub, '目的站點')).toHaveText('裁切站');
 });
 
-test('10.39 轉交狀態兩條邊界：轉交點收量多於良品時點收不擋、落在轉交中', async ({ page }) => {
+test('10.39 轉交狀態兩條邊界：點收量多於良品時點收不擋、落在轉交中', async ({ page }) => {
   test.setTimeout(180_000);
   // 前置：印務把證書四色印刷的報工良品改為 480、不良品改為 35（點收數量 480）
   await openAs(page, '印務', '/production-floor/work-packages');
@@ -392,12 +391,12 @@ test('10.39 轉交狀態兩條邊界：轉交點收量多於良品時點收不�
   const again = dialogOf(page, '點收');
   await again.locator('.ant-input-number-input').first().fill('20');
   await confirmDialog(again);
-  await expect(subCell(subRow, '點收數量')).toHaveText('500');
+  await expect(subCell(subRow, '點收量')).toHaveText('500');
 
   await switchRole(page, '印務');
   let certRow = await certWorkOrderTaskRow(page, '證書四色印刷');
   await expect(certRow).toContainText('轉交中');
-  await expect(certRow).toContainText('轉交量 500／點收量 500／良品 480');
+  await expect(certRow).toContainText('500／500');
 
   // 印務再把報工良品改回 500、不良品改回 15 → 已轉交
   reports = await openPackageReports(page, 'WP-2026-0812-01');
@@ -405,21 +404,21 @@ test('10.39 轉交狀態兩條邊界：轉交點收量多於良品時點收不�
   await closeDrawer(page);
   certRow = await certWorkOrderTaskRow(page, '證書四色印刷');
   await expect(certRow).toContainText('已轉交');
-  await expect(certRow).toContainText('轉交量 500／點收量 500／良品 500');
+  await expect(certRow).toContainText('500／500');
 });
 
 test('10.59 點收時每條明細都要填且大於 0，任一條未填擋下整次點收；已點收後可只對單條明細再點收', async ({ page }) => {
   test.setTimeout(120_000);
   // 生管在點收佇列對 TT-20260827-002 按點收：信封清空、只留內卡 200 送出 → 整次擋下
   await openAs(page, '生管', '/production-floor/receiving');
-  await page.locator('tr.ant-table-row', { hasText: 'TT-20260827-002' }).getByRole('button', { name: '點收' }).click();
+  await page.locator('tr.ant-table-row', { hasText: 'TT-20260827-002' }).getByRole('button', { name: '點收', exact: true }).click();
   const dialog = dialogOf(page, '點收');
   const cardInput = dialog.locator('tr', { hasText: '內卡四色印刷' }).locator('.ant-input-number-input');
   const envelopeInput = dialog.locator('tr', { hasText: '信封四色印刷' }).locator('.ant-input-number-input');
   await cardInput.fill('200');
   await envelopeInput.fill('');
   await confirmDialog(dialog);
-  await expect(noticeOf(page, /請填點收量/)).toBeVisible();
+  await expect(noticeOf(page, /請填點收數量/)).toBeVisible();
 
   // 沒有任何點收紀錄寫入：單維持已送達，兩條明細的點收數量都沒有出現（內卡那一條也沒收）
   await dialog.getByRole('button', { name: '取消' }).click();
@@ -431,7 +430,7 @@ test('10.59 點收時每條明細都要填且大於 0，任一條未填擋下整
 
   // 兩條都填後成立：單轉已點收
   await gotoInApp(page, '/production-floor/receiving');
-  await page.locator('tr.ant-table-row', { hasText: 'TT-20260827-002' }).getByRole('button', { name: '點收' }).click();
+  await page.locator('tr.ant-table-row', { hasText: 'TT-20260827-002' }).getByRole('button', { name: '點收', exact: true }).click();
   const again = dialogOf(page, '點收');
   await again.locator('tr', { hasText: '內卡四色印刷' }).locator('.ant-input-number-input').fill('200');
   await again.locator('tr', { hasText: '信封四色印刷' }).locator('.ant-input-number-input').fill('280');
@@ -444,5 +443,5 @@ test('10.59 點收時每條明細都要填且大於 0，任一條未填擋下整
   const extra = dialogOf(page, '點收');
   await extra.locator('.ant-input-number-input').first().fill('20');
   await confirmDialog(extra);
-  await expect(subCell(subRow, '點收數量')).toHaveText('300');
+  await expect(subCell(subRow, '點收量')).toHaveText('300');
 });

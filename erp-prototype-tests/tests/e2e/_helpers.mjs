@@ -221,7 +221,7 @@ export const taskRows = (page) =>
   );
 
 /**
- * 報工對話框送出前，為每一列附一張現場照片（報工照片必填，Miles 2026-10-06 拍板 R9）。
+ * 報工對話框送出前，為每一列附一張報工照片（報工照片必填，Miles 2026-10-06 拍板 R9）。
  * 只動目前顯示中的報工對話框；沒填數量的列一併附照不影響檢核。
  */
 export async function attachReportPhotos(page) {

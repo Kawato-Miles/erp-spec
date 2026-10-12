@@ -40,7 +40,7 @@ async function openTaskDrawer(page, taskName, workOrderNo) {
   return drawer;
 }
 
-test('10.41 報工時可填備註，修改報工時可改；報工紀錄與歷程顯示備註', async ({ page }) => {
+test('10.41 報工時可填備註，修正報工時可改；報工紀錄與歷程顯示備註', async ({ page }) => {
   test.setTimeout(120_000);
   await openAs(page, '師傅', '/production-floor/work-packages');
   const row = await packageTaskRow(page, 'WP-2026-0710-01', '海報四色印刷');
@@ -68,12 +68,12 @@ test('10.41 報工時可填備註，修改報工時可改；報工紀錄與歷�
   await expect(newRow).toBeVisible();
 
   // 修改：備註帶出原值、可改；儲存後修改紀錄記備註的改前改後
-  await newRow.getByRole('button', { name: '修改' }).click();
-  const edit = dialogOf(page, '修改報工');
+  await newRow.getByRole('button', { name: '修正', exact: true }).click();
+  const edit = dialogOf(page, '修正報工');
   const remark = formItemOf(edit, '備註').locator('textarea');
   await expect(remark).toHaveValue('換版後第二批，色偏已調回');
   await remark.fill('換版後第二批，色偏已調回；首件已比對');
-  await formItemOf(edit, '修改原因').locator('textarea').fill('補記首件');
+  await formItemOf(edit, '修正原因').locator('textarea').fill('補記首件');
   await confirmDialog(edit);
   const edited = reports
     .locator('tr.ant-table-row', { hasText: '換版後第二批，色偏已調回；首件已比對' })
@@ -81,10 +81,10 @@ test('10.41 報工時可填備註，修改報工時可改；報工紀錄與歷�
   await expect(edited).toContainText('備註');
   await closeDrawer(page);
 
-  // 歷程：最上一筆是報工修改（備註前後值），下一筆是報工（備註與生產數量前後值）
+  // 歷程：最上一筆是報工修正（備註前後值），下一筆是報工（備註與生產數量前後值）
   const drawer = await openTaskDrawer(page, '海報四色印刷', 'WO-2026-0710');
   const items = drawer.locator('.ant-timeline-item');
-  await expect(items.first()).toContainText('報工修改（補記首件）');
+  await expect(items.first()).toContainText('報工修正（補記首件）');
   await expect(items.first()).toContainText('備註：換版後第二批，色偏已調回 → 換版後第二批，色偏已調回；首件已比對');
   await expect(items.nth(1)).toContainText('備註：換版後第二批，色偏已調回');
   await expect(items.nth(1)).toContainText('生產數量：2,000 → 2,500');
@@ -109,15 +109,15 @@ test('10.42 生產數量大於 0 時，良品數與不良品數不可同時為 0
     '2,000 / 3,090',
   );
 
-  // 修改既有報工把良品與不良品都改為 0：擋下、數字不變
+  // 修正既有報工把良品與不良品都改為 0：擋下、數字不變
   await switchRole(page, '印務');
   const reports = await openPackageReports(page, 'WP-2026-0812-01');
   const wr = reportRowOf(reports, '2026-08-25 16:30');
-  await wr.getByRole('button', { name: '修改' }).click();
-  const edit = dialogOf(page, '修改報工');
+  await wr.getByRole('button', { name: '修正', exact: true }).click();
+  const edit = dialogOf(page, '修正報工');
   await formItemOf(edit, '良品數').locator('input').fill('0');
   await formItemOf(edit, '不良品數').locator('input').fill('0');
-  await formItemOf(edit, '修改原因').locator('textarea').fill('誤報');
+  await formItemOf(edit, '修正原因').locator('textarea').fill('誤報');
   await confirmDialog(edit);
   await expect(noticeOf(page, '生產數量大於 0 時，良品數與不良品數不可同時為 0')).toBeVisible();
   await page.keyboard.press('Escape');
@@ -129,7 +129,7 @@ test('10.43 生產任務歷程統合報工、轉交、點收、交付與接收�
   page,
 }) => {
   test.setTimeout(180_000);
-  // 生管看證書四色印刷的側板歷程：新到舊，抵達附簽收照片、轉交單連結；報工附現場照片
+  // 生管看證書四色印刷的側板歷程：新到舊，抵達附簽收照片、轉交單連結；報工附報工照片
   await openAs(page, '生管', '/production-floor/dispatch');
   const drawer = await openTaskDrawer(page, '證書四色印刷', 'WO-2026-0812');
   const history = drawer.locator('.ant-timeline');
@@ -192,7 +192,7 @@ test('10.43 生產任務歷程統合報工、轉交、點收、交付與接收�
   await expect(page.locator('.ant-drawer-content:visible').last()).toContainText('TT-20260830-003');
   await closeDrawer(page);
 
-  // 搬運數量修改記入來源任務歷程：TT-20260830-003 那條明細 800 改為 790 並填原因
+  // 搬運數量修正記入來源任務歷程：TT-20260830-003 那條明細 800 改為 790 並填原因
   const subRow = await ticketDetailSubRow(page, 'TT-20260830-003', '海報四色印刷');
   await editMoveQty(page, subRow, { qty: 790, reason: '裝車時少十張' });
   const posterAfter = await openTaskDrawer(page, '海報四色印刷', 'WO-2026-0710');

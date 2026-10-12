@@ -41,7 +41,7 @@ const historyOf = (id) =>
     floorTasks: floor().tasks,
   });
 
-describe('10.41 報工時填備註，修改報工時可改；歷程顯示備註與照片', () => {
+describe('10.41 報工時填備註，修正報工時可改；歷程顯示備註與照片', () => {
   // 鏈二 WP-2026-0710-01 的海報四色印刷（pt-0710-2，製作中、已報 2,000、目標 3,090）
   it('師傅報工 500 並填備註：報工紀錄留備註，任務歷程那一筆帶備註、照片與三個累計的前後值', () => {
     const result = floor().submitWorkReport('pt-0710-2', {
@@ -75,7 +75,7 @@ describe('10.41 報工時填備註，修改報工時可改；歷程顯示備註�
     expect(result.report.remark).toBeNull();
   });
 
-  it('修改報工只改備註：修改紀錄記「備註」前後值，數字不動，任務歷程記一筆備註前後值', () => {
+  it('修正報工只改備註：報工修正紀錄記「備註」前後值，數字不動，任務歷程記一筆備註前後值', () => {
     const before = reportById('wr-0018');
     const result = floor().editWorkReport('wr-0018', {
       remark: '首件比對後才放量',
@@ -102,7 +102,7 @@ describe('10.41 報工時填備註，修改報工時可改；歷程顯示備註�
 describe('10.42 生產數量大於 0 時，良品數與不良品數不可同時為 0', () => {
   it('純函式：投入 300、良品 0、不良品 0 擋下；不良品 300 或良品 1 都放行', () => {
     expect(isGoodAndDefectBothZero({ input_qty: 300, good_qty: 0, defect_qty: 0 })).toBe(true);
-    // 現場照片必填（10.49），這裡各附一張，只驗良品與不良品同時為 0 這一條
+    // 報工照片必填（10.49），這裡各附一張，只驗良品與不良品同時為 0 這一條
     const photos = ['現場照-001.jpg'];
     expect(validateReportRow({}, { input_qty: 300, good_qty: 0, defect_qty: 0, photos })).toContain(
       GOOD_DEFECT_BOTH_ZERO_ERROR,
@@ -113,7 +113,7 @@ describe('10.42 生產數量大於 0 時，良品數與不良品數不可同時�
     expect(validateReportRow({}, { input_qty: 300, good_qty: 1, defect_qty: 0, photos })).toEqual([]);
   });
 
-  it('修改報工把良品與不良品都改成 0：擋下並提示，數字不動', () => {
+  it('修正報工把良品與不良品都改成 0：擋下並提示，數字不動', () => {
     const result = floor().editWorkReport('wr-0018', {
       good_qty: 0,
       defect_qty: 0,

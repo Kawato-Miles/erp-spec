@@ -42,26 +42,26 @@ test('8.14 印務主管審核製程時任務列表帶出產線', async ({ page }
   await expectCell(page, '型錄四色雙面印刷', '產線', '數位產線');
 });
 
-test('8.15 工單詳情任務列表現場執行欄序、轉交進度三數與生產數量；外發任務交付後交付狀態顯示「－」', async ({ page }) => {
+test('8.15 工單詳情任務列表現場執行欄序、轉交進度兩數與生產數量；外發任務交付後交付狀態顯示「－」', async ({ page }) => {
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0812');
   await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0812' })).toBeVisible({
     timeout: 20_000,
   });
-  // 現場執行欄序：生產任務狀態、交付狀態、轉交狀態、轉交進度、生產數量（Miles 2026-10-06 拍板）
+  // 現場執行欄序：生產任務狀態、交付狀態、轉交狀態、生產數量、轉交進度（Miles 2026-10-12 拍板：生產數量移到轉交進度前）
   const floorHeaders = await page
     .locator('.ant-table-thead tr')
     .last()
     .locator('th')
     .allInnerTexts();
-  const order = ['生產任務狀態', '交付狀態', '轉交狀態', '轉交進度', '生產數量'].map((label) =>
+  const order = ['生產任務狀態', '交付狀態', '轉交狀態', '生產數量', '轉交進度'].map((label) =>
     floorHeaders.findIndex((text) => text.trim().startsWith(label)),
   );
   expect(order.every((i) => i >= 0)).toBe(true);
   expect([...order].sort((a, b) => a - b)).toEqual(order);
-  // 轉交進度表頭帶數值說明
+  // 轉交進度表頭為「轉交進度（搬運量／點收量）」
   await expect(
     page.locator('.ant-table-thead th').filter({ hasText: '轉交進度' }).first(),
-  ).toContainText('排進搬運／下游收下／良品');
+  ).toContainText('轉交進度（搬運量／點收量）');
 
   // WO-2026-0812 各列（情境目錄 8.15 表）
   await expectCell(page, '雪銅紙 150g 菊全', '生產任務狀態', '已完成');
@@ -69,7 +69,7 @@ test('8.15 工單詳情任務列表現場執行欄序、轉交進度三數與生
   await expectCell(page, '證書四色印刷', '生產任務狀態', '已完成');
   await expectCell(page, '證書四色印刷', '轉交狀態', '待點收');
   const certRow = taskRows(page).filter({ hasText: '證書四色印刷' });
-  await expect(certRow).toContainText('轉交量 500／點收量 480／良品 500');
+  await expect(certRow).toContainText('500／480');
   // 生產數量只顯示當前報工累計，下行良品與不良品，不再顯示「515 / 515」式分母
   await expectCell(page, '證書四色印刷', '生產數量', '515良品 500／不良品 15');
   await expect(certRow).not.toContainText('515 / 515');
@@ -84,9 +84,9 @@ test('8.15 工單詳情任務列表現場執行欄序、轉交進度三數與生
     await expectCell(page, name, '生產任務狀態', '製作中');
     await expectCell(page, name, '轉交狀態', '轉交中');
     await expectCell(page, name, '交付狀態', '已接收');
-    // 已送達待點收不另設標記：點收量 0 與轉交量的差就看得出來
+    // 已送達待點收不另設標記：點收量 0 與搬運量的差就看得出來
     const row = taskRows(page).filter({ hasText: name });
-    await expect(row).toContainText(`轉交量 ${good}／點收量 0／良品 ${good}`);
+    await expect(row).toContainText(`${good}／0`);
     await expect(row).not.toContainText('有貨待點收');
   }
 
@@ -94,7 +94,7 @@ test('8.15 工單詳情任務列表現場執行欄序、轉交進度三數與生
     await expectCell(page, name, '生產任務狀態', '待處理');
     await expectCell(page, name, '轉交狀態', '待轉交');
     await expectCell(page, name, '交付狀態', '已接收');
-    await expect(taskRows(page).filter({ hasText: name })).toContainText('轉交量 0／點收量 0／良品 0');
+    await expect(taskRows(page).filter({ hasText: name })).toContainText('0／0');
   }
 
   // 對照一：WO-2026-0906 的局部上光是外包廠任務，交付狀態不推導；雪銅紙備料為未交付

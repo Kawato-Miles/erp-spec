@@ -328,7 +328,7 @@ describe('11.17 不良品不進待驗量，齊套完成數照樣含它', () => {
 });
 
 describe('11.1 唯一的計入完成度任務轉報廢、又沒有任何品檢紀錄的印件不列出', () => {
-  // 11.19 已改寫為「報工修改或作廢會讓待驗量變負時擋下」，見 report-edit-void-pending-guard.test.mjs；
+  // 11.19 已改寫為「報工修正或作廢會讓待驗量變負時擋下」，見 report-edit-void-pending-guard.test.mjs；
   // 原本「轉報廢後待驗量顯示 −500」的期望依 qc 規格差異檔 § 待驗清單（不讓待驗量出現負數）刪除。
   const printItems = [printItemOf('PI-TEST-SCRAP', '報廢樣本')];
 

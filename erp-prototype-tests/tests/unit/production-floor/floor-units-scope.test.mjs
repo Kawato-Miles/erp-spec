@@ -120,7 +120,7 @@ describe('10.10 不設人工註記', () => {
 });
 
 // 9.20、9.21、14.28（2026-10-06 改版）：所有生產任務納入加工廠；跨產線工作包只對自己產線範圍的任務開放
-// 報工、修改與作廢；我的生產任務開放報工、修改與作廢自己的報工。
+// 報工、修正與作廢；我的生產任務開放報工、修正與作廢自己的報工。
 // 新契約（等 tasks 6.1、6.2 實作）：
 //   permissions.canEditWorkReport／canVoidWorkReport(report, role, currentUser, task, { source })
 //     source 為 ALL_PACKAGES、ALL_TASKS｜任務的產線在操作者所屬產線內（生管、印務、印務主管）
@@ -142,7 +142,7 @@ describe('9.20 所有生產任務納入已交付的加工廠任務', () => {
   });
 });
 
-describe('9.21 跨產線工作包只能對自己產線範圍的任務報工、修改與作廢', () => {
+describe('9.21 跨產線工作包只能對自己產線範圍的任務報工、修正與作廢', () => {
   // 生管許文傑把證書裁切（手工產線）與五色印刷（數位產線）打成一包給劉阿海；鄭宇翔的所屬產線為手工與壓克力
   const cut = { id: 'pt-0812-3', name: '證書裁切', production_line: '手工產線', package_id: 'wp-mix' };
   const print = { id: 'pt-0815-2', name: '五色印刷', production_line: '數位產線', package_id: 'wp-mix' };
@@ -153,7 +153,7 @@ describe('9.21 跨產線工作包只能對自己產線範圍的任務報工、�
     expect(isPackageInMyLines(pkg, [cut, print], '鄭宇翔')).toBe(true);
   });
 
-  it('鄭宇翔只能修改與作廢證書裁切的報工；五色印刷的報工只能看', () => {
+  it('鄭宇翔只能修正與作廢證書裁切的報工；五色印刷的報工只能看', () => {
     const cutReport = { id: 'wr-cut', task_id: cut.id, reporter: '劉阿海' };
     const printReport = { id: 'wr-print', task_id: print.id, reporter: '劉阿海' };
     expect(permissions.canEditWorkReport(cutReport, 'production_planner', '鄭宇翔', cut, opts)).toBe(true);
@@ -168,15 +168,15 @@ describe('9.21 跨產線工作包只能對自己產線範圍的任務報工、�
   });
 });
 
-describe('14.28 我的生產任務可報工、修改與作廢自己的報工', () => {
+describe('14.28 我的生產任務可報工、修正與作廢自己的報工', () => {
   const task = { id: 'pt-0812-4', name: '信封四色印刷', production_line: '數位產線', package_id: 'wp-0010' };
-  const opts = { source: permissions.REPORT_SOURCES.MY_TASKS };
+  const opts = { source: permissions.REPORT_SOURCES.MY_TASKS, pkg: { id: 'wp-0010', master: '劉阿海' } };
 
   it('師傅持我的生產任務，該單元可以操作', () => {
     expect(permissions.canOperateFloorUnit('master', P.TASKS_OWN)).toBe(true);
   });
 
-  it('劉阿海對自己提交的報工可修改與作廢；別人代報的那筆不行', () => {
+  it('劉阿海對自己提交的報工可修正與作廢；別人代報的那筆不行', () => {
     const own = { id: 'wr-own', task_id: task.id, reporter: '劉阿海' };
     const proxied = { id: 'wr-proxy', task_id: task.id, reporter: '許文傑' };
     expect(permissions.canEditWorkReport(own, 'master', '劉阿海', task, opts)).toBe(true);

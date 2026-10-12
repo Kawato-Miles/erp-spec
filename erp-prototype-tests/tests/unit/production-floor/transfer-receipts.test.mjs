@@ -5,9 +5,9 @@ import * as transferRules from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototyp
 import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/store.js';
 
 // 情境目錄 10.17（純函式段）、10.26～10.31、10.38：轉交單逐條上傳簽收照片、點收單一動作、
-// 再點收一筆、點收修改、到料量取轉交點收量、點收前可作廢、作廢重開重走搬運。
+// 再點收一筆、點收修正、到料量取點收量、點收前可作廢、作廢重開重走搬運。
 // 期望值取自 openspec change production-dispatch-report-transfer-convergence
-// production-execution delta § 場內轉交、§ 點收紀錄的修改與作廢、§ 轉交單改單與更正、
+// production-execution delta § 場內轉交、§ 點收紀錄的修正與作廢、§ 轉交單改單與更正、
 // § 生產任務與轉交單歷程紀錄 的 THEN。
 //
 // 2026-10-06 拍板（T1～T3、Q25、Q27）：點收只有一個動作，每次點收對各條明細新增一筆點收紀錄、
@@ -19,7 +19,7 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 //   store.receiveTransfer(ticketId, { by, quantities: { [task_id]: number }, remarks?: { [task_id]: string } })
 //     已送達與已點收的單都走這一支；quantities 有列的明細各新增一筆點收紀錄
 //     { id, qty, remark, received_by, received_at, status: '有效' }；已送達的單每條明細都要列到且大於 0，
-//     任一條未填或為 0 時整筆擋下、不寫入任何紀錄（訊息含「點收量須大於 0」；10.59）；已點收的單只對列到的明細新增紀錄。
+//     任一條未填或為 0 時整筆擋下、不寫入任何紀錄（訊息含「點收數量須大於 0」；10.59）；已點收的單只對列到的明細新增紀錄。
 //     store 不再有 receiveTransferAgain。
 //   store.editTransferReceipt(ticketId, { taskId, receiptId, qty, remark?, reason, by })
 //   store.voidTransferReceipt(ticketId, { taskId, receiptId, reason, by })  → { ok, error? }
@@ -121,7 +121,7 @@ describe('10.27 點收單一動作：逐條填實際量，第一筆轉已點收�
     expect(ticket.status).toBe('已點收');
     expect(calcDetailReceivedQty(detailOf(ticket, 'pt-0812-6'))).toBe(210);
     expect(describeTransferProgress(taskById('pt-0812-6'), floor().transferTickets)).toBe(
-      '轉交量 200／點收量 210／良品 200',
+      '200／210',
     );
   });
 
@@ -146,26 +146,26 @@ describe('10.27 點收單一動作：逐條填實際量，第一筆轉已點收�
     expect(calcDetailReceivedQty(envelope)).toBe(280);
   });
 
-  it('點收量填 0 時整筆擋下，提示點收量須大於 0，不寫入點收紀錄、單維持已送達', () => {
+  it('點收量填 0 時整筆擋下，提示點收數量須大於 0，不寫入點收紀錄、單維持已送達', () => {
     const result = floor().receiveTransfer('tt-016', {
       by: '許文傑',
       quantities: { 'pt-0812-6': 0, 'pt-0812-4': 300 },
     });
     expect(result.ok).toBe(false);
-    expect(result.error).toContain('點收量須大於 0');
+    expect(result.error).toContain('點收數量須大於 0');
     const ticket = ticketByNo('TT-20260827-002');
     expect(ticket.status).toBe('已送達');
     ticket.details.forEach((d) => expect(d.receipts).toHaveLength(0));
   });
 
-  it('點收後兩筆任務的轉交進度照實顯示轉交量、點收量與良品數', () => {
+  it('點收後兩筆任務的轉交進度照實顯示搬運量與點收量', () => {
     floor().receiveTransfer('tt-016', {
       by: '許文傑',
       quantities: { 'pt-0812-6': 200, 'pt-0812-4': 280 },
     });
     const tickets = floor().transferTickets;
-    expect(describeTransferProgress(taskById('pt-0812-4'), tickets)).toBe('轉交量 300／點收量 280／良品 300');
-    expect(describeTransferProgress(taskById('pt-0812-6'), tickets)).toBe('轉交量 200／點收量 200／良品 200');
+    expect(describeTransferProgress(taskById('pt-0812-4'), tickets)).toBe('300／280');
+    expect(describeTransferProgress(taskById('pt-0812-6'), tickets)).toBe('200／200');
   });
 
   it('已送達的單有明細沒填時整次點收擋下，不把空白補成搬運數量（Q29，細節見 10.59）', () => {
@@ -262,7 +262,7 @@ describe('10.29 貨補到後對同一明細再點收一筆，點收數量可超�
   });
 });
 
-describe('10.30 收貨人點錯數修改點收數量並填原因，低於下游已報工量時擋下', () => {
+describe('10.30 收貨人點錯數修正點收數量並填原因，低於下游已報工量時擋下', () => {
   it('未填原因時擋下送出', () => {
     const result = floor().editTransferReceipt('tt-015', {
       taskId: 'pt-0812-2',
@@ -331,14 +331,14 @@ describe('10.30 收貨人點錯數修改點收數量並填原因，低於下游�
     expect(ticketByNo('TT-20260827-001').history.at(-1).event).toContain('重點數量');
   });
 
-  it('點收佇列的整張單修改：數量沒變時擋下，提示沒有要儲存的修改', () => {
+  it('點收佇列的整張單修改：數量沒變時擋下，提示沒有要儲存的修正', () => {
     const result = floor().editTicketReceipts('tt-015', {
       quantities: { 'pt-0812-2': 480 },
       reason: '重點數量',
       by: '許文傑',
     });
     expect(result.ok).toBe(false);
-    expect(result.error).toContain('沒有要儲存的修改');
+    expect(result.error).toContain('沒有要儲存的修正');
   });
 
   // 合成資料：前置甲（需轉交）一張已點收的單，下游乙依甲開工
@@ -475,7 +475,7 @@ describe('10.30 收貨人點錯數修改點收數量並填原因，低於下游�
   });
 });
 
-describe('10.31 到料量取轉交點收量，含再次點收與修改後的值', () => {
+describe('10.31 到料量取點收量，含再次點收與修改後的值', () => {
   // 鏈外 WO-2026-0812 證書裁切的前置證書四色印刷經 TT-20260827-001 點收 480
   it('起點到料量 480，不是搬運數量 500', () => {
     expect(calcArrivedQty('pt-0812-2', floor().transferTickets)).toBe(480);
@@ -518,7 +518,7 @@ describe('10.31 到料量取轉交點收量，含再次點收與修改後的值'
   });
 });
 
-describe('10.17（純函式）來源任務報廢或作廢時，擋下點收、點收修改、點收紀錄作廢與搬運數量修改；點收前的單生管可作廢', () => {
+describe('10.17（純函式）來源任務報廢或作廢時，擋下點收、點收修正、點收紀錄作廢與搬運數量修正；點收前的單生管可作廢', () => {
   const markDead = (taskId, status) =>
     useProductionFloorStore.setState((s) => ({
       tasks: s.tasks.map((t) => (t.id === taskId ? { ...t, status } : t)),
@@ -537,7 +537,7 @@ describe('10.17（純函式）來源任務報廢或作廢時，擋下點收、�
     expect(canVoidTransfer(ticketByNo('TT-20260830-002'), floor().tasks)).toBe(true);
   });
 
-  it('來源任務已報廢的已點收單（TT-20260828-001）：點收、點收修改、點收紀錄作廢與搬運數量修改都被擋下，點收紀錄不變', () => {
+  it('來源任務已報廢的已點收單（TT-20260828-001）：點收、點收修正、點收紀錄作廢與搬運數量修正都被擋下，點收紀錄不變', () => {
     markDead('pt-0710-1', '報廢');
     const again = floor().receiveTransfer('tt-004', {
       by: '許文傑',
@@ -589,7 +589,7 @@ describe('10.38 搬運中作廢重開沿用原單目的地、重走搬運，沒�
     });
   });
 
-  it('作廢成立當下明細退出轉交量，海報四色印刷的可搬量由 0 回到 800', () => {
+  it('作廢成立當下明細退出搬運量，海報四色印刷的可搬量由 0 回到 800', () => {
     const task = () => taskById('pt-0710-2');
     expect(calcMovableQty(task(), floor().transferTickets)).toBe(0);
     expect(floor().voidTransfer('tt-006', { reason: '數量填錯', by: '許文傑' }).ok).toBe(true);
@@ -620,7 +620,7 @@ describe('10.59 點收時每條明細都要填且大於 0，任一條未填或�
   it('只填一條、另一條沒填：整次擋下，不寫入任何點收紀錄，單頭維持已送達，空白不補成搬運數量', () => {
     const result = floor().receiveTransfer('tt-016', { by: '許文傑', quantities: { 'pt-0812-6': 200 } });
     expect(result.ok).toBe(false);
-    expect(result.error).toContain('點收量須大於 0');
+    expect(result.error).toContain('點收數量須大於 0');
     expect(result.error).toContain('信封四色印刷');
     const ticket = ticketByNo('TT-20260827-002');
     expect(ticket.status).toBe('已送達');

@@ -59,7 +59,7 @@ export async function assignMover(page, name = '簡俊男') {
 
 /**
  * 在轉交單把某張單的母層列展開，回傳子層中某一條明細列（以生產任務名稱定位）。
- * 點收、點收修改、點收紀錄作廢與搬運數量修改的操作在子層列上。
+ * 點收與搬運數量修正在子層列上；修正點收紀錄與作廢點收紀錄在母層列（2026-10-12 拍板）。
  */
 export async function ticketDetailSubRow(page, ticketNo, taskName) {
   await gotoInApp(page, '/production-floor/transfers');
@@ -91,7 +91,7 @@ export async function closeDrawer(page) {
  */
 export async function receiveInQueue(page, ticketNo, quantities = {}) {
   await gotoInApp(page, '/production-floor/receiving');
-  await page.locator('tr', { hasText: ticketNo }).getByRole('button', { name: '點收' }).click();
+  await page.locator('tr', { hasText: ticketNo }).getByRole('button', { name: '點收', exact: true }).click();
   const dialog = dialogOf(page, '點收');
   for (const [taskName, qty] of Object.entries(quantities)) {
     await dialog.locator('tr', { hasText: taskName }).locator('.ant-input-number-input').fill(String(qty));
@@ -115,23 +115,23 @@ export const reportRowOf = (drawer, reportedAt) =>
 
 /** 對一筆報工按「修改」，填改後的值與原因後送出 */
 export async function editReport(page, row, { input, good, defect, reason }) {
-  await row.getByRole('button', { name: '修改' }).click();
-  const dialog = dialogOf(page, '修改');
+  await row.getByRole('button', { name: '修正', exact: true }).click();
+  const dialog = dialogOf(page, '修正');
   if (input != null) await formItemOf(dialog, '生產數量').locator('input').fill(String(input));
   if (good != null) await formItemOf(dialog, '良品數').locator('input').fill(String(good));
   if (defect != null) await formItemOf(dialog, '不良品數').locator('input').fill(String(defect));
   if (reason != null) {
-    await formItemOf(dialog, '修改原因').locator('input, textarea').first().fill(reason);
+    await formItemOf(dialog, '修正原因').locator('input, textarea').first().fill(reason);
   }
   await confirmDialog(dialog);
   return dialog;
 }
 
 /**
- * 轉交單子層明細列的欄序（2026-10-06 拍板）：完稿縮圖、訂單、印件、工單、生產任務、目的站點、搬運數量、
- * 點收數量、最近點收、簽收照片、操作。回傳某一欄的儲存格。
+ * 轉交單子層明細列的欄序（2026-10-12 拍板）：完稿縮圖、簽收照片（兩欄固定在左）、訂單、印件、工單、生產任務、
+ * 目的站點、搬運數量、點收量、最近點收、操作。回傳某一欄的儲存格。
  */
-const SUB_COLUMNS = ['完稿縮圖', '訂單', '印件', '工單', '生產任務', '目的站點', '搬運數量', '點收數量', '最近點收', '簽收照片', '操作'];
+const SUB_COLUMNS = ['完稿縮圖', '簽收照片', '訂單', '印件', '工單', '生產任務', '目的站點', '搬運數量', '點收量', '最近點收', '操作'];
 export const subCell = (subRow, column) => subRow.locator('td').nth(SUB_COLUMNS.indexOf(column));
 
 /**
@@ -139,7 +139,7 @@ export const subCell = (subRow, column) => subRow.locator('td').nth(SUB_COLUMNS.
  * @param row 轉交單母層列
  */
 export async function voidTicket(page, row, reason) {
-  await row.getByRole('button', { name: '作廢' }).click();
+  await row.getByRole('button', { name: '作廢', exact: true }).click();
   const dialog = dialogOf(page, '作廢轉交單');
   if (reason != null) {
     await formItemOf(dialog, '作廢原因').locator('textarea, input').first().fill(reason);
@@ -149,22 +149,30 @@ export async function voidTicket(page, row, reason) {
 }
 
 /**
- * 對某條明細按「搬運數量修改」（開始搬運之後的更正，2026-10-06 拍板 Q22），填改後的搬運數量與修改原因。
+ * 對某條明細按「搬運數量修正」（開始搬運之後的更正，2026-10-06 拍板 Q22），填改後的搬運數量與修改原因。
  * @param subRow 轉交單子層明細列（ticketDetailSubRow 取得）
  */
 export async function editMoveQty(page, subRow, { qty, reason }) {
-  await subRow.getByRole('button', { name: '搬運數量修改' }).click();
-  const dialog = dialogOf(page, '搬運數量修改');
+  await subRow.getByRole('button', { name: '搬運數量修正' }).click();
+  const dialog = dialogOf(page, '搬運數量修正');
   if (qty != null) await formItemOf(dialog, '搬運數量').locator('input').first().fill(String(qty));
-  if (reason != null) await formItemOf(dialog, '修改原因').locator('textarea, input').first().fill(reason);
+  if (reason != null) await formItemOf(dialog, '修正原因').locator('textarea, input').first().fill(reason);
   await confirmDialog(dialog);
   return dialog;
 }
 
-/** 對某條明細的某一筆點收紀錄按「作廢點收紀錄」並填作廢原因 */
-export async function voidReceipt(page, subRow, reason) {
-  await subRow.getByRole('button', { name: '作廢點收紀錄' }).click();
+/**
+ * 在轉交單母層列按「作廢點收紀錄」，對話框列出這張單所有有效點收紀錄；勾選第一筆（可指定任務名）並填作廢原因。
+ * @param mainRow 轉交單母層列
+ * @param {Object} options taskName＝要作廢的那筆點收紀錄所屬的生產任務；pick＝false 時不勾選
+ */
+export async function voidReceipt(page, mainRow, reason, { taskName, pick = true } = {}) {
+  await mainRow.getByRole('button', { name: '作廢點收紀錄' }).click();
   const dialog = dialogOf(page, '作廢點收紀錄');
+  if (pick) {
+    const row = dialog.locator('tbody tr.ant-table-row', { hasText: taskName ?? '' }).first();
+    await row.locator('input[type="radio"], input[type="checkbox"]').first().check({ force: true });
+  }
   if (reason != null) await formItemOf(dialog, '作廢原因').locator('textarea, input').first().fill(reason);
   await confirmDialog(dialog);
   return dialog;

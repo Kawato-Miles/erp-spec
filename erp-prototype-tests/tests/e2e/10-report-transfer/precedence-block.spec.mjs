@@ -47,7 +47,7 @@ test('10.1 前置未到料：沒有報工入口，送出時擋下並指出在等
   await gotoInApp(page, '/production-floor/receiving');
   await page
     .locator('tr', { hasText: 'TT-20260830-002' })
-    .getByRole('button', { name: '點收' })
+    .getByRole('button', { name: '點收', exact: true })
     .click();
   await page.getByRole('button', { name: '確認點收' }).click();
   await expect(page.getByText(/已點收 TT-20260830-002/)).toBeVisible();
