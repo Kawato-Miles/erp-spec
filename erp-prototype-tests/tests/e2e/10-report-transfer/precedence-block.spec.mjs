@@ -6,7 +6,7 @@ import { closeDrawer } from './_ch10.mjs';
 // 起點資料：鏈二 WP-2026-0710-02 的「裁切成型」任務（可做量 0，前置轉交單皆未點收）、
 // TT-20260830-002（待點收）。數字：點收前可做量 0／3,000；點收 1,190 後 1,190／3,000。
 // 送出時的前置擋下留在系統裡當最後防線（併發），介面這一層改以隱藏入口表達。
-// 入口隱藏處與生產任務側板都說明在等哪張工單、哪一筆生產任務的貨（前置清單取 precedence）。
+// 狀態欄以「前置未到料」標籤呈現，在等哪張工單、哪一筆生產任務的貨寫在生產任務側板數量區（前置清單取 precedence）。
 
 const WAITING_HINT = '前置未到料：等 WO-2026-0710／海報四色印刷 的貨';
 
@@ -19,16 +19,16 @@ test('10.1 前置未到料：沒有報工入口，送出時擋下並指出在等
   // 可做量＝各前置到料量的最小值（直接比數值、不換算單位），與目標數量並排：0／3,000
   await expect(subRow.getByText('0／3,000')).toBeVisible();
 
-  // 報不了的工不給入口：該任務列的操作欄只有檢視歷程
+  // 報不了的工不給入口：該任務列的操作欄沒有報工
   await expect(subRow.getByRole('button', { name: '報工' })).toHaveCount(0);
-  await expect(subRow.getByRole('button', { name: /檢視歷程/ })).toHaveCount(1);
   // 這一包裡沒有別的可報工任務，母列的批次報工也一起隱藏（開起來只會是一張空表）
   await expect(pkgRow.getByRole('button', { name: '報工' })).toHaveCount(0);
-  // 入口隱藏處補一句在等誰的貨；生產任務側板的數量區同一句
-  await expect(subRow).toContainText(WAITING_HINT);
+  // 狀態欄顯示標籤、列上沒有說明文字；點任務名稱開側板，數量區說明在等誰的貨
+  await expect(subRow.getByText('前置未到料', { exact: true })).toBeVisible();
+  await expect(subRow).not.toContainText(WAITING_HINT);
   await subRow
     .locator('tr', { hasText: '裁切成型' })
-    .getByRole('button', { name: /檢視歷程/ })
+    .getByText('裁切成型', { exact: true })
     .click();
   const drawer = page.locator('.ant-drawer-content:visible').last();
   await expect(drawer).toContainText(WAITING_HINT);
@@ -41,7 +41,8 @@ test('10.1 前置未到料：沒有報工入口，送出時擋下並指出在等
   await search.press('Enter');
   const floorRow = page.locator('tr.ant-table-row', { hasText: '裁切成型' }).first();
   await expect(floorRow.getByRole('button', { name: '報工' })).toHaveCount(0);
-  await expect(floorRow).toContainText(WAITING_HINT);
+  await expect(floorRow.getByText('前置未到料', { exact: true })).toBeVisible();
+  await expect(floorRow).not.toContainText(WAITING_HINT);
 
   // 點收才算到料（已送達是搬運方的單方宣稱）
   await gotoInApp(page, '/production-floor/receiving');

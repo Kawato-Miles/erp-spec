@@ -6,7 +6,7 @@ import { nextStatusOptions } from '/Users/b-f-03-029/erp/apps/erp/src/app/(proto
 //
 // 狀態欄是側板裡唯一會推進單據的控制項，可選值錯一格就會讓現場推出一個狀態機不允許的轉換，
 // 所以逐一格驗：角色 × 當下狀態 × 出貨方式三個維度的每一種組合各對一次。
-// required 是這個轉換要填齊才推得動的欄位；重量（公斤）三種出貨方式都填得了，掛在 optional。
+// required 是這個轉換要填齊才推得動的欄位；目前沒有轉換帶選填欄位（出貨單不記重量）。
 
 const shipmentOf = (status, method = '新竹物流') => ({ status, method });
 const statusesOf = (role, shipment) => nextStatusOptions({ role, shipment }).map((o) => o.status);
@@ -48,23 +48,23 @@ describe('出貨人員在待出貨依出貨方式分流', () => {
     const option = onlyOption('shipper', shipmentOf('待出貨', '自取'));
     expect(option.status).toBe('已送達');
     expect(option.required).toEqual(['pickup_proof']);
-    expect(option.optional).toEqual(['weight_kg']);
+    expect(option.optional).toEqual([]);
   });
 
   it('專車配送到運送中，發車確認不必附任何憑證', () => {
     const option = onlyOption('shipper', shipmentOf('待出貨', '專車配送'));
     expect(option.status).toBe('運送中');
     expect(option.required).toEqual([]);
-    expect(option.optional).toEqual(['weight_kg']);
+    expect(option.optional).toEqual([]);
   });
 
-  it('第三方物流為拋單到運送中，不填物流單號（由物流商回傳）、重量選填', () => {
+  it('第三方物流為拋單到運送中，不填物流單號（由系統示意生成）、沒有選填欄位', () => {
     ['順豐', '新竹物流', '超商', '其他'].forEach((method) => {
       const option = onlyOption('shipper', shipmentOf('待出貨', method));
       expect(option.status).toBe('運送中');
       expect(option.label).toContain('拋單');
       expect(option.required).toEqual([]);
-      expect(option.optional).toEqual(['weight_kg']);
+      expect(option.optional).toEqual([]);
     });
   });
 

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { gotoInApp, openAs } from '../_helpers.mjs';
 
 // 情境目錄 9.12：主管在生產管理五個產線單元唯讀看全貌（wiki 印件生產流程 § 生產管理單元的權限範圍、
-// wiki Supervisor）。五頁都列全部產線的單據、頁首提示唯讀、沒有任何操作入口；檢視歷程照樣看得到。
+// wiki Supervisor）。五頁都列全部產線的單據、頁首提示唯讀、沒有任何操作入口；點任務名稱開生產任務側板照樣看得到歷程。
 // 2026-10-06 改版：操作清單拿掉再次點收與人工註記，補修正點收紀錄、作廢點收紀錄、搬運數量修正。
 
 const READ_ONLY_NOTICE = '主管在生產管理只有唯讀檢視';
@@ -62,12 +62,12 @@ test('9.12 主管在生產管理五個產線單元唯讀看全貌', async ({ pag
   await page
     .locator('tr.ant-table-row', { hasText: '證書四色印刷' })
     .first()
-    .getByRole('button', { name: /檢視歷程/ })
+    .getByText('證書四色印刷', { exact: true })
     .click();
   await expect(page.locator('.ant-drawer-content:visible').last()).toContainText('歷程（');
   await page.getByRole('button', { name: '關閉' }).last().click();
 
-  // 所有工作包：展開後子層也沒有報工、手動完成；工作包側板的報工紀錄沒有修正與作廢
+  // 所有工作包：展開後子層也沒有報工、手動完成；點子層任務名稱開生產任務側板，報工紀錄沒有修正與作廢
   await gotoInApp(page, '/production-floor/work-packages');
   await expect(page.getByText(READ_ONLY_NOTICE).first()).toBeVisible();
   const pkgRow = page.locator('.ant-table-row', { hasText: 'WP-2026-0710-01' }).first();
@@ -76,7 +76,15 @@ test('9.12 主管在生產管理五個產線單元唯讀看全貌', async ({ pag
   await expectNoOperations(page);
   await page.getByText('WP-2026-0710-01', { exact: true }).first().click();
   const pkgDrawer = page.locator('.ant-drawer-content:visible').last();
-  await expect(pkgDrawer).toContainText('報工紀錄');
+  // 工作包檢視面板只看工作包基本資料，報工紀錄跟著生產任務
+  await expect(pkgDrawer).not.toContainText('報工紀錄（');
+  await page.getByRole('button', { name: '關閉' }).last().click();
+  await pkgRow
+    .locator('xpath=following-sibling::tr[1]')
+    .getByText('海報四色印刷', { exact: true })
+    .click();
+  const taskDrawer = page.locator('.ant-drawer-content:visible').last();
+  await expect(taskDrawer).toContainText('報工紀錄（');
   await expectNoOperations(page);
   await page.getByRole('button', { name: '關閉' }).last().click();
 

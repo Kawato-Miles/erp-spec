@@ -55,10 +55,10 @@ test('14.37 出貨單對話框：單頭固定，出貨明細與歷程兩個頁�
   await expect(row.locator('td').nth(3)).toContainText('3,000');
   await expect(row.locator('td').nth(4)).toContainText('500');
 
-  // 表下方包裝區：箱數、箱規、重量、裝箱照片縮圖（只有檔名，顯示佔位圖，不顯示檔名）
+  // 表下方包裝區：箱數、箱規、裝箱照片縮圖（只有檔名，顯示佔位圖，不顯示檔名），沒有重量
   await expect(dialog).toContainText('箱數');
   await expect(dialog).toContainText('B 箱（45×35×30）');
-  await expect(dialog).toContainText('7.5');
+  await expect(dialog).not.toContainText('重量');
   await expect(dialog).toContainText('裝箱照片');
   await expect(dialog.getByRole('img', { name: /裝箱照片/ })).toHaveCount(1);
   await expect(dialog).not.toContainText('.jpg');

@@ -3,13 +3,12 @@ import { openAs, gotoInApp, switchRole } from '../_helpers.mjs';
 // 表頭定位取欄的工具放在第八章（工單詳情的生產任務列表是群組表頭），9.2 的最後一步回工單詳情看交付狀態
 import { expectCell, openWorkOrderFromList } from '../08-process-review-deliver/_page-helpers.mjs';
 
-// 情境目錄第九章：生管在「所有生產任務」（/production-floor/dispatch）接收、打包派工與取消工作包。
+// 情境目錄第九章：生管在「所有生產任務」（/production-floor/dispatch）接收、打包派工；取消工作包在所有工作包的列上。
 // 起點資料：鏈三 WO-2026-0815 的四筆待派任務（皆待處理、已交付、待接收、無工作包）：
 // 牛皮紙 150g 備料、五色印刷、軋盒成型、糊盒成型。任務編號（PT-0815-*）不在畫面上顯示，
 // 一律以任務名稱、工單編號等使用者看得到的文字選取列。
 
-// 任務列一律以任務格的名稱全文定位（exact）：五色印刷那一列的報工提示「前置未到料：等 WO-2026-0815／
-// 牛皮紙 150g 備料 的貨」也含備料的名稱，用 hasText 會一併選中（2026-10-06 所有生產任務加報工後）。
+// 任務列一律以任務格的名稱全文定位（exact）：任務名稱是可點的連結樣式，點它開生產任務側板。
 
 // AntD Select 下拉為虛擬捲動、選項可能落在可視區外，改用鍵盤移動再 Enter（同 _helpers.switchRole 的做法）。
 // GenericFilter 篩選欄位沒有 <label for>：用「標籤文字所在的 Col」找同一格內的 Select。
@@ -28,14 +27,14 @@ test('9.1 生管在所有生產任務看範圍內已交付的自有工廠與加�
   const pendingRow = page.locator('tr.ant-table-row', { has: page.getByText('牛皮紙 150g 備料', { exact: true }) }).first();
   await expect(pendingRow.locator('input[type="checkbox"]')).toHaveCount(1);
 
-  // 全部任務含已打包與終態：以搜尋框找鏈二。已打包的列顯示工作包編號與師傅、不出勾選框，有取消工作包
+  // 全部任務含已打包與終態：以搜尋框找鏈二。已打包的列顯示工作包編號與師傅、不出勾選框，也沒有取消工作包（取消工作包在所有工作包的列上）
   const search = page.getByPlaceholder(/工單編號/).first();
   await search.fill('WO-2026-0710');
   await search.press('Enter');
   const packedRow = page.locator('tr.ant-table-row', { hasText: 'WP-2026-0710-01' }).first();
   await expect(packedRow).toContainText('師傅 劉阿海');
   await expect(packedRow.locator('input[type="checkbox"]')).toHaveCount(0);
-  await expect(packedRow.getByRole('button', { name: '取消工作包' })).toBeVisible();
+  await expect(packedRow.getByRole('button', { name: '取消工作包' })).toHaveCount(0);
   await page.getByRole('button', { name: /清空/ }).click();
 
   // 篩選：派工狀態＝未派工，再加任務類別＝工序 → 材料型任務（牛皮紙 150g 備料）被篩掉，工序任務（五色印刷）留下
@@ -181,10 +180,15 @@ test('9.10 沒接收、沒打包也能報工；未交付與前置未到料才擋
   await openAs(page, '生管', '/production-floor/dispatch');
   const prepRow = page.locator('tr.ant-table-row', { has: page.getByText('牛皮紙 150g 備料', { exact: true }) }).first();
   await expect(prepRow.getByRole('button', { name: '報工' })).toBeVisible();
-  // 五色印刷前置未到料：沒有報工入口，同一處說明在等誰
+  // 五色印刷前置未到料：沒有報工入口，狀態欄顯示「前置未到料」標籤；在等誰的說明在生產任務側板數量區
   const printRow = page.locator('tr.ant-table-row', { hasText: '五色印刷' }).first();
   await expect(printRow.getByRole('button', { name: '報工' })).toHaveCount(0);
-  await expect(printRow).toContainText('前置未到料：等 WO-2026-0815／牛皮紙 150g 備料 的貨');
+  await expect(printRow.getByText('前置未到料', { exact: true })).toBeVisible();
+  await printRow.getByText('五色印刷', { exact: true }).click();
+  await expect(page.locator('.ant-drawer-content:visible').last()).toContainText(
+    '前置未到料：等 WO-2026-0815／牛皮紙 150g 備料 的貨',
+  );
+  await page.getByRole('button', { name: '關閉' }).last().click();
 
   // 工單詳情：同一張工單的備料有報工入口、不再提示「尚未派工」
   await switchRole(page, '印務');

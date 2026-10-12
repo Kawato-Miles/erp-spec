@@ -14,7 +14,7 @@ import { MOCK_FLOOR_TASKS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(protot
 // 的數字驗算；畫面呈現另在 e2e 第十一章驗。
 //
 // 待驗量＝做出來的良品 − 已驗量（各筆修正後的通過與不通過加總），不看轉交、不看點收。
-// 齊套完成數取產出（良品＋不良品），是製作進度那一欄，不參與待驗量。
+// 完成數取產出（良品＋不良品），是製作進度那一欄，不參與待驗量。
 
 // 起點資料以外的情境用合成資料：多部件、不需轉交、報廢三種樣本現行 mock 上沒有對應的印件。
 const workOrderOf = (printItemNo, tasks, extra = {}) => ({
@@ -237,7 +237,7 @@ describe('11.14 多部件印件的待驗量取各部件良品的最小值', () =
     });
     expect(rows[0].pending_qty).not.toBe(1590);
     expect(rows[0].pending_qty).not.toBe(600);
-    // 齊套完成數（製作進度）仍取產出，內襯做了 600 件所以是 600
+    // 完成數（製作進度）仍取產出，內襯做了 600 件所以是 600
     expect(rows[0].kitting_qty).toBe(600);
   });
 
@@ -307,7 +307,7 @@ describe('11.16 修正誤記的通過量後待驗量回升', () => {
   });
 });
 
-describe('11.17 不良品不進待驗量，齊套完成數照樣含它', () => {
+describe('11.17 不良品不進待驗量，完成數照樣含它', () => {
   const rows = calcPendingInspections({
     printItems: [printItemOf('PI-TEST-DEFECT', '不良品樣本')],
     orders: [],
@@ -320,7 +320,7 @@ describe('11.17 不良品不進待驗量，齊套完成數照樣含它', () => {
     expect(rows[0].pending_qty).toBe(1000);
   });
 
-  it('齊套完成數仍顯示 1,003（製作進度取產出，兩個數互不覆蓋）', () => {
+  it('完成數仍顯示 1,003（製作進度取產出，兩個數互不覆蓋）', () => {
     expect(rows[0].kitting_qty).toBe(1003);
   });
 });

@@ -28,6 +28,17 @@ import {
 // 多數情境要先驗收取得額度、再建單走到出貨，鏈長故放寬逾時
 test.describe.configure({ timeout: 180_000 });
 
+// 第三方出貨單送達：Prototype 不模擬物流商串接，由出貨人員在「送達確認」手動回填物流商配達時間
+const deliverThirdParty = async (page, shipmentNo, time = '2026-09-17 10:00') => {
+  const dialog = await clickRowAction(page, shipmentNo, '送達確認');
+  const deliveredTime = dialog.getByLabel('物流商配達時間');
+  await deliveredTime.click();
+  await deliveredTime.fill(time);
+  await deliveredTime.press('Enter');
+  await dialog.getByRole('button', { name: '確認送達' }).click();
+  await expect(page.getByText(/送達確認完成/).first()).toBeVisible();
+};
+
 // 出貨單對話框（上方固定單頭、下方兩個頁籤：出貨明細、歷程），出貨管理列表點單號或檢視鈕打開；
 // 狀態推進在列上動作鈕開的另一種對話框，歷程頁籤純唯讀
 const detailDrawer = (page) => page.locator('.ant-modal-content:visible').last();
@@ -342,7 +353,7 @@ test('12.5 揀貨數量與明細不符時揀貨人員照實填、不自行改明
   await expect(panel).toContainText('揀貨數量與出貨明細不符');
 });
 
-test('12.6 拋單與出貨確認帶重量，三種方式各走各的分流（原編號 32）', async ({ page }) => {
+test('12.6 拋單與出貨確認，三種方式各走各的分流（原編號 32）', async ({ page }) => {
   await setupShippableState(page, { passed: 500 });
   await switchRoleSafe(page, '業務');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
@@ -366,37 +377,28 @@ test('12.6 拋單與出貨確認帶重量，三種方式各走各的分流（原
   await pickupDialog.getByRole('button', { name: '確認交付' }).click();
   await expect(page.getByText(/一次完成出貨與送達確認/).first()).toBeVisible();
 
-  // 第三方：列上鈕名是「拋單」，對話框沒有物流單號輸入欄、重量選填；送出後系統生成物流單號、轉運送中
+  // 第三方：列上鈕名是「拋單」，對話框沒有物流單號輸入欄、沒有重量欄；送出後系統生成物流單號、轉運送中
   await expect(shipmentRow(page, carrierNo).getByRole('button', { name: '出貨確認' })).toHaveCount(0);
   const shipDialog = await clickRowAction(page, carrierNo, '拋單');
   await expect(shipDialog.getByLabel(/物流單號|托運單號/)).toHaveCount(0);
-  await shipDialog.getByLabel('重量（公斤，選填）').fill('8.2');
+  await expect(shipDialog.getByLabel(/重量/)).toHaveCount(0);
   await shipDialog.getByRole('button', { name: '確認拋單' }).click();
   await expect(page.getByText(/已拋單（運送中）；物流單號 HCT-\d+/)).toBeVisible();
   await expect(shipmentRow(page, carrierNo)).toContainText(/HCT-\d+/);
 
-  // 對話框的單頭看得到物流單號，包裝區看得到重量
-  const weightPanel = await openShipmentPanel(page, carrierNo);
-  await expect(weightPanel).toContainText(/HCT-\d+/);
-  await expect(weightPanel).toContainText('8.2');
+  // 對話框的單頭看得到物流單號，包裝區沒有重量
+  const carrierPanel = await openShipmentPanel(page, carrierNo);
+  await expect(carrierPanel).toContainText(/HCT-\d+/);
+  await expect(carrierPanel).not.toContainText('重量');
   await closeDrawer(page);
 
-  // 運送中的第三方單：列上有一顆標明是模擬的物流商回報配達（主路徑），
-  // 另有備援的「送達確認」（手動補登配達時間）
+  // 運送中的第三方單：Prototype 不模擬物流商回報配達，列上沒有模擬鈕，也沒有補填重量；
+  // 停在運送中屬預期，出貨人員可用「送達確認」手動補登配達時間
   const carrierRow = shipmentRow(page, carrierNo);
-  await expect(carrierRow.getByRole('button', { name: '模擬物流商回報配達' })).toBeVisible();
+  await expect(carrierRow).toContainText('運送中');
+  await expect(carrierRow.getByRole('button', { name: '模擬物流商回報配達' })).toHaveCount(0);
+  await expect(carrierRow.getByRole('button', { name: '補填重量' })).toHaveCount(0);
   await expect(carrierRow.getByRole('button', { name: '送達確認' })).toBeVisible();
-
-  // 走主路徑：歷程的送達確認記操作人為物流商同步（模擬）
-  await carrierRow.getByRole('button', { name: '模擬物流商回報配達' }).click();
-  const syncDialog = confirmBox(page);
-  // 配達的定義寫在視窗上：到店與配送中都不算
-  await expect(syncDialog).toContainText('配達指物流商的簽收或取件完成，到店與配送中都不算');
-  await syncDialog.getByRole('button', { name: '模擬回報配達' }).click();
-  await expect(page.getByText(/已接收物流商配達回報（模擬）/).first()).toBeVisible();
-  const syncedPanel = await openShipmentPanel(page, carrierNo);
-  await syncedPanel.getByRole('tab', { name: '歷程' }).click();
-  await expect(syncedPanel).toContainText('物流商同步（模擬）');
 });
 
 test('12.7 三種出貨方式的憑證形式各自不同（原編號 129）', async ({ page }) => {
@@ -418,13 +420,11 @@ test('12.7 三種出貨方式的憑證形式各自不同（原編號 129）', as
 
   // 第三方物流：拋單不填物流單號（由物流商回傳，原型由系統生成），直接確認即推得動
   let dialog = await clickRowAction(page, carrierNo, '拋單');
-  await expect(dialog).toContainText('物流單號由物流商回傳');
   await dialog.getByRole('button', { name: '確認拋單' }).click();
   await expect(page.getByText(/已拋單（運送中）/).first()).toBeVisible();
 
   // 專車配送：發車確認不附件即可轉運送中
   dialog = await clickRowAction(page, vanNo, '出貨確認');
-  await expect(dialog).toContainText('確認發車即轉「運送中」');
   await dialog.getByRole('button', { name: '確認出貨' }).click();
   await expect(page.getByText(/專車已發車（運送中）/)).toBeVisible();
 
@@ -436,8 +436,7 @@ test('12.7 三種出貨方式的憑證形式各自不同（原編號 129）', as
   await dialog.getByRole('button', { name: '確認交付' }).click();
   await expect(page.getByText(/一次完成出貨與送達確認（現場點交照已留存）/)).toBeVisible();
 
-  // 專車只有送達確認一條路，列上沒有模擬配達那顆鈕；送達確認要附司機交付照
-  await expect(shipmentRow(page, vanNo).getByRole('button', { name: '模擬物流商回報配達' })).toHaveCount(0);
+  // 專車只有送達確認一條路；送達確認要附司機交付照
   dialog = await clickRowAction(page, vanNo, '送達確認');
   await dialog.getByRole('button', { name: '確認送達' }).click();
   await expect(dialog.getByText('請附司機交付照')).toBeVisible();
@@ -445,27 +444,17 @@ test('12.7 三種出貨方式的憑證形式各自不同（原編號 129）', as
   await dialog.getByRole('button', { name: '確認送達' }).click();
   await expect(page.getByText(/送達確認完成/)).toBeVisible();
 
-  // 第三方的送達備援：手動回填物流商配達時間，欄位說明寫明要回填的是簽收或取件完成的時間
-  dialog = await clickRowAction(page, carrierNo, '送達確認');
-  await expect(dialog).toContainText('簽收或取件完成');
-  await expect(dialog).toContainText('到店與配送中都不算配達');
-  const deliveredTime = dialog.getByLabel('物流商配達時間（備援：手動補登）');
-  await deliveredTime.click();
-  await deliveredTime.fill('2026-09-17 10:00');
-  await deliveredTime.press('Enter');
-  await dialog.getByRole('button', { name: '確認送達' }).click();
-  await expect(page.getByText(/送達確認完成/).first()).toBeVisible();
+  // 第三方的送達：手動回填物流商配達時間（Prototype 不模擬物流商串接）
+  await deliverThirdParty(page, carrierNo);
 
-  // 兩條路先寫入者成立：人工補登一成立，這張單離開運送中，模擬配達鈕與其他動作鈕一併退場
-  //（守衛本身與「此單已收尾，請重新整理」以純函式驗，見 tests/unit/qc-shipping/shipment-draft.test.mjs）
+  // 送達確認一成立，這張單離開運送中，送達確認與異常鈕一併退場
+  //（後到者不改任何欄位與「此單已收尾，請重新整理」以純函式驗，見 tests/unit/qc-shipping/shipment-draft.test.mjs）
   const settledRow = shipmentRow(page, carrierNo);
   await expect(settledRow).toContainText('已送達');
-  await expect(settledRow.getByRole('button', { name: '模擬物流商回報配達' })).toHaveCount(0);
   await expect(settledRow.getByRole('button', { name: '送達確認' })).toHaveCount(0);
   await expect(settledRow.getByRole('button', { name: '異常' })).toHaveCount(0);
-  // 已拋單的第三方單送達後仍可下載物流單與補填重量，所以剩檢視、下載物流單、補填重量三顆
-  await expect(settledRow.getByRole('button')).toHaveCount(3);
-  await expect(settledRow.getByRole('button', { name: '補填重量' })).toHaveCount(1);
+  // 已拋單的第三方單送達後仍可下載物流單，所以剩檢視、下載物流單兩顆
+  await expect(settledRow.getByRole('button')).toHaveCount(2);
   await expect(settledRow.getByRole('button', { name: '下載物流單' })).toHaveCount(1);
 });
 
@@ -485,9 +474,13 @@ test('12.8 累計送達達到購買數量，印件與訂單一起收尾（原編
   await shipDialog.getByRole('button', { name: '確認拋單' }).click();
   await expect(page.getByText(/已拋單（運送中）/).first()).toBeVisible();
 
-  // 經模擬物流商回報配達同樣觸發收尾：印件轉已送達、訂單轉訂單完成
-  await shipmentRow(page, shipmentNo).getByRole('button', { name: '模擬物流商回報配達' }).click();
-  await confirmBox(page).getByRole('button', { name: '模擬回報配達' }).click();
+  // 第三方送達確認（手動補登配達時間）觸發收尾：印件轉已送達、訂單轉訂單完成
+  const dialogDeliver = await clickRowAction(page, shipmentNo, '送達確認');
+  const deliveredTime = dialogDeliver.getByLabel('物流商配達時間');
+  await deliveredTime.click();
+  await deliveredTime.fill('2026-09-17 10:00');
+  await deliveredTime.press('Enter');
+  await dialogDeliver.getByRole('button', { name: '確認送達' }).click();
   const notice = page.locator('.ant-message-notice-content').last();
   await expect(notice).toBeVisible();
   const noticeText = await notice.innerText();
@@ -510,10 +503,9 @@ test('12.9 業務刪除不再需要的草稿', async ({ page }) => {
   await closeDrawer(page);
   await draftRow.getByRole('button', { name: '刪除' }).click();
 
-  // 二次確認：說明草稿未佔額度、未推進狀態，因此不填理由（沒有理由輸入欄）
+  // 二次確認：草稿未佔額度、未推進狀態，不填理由（沒有理由輸入欄）
   const confirm = confirmBox(page);
   await expect(confirm).toContainText(`刪除出貨單草稿：${CHAIN4.draftShipmentNo}`);
-  await expect(confirm).toContainText('不需填理由');
   await expect(confirm.locator('textarea, input[type="text"]')).toHaveCount(0);
   await confirm.getByRole('button', { name: '刪除草稿' }).click();
 
@@ -941,10 +933,10 @@ test('12.21 出貨人員對第三方出貨單按拋單，系統生成物流單�
   // 還沒拋單：沒有下載物流單
   await expect(shipmentRow(page, carrierNo).getByRole('button', { name: '下載物流單' })).toHaveCount(0);
 
-  // 拋單：對話框沒有物流單號輸入欄、重量選填
+  // 拋單：對話框沒有物流單號輸入欄、沒有重量欄
   const dialog = await clickRowAction(page, carrierNo, '拋單');
   await expect(dialog).toContainText(`拋單：${carrierNo}`);
-  await expect(dialog.getByLabel('重量（公斤，選填）')).toBeVisible();
+  await expect(dialog.getByLabel(/重量/)).toHaveCount(0);
   await dialog.getByRole('button', { name: '確認拋單' }).click();
   await expect(page.getByText(/已拋單（運送中）/).first()).toBeVisible();
 
@@ -974,39 +966,27 @@ test('12.21 出貨人員對第三方出貨單按拋單，系統生成物流單�
   expect(text).toContain(carrierNo);
   expect(text).toContain(trackingNo);
 
-  // 拋單後可補填重量（比照專車）：運送中的列上有「補填重量」，改動寫進歷程
-  const weightDialog = await clickRowAction(page, carrierNo, '補填重量');
-  await weightDialog.getByLabel('重量（公斤）').fill('9.5');
-  await weightDialog.getByRole('button', { name: '確認補填' }).click();
-  await expect(page.getByText('已補填重量').first()).toBeVisible();
-  const weighed = await openShipmentPanel(page, carrierNo);
-  await expect(weighed).toContainText('9.5');
-  await weighed.getByRole('tab', { name: '歷程' }).click();
-  await expect(weighed).toContainText('補填重量');
-  await closeDrawer(page);
-
   // 專車單與自取單沒有下載物流單，也沒有物流單號
   await expect(shipmentRow(page, vanNo).getByRole('button', { name: '下載物流單' })).toHaveCount(0);
   await expect(shipmentRow(page, pickupNo).getByRole('button', { name: '下載物流單' })).toHaveCount(0);
 
-  // 補填重量的範圍：運送中與已送達可補，異常不可，自取交付確認後（已送達）也可補
+  // 沒有補填重量：自取交付確認後、專車運送中與異常、第三方運送中的列上都沒有這顆鈕
   const pickup = await clickRowAction(page, pickupNo, '交付確認');
   await pickup.locator('input[type="file"]').setInputFiles(fakePhoto('點交照.jpg'));
   await pickup.getByRole('button', { name: '確認交付' }).click();
   await expect(shipmentRow(page, pickupNo)).toContainText('已送達');
-  await expect(shipmentRow(page, pickupNo).getByRole('button', { name: '補填重量' })).toHaveCount(1);
+  await expect(shipmentRow(page, pickupNo).getByRole('button', { name: '補填重量' })).toHaveCount(0);
   const vanDone = await clickRowAction(page, vanNo, '出貨確認');
   await vanDone.getByRole('button', { name: '確認出貨' }).click();
   await expect(shipmentRow(page, vanNo)).toContainText('運送中');
-  await expect(shipmentRow(page, vanNo).getByRole('button', { name: '補填重量' })).toHaveCount(1);
+  await expect(shipmentRow(page, vanNo).getByRole('button', { name: '補填重量' })).toHaveCount(0);
   const abnormal = await clickRowAction(page, vanNo, '異常');
   await abnormal.getByLabel('異常理由').fill('客戶拒收');
   await abnormal.getByRole('button', { name: '轉異常' }).click();
   await expect(shipmentRow(page, vanNo)).toContainText('異常');
   await expect(shipmentRow(page, vanNo).getByRole('button', { name: '補填重量' })).toHaveCount(0);
-  // 第三方送達後（模擬配達）仍可補
-  await shipmentRow(page, carrierNo).getByRole('button', { name: '模擬物流商回報配達' }).click();
-  await confirmBox(page).getByRole('button', { name: '模擬回報配達' }).click();
+  // 第三方送達（手動補登配達時間）後同樣沒有補填重量
+  await deliverThirdParty(page, carrierNo);
   await expect(shipmentRow(page, carrierNo)).toContainText('已送達');
-  await expect(shipmentRow(page, carrierNo).getByRole('button', { name: '補填重量' })).toHaveCount(1);
+  await expect(shipmentRow(page, carrierNo).getByRole('button', { name: '補填重量' })).toHaveCount(0);
 });

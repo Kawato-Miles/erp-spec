@@ -209,7 +209,7 @@ test('10.33 短少確定找不到：先改搬運數量、再改報工，轉交�
 
   // 印務把證書四色印刷那筆報工的良品 500 改 480、不良品 15 改 35（生產數量 515 不變）
   await switchRole(page, '印務');
-  const reports = await openPackageReports(page, 'WP-2026-0812-01');
+  const reports = await openPackageReports(page, 'WP-2026-0812-01', '證書四色印刷');
   await editReport(page, reportRowOf(reports, '2026-08-25 16:30'), {
     good: 480,
     defect: 35,
@@ -231,7 +231,7 @@ test('10.33 短少確定找不到：先改搬運數量、再改報工，轉交�
 test('10.34 報工修正三欄可改、原因必填、留修改紀錄、調升不擋', async ({ page }) => {
   test.setTimeout(120_000);
   await openAs(page, '印務', '/production-floor/work-packages');
-  const reports = await openPackageReports(page, 'WP-2026-0812-01');
+  const reports = await openPackageReports(page, 'WP-2026-0812-01', '證書四色印刷');
   const row = reportRowOf(reports, '2026-08-25 16:30');
 
   // 修改對話框開放生產數量、良品數、不良品數三欄與備註
@@ -260,11 +260,12 @@ test('10.34 報工修正三欄可改、原因必填、留修改紀錄、調升�
   // 任務歷程新增一筆報工修正，前後值列良品數 500 → 480
   await gotoInApp(page, '/production-floor/work-packages');
   const pkgRow = page.locator('.ant-table-row', { hasText: 'WP-2026-0812-01' });
-  await pkgRow.getByLabel('展開行').click();
+  // 同一頁停留時工作包列可能已展開（前面開側板時展開過），已展開就不再點
+  if (await pkgRow.getByLabel('展開行').count()) await pkgRow.getByLabel('展開行').click();
   await pkgRow
     .locator('xpath=following-sibling::tr[1]')
     .locator('tr', { hasText: '證書四色印刷' })
-    .getByRole('button', { name: '檢視歷程' })
+    .getByText('證書四色印刷', { exact: true })
     .click();
   const history = page.locator('.ant-drawer-content:visible').last();
   await expect(history).toContainText('良品數：500 → 480');
@@ -274,7 +275,7 @@ test('10.35 報工修正與作廢共用擋下條件：在途與已點收量、�
   test.setTimeout(120_000);
   // 海報四色印刷第二筆報工（投入 1,000、良品 1,000）的良品改為 900：改後 1,890 低於 1,990，擋下並列出兩張單
   await openAs(page, '印務', '/production-floor/work-packages');
-  const posterReports = await openPackageReports(page, 'WP-2026-0710-01');
+  const posterReports = await openPackageReports(page, 'WP-2026-0710-01', '海報四色印刷');
   await editReport(page, reportRowOf(posterReports, '2026-08-29 16:45'), { good: 900, reason: '誤報' });
   const blocked = noticeOf(page, 'TT-20260830-003');
   await expect(blocked).toBeVisible();
@@ -291,7 +292,7 @@ test('10.35 報工修正與作廢共用擋下條件：在途與已點收量、�
   await switchRole(page, '師傅');
   // 切角色後頁面還停在所有工作包（師傅沒有這個單元的操作）：先進我的工作包再開報工紀錄
   await gotoInApp(page, '/production-floor/work-packages/mine');
-  const envelopeReports = await openPackageReports(page, 'WP-2026-0812-01');
+  const envelopeReports = await openPackageReports(page, 'WP-2026-0812-01', '信封四色印刷');
   await reportRowOf(envelopeReports, '2026-08-26 15:40').getByRole('button', { name: '作廢', exact: true }).click();
   // 作廢原因為文字欄、自由填寫（wiki 報工紀錄 § 作廢原因）
   await page.locator('.ant-form-item', { hasText: '作廢原因' }).locator('textarea, input').first().fill('誤報');
@@ -305,7 +306,7 @@ test('10.36 已完成任務可修正與作廢報工；修正或作廢跌破目�
   test.setTimeout(120_000);
   // 證書四色印刷（已完成）那筆報工：修正與作廢都在
   await openAs(page, '印務', '/production-floor/work-packages');
-  const reports = await openPackageReports(page, 'WP-2026-0812-01');
+  const reports = await openPackageReports(page, 'WP-2026-0812-01', '證書四色印刷');
   const row = reportRowOf(reports, '2026-08-25 16:30');
   await expect(row.getByRole('button', { name: '作廢', exact: true })).toHaveCount(1);
   await expect(row.getByRole('button', { name: '修正', exact: true })).toBeEnabled();
@@ -378,7 +379,7 @@ test('10.39 轉交狀態兩條邊界：點收量多於良品時點收不擋、�
   test.setTimeout(180_000);
   // 前置：印務把證書四色印刷的報工良品改為 480、不良品改為 35（點收數量 480）
   await openAs(page, '印務', '/production-floor/work-packages');
-  let reports = await openPackageReports(page, 'WP-2026-0812-01');
+  let reports = await openPackageReports(page, 'WP-2026-0812-01', '證書四色印刷');
   await editReport(page, reportRowOf(reports, '2026-08-25 16:30'), { good: 480, defect: 35, reason: '現場清點只有 480' });
   await expect(reportRowOf(reports, '2026-08-25 16:30')).toContainText('480');
   await closeDrawer(page);
@@ -399,7 +400,7 @@ test('10.39 轉交狀態兩條邊界：點收量多於良品時點收不擋、�
   await expect(certRow).toContainText('500／500');
 
   // 印務再把報工良品改回 500、不良品改回 15 → 已轉交
-  reports = await openPackageReports(page, 'WP-2026-0812-01');
+  reports = await openPackageReports(page, 'WP-2026-0812-01', '證書四色印刷');
   await editReport(page, reportRowOf(reports, '2026-08-25 16:30'), { good: 500, defect: 15, reason: '貨已找回' });
   await closeDrawer(page);
   certRow = await certWorkOrderTaskRow(page, '證書四色印刷');

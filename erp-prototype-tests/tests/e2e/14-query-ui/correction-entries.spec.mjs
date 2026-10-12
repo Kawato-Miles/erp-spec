@@ -19,7 +19,7 @@ async function openCertificateTaskDrawerOnAllTasks(page) {
   await page
     .locator('tr.ant-table-row', { hasText: '證書四色印刷' })
     .first()
-    .getByRole('button', { name: /檢視歷程/ })
+    .getByText('證書四色印刷', { exact: true })
     .click();
   const drawer = drawerOf(page);
   await expect(drawer).toContainText('報工紀錄');
@@ -154,7 +154,7 @@ test('14.35 我的生產任務的側板只能修正與作廢自己提交的報�
   await page
     .locator('tr.ant-table-row', { hasText: '信封四色印刷' })
     .first()
-    .getByRole('button', { name: /檢視歷程/ })
+    .getByText('信封四色印刷', { exact: true })
     .click();
   const drawer = drawerOf(page);
   await expect(drawer).toContainText('報工紀錄');

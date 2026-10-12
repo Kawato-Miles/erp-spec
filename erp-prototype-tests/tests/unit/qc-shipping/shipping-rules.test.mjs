@@ -37,7 +37,6 @@ const shipmentOf = (overrides = {}) => ({
   boxes: 10,
   box_spec: 'A 箱（60×40×40）',
   packing_photos: ['裝箱照.jpg'],
-  weight_kg: null,
   tracking_no: null,
   packing_corrections: [],
   history: [],
@@ -319,13 +318,13 @@ describe('12.21 拋單：系統生成物流單號、單轉運送中、寫歷程'
   it('第三方拋單寫入 HCT 開頭的物流單號與實際出貨時間，歷程多一筆拋單', () => {
     const result = useQcShippingStore
       .getState()
-      .confirmShipping('sh-test-1', { operator: '曾志偉', weight_kg: 8.2 });
+      .confirmShipping('sh-test-1', { operator: '曾志偉' });
     expect(result.ok).toBe(true);
     const sh = current();
     expect(sh.status).toBe('運送中');
     expect(sh.tracking_no).toMatch(/^HCT-\d+$/);
     expect(sh.shipped_by).toBe('曾志偉');
-    expect(sh.weight_kg).toBe(8.2);
+    expect(sh.weight_kg).toBeUndefined();
     const last = sh.history[sh.history.length - 1];
     expect(last.category).toBe('拋單或出貨確認');
     expect(last.event).toContain('拋單');
@@ -339,28 +338,11 @@ describe('12.21 拋單：系統生成物流單號、單轉運送中、寫歷程'
     expect(current().status).toBe('運送中');
   });
 
-  it('拋單後可補填重量，限運送中與已送達，改動寫一筆編輯歷程', () => {
+  it('出貨單沒有補填重量的動作，歷程也不出現重量事件', () => {
     useQcShippingStore.getState().confirmShipping('sh-test-1', { operator: '曾志偉' });
-    const result = useQcShippingStore
-      .getState()
-      .recordWeight('sh-test-1', { weight_kg: 9.5, operator: '曾志偉' });
-    expect(result.ok).toBe(true);
-    expect(current().weight_kg).toBe(9.5);
-    const last = current().history[current().history.length - 1];
-    expect(last.category).toBe('編輯');
-    expect(last.changes[0]).toMatchObject({ field: '重量（公斤）', before: null, after: 9.5 });
-    // 已送達仍可補，異常、已作廢、待出貨不可
-    useQcShippingStore.setState({ shipments: [{ ...current(), status: '已送達' }] });
-    expect(useQcShippingStore.getState().recordWeight('sh-test-1', { weight_kg: 9.8, operator: '曾志偉' }).ok).toBe(true);
-    ['異常', '已作廢'].forEach((status) => {
-      useQcShippingStore.setState({ shipments: [{ ...current(), status }] });
-      expect(useQcShippingStore.getState().recordWeight('sh-test-1', { weight_kg: 1, operator: '曾志偉' }).ok).toBe(false);
-    });
-    // 還沒出貨的單不能補填
-    seed(shipmentOf());
-    expect(
-      useQcShippingStore.getState().recordWeight('sh-test-1', { weight_kg: 1, operator: '曾志偉' }).ok,
-    ).toBe(false);
+    expect(useQcShippingStore.getState().recordWeight).toBeUndefined();
+    const fields = current().history.flatMap((h) => h.changes.map((c) => c.field));
+    expect(fields.some((f) => f.includes('重量'))).toBe(false);
   });
 
   it('揀貨不符時拋單被擋下，單與歷程都不變', () => {

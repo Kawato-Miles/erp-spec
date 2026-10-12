@@ -155,25 +155,22 @@ test('14.7 印件詳情的工單與生產任務頁籤（原編號 58）',
   },
 );
 
-test('14.8 業務看到的印件詳情有三個頁籤（原編號 59）', async ({ page }) => {
+test('14.8 業務看到的印件詳情頁籤範圍與印務相同，含品檢頁籤（原編號 59，2026-10-13 改寫）', async ({ page }) => {
   // 起點資料：鏈一 PI-2026-0601
-  // 期望值取自 openspec sales-platform § 業務進入印件詳情頁看到三個 Tab
   await openAs(page, '業務', '/print-items/detail?id=PI-2026-0601');
 
-  // 審稿紀錄、活動紀錄、報價與利潤三個頁籤
+  // 審稿紀錄、活動紀錄、工單與生產任務、品檢紀錄與品檢缺口處置、報價與利潤五個頁籤（與印務相同）
   const tabs = page.locator('[role="tab"]');
-  await expect(tabs).toHaveCount(3);
+  await expect(tabs).toHaveCount(5);
   await expect(page.getByRole('tab', { name: /審稿紀錄/ })).toBeVisible();
   await expect(page.getByRole('tab', { name: /活動紀錄/ })).toBeVisible();
+  await expect(page.getByRole('tab', { name: /工單與生產任務/ })).toBeVisible();
+  await expect(page.getByRole('tab', { name: '品檢紀錄與品檢缺口處置' })).toBeVisible();
   await expect(page.getByRole('tab', { name: '報價與利潤' })).toBeVisible();
-
-  // 工單與生產任務、品檢紀錄與缺口處置兩個頁籤仍隱藏
-  await expect(page.getByRole('tab', { name: /工單與生產任務/ })).toHaveCount(0);
-  await expect(page.getByRole('tab', { name: /品檢/ })).toHaveCount(0);
 
   // 固定區塊不再有成本區；其餘固定區塊正常顯示
   await expect(page.locator('body')).toContainText('購買數量');
-  await expect(page.locator('body')).toContainText('製作進度');
+  await expect(page.locator('body')).toContainText('完成數');
   await expect(page.locator('body')).toContainText('可出貨額度');
 });
 
@@ -189,7 +186,7 @@ test('14.9 印件詳情頁的兩本帳與報價與利潤都要有數字（原編
     page.locator(`th.ant-descriptions-item-label:has-text("${label}") + td`).first();
 
   for (const label of [
-    '製作進度',
+    '完成數',
     '品質帳',
     '報廢數',
     '不通過累計',

@@ -73,13 +73,13 @@ test('10.46 五個報工入口與三值提交管道；印件詳情沒有報工�
   await expect(page.getByText(/已送出 1 筆報工/).last()).toBeVisible();
 
   // 報工紀錄的提交管道：師傅自助兩筆、生產管理頁面代報兩筆、印務於工單詳情頁一筆
-  const reports = await openPackageReports(page, 'WP-2026-0710-01');
-  // 以「生產數量」那一格的全文定位（欄序：完稿縮圖、報工照片、報工時間、報工人員、提交管道、狀態、生產數量）：
+  const reports = await openPackageReports(page, 'WP-2026-0710-01', '海報四色印刷');
+  // 以「生產數量」那一格的全文定位（側板欄序：完稿縮圖、報工照片、報工時間、報工人員（第二行為提交管道）、狀態、生產數量）：
   // 整列的文字各格相連（如「1111０」），用數字前後非數字的正規式會比對到報工時間裡的月份
   const channelOf = (qty) =>
     reports
       .locator('tr.ant-table-row')
-      .filter({ has: page.locator('td:nth-child(7)', { hasText: new RegExp(`^${qty}$`) }) })
+      .filter({ has: page.locator('td:nth-child(6)', { hasText: new RegExp(`^${qty}$`) }) })
       .first();
   await expect(channelOf(10)).toContainText('師傅自助');
   await expect(channelOf(11)).toContainText('師傅自助');
@@ -117,7 +117,7 @@ test('10.48 未交付擋下；已完成任務擋下新增報工，既有報工�
   ).toHaveCount(0);
 
   // 既有報工的修正與作廢仍可用
-  const reports = await openPackageReports(page, 'WP-2026-0812-01');
+  const reports = await openPackageReports(page, 'WP-2026-0812-01', '證書四色印刷');
   const row = reports.locator('tr.ant-table-row', { hasText: '2026-08-25 16:30' }).first();
   await expect(row.getByRole('button', { name: '修正', exact: true })).toBeVisible();
   await expect(row.getByRole('button', { name: '作廢', exact: true })).toBeVisible();

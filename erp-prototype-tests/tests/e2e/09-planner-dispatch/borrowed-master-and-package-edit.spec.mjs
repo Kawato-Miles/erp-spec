@@ -75,7 +75,7 @@ test('9.16 指派師傅在我的工作包編輯自己的工作包，指派師傅
     .locator('xpath=following-sibling::tr[1]')
     .locator('tr', { hasText: '證書四色印刷' })
     .first()
-    .getByRole('button', { name: /檢視歷程/ })
+    .getByText('證書四色印刷', { exact: true })
     .click();
   const drawer = page.locator('.ant-drawer-content:visible').last();
   const first = drawer.locator('.ant-timeline-item').first();

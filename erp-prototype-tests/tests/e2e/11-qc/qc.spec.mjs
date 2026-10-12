@@ -46,8 +46,8 @@ const qcHeader = (page) => page.locator('.ant-table-thead').first();
 test('11.1 待驗清單依印件做出來的良品列出，不依轉交（原編號 27）', async ({ page }) => {
   await openAs(page, '品檢人員', '/qc-shipping/inspection');
 
-  // 欄位：印件、所屬訂單編號、客戶名稱、品檢需求、內部完成日、預計交期、急件、齊套完成數、
-  // 已驗（通過／不通過）、待驗量、操作
+  // 欄位：印件、所屬訂單編號、客戶名稱、品檢需求、內部完成日、預計交期、急件、完成數、
+  // 待驗量、已驗（通過／不通過）、操作
   await expect(qcHeader(page)).toContainText('印件');
   await expect(qcHeader(page)).toContainText('所屬訂單編號');
   await expect(qcHeader(page)).toContainText('客戶名稱');
@@ -55,10 +55,15 @@ test('11.1 待驗清單依印件做出來的良品列出，不依轉交（原編
   await expect(qcHeader(page)).toContainText('內部完成日');
   await expect(qcHeader(page)).toContainText('預計交期');
   await expect(qcHeader(page)).toContainText('急件');
-  await expect(qcHeader(page)).toContainText('齊套完成數');
+  await expect(qcHeader(page)).toContainText('完成數');
   await expect(qcHeader(page)).toContainText('已驗（通過／不通過）');
   await expect(qcHeader(page)).toContainText('待驗量');
   await expect(qcHeader(page)).toContainText('操作');
+  // 數量欄依序為完成數、待驗量、已驗量
+  const headers = (await qcHeader(page).locator('th').allInnerTexts()).map((t) => t.trim());
+  expect(headers.indexOf('完成數')).toBeGreaterThanOrEqual(0);
+  expect(headers.indexOf('完成數')).toBeLessThan(headers.indexOf('待驗量'));
+  expect(headers.indexOf('待驗量')).toBeLessThan(headers.indexOf('已驗（通過／不通過）'));
   // 待驗量只看做出來的良品；頁首指點品檢人員看得到的「點收佇列」查貨在哪裡
   await expect(page.getByText('待驗量＝做出來的良品 − 已驗量，只看做出來多少；貨在哪裡請到點收佇列查。')).toBeVisible();
 
@@ -127,8 +132,7 @@ test('11.3 驗收數量不得超過待驗量（原編號 52）', async ({ page }
   await openAs(page, '品檢人員', '/qc-shipping/inspection');
   await pendingRow(page).getByRole('button', { name: '驗收' }).click();
   const dialog = inspectDialog(page);
-  await expect(dialog).toContainText('本站待驗量 500（可驗良品 500 − 已驗 0）');
-  await expect(dialog).toContainText('本批驗出多種不良時分批各記一筆');
+  await expect(dialog).toContainText('本站待驗量 500');
 
   // 填 600 送出：整筆擋下並顯示當下待驗量 500，且輸入框不自動把數字砍到上限內
   const passedInput = dialog.getByLabel('通過數量', { exact: true });
@@ -150,12 +154,12 @@ test('11.3 驗收數量不得超過待驗量（原編號 52）', async ({ page }
 });
 
 test('11.4 製作帳與品質帳並排，互不覆蓋（原編號 103）', async ({ page }) => {
-  // 起點：鏈四齊套完成數 500、尚未驗收
+  // 起點：鏈四完成數 500、尚未驗收
   await openAs(page, '印務主管', '/print-items');
   await openPrintItemDetail(page, CHAIN4.printItemName);
 
   // 兩個數字並排且互不覆蓋；驗收前品質帳為 0、缺口等於待驗量
-  await expect(descValue(page, '製作進度（齊套完成數／購買數量）')).toHaveText('500 / 500');
+  await expect(descValue(page, '完成數')).toHaveText('500');
   await expect(descValue(page, '品質帳（完工良品數／缺口）')).toContainText('0');
   await expect(descValue(page, '品質帳（完工良品數／缺口）')).toContainText('500');
 
@@ -176,11 +180,11 @@ test('11.4 製作帳與品質帳並排，互不覆蓋（原編號 103）', async
   await switchRoleSafe(page, '印務主管');
   await gotoInAppSafe(page, '/print-items');
   await openPrintItemDetail(page, CHAIN4.printItemName);
-  await expect(descValue(page, '製作進度（齊套完成數／購買數量）')).toHaveText('500 / 500');
+  await expect(descValue(page, '完成數')).toHaveText('500');
   await expect(descValue(page, '品質帳（完工良品數／缺口）')).toContainText('480');
   await expect(descValue(page, '品質帳（完工良品數／缺口）')).toContainText('20');
 
-  // 訂單詳情印件列的進度數字＝齊套完成數，與印件詳情頁一致（訂單列表限業務端側欄可達）
+  // 訂單詳情印件列的進度數字＝完成數，與印件詳情頁一致（訂單列表限業務端側欄可達）
   await switchRoleSafe(page, '業務');
   await gotoInAppSafe(page, '/orders');
   await openOrderItemsTab(page, CHAIN4.orderNo);
@@ -378,7 +382,7 @@ test('11.10 印件詳情頁看得到歷次分次驗收（原編號 11）', async
   // 固定區塊：印件基本資訊、印件檔案、數量與進度
   await expect(page.getByText('印件基本資訊')).toBeVisible();
   await expect(page.getByText('印件檔案')).toBeVisible();
-  await expect(page.getByText('製作進度（齊套完成數／購買數量）')).toBeVisible();
+  await expect(descValue(page, '完成數')).toBeVisible();
 
   // 旗下工單在「工單與生產任務」頁籤
   await expect(page.getByRole('tab', { name: /工單與生產任務/ })).toBeVisible();

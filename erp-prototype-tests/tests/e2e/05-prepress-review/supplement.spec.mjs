@@ -126,8 +126,8 @@ test('5.11 打樣結果 NG-製程問題，系統自動在原印件下建新打�
   // 印製狀態即刻推進「製程已確認」，不進待確認製作細節佇列
   await expect(page.getByText('製程已確認', { exact: true }).first()).toBeVisible();
 
-  // 工單與生產任務頁籤業務平台角色看不到（canSeeProductionTabs 排除業務／諮詢／會計），
-  // 切印務才看得到這個 Tab；印件詳情不分角色，切角色不影響已在頁面上的資料
+  // 工單與生產任務頁籤業務與印務都看得到（只有會計看不到，見 canSeeProductionTabs）；
+  // 印件詳情不分角色，切角色不影響已在頁面上的資料
   await switchRole(page, '印務');
   await page.getByRole('tab', { name: /工單與生產任務/ }).click();
   // 兩張工單：原工單＋系統新建的草稿打樣工單

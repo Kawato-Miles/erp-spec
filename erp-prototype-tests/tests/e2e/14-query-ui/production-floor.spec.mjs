@@ -187,7 +187,7 @@ test('14.28 生產管理權限分產線與負責兩種範圍，能做的操作�
   await expect(page.locator('main .ant-table .ant-checkbox-input')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /接收工作|取消工作包|派工/ })).toHaveCount(0);
   // 自己提交的報工有修正與作廢（從該任務的報工紀錄看）
-  await myRow.getByRole('button', { name: /檢視歷程|報工紀錄/ }).first().click();
+  await myRow.getByText('信封四色印刷', { exact: true }).click();
   const drawer = page.locator('.ant-drawer-content:visible').last();
   await expect(drawer.getByRole('button', { name: /修\s*正/ }).first()).toBeVisible();
   await expect(drawer.getByRole('button', { name: /作\s*廢/ }).first()).toBeVisible();

@@ -293,7 +293,7 @@ test('10.10 歷程只追加；點收紀錄作廢與搬運數量修正各記一�
   await closeDrawer(page);
 
   // 工作包報工紀錄也沒有加註記
-  const reports = await openPackageReports(page, 'WP-2026-0601-01');
+  const reports = await openPackageReports(page, 'WP-2026-0601-01', '會員卡印刷（CMYK 雙面）');
   await expect(reports.getByRole('button', { name: /加註記/ })).toHaveCount(0);
 });
 
@@ -429,15 +429,14 @@ test('10.25 已點收的轉交單不可作廢，送錯站由現場溝通後直�
   await expect(page.getByRole('button', { name: /回運/ })).toHaveCount(0);
 
   // 搬運中的 TT-20260830-003 仍可作廢（點收前的單都可作廢，見 10.53）；
-  // 作廢對話框寫明已點收不可作廢、送錯站由現場溝通後直接搬
+  // 作廢對話框只有作廢原因欄，不放長段說明
   await ticketSearch.fill('TT-20260830-003');
   await ticketSearch.press('Enter');
   const movingRow = page.locator('tr', { hasText: 'TT-20260830-003' });
   await movingRow.getByRole('button', { name: '作廢', exact: true }).click();
   const voidDialog = page.locator('.ant-modal-content').filter({ hasText: '作廢轉交單' });
-  await expect(voidDialog).toContainText(
-    '已點收不可作廢（貨若送錯站，現場溝通後由廠務直接搬到正確的站）',
-  );
+  await expect(voidDialog.getByLabel('作廢原因')).toBeVisible();
+  await expect(voidDialog).not.toContainText('現場溝通後由廠務直接搬到正確的站');
 });
 
 test('10.40 建轉交單選負責廠務與預計轉交日，系統只通知負責廠務；開始搬運與抵達由負責廠務回報', async ({

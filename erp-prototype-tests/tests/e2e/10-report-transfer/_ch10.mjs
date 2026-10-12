@@ -100,12 +100,23 @@ export async function receiveInQueue(page, ticketNo, quantities = {}) {
   return dialog;
 }
 
-/** 在生產任務單元打開某個工作包的報工紀錄側板 */
-export async function openPackageReports(page, packageNo) {
-  await gotoInApp(page, '/production-floor/work-packages');
-  await page.getByText(packageNo, { exact: true }).first().click();
+/**
+ * 在工作包單元展開某個工作包，點子層某一筆生產任務的名稱，開出該任務的生產任務側板（報工紀錄在側板內）。
+ * 工作包檢視面板不再有報工紀錄，報工跟著生產任務。
+ * @param {string} [path] 單元路徑，預設所有工作包；我的工作包傳 '/production-floor/work-packages/mine'
+ */
+export async function openPackageReports(page, packageNo, taskName, path = '/production-floor/work-packages') {
+  await gotoInApp(page, path);
+  const pkgRow = page.locator('.ant-table-row', { hasText: packageNo }).first();
+  // 同一頁停留時工作包列可能已展開（鈕名變「收起行」），已展開就不再點
+  const expand = pkgRow.getByLabel('展開行');
+  if (await expand.count()) await expand.click();
+  await pkgRow
+    .locator('xpath=following-sibling::tr[1]')
+    .getByText(taskName, { exact: true })
+    .click();
   const drawer = page.locator('.ant-drawer-content:visible').last();
-  await expect(drawer).toContainText('報工紀錄');
+  await expect(drawer).toContainText('報工紀錄（');
   return drawer;
 }
 

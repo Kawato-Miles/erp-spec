@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { gotoInApp, openAs } from '../_helpers.mjs';
 
-// 情境目錄 14.29：生產任務側板分基本資料、狀態、數量、報工紀錄、歷程五區，標題帶序號（2026-10-12 改寫）。
+// 情境目錄 14.29：生產任務側板分基本資料、狀態、數量、報工紀錄、歷程五區，標題帶序號；側板由點任務名稱開啟（2026-10-13 改寫）。
 // 情境目錄 14.30：轉交單子層最前面固定放完稿縮圖與簽收照片（所有轉交單與點收佇列共用子母表）。
 
 const SECTIONS = ['基本資料', '狀態', '數量', '報工紀錄（', '歷程（'];
@@ -28,7 +28,7 @@ test('14.29 生產任務側板分基本資料、狀態、數量、報工紀錄�
   await page
     .locator('tr.ant-table-row', { hasText: '證書四色印刷' })
     .first()
-    .getByRole('button', { name: /檢視歷程/ })
+    .getByText('證書四色印刷', { exact: true })
     .click();
   const drawer = page.locator('.ant-drawer-content:visible').last();
   await expectFiveSections(drawer);
@@ -52,7 +52,7 @@ test('14.29 生產任務側板分基本資料、狀態、數量、報工紀錄�
   expect(scrolls).toBe(true);
   await page.getByRole('button', { name: '關閉' }).last().click();
 
-  // 所有工作包的檢視歷程開出同一個側板
+  // 所有工作包展開後，點子列的任務名稱開出同一個側板
   await gotoInApp(page, '/production-floor/work-packages');
   const pkgRow = page.locator('.ant-table-row', { hasText: 'WP-2026-0812-01' }).first();
   await pkgRow.getByLabel('展開行').click();
@@ -60,7 +60,7 @@ test('14.29 生產任務側板分基本資料、狀態、數量、報工紀錄�
     .locator('xpath=following-sibling::tr[1]')
     .locator('tr', { hasText: '證書四色印刷' })
     .first()
-    .getByRole('button', { name: /檢視歷程/ })
+    .getByText('證書四色印刷', { exact: true })
     .click();
   await expectFiveSections(page.locator('.ant-drawer-content:visible').last());
 });

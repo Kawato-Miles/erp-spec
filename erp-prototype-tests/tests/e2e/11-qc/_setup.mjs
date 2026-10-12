@@ -266,8 +266,8 @@ export async function openShipmentEdit(page, keyword) {
 }
 
 /**
- * 按列上某顆動作鈕（開始揀貨、裝箱回報、出貨確認、交付確認、送達確認、異常、作廢、刪除、
- * 模擬物流商回報配達），回它開出來的對話框。確認框（開始揀貨、刪除、模擬配達）用 confirmBox 另取。
+ * 按列上某顆動作鈕（開始揀貨、裝箱回報、出貨確認、交付確認、送達確認、異常、作廢、刪除），
+ * 回它開出來的對話框。確認框（開始揀貨、刪除）用 confirmBox 另取。
  */
 export async function clickRowAction(page, keyword, name) {
   await shipmentRow(page, keyword).getByRole('button', { name, exact: true }).click();

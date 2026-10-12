@@ -98,7 +98,7 @@ test('10.19 同站下一台機台的任務要等上一道報出良品才有報�
   const glueRow = subRow.locator('tr', { hasText: '糊盒成型' }).first();
   await expect(glueRow.getByText('0／2,000')).toBeVisible();
   await expect(glueRow.getByRole('button', { name: '報工' })).toHaveCount(0);
-  await expect(glueRow.getByRole('button', { name: /檢視歷程/ })).toHaveCount(1);
+  await expect(glueRow.getByText('前置未到料', { exact: true })).toBeVisible();
 
   // 軋盒成型報出 1,200 良品（沒有搬運這一段）→ 糊盒成型的可做量變成 1,200，報工入口出現
   await reportTask(page, '軋盒成型', 1200);

@@ -107,21 +107,27 @@ test('8.5 交付產線後的欄位一路帶到現場報工（原編號 112）', 
   // 與預估側同一支引擎，只換數量輸入）。材料任務不上機，實際小計不扣平版開機費。
   expect(actual).toBe('NT$ 612');
 
-  // 五、工作包側板看得到這筆報工紀錄
+  // 五、生產任務側板看得到這筆報工紀錄（報工跟著生產任務，工作包檢視面板不列報工）
   await switchRoleReliable(page, '生管');
   await gotoInAppStable(page, '/production-floor/work-packages');
-  await page.getByText(/^WP-/).first().click();
+  const pkgRowForReport = page.locator('.ant-table-row', { hasText: 'WP-' }).first();
+  await pkgRowForReport.getByLabel('展開行').click();
+  await pkgRowForReport
+    .locator('xpath=following-sibling::tr[1]')
+    .locator('a', { hasText: '一級卡 300g 名片八開' })
+    .first()
+    .click();
   const drawer = page.locator('.ant-drawer').last();
   await expect(drawer.getByText(/報工紀錄（1）/)).toBeVisible();
   await expect(drawer.getByText('劉阿海').first()).toBeVisible();
   // 這筆報工照實記 700（目標數量 628），沒有被夾回目標值
   await expect(
-    drawer.locator('.ant-table-tbody > tr.ant-table-row').first(),
-  ).toContainText('700');
+    drawer.locator('.ant-table-tbody > tr.ant-table-row').filter({ hasText: '700' }).first(),
+  ).toBeVisible();
   await drawer.getByRole('button', { name: /Close|關閉/ }).first().click();
 
-  // 六、印件詳情的製作進度：齊套完成數取各計入完成度工序的最慢者
-  //（本鏈只報得動備料，計入完成度的「名片裁切分盒」尚未有產出，故齊套完成數仍為 0）
+  // 六、印件詳情的製作進度：完成數取各計入完成度工序的最慢者
+  //（本鏈只報得動備料，計入完成度的「名片裁切分盒」尚未有產出，故完成數仍為 0）
   await switchRoleReliable(page, '印務');
   await gotoInAppStable(page, '/print-items');
   // 印件總覽點的是印件名稱（印件編號欄為純文字），故取該列的第一個連結
@@ -131,8 +137,9 @@ test('8.5 交付產線後的欄位一路帶到現場報工（原編號 112）', 
     .locator('a.ant-typography')
     .first()
     .click();
-  await expect(page.getByText('製作進度（齊套完成數／購買數量）')).toBeVisible({
-    timeout: 20_000,
-  });
-  await expect(page.getByText('0 / 123')).toBeVisible();
+  // 製作進度只顯示完成數（不帶購買數量，購買數量在左邊一格已列）
+  const progressValue = page
+    .locator('th', { hasText: /^完成數$/ })
+    .locator('xpath=following-sibling::td[1]');
+  await expect(progressValue).toHaveText('0', { timeout: 20_000 });
 });

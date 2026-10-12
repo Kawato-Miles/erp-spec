@@ -262,7 +262,7 @@ describe('12.11 成立那一刻記下帳務公司代號，名稱電話地址仍�
   });
 });
 
-// ── 12.6、12.7：送達的兩條路徑先寫入者成立 ──
+// ── 12.6、12.7：送達確認只對運送中的單生效，先寫入者成立 ──
 
 const inTransitShipment = () => ({
   id: 'sh-test-transit',
@@ -285,7 +285,7 @@ describe('12.6、12.7 送達只對運送中的單生效，後到者不改任何�
     useQcShippingStore.setState({ shipments: [inTransitShipment()] });
   });
 
-  it('人工送達確認先寫入時，物流商回傳改不動任何欄位', () => {
+  it('人工送達確認先寫入後，第二次送達確認改不動任何欄位', () => {
     const written = useQcShippingStore
       .getState()
       .confirmDelivery('sh-test-transit', { operator: '吳孟哲', proof: '物流商配達時間：2026-09-20 10:00' });
@@ -294,40 +294,30 @@ describe('12.6、12.7 送達只對運送中的單生效，後到者不改任何�
 
     const late = useQcShippingStore
       .getState()
-      .syncCarrierDelivered('sh-test-transit', { delivered_at: '2026-09-20 18:00' });
+      .confirmDelivery('sh-test-transit', { operator: '范姜宏', proof: '補登' });
     expect(late).toBeNull();
     const after = shipmentById('sh-test-transit');
     expect(after.delivered_by).toBe('吳孟哲');
-    expect(after.delivered_at).not.toBe('2026-09-20 18:00');
+    expect(after.delivery_proof).toBe('物流商配達時間：2026-09-20 10:00');
   });
 
-  it('物流商回傳先寫入時，人工送達確認同樣被擋下', () => {
-    const written = useQcShippingStore
-      .getState()
-      .syncCarrierDelivered('sh-test-transit', { delivered_at: '2026-09-20 10:00' });
-    expect(written.status).toBe('已送達');
-    expect(written.delivered_by).toBe('物流商同步（模擬）');
-
-    const late = useQcShippingStore
-      .getState()
-      .confirmDelivery('sh-test-transit', { operator: '吳孟哲', proof: '補登' });
-    expect(late).toBeNull();
-    expect(shipmentById('sh-test-transit').delivered_by).toBe('物流商同步（模擬）');
-  });
-
-  it('還沒離廠的單也不接受送達寫入', () => {
+  it('還沒離廠的單不接受送達確認，狀態不變', () => {
     useQcShippingStore.setState({
       shipments: [{ ...inTransitShipment(), status: '待出貨' }],
     });
     expect(
-      useQcShippingStore.getState().syncCarrierDelivered('sh-test-transit', {
-        delivered_at: '2026-09-20 10:00',
-      }),
+      useQcShippingStore
+        .getState()
+        .confirmDelivery('sh-test-transit', { operator: '吳孟哲', proof: '補登' }),
     ).toBeNull();
     expect(shipmentById('sh-test-transit').status).toBe('待出貨');
   });
 
-  it('後到者看到的提示只有一句，兩條路徑共用同一份文字', () => {
+  it('出貨單沒有模擬物流商回報配達的動作', () => {
+    expect(useQcShippingStore.getState().syncCarrierDelivered).toBeUndefined();
+  });
+
+  it('後到者看到的提示只有一句，送達確認共用同一份文字', () => {
     expect(SETTLED_ALREADY_HINT).toBe('此單已收尾，請重新整理');
   });
 });

@@ -24,7 +24,7 @@ async function packageTaskRow(page, packageNo, taskName) {
     .first();
 }
 
-/** 在所有生產任務對某筆任務按「檢視歷程」，回傳生產任務側板 */
+/** 在所有生產任務點某筆任務的名稱，回傳生產任務側板 */
 async function openTaskDrawer(page, taskName, workOrderNo) {
   await gotoInApp(page, '/production-floor/dispatch');
   const search = page.getByPlaceholder(/工單編號/).first();
@@ -33,7 +33,7 @@ async function openTaskDrawer(page, taskName, workOrderNo) {
   await page
     .locator('tr.ant-table-row', { hasText: taskName })
     .first()
-    .getByRole('button', { name: /檢視歷程/ })
+    .getByText(taskName, { exact: true })
     .click();
   const drawer = page.locator('.ant-drawer-content:visible').last();
   await expect(drawer).toContainText(taskName);
@@ -60,10 +60,9 @@ test('10.41 報工時可填備註，修正報工時可改；報工紀錄與歷�
   await page.getByRole('button', { name: '送出報工' }).click();
   await expect(page.getByText('已送出 1 筆報工').last()).toBeVisible();
 
-  // 生管看工作包報工紀錄：多一欄備註
+  // 生管看生產任務側板的報工紀錄：報工人員格帶備註
   await switchRole(page, '生管');
-  const reports = await openPackageReports(page, 'WP-2026-0710-01');
-  await expect(reports.locator('thead')).toContainText('備註');
+  const reports = await openPackageReports(page, 'WP-2026-0710-01', '海報四色印刷');
   const newRow = reports.locator('tr.ant-table-row', { hasText: '換版後第二批，色偏已調回' }).first();
   await expect(newRow).toBeVisible();
 
@@ -111,7 +110,7 @@ test('10.42 生產數量大於 0 時，良品數與不良品數不可同時為 0
 
   // 修正既有報工把良品與不良品都改為 0：擋下、數字不變
   await switchRole(page, '印務');
-  const reports = await openPackageReports(page, 'WP-2026-0812-01');
+  const reports = await openPackageReports(page, 'WP-2026-0812-01', '證書四色印刷');
   const wr = reportRowOf(reports, '2026-08-25 16:30');
   await wr.getByRole('button', { name: '修正', exact: true }).click();
   const edit = dialogOf(page, '修正報工');
