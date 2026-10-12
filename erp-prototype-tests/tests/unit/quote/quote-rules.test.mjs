@@ -59,6 +59,33 @@ describe('1.3 業務談定單價、標記成交並一鍵轉出訂單（金額口
     const chainOne = MOCK_QUOTES.find((q) => q.quote_no === 'Q-20260601-01');
     expect(chainOne.items[0].unit_price).toBe(9.8);
     expect(lineSubtotal(chainOne.items[0].quantity, chainOne.items[0].unit_price)).toBe(49000);
+    // 鏈八議價中 Q-20260908-01：6,900／345／7,245（菜單夾頁單價為空，小計不入）
+    const negotiating = MOCK_QUOTES.find((q) => q.quote_no === 'Q-20260908-01');
+    expect(quoteTotals(negotiating.items)).toEqual({
+      amount_excl_tax: 6900,
+      tax_amount: 345,
+      total_incl_tax: 7245,
+    });
+    expect(negotiating.items[1].unit_price).toBeNull();
+    // 補上菜單夾頁單價 3.2 後：小計 1,600、利潤率 25.00%、金額 8,500／425／8,925
+    expect(lineSubtotal(500, 3.2)).toBe(1600);
+    expect(profitMargin(1200, 1600)).toBe(25);
+    expect(quoteTotals([{ subtotal_excl_tax: 6900 }, { subtotal_excl_tax: 1600 }])).toEqual({
+      amount_excl_tax: 8500,
+      tax_amount: 425,
+      total_incl_tax: 8925,
+    });
+    // 鏈八流失 Q-20260909-01：12,500／625／13,125
+    const lost = MOCK_QUOTES.find((q) => q.quote_no === 'Q-20260909-01');
+    expect(quoteTotals(lost.items)).toEqual({
+      amount_excl_tax: 12500,
+      tax_amount: 625,
+      total_incl_tax: 13125,
+    });
+    expect(lost.lost_reason).toBe('price');
+    expect(lost.lost_note).toBe('客戶轉單同業，價差約一成');
+    // 評估印務主管一律吳國豪（AU-009）
+    for (const q of MOCK_QUOTES) expect(q.estimated_by_manager_ids).toEqual(['AU-009']);
     for (const q of MOCK_QUOTES) {
       for (const it of q.items) {
         if (it.unit_price != null) {

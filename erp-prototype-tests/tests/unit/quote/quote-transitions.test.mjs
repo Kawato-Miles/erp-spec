@@ -5,6 +5,8 @@ import {
   QUOTE_STATUS,
   QUOTE_STATUS_LABELS,
   QUOTE_STEPS,
+  LOST_REASON_LABELS,
+  LOST_REASON_OPTIONS,
   QUOTE_TRANSITIONS,
   REQUOTE_TARGETS,
   getPrimaryTarget,
@@ -66,5 +68,31 @@ describe('1.1／1.2／1.3 主要前進轉換目標（供詳情頁主動作鈕挑
     );
     expect(getPrimaryTarget(QUOTE_STATUS.QUOTE_EVALUATED)).toBe(QUOTE_STATUS.NEGOTIATING);
     expect(getPrimaryTarget(QUOTE_STATUS.NEGOTIATING)).toBe(QUOTE_STATUS.WON);
+  });
+});
+
+describe('1.24 標記流失須選原因，流失原因為後端六個值', () => {
+  it('流失原因選項恰為六個，值域與後端一致', () => {
+    expect(LOST_REASON_OPTIONS).toHaveLength(6);
+    expect(Object.values(LOST_REASON_LABELS)).toEqual([
+      '價格因素',
+      '交期因素',
+      '規格不符',
+      '無回覆',
+      '改找他家',
+      '其他',
+    ]);
+  });
+
+  it('非終局狀態都能轉流失，成交不能', () => {
+    for (const status of [
+      QUOTE_STATUS.REQUIREMENT_CONFIRMING,
+      QUOTE_STATUS.PENDING_QUOTE_EVALUATION,
+      QUOTE_STATUS.QUOTE_EVALUATED,
+      QUOTE_STATUS.NEGOTIATING,
+    ]) {
+      expect(QUOTE_TRANSITIONS[status]).toContain(QUOTE_STATUS.LOST);
+    }
+    expect(QUOTE_TRANSITIONS[QUOTE_STATUS.WON]).not.toContain(QUOTE_STATUS.LOST);
   });
 });

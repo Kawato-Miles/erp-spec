@@ -13,6 +13,7 @@ import {
   fakeFile,
   fillCosts,
   openTab,
+  pickMulti,
   pickOption,
   quoteCurrentStep,
   rowOf,
@@ -22,6 +23,14 @@ import {
 } from './_local.mjs';
 
 // 第一章「需求單」情境驗收（docs/scenario-catalog.md 第一章各節）。
+// 單頭金額區（Descriptions）依標題取其內容格
+const amountField = (page, label) =>
+  page
+    .locator('th.ant-descriptions-item-label')
+    .filter({ hasText: label })
+    .first()
+    .locator('xpath=following-sibling::td[1]');
+
 // 每條情境獨立一條測試：第一步 openAs 之後一律 gotoInApp 與 switchRole，
 // 同一條測試內完成的推狀態鏈就是情境本文寫的「前置」。
 
@@ -77,6 +86,15 @@ test('1.2 印務主管回填成本、業務按評估完成，系統留一筆報�
   await addItem(page, { name: '甲印件', difficulty: 3 });
   await addItem(page, { name: '乙印件', difficulty: 5 });
   await button(page, '送印務評估').click();
+  await expect(quoteCurrentStep(page)).toHaveText('評估成本');
+
+  // 成本估算尚未填齊時按評估完成不受理，視窗列出缺漏印件，狀態不動
+  await button(page, '評估完成').click();
+  await expect(dialog(page)).toContainText('請填寫每個印件項目的成本估算（未稅），才能完成評估。');
+  await expect(dialog(page)).toContainText('甲印件');
+  await expect(dialog(page)).toContainText('乙印件');
+  await dialog(page).getByRole('button', { name: '知道了' }).click();
+  await waitModalsClosed(page);
   await expect(quoteCurrentStep(page)).toHaveText('評估成本');
 
   // 被指派的評估印務主管只填成本，沒有「評估完成」鈕，也看不到新增印件
@@ -167,14 +185,14 @@ test('1.3 業務談定單價、標記成交並一鍵轉出訂單', async ({ page
 test('1.4 議價中申請重新評估，需求單退回待評估成本', async ({ page }) => {
   // 情境內兩輪評估完成、跨三次角色切換，預設 30 秒跑不完
   test.setTimeout(90_000);
-  const title = '1.4 情境需求案';
+  // 起點：Q-20260908-01（鼎味餐飲集團冬季菜單桌卡，議價中，報價紀錄一筆）
   await openAs(page, '業務', '/quote-prototype');
-  await createQuoteHeader(page, { title });
-  await addItem(page, { name: '甲印件', unitPrice: '10' });
-  await button(page, '送印務評估').click();
-  await salesFillCostAndCompleteEstimate(page, ['甲印件'], 5);
-  await button(page, '報價').click();
+  await page.getByRole('link', { name: 'Q-20260908-01' }).click();
+  await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
   await expect(quoteCurrentStep(page)).toHaveText('議價');
+  await openTab(page, '報價紀錄');
+  await expect(activeTabRows(page)).toHaveCount(1);
+  await openTab(page, '印件報價');
 
   await button(page, '重新評估').click();
   const modal = dialog(page);
@@ -193,11 +211,12 @@ test('1.4 議價中申請重新評估，需求單退回待評估成本', async (
   await openTab(page, '活動紀錄');
   await expect(page.getByText(/調整說明：客戶要求降價 10%/)).toBeVisible();
 
-  // 印務主管重填成本、業務再按評估完成後新增一筆，兩筆可並列比對（先切回印件報價頁籤：
-  // 目前停在活動紀錄頁籤，該表格是隱藏但仍掛載的節點，直接點擊會因不可見而逾時）
+  // 印務主管吳國豪把冬季菜單桌卡成本由 4,485 改為 4,200、業務再按評估完成後新增一筆，
+  // 兩筆可並列比對（先切回印件報價頁籤：目前停在活動紀錄頁籤，該表格是隱藏但仍掛載的節點，
+  // 直接點擊會因不可見而逾時）
   await switchRole(page, '印務主管');
   await openTab(page, '印件報價');
-  await fillCosts(page, ['甲印件'], 4);
+  await fillCosts(page, ['冬季菜單桌卡'], 4200);
   await switchRole(page, '業務');
   await completeEstimate(page);
   await openTab(page, '報價紀錄');
@@ -233,6 +252,7 @@ test('1.5 已評估成本階段印務主管直接改成本、不退狀態', asyn
 });
 
 test('1.6 從既有需求單複製建單', async ({ page }) => {
+  // 起點：Q-20260601-01（會員卡（客製燙金）5,000 張、單價 9.8、小計 49,000）
   await openAs(page, '業務', '/quote-prototype');
   await page.getByRole('link', { name: 'Q-20260601-01' }).click();
   await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
@@ -243,78 +263,80 @@ test('1.6 從既有需求單複製建單', async ({ page }) => {
   // 產生新單，掛新單號並導頁過去
   await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
 
-  // 狀態回到待確認需求，印件原值帶入
+  // 狀態回到需求確認中，印件原值帶入，單頭金額依帶入的印件重算
   await expect(quoteCurrentStep(page)).toHaveText('確認需求');
   await expect(page.getByText('會員卡（客製燙金）', { exact: true })).toBeVisible();
+  const item = rowOf(page, '會員卡（客製燙金）');
+  await expect(item).toContainText('5,000');
+  await expect(item).toContainText('9.8');
+  await expect(item).toContainText('49,000');
+  const field = (label) => amountField(page, label);
+  await expect(field('小計（未稅）')).toContainText('49,000');
+  await expect(field('稅額（5%）')).toContainText('2,450');
+  await expect(field('含稅總額')).toContainText('51,450');
+  // 評估印務主管帶入；報價輪次歸零
+  await expect(field('評估印務')).toContainText('吳國豪');
+  await expect(field('報價輪次')).toContainText('0 輪');
 
-  // 報價輪次、報價紀錄、授權清單歸零重來，歷史報價不帶進新單
+  // 報價紀錄、分享成員不帶入，歷史報價不帶進新單
   await openTab(page, '報價紀錄');
   await expect(activeTabRows(page)).toHaveCount(0);
   await openTab(page, '權限管理');
   await expect(page.getByText('尚無授權人員')).toBeVisible();
 
-  // 活動紀錄第一筆寫「由 Q-20260601-01 複製建立需求單」
+  // 活動紀錄第一筆為「建立需求單」，不記來源需求單
   await openTab(page, '活動紀錄');
-  await expect(page.getByText(/由 Q-20260601-01 複製建立需求單/)).toBeVisible();
+  const activity = page.locator('.ant-tabs-tabpane-active');
+  await expect(activity).toContainText('建立需求單');
+  await expect(activity).not.toContainText('Q-20260601-01');
+  await expect(activity).not.toContainText('複製建立');
 });
 
-test.fixme(
-  '1.7 需求單參考附件可挑選檔案並列出檔名',
-  {
-    annotation: {
-      type: '與 prototype 不符',
-      description:
-        '印件抽屜暫存檔案時用 URL.createObjectURL(file) 產生 blob 網址' +
-        '（detail/page.js stageFile），存檔只把這個 blob 網址存進 file_urls、原始檔名（file.name）' +
-        '被丟棄；印件表格「參考檔案」欄的 render 用 url.split(\'/\').pop() 從網址取檔名，blob 網址' +
-        '的路徑段是亂數 UUID，不是原始檔名。抽屜內即時預覽用的是 f.name 所以看得到正確檔名，' +
-        '但存檔關閉抽屜後表格上顯示的是一串 UUID，不是「客戶完稿-封面.pdf」這種可讀檔名。' +
-        '待 Miles 裁決：暫存物件需一併保留原始檔名（例如 file_urls 存 {url,name} 而非純字串）。',
-    },
-  },
-  async ({ page }) => {
-    const title = '1.7 情境需求案';
-    await openAs(page, '業務', '/quote-prototype');
-    await createQuoteHeader(page, { title });
-    await addItem(page, { name: '甲印件' });
-
-    const panel = drawer(page);
-    await clickOpen(rowOf(page, '甲印件').getByRole('button').first(), panel.getByLabel('項目名稱'));
-    await panel
-      .locator('input[type="file"]')
-      .setInputFiles([fakeFile('客戶完稿-封面.pdf'), fakeFile('客戶完稿-內頁.pdf')]);
-    await expect(panel.getByText('客戶完稿-封面.pdf')).toBeVisible();
-    await expect(panel.getByText('客戶完稿-內頁.pdf')).toBeVisible();
-    await button(panel, '確認').click();
-    await waitModalsClosed(page);
-
-    // 存檔後表格顯示檔名清單
-    await expect(rowOf(page, '甲印件')).toContainText('客戶完稿-封面.pdf');
-    await expect(rowOf(page, '甲印件')).toContainText('客戶完稿-內頁.pdf');
-  },
-);
-
-test('1.8 流失需求單重新啟動回待評估成本', async ({ page }) => {
-  const title = '1.8 情境需求案';
+test('1.7 需求單參考附件可挑選檔案並列出檔名，再上傳新版時舊版保留', async ({ page }) => {
+  test.setTimeout(90_000);
+  const title = '1.7 情境需求案';
   await openAs(page, '業務', '/quote-prototype');
   await createQuoteHeader(page, { title });
+  await addItem(page, { name: '甲印件' });
 
-  // 執行流失（流失原因六選一）
-  await button(page, '流失').click();
-  const lostModal = dialog(page);
-  await expect(lostModal.getByRole('button', { name: /確\s*認/ })).toBeDisabled();
-  await lostModal.locator('.ant-select').click();
-  await page.locator('.ant-select-dropdown').last().getByText('價格因素', { exact: true }).click();
-  await lostModal.locator('textarea').fill('客戶覺得報價偏高');
-  await lostModal.getByRole('button', { name: /確\s*認/ }).click();
+  const panel = drawer(page);
+  await clickOpen(rowOf(page, '甲印件').getByRole('button').first(), panel.getByLabel('項目名稱'));
+  await panel
+    .locator('input[type="file"]')
+    .setInputFiles([fakeFile('客戶完稿-封面.pdf'), fakeFile('客戶完稿-內頁.pdf')]);
+  await expect(panel.getByText('客戶完稿-封面.pdf')).toBeVisible();
+  await expect(panel.getByText('客戶完稿-內頁.pdf')).toBeVisible();
+  await button(panel, '確認').click();
   await waitModalsClosed(page);
-  await expect(page.getByText(/印件流失原因：價格因素（客戶覺得報價偏高）/)).toBeVisible();
+
+  // 存檔後表格以原始檔名列出清單
+  await expect(rowOf(page, '甲印件')).toContainText('客戶完稿-封面.pdf');
+  await expect(rowOf(page, '甲印件')).toContainText('客戶完稿-內頁.pdf');
+
+  // 客戶改版：同一件印件再上傳新版，舊版保留、三個檔名同時列出
+  await clickOpen(rowOf(page, '甲印件').getByRole('button').first(), panel.getByLabel('項目名稱'));
+  await expect(panel.getByText('客戶完稿-封面.pdf')).toBeVisible();
+  await panel.locator('input[type="file"]').setInputFiles([fakeFile('客戶完稿-封面-v2.pdf')]);
+  await expect(panel.getByText('客戶完稿-封面-v2.pdf')).toBeVisible();
+  await button(panel, '確認').click();
+  await waitModalsClosed(page);
+  await expect(rowOf(page, '甲印件')).toContainText('客戶完稿-封面.pdf');
+  await expect(rowOf(page, '甲印件')).toContainText('客戶完稿-內頁.pdf');
+  await expect(rowOf(page, '甲印件')).toContainText('客戶完稿-封面-v2.pdf');
+});
+
+test('1.8 流失需求單重新啟動回待評估成本', async ({ page }) => {
+  // 起點：Q-20260909-01（晨光文創文創市集提袋，流失，價格因素，補充說明「客戶轉單同業，價差約一成」）
+  await openAs(page, '業務', '/quote-prototype');
+  await openQuoteDetail(page, 'Q-20260909-01');
+  await expect(page.getByText(/印件流失原因：價格因素（客戶轉單同業，價差約一成）/)).toBeVisible();
+  await expect(button(page, '新增印件')).toBeDisabled();
 
   // 重新啟動：重啟原因必填
   await button(page, '重新啟動').click();
   const requoteModal = dialog(page);
   await expect(requoteModal.getByRole('button', { name: /確\s*認/ })).toBeDisabled();
-  await requoteModal.locator('textarea').fill('客戶隔了兩週回頭要重談');
+  await requoteModal.locator('textarea').fill('客戶預算核准');
   await requoteModal.getByRole('button', { name: /確\s*認/ }).click();
   await waitModalsClosed(page);
 
@@ -323,7 +345,7 @@ test('1.8 流失需求單重新啟動回待評估成本', async ({ page }) => {
   await expect(page.getByText(/印件流失原因/)).toHaveCount(0);
   await expect(button(page, '新增印件')).toBeEnabled();
   await openTab(page, '活動紀錄');
-  await expect(page.getByText(/重新啟動需求單（重啟原因：客戶隔了兩週回頭要重談）/)).toBeVisible();
+  await expect(page.getByText(/重新啟動需求單（重啟原因：客戶預算核准）/)).toBeVisible();
 });
 
 test('1.9 需求單狀態只出現六個值，顯示名依 wiki', async ({ page }) => {
@@ -661,4 +683,232 @@ test('1.16 成本估算每次編輯都留活動紀錄，議價中業務不可直
   const activity = page.locator('.ant-tabs-tabpane-active');
   await expect(activity).toContainText('洪嘉駿 編輯印件「甲印件」成本估算（未稅）：－ → 20');
   await expect(activity).toContainText('吳國豪 編輯印件「甲印件」成本估算（未稅）：20 → 25');
+});
+
+// 以下 1.18 至 1.24 起點取自資料主鏈鏈八與鏈一（MOCK-DATA-CHAIN.md），期望值取自情境目錄。
+
+async function openQuoteDetail(page, quoteNo) {
+  // 需求單列表每頁十筆；資料主鏈的需求單超過十筆時，後面的單在第二頁
+  await expect(page.locator('tbody tr.ant-table-row').first()).toBeVisible();
+  const link = page.getByRole('link', { name: quoteNo });
+  if ((await link.count()) === 0) await page.locator('.ant-pagination-next').click();
+  await link.click();
+  await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
+}
+
+test('1.18 業務建立需求單，接單業務為本人，必填欄位未填無法建立', async ({ page }) => {
+  test.setTimeout(90_000);
+  const title = '1.18 情境需求案';
+  await openAs(page, '業務', '/quote-prototype');
+
+  // 單頭什麼都不填就確認：逐欄提示、不建立
+  const panel = drawer(page);
+  await clickOpen(button(page, '新增'), panel.getByLabel('需求案名'));
+  await button(panel, '確認').click();
+  for (const msg of [
+    '請輸入需求案名',
+    '請選擇客戶',
+    '請選擇詢價來源',
+    '請選擇接單業務',
+    '請選擇評估印務主管',
+    '請選擇帳務公司',
+  ]) {
+    await expect(panel).toContainText(msg);
+  }
+  await expect(page.locator('tbody tr.ant-table-row').filter({ hasText: title })).toHaveCount(0);
+
+  // 填齊後建立
+  await panel.getByLabel('需求案名').fill(title);
+  await pickOption(page, panel.getByLabel('客戶'), '喜互惠量販股份有限公司');
+  await pickOption(page, panel.getByLabel('詢價來源'), 'Line');
+  await pickOption(page, panel.getByLabel('接單業務'), '洪嘉駿');
+  await pickMulti(page, panel.getByLabel('評估印務主管'), '吳國豪');
+  await pickOption(page, panel.getByLabel('帳務公司'), '感官');
+  await button(panel, '確認').click();
+  await waitModalsClosed(page);
+
+  const quoteNo = (await rowOf(page, title).innerText()).match(/Q-\d{8}-\d{2}/)[0];
+  await page.getByRole('link', { name: quoteNo }).click();
+  await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
+  await expect(quoteCurrentStep(page)).toHaveText('確認需求');
+  await expect(page.locator('.ant-descriptions').first()).toContainText('洪嘉駿');
+  await openTab(page, '活動紀錄');
+  await expect(page.locator('.ant-tabs-tabpane-active')).toContainText('洪嘉駿 建立需求單');
+  await openTab(page, '印件報價');
+
+  // 印件項目必填：項目名稱、印件屬性、數量、難易度
+  const itemPanel = drawer(page);
+  await clickOpen(button(page, '新增印件'), itemPanel.getByLabel('項目名稱'));
+  await button(itemPanel, '確認').click();
+  for (const msg of ['請輸入項目名稱', '請選擇印件屬性', '請輸入數量', '請選擇難易度']) {
+    await expect(itemPanel).toContainText(msg);
+  }
+  await expect(page.getByText('甲印件', { exact: true })).toHaveCount(0);
+  await button(itemPanel, '取消').click();
+  await waitModalsClosed(page);
+  await addItem(page, { name: '甲印件', quantity: '100', difficulty: 3 });
+});
+
+test('1.19 印件項目金額依數量與單價計算，數量改動以原單價重算', async ({ page }) => {
+  test.setTimeout(120_000);
+  await openAs(page, '業務', '/quote-prototype');
+
+  // Q-20260906-01：3,000 × 6.2 ＝ 18,600，稅額 930，含稅 19,530
+  await openQuoteDetail(page, 'Q-20260906-01');
+  await expect(rowOf(page, '耶誕禮盒吊卡')).toContainText('18,600');
+  await expect(amountField(page, '小計（未稅）')).toContainText('18,600');
+  await expect(amountField(page, '稅額（5%）')).toContainText('930');
+  await expect(amountField(page, '含稅總額')).toContainText('19,530');
+
+  // Q-20260905-01：數量 800 改為 1,000，小計 15,000 → 18,750、單價仍 18.75
+  await gotoInApp(page, '/quote-prototype');
+  await openQuoteDetail(page, 'Q-20260905-01');
+  await expect(rowOf(page, '福利禮盒外包裝')).toContainText('15,000');
+  const panel = drawer(page);
+  await clickOpen(rowOf(page, '福利禮盒外包裝').getByRole('button').first(), panel.getByLabel('數量'));
+  await panel.getByLabel('數量').fill('1000');
+  await button(panel, '確認').click();
+  await waitModalsClosed(page);
+  await expect(rowOf(page, '福利禮盒外包裝')).toContainText('18,750');
+  await expect(rowOf(page, '福利禮盒外包裝')).toContainText('18.75');
+  await expect(amountField(page, '小計（未稅）')).toContainText('18,750');
+  await expect(amountField(page, '稅額（5%）')).toContainText('938');
+  await expect(amountField(page, '含稅總額')).toContainText('19,688');
+
+  // Q-20260601-01 已成交：印件編輯與刪除鈕停用，提示「需求單已成交，印件不可再修改」
+  await gotoInApp(page, '/quote-prototype');
+  await openQuoteDetail(page, 'Q-20260601-01');
+  const lockedButtons = rowOf(page, '會員卡（客製燙金）').getByRole('button');
+  await expect(lockedButtons.first()).toBeDisabled();
+  await lockedButtons.first().hover({ force: true });
+  await expect(page.getByRole('tooltip', { name: '需求單已成交，印件不可再修改' })).toBeVisible();
+});
+
+test('1.20 具名需求單評估完成，報價紀錄留利潤率', async ({ page }) => {
+  test.setTimeout(90_000);
+  await openAs(page, '業務', '/quote-prototype');
+  await openQuoteDetail(page, 'Q-20260905-01');
+  await expect(quoteCurrentStep(page)).toHaveText('評估成本');
+
+  await completeEstimate(page);
+  await expect(quoteCurrentStep(page)).toHaveText('報價');
+  await expect(amountField(page, '報價輪次')).toContainText('1 輪');
+
+  // 報價紀錄一筆、評估者洪嘉駿；展開第 1 輪看成本、單價、小計、利潤率快照
+  await openTab(page, '報價紀錄');
+  await expect(activeTabRows(page)).toHaveCount(1);
+  await expect(activeTabRows(page).first()).toContainText('洪嘉駿');
+  await page.locator('.ant-tabs-tabpane-active .ant-table-row-expand-icon').first().click();
+  const expanded = page.locator('.ant-table-expanded-row').last();
+  await expect(expanded).toContainText('福利禮盒外包裝');
+  await expect(expanded).toContainText('9,800');
+  await expect(expanded).toContainText('18.75');
+  await expect(expanded).toContainText('15,000');
+  await expect(expanded).toContainText('34.67');
+});
+
+test('1.21 進入議價後改單價，小計與金額重算', async ({ page }) => {
+  test.setTimeout(90_000);
+  await openAs(page, '業務', '/quote-prototype');
+  await openQuoteDetail(page, 'Q-20260906-01');
+  await expect(quoteCurrentStep(page)).toHaveText('報價');
+
+  await button(page, '報價').click();
+  await expect(quoteCurrentStep(page)).toHaveText('議價');
+
+  const panel = drawer(page);
+  await clickOpen(rowOf(page, '耶誕禮盒吊卡').getByRole('button').first(), panel.getByLabel('單價（未稅）'));
+  await panel.getByLabel('單價（未稅）').fill('6.5');
+  await button(panel, '確認').click();
+  await waitModalsClosed(page);
+
+  await expect(rowOf(page, '耶誕禮盒吊卡')).toContainText('19,500');
+  await expect(amountField(page, '小計（未稅）')).toContainText('19,500');
+  await expect(amountField(page, '稅額（5%）')).toContainText('975');
+  await expect(amountField(page, '含稅總額')).toContainText('20,475');
+});
+
+test('1.22 單價未填不可成交，補齊後成交並鎖定', async ({ page }) => {
+  test.setTimeout(90_000);
+  await openAs(page, '業務', '/quote-prototype');
+  await openQuoteDetail(page, 'Q-20260908-01');
+  await expect(quoteCurrentStep(page)).toHaveText('議價');
+  await expect(amountField(page, '小計（未稅）')).toContainText('6,900');
+
+  // 菜單夾頁單價為空：成交不受理，列出缺漏印件
+  await button(page, '成交').click();
+  await expect(dialog(page)).toContainText('請填寫每個印件項目的單價（未稅），才能將需求單標記為成交。');
+  await expect(dialog(page)).toContainText('菜單夾頁');
+  await expect(dialog(page)).not.toContainText('冬季菜單桌卡');
+  await dialog(page).getByRole('button', { name: '知道了' }).click();
+  await waitModalsClosed(page);
+  await expect(quoteCurrentStep(page)).toHaveText('議價');
+
+  // 補單價 3.2：小計 1,600
+  const panel = drawer(page);
+  await clickOpen(rowOf(page, '菜單夾頁').getByRole('button').first(), panel.getByLabel('單價（未稅）'));
+  await panel.getByLabel('單價（未稅）').fill('3.2');
+  await button(panel, '確認').click();
+  await waitModalsClosed(page);
+  await expect(rowOf(page, '菜單夾頁')).toContainText('1,600');
+
+  // 成交：單頭金額 8,500／425／8,925，印件鎖定
+  await button(page, '成交').click();
+  await expect(button(page, '建立訂單')).toBeVisible();
+  await expect(amountField(page, '小計（未稅）')).toContainText('8,500');
+  await expect(amountField(page, '稅額（5%）')).toContainText('425');
+  await expect(amountField(page, '含稅總額')).toContainText('8,925');
+  const lockedButtons = rowOf(page, '菜單夾頁').getByRole('button');
+  await expect(lockedButtons.first()).toBeDisabled();
+  await lockedButtons.first().hover({ force: true });
+  await expect(page.getByRole('tooltip', { name: '需求單已成交，印件不可再修改' })).toBeVisible();
+});
+
+test('1.23 已成交未建單的需求單轉出訂單', async ({ page }) => {
+  test.setTimeout(90_000);
+  await openAs(page, '業務', '/quote-prototype');
+  await openQuoteDetail(page, 'Q-20260907-01');
+  await expect(button(page, '建立訂單')).toBeVisible();
+  await expect(button(page, '查看訂單')).toHaveCount(0);
+
+  await button(page, '建立訂單').click();
+  await dialog(page).getByRole('button', { name: /確\s*認/ }).click();
+  await expect(page).toHaveURL(/orders\/detail/, { timeout: 40_000 });
+
+  // 草稿訂單的訂單項目：春季新品型錄內頁小計 27,500、難易度 3
+  await page.getByRole('tab', { name: /訂單項目/ }).click();
+  const itemRow = page.locator('tr', { hasText: '春季新品型錄內頁' }).first();
+  await expect(itemRow).toContainText('27,500');
+  await expect(itemRow).toContainText('3');
+
+  // 回需求單：掛上訂單編號、頁首改「查看訂單」、不再出現「建立訂單」
+  await gotoInApp(page, '/quote-prototype');
+  await openQuoteDetail(page, 'Q-20260907-01');
+  await expect(page.getByText(/已建立訂單：ORD-/)).toBeVisible();
+  await expect(button(page, '查看訂單')).toBeVisible();
+  await expect(button(page, '建立訂單')).toHaveCount(0);
+});
+
+test('1.24 標記流失須選原因，流失後鎖定', async ({ page }) => {
+  test.setTimeout(90_000);
+  await openAs(page, '業務', '/quote-prototype');
+  await openQuoteDetail(page, 'Q-20260905-01');
+
+  await button(page, '流失').click();
+  const lostModal = dialog(page);
+  // 未選原因時確認鈕停用
+  await expect(lostModal.getByRole('button', { name: /確\s*認/ })).toBeDisabled();
+  await lostModal.locator('.ant-select').click();
+  await page.locator('.ant-select-dropdown').last().getByText('價格因素', { exact: true }).click();
+  await lostModal.getByRole('button', { name: /確\s*認/ }).click();
+  await waitModalsClosed(page);
+
+  // 流失：頁首提示流失原因、印件鎖定、活動紀錄留原因
+  await expect(page.getByText(/印件流失原因：價格因素/)).toBeVisible();
+  const lockedButtons = rowOf(page, '福利禮盒外包裝').getByRole('button');
+  await expect(lockedButtons.first()).toBeDisabled();
+  await lockedButtons.first().hover({ force: true });
+  await expect(page.getByRole('tooltip', { name: '需求單已流失，印件不可再修改' })).toBeVisible();
+  await openTab(page, '活動紀錄');
+  await expect(page.locator('.ant-tabs-tabpane-active')).toContainText('流失原因：價格因素');
 });
