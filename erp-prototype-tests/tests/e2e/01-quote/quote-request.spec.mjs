@@ -344,6 +344,19 @@ test('1.8 流失需求單重新啟動回待評估成本', async ({ page }) => {
   await expect(button(page, '新增印件')).toBeEnabled();
   await openTab(page, '活動紀錄');
   await expect(page.getByText(/重新啟動需求單（重啟原因：客戶預算核准）/)).toBeVisible();
+  // 流失當時的活動紀錄保留
+  await expect(page.getByText(/流失原因：價格因素（客戶轉單同業，價差約一成）/)).toBeVisible();
+
+  // 印件項目的成本估算與單價保留
+  await openTab(page, '印件報價');
+  const keptItem = rowOf(page, '文創市集提袋');
+  await expect(keptItem).toContainText('8,125');
+  await expect(keptItem).toContainText('12.5');
+  await expect(keptItem).toContainText('12,500');
+
+  // 報價紀錄第 1 輪一筆仍在
+  await openTab(page, '報價紀錄');
+  await expect(activeTabRows(page)).toHaveCount(1);
 });
 
 test('1.9 需求單狀態只出現六個值，顯示名依 wiki', async ({ page }) => {
@@ -912,4 +925,46 @@ test('1.24 標記流失須選原因，流失後鎖定', async ({ page }) => {
   await expect(page.getByRole('tooltip', { name: '需求單已流失，印件不可再修改' })).toBeVisible();
   await openTab(page, '活動紀錄');
   await expect(page.locator('.ant-tabs-tabpane-active')).toContainText('流失原因：價格因素');
+});
+
+test('1.25 被分享（編輯）者複製他人負責的需求單，建立者為複製者、接單業務沿用來源單', async ({ page }) => {
+  test.setTimeout(120_000);
+  // 起點：Q-20260601-01（接單業務洪嘉駿）；分享為情境內前置步驟
+  await openAs(page, '業務', '/quote-prototype');
+  await openQuoteDetail(page, 'Q-20260601-01');
+  // 前置：洪嘉駿分享給張惠雯並改為編輯（代理）
+  await shareQuoteTo(page, '張惠雯');
+  await openTab(page, '權限管理');
+  await pickOption(page, rowOf(page, '張惠雯').locator('.ant-select'), '編輯（代理）');
+  await expect(rowOf(page, '張惠雯')).toContainText('編輯（代理）');
+
+  // 切換成張惠雯，從列表進同一張單，按複製
+  await gotoInApp(page, '/quote-prototype');
+  await switchRole(page, '諮詢');
+  await page.getByRole('link', { name: 'Q-20260601-01' }).click();
+  await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
+  await page.getByRole('button', { name: '複製需求單' }).click();
+  await dialog(page).getByRole('button', { name: /確\s*認/ }).click();
+  await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
+
+  // 接單業務沿用來源單（洪嘉駿），建立者為張惠雯
+  await expect(quoteCurrentStep(page)).toHaveText('確認需求');
+  await expect(page.locator('.ant-descriptions').first()).toContainText('洪嘉駿');
+  const item = rowOf(page, '會員卡（客製燙金）');
+  await expect(item).toContainText('5,000');
+  await expect(item).toContainText('9.8');
+  await expect(item).toContainText('49,000');
+  await expect(amountField(page, '小計（未稅）')).toContainText('49,000');
+  await expect(amountField(page, '稅額（5%）')).toContainText('2,450');
+  await expect(amountField(page, '含稅總額')).toContainText('51,450');
+
+  // 報價紀錄、分享成員不帶入
+  await openTab(page, '報價紀錄');
+  await expect(activeTabRows(page)).toHaveCount(0);
+  await openTab(page, '權限管理');
+  await expect(page.getByText('尚無授權人員')).toBeVisible();
+  await openTab(page, '活動紀錄');
+  const activity = page.locator('.ant-tabs-tabpane-active');
+  await expect(activity).toContainText('張惠雯 建立需求單');
+  await expect(activity).not.toContainText('Q-20260601-01');
 });
