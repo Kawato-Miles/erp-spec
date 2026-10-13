@@ -182,7 +182,10 @@ def main():
         ops = {}
         _, _, lines = op_sec[0]
         tbs = tables(lines)
-        if not tbs or tbs[0][0][:3] != ["操作編號", "操作", "動作類型"]:
+        no_ops = any(ln.startswith("本實體無使用者發起的操作") for ln in lines)
+        if no_ops and not tbs:
+            pass
+        elif not tbs or tbs[0][0][:3] != ["操作編號", "操作", "動作類型"]:
             err(rel(p), "操作段沒有固定欄位表（操作編號｜操作｜動作類型）")
         else:
             for cells, raw in tbs[0][1]:
