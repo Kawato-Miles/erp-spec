@@ -81,3 +81,4 @@ unit：quote-rules.test.mjs L115-167；ch2-order-lifecycle-rules.test.mjs L27、
 | 9 | 狀態機轉換條件缺「單價未填不可成交」「沒有印件不可評估完成或成交」 | 狀態機卡沒有 | 情境目錄與 Prototype 都有 | 新議題 |
 | 10 | 需求單欄位名稱：wiki 實體卡「詢問來源」、Prototype「詢價來源」 | 名稱不一致 | 新議題 |
 | 11 | 需求單報價成交情境卡第 6 步把標記成交與轉訂單寫在同一步，未說明是兩個動作；狀態卡與 Prototype 是兩個動作 | 情境卡措辭不清 | 新議題，wiki 小修 |
+| 12 | mock 人員清單把張惠雯列為業務，Prototype 模擬登入與情境目錄 1.25 把她當諮詢 | — | mock 與登入設定不一致 | 與 K11 林雅婷殘留一起修 erp mock |
