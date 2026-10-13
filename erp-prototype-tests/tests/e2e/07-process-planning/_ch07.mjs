@@ -120,3 +120,16 @@ export async function pickProductionLine(page, line) {
     .locator(`.ant-select-item-option[title="${line}"]`)
     .click();
 }
+
+/**
+ * 本數計價的裝訂（騎馬釘、精裝）要從頁數下拉選一個主檔頁數項目，必填；未選存不進去。
+ * @param {string} option 選項文字，例「16 頁」
+ */
+export async function pickBindingPages(page, option) {
+  await formField(page, '頁數').locator('.ant-select').click();
+  await page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
+    .last()
+    .locator(`.ant-select-item-option[title="${option}"]`)
+    .click();
+}

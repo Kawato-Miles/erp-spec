@@ -18,7 +18,7 @@
 
 ---
 
-**範圍外（本輪掛點，不展開）**：多工單合併上機時的用量分攤屬拼版功能（本輪掛點，見 `memory/erp/plans/_archives/2026/production-stage/production-stage-high-level-design.md` § 0.2）。時間計價的時間來源取 BOM 主檔的製作天數與工時、非排程演算法動態估算（排程為人腦決策＋負荷可視化，見 `production-overview`）。成品計價與工序面積的語意區分見 wiki [工序主檔](../../../memory/Sens_wiki/wiki/erp/05-entities/工序主檔.md)（成品計價＝產品總面積、滿版處理；工序面積＝工序處理面積、獨立輸入必填不回退成品尺寸）。工序廠商即外包承作方——生產任務的廠商類別由該廠商決定並唯讀（見 `work-order` § 生產任務結構與帶入規則）。
+**範圍外（本輪掛點，不展開）**：多工單合併上機時的用量分攤屬拼版功能（本輪掛點，見 `memory/erp/plans/_archives/2026/production-stage/production-stage-high-level-design.md` § 0.2）。時間計價的每件時間由印務於生產任務填寫（欄位正本見 wiki [生產任務](../../../memory/Sens_wiki/wiki/erp/05-entities/生產任務.md)），非排程演算法動態估算。成品計價與工序面積的語意區分見 wiki [工序主檔](../../../memory/Sens_wiki/wiki/erp/05-entities/工序主檔.md)（成品計價＝產品總面積、滿版處理；工序面積＝工序處理面積、獨立輸入必填不回退成品尺寸）。工序廠商即外包承作方——生產任務的廠商類別由該廠商決定並唯讀（見 `work-order` § 生產任務結構與帶入規則）。
 
 ## Requirements
 
@@ -109,8 +109,8 @@
 #### Scenario: 時間計價設定
 
 - **WHEN** 管理員於工序設定 pricing_method = 時間計價
-- **THEN** 系統 SHALL 提供時間區間（min）與數量區間的巢狀矩陣
-- **AND** ProcessPricingRange 之 X 軸 range_type MUST 為 `time`，單位為 min
+- **THEN** 系統 SHALL 提供時間區間與數量區間的巢狀矩陣，時間單位由管理員於秒、分鐘、小時中擇一設定
+- **AND** ProcessPricingRange 之 X 軸 range_type MUST 為 `time`
 
 ### Requirement: 計價方式 - 單一（一維級距）
 
@@ -150,7 +150,7 @@
   |----------------|------|--------------------------|
   | 成品面積 | ProcessPricingRange + ProcessPricingMatrix | x: area (m²) / y: qty (張) |
   | 工序面積 | ProcessPricingRange + ProcessPricingMatrix | x: area (m²) / y: qty (張) |
-  | 時間計價 | ProcessPricingRange + ProcessPricingMatrix | x: time (min) / y: qty (張) |
+  | 時間計價 | ProcessPricingRange + ProcessPricingMatrix | x: time（秒／分鐘／小時，依主檔設定）/ y: qty (張) |
   | 成品數量 | ProcessPricingTier | tier_type: qty |
   | 原紙張數 | ProcessPricingTier | tier_type: sheet |
   | 原紙令數 | ProcessPricingTier | tier_type: ream |
@@ -238,7 +238,7 @@ pricing_selection 採混合帶入：目前由使用者手動選擇；拼版模�
 |----------------|---------------------|---------------------|
 | 成品面積 | area / m² | qty / 張 |
 | 工序面積 | area / m² | qty / 張 |
-| 時間計價 | time / min | qty / 張 |
+| 時間計價 | time / 秒、分鐘或小時（依主檔設定） | qty / 張 |
 
 ### ProcessPricingMatrix（巢狀價格矩陣 cell）
 

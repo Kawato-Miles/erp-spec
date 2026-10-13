@@ -155,8 +155,10 @@ test('7.17 任務表單改成頂端固定區加三個頁籤（原編號 177）',
   // 第二段：要填的欄位
   await expect(formField(page, '任務名稱').locator('input')).toHaveValue('平版印刷');
   await expect(formField(page, '計畫設備')).toBeVisible();
-  // 非按面積計價的工序不出現面積欄
-  await expect(formField(page, '面積')).toHaveCount(0);
+  // 平版印刷不以價格矩陣另一軸查價，不出現面積、每件時間、台數、頁數欄
+  for (const label of ['面積', '每件時間', '台數', '頁數']) {
+    await expect(formField(page, label)).toHaveCount(0);
+  }
 
   await expect(form.locator('.ant-tabs-nav .ant-tabs-tab')).toHaveCount(3);
   await expect(form.locator('.ant-tabs-nav .ant-tabs-tab').nth(0)).toContainText('任務內容與排程');

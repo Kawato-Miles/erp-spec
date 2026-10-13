@@ -15,6 +15,7 @@ import {
   clickIntoDetail,
   formField,
   openWorkOrder,
+  pickBindingPages,
   pickBomRow,
   pickProductionLine,
   switchFormTab,
@@ -372,6 +373,7 @@ test('7.23 生產任務的任務預計完成日晚於印件內部完成日時軟
   // 新增一筆裝訂任務，任務預計完成日填 2026-09-28（晚於印件內部完成日 2026-09-24）
   await page.getByRole('button', { name: '新增生產任務' }).click();
   await pickBomRow(page, { tab: '裝訂', keyword: '騎馬釘' });
+  await pickBindingPages(page, '16 頁'); // 本數計價的頁數必填
   await formField(page, '印件部位').locator('input').fill('內頁');
   await formField(page, '目的站點').locator('.ant-select').click();
   await page.keyboard.press('ArrowDown');

@@ -4,6 +4,7 @@ import {
   bomPicker,
   formField,
   openWorkOrder,
+  pickBindingPages,
   pickBomRow,
   pickPickerFilter,
   pickProductionLine,
@@ -26,7 +27,7 @@ test('7.2 備料規格選擇器的牌價欄顯示價格範圍（原編號 69）'
   const searchBox = picker.getByPlaceholder('搜尋材料名稱');
   await searchBox.fill('珠光合成紙');
   await searchBox.press('Enter');
-  await expect(pickerRows(page)).toHaveCount(3);
+  await expect(pickerRows(page)).toHaveCount(1);
   await expect(pickerRows(page).first()).toContainText(/\d+ ~ \d+ 元／平方公尺/);
   // 沒有滑鼠停留才出現的級距表
   await pickerRows(page).first().locator('td').last().hover();
@@ -45,11 +46,11 @@ test('7.2 備料規格選擇器的牌價欄顯示價格範圍（原編號 69）'
     );
   }
 
-  // 裝訂頁籤的騎馬釘：一頁數一列，牌價同樣寫成範圍
+  // 裝訂頁籤的騎馬釘：一個裝訂方式一列，牌價同樣寫成整張矩陣的範圍
   await picker.locator('.ant-tabs-tab', { hasText: '裝訂' }).click();
   const stitchRows = pickerRows(page).filter({ hasText: '騎馬釘裝訂' });
-  await expect(stitchRows).toHaveCount(4);
-  await expect(stitchRows.first()).toContainText(/元／本/);
+  await expect(stitchRows).toHaveCount(1);
+  await expect(stitchRows.first()).toContainText('3.6 ~ 7.6 元／本');
 
   // 工單詳情的成本對照頁籤照常於預估欄呈現任務小計（不含顏色）——成本區只有這一個頁籤
   await picker.getByRole('button', { name: '取消' }).click();
@@ -81,6 +82,8 @@ test('7.11 新增生產任務一開就選主檔，新任務排在最後（原編
   await pickerRows(page).filter({ hasText: '騎馬釘裝訂' }).first().click();
   await picker.getByRole('button', { name: '帶入' }).click();
   await expect(page.locator('.ant-modal-title').last()).toHaveText('新增裝訂任務');
+  // 本數計價的頁數從主檔頁數項目選，必填
+  await pickBindingPages(page, '16 頁');
 
   // 填完必填欄位後送出
   await formField(page, '印件部位').locator('input').fill('內頁');
@@ -109,7 +112,7 @@ test('7.11 新增生產任務一開就選主檔，新任務排在最後（原編
   await expect(page.locator('.ant-modal-title')).toHaveCount(0);
 });
 
-test('7.14 按面積計價的工序改選面積規格，備料任務只在自有機台工單（原編號 173）', async ({
+test('7.14 按面積計價的工序在選擇器只出一列，表單填面積、沒填擋下，備料任務只在自有機台工單（原編號 173）', async ({
   page,
 }) => {
   test.setTimeout(90_000); // 切角色整段可重試，預設 30 秒不夠
@@ -120,22 +123,32 @@ test('7.14 按面積計價的工序改選面積規格，備料任務只在自有
   await picker.locator('.ant-tabs-tab', { hasText: '工序' }).click();
   // 側欄點表面處理分類
   await picker.getByText('表面處理', { exact: true }).click();
-  const polishRows = pickerRows(page).filter({ hasText: '局部上光' }).filter({ hasNotText: '網印' });
-  // 局部上光展成四列，一列一個尺寸，單價欄顯示該尺寸落到的區間價
-  await expect(polishRows).toHaveCount(4);
-  await expect(polishRows.first()).toContainText('20×20 公分');
-  await expect(polishRows.first()).toContainText(/元／平方公尺/);
+  const polishRows = pickerRows(page)
+    .filter({ hasText: '局部上光' })
+    .filter({ hasNotText: '網印' });
+  // 局部上光只出一列，牌價顯示整張價格矩陣的最低到最高，沒有面積規格欄
+  await expect(polishRows).toHaveCount(1);
+  await expect(polishRows.first()).toContainText('14 ~ 34 元／平方公尺');
+  await expect(picker.locator('.ant-table-thead th').filter({ hasText: '面積規格' })).toHaveCount(
+    0,
+  );
   await polishRows.first().click();
   await picker.getByRole('button', { name: '帶入' }).click();
 
-  // 帶入後表單頂端只留面積數值欄（必填、單位平方公尺）
+  // 帶入後表單頂端出現面積數值欄（必填、單位平方公尺）
   const areaField = formField(page, '面積');
   await expect(areaField).toBeVisible();
   await expect(areaField).toContainText('平方公尺');
+  // 牌價是整張矩陣的範圍，不隨填寫的面積變動
+  await expect(readOnlyPair(page, '牌價')).toContainText('14 ~ 34 元／平方公尺');
   // 沒填會被擋下並提示請填面積
   await taskForm(page).getByRole('button', { name: '新增任務' }).click();
   await expect(taskForm(page).getByRole('button', { name: '面積' })).toBeVisible();
   await expect(taskForm(page)).toContainText('請填面積');
+  // 填了面積後缺漏清單不再列面積，牌價維持原範圍
+  await areaField.locator('input').fill('0.06');
+  await expect(taskForm(page).getByRole('button', { name: '面積' })).toHaveCount(0);
+  await expect(readOnlyPair(page, '牌價')).toContainText('14 ~ 34 元／平方公尺');
 
   // 改帶入非面積計價的工序後面積欄消失
   await taskForm(page).getByRole('button', { name: '重選' }).click();
@@ -159,7 +172,7 @@ test('7.14 按面積計價的工序改選面積規格，備料任務只在自有
   await expect(costRow).toContainText('NT$');
 });
 
-test('7.15 選擇器一列等於一個計價層級的選項（原編號 175）', async ({ page }) => {
+test('7.15 選擇器一列等於一個主檔品項（原編號 175）', async ({ page }) => {
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0901');
   await page.getByRole('button', { name: '新增生產任務' }).click();
@@ -173,11 +186,11 @@ test('7.15 選擇器一列等於一個計價層級的選項（原編號 175）',
   await expect(pickerRows(page).nth(0)).toContainText('150g');
   await expect(pickerRows(page).nth(1)).toContainText('200g');
 
-  // 側欄點輸出材：同一種輸出材的三個面積區間各一列
+  // 側欄點輸出材：按面積計價的輸出材一種材料規格只出一列，面積區間不展成列
   await searchBox.fill('');
   await searchBox.press('Enter');
   await picker.getByText('輸出材', { exact: true }).click();
-  await expect(pickerRows(page).filter({ hasText: '珠光合成紙' })).toHaveCount(3);
+  await expect(pickerRows(page).filter({ hasText: '珠光合成紙' })).toHaveCount(1);
 
   // 表格欄含計價大類與計價子類兩欄
   for (const header of ['計價大類', '計價子類']) {
@@ -193,13 +206,13 @@ test('7.15 選擇器一列等於一個計價層級的選項（原編號 175）',
   await procSearch.press('Enter');
   await expect(pickerRows(page)).toHaveCount(1);
 
-  // 裝訂頁籤：騎馬釘四列、膠裝三列，且沒有左側分類側欄
+  // 裝訂頁籤：騎馬釘與膠裝各一列，且沒有左側分類側欄
   await picker.locator('.ant-tabs-tab', { hasText: '裝訂' }).click();
-  await expect(pickerRows(page).filter({ hasText: '騎馬釘裝訂' })).toHaveCount(4);
-  await expect(pickerRows(page).filter({ hasText: '膠裝' })).toHaveCount(3);
+  await expect(pickerRows(page).filter({ hasText: '騎馬釘裝訂' })).toHaveCount(1);
+  await expect(pickerRows(page).filter({ hasText: '膠裝' })).toHaveCount(1);
   await expect(picker.getByPlaceholder('輸入分類名稱搜尋')).toHaveCount(0);
 
-  // 帶入材料列後，表單上沒有群組、名稱、規格、備料、面積區間、頁數、台數任何下拉
+  // 帶入按重量材料列後，表單上沒有群組、名稱、規格、備料任何下拉
   await picker.locator('.ant-tabs-tab', { hasText: '材料' }).click();
   await pickBomRow(page, { tab: '材料', keyword: '一級卡', index: 1 });
   const form = taskForm(page);
@@ -218,17 +231,17 @@ test('7.16 選擇器的篩選：分類側欄、名稱、品牌與廠商（原編
   // 點群組只剩該群組的列
   await picker.getByText('輸出材', { exact: true }).click();
   const rows = pickerRows(page);
-  await expect(rows).toHaveCount(6);
+  await expect(rows).toHaveCount(2);
   // 點材料名稱只剩該材料的列，再點一次取消
   await picker.getByText('珠光合成紙', { exact: true }).first().click();
-  await expect(rows).toHaveCount(3);
+  await expect(rows).toHaveCount(1);
   await picker.getByText('珠光合成紙', { exact: true }).first().click();
-  await expect(rows).toHaveCount(6);
+  await expect(rows).toHaveCount(2);
 
   // 清掉側欄改用品牌篩選
   await picker.getByRole('button', { name: 'autorenew' }).click();
   await pickPickerFilter(page, picker, '南亞');
-  await expect(rows).toHaveCount(3);
+  await expect(rows).toHaveCount(1);
   await expect(rows.first()).toContainText('珠光合成紙');
 
   // 名稱關鍵字同時比對名稱、規格、備料、供應商原料與品牌
