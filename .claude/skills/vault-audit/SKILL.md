@@ -30,7 +30,7 @@ ERP_Vault 的 lint：找出**矛盾／過時／孤島／死鏈／缺欄位／違
 
 ## 二、稽核維度
 
-> 維度 1-6 為通用 lint（Karpathy），7-14 為 Sens 特化。每維度產出：命中清單＋判定（OK / Warning / Error；維度 10 為 Info）。
+> 維度 1-6 為通用 lint（Karpathy），7-15 為 Sens 特化。每維度產出：命中清單＋判定（OK / Warning / Error；維度 10 為 Info）。
 
 ### 維度 1：頁面間矛盾
 
@@ -74,7 +74,7 @@ threshold=$(date -v-90d +%Y-%m-%d 2>/dev/null || date -d "90 days ago" +%Y-%m-%d
 
 **目的**：缺必填欄位的卡進不了載入決策表與領域 grep。
 
-方法：依 [[wiki-schema]] **各 type 的必填欄位表**檢查（禁用一體適用清單——open-question / raw 以 `raised-at` / `created-at` 承載時間，schema 未列 `last-reviewed`，不得檢缺）。通用必檢：`type`／`status`／`tags`（領域 tag，必標範圍見 [[business-domain-taxonomy]] § 領域 tag 標注規則）；`module` 與 `last-reviewed` 依該 type 的 schema 段；正本卡（03/04/05/06）另須 `source`。領域 tag lint：必標範圍內缺 tag／tag 值不在 taxonomy enum／濫標 `領域/全域`（實際只沾一兩個領域），皆計違規。同時列英文 module token 殘留（列 Info 供順手清理）；`business-domain` 欄位已全庫移除，偵測到即 Error（防舊範本回流），但 `08-open-questions/_archives/` 排除——封存卡依 schema § 四規約只增不改、保留拍板當時原貌。豁免：`wiki/範本/` 骨架檔（填空樣板）與 `type: example` 範例卡不檢必填欄位（[[卡片撰寫共用規範]] § 一鐵則 5；範例卡另由維度 12 勾稽）；`status: deprecated` 退役 stub 卡不檢 `source` 與 `tags`（schema § 四通則三）。已移除欄位偵測：正本卡型（entity／role／service-blueprint／business-rule／state-machine／scenario）偵測到 `module`／`implemented-by`／`related-spec` 即 Error（已全庫移除，防回流；OQ／raw 的 `module` 仍合法）。`title` 依 schema § 四通則一：只在檔名帶前綴而標題不含該前綴時填（如日期前綴檔名），`title` 值與檔名相同即冗餘、列 Warning；不列缺欄。空欄位（含空 list `[]`）依通則二列 Warning。
+方法：依 [[wiki-schema]] **各 type 的必填欄位表**檢查（禁用一體適用清單——open-question / raw 以 `raised-at` / `created-at` 承載時間，schema 未列 `last-reviewed`，不得檢缺）。通用必檢：`type`／`status`／`tags`（領域 tag，必標範圍見 [[business-domain-taxonomy]] § 領域 tag 標注規則）；`module` 與 `last-reviewed` 依該 type 的 schema 段；正本卡（03/04/05/06）另須 `source`。領域 tag lint：必標範圍內缺 tag／tag 值不在 taxonomy enum／濫標 `領域/全域`（實際只沾一兩個領域），皆計違規。同時列英文 module token 殘留（列 Info 供順手清理）；`business-domain` 欄位已全庫移除，偵測到即 Error（防舊範本回流），但 `08-open-questions/_archives/` 排除——封存卡依 schema § 四規約只增不改、保留拍板當時原貌。豁免：`wiki/範本/` 骨架檔（填空樣板）與 `type: example` 範例卡不檢必填欄位（[[卡片撰寫共用規範]] § 一鐵則 5；範例卡另由維度 12 勾稽）；`status: deprecated` 退役 stub 卡不檢 `source` 與 `tags`（schema § 四通則三）。已移除欄位偵測：正本卡型（entity／role／process-architecture／service-blueprint／activity-list／controlled-list／business-rule／state-machine／scenario）偵測到 `module`／`implemented-by`／`related-spec` 即 Error（已全庫移除，防回流；OQ／raw 的 `module` 仍合法）。`title` 依 schema § 四通則一：只在檔名帶前綴而標題不含該前綴時填（如日期前綴檔名），`title` 值與檔名相同即冗餘、列 Warning；不列缺欄。空欄位（含空 list `[]`）依通則二列 Warning。
 判定：OK＝0 缺；Warning＝1-5；Error＝> 5。
 
 ### 維度 6：規約遵守
@@ -161,7 +161,7 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 **目的**：把各單元規範的「稽核維度」表真正接進 lint——寫卡宣稱合規不算數，稽核者逐項勾才算（執行者／稽核者分離，[[卡片撰寫共用規範]] § 二）。
 
 檢查兩部分：
-1. **本輪異動的正本卡**（範圍取法同維度 10）：稽核維度分 L1、L2、L3，**L1＋L2＋L3 全通過才算完成**。先載入 L1 共用維度（`00-meta/卡片撰寫共用規範` § 四之二，所有卡型一體適用），再依卡的 type 載入該單元的 L2／L3——entity → `規範 - 實體` § 十、role → `規範 - 角色` § 十、state-machine → `規範 - 狀態機` § 十、scenario → `規範 - 業務情境` § 十二、service-blueprint／business-rule → `規範 - 商業邏輯` § 十三（含依 `mutability` 加勾的 L3 分型維度）、open-question → `規範 - OQ` § 九；以該單元「範例 - 」卡為通過樣本對照。存量未異動卡不掃（避免噪音，隨異動逐步覆蓋）。L1-9 用詞正本的機械取證走維度 14；本輪若有 Miles 核對過的落點表（[[卡片撰寫共用規範]] § 二之二），逐條驗「一條內容只有一個落點」是否成立。
+1. **本輪異動的正本卡**（範圍取法同維度 10）：稽核維度分 L1、L2、L3，**L1＋L2＋L3 全通過才算完成**。先載入 L1 共用維度（`00-meta/卡片撰寫共用規範` § 四之二，所有卡型一體適用），再依卡的 type 載入該單元的 L2／L3——entity → `規範 - 實體` § 十、role → `規範 - 角色` § 十、state-machine → `規範 - 狀態機` § 十、scenario → `規範 - 業務情境` § 十二、service-blueprint／business-rule → `規範 - 商業邏輯` § 十三（含依 `mutability` 加勾的 L3 分型維度）、activity-list → `規範 - 活動清單` § 十、process-architecture／controlled-list → [[wiki-schema]] § 四該型的段落要求（兩型各全庫一張，無單元規範）、open-question → `規範 - OQ` § 九；以該單元「範例 - 」卡為通過樣本對照。存量未異動卡不掃（避免噪音，隨異動逐步覆蓋）。L1-9 用詞正本的機械取證走維度 14；本輪若有 Miles 核對過的落點表（[[卡片撰寫共用規範]] § 二之二），逐條驗「一條內容只有一個落點」是否成立。
 2. **規則正本回歸比對**：本輪異動若含 00-meta 規則正本（wiki-schema／卡片撰寫共用規範／erp_index）或任一規範卡正文，MUST 全庫比對各單元規範卡卡尾「稽核維度」表與規則正本的一致性——規則正本改了、稽核表沒跟上，下一張卡就會被舊標準判違規（2026-08-18 source 分工語意改版漏三張表的教訓）。發現不一致計 Error。
 3. **全部「範例 - 」卡**：`synced-with-template` 不得早於對應規範檔的最後實質修改（`git log -1 --format=%ad --date=short -- <規範檔>` 比對）；範例卡正文須與快照來源卡在最後同步時點一致性抽查（至少驗段落結構同構）。
 
@@ -198,6 +198,35 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 
 判定：OK＝0 個未命中；Warning＝1-3 個；Error＝> 3 個或發現同一概念兩個名字並存。
 
+### 維度 15：權責結構（機械檢查）
+
+**目的**：誰能做什麼的資料散在活動清單卡、實體卡操作段、狀態機觸發操作欄、情境卡活動欄四處，編號與名稱靠引用串起來；人工檢查會漏，用腳本逐列比對。
+
+**卡型與正本**：流程架構（`process-architecture`，[[流程架構]]）→ 流程群組（`service-blueprint`）→ 活動清單（`activity-list`）→ 活動；範圍用詞、動作類型、單據代碼、活動清單代碼的值域正本是受控清單（`controlled-list`，[[受控清單]]）。各型的撰寫規則見 [[規範 - 活動清單]]、[[規範 - 實體]]、[[規範 - 狀態機]]、[[規範 - 業務情境]]。
+
+**方法**：在 repo 根目錄執行腳本（只讀，不改任何檔）：
+
+```bash
+python3 .claude/skills/vault-audit/scripts/authority_check.py            # 預設檢查 memory/Sens_wiki/wiki
+python3 .claude/skills/vault-audit/scripts/authority_check.py <wiki 根目錄>
+```
+
+腳本檢查的項目：
+
+| 檢查對象 | 檢查內容 |
+|---------|---------|
+| 實體卡操作段 | 固定欄位表、操作編號格式與卡內不重複、單據代碼登記在受控清單且指向本卡、動作類型命中受控清單、不重用已作廢編號、有「無操作的動作類型」行 |
+| 活動清單卡活動表 | 固定欄位、活動編號格式與全庫不重複、活動清單代碼登記在受控清單、範圍命中受控清單、執行角色是角色卡連結、依據欄位格式與欄位存在、操作指得到實體卡操作段且名稱一致 |
+| 狀態機觸發操作欄 | 不留白、操作指得到實體卡操作段且名稱一致 |
+| 情境卡活動欄 | 不留白、活動編號附活動清單卡連結、活動存在且名稱一致；疑似以角色名當執行者列為警告 |
+| 全庫 | 每個操作至少被一個活動或觸發操作引用；連到未結案問題的卡列為提醒 |
+
+結束碼：有錯誤為 1，否則為 0。報告分錯誤、警告、提醒三段，末行為總計。
+
+**時機**：權責相關卡（活動清單、實體卡操作段、狀態機觸發操作、情境卡活動欄、受控清單）有異動時，提交前執行一次，總計行附在提交訊息；全量稽核時一併執行。
+
+判定：OK＝錯誤 0 筆；Warning＝錯誤 0 筆但有新增警告（逐筆人工判讀：「同主流程第 N 步」等轉引列與系統外作業列屬合法，不計）；Error＝錯誤 1 筆以上。
+
 ## 三、執行流程
 
 1. **宣告範圍與模式**（全量／單維度 N／修復）。
@@ -208,7 +237,7 @@ for f in $changed; do [ -f "$f" ] && grep -qE 'spec\.md#Requirement:' "$f" && ec
 # Vault Audit 報告（YYYY-MM-DD HH:MM）
 
 ## 摘要
-- 模式 / 總體狀態（OK / Warning / Error）/ 維度通過 X / 14
+- 模式 / 總體狀態（OK / Warning / Error）/ 維度通過 X / 15
 
 ## 維度結果
 ### 維度 N <名稱>：<判定>
