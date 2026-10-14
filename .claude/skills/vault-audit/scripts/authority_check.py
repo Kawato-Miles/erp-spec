@@ -355,7 +355,7 @@ def main():
                         err(f, f"活動 {aid} 登記在 [[{activities[aid][0]}]]，不是 [[{card}]]", raw)
                     elif not rest.startswith(activities[aid][1]):
                         err(f, f"活動 {aid} 名稱不一致：活動清單卡為「{activities[aid][1]}」", raw)
-                if not refs and not bare and not re.match(r"^(系統事件|外部事件)：", cell):
+                if not refs and not bare and not re.match(r"^(系統事件|外部事件|系統外作業)：", cell):
                     warn(f, "活動欄沒有活動編號，也不是系統事件或外部事件開頭（請人工確認是否為「同主流程／同他卡第 N 步」的轉引）", raw)
 
     # ---------- 覆蓋 ----------
@@ -392,7 +392,12 @@ def main():
         rows = []
         for header, trows in tables(texts[p].splitlines()):
             if header[:2] == ["步驟", "活動"] or (header and header[0] == "分支點"):
-                rows += [raw for _, raw in trows]
+                k = 1 if header[0] == "步驟" else 2
+                for cells, raw in trows:
+                    # 系統外作業的活動欄允許寫角色名，只把這一格排除在角色名掃描外
+                    if k < len(cells) and cells[k].startswith("系統外作業："):
+                        raw = raw.replace(cells[k], "")
+                    rows.append(raw)
         scan_roles(rel(p), rows)
 
     # ---------- 未解問題 ----------
