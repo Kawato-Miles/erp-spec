@@ -10,6 +10,7 @@ source:
   - "Miles 2026-10-06 拍板（生產段分派、報工、轉交 grill，Sens memory/erp/production-dispatch-report-transfer-20261006/grill-decisions.md）：已完成的任務不能新增報工；搬運短少的補做不在本輪正流程"
   - "Miles 2026-10-12 拍板（生產與出貨修正機制統一 grill，Sens memory/erp/plans/production-ui-correction-20261012/grill.md）：客戶照收改走品檢修正，把不通過改通過；印務誤記報廢時先修正處置紀錄"
   - "Miles 2026-10-13 拍板（wiki 權責結構重構 grill，Sens memory/erp/plans/document-access-scope-20261013/grill.md G26）：情境卡刪行為者欄、步驟引用活動、成立判準改引用轉換"
+  - "Miles 2026-10-14 拍板（wiki 權責結構重構 grill，Sens memory/erp/plans/document-access-scope-20261013/grill.md G54）：售後決議觸發的補做放售後處理活動清單"
 status: active
 last-reviewed: 2026-10-14
 ---
