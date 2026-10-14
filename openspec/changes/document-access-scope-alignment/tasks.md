@@ -7,15 +7,15 @@
 | 順序 | 檔案 | 改什麼 | 服務的節號 |
 |------|------|------|----------|
 | 1 | `P/MOCK-DATA-CHAIN.md` | 人員名冊統一一份；林雅婷、黃聖雯的角色改回業務主管、訂單管理人 | 1.13 至 1.15、2.10、14.15 |
-| 2 | `P/MOCK-DATA-CHAIN.md` | 需求單、訂單、工單各補一筆檢視層級與一筆編輯層級的分享成員，編輯層級用非業務、非印務角色（生管、業務被分享工單） | 1.26 起、2.10、2.20 起、14.15、14.41 起 |
+| 2 | `P/MOCK-DATA-CHAIN.md` | 需求單、訂單、工單各補一筆檢視層級與一筆編輯層級的分享成員；成員限依活動列可分享的角色：需求單與訂單的編輯層級用非接單業務的諮詢，工單的編輯層級用生管與業務 | 1.26 起、2.10、2.20 起、14.15、14.41 起 |
 | 3 | `P/MOCK-DATA-CHAIN.md` | 訂單分享成員張惠雯的層級寫明檢視；另加一位編輯層級成員 | 2.10 |
 | 4 | `P/MOCK-DATA-CHAIN.md` | 移除「業務被記為審核業務主管」的組合，或改為業務主管 | 2.21 起（新增） |
 | 5 | `P/MOCK-DATA-CHAIN.md` | 一張出貨單由業務甲建立、所屬訂單後來改派給業務乙 | 12.22 起（新增） |
 | 6 | `P/MOCK-DATA-CHAIN.md` | 一張售後服務單由編輯層級被分享的業務乙代開 | 12.x 售後（新增） |
 | 7 | `P/MOCK-DATA-CHAIN.md` | 一筆報工紀錄的報工人員為劉阿海、任務所屬工作包後來改派陳金水（若已存在則註明） | 14.35 |
-| 8 | `P/quote-prototype/mock-data.js` | 分享候選改取全體名冊；角色標示對齊 sessionStore | 1.13 至 1.15 |
-| 9 | `P/orders/mock-data.js` | 分享候選改取全體名冊（原 :265 只有業務、諮詢）；張惠雯層級（原 :525）寫成檢視 | 2.10 |
-| 10 | `P/work-orders/_lib/mock-data.js` | 分享候選改取全體名冊（原 :75 只有兩位印務） | 14.15 |
+| 8 | `P/quote-prototype/mock-data.js` | 分享候選改為依活動列可分享的角色（業務、諮詢、業務主管、印務主管、Supervisor）；角色標示對齊 sessionStore | 1.13 至 1.15 |
+| 9 | `P/orders/mock-data.js` | 分享候選改為依活動列可分享的角色（原 :265 只有業務、諮詢；改為業務、諮詢與六個全公司協助角色，不含會計、生管）；張惠雯層級（原 :525）寫成檢視 | 2.10 |
+| 10 | `P/work-orders/_lib/mock-data.js` | 分享候選改為依活動列可分享的角色（原 :75 只有兩位印務；改為印務、印務主管、生管、訂單管理人、Supervisor、業務、諮詢） | 14.15 |
 | 11 | `P/_lib/sessionStore.js` | Supervisor 標籤由「主管」改為「Supervisor」；Supervisor 不再以所屬產線全選模擬全公司 | 9.12 |
 
 ### 二、既有測試衝突逐筆處置（29 筆）
@@ -44,7 +44,7 @@
 | C20 | `T/tests/e2e/08-process-review-deliver/print-sheet.spec.mjs:124` | 8.7 | 改斷言：印務主管可預覽與列印；非負責印務不可列印；生管可列印維持；8.7 標題改寫 | 四 |
 | C21 | `T/tests/e2e/14-query-ui/work-orders.spec.mjs:221` | 14.15 | 改斷言：印務主管有分享新增與移除；候選含非印務角色 | 四 |
 | C22 | `T/tests/unit/production-floor/correction-entry-scope.test.mjs:71-73`；`T/tests/e2e/14-query-ui/correction-entries.spec.mjs:53` | 14.32 | 改斷言：非負責的印務主管在工單詳情可修正、作廢報工；14.32 標題改寫 | 四 |
-| C23 | 同 unit 檔 `:91-98`；同 e2e 檔 `:133` | 14.35、10.x | unit 改斷言：系統層只看報工人員，原師傅可修正。e2e 入口斷言依 design Q3：預設維持入口現況，只把說明改為「入口不在我的生產任務」；Q3 若改判，再改 e2e | 四 |
+| C23 | 同 unit 檔 `:91-98`；同 e2e 檔 `:133` | 14.35、10.x | 依 design Q3（G66 第 64 題）：unit 改斷言為師傅修正只看報工人員、限仍看得到任務時；工作包改派後原師傅看不到原任務、無修正入口，由所屬產線的生管更正。e2e 斷言原師傅的我的生產任務不列原任務，生管在所有生產任務可修正 | 四 |
 | C24 | `T/tests/e2e/07-process-planning/proof-and-notes.spec.mjs:76` | 7.27（第二個） | 改斷言：印務可改稿件備註（G65 第 60 題） | 二 |
 | C25 | `T/tests/e2e/03-payment/reconciliation-lists.spec.mjs:10` | 3.11 | 改寫：會計從帳務異常清單看差額，不開訂單詳情；三方對帳面板改由業務主管開訂單詳情驗 | 一 |
 | C26 | `T/docs/scenario-catalog.md` 1.14 說明 | 1.14 | 改寫說明：業務主管全公司 | 三 |
@@ -59,7 +59,7 @@
 | 新節 | 章 | 內容 | 對應 delta Scenario | 測試形式 |
 |------|----|------|-------------------|---------|
 | 1.26 | 一 | 建立者不因建立而看得到需求單；直連導回 | quote-request〈建立者不因建立而看得到〉 | e2e |
-| 1.27 | 一 | 生管被分享（編輯）需求單後可編輯、送評估；檢視層級不可 | quote-request〈編輯層級的被分享者可編輯並推進〉、document-access〈檢視層級的分享成員改不了需求單〉 | e2e |
+| 1.27 | 一 | 諮詢乙被分享（編輯）他人的需求單後可編輯、送評估；檢視層級不可 | quote-request〈編輯層級的被分享者可編輯並推進〉、document-access〈檢視層級的分享成員改不了需求單〉 | e2e |
 | 1.28 | 一 | 評估印務主管列在分享成員清單；頁籤名「分享成員」、欄名「評估印務主管」 | quote-request〈評估印務主管列在分享成員清單〉、document-access〈需求單頁籤與欄名用 wiki 名稱〉 | e2e |
 | 1.29 | 一 | 只有業務、諮詢看到建立需求單；未列角色無需求單入口 | quote-request〈業務、諮詢可建立需求單〉〈未列的角色看不到需求單〉 | unit＋e2e |
 | 1.30 | 一 | Supervisor 改派需求單；其他角色無改派入口 | quote-request〈Supervisor 改派進行中需求單〉〈其他角色看不到改派入口〉〈改派與分享為獨立入口〉 | e2e |
@@ -67,11 +67,11 @@
 | 2.20 | 二 | 六個全公司協助角色可編輯訂單；會計無訂單入口、直連導回 | document-access〈全公司協助角色看得到接單業務能做的操作〉〈會計直連訂單詳情被導回〉〈會計看不到訂單管理〉 | e2e |
 | 2.21 | 二 | 業務直連別人的訂單導回；審核業務主管途徑不給業務看 | document-access〈業務直連別人的訂單詳情被導回〉、order-management〈審核業務主管途徑不給業務看訂單〉 | e2e |
 | 2.22 | 二 | 已送報價單、確認回簽、上傳回簽只給訂單編輯權者 | order-management〈已送報價單只對有訂單編輯權的人顯示〉 | unit |
-| 2.23 | 二 | 生管被分享（編輯）訂單後送主管審核；直連可進 | order-management〈編輯層級的非業務分享成員送主管審核〉、document-access〈被分享後直連詳情可進入〉 | e2e |
+| 2.23 | 二 | 諮詢乙被分享（編輯）他人的訂單後送主管審核；業務乙被分享後直連可進 | order-management〈編輯層級的分享成員送主管審核〉、document-access〈被分享後直連詳情可進入〉 | e2e |
 | 2.24 | 二 | 核准訂單只給審核業務主管本人 | order-management〈核准訂單不隨編輯權開放〉 | unit |
 | 2.25 | 二 | 訂單改派：Supervisor 可、訂單完成可、已取消不可、其他角色無入口 | order-management〈訂單接單業務改派〉全部 Scenario；document-access〈管理類動作不隨訂單編輯權開放〉 | e2e |
 | 2.26 | 二 | 印務主管、印務、審稿主管側欄有訂單管理並看全公司 | document-access〈印務主管、印務、審稿主管看得到訂單管理〉、order-management〈印務、印務主管、審稿主管看全公司訂單〉 | e2e |
-| 2.27 | 二 | 分享候選含生管 | document-access〈業務把訂單分享給生管〉 | e2e |
+| 2.27 | 二 | 訂單分享候選含審稿主管，不含會計與生管 | document-access〈業務把訂單分享給審稿主管〉〈會計不會出現在訂單分享候選〉 | e2e |
 | 3.24 | 三 | 檢視層級分享成員看不到帳務入口；業務主管可登錄款項 | order-management〈檢視層級分享成員看不到訂單頁籤內的帳務入口〉、order-billing〈檢視層級分享成員不能開立發票〉〈全公司協助角色登錄款項紀錄〉 | e2e |
 | 3.25 | 三 | 跨訂單清單含被分享訂單；業務應收全公司 | order-billing〈被分享訂單的待開發票列在清單〉〈業務在應收款項清單看全公司〉 | unit（`visibleForRole` 首次覆蓋） |
 | 3.26 | 三 | 會計從帳務異常清單對帳、列上沒有訂單連結 | order-billing〈會計從帳務異常清單對帳不進訂單詳情〉 | e2e |
@@ -97,7 +97,7 @@
 | 12.24 | 十二 | 出貨人員補附送達憑證 | shipment〈出貨人員於已送達後補附憑證〉 | e2e |
 | 12.25 | 十二 | 售後服務單跟著訂單；會計與 Supervisor 有入口；會計只能看 | after-sales-ticket〈接單業務看得到同事代開的售後服務單〉〈會計與 Supervisor 有售後服務入口〉〈會計看得到但不能操作〉 | e2e |
 | 12.26 | 十二 | 業務主管協助編輯送出決議；印務主管建立售後服務單；非負責業務擋下建訂單異動 | after-sales-ticket〈業務主管協助編輯與送出決議〉〈全公司協助角色建立售後服務單〉〈非負責業務不能在售後服務單內建立訂單異動〉 | unit |
-| 14.41 | 十四 | 分享候選含所有角色（工單分享給業務） | document-access〈印務把工單分享給業務〉 | e2e（與 C21 同檔） |
+| 14.41 | 十四 | 工單分享候選含業務與生管 | document-access〈印務把工單分享給業務〉〈生管會出現在工單分享候選〉 | e2e（與 C21 同檔） |
 | 14.42 | 十四 | 介面用詞：Supervisor、不顯示權限名稱 | document-access〈角色名顯示 Supervisor〉〈介面不顯示權限名稱〉 | e2e |
 | 14.43 | 十四 | 訂單檢視層級分享成員無修改入口 | document-access〈檢視層級的分享成員改不了訂單備註〉 | e2e（與 C11 同檔） |
 | 2.28 | 二 | 複製訂單：編輯分享成員與協助角色可複製、新單接單業務為複製者；檢視層級不可 | order-management〈複製訂單的執行者與新訂單接單業務〉全部 Scenario | e2e（第七批） |
@@ -118,7 +118,7 @@
 ## 0. 前置
 
 - [ ] 0.1 確認 erp repo 在 `prototype/production-stage` 分支、工作區乾淨；記下起點提交（`git -C /Users/b-f-03-029/erp rev-parse HEAD` 有輸出）
-- [ ] 0.2 主對話確認 design § Open Questions 的 Q1 至 Q5 處置；需要開卡者經 oq-manage mode B 開卡
+- [x] 0.2 design § Open Questions 的 Q1 至 Q5 已依 grill G66 決議，不另開 OQ 卡
 - [ ] 0.3 讀 erp repo skill `prototype-from-prompt`，後續每批 Prototype 實作依該 skill 執行
 - [ ] 0.4 在 `T/` 跑 `npm test` 取得基準（記下失敗數，作為各批比對）
 
@@ -131,7 +131,7 @@
 - [ ] 1.5 Prototype：建立集中權限判斷與活動表資料（design D1 至 D4），先不改各模組呼叫
 - [ ] 1.6 Prototype：側欄入口改由集中判斷產生（D5）；會計移除訂單管理，款項清單的訂單連結對會計不顯示
 - [ ] 1.7 Prototype：需求單、訂單、印件、工單、出貨單、售後服務單詳情頁加進入判斷，無檢視組合導回預設頁
-- [ ] 1.8 Prototype：三種單據的分享候選改取全體名冊（D6、D7）
+- [ ] 1.8 Prototype：三種單據的分享候選改為依活動列可分享的角色（D6、D7）
 - [ ] 1.9 Prototype：用詞修正（Supervisor 標籤、移除權限名稱提示）
 - [ ] 1.10 驗證：`npm run impact` 判影響全站，跑 `npm test` 全套；1.2 至 1.4 的測試全部通過、其餘失敗數不高於 0.4 基準
 - [ ] 1.11 提交 erp 與 Sens，訊息附全套結果
@@ -169,7 +169,7 @@
 - [ ] 4.5 Prototype：目的站點與產線修改開放印務主管於核可前；確樣需求開放印務主管
 - [ ] 4.6 Prototype：工單分享管理開放印務主管與編輯分享成員
 - [ ] 4.7 Prototype：工單單據預覽與列印依集中判斷
-- [ ] 4.8 Prototype：工單詳情的報工、修正、作廢依工單編輯權；師傅修正只看報工人員
+- [ ] 4.8 Prototype：工單詳情的報工、修正、作廢依工單編輯權；師傅修正只看報工人員、限仍看得到任務時，工作包改派後由生管更正
 - [ ] 4.9 Prototype：缺口處置、補做、短出結案依工單編輯權
 - [ ] 4.10 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/07-process-planning tests/e2e/08-process-review-deliver tests/e2e/09-planner-dispatch tests/e2e/10-report-transfer tests/e2e/14-query-ui` 通過；`npx vitest run tests/unit/work-orders tests/unit/production-floor` 通過
 - [ ] 4.11 提交 erp 與 Sens
@@ -194,7 +194,7 @@
 - [ ] 6.5 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/03-payment` 通過；`npx vitest run tests/unit/payment` 通過
 - [ ] 6.6 提交 erp 與 Sens
 
-## 7. 第七批：未實作操作補齊（依 design Q5，可拆出另案）
+## 7. 第七批：未實作操作補齊（依 design Q5，留在本變更最後做）
 
 - [ ] 7.1 測試先行：新增 2.28、7.48、12.24 的測試，確認先失敗
 - [ ] 7.2 Prototype：複製訂單（新單接單業務為執行者；帶入內容依既有〈訂單複製功能〉）
@@ -224,4 +224,4 @@
   - production-execution〈生產管理單元的權限與可見範圍〉：「主管（Supervisor）」用詞與權限名稱
   - qc〈待驗清單〉：「生管、印務、印務主管 SHALL 可唯讀檢視」與〈非品檢人員唯讀檢視〉Scenario
   - after-sales-ticket〈我的售後服務作業頁〉、〈業務主管全公司售後管理頁〉：「範圍為開立者本人」
-- [ ] 8.4 主動收尾：依 CLAUDE.md § 主動收尾掃本變更檔案有無 inline 待確認措辭；後端未解問題卡（AFT-16、ORD-058、QR-015、QR-016）補記 Prototype 已改的事實
+- [ ] 8.4 主動收尾：依 CLAUDE.md § 主動收尾掃本變更檔案有無 inline 待確認措辭；後端未解問題卡（AFT-16、ORD-058、QR-015）補記 Prototype 已改的事實
