@@ -990,3 +990,184 @@ test('12.21 出貨人員對第三方出貨單按拋單，系統生成物流單�
   await expect(shipmentRow(page, carrierNo)).toContainText('已送達');
   await expect(shipmentRow(page, carrierNo).getByRole('button', { name: '補填重量' })).toHaveCount(0);
 });
+
+// ── 12.22～12.25（2026-10-14）：異常、作廢、補附送達憑證 ──
+
+// 印件總覽某件印件列的某一欄文字（以表頭文字找欄序，已出貨與可出貨額度兩欄共用）
+const printItemCell = async (page, printItemNo, header) => {
+  const headers = await page.locator('.ant-table-thead').first().locator('th').allInnerTexts();
+  const index = headers.findIndex((h) => h.includes(header));
+  expect(index, `印件總覽找不到欄位 ${header}`).toBeGreaterThanOrEqual(0);
+  const row = page.locator('tr.ant-table-row').filter({ hasText: printItemNo }).first();
+  return (await row.locator('td').nth(index).innerText()).trim();
+};
+
+// 詳情頁「標題：值」的值（AntD Descriptions 以 th／td 成對呈現）
+const descValue = (page, label) =>
+  page.locator(`xpath=//th[normalize-space(.)="${label}"]/following-sibling::td[1]`).first();
+
+// 業務建一張專車單，揀貨裝箱後由出貨人員發車，回傳單號（結束時為出貨人員、在出貨管理列表）
+const shipVanToTransit = async (page, qty = 100) => {
+  await switchRoleSafe(page, '業務');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  const vanNo = await createShipment(page, { qty, method: '專車配送' });
+  await switchRoleSafe(page, '揀貨人員');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await pickAndPack(page, vanNo, { pickedQty: qty, boxes: 2, perBoxQty: 50 });
+  await switchRoleSafe(page, '出貨人員');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  const dialog = await clickRowAction(page, vanNo, '出貨確認');
+  await dialog.getByRole('button', { name: '確認出貨' }).click();
+  await expect(page.getByText(/專車已發車（運送中）/)).toBeVisible();
+  return vanNo;
+};
+
+test('12.22 出貨人員對運送中的出貨單轉異常，理由必填並記轉入時間，額度即時回補，印件列表與印件詳情同時變', async ({
+  page,
+}) => {
+  await setupShippableState(page, { passed: 500 });
+  const vanNo = await shipVanToTransit(page, 100);
+
+  // 業務在運送中的單列上沒有「異常」與「作廢」，轉異常只歸出貨人員
+  await switchRoleSafe(page, '業務');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await expect(shipmentRow(page, vanNo)).toContainText('運送中');
+  await expect(shipmentRow(page, vanNo).getByRole('button', { name: '異常' })).toHaveCount(0);
+  await expect(shipmentRow(page, vanNo).getByRole('button', { name: '作廢' })).toHaveCount(0);
+
+  // 轉異常前：印件總覽已出貨 100、可出貨額度 400
+  await switchRoleSafe(page, '印務主管');
+  await gotoInAppSafe(page, '/print-items');
+  expect(await printItemCell(page, CHAIN4.printItemNo, '已出貨')).toBe('100');
+  expect(await printItemCell(page, CHAIN4.printItemNo, '可出貨額度')).toBe('400');
+
+  // 出貨人員按列上「異常」：理由沒填送出，對話框不關、單不變；填理由後轉異常
+  await switchRoleSafe(page, '出貨人員');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  const dialog = await clickRowAction(page, vanNo, '異常');
+  await dialog.getByRole('button', { name: '轉異常' }).click();
+  await expect(dialog).toBeVisible();
+  await expect(shipmentRow(page, vanNo)).toContainText('運送中');
+  await dialog.getByLabel('異常理由').fill('客戶拒收');
+  await dialog.getByRole('button', { name: '轉異常' }).click();
+  await expect(page.getByText(/已轉異常（終態）；明細數量已回補可出貨額度/)).toBeVisible();
+  await expect(shipmentRow(page, vanNo)).toContainText('異常');
+
+  // 單上記異常理由與轉入時間，歷程多一筆轉異常
+  const panel = await openShipmentPanel(page, vanNo);
+  await panel.getByRole('tab', { name: '歷程' }).click();
+  await expect(panel).toContainText('轉異常');
+  await expect(panel).toContainText('運送中 → 異常');
+  await expect(panel).toContainText('異常理由：客戶拒收');
+  await closeDrawer(page);
+
+  // 印件總覽與印件詳情同時變：已出貨歸 0、可出貨額度加回 100
+  await switchRoleSafe(page, '印務主管');
+  await gotoInAppSafe(page, '/print-items');
+  expect(await printItemCell(page, CHAIN4.printItemNo, '已出貨')).toBe('0');
+  expect(await printItemCell(page, CHAIN4.printItemNo, '可出貨額度')).toBe('500');
+  await page.getByText(CHAIN4.printItemName, { exact: true }).first().click();
+  await expect(page.getByText('印件基本資訊')).toBeVisible();
+  await expect(descValue(page, '可出貨額度')).toHaveText('500');
+});
+
+test('12.23 業務對未離廠的出貨單作廢，理由必填並記轉入時間，額度即時回補', async ({ page }) => {
+  await setupShippableState(page, { passed: 500 });
+  await switchRoleSafe(page, '業務');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  const shipmentNo = await createShipment(page, { qty: 100, method: '專車配送' });
+  await expect(shipmentRow(page, shipmentNo)).toContainText('未處理');
+
+  // 出貨人員看同一張單：沒有作廢
+  await switchRoleSafe(page, '出貨人員');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await expect(shipmentRow(page, shipmentNo).getByRole('button', { name: '作廢' })).toHaveCount(0);
+
+  // 業務作廢：理由沒填對話框不關；填「客戶改期」後單轉已作廢
+  await switchRoleSafe(page, '業務');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  const dialog = await clickRowAction(page, shipmentNo, '作廢');
+  await dialog.getByRole('button', { name: '作廢', exact: true }).click();
+  await expect(dialog).toBeVisible();
+  await expect(shipmentRow(page, shipmentNo)).toContainText('未處理');
+  await dialog.getByLabel('作廢理由').fill('客戶改期');
+  await dialog.getByRole('button', { name: '作廢', exact: true }).click();
+  await expect(page.getByText(/已作廢（終態）；明細數量已逐印件回補可出貨額度/)).toBeVisible();
+  await expect(shipmentRow(page, shipmentNo)).toContainText('已作廢');
+  // 終態：列上不再有作廢鈕
+  await expect(shipmentRow(page, shipmentNo).getByRole('button', { name: '作廢' })).toHaveCount(0);
+
+  // 單上記作廢理由與時間，歷程多一筆作廢出貨單
+  const panel = await openShipmentPanel(page, shipmentNo);
+  await panel.getByRole('tab', { name: '歷程' }).click();
+  await expect(panel).toContainText('作廢出貨單');
+  await expect(panel).toContainText('未處理 → 已作廢');
+  await expect(panel).toContainText('作廢原因：客戶改期');
+  await closeDrawer(page);
+
+  // 額度加回：印件總覽可出貨額度回到 500
+  await switchRoleSafe(page, '印務主管');
+  await gotoInAppSafe(page, '/print-items');
+  expect(await printItemCell(page, CHAIN4.printItemNo, '可出貨額度')).toBe('500');
+});
+
+test('12.25 出貨人員對已送達的出貨單補附送達憑證，其他狀態沒有這顆鈕', async ({ page }) => {
+  // 鏈一 SH-2026-0601（專車，已送達，已有司機交付照）
+  await openAs(page, '出貨人員', '/qc-shipping/shipments');
+  const row = shipmentRow(page, 'SH-2026-0601');
+  await expect(row).toContainText('已送達');
+
+  // 沒選檔送出：對話框不關
+  const dialog = await clickRowAction(page, 'SH-2026-0601', '補附送達憑證');
+  await expect(dialog).toContainText('司機交付照');
+  await dialog.getByRole('button', { name: '送出憑證' }).click();
+  await expect(dialog.getByText('請附司機交付照')).toBeVisible();
+  // 選一張照片送出：單仍為已送達，歷程多一筆補附送達憑證
+  await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('司機交付照-補.jpg'));
+  await dialog.getByRole('button', { name: '送出憑證' }).click();
+  await expect(page.getByText(/已補附送達憑證/).first()).toBeVisible();
+  await expect(row).toContainText('已送達');
+  const panel = await openShipmentPanel(page, 'SH-2026-0601');
+  await panel.getByRole('tab', { name: '歷程' }).click();
+  await expect(panel).toContainText('補附送達憑證');
+  await closeDrawer(page);
+
+  // 業務看同一張已送達的單：沒有這顆鈕
+  await switchRoleSafe(page, '業務');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await expect(shipmentRow(page, 'SH-2026-0601').getByRole('button', { name: '補附送達憑證' })).toHaveCount(0);
+});
+
+test('12.25 補附送達憑證只在已送達：待出貨與運送中的列上沒有，自取交付後憑證名稱為現場點交照', async ({
+  page,
+}) => {
+  await setupShippableState(page, { passed: 500 });
+  await switchRoleSafe(page, '業務');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  const vanNo = await createShipment(page, { qty: 100, method: '專車配送' });
+  const pickupNo = await createShipment(page, { qty: 100, method: '自取' });
+  await switchRoleSafe(page, '揀貨人員');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await pickAndPack(page, vanNo, { pickedQty: 100, boxes: 2, perBoxQty: 50 });
+  await pickAndPack(page, pickupNo, { pickedQty: 100, boxes: 2, perBoxQty: 50 });
+
+  // 待出貨與運送中：沒有補附鈕
+  await switchRoleSafe(page, '出貨人員');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await expect(shipmentRow(page, vanNo).getByRole('button', { name: '補附送達憑證' })).toHaveCount(0);
+  const ship = await clickRowAction(page, vanNo, '出貨確認');
+  await ship.getByRole('button', { name: '確認出貨' }).click();
+  await expect(shipmentRow(page, vanNo)).toContainText('運送中');
+  await expect(shipmentRow(page, vanNo).getByRole('button', { name: '補附送達憑證' })).toHaveCount(0);
+
+  // 自取交付確認後已送達：補附鈕出現，憑證名稱為現場點交照
+  const handover = await clickRowAction(page, pickupNo, '交付確認');
+  await handover.locator('input[type="file"]').setInputFiles(fakePhoto('點交照.jpg'));
+  await handover.getByRole('button', { name: '確認交付' }).click();
+  await expect(shipmentRow(page, pickupNo)).toContainText('已送達');
+  const attach = await clickRowAction(page, pickupNo, '補附送達憑證');
+  await expect(attach).toContainText('現場點交照');
+  await attach.locator('input[type="file"]').setInputFiles(fakePhoto('點交照-補.jpg'));
+  await attach.getByRole('button', { name: '送出憑證' }).click();
+  await expect(page.getByText(/已補附送達憑證/).first()).toBeVisible();
+});

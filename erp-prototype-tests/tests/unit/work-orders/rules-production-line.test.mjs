@@ -264,7 +264,7 @@ describe('8.17 製程核可後印務主管或工單負責人改產線，不必�
   });
 });
 
-describe('8.19 製程確認中只有工單負責人或編輯（代理）成員能改產線與目的站點，印務主管要等核可後', () => {
+describe('8.19 製程確認中，工單負責人、編輯（代理）成員與印務主管都能直接改產線與目的站點', () => {
   // 起點資料：鏈外 WO-2026-0907（製程確認中，負責印務蔡明修）的型錄四色雙面印刷（數位產線、品檢站）
   const TASK = '型錄四色雙面印刷';
 
@@ -278,15 +278,30 @@ describe('8.19 製程確認中只有工單負責人或編輯（代理）成員�
     expect(task.destination_station_key).toBe('品檢站');
   });
 
-  it('印務主管吳國豪在製程確認中不可改產線與目的站點；負責印務蔡明修兩者都可改', () => {
+  it('印務主管吳國豪在製程確認中可改產線與目的站點；負責印務蔡明修兩者也都可改', () => {
     const wo = workOrderOf('WO-2026-0907');
     const task = taskOf('WO-2026-0907', TASK);
-    expect(permissions.canEditTaskProductionLine(wo, task, 'print_manager', '吳國豪')).toBe(false);
-    expect(permissions.canEditTaskDestination(wo, task, 'print_manager', '吳國豪')).toBe(false);
+    expect(permissions.canEditTaskProductionLine(wo, task, 'print_manager', '吳國豪')).toBe(true);
+    expect(permissions.canEditTaskDestination(wo, task, 'print_manager', '吳國豪')).toBe(true);
     expect(permissions.canEditTaskProductionLine(wo, task, 'print_officer', '蔡明修')).toBe(true);
     expect(permissions.canEditTaskDestination(wo, task, 'print_officer', '蔡明修')).toBe(true);
     // 非負責、非編輯成員的印務同樣不可改
     expect(permissions.canEditTaskProductionLine(wo, task, 'print_officer', '周建宏')).toBe(false);
+  });
+
+  it('印務主管任何工單狀態都可改（草稿、製程確認中、製程審核完成），任務已作廢或報廢時不可', () => {
+    const task = taskOf('WO-2026-0907', TASK);
+    ['草稿', '製程確認中', '重新確認製程', '製程審核完成', '工單已交付'].forEach((status) => {
+      const wo = { ...workOrderOf('WO-2026-0907'), status };
+      expect(permissions.canEditTaskDestination(wo, task, 'print_manager', '吳國豪'), status).toBe(true);
+      expect(permissions.canEditTaskProductionLine(wo, task, 'print_manager', '吳國豪'), status).toBe(true);
+    });
+    ['已作廢', '報廢'].forEach((taskStatus) => {
+      const wo = workOrderOf('WO-2026-0907');
+      expect(
+        permissions.canEditTaskDestination(wo, { ...task, status: taskStatus }, 'print_manager', '吳國豪'),
+      ).toBe(false);
+    });
   });
 
   it('蔡明修把產線改為裝訂產線：直接儲存、工單維持製程確認中，歷程記原值、新值、修改人與時間', () => {
@@ -304,7 +319,7 @@ describe('8.19 製程確認中只有工單負責人或編輯（代理）成員�
     expect(last.changes).toEqual([{ field: '產線', before: '數位產線', after: '裝訂產線' }]);
   });
 
-  it('核可後（製程審核完成）印務主管才可改：WO-2026-0910 的吳國豪可改，與製程確認中對照', () => {
+  it('核可後（製程審核完成）印務主管同樣可改：WO-2026-0910 的吳國豪', () => {
     const wo = workOrderOf('WO-2026-0910');
     expect(wo.status).toBe('製程審核完成');
     expect(

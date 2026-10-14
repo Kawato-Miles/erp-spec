@@ -755,3 +755,124 @@ test('11.27 印務記錯報廢，先修正處置為照收，品檢人員再修�
   await expect(pendingRow(page)).toContainText('500 ／ 0');
 });
 
+
+// ── 11.28、11.29（2026-10-14）：印務記錄品檢缺口處置 ──
+
+// 品檢缺口處置對話框（印件詳情品檢頁籤，印務與印務主管）
+const dispositionDialog = (page) =>
+  page.locator('.ant-modal-content').filter({ hasText: '品檢缺口處置（兩決策組合' }).first();
+
+// 印務主管打開鏈四印件詳情的品檢紀錄頁籤
+const openQcTabAsManager = async (page) => {
+  await gotoInAppSafe(page, '/print-items');
+  // 列表剛掛載時第一次點擊偶爾落空，重試到詳情頁出現為止
+  await expect(async () => {
+    await page.getByText(CHAIN4.printItemName, { exact: true }).first().click();
+    await expect(page.getByText('印件基本資訊')).toBeVisible({ timeout: 3000 });
+  }).toPass({ timeout: 20_000 });
+  await page.getByRole('tab', { name: /品檢紀錄/ }).click();
+};
+
+// 處置留痕表的資料列（欄名含處置決策與處置數量）
+const dispositionRows = (page) =>
+  page
+    .locator('.ant-table')
+    .filter({ has: page.locator('th', { hasText: '處置決策' }) })
+    .locator('tbody tr.ant-table-row');
+
+test('11.28 印務對有缺口的印件分次處置，兩軸各自獨立選，處置留痕逐筆列出；品檢人員看不到入口', async ({
+  page,
+}) => {
+  // 前置：品檢人員驗通過 470、不通過 30；品檢人員的品檢站沒有處置入口
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+  await inspectAtQc(page, { passed: 470, failed: 30 });
+  await expect(page.getByRole('button', { name: '品檢缺口處置' })).toHaveCount(0);
+
+  // 印務主管第一筆：數量 20、補做、報廢
+  await switchRoleSafe(page, '印務主管');
+  await openQcTabAsManager(page);
+  await expect(descValue(page, '未處置品檢缺口')).toHaveText('30');
+  await page.getByRole('button', { name: '品檢缺口處置' }).first().click();
+  let dialog = dispositionDialog(page);
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('spinbutton').first().fill('20');
+  // 補做與報廢是對話框的預設選項（再按一次會取消選取），直接確認即第一種組合
+  await dialog.getByPlaceholder('與客戶議定的條件等補充說明').fill('第一筆');
+  await dialog.getByRole('button', { name: '確認處置' }).click();
+  await expect(page.getByText(/已就 20 記下處置/).first()).toBeVisible();
+  await expect(descValue(page, '報廢數')).toHaveText('20');
+  await expect(descValue(page, '未處置品檢缺口')).toHaveText('10');
+
+  // 第二筆：數量 10、不補、客戶照收（兩軸組合與第一筆不同）
+  await page.getByRole('button', { name: '品檢缺口處置' }).first().click();
+  dialog = dispositionDialog(page);
+  await expect(dialog.getByRole('spinbutton').first()).toHaveValue('10');
+  await dialog.getByRole('button', { name: /^不補/ }).click();
+  await dialog.getByRole('button', { name: '客戶照收', exact: true }).click();
+  await dialog.getByRole('button', { name: '確認處置' }).click();
+  await expect(page.getByText(/已就 10 記下處置/).first()).toBeVisible();
+
+  // 處置留痕逐筆列出兩列（決策、去向、數量、決策者）；客戶照收那一筆不讓未處置缺口下降，報廢累計仍為 20
+  await expect(dispositionRows(page)).toHaveCount(2);
+  const first = dispositionRows(page).nth(0);
+  await expect(first).toContainText('補做');
+  await expect(first).toContainText('報廢');
+  await expect(first).toContainText('20');
+  await expect(first).toContainText('吳國豪');
+  await expect(first).toContainText('第一筆');
+  const second = dispositionRows(page).nth(1);
+  await expect(second).toContainText('不補');
+  await expect(second).toContainText('客戶照收');
+  await expect(second).toContainText('10');
+  await expect(descValue(page, '報廢數')).toHaveText('20');
+  await expect(descValue(page, '未處置品檢缺口')).toHaveText('10');
+
+  // 品檢人員回到品檢站：仍看不到處置入口
+  await switchRoleSafe(page, '品檢人員');
+  await gotoInAppSafe(page, '/qc-shipping/inspection');
+  await expect(page.getByRole('button', { name: '品檢缺口處置' })).toHaveCount(0);
+});
+
+test('11.29 缺口處置的數量檢核只約束報廢類，客戶照收不設上限', async ({ page }) => {
+  // 前置：品檢人員驗通過 480、不通過 20
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+  await inspectAtQc(page, { passed: 480, failed: 20 });
+  await switchRoleSafe(page, '印務主管');
+  await openQcTabAsManager(page);
+
+  // 瑕疵品去向選報廢（預設）：數量欄的上限是未處置缺口 20，超過的輸入被夾回 20，不會有 21 送出
+  await page.getByRole('button', { name: '品檢缺口處置' }).first().click();
+  let dialog = dispositionDialog(page);
+  const qtyInput = dialog.getByRole('spinbutton').first();
+  await qtyInput.fill('21');
+  await qtyInput.blur();
+  await expect(qtyInput).toHaveValue('20');
+  await dialog.getByRole('button', { name: '確認處置' }).click();
+  await expect(page.getByText(/已就 20 記下處置/).first()).toBeVisible();
+  await expect(descValue(page, '未處置品檢缺口')).toHaveText('0');
+});
+
+test('11.29 客戶照收的處置數量超過不通過累計照樣成立，缺口不下降', async ({ page }) => {
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+  await inspectAtQc(page, { passed: 480, failed: 20 });
+  await switchRoleSafe(page, '印務主管');
+  await openQcTabAsManager(page);
+
+  await page.getByRole('button', { name: '品檢缺口處置' }).first().click();
+  const dialog = dispositionDialog(page);
+  await dialog.getByRole('button', { name: '客戶照收', exact: true }).click();
+  const qtyInput = dialog.getByRole('spinbutton').first();
+  await qtyInput.fill('50');
+  await qtyInput.blur();
+  // 照收不設上限：欄位保留 50，不被夾回
+  await expect(qtyInput).toHaveValue('50');
+  await dialog.getByRole('button', { name: '確認處置' }).click();
+  await expect(page.getByText(/已就 50 記下處置/).first()).toBeVisible();
+
+  // 缺口與報廢累計不動；處置留痕多一列數量 50
+  await expect(descValue(page, '不通過累計')).toHaveText('20');
+  await expect(descValue(page, '報廢數')).toHaveText('0');
+  await expect(descValue(page, '未處置品檢缺口')).toHaveText('20');
+  await expect(dispositionRows(page)).toHaveCount(1);
+  await expect(dispositionRows(page).first()).toContainText('50');
+});

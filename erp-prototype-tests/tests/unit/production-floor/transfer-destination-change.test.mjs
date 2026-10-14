@@ -162,20 +162,27 @@ describe('10.23 已作廢或報廢的任務不可改目的站點，已完成仍�
     expect(canEditTaskDestination(workOrder(), task(), 'print_officer', '蔡明修')).toBe(false);
   });
 
-  it('印務主管：製程核可後可改（不必重審），核可前三態不可改', () => {
+  it('印務主管：任何時候都能協助改（不分工單狀態、不必重審），任務已作廢或報廢時不可', () => {
     expect(canEditTaskDestination(workOrder(), task(), 'print_manager', '吳國豪')).toBe(true);
-    for (const status of ['製程審核完成', '工單已交付', '製作中', '異動']) {
+    for (const status of [
+      '草稿',
+      '製程確認中',
+      '重新確認製程',
+      '製程審核完成',
+      '工單已交付',
+      '製作中',
+      '異動',
+    ]) {
       expect(
         canEditTaskDestination({ ...workOrder(), status }, task(), 'print_manager', '吳國豪'),
+        status,
       ).toBe(true);
-    }
-    for (const status of ['草稿', '製程確認中', '重新確認製程']) {
-      expect(
-        canEditTaskDestination({ ...workOrder(), status }, task(), 'print_manager', '吳國豪'),
-      ).toBe(false);
     }
     expect(
       canEditTaskDestination(workOrder(), { ...task(), status: '報廢' }, 'print_manager', '吳國豪'),
+    ).toBe(false);
+    expect(
+      canEditTaskDestination(workOrder(), { ...task(), status: '已作廢' }, 'print_manager', '吳國豪'),
     ).toBe(false);
   });
 

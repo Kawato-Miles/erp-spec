@@ -195,14 +195,16 @@ async function changeProductionLine(page, taskName, line) {
   await waitModalsClosed(page);
 }
 
-// 展開該筆任務，歷程記產線原值、新值與修改人
-async function expectHistory(page, taskName, actor) {
+// 展開該筆任務，歷程記欄位原值、新值與修改人（預設驗產線由數位產線改為手工產線）
+async function expectHistory(page, taskName, actor, text = /產線由 數位產線 改為 手工產線/) {
   const row = taskRows(page).filter({ hasText: taskName });
   const expand = row.locator('.ant-table-row-expand-icon');
-  if ((await expand.getAttribute('class'))?.includes('collapsed')) await expand.click();
-  const entry = page.getByText(/產線由 數位產線 改為 手工產線/).first();
-  await expect(entry).toBeVisible();
-  await expect(page.locator('.ant-table-expanded-row').filter({ hasText: '產線由 數位產線 改為 手工產線' }).first()).toContainText(actor);
+  // 展開圖示在重新渲染後偶爾點不到，重試到歷程文字出現為止
+  await expect(async () => {
+    if ((await expand.getAttribute('class'))?.includes('collapsed')) await expand.click();
+    await expect(page.getByText(text).first()).toBeVisible({ timeout: 2000 });
+  }).toPass({ timeout: 20_000 });
+  await expect(page.locator('.ant-table-expanded-row').filter({ hasText: text }).first()).toContainText(actor);
 }
 
 // 8.18（2026-10-06 新增）：加工廠任務交付後照常推導已交付、已接收（拍板 D3）。
@@ -217,7 +219,7 @@ test('8.18 加工廠任務交付後照常推導已交付、已接收', async ({ 
 });
 
 
-// 8.19（2026-10-12 新增）：製程確認中只有工單負責人或編輯（代理）成員能改產線與目的站點，印務主管要等核可後。
+// 8.19（2026-10-12 新增、2026-10-14 改寫）：製程確認中，工單負責人、編輯（代理）成員與印務主管都能直接改產線與目的站點。
 // 起點：鏈外 WO-2026-0907（製程確認中，負責印務蔡明修）的型錄四色雙面印刷（數位產線、品檢站）。
 const lineAndDestinationFields = (page) => {
   const form = page.locator('.ant-modal:visible').last();
@@ -228,7 +230,9 @@ const lineAndDestinationFields = (page) => {
   };
 };
 
-test('8.19 製程確認中印務主管吳國豪改不了產線與目的站點', async ({ page }) => {
+test('8.19 製程確認中印務主管吳國豪直接改產線與目的站點，工單維持製程確認中，歷程留原值與新值', async ({
+  page,
+}) => {
   await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0907');
   await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0907' })).toBeVisible({
     timeout: 20_000,
@@ -236,13 +240,36 @@ test('8.19 製程確認中印務主管吳國豪改不了產線與目的站點', 
   await expect(page.getByText('製程確認中', { exact: true }).first()).toBeVisible();
   await expectCell(page, '型錄四色雙面印刷', '產線', '數位產線');
 
-  // 編輯入口只剩備註：沒有「編輯備註與目的站點」
-  await expect(page.getByRole('button', { name: '編輯備註與目的站點' })).toHaveCount(0);
+  // 其餘欄位鎖定（製程已送審），只有產線與目的站點（以及備註）可改
   await taskRows(page).filter({ hasText: '型錄四色雙面印刷' }).getByRole('button', { name: /編輯/ }).first().click({ timeout: 20_000 });
   const { form, line, destination } = lineAndDestinationFields(page);
   await expect(form).toBeVisible();
-  await expect(line).toHaveClass(/ant-select-disabled/);
-  await expect(destination).toHaveClass(/ant-select-disabled/);
+  await expect(line).not.toHaveClass(/ant-select-disabled/);
+  await expect(destination).not.toHaveClass(/ant-select-disabled/);
+  await form.getByRole('button', { name: cjkName('取消') }).click();
+  await waitModalsClosed(page);
+
+  // 改產線：直接儲存，不要求收回或重新送審
+  await changeProductionLine(page, '型錄四色雙面印刷', '裝訂產線');
+  await expectCell(page, '型錄四色雙面印刷', '產線', '裝訂產線');
+  await expect(page.getByText('製程確認中', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText(/重新送審|收回工單/)).toHaveCount(0);
+  await expectHistory(page, '型錄四色雙面印刷', '吳國豪', /產線由 數位產線 改為 裝訂產線/);
+
+  // 改目的站點：同樣直接儲存，歷程留一筆（品檢站 → 其他站點）
+  await taskRows(page).filter({ hasText: '型錄四色雙面印刷' }).getByRole('button', { name: /編輯/ }).first().click({ timeout: 20_000 });
+  const second = lineAndDestinationFields(page);
+  await second.destination.click();
+  const dropdown = page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last();
+  await dropdown.locator('.ant-select-item-option:not(.ant-select-item-option-disabled)').filter({ hasNotText: '品檢站' }).first().click();
+  await second.form.getByRole('button', { name: cjkName('儲存') }).click();
+  await expect(page.getByText(/已更新目的站點；已建的轉交單不跟著改/)).toBeVisible();
+  await waitModalsClosed(page);
+  await expect(page.getByText('製程確認中', { exact: true }).first()).toBeVisible();
+  // 目的站點變更記在任務歷程區：事件名、前後值與修改人
+  await expect(page.getByText('目的站點變更；已建的轉交單不跟著改').first()).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText(/目的站點：品檢站 → /).first()).toBeVisible();
+  await expect(page.locator('.ant-table-expanded-row').filter({ hasText: '目的站點變更' }).first()).toContainText('吳國豪');
 });
 
 // 目錄情境的後半（切成負責印務蔡明修改產線）無法在畫面上演：模擬角色切換器的印務只有周建宏，
