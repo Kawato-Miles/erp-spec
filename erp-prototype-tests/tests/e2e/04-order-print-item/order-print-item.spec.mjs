@@ -201,7 +201,7 @@ test('4.6 改急件選項或未扣急件內部完成日只留痕與同步，不�
       .locator('h4', { hasText: 'WO-2026-0710' })
       .locator('..')
       .getByText(/急件・三天急件提前 3 個工作天/),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 20_000 }); // 工單詳情路由首次編譯可能超過預設 5 秒
 });
 
 test('4.7 新增印件收齊七項必填、未扣急件內部完成日選填且無預設值', async ({ page }) => {

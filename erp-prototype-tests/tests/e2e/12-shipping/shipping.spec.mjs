@@ -750,9 +750,10 @@ test('12.17 諮詢從訂單詳情的出貨單頁籤替自己負責的訂單建�
   await addModal.getByRole('button', { name: /新\s*增/ }).click();
   await expect(page.getByText('已新增分享成員').last()).toBeVisible();
 
-  // 諮詢的側欄沒有品檢與出貨；從訂單詳情的出貨單頁籤建草稿
+  // 諮詢對自己負責的訂單有出貨單與品檢紀錄的檢視活動（出貨與售後檢視 ACT-VDLV-001、生產單據檢視 ACT-VPRD-021），
+  // 側欄有品檢與出貨；建草稿仍從訂單詳情的出貨單頁籤進
   await switchRoleSafe(page, '諮詢');
-  await expect(page.locator('.ant-menu-submenu-title', { hasText: '品檢與出貨' })).toHaveCount(0);
+  await expect(page.locator('.ant-menu-submenu-title', { hasText: '品檢與出貨' })).toHaveCount(1);
   const dialog = await openCreateShipmentFromOrder(page);
   await fillPlannedShipDate(dialog);
   await dialog.getByRole('button', { name: '儲存草稿' }).click();

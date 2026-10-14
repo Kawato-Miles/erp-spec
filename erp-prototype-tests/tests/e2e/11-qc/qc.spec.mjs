@@ -305,9 +305,10 @@ test('11.7 品檢站在桌機是表格，窄視窗靠側欄收合與橫向捲動
     )
     .toBe(true);
 
-  // 生管與印務主管：側欄有「品檢與出貨」，進頁看得到同一張清單但沒有操作欄
+  // 印務主管：側欄有「品檢與出貨」，進頁看得到同一張清單但沒有操作欄
+  // （生管沒有品檢待驗清單與品檢紀錄的檢視活動，側欄沒有品檢站——單據權責修正，活動清單 ACT-VPRD-010 至 026）
   await page.setViewportSize({ width: 1280, height: 720 });
-  for (const role of ['生管', '印務主管']) {
+  for (const role of ['印務主管']) {
     await switchRoleSafe(page, role);
     await gotoInAppSafe(page, '/qc-shipping/inspection');
     await expect(pendingRow(page)).toContainText(CHAIN4.printItemName);

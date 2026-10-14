@@ -48,7 +48,7 @@ test('14.6 報價與利潤頁籤的角色可見性（原編號 57）', async ({ 
   };
 
   // 印務、印務主管、主管見七欄
-  for (const role of ['印務', '印務主管', '主管']) {
+  for (const role of ['印務', '印務主管', 'Supervisor']) {
     await switchRole(page, role);
     const pane = await tabText();
     for (const label of [

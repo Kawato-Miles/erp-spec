@@ -100,15 +100,25 @@ test('14.19 工單摘要卡只留預估利潤率一格', async ({ page }) => {
   await expect(page.locator('body')).not.toContainText('任務進度');
   await expect(page.locator('body')).not.toContainText('顏色費用合計');
 
-  // 現場角色整格不出現，也不以空值或「權限不足」字樣呈現
-  for (const role of ['生管', '師傅', '品檢人員']) {
+  // 現場角色整格不出現，也不以空值或「權限不足」字樣呈現。
+  // 師傅與品檢人員沒有工單的檢視活動（生產單據檢視活動清單 ACT-VPRD-027 至 036），停在工單詳情時被導回預設頁面
+  await switchRole(page, '生管');
+  await expect(page.locator('body')).not.toContainText('預估利潤率');
+  await expect(page.locator('body')).not.toContainText('權限不足');
+  for (const role of ['師傅', '品檢人員']) {
     await switchRole(page, role);
+    await expect(page).not.toHaveURL(/\/work-orders\/detail/);
     await expect(page.locator('body')).not.toContainText('預估利潤率');
-    await expect(page.locator('body')).not.toContainText('權限不足');
   }
+  // 回到印務身分，從工單列表重新進這張工單詳情
+  await switchRole(page, '印務');
+  await gotoInApp(page, '/work-orders');
+  await page.getByText('WO-2026-0710', { exact: true }).first().click();
+  await expect(page).toHaveURL(/\/work-orders\/detail/);
 
   // 印務、業務與業務主管看得到這一格
-  for (const role of ['業務', '業務主管', '印務']) {
+  // 業務主管沒有工單的檢視活動（生產單據檢視活動清單 ACT-VPRD-027 至 036），不開工單詳情；改看印務主管
+  for (const role of ['業務', '印務主管', '印務']) {
     await switchRole(page, role);
     await expect(page.locator('body')).toContainText('預估利潤率');
     await expect(page.locator('body')).not.toContainText('實際利潤率');

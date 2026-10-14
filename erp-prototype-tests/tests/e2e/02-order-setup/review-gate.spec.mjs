@@ -187,7 +187,8 @@ test('2.17 草稿與待審兩態修改直接儲存不回審，只有可編輯角
   // 草稿態：送審鈕只有接單業務看得到（停用也照樣顯示）
   await openAs(page, '業務', DETAIL);
   await expect(submitButton(page)).toHaveCount(1);
-  for (const role of ['業務主管', '印務主管', '會計']) {
+  // 會計沒有訂單檢視活動，停在訂單詳情時被導回預設頁（見 2.20），不在這個迴圈裡
+  for (const role of ['業務主管', '印務主管']) {
     await switchRole(page, role);
     await expect(submitButton(page)).toHaveCount(0);
   }

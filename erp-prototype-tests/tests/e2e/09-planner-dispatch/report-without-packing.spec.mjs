@@ -141,7 +141,7 @@ test('9.22 沒打包的加工廠任務在所有生產任務也能手動完成', 
   await expect(row.getByRole('button', { name: '手動完成' })).toHaveCount(0);
 
   // 主管在生產管理五個產線單元唯讀：同一列沒有手動完成
-  await switchRole(page, '主管');
+  await switchRole(page, 'Supervisor');
   await gotoInApp(page, '/production-floor/dispatch');
   await search.fill('證書局部上光');
   await search.press('Enter');

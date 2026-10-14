@@ -1,13 +1,15 @@
 import { test, expect } from '@playwright/test';
-import { openAs, gotoInApp, cjkName } from '../_helpers.mjs';
+import { openAs, gotoInApp, cjkName, switchRole } from '../_helpers.mjs';
 import { dialog, issueButton, pickOption, pickDate, toastText, waitModalsClosed } from './_local.mjs';
 
 // 情境目錄 3.11：三方對帳與跨訂單四張清單。
 // 起點資料：鏈一 ORD-2026-0601（已收訖）、鏈二 ORD-2026-0710（尾款未開立未收）、
 // 款項管理的四張清單頁（應收款項／待開發票／待退款／帳務異常）。
+// 會計不在訂單模組（單據權責修正，活動清單 ACT-VORD-019 至 042）：三方對帳區在訂單詳情，改由看得到訂單的
+// 業務主管開訂單詳情驗；會計從跨訂單清單看差額，列上的訂單編號不是連結、不開訂單詳情。
 
 test('3.11 三方對帳與跨訂單四張清單', async ({ page }) => {
-  await openAs(page, '會計', '/orders/detail?id=ORD-2026-0601&tab=paymentPlan');
+  await openAs(page, '業務主管', '/orders/detail?id=ORD-2026-0601&tab=paymentPlan');
 
   // 差額為零時標對帳通過；帳務公司顯示公司抬頭，不顯示代碼
   await expect(page.getByText('對帳通過（差額 = 0）')).toBeVisible();
@@ -29,6 +31,10 @@ test('3.11 三方對帳與跨訂單四張清單', async ({ page }) => {
   const invoicedCard = page.locator('div', { has: page.getByText('發票淨額（含稅）', { exact: true }) }).last();
   await expect(invoicedCard.getByText('NT$ 47,425')).toBeVisible();
 
+  // 換成會計：會計沒有訂單檢視，停在訂單詳情的那一刻被導回預設頁，改從四張跨訂單清單看差額
+  await switchRole(page, '會計');
+  await expect(page).not.toHaveURL(/\/orders\/detail/);
+
   // 依序打開應收款項、待開發票、待退款、帳務異常四張清單
   await gotoInApp(page, '/payment/receivable');
   for (const orderNo of ['ORD-2026-0710', 'ORD-2026-0815', 'ORD-2026-0820', 'ORD-2026-0901', 'ORD-2026-0903', 'ORD-2026-0904']) {
@@ -36,6 +42,9 @@ test('3.11 三方對帳與跨訂單四張清單', async ({ page }) => {
   }
   // 已收訖的 ORD-2026-0601 不在應收款項清單（沒有未收餘額）
   await expect(page.getByRole('cell', { name: 'ORD-2026-0601', exact: true })).toHaveCount(0);
+  // 會計列上的訂單編號只是文字，不是通往訂單詳情的連結
+  await expect(page.locator('tbody a', { hasText: 'ORD-2026-0710' })).toHaveCount(0);
+  await expect(page.getByRole('cell', { name: 'ORD-2026-0710', exact: true })).toBeVisible();
 
   await gotoInApp(page, '/payment/pending-invoice');
   const pendingRow = page.locator('tr', { hasText: 'ORD-2026-0710' });

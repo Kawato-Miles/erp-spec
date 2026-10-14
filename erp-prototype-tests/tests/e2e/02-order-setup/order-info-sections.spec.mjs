@@ -54,7 +54,7 @@ test('2.11 審核通過前，業務主管與主管可改派審核業務主管；
   ).toHaveCount(1);
 
   // 主管同樣看得到入口；業務看不到
-  await switchRole(page, '主管');
+  await switchRole(page, 'Supervisor');
   await openTab(page, '資訊');
   await expect(infoCell(page, '審核業務主管').getByRole('button', { name: '改派' })).toHaveCount(1);
   await switchRole(page, '業務');

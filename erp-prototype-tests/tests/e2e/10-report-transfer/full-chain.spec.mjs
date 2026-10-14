@@ -83,7 +83,7 @@ test('10.14 最後一筆報工把工單、印件、訂單一路推到製作完�
   // 材料備料先報完（2,060）→ 該任務完成，但工單旗下還有任務未完成，不向上反映
   await reportTask(page, '牛皮紙 150g 備料', 2060);
   // 看工單與訂單改切主管（唯讀可看全公司；生管的選單沒有工單管理與訂單管理），現場動作回生管做
-  await switchRole(page, '主管');
+  await switchRole(page, 'Supervisor');
   await gotoInApp(page, '/work-orders');
   await page.getByText('WO-2026-0815', { exact: true }).click();
   await expect(page.getByText('工單已交付')).toHaveCount(0); // 已因首次報工轉製作中
@@ -111,7 +111,7 @@ test('10.14 最後一筆報工把工單、印件、訂單一路推到製作完�
   ).toBeVisible();
 
   // 訂單詳情：印件列、訂單狀態與活動紀錄
-  await switchRole(page, '主管');
+  await switchRole(page, 'Supervisor');
   await gotoInApp(page, '/orders');
   await page.getByText('ORD-2026-0815', { exact: true }).click();
   await expect(page.getByText('製作完成').first()).toBeVisible();

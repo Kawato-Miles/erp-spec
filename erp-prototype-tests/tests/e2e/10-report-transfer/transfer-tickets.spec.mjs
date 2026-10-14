@@ -462,7 +462,7 @@ test('10.40 建轉交單選負責廠務與預計轉交日，系統只通知負�
   await dateInput.fill('2026-10-07');
   await dateInput.press('Enter');
 
-  // 候選只有持「管理轉交單（負責）」權限的人員（兩位廠務），不含師傅、品檢人員與生管
+  // 候選只有範圍為自己負責的廠務（兩位廠務），不含師傅、品檢人員與生管
   const dialog = dialogOf(page, '建立轉交單');
   await dialog.locator('.ant-form-item').filter({ hasText: '負責廠務' }).locator('.ant-select').click();
   const options = page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last().locator('.ant-select-item-option');

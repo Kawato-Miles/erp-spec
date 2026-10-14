@@ -92,7 +92,7 @@ test('14.10 生產管理各單元的角色預設權限（原編號 180）', asyn
   await page.keyboard.press('Escape');
 
   // 主管：五個產線單元（唯讀檢視，見 9.12）
-  await switchRole(page, '主管');
+  await switchRole(page, 'Supervisor');
   await expect(async () => expect(await readGroupItems()).toEqual(LINE_UNITS)).toPass({ timeout: 10_000 });
 });
 

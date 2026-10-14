@@ -17,9 +17,11 @@ import {
   isTaskInMyLines,
   isTicketInMyLines,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/unit-scope.js';
+import { staffLinesOf } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/transfer-rules.js';
+import { ROLES } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/_lib/sessionStore.js';
 
-// 情境 9.12「主管在生產管理五個產線單元唯讀看全貌」的判定驗算（畫面另在 e2e 9.12 驗）。
-// 規則正本：wiki 印件生產流程 § 生產管理單元的權限範圍（主管對五個產線單元只有唯讀檢視）、
+// 情境 9.12「Supervisor 在生產管理五個產線單元唯讀看全貌」的判定驗算（畫面另在 e2e 9.12 驗）。
+// 規則正本：wiki 印件生產流程 § 生產管理單元的權限範圍（Supervisor 對五個產線單元只有唯讀檢視）、
 // wiki Supervisor（生產管理各頁唯讀看全貌）。現場代行角色仍只有生管、印務、印務主管。
 
 const pkg = { id: 'wp-demo', master: '劉阿海' };
@@ -40,8 +42,8 @@ const LINE_UNITS = [
   P.RECEIVING_LINE,
 ];
 
-describe('9.12 主管在生產管理五個產線單元唯讀看全貌', () => {
-  it('主管拿到五個產線單元、沒有負責單元', () => {
+describe('9.12 Supervisor 在生產管理五個產線單元唯讀看全貌', () => {
+  it('Supervisor 拿到五個產線單元、沒有負責單元', () => {
     expect(floorUnitsOf('supervisor').map((u) => u.label)).toEqual([
       '所有生產任務',
       '所有工作包',
@@ -59,7 +61,15 @@ describe('9.12 主管在生產管理五個產線單元唯讀看全貌', () => {
     LINE_UNITS.forEach((key) => expect(canOperateFloorUnit('production_planner', key)).toBe(true));
   });
 
-  it('看全貌：六條產線與品檢線的單據都在主管的範圍內', () => {
+  it('全公司範圍不經所屬產線：模擬角色名為 Supervisor、不帶所屬產線，現場名冊也沒有所屬產線', () => {
+    const supervisor = ROLES.find((r) => r.value === 'supervisor');
+    expect(supervisor.label).toBe('Supervisor');
+    expect(supervisor.lines).toBeUndefined();
+    expect(staffLinesOf('王大明')).toEqual([]);
+  });
+
+  it('看全貌：六條產線與品檢線的單據都在 Supervisor 的範圍內（不看所屬產線，連名冊以外的產線也看得到）', () => {
+    expect(isTaskInMyLines({ production_line: '外包廠線' }, '王大明')).toBe(true);
     ['壓克力產線', '馬克杯產線', '杯墊產線', '數位產線', '裝訂產線', '手工產線'].forEach(
       (line) => expect(isTaskInMyLines({ production_line: line }, '王大明')).toBe(true),
     );

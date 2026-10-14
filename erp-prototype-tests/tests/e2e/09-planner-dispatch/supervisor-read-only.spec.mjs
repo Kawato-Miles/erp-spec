@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { gotoInApp, openAs } from '../_helpers.mjs';
 
-// 情境目錄 9.12：主管在生產管理五個產線單元唯讀看全貌（wiki 印件生產流程 § 生產管理單元的權限範圍、
-// wiki Supervisor）。五頁都列全部產線的單據、頁首提示唯讀、沒有任何操作入口；點任務名稱開生產任務側板照樣看得到歷程。
+// 情境目錄 9.12：Supervisor 在生產管理五個產線單元唯讀看全貌（wiki 印件生產流程 § 生產管理單元的權限範圍、
+// wiki Supervisor）。範圍是全公司、不經所屬產線。五頁都列全部產線的單據、頁首提示唯讀、沒有任何操作入口；點任務名稱開生產任務側板照樣看得到歷程。
 // 2026-10-06 改版：操作清單拿掉再次點收與人工註記，補修正點收紀錄、作廢點收紀錄、搬運數量修正。
 
-const READ_ONLY_NOTICE = '主管在生產管理只有唯讀檢視';
+const READ_ONLY_NOTICE = 'Supervisor 在生產管理只有唯讀檢視';
 
 // 生產管理各頁的操作鈕（名稱以正規式比對，AntD 會在兩字按鈕中間插空白）
 const OPERATIONS = [
@@ -35,9 +35,9 @@ async function expectNoOperations(page) {
   await expect(page.locator('main .ant-table .ant-checkbox-input')).toHaveCount(0);
 }
 
-test('9.12 主管在生產管理五個產線單元唯讀看全貌', async ({ page }) => {
+test('9.12 Supervisor 在生產管理五個產線單元唯讀看全貌', async ({ page }) => {
   test.setTimeout(150_000);
-  await openAs(page, '主管', '/production-floor/schedule');
+  await openAs(page, 'Supervisor', '/production-floor/schedule');
 
   // 選單：生產管理群組列五個產線單元，沒有「我的」單元；工廠總覽照樣在
   const groupTitles = page.locator('.ant-menu-submenu-title');
