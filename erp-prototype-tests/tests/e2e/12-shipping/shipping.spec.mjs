@@ -453,8 +453,9 @@ test('12.7 三種出貨方式的憑證形式各自不同（原編號 129）', as
   await expect(settledRow).toContainText('已送達');
   await expect(settledRow.getByRole('button', { name: '送達確認' })).toHaveCount(0);
   await expect(settledRow.getByRole('button', { name: '異常' })).toHaveCount(0);
-  // 已拋單的第三方單送達後仍可下載物流單，所以剩檢視、下載物流單兩顆
-  await expect(settledRow.getByRole('button')).toHaveCount(2);
+  // 已拋單的第三方單送達後仍可下載物流單，也可補附送達憑證（12.25），出貨人員列上剩檢視、補附送達憑證、下載物流單三顆
+  await expect(settledRow.getByRole('button')).toHaveCount(3);
+  await expect(settledRow.getByRole('button', { name: '補附送達憑證' })).toHaveCount(1);
   await expect(settledRow.getByRole('button', { name: '下載物流單' })).toHaveCount(1);
 });
 
@@ -1111,8 +1112,10 @@ test('12.23 業務對未離廠的出貨單作廢，理由必填並記轉入時�
   expect(await printItemCell(page, CHAIN4.printItemNo, '可出貨額度')).toBe('500');
 });
 
-test('12.25 出貨人員對已送達的出貨單補附送達憑證，其他狀態沒有這顆鈕', async ({ page }) => {
-  // 鏈一 SH-2026-0601（專車，已送達，已有司機交付照）
+test('12.25 出貨人員對已送達的出貨單補附送達憑證，各出貨方式都可，其他狀態沒有這顆鈕', async ({
+  page,
+}) => {
+  // 鏈一 SH-2026-0601（專車，已送達，已有司機交付照）；SH-2026-0602（新竹物流，已送達）
   await openAs(page, '出貨人員', '/qc-shipping/shipments');
   const row = shipmentRow(page, 'SH-2026-0601');
   await expect(row).toContainText('已送達');
@@ -1132,10 +1135,61 @@ test('12.25 出貨人員對已送達的出貨單補附送達憑證，其他狀�
   await expect(panel).toContainText('補附送達憑證');
   await closeDrawer(page);
 
+  // 第三方物流已送達的 SH-2026-0602（新竹物流）也可補附，憑證名稱為送達照片
+  const thirdRow = shipmentRow(page, 'SH-2026-0602');
+  await expect(thirdRow).toContainText('已送達');
+  const thirdDialog = await clickRowAction(page, 'SH-2026-0602', '補附送達憑證');
+  await expect(thirdDialog).toContainText('送達照片');
+  await thirdDialog.locator('input[type="file"]').setInputFiles(fakePhoto('送達照片-補.jpg'));
+  await thirdDialog.getByRole('button', { name: '送出憑證' }).click();
+  await expect(page.getByText(/已補附送達憑證/).first()).toBeVisible();
+  await expect(thirdRow).toContainText('已送達');
+
   // 業務看同一張已送達的單：沒有這顆鈕
   await switchRoleSafe(page, '業務');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   await expect(shipmentRow(page, 'SH-2026-0601').getByRole('button', { name: '補附送達憑證' })).toHaveCount(0);
+  await expect(shipmentRow(page, 'SH-2026-0602').getByRole('button', { name: '補附送達憑證' })).toHaveCount(0);
+});
+
+test('12.26 出貨完畢樣本：鏈一第三方物流已送達的出貨單，補附送達憑證鈕與物流單下載鈕出現', async ({
+  page,
+}) => {
+  // 出貨單：SH-2026-0602 新竹物流、已送達、物流單號與配達時間有值
+  await openAs(page, '出貨人員', '/qc-shipping/shipments');
+  const row = shipmentRow(page, 'SH-2026-0602');
+  await expect(row).toContainText('已送達');
+  await expect(row).toContainText('新竹物流');
+  await expect(row).toContainText('HCT-902100002');
+  await expect(row.getByRole('button', { name: '補附送達憑證' })).toBeVisible();
+  await expect(row.getByRole('button', { name: '下載物流單' })).toBeVisible();
+  const panel = await openShipmentPanel(page, 'SH-2026-0602');
+  await panel.getByRole('tab', { name: '歷程' }).click();
+  await expect(panel).toContainText('物流商配達時間：2026-06-23 10:20');
+  await closeDrawer(page);
+
+  // 同訂單另一張 SH-2026-0601 仍是專車
+  await expect(shipmentRow(page, 'SH-2026-0601')).toContainText('專車配送');
+});
+
+test('12.26 出貨完畢樣本：訂單訂單完成、出貨單頁籤列出第三方已送達的單，印件印製維度已送達', async ({
+  page,
+}) => {
+  // 訂單：訂單完成
+  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0601');
+  await expect(page.locator('body')).toContainText('訂單完成');
+  await page.getByRole('tab', { name: /出貨/ }).first().click();
+  await expect(page.locator('body')).toContainText('SH-2026-0601');
+  await expect(page.locator('body')).toContainText('SH-2026-0602');
+
+  // 印件：由訂單項目頁籤的「檢視印件」進入，印製維度已送達
+  await page.getByRole('tab', { name: /訂單項目/ }).click();
+  const itemRow = page.locator('tr', { hasText: 'PI-2026-0601' });
+  await expect(async () => {
+    await itemRow.getByRole('button', { name: '檢視印件' }).click();
+    await expect(page).toHaveURL(/\/print-items\/detail\/?\?id=pi-2026-0601/, { timeout: 3000 });
+  }).toPass({ timeout: 20000 });
+  await expect(page.locator('body')).toContainText('已送達');
 });
 
 test('12.25 補附送達憑證只在已送達：待出貨與運送中的列上沒有，自取交付後憑證名稱為現場點交照', async ({

@@ -222,13 +222,13 @@ describe('12.25 出貨人員對已送達的出貨單補附送達憑證', () => {
     ).toEqual({ allowed: true, proofLabel: '現場點交照' });
   });
 
-  it('第三方物流的憑證是配達時間，不補照片；其他狀態與其他角色都沒有', () => {
+  it('第三方物流的已送達單也可補附，憑證名稱為送達照片；其他狀態與其他角色都沒有', () => {
     expect(
       attachDeliveryProofOf({
         role: 'shipper',
         shipment: shipmentOf('a', '已送達', { method: '新竹物流' }),
-      }).allowed,
-    ).toBe(false);
+      }),
+    ).toEqual({ allowed: true, proofLabel: '送達照片' });
     ['草稿', '未處理', '打包中', '待出貨', '運送中', '異常', '已作廢'].forEach((status) => {
       expect(
         attachDeliveryProofOf({ role: 'shipper', shipment: shipmentOf('a', status) }).allowed,
@@ -276,19 +276,31 @@ describe('12.25 出貨人員對已送達的出貨單補附送達憑證', () => {
     expect(byId('a').history.at(-1).attachments.map((a) => a.name)).toEqual(['司機交付照-補.jpg']);
   });
 
-  it('只有已送達的單補得進去；沒附照片或第三方物流直接呼叫也不寫入', () => {
+  it('第三方物流的已送達單補附：保留原配達時間憑證，歷程多一筆帶送達照片', () => {
     seed([
-      shipmentOf('t', '運送中'),
-      shipmentOf('d', '已送達'),
-      shipmentOf('h', '已送達', { method: '新竹物流' }),
+      shipmentOf('h', '已送達', {
+        method: '新竹物流',
+        delivery_proof: '物流商配達時間：2026-06-23 10:20',
+      }),
     ]);
+    const result = useQcShippingStore
+      .getState()
+      .attachDeliveryProof('h', { operator: '曾志偉', proof: { name: '送達照片-補.jpg', url: null } });
+    expect(result.ok).toBe(true);
+    expect(byId('h').status).toBe('已送達');
+    expect(byId('h').delivery_proof).toBe('物流商配達時間：2026-06-23 10:20');
+    const last = byId('h').history.at(-1);
+    expect(last.event).toBe('補附送達憑證');
+    expect(last.attachments.map((a) => a.name)).toEqual(['送達照片-補.jpg']);
+  });
+
+  it('只有已送達的單補得進去；沒附照片直接呼叫不寫入', () => {
+    seed([shipmentOf('t', '運送中'), shipmentOf('d', '已送達')]);
     const store = useQcShippingStore.getState();
     const proof = { name: 'x.jpg', url: null };
     expect(store.attachDeliveryProof('t', { operator: '曾志偉', proof }).ok).toBe(false);
     expect(store.attachDeliveryProof('d', { operator: '曾志偉', proof: null }).ok).toBe(false);
-    expect(store.attachDeliveryProof('h', { operator: '曾志偉', proof }).ok).toBe(false);
     expect(byId('t').history).toHaveLength(0);
     expect(byId('d').history).toHaveLength(0);
-    expect(byId('h').history).toHaveLength(0);
   });
 });
