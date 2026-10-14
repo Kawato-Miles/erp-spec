@@ -54,6 +54,7 @@
 - [ ] 6.4 收斂 change（production-dispatch-report-transfer-convergence）先歸檔；之後以歸檔後的主規格重新比對本 change 的 MODIFIED 與 RENAMED 區塊
 - [ ] 6.5 歸檔前跑 `npm run test:smoke` 與第十、十一、十二、十四章測試，記錄結果
 - [ ] 6.6 本 change 歸檔後，清理 qc 主規格 Purpose 與正本邊界段的「品檢紀錄為只增紀錄」用詞
+- [ ] 6.7 shipment 主規格正本邊界段與「唯一的明細可選性排除」理由句的可出貨額度算式改引 wiki 印件卡可出貨額度欄，拿掉「＋ 出貨單回補」（wiki 2026-10-14 已修，Prototype 本來就沒有重複計算）
 
 ## 測試影響清單
 
