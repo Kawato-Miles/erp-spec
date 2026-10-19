@@ -3,6 +3,7 @@ import {
   isPrintItemDelivered,
   useOrdersStore,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/_lib/store.js';
+import { departed, packedShipment } from '../qc-shipping/_fixtures.mjs';
 
 // 情境 12.13（先做完的那一批可以先出）與 12.8 補充（殘留的草稿不卡收尾）的判定驗算。
 // 合成資料的理由：現行 mock 的鏈四訂單與印件都已在製作完成，構造不出「兩者皆製作中」的起點；
@@ -92,12 +93,14 @@ describe('12.13 首張出貨單成立時，製作中的印件與訂單都推得�
 
 const printItem = { print_item_no: 'PI-TEST-A', ordered_qty: 500 };
 
-const deliveredShipment = {
+// 出貨單已裝箱之後的狀態由物流單計算：這張的物流單已送達，所以出貨單是已送達，送達數量 500
+const deliveredShipment = packedShipment({
   id: 'sh-done',
-  status: '已送達',
-  details: [{ print_item_no: 'PI-TEST-A', name: '甲印件', qty: 500 }],
-  planned_details: [],
-};
+  printItemNo: 'PI-TEST-A',
+  name: '甲印件',
+  qty: 500,
+  logisticsOrders: [departed('SH-TEST-0001-001', '已送達')],
+});
 
 // 草稿的印件列存在預計出貨印件、正式明細為空：收尾判定只認正式明細
 const draftShipment = {
@@ -118,5 +121,46 @@ describe('12.8 補充 沒清掉的草稿不擋印件收尾', () => {
 
   it('只有一張草稿、沒有任何正式的單時不成立（貨根本還沒出）', () => {
     expect(isPrintItemDelivered(printItem, [draftShipment])).toBe(false);
+  });
+});
+
+describe('12.8 補充 異常的出貨單視為未收尾，已作廢的單先排除再判定', () => {
+  const abnormalShipment = packedShipment({
+    id: 'sh-abn',
+    printItemNo: 'PI-TEST-A',
+    name: '甲印件',
+    qty: 100,
+    logisticsOrders: [departed('SH-TEST-0002-001', '例外事故', { exception_source: 'manual' })],
+  });
+  const voidedShipment = packedShipment({
+    id: 'sh-void',
+    printItemNo: 'PI-TEST-A',
+    name: '甲印件',
+    qty: 100,
+    status: '已作廢',
+    logisticsOrders: [departed('SH-TEST-0003-001', '已作廢')],
+  });
+
+  it('同一件印件另有一張異常的單時不收尾：異常不回補、仍佔用，要等例外物流單處理完', () => {
+    expect(isPrintItemDelivered(printItem, [deliveredShipment, abnormalShipment])).toBe(false);
+  });
+
+  it('例外物流單作廢（填未送達數量）後出貨單轉已作廢，退出分母，已送達的那張就足以收尾', () => {
+    expect(isPrintItemDelivered(printItem, [deliveredShipment, voidedShipment])).toBe(true);
+  });
+
+  it('累計送達數取送達數量：物流單填了未送達數量時，送達數量不足購買數量就不收尾', () => {
+    const shortDelivered = packedShipment({
+      id: 'sh-short',
+      printItemNo: 'PI-TEST-A',
+      name: '甲印件',
+      qty: 500,
+      logisticsOrders: [
+        departed('SH-TEST-0004-001', '已送達', {
+          undelivered: [{ print_item_no: 'PI-TEST-A', qty: 100 }],
+        }),
+      ],
+    });
+    expect(isPrintItemDelivered(printItem, [shortDelivered])).toBe(false);
   });
 });

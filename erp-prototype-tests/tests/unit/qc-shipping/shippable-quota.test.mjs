@@ -5,10 +5,12 @@ import {
   detailsTotalQty,
   validateShipmentQuota,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/store.js';
+import { departed, logistics, packedShipment } from './_fixtures.mjs';
 
 // 情境 12.2「額度即時檢核並整張擋下」與 12.4「回報總數與明細數量並排」的數字驗算
 // （畫面呈現另在 e2e 12.2、12.4 驗）。
-// 可出貨額度＝完工良品數 − 未回補的出貨佔用；異常與已作廢兩終態退出佔用。
+// 可出貨額度＝完工良品數 − 累計已出貨數量（Σ 單張佔用量）；只有已作廢的出貨單退出佔用，
+// 異常的出貨單仍佔用、不回補；回補只發生在作廢物流單（未送達數量）與作廢出貨單（整張）。
 
 const printItem = { print_item_no: 'PI-2026-0820' };
 const qcRecords = [{ print_item_no: 'PI-2026-0820', passed_qty: 480, failed_qty: 20 }];
@@ -41,9 +43,34 @@ describe('可出貨額度', () => {
     expect(calcShippableQty(printItem, shipments, qcRecords)).toBe(280);
   });
 
-  it('異常與已作廢的出貨單退出佔用、額度回補', () => {
-    const shipments = [shipment('sh-1', '異常', 200), shipment('sh-2', '已作廢', 100)];
+  it('已作廢的出貨單退出佔用、額度回補', () => {
+    const shipments = [shipment('sh-1', '已作廢', 200), shipment('sh-2', '已作廢', 100)];
     expect(calcShippableQty(printItem, shipments, qcRecords)).toBe(480);
+  });
+
+  it('異常的出貨單仍佔用、不回補（回補只在作廢物流單或作廢出貨單）', () => {
+    const abnormal = packedShipment({
+      id: 'sh-1',
+      printItemNo: 'PI-2026-0820',
+      qty: 200,
+      logisticsOrders: [departed('SH-1-001', '例外事故', { exception_source: 'manual' })],
+    });
+    expect(calcShippableQty(printItem, [abnormal], qcRecords)).toBe(280);
+  });
+
+  it('作廢物流單填的未送達數量回補額度：單張佔用量＝明細數量 − 未送達合計', () => {
+    const sh = packedShipment({
+      id: 'sh-1',
+      printItemNo: 'PI-2026-0820',
+      qty: 200,
+      logisticsOrders: [
+        departed('SH-1-001', '已作廢', {
+          undelivered: [{ print_item_no: 'PI-2026-0820', qty: 60 }],
+        }),
+        departed('SH-1-002', '等待出貨'),
+      ],
+    });
+    expect(calcShippableQty(printItem, [sh], qcRecords)).toBe(480 - 140);
   });
 
   it('改某張單的明細數量時，本單原有的佔用先還回來當增量基準', () => {
@@ -89,16 +116,33 @@ describe('建單額度檢核', () => {
 
 describe('出貨單上的兩個數', () => {
   it('出貨明細數量為明細合計（與逐條揀貨數量比對用）', () => {
-    expect(detailsTotalQty(shipment('sh-1', '待出貨', 500))).toBe(500);
+    expect(detailsTotalQty(shipment('sh-1', '已裝箱', 500))).toBe(500);
   });
 
-  it('已出貨只認貨已離廠的單（運送中、已送達）', () => {
+  it('已出貨只認全部物流單都已離廠的單（部分離廠、尚未離廠都不算）；已作廢不計', () => {
+    const at = (id, qty, los) =>
+      packedShipment({ id, printItemNo: 'PI-2026-0820', qty, logisticsOrders: los });
     const shipments = [
-      shipment('sh-1', '待出貨', 100),
-      shipment('sh-2', '運送中', 200),
-      shipment('sh-3', '已送達', 150),
-      shipment('sh-4', '異常', 50),
+      at('sh-1', 100, [logistics('a-001', '已裝箱')]),
+      at('sh-2', 200, [departed('b-001', '運送中')]),
+      at('sh-3', 150, [departed('c-001', '已送達')]),
+      at('sh-4', 50, [departed('d-001', '例外事故')]),
+      at('sh-5', 70, [departed('e-001', '等待出貨'), logistics('e-002', '已裝箱')]),
+      shipment('sh-6', '已作廢', 80),
     ];
-    expect(calcShippedQty(printItem, shipments)).toBe(350);
+    // 全數離廠者：sh-2（200）、sh-3（150）、sh-4（50，異常仍算已離廠）＝400；sh-5 只離廠一部分、sh-1 未離廠
+    expect(calcShippedQty(printItem, shipments)).toBe(400);
+  });
+
+  it('已離廠量取單張佔用量：扣掉作廢或送達確認填的未送達數量', () => {
+    const sh = packedShipment({
+      id: 'sh-1',
+      printItemNo: 'PI-2026-0820',
+      qty: 200,
+      logisticsOrders: [
+        departed('a-001', '已送達', { undelivered: [{ print_item_no: 'PI-2026-0820', qty: 20 }] }),
+      ],
+    });
+    expect(calcShippedQty(printItem, [sh])).toBe(180);
   });
 });

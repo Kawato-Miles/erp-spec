@@ -7,6 +7,7 @@ import {
 import {
   MOCK_SHIPMENTS,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/mock-data.js';
+import { shipmentStatusOf } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/logistics-rules.js';
 import {
   firstShipmentOfPrintItem,
   shipmentOnTimeOfPrintItem,
@@ -32,7 +33,8 @@ describe('15.5 印件出貨統計反映已送達的出貨單', () => {
       sh.details.some((d) => d.print_item_no === PRINT_ITEM_NO),
     );
     expect(shipments.map((sh) => sh.shipment_no)).toEqual(['SH-2026-0601', 'SH-2026-0602']);
-    expect(shipments.every((sh) => sh.status === '已送達')).toBe(true);
+    // 出貨單已裝箱之後的狀態由物流單計算：兩張都已送達（順豐五箱已送達、自取兩箱已自取）
+    expect(shipments.every((sh) => shipmentStatusOf(sh) === '已送達')).toBe(true);
     const total = shipments
       .flatMap((sh) => sh.details)
       .filter((d) => d.print_item_no === PRINT_ITEM_NO)
@@ -51,12 +53,12 @@ describe('15.5 印件出貨統計反映已送達的出貨單', () => {
     expect(result.onTime).toBe(true);
   });
 
-  it('已出貨（訂單印件列的口徑：運送中或已送達）為 5,000', () => {
+  it('已出貨（訂單印件列的口徑：全數離廠的出貨單佔用量）為 5,000', () => {
     const value = calcShippedQty({ print_item_no: PRINT_ITEM_NO }, MOCK_SHIPMENTS);
     expect(value).toBe(5000);
   });
 
-  it('累計已出貨數量（印件詳情的口徑：出貨單佔用量，異常與已作廢不計）為 5,000', () => {
+  it('累計已出貨數量（印件詳情的口徑：單張佔用量，已作廢不計、異常仍佔用）為 5,000', () => {
     const value = sumShippedQty(MOCK_SHIPMENTS, PRINT_ITEM_NO);
     expect(value).toBe(5000);
   });

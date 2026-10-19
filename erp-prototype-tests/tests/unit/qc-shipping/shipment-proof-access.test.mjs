@@ -8,10 +8,16 @@ import {
   activitiesOfOp,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/_lib/access-control.js';
 import { attachDeliveryProofOf } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/next-status-options.js';
+import { shipmentStatusOf } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/logistics-rules.js';
 import { useQcShippingStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/store.js';
+import { departed, packedShipment } from './_fixtures.mjs';
 
 const METHODS = ['專車配送', '自取', '新竹物流'];
-const delivered = (method) => ({ status: '已送達', method });
+// 補附送達憑證掛在物流單上：已送達（自取叫已自取）的物流單才開放
+const delivered = (method) => ({
+  shipment: { status: '已裝箱', method },
+  logistics: { status: method === '自取' ? '已自取' : '已送達' },
+});
 
 describe('12.31 補附送達憑證的操作者與活動表一致', () => {
   it('活動表只有一列：出貨人員、全公司', () => {
@@ -27,7 +33,7 @@ describe('12.31 補附送達憑證的操作者與活動表一致', () => {
     for (const [role, wikiName] of Object.entries(ROLE_WIKI_NAME)) {
       for (const method of METHODS) {
         expect(
-          attachDeliveryProofOf({ role, shipment: delivered(method) }).allowed,
+          attachDeliveryProofOf({ role, ...delivered(method) }).allowed,
           `${wikiName}／${method}`,
         ).toBe(allowedNames.includes(wikiName));
       }
@@ -35,51 +41,73 @@ describe('12.31 補附送達憑證的操作者與活動表一致', () => {
   });
 
   it('憑證名稱依出貨方式：專車司機交付照、自取現場點交照、第三方物流送達照片', () => {
-    expect(attachDeliveryProofOf({ role: 'shipper', shipment: delivered('專車配送') }).proofLabel).toBe('司機交付照');
-    expect(attachDeliveryProofOf({ role: 'shipper', shipment: delivered('自取') }).proofLabel).toBe('現場點交照');
-    expect(attachDeliveryProofOf({ role: 'shipper', shipment: delivered('新竹物流') }).proofLabel).toBe('送達照片');
+    expect(attachDeliveryProofOf({ role: 'shipper', ...delivered('專車配送') }).proofLabel).toBe('司機交付照');
+    expect(attachDeliveryProofOf({ role: 'shipper', ...delivered('自取') }).proofLabel).toBe('現場點交照');
+    expect(attachDeliveryProofOf({ role: 'shipper', ...delivered('新竹物流') }).proofLabel).toBe('送達照片');
   });
 });
 
 describe('12.31 補附後的歷程記補附人與時間，狀態不變', () => {
   const byId = (id) => useQcShippingStore.getState().shipments.find((sh) => sh.id === id);
+  const lo = (no) => byId('van').logistics_orders.find((l) => l.logistics_order_no === no);
   beforeEach(() => {
     useQcShippingStore.setState({
       shipments: [
-        {
+        packedShipment({
           id: 'van',
-          shipment_no: 'SH-TEST-VAN',
-          order_no: 'ORD-TEST-PROOF',
-          status: '已送達',
+          shipmentNo: 'SH-TEST-VAN',
+          orderNo: 'ORD-TEST-PROOF',
           method: '專車配送',
-          details: [],
-          planned_details: [],
-          history: [],
-          delivery_proof: null,
-          delivered_at: '2026-10-01 09:00',
-          delivered_by: '曾志偉',
-        },
+          logisticsOrders: [
+            departed('SH-TEST-VAN-001', '已送達', {
+              delivered_at: '2026-10-01 09:00',
+              delivered_by: '曾志偉',
+              delivery_proof: null,
+            }),
+          ],
+        }),
       ],
     });
   });
 
-  it('補附一張簽收照片：憑證存下、狀態維持已送達、歷程多一筆帶補附人與時間', () => {
-    const result = useQcShippingStore
-      .getState()
-      .attachDeliveryProof('van', { operator: '曾志偉', proof: { name: '簽收照片.jpg', url: null } });
+  it('補附一張簽收照片：憑證存下、物流單與出貨單狀態維持已送達、物流單歷程多一筆帶補附人與時間', () => {
+    const result = useQcShippingStore.getState().attachLogisticsProof('van', 'SH-TEST-VAN-001', {
+      operator: '曾志偉',
+      proof: { name: '簽收照片.jpg', url: null },
+    });
     expect(result.ok).toBe(true);
-    const sh = byId('van');
-    expect(sh.status).toBe('已送達');
-    expect(sh.delivery_proof).toEqual({ name: '簽收照片.jpg', url: null });
-    const event = sh.history[sh.history.length - 1] ?? sh.history[0];
+    expect(lo('SH-TEST-VAN-001').status).toBe('已送達');
+    expect(shipmentStatusOf(byId('van'))).toBe('已送達');
+    expect(lo('SH-TEST-VAN-001').delivery_proof).toEqual({ name: '簽收照片.jpg', url: null });
+    expect(lo('SH-TEST-VAN-001').delivered_at).toBe('2026-10-01 09:00');
+    const event = lo('SH-TEST-VAN-001').history.at(-1);
     expect(event.event).toBe('補附送達憑證');
     expect(event.actor).toBe('曾志偉');
     expect(event.at).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/);
   });
 
-  it('沒有附照片不寫入任何東西', () => {
-    const result = useQcShippingStore.getState().attachDeliveryProof('van', { operator: '曾志偉', proof: null });
-    expect(result.ok).toBe(false);
-    expect(byId('van').history).toEqual([]);
+  it('沒有附照片不寫入任何東西；還沒送達的物流單補不進去', () => {
+    const store = useQcShippingStore.getState();
+    expect(
+      store.attachLogisticsProof('van', 'SH-TEST-VAN-001', { operator: '曾志偉', proof: null }).ok,
+    ).toBe(false);
+    expect(lo('SH-TEST-VAN-001').history).toEqual([]);
+    useQcShippingStore.setState({
+      shipments: [
+        packedShipment({
+          id: 'van',
+          method: '專車配送',
+          logisticsOrders: [departed('SH-TEST-VAN-001', '已出貨')],
+        }),
+      ],
+    });
+    expect(
+      useQcShippingStore
+        .getState()
+        .attachLogisticsProof('van', 'SH-TEST-VAN-001', {
+          operator: '曾志偉',
+          proof: { name: 'x.jpg', url: null },
+        }).ok,
+    ).toBe(false);
   });
 });

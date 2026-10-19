@@ -3,8 +3,9 @@ import { openAs } from '../_helpers.mjs';
 import { openShipmentPanel, shipmentRow } from '../11-qc/_setup.mjs';
 
 // 情境目錄 14.37、14.38（2026-10-13 新增）。
-// 起點資料：鏈一 SH-2026-0601（已送達；明細 PI-2026-0601 × 3,000、揀貨數量 3,000、每箱 500、箱數 6，
-// 裝箱照片只有檔名「裝箱照-SH0601.jpg」，歷程五筆）、SH-2026-0602，鏈四 SH-2026-0820（草稿，無裝箱照片）。
+// 起點資料：鏈一 SH-2026-0601（順豐、已送達；明細 PI-2026-0601 × 3,000、揀貨數量 3,000、每箱 600、五箱、一筆物流單，
+// 裝箱照片只有檔名「裝箱照-SH0601-1.jpg」等，出貨單歷程五筆加物流單歷程四筆）、SH-2026-0602（自取），
+// 鏈四 SH-2026-0820（草稿，無裝箱照片）。
 
 test('14.37 出貨單對話框：單頭固定，出貨明細與歷程兩個頁籤；明細有完稿縮圖、揀貨數量、每箱幾個', async ({
   page,
@@ -23,7 +24,7 @@ test('14.37 出貨單對話框：單頭固定，出貨明細與歷程兩個頁�
     '出貨單編號',
     '所屬訂單與客戶',
     '出貨方式',
-    '物流單號',
+    '箱數',
     '出貨單預計出貨日',
     '實際出貨日',
     '收件人與電話',
@@ -53,30 +54,32 @@ test('14.37 出貨單對話框：單頭固定，出貨明細與歷程兩個頁�
   await expect(row).toContainText('會員卡（客製燙金）');
   await expect(row.locator('td').nth(2)).toContainText('3,000');
   await expect(row.locator('td').nth(3)).toContainText('3,000');
-  await expect(row.locator('td').nth(4)).toContainText('500');
+  await expect(row.locator('td').nth(4)).toContainText('600');
 
-  // 表下方包裝區：箱數、箱規、裝箱照片縮圖（只有檔名，顯示佔位圖，不顯示檔名），沒有重量
-  await expect(dialog).toContainText('箱數');
-  await expect(dialog).toContainText('B 箱（45×35×30）');
+  // 表下方：裝箱明細（逐箱箱序、箱規、裝箱照片縮圖，只有檔名，顯示佔位圖，不顯示檔名、所屬物流單、子單號）與物流單表格；沒有重量
+  await expect(dialog).toContainText('裝箱明細');
+  await expect(dialog).toContainText('順豐標準箱 B（50×40×35）');
+  await expect(dialog).toContainText('SF1400020601001');
+  await expect(dialog).toContainText('物流單編號');
+  await expect(dialog).toContainText('SH-2026-0601-001');
   await expect(dialog).not.toContainText('重量');
   await expect(dialog).toContainText('裝箱照片');
-  await expect(dialog.getByRole('img', { name: /裝箱照片/ })).toHaveCount(1);
+  await expect(dialog.getByRole('img', { name: /裝箱照片/ })).toHaveCount(5);
   await expect(dialog).not.toContainText('.jpg');
 
-  // 歷程：新到舊，五筆；每筆帶時間、操作人、前後值與附件縮圖
+  // 歷程：新到舊，出貨單五筆加物流單四筆共九筆；每筆帶時間、操作人、前後值與附件縮圖
   await dialog.getByRole('tab', { name: '歷程' }).click();
   const timeline = dialog.locator('.ant-timeline');
-  await expect(timeline.locator('.ant-timeline-item')).toHaveCount(5);
+  await expect(timeline.locator('.ant-timeline-item')).toHaveCount(9);
   const items = await timeline.locator('.ant-timeline-item').allInnerTexts();
-  expect(items[0]).toContain('送達確認');
-  expect(items[4]).toContain('建立出貨單');
   expect(items[0]).toContain('2026-06-19 09:00');
-  expect(items[0]).toContain('曾志偉');
-  expect(items[0]).toContain('運送中 → 已送達');
-  expect(items[2]).toContain('裝箱回報');
-  expect(items[2]).toContain('范姜宏');
-  await expect(timeline.locator('.ant-timeline-item').nth(0).getByRole('img')).toHaveCount(1);
-  await expect(timeline.locator('.ant-timeline-item').nth(2).getByRole('img')).toHaveCount(1);
+  expect(items[0]).toContain('物流單 SH-2026-0601-001');
+  expect(items[1]).toContain('物流單全數送達，出貨單轉已送達');
+  expect(items[1]).toContain('運送中 → 已送達');
+  expect(items[6]).toContain('裝箱回報');
+  expect(items[6]).toContain('范姜宏');
+  expect(items[8]).toContain('建立出貨單');
+  await expect(timeline.locator('.ant-timeline-item').nth(6).getByRole('img')).toHaveCount(5);
 });
 
 test('14.38 出貨單列表與訂單詳情出貨單頁籤有裝箱照片縮圖欄（列表）', async ({ page }) => {

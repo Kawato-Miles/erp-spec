@@ -380,10 +380,39 @@ export async function createDraftShipment(
   return newestShipmentNo(page);
 }
 
-/** 箱規下拉選第一個選項（舊的下拉即使關閉仍留在 DOM，選項清單須限定在當前可見的那個；點開後沒出現就再點一次） */
-export async function pickBoxSpec(page, dialog) {
+/**
+ * 在下拉裡選一個選項（舊的下拉即使關閉仍留在 DOM，選項清單須限定在當前可見的那個；點開後沒出現就再點一次）。
+ * @param {string} selector 下拉本體的選擇器（例：#bulk-box-spec）
+ * @param {string|RegExp} [text] 要選的選項文字；沒給就選第一個
+ */
+export async function pickFromSelect(page, dialog, selector, text) {
   await expect(async () => {
-    await dialog.locator('#box_spec').click({ force: true });
+    await dialog.locator(selector).click({ force: true });
+    const options = page
+      .locator('.ant-select-dropdown:visible')
+      .last()
+      .locator('.ant-select-item-option');
+    await (text ? options.filter({ hasText: text }).first() : options.first()).click({
+      timeout: 3000,
+    });
+  }).toPass({ timeout: 20000 });
+}
+
+/** 裝箱明細：「一次新增多箱」輸入箱數、選箱規（預設第一個）、上傳共用照片、按「一次新增」（每箱各存一份照片） */
+export async function addBoxesInBulk(page, dialog, { boxes = 2, spec, photo = '裝箱照.jpg' } = {}) {
+  await dialog.getByLabel('一次新增箱數').fill(String(boxes));
+  await pickFromSelect(page, dialog, '#bulk-box-spec', spec);
+  await dialog
+    .getByRole('group', { name: '一次新增共用照片' })
+    .locator('input[type="file"]')
+    .setInputFiles(fakePhoto(photo));
+  await dialog.getByRole('button', { name: '一次新增', exact: true }).click();
+}
+
+/** 裝箱明細表某一列（從 0 起）的箱規下拉選第一個選項 */
+export async function pickBoxSpec(page, dialog, rowIndex = 0) {
+  await expect(async () => {
+    await dialog.locator('.ant-table-tbody .ant-select').nth(rowIndex).click({ force: true });
     await page
       .locator('.ant-select-dropdown:visible')
       .last()
@@ -410,21 +439,72 @@ export async function fillPackingLines(dialog, lines) {
 }
 
 /**
- * 揀貨人員把一張未處理的出貨單走到待出貨（開始揀貨 → 裝箱回報）。
- * 預設單一明細（PI-2026-0820）；多條明細時用 lines 逐條給。
- * @param {{ pickedQty?: number, perBoxQty?: number, boxes?: number, lines?: Array }} options
+ * 揀貨人員把一張未處理的出貨單走到已裝箱（開始揀貨 → 裝箱回報）。
+ * 預設單一明細（PI-2026-0820）；多條明細時用 lines 逐條給。裝箱明細用「一次新增多箱」一次加 boxes 箱
+ * （同箱規、共用一張照片；箱規預設取該出貨方式的第一個）。
+ * @param {{ pickedQty?: number, perBoxQty?: number, boxes?: number, spec?: string|RegExp, lines?: Array }} options
  */
-export async function pickAndPack(page, shipmentNo, { pickedQty, perBoxQty = 50, boxes = 10, lines } = {}) {
+export async function pickAndPack(
+  page,
+  shipmentNo,
+  { pickedQty, perBoxQty = 50, boxes = 2, spec, lines } = {},
+) {
   // 兩步都在列上：「開始揀貨」彈確認框 → 「裝箱回報」開對話框填該步要填的欄位
   await shipmentRow(page, shipmentNo).getByRole('button', { name: '開始揀貨' }).click();
   await confirmBox(page).getByRole('button', { name: '開始揀貨' }).click();
   await expect(page.getByText(/已開始揀貨/).first()).toBeVisible();
   const dialog = await clickRowAction(page, shipmentNo, '裝箱回報');
   await fillPackingLines(dialog, lines ?? [{ pickedQty, perBoxQty }]);
-  // 「箱數」非 exact 比對時會命中「每箱幾個」之類含「箱」的標籤，須精確比對
-  await dialog.getByLabel('箱數', { exact: true }).fill(String(boxes));
-  await pickBoxSpec(page, dialog);
-  await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('裝箱照.jpg'));
+  await addBoxesInBulk(page, dialog, { boxes, spec });
   await dialog.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(page.getByText(/裝箱回報完成/).first()).toBeVisible();
+}
+
+// ── 第十二章共用：出貨單對話框裡的物流單 ──
+
+/** 關閉出貨單對話框（檢視用「關閉」、編輯用「取消」）；開啟後焦點尚未移進對話框時 Esc 會落空，所以不靠鍵盤 */
+export async function closeShipmentPanel(page) {
+  await shipmentPanel(page)
+    .getByRole('button', { name: /^(關\s*閉|取\s*消)$/ })
+    .click();
+  await expect(page.locator('.ant-modal-content:visible')).toHaveCount(0);
+}
+
+/** 出貨單對話框裡的「物流單」表格（表頭有「物流單編號」；裝箱明細表的欄名是「所屬物流單」，不會誤中） */
+export const logisticsTable = (dialog) =>
+  dialog.locator('.ant-table').filter({ hasText: '物流單編號' }).first();
+
+/** 物流單表格的資料列（從 0 起數） */
+export const logisticsRows = (dialog) => logisticsTable(dialog).locator('tbody tr.ant-table-row');
+
+/** 出貨單對話框裡的「裝箱明細」表格資料列 */
+export const boxRows = (dialog) =>
+  dialog.locator('.ant-table').filter({ hasText: '所屬物流單' }).first().locator('tbody tr.ant-table-row');
+
+/**
+ * 開出貨單對話框，按物流單表格第 nth 列（從 0 起）的某顆動作鈕，回它開出來的動作對話框
+ * （物流單層動作鈕會先關掉出貨單對話框再開動作對話框；重新同步與下載沒有對話框，不走這支）。
+ */
+export async function openLogisticsAction(page, shipmentNo, name, nth = 0) {
+  const panel = await openShipmentPanel(page, shipmentNo);
+  await logisticsRows(panel).nth(nth).getByRole('button', { name, exact: true }).click();
+  const dialog = actionDialog(page);
+  await expect(dialog).toBeVisible();
+  return dialog;
+}
+
+/** 開出貨單對話框，對物流單表格第 nth 列按「重新同步」times 次（每次模擬物流商回傳往前一格），最後關閉對話框 */
+export async function resyncLogistics(page, shipmentNo, { times = 1, nth = 0 } = {}) {
+  const panel = await openShipmentPanel(page, shipmentNo);
+  for (let i = 0; i < times; i += 1) {
+    await logisticsRows(panel).nth(nth).getByRole('button', { name: '重新同步', exact: true }).click();
+    await expect(page.getByText(/已重新同步/).last()).toBeVisible();
+  }
+  await closeShipmentPanel(page);
+}
+
+/** 出貨人員在列上按出貨動作（拋單、出貨確認、標記可自取）並確認 */
+export async function dispatchRow(page, shipmentNo, name, confirmName) {
+  const dialog = await clickRowAction(page, shipmentNo, name);
+  await dialog.getByRole('button', { name: confirmName }).click();
 }

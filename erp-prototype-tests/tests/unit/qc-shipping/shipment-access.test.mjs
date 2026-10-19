@@ -91,16 +91,23 @@ describe('12.28 出貨單業務端操作：接單業務、編輯分享成員、�
   });
 
   it('現場動作不隨訂單編輯權開放：業務、業務主管等看不到任何現場下一步，也沒有補附送達憑證', () => {
-    const states = ['未處理', '打包中', '待出貨', '運送中'];
+    const states = ['未處理', '打包中', '已裝箱', '運送中'];
+    const delivered = { status: '已送達', method: '新竹物流' };
+    const deliveredLogistics = { status: '已送達' };
     for (const [role] of [['sales'], ['consultant'], ...HELPERS]) {
       for (const status of states) {
         const options = nextStatusOptions({ role, shipment: { status, method: '新竹物流' } });
-        expect(options.filter((o) => o.status !== '已作廢')).toEqual([]);
+        expect(options.filter((o) => o.key !== 'void')).toEqual([]);
       }
-      expect(attachDeliveryProofOf({ role, shipment: { status: '已送達', method: '新竹物流' } }).allowed).toBe(false);
+      expect(
+        attachDeliveryProofOf({ role, shipment: delivered, logistics: deliveredLogistics }).allowed,
+      ).toBe(false);
     }
     // 補附送達憑證只給出貨人員（ACT-SHP-025）
-    expect(attachDeliveryProofOf({ role: 'shipper', shipment: { status: '已送達', method: '新竹物流' } }).allowed).toBe(true);
+    expect(
+      attachDeliveryProofOf({ role: 'shipper', shipment: delivered, logistics: deliveredLogistics })
+        .allowed,
+    ).toBe(true);
   });
 });
 

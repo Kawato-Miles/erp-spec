@@ -3,9 +3,12 @@ import { openAs } from '../_helpers.mjs';
 import {
   CHAIN4,
   clickRowAction,
+  closeShipmentPanel,
   createShipment,
   fakePhoto,
   gotoInAppSafe,
+  logisticsRows,
+  openLogisticsAction,
   openShipmentPanel,
   setupShippableState,
   shipmentRow,
@@ -230,8 +233,9 @@ test('12.30 業務主管開檢視側板：有編輯與補述客戶反映；訂�
   // 會計沒有訂單檢視，不經訂單頁籤；檢視層級以外的唯讀由 12.30 純函式驗
 });
 
-test('12.31 已送達的出貨單補附送達憑證只給出貨人員：接單業務、編輯分享成員、六個協助角色與揀貨人員都沒有入口；補附後狀態不變、歷程記補附人', async ({ page }) => {
-  // 起點：鏈一 SH-2026-0601（專車，已送達，ORD-2026-0601，接單業務洪嘉駿，陳映蓉為編輯層級分享成員）
+test('12.31 已送達的物流單補附送達憑證只給出貨人員：接單業務、編輯分享成員、六個協助角色與揀貨人員都沒有入口；補附後狀態不變、歷程記補附人', async ({ page }) => {
+  // 起點：鏈一 SH-2026-0601（順豐，已送達，ORD-2026-0601，接單業務洪嘉駿，陳映蓉為編輯層級分享成員）
+  // 補附送達憑證掛在物流單上，入口在出貨單對話框的物流單表格內
   const PROOF = '補附送達憑證';
   await openAs(page, '業務', SHIPMENTS);
   await expect(shipmentRow(page, 'SH-2026-0601')).toContainText('已送達');
@@ -241,12 +245,16 @@ test('12.31 已送達的出貨單補附送達憑證只給出貨人員：接單�
     await gotoInAppSafe(page, SHIPMENTS);
     await expect(shipmentRow(page, 'SH-2026-0601'), role).toContainText('已送達');
     await expect(rowButton(page, 'SH-2026-0601', PROOF), role).toHaveCount(0);
+    const roPanel = await openShipmentPanel(page, 'SH-2026-0601');
+    await expect(logisticsRows(roPanel).first(), role).toBeVisible();
+    await expect(roPanel.getByRole('button', { name: PROOF }), role).toHaveCount(0);
+    await closeShipmentPanel(page);
   }
 
-  // 出貨人員補附：單仍是已送達，歷程多一筆補附送達憑證並帶補附人曾志偉
+  // 出貨人員補附：單仍是已送達，物流單歷程多一筆補附送達憑證並帶補附人曾志偉
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, SHIPMENTS);
-  const dialog = await clickRowAction(page, 'SH-2026-0601', PROOF);
+  const dialog = await openLogisticsAction(page, 'SH-2026-0601', PROOF);
   await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('簽收照片-補.jpg'));
   await dialog.getByRole('button', { name: '送出憑證' }).click();
   await expect(page.getByText(/已補附送達憑證/).first()).toBeVisible();
