@@ -2,8 +2,11 @@ import { test, expect } from '@playwright/test';
 import { openAs } from '../_helpers.mjs';
 import {
   CHAIN4,
+  clickRowAction,
   createShipment,
+  fakePhoto,
   gotoInAppSafe,
+  openShipmentPanel,
   setupShippableState,
   shipmentRow,
   switchRoleSafe,
@@ -225,4 +228,31 @@ test('12.30 業務主管開檢視側板：有編輯與補述客戶反映；訂�
   await expect(tabDrawer.getByRole('button', { name: '編輯', exact: true })).toHaveCount(1);
 
   // 會計沒有訂單檢視，不經訂單頁籤；檢視層級以外的唯讀由 12.30 純函式驗
+});
+
+test('12.31 已送達的出貨單補附送達憑證只給出貨人員：接單業務、編輯分享成員、六個協助角色與揀貨人員都沒有入口；補附後狀態不變、歷程記補附人', async ({ page }) => {
+  // 起點：鏈一 SH-2026-0601（專車，已送達，ORD-2026-0601，接單業務洪嘉駿，陳映蓉為編輯層級分享成員）
+  const PROOF = '補附送達憑證';
+  await openAs(page, '業務', SHIPMENTS);
+  await expect(shipmentRow(page, 'SH-2026-0601')).toContainText('已送達');
+  const roles = ['業務', '業務（陳映蓉）', ...HELPER_ROLES, '揀貨人員'];
+  for (const role of roles) {
+    await switchRoleSafe(page, role);
+    await gotoInAppSafe(page, SHIPMENTS);
+    await expect(shipmentRow(page, 'SH-2026-0601'), role).toContainText('已送達');
+    await expect(rowButton(page, 'SH-2026-0601', PROOF), role).toHaveCount(0);
+  }
+
+  // 出貨人員補附：單仍是已送達，歷程多一筆補附送達憑證並帶補附人曾志偉
+  await switchRoleSafe(page, '出貨人員');
+  await gotoInAppSafe(page, SHIPMENTS);
+  const dialog = await clickRowAction(page, 'SH-2026-0601', PROOF);
+  await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('簽收照片-補.jpg'));
+  await dialog.getByRole('button', { name: '送出憑證' }).click();
+  await expect(page.getByText(/已補附送達憑證/).first()).toBeVisible();
+  await expect(shipmentRow(page, 'SH-2026-0601')).toContainText('已送達');
+  const panel = await openShipmentPanel(page, 'SH-2026-0601');
+  await panel.getByRole('tab', { name: '歷程' }).click();
+  const proofEvent = panel.locator('tr, li, .ant-timeline-item, .ant-list-item').filter({ hasText: PROOF }).first();
+  await expect(proofEvent).toContainText('曾志偉');
 });

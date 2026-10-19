@@ -16,7 +16,7 @@ async function search(page, keyword) {
   await page.waitForTimeout(300);
 }
 
-test('4.21 業務的印件列表只列自己負責與被分享訂單的印件，協助角色看全公司', async ({ page }) => {
+test('4.21 業務的印件列表只列自己負責與被分享訂單的印件，協助角色與印務看全公司', async ({ page }) => {
   test.setTimeout(180_000);
   // 業務乙：只看到被分享的 PI-2026-0820，看不到洪嘉駿負責的 PI-2026-0710
   await openAs(page, '業務（陳映蓉）', '/print-items');
@@ -37,4 +37,10 @@ test('4.21 業務的印件列表只列自己負責與被分享訂單的印件，
   await gotoInApp(page, '/print-items');
   await search(page, 'PI-2026-0710');
   await expect(page.getByText('PI-2026-0710', { exact: true }).first()).toBeVisible();
+
+  // 印務（ACT-VPRD-005 全公司）：PI-2026-0803 旗下唯一工單的負責印務是蔡明修，周建宏照樣列得到
+  await switchRole(page, '印務');
+  await gotoInApp(page, '/print-items');
+  await search(page, 'PI-2026-0803');
+  await expect(page.getByText('PI-2026-0803', { exact: true }).first()).toBeVisible();
 });

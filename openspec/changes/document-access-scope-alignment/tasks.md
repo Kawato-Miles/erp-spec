@@ -94,7 +94,7 @@
 | 11.30 | 十一 | 缺口處置、修正處置、補做、短出結案限工單編輯權（落目錄時 11.29 已被缺口處置數量檢核使用，順延為 11.30） | work-order〈非負責印務不能處置缺口〉〈編輯分享成員短出結案〉〈售後決議補做限工單編輯權〉 | unit |
 | 12.22 | 十二 | 出貨單列表跟著訂單；業務主管與協助角色全公司；生管、品檢人員無入口 | shipment〈業務的出貨單列表只列自己負責訂單的單〉〈業務主管與協助角色看全公司出貨單〉、document-access〈沒有出貨單檢視列的角色看不到出貨管理〉〈活動清單沒有列出的角色看不到操作鈕〉 | e2e |
 | 12.23 | 十二 | 協助角色建草稿、作廢；印務（編輯分享）建立並作廢；改派後新業務可處置；現場動作不開放 | shipment〈出貨單業務端操作的操作者依訂單編輯權〉全部 Scenario | unit（與 C18 同檔）＋e2e |
-| 12.24 | 十二 | 出貨人員補附送達憑證 | shipment〈出貨人員於已送達後補附憑證〉 | e2e |
+| 12.31 | 十二 | 出貨人員補附送達憑證（落目錄時 12.24 已被收尾判定使用、12.25 已被補附功能本體使用，順延為 12.31；功能本體由另一工作階段先落地，本節補權限對齊活動表與歷程斷言） | shipment〈出貨人員於已送達後補附憑證〉 | unit＋e2e |
 | 12.25 | 十二 | 售後服務單跟著訂單；會計與 Supervisor 有入口；會計只能看 | after-sales-ticket〈接單業務看得到同事代開的售後服務單〉〈會計與 Supervisor 有售後服務入口〉〈會計看得到但不能操作〉 | e2e |
 | 12.26 | 十二 | 業務主管協助編輯送出決議；印務主管建立售後服務單；非負責業務擋下建訂單異動 | after-sales-ticket〈業務主管協助編輯與送出決議〉〈全公司協助角色建立售後服務單〉〈非負責業務不能在售後服務單內建立訂單異動〉 | unit |
 | 14.41 | 十四 | 工單分享候選含業務與生管 | document-access〈印務把工單分享給業務〉〈生管會出現在工單分享候選〉 | e2e（與 C21 同檔） |
@@ -147,7 +147,7 @@
 - [x] 2.7 Prototype：訂單改派顯示條件改為「未取消」，並開放 Supervisor
 - [x] 2.8 Prototype：印件列表依訂單範圍過濾；移除審核業務主管途徑
 - [x] 2.9 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/02-order-setup tests/e2e/04-order-print-item tests/e2e/05-prepress-review tests/e2e/07-process-planning` 通過；`npx vitest run tests/unit/orders tests/unit/print-items` 通過
-- [ ] 2.10 提交 erp 與 Sens，訊息附 smoke 與模組結果
+- [x] 2.10 提交 erp 與 Sens，訊息附 smoke 與模組結果
 
 ## 3. 第三批：需求單
 
@@ -158,7 +158,7 @@
 - [x] 3.5 Prototype：改派開放 Supervisor；分享管理開放所有編輯分享成員
 - [x] 3.6 Prototype：複製需求單的新單接單業務改為執行者；頁籤名「分享成員」、欄名「評估印務主管」
 - [x] 3.7 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/01-quote` 通過；`npx vitest run tests/unit/quote` 通過
-- [ ] 3.8 提交 erp 與 Sens
+- [x] 3.8 提交 erp 與 Sens
 
 ## 4. 第四批：工單與生產
 
@@ -172,7 +172,7 @@
 - [x] 4.8 Prototype：工單詳情的報工、修正、作廢依工單編輯權；師傅修正只看報工人員、限仍看得到任務時，工作包改派後由生管更正
 - [x] 4.9 Prototype：缺口處置、補做、短出結案依工單編輯權
 - [x] 4.10 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/07-process-planning tests/e2e/08-process-review-deliver tests/e2e/09-planner-dispatch tests/e2e/10-report-transfer tests/e2e/14-query-ui` 通過；`npx vitest run tests/unit/work-orders tests/unit/production-floor` 通過
-- [ ] 4.11 提交 erp 與 Sens
+- [x] 4.11 提交 erp 與 Sens
 
 ## 5. 第五批：出貨、售後、品檢
 
@@ -183,7 +183,7 @@
 - [x] 5.5 Prototype：出貨單列表依訂單範圍；業務端操作依訂單編輯權，不看建單人
 - [x] 5.6 Prototype：售後服務單列表依訂單範圍（不看開立者）；編輯、送出決議、結案、建訂單異動依訂單編輯權；會計只能檢視
 - [x] 5.7 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/11-qc tests/e2e/12-shipping` 通過；`npx vitest run tests/unit/qc-shipping` 通過
-- [ ] 5.8 提交 erp 與 Sens
+- [x] 5.8 提交 erp 與 Sens
 
 ## 6. 第六批：帳務清單與輸出
 
@@ -192,15 +192,15 @@
 - [x] 6.3 Prototype：四張跨訂單清單依活動清單範圍，含被分享訂單；應收款項對業務、諮詢全公司
 - [x] 6.4 Prototype：匯出對帳明細給看得到應收款項清單的人；匯出待退款報表限業務主管、會計、Supervisor
 - [x] 6.5 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/03-payment` 通過；`npx vitest run tests/unit/payment` 通過
-- [ ] 6.6 提交 erp 與 Sens
+- [x] 6.6 提交 erp 與 Sens
 
 ## 7. 第七批：未實作操作補齊（依 design Q5，留在本變更最後做）
 
-- [ ] 7.1 測試先行：新增 2.28、7.48、12.24 的測試，確認先失敗
-- [ ] 7.2 Prototype：複製訂單（新單接單業務為執行者；帶入內容依既有〈訂單複製功能〉）
-- [ ] 7.3 Prototype：印務自行加開工單（負責人固定為加開者、送審時指定審核主管）
-- [ ] 7.4 Prototype：出貨人員補附送達憑證
-- [ ] 7.5 驗證：`npm run test:smoke` 與 `npm run test:module -- tests/e2e/02-order-setup tests/e2e/07-process-planning tests/e2e/12-shipping` 通過
+- [x] 7.1 測試先行：新增 2.28、7.48、12.31 的測試（12.31 因功能本體已落地，先就通過）；2.28、7.48 確認先失敗
+- [x] 7.2 Prototype：複製訂單（新單接單業務為執行者；帶入內容依既有〈訂單複製功能〉）
+- [x] 7.3 Prototype：印務自行加開工單（負責人固定為加開者、送審時指定審核主管）
+- [x] 7.4 Prototype：出貨人員補附送達憑證（功能本體由另一工作階段先落地；本批確認權限符合 ACT-SHP-025，不重做）
+- [x] 7.5 驗證：`npm run test:smoke` 與 `npm run test:module -- tests/e2e/02-order-setup tests/e2e/07-process-planning tests/e2e/12-shipping` 通過
 - [ ] 7.6 提交 erp 與 Sens
 
 ## 8. 收尾
