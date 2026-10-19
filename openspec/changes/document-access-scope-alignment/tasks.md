@@ -117,36 +117,36 @@
 
 ## 0. 前置
 
-- [ ] 0.1 確認 erp repo 在 `prototype/production-stage` 分支、工作區乾淨；記下起點提交（`git -C /Users/b-f-03-029/erp rev-parse HEAD` 有輸出）
+- [x] 0.1 確認 erp repo 在 `prototype/production-stage` 分支、工作區乾淨；記下起點提交（`git -C /Users/b-f-03-029/erp rev-parse HEAD` 有輸出）
 - [x] 0.2 design § Open Questions 的 Q1 至 Q5 已依 grill G66 決議，不另開 OQ 卡
-- [ ] 0.3 讀 erp repo skill `prototype-from-prompt`，後續每批 Prototype 實作依該 skill 執行
-- [ ] 0.4 在 `T/` 跑 `npm test` 取得基準（記下失敗數，作為各批比對）
+- [x] 0.3 讀 erp repo skill `prototype-from-prompt`，後續每批 Prototype 實作依該 skill 執行
+- [x] 0.4 在 `T/` 跑 `npm test` 取得基準（記下失敗數，作為各批比對）
 
 ## 1. 第一批：共用判斷、側欄、直連、分享候選、用詞
 
-- [ ] 1.1 mock：依測試影響清單一、第 1、2、8、9、10、11 項改 `P/MOCK-DATA-CHAIN.md`，再改三個模組的 `mock-data.js` 與 `P/_lib/sessionStore.js` 標籤
-- [ ] 1.2 測試先行：改 C25（3.11）、C28（9.12 目錄）、C29（10.40、14.10、14.28 目錄與 `transfer-tickets.spec.mjs:465`）
-- [ ] 1.3 測試先行：新增 2.20、2.21、2.26、2.27、14.41、14.42 的測試；跑 `npm run test:module -- tests/e2e/02-order-setup tests/e2e/14-query-ui` 確認新測試先失敗
-- [ ] 1.4 測試先行：新增一則 unit 測試，抽樣比對 Prototype 活動表與活動清單卡（至少訂單審核、出貨、製程規劃三張卡的列數與角色組合）
-- [ ] 1.5 Prototype：建立集中權限判斷與活動表資料（design D1 至 D4），先不改各模組呼叫
-- [ ] 1.6 Prototype：側欄入口改由集中判斷產生（D5）；會計移除訂單管理，款項清單的訂單連結對會計不顯示
-- [ ] 1.7 Prototype：需求單、訂單、印件、工單、出貨單、售後服務單詳情頁加進入判斷，無檢視組合導回預設頁
-- [ ] 1.8 Prototype：三種單據的分享候選改為依活動列可分享的角色（D6、D7）
-- [ ] 1.9 Prototype：用詞修正（Supervisor 標籤、移除權限名稱提示）
-- [ ] 1.10 驗證：`npm run impact` 判影響全站，跑 `npm test` 全套；1.2 至 1.4 的測試全部通過、其餘失敗數不高於 0.4 基準
-- [ ] 1.11 提交 erp 與 Sens，訊息附全套結果
+- [x] 1.1 mock：依測試影響清單一、第 1、2、8、9、10、11 項改 `P/MOCK-DATA-CHAIN.md`，再改三個模組的 `mock-data.js` 與 `P/_lib/sessionStore.js` 標籤
+- [x] 1.2 測試先行：改 C25（3.11）、C28（9.12 目錄）、C29（10.40、14.10、14.28 目錄與 `transfer-tickets.spec.mjs:465`）
+- [x] 1.3 測試先行：新增 2.20、2.21、2.26、2.27、14.41、14.42 的測試；跑 `npm run test:module -- tests/e2e/02-order-setup tests/e2e/14-query-ui` 確認新測試先失敗
+- [x] 1.4 測試先行：新增一則 unit 測試，抽樣比對 Prototype 活動表與活動清單卡（至少訂單審核、出貨、製程規劃三張卡的列數與角色組合）
+- [x] 1.5 Prototype：建立集中權限判斷與活動表資料（design D1 至 D4），先不改各模組呼叫
+- [x] 1.6 Prototype：側欄入口改由集中判斷產生（D5）；會計移除訂單管理，款項清單的訂單連結對會計不顯示
+- [x] 1.7 Prototype：需求單、訂單、印件、工單、出貨單、售後服務單詳情頁加進入判斷，無檢視組合導回預設頁
+- [x] 1.8 Prototype：三種單據的分享候選改為依活動列可分享的角色（D6、D7）
+- [x] 1.9 Prototype：用詞修正（Supervisor 標籤、移除權限名稱提示）
+- [x] 1.10 驗證：`npm run impact` 判影響全站，跑 `npm test` 全套；1.2 至 1.4 的測試全部通過、其餘失敗數不高於 0.4 基準
+- [x] 1.11 提交 erp 與 Sens，訊息附全套結果
 
 ## 2. 第二批：訂單與印件
 
-- [ ] 2.1 mock：依測試影響清單一、第 3、4 項改 `P/MOCK-DATA-CHAIN.md` 與 `P/orders/mock-data.js`
-- [ ] 2.2 測試先行：改 C11、C12、C13、C14、C15、C16、C17、C24、C27；情境目錄第二個 7.27 改編 7.44
-- [ ] 2.3 測試先行：新增 2.22、2.23、2.24、2.25、4.21、4.22、4.23、5.18、7.49、14.43 的測試；跑 `npm run test:module -- tests/e2e/02-order-setup tests/e2e/04-order-print-item tests/e2e/07-process-planning` 確認新測試先失敗
-- [ ] 2.4 Prototype：訂單詳情各頁籤的編輯入口改由集中判斷（不再只看 `readOnly = isOrderTerminal`）
-- [ ] 2.5 Prototype：送審、取消、手動推進、已送報價單、確認回簽、上傳回簽、新增與刪除印件改由集中判斷
-- [ ] 2.6 Prototype：印件審稿面操作（討論串、上傳與補件、確認可製作、退回重審、打樣結果、取消製作、規格備註與包裝備註、稿件備註）改由集中判斷
-- [ ] 2.7 Prototype：訂單改派顯示條件改為「未取消」，並開放 Supervisor
-- [ ] 2.8 Prototype：印件列表依訂單範圍過濾；移除審核業務主管途徑
-- [ ] 2.9 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/02-order-setup tests/e2e/04-order-print-item tests/e2e/05-prepress-review tests/e2e/07-process-planning` 通過；`npx vitest run tests/unit/orders tests/unit/print-items` 通過
+- [x] 2.1 mock：依測試影響清單一、第 3、4 項改 `P/MOCK-DATA-CHAIN.md` 與 `P/orders/mock-data.js`
+- [x] 2.2 測試先行：改 C11、C12、C13、C14、C15、C16、C17、C24、C27；情境目錄第二個 7.27 改編 7.44
+- [x] 2.3 測試先行：新增 2.22、2.23、2.24、2.25、4.21、4.22、4.23、5.18、7.49、14.43 的測試；跑 `npm run test:module -- tests/e2e/02-order-setup tests/e2e/04-order-print-item tests/e2e/07-process-planning` 確認新測試先失敗
+- [x] 2.4 Prototype：訂單詳情各頁籤的編輯入口改由集中判斷（不再只看 `readOnly = isOrderTerminal`）
+- [x] 2.5 Prototype：送審、取消、手動推進、已送報價單、確認回簽、上傳回簽、新增與刪除印件改由集中判斷
+- [x] 2.6 Prototype：印件審稿面操作（討論串、上傳與補件、確認可製作、退回重審、打樣結果、取消製作、規格備註與包裝備註、稿件備註）改由集中判斷
+- [x] 2.7 Prototype：訂單改派顯示條件改為「未取消」，並開放 Supervisor
+- [x] 2.8 Prototype：印件列表依訂單範圍過濾；移除審核業務主管途徑
+- [x] 2.9 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/02-order-setup tests/e2e/04-order-print-item tests/e2e/05-prepress-review tests/e2e/07-process-planning` 通過；`npx vitest run tests/unit/orders tests/unit/print-items` 通過
 - [ ] 2.10 提交 erp 與 Sens，訊息附 smoke 與模組結果
 
 ## 3. 第三批：需求單

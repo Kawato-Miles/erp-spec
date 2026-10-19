@@ -134,16 +134,21 @@ test('4.19 可刪到零件、差額提示不擋刪除、出貨單草稿自動移
   }
 });
 
-test('4.20 成立後、線上單等待付款、印務主管都看不到刪除操作', async ({ page }) => {
+test('4.20 成立後與線上單等待付款看不到刪除操作；成立前印務主管看得到、非負責業務看不到', async ({ page }) => {
   test.setTimeout(150_000);
-  // 印務主管打開草稿單 ORD-2026-0814 的訂單項目：看不到刪除
+  // 印務主管（全公司協助角色）打開草稿單 ORD-2026-0814 的訂單項目：看得到刪除
   await openAs(page, '印務主管', `/orders/detail?id=${ORDER_NO}&tab=printItems`);
   await expect(itemRow(page, '名片')).toBeVisible();
-  await expect(page.getByRole('button', { name: '刪除印件' })).toHaveCount(0);
+  await expect(itemRow(page, '名片').getByRole('button', { name: '刪除印件' })).toHaveCount(1);
 
-  // 對照：同一張草稿單由接單業務打開時看得到刪除
+  // 對照：接單業務打開時同樣看得到刪除
   await switchRole(page, '業務');
   await expect(itemRow(page, '名片').getByRole('button', { name: '刪除印件' })).toHaveCount(1);
+
+  // 非負責、不在分享成員的業務乙：直連被導回，看不到這張訂單的任何印件
+  await switchRole(page, '業務（陳映蓉）');
+  await expect(page.getByRole('button', { name: '刪除印件' })).toHaveCount(0);
+  await switchRole(page, '業務');
 
   // 已成立的 ORD-2026-0710（製作中）：印件列沒有刪除，「取消製作」（轉已棄用）照樣可用
   await gotoInApp(page, '/orders');

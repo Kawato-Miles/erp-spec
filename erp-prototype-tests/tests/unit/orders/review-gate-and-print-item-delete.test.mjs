@@ -28,7 +28,7 @@ const ALL_MISSING_LABELS = ['訂單須知', '交貨備註', '付款備註', '收
 const initialOrders = useOrdersStore.getState().orders;
 const store = () => useOrdersStore.getState();
 const orderOf = (id = ORDER_ID) => store().orders.find((o) => o.id === id);
-const actAs = (role) => useSessionStore.setState({ role });
+const actAs = (role) => useSessionStore.setState({ role, userName: null });
 const lastActivity = (id = ORDER_ID) => orderOf(id).activities.at(-1);
 
 // 一期收款項目（只填送審要看的欄位，其餘沿用新增時的預設）
@@ -204,18 +204,37 @@ describe('2.16 業務主管核准當下重檢送審條件', () => {
   });
 });
 
-describe('2.17 送審鈕只給可編輯角色；草稿與待審兩態修改直接儲存不回審', () => {
-  it('草稿態的「送主管審核」只對負責該單的業務或諮詢顯示', () => {
+describe('2.17 送審鈕只給有訂單編輯權的人；草稿與待審兩態修改直接儲存不回審', () => {
+  it('草稿態的「送主管審核」對負責該單的業務或諮詢、編輯層級分享成員與六個全公司協助角色顯示', () => {
     const draft = orderOf();
     expect(perms.canSubmitOrderForReview(draft, 'sales', '洪嘉駿')).toBe(true);
     expect(perms.canSubmitOrderForReview({ ...draft, sales_person: '張惠雯' }, 'consultant', '張惠雯')).toBe(true);
+    // 六個全公司協助角色（活動 ACT-APV-012）：業務主管乙不是該單的審核業務主管也可協助送審
     for (const [role, name] of [
       ['sales_manager', '林雅婷'],
+      ['order_manager', '黃聖雯'],
       ['print_manager', '吳國豪'],
-      ['accountant', '陳美玲'],
+      ['print_officer', '周建宏'],
+      ['reviewer_supervisor', '魏彣軒'],
+      ['supervisor', '王大明'],
     ]) {
-      expect(perms.canSubmitOrderForReview(draft, role, name)).toBe(false);
+      expect(perms.canSubmitOrderForReview(draft, role, name)).toBe(true);
     }
+    // 會計沒有訂單編輯權，維持不可
+    expect(perms.canSubmitOrderForReview(draft, 'accountant', '陳美玲')).toBe(false);
+  });
+
+  it('編輯層級的分享成員可送審，檢視層級與不在名單上的業務不可', () => {
+    const shared = {
+      ...orderOf(),
+      shared_members: [
+        { name: '蘇怡君', level: 'edit' },
+        { name: '張惠雯', level: 'view' },
+      ],
+    };
+    expect(perms.canSubmitOrderForReview(shared, 'consultant', '蘇怡君')).toBe(true);
+    expect(perms.canSubmitOrderForReview(shared, 'consultant', '張惠雯')).toBe(false);
+    expect(perms.canSubmitOrderForReview(shared, 'sales', '陳映蓉')).toBe(false);
   });
 
   it('草稿以外的狀態不顯示送審鈕', () => {
@@ -224,15 +243,26 @@ describe('2.17 送審鈕只給可編輯角色；草稿與待審兩態修改直�
     }
   });
 
-  it('非可編輯角色發起的送審請求回權限不足，訂單維持草稿', () => {
+  it('無訂單編輯權的人發起的送審請求回權限不足，訂單維持草稿', () => {
     seedOrder(completeDraft());
-    for (const role of ['sales_manager', 'print_manager', 'accountant']) {
-      actAs(role);
-      const result = store().submitForReview(ORDER_ID);
-      expect(result.ok).toBe(false);
-      expect(result.reason).toMatch(/權限不足/);
-      expect(orderOf().status).toBe('草稿');
-    }
+    // 會計沒有訂單編輯權；業務乙（陳映蓉）不是接單業務、也不在分享成員
+    actAs('accountant');
+    let result = store().submitForReview(ORDER_ID);
+    expect(result.ok).toBe(false);
+    expect(result.reason).toMatch(/權限不足/);
+    useSessionStore.setState({ role: 'sales', userName: '陳映蓉' });
+    result = store().submitForReview(ORDER_ID);
+    expect(result.ok).toBe(false);
+    expect(result.reason).toMatch(/權限不足/);
+    expect(orderOf().status).toBe('草稿');
+  });
+
+  it('全公司協助角色（印務主管）送審成功，活動紀錄記實際操作者', () => {
+    seedOrder(completeDraft());
+    actAs('print_manager');
+    expect(store().submitForReview(ORDER_ID)).toMatchObject({ ok: true });
+    expect(orderOf().status).toBe('待業務主管審核');
+    expect(lastActivity()).toMatchObject({ actor: '吳國豪', action: '送主管審核' });
   });
 
   it('待審期間改成交單價、收款條件備註與第二期預計收款日：直接儲存、維持待審、留活動紀錄、變更次數加 1', () => {
@@ -306,7 +336,7 @@ describe('4.19 可刪到零件、差額提示不擋刪除', () => {
   });
 });
 
-describe('4.20 可刪時點與角色：成立後、線上單等待付款、印務主管都不提供刪除', () => {
+describe('4.20 可刪時點與角色：成立後、線上單等待付款不提供刪除；印務主管成立前可刪', () => {
   const offline = (status) => ({ ...orderOf(), order_type: '線下單', status });
 
   it('線下單審核段四格（草稿、待業務主管審核、審核通過、報價待回簽）業務可刪', () => {
@@ -326,10 +356,12 @@ describe('4.20 可刪時點與角色：成立後、線上單等待付款、印�
     expect(perms.canDeletePrintItem(online, 'sales', '洪嘉駿')).toBe(false);
   });
 
-  it('負責該訂單的諮詢在成立前看得到刪除；印務主管看不到', () => {
+  it('負責該訂單的諮詢在成立前看得到刪除；印務主管（全公司協助角色）也看得到；非負責業務看不到', () => {
     const consultantOrder = { ...offline('草稿'), sales_person: '張惠雯' };
     expect(perms.canDeletePrintItem(consultantOrder, 'consultant', '張惠雯')).toBe(true);
-    expect(perms.canDeletePrintItem(offline('草稿'), 'print_manager', '吳國豪')).toBe(false);
+    expect(perms.canDeletePrintItem(offline('草稿'), 'print_manager', '吳國豪')).toBe(true);
+    expect(perms.canDeletePrintItem(offline('草稿'), 'sales', '陳映蓉')).toBe(false);
+    expect(perms.canDeletePrintItem(offline('草稿'), 'accountant', '陳美玲')).toBe(false);
   });
 
   it('已回簽的訂單直接呼叫刪除被擋下，印件原樣留著', () => {
@@ -338,9 +370,16 @@ describe('4.20 可刪時點與角色：成立後、線上單等待付款、印�
     expect(orderOf().print_items).toHaveLength(3);
   });
 
-  it('印務主管直接呼叫刪除被擋下，印件原樣留著', () => {
-    actAs('print_manager');
+  it('非負責業務直接呼叫刪除被擋下，印件原樣留著', () => {
+    useSessionStore.setState({ role: 'sales', userName: '陳映蓉' });
     expect(store().deletePrintItem(ORDER_ID, STICKER_ID).ok).toBe(false);
     expect(orderOf().print_items).toHaveLength(3);
+  });
+
+  it('印務主管直接呼叫刪除成立，活動紀錄記印務主管', () => {
+    actAs('print_manager');
+    expect(store().deletePrintItem(ORDER_ID, STICKER_ID).ok).toBe(true);
+    expect(orderOf().print_items).toHaveLength(2);
+    expect(lastActivity()).toMatchObject({ actor: '吳國豪', action: '刪除印件 貼紙' });
   });
 });

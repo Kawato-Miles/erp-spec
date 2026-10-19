@@ -19,12 +19,29 @@ import {
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/_lib/order-amounts.js';
 
 describe('2.1／2.2 訂單四步接力與核可（把關條件）', () => {
-  it('取消訂單限業務，且限非終態；訂單完成與已取消兩個終態都擋下', () => {
-    expect(canCancelOrder({ status: '草稿' }, 'sales')).toBe(true);
-    expect(canCancelOrder({ status: '待業務主管審核' }, 'sales')).toBe(true);
-    expect(canCancelOrder({ status: '訂單完成' }, 'sales')).toBe(false);
-    expect(canCancelOrder({ status: '已取消' }, 'sales')).toBe(false);
-    expect(canCancelOrder({ status: '草稿' }, 'sales_manager')).toBe(false);
+  it('取消訂單給有訂單編輯權的人，且限非終態；訂單完成與已取消兩個終態都擋下', () => {
+    const own = (status) => ({ status, sales_person: '洪嘉駿' });
+    expect(canCancelOrder(own('草稿'), 'sales', '洪嘉駿')).toBe(true);
+    expect(canCancelOrder(own('待業務主管審核'), 'sales', '洪嘉駿')).toBe(true);
+    expect(canCancelOrder(own('訂單完成'), 'sales', '洪嘉駿')).toBe(false);
+    expect(canCancelOrder(own('已取消'), 'sales', '洪嘉駿')).toBe(false);
+    // 業務主管是全公司協助角色，可取消；非負責業務、會計不可
+    expect(canCancelOrder(own('草稿'), 'sales_manager', '林雅婷')).toBe(true);
+    expect(canCancelOrder(own('草稿'), 'sales', '陳映蓉')).toBe(false);
+    expect(canCancelOrder(own('草稿'), 'accountant', '陳美玲')).toBe(false);
+  });
+
+  it('編輯層級的分享成員可取消；檢視層級的分享成員不可', () => {
+    const order = {
+      status: '製作中',
+      sales_person: '洪嘉駿',
+      shared_members: [
+        { name: '蘇怡君', level: 'edit' },
+        { name: '張惠雯', level: 'view' },
+      ],
+    };
+    expect(canCancelOrder(order, 'consultant', '蘇怡君')).toBe(true);
+    expect(canCancelOrder(order, 'consultant', '張惠雯')).toBe(false);
   });
 });
 
@@ -155,7 +172,7 @@ describe('2.11 改派審核業務主管的寫入（store 再驗一次狀態）',
   });
 });
 
-describe('12.17 出貨單建單人：接單業務或編輯（代理）成員，角色為業務或諮詢', () => {
+describe('12.17 出貨單草稿建單人：接單業務、編輯（代理）成員與六個全公司協助角色', () => {
   const order = {
     sales_person: '洪嘉駿',
     shared_members: [
@@ -178,9 +195,23 @@ describe('12.17 出貨單建單人：接單業務或編輯（代理）成員，�
     expect(canOperateOrderShipments({ sales_person: '張惠雯' }, 'consultant', '張惠雯')).toBe(true);
   });
 
-  it('業務與諮詢以外的角色一律不可建', () => {
-    for (const role of ['sales_manager', 'order_manager', 'picker', 'shipper']) {
-      expect(canOperateOrderShipments(order, role, '洪嘉駿')).toBe(false);
+  it('業務主管、訂單管理人等六個全公司協助角色可建草稿；揀貨人員、出貨人員不可（現場動作不開放）', () => {
+    for (const [role, name] of [
+      ['sales_manager', '林雅婷'],
+      ['order_manager', '黃聖雯'],
+      ['print_manager', '吳國豪'],
+      ['print_officer', '周建宏'],
+      ['reviewer_supervisor', '魏彣軒'],
+      ['supervisor', '王大明'],
+    ]) {
+      expect(canOperateOrderShipments(order, role, name)).toBe(true);
+    }
+    for (const [role, name] of [
+      ['picker', '范姜宏'],
+      ['shipper', '曾志偉'],
+      ['accountant', '陳美玲'],
+    ]) {
+      expect(canOperateOrderShipments(order, role, name)).toBe(false);
     }
   });
 });

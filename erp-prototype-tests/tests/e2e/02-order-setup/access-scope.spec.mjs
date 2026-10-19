@@ -1,6 +1,15 @@
 import { test, expect } from '@playwright/test';
 import { gotoInApp, openAs, switchRole } from '../_helpers.mjs';
-import { button, dialog, openByNo, openTab } from './_local.mjs';
+import {
+  button,
+  dialog,
+  openByNo,
+  openTab,
+  orderHeader,
+  panelSection,
+  pickOption,
+  submit0814ForReview,
+} from './_local.mjs';
 
 // 單據權責修正（wiki 活動清單卡為判準，OpenSpec change document-access-scope-alignment 第一批）：
 // 側欄入口、列表範圍、詳情頁直連與分享候選，都依檢視活動清單的同一份活動列判定。
@@ -116,4 +125,88 @@ test('2.27 訂單的分享候選：業務、諮詢與全公司協助角色，不
   for (const name of ['陳美玲', '許文傑', '鄭宇翔', '洪嘉駿', '張惠雯']) {
     expect(titles, `候選不應含 ${name}`).not.toContain(name);
   }
+});
+
+test('2.20 六個全公司協助角色在訂單詳情有編輯入口：業務主管、訂單管理人、印務主管、印務、審稿主管、Supervisor', async ({ page }) => {
+  test.setTimeout(240_000);
+  // 起點：鏈二 ORD-2026-0710（製作中，接單業務洪嘉駿），六個角色都不是接單業務、也不是分享成員
+  await openAs(page, '業務主管', '/orders');
+  await openByNo(page, 'ORD-2026-0710');
+  for (const role of ['業務主管', '訂單管理人', '印務主管', '印務', '審稿主管', 'Supervisor']) {
+    await switchRole(page, role);
+    await openTab(page, '資訊');
+    // 訂單備註、發票與收款兩塊的編輯鈕都在（協助角色做得到接單業務能做的操作）
+    await expect(button(panelSection(page, '訂單備註'), '編輯'), `${role} 訂單備註編輯`).toBeVisible();
+    await expect(button(panelSection(page, '發票與收款'), '編輯'), `${role} 發票與收款編輯`).toBeVisible();
+  }
+  // 反向：會計直連被導回（見上一則），審稿人員沒有訂單檢視活動，停在詳情頁被導回
+  await switchRole(page, '審稿人員');
+  await expect(page).not.toHaveURL(/\/orders\/detail/, { timeout: 15_000 });
+});
+
+// 在分享頁籤新增一位分享成員並指定層級
+async function shareOrderTo(page, name, levelLabel) {
+  await openTab(page, '分享');
+  await button(page, '新增分享成員').click();
+  const addPanel = dialog(page);
+  await pickOption(page, addPanel.locator('.ant-select').nth(0), name);
+  await pickOption(page, addPanel.locator('.ant-select').nth(1), levelLabel);
+  await button(addPanel, '新增').click();
+  await expect(page.getByText('已新增分享成員').last()).toBeVisible();
+}
+
+test('2.23 諮詢乙被分享（編輯）他人的草稿訂單後可送主管審核；業務乙被分享後直連可進', async ({ page }) => {
+  test.setTimeout(240_000);
+  // 起點：鏈八 ORD-2026-0814（草稿，接單業務洪嘉駿）。前置：接單業務把訂單以編輯（代理）分享給諮詢乙蘇怡君與業務乙陳映蓉
+  await openAs(page, '業務', '/orders');
+  await openByNo(page, 'ORD-2026-0814');
+  await shareOrderTo(page, '蘇怡君', '編輯（代理）');
+  await shareOrderTo(page, '陳映蓉', '編輯（代理）');
+
+  // 業務乙停在這張訂單的詳情頁：被分享後可進，畫面不導回，送主管審核鈕顯示（條件不齊時停用）
+  await switchRole(page, '業務（陳映蓉）');
+  await expect(page).toHaveURL(/\/orders\/detail/);
+  await expect(orderHeader(page)).toContainText('ORD-2026-0814');
+  await expect(button(page, '送主管審核')).toHaveCount(1);
+
+  // 諮詢乙補齊送審條件並送主管審核，訂單推進至待業務主管審核，活動紀錄記實際操作者
+  await switchRole(page, '諮詢（蘇怡君）');
+  await submit0814ForReview(page);
+  await openTab(page, '活動紀錄');
+  await expect(page.locator('.ant-timeline-item-content').filter({ hasText: '送主管審核' }).first()).toContainText('蘇怡君');
+});
+
+test('2.25 訂單改派：Supervisor 與業務主管有入口、訂單完成可改派、已取消沒有入口、其他角色看不到', async ({ page }) => {
+  test.setTimeout(300_000);
+  const reassign = () => page.getByRole('button', { name: '改派' });
+  // 起點：鏈二 ORD-2026-0710（製作中）
+  await openAs(page, '業務主管', '/orders');
+  await openByNo(page, 'ORD-2026-0710');
+  await expect(reassign()).toHaveCount(1);
+  await switchRole(page, 'Supervisor');
+  await expect(reassign()).toHaveCount(1);
+  // 業務、印務主管、訂單管理人、審稿主管雖看得到訂單、也能編輯，都沒有改派入口（管理類動作不隨編輯權開放）
+  for (const role of ['業務', '印務主管', '訂單管理人', '審稿主管']) {
+    await switchRole(page, role);
+    await expect(reassign(), role).toHaveCount(0);
+  }
+
+  // 訂單完成：鏈一 ORD-2026-0601 仍可改派
+  await switchRole(page, '業務主管');
+  await gotoInApp(page, '/orders');
+  await openByNo(page, 'ORD-2026-0601');
+  await expect(orderHeader(page)).toContainText('訂單完成');
+  await expect(reassign()).toHaveCount(1);
+  await expect(reassign()).toBeEnabled();
+
+  // 已取消：鏈八 ORD-2026-0814 取消後，業務主管與 Supervisor 都沒有改派入口
+  await gotoInApp(page, '/orders');
+  await openByNo(page, 'ORD-2026-0814');
+  await expect(reassign().first()).toBeVisible();
+  await button(page, '取消訂單').click();
+  await page.locator('.ant-modal-confirm-btns').getByRole('button', { name: /確\s*定/ }).click();
+  await expect(orderHeader(page)).toContainText('已取消');
+  await expect(reassign()).toHaveCount(0);
+  await switchRole(page, 'Supervisor');
+  await expect(reassign()).toHaveCount(0);
 });

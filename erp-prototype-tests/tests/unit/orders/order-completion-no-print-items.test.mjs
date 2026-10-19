@@ -34,7 +34,7 @@ const STEPS = [
 
 beforeEach(() => {
   useOrdersStore.setState({ orders: initialOrders });
-  useSessionStore.setState({ role: 'sales' });
+  useSessionStore.setState({ role: 'sales', userName: null });
 });
 
 describe('2.19 沒有任何印件與全數棄用分開判定', () => {
@@ -65,7 +65,7 @@ describe('2.19 沒有任何印件與全數棄用分開判定', () => {
 
   it('沒有任何印件的訂單到出貨中仍不自動完成，要靠手動推進', () => {
     expect(evaluateOrderCompletion([], '出貨中').completable).toBe(false);
-    expect(canAdvanceOrderStatus({ status: '出貨中' }, 'sales')).toBe(true);
+    expect(canAdvanceOrderStatus({ status: '出貨中', sales_person: '洪嘉駿' }, 'sales', '洪嘉駿')).toBe(true);
     expect(nextOrderStatus('出貨中')).toBe('訂單完成');
   });
 });
@@ -81,7 +81,7 @@ describe('2.19 業務以手動推進逐格推到訂單完成', () => {
     }
     // 終態之後沒有下一格，手動推進不再提供
     expect(nextOrderStatus('訂單完成')).toBeNull();
-    expect(canAdvanceOrderStatus(orderOf(), 'sales')).toBe(false);
+    expect(canAdvanceOrderStatus(orderOf(), 'sales', '洪嘉駿')).toBe(false);
   });
 
   it('每一格在活動紀錄留一筆：推進人、時間、推進前後狀態', () => {
@@ -99,7 +99,23 @@ describe('2.19 業務以手動推進逐格推到訂單完成', () => {
     expect(orderOf().activities).toHaveLength(before + STEPS.length);
   });
 
-  it('手動推進限業務：業務主管發起不推進', () => {
-    expect(canAdvanceOrderStatus(orderOf(), 'sales_manager')).toBe(false);
+  it('手動推進給有訂單編輯權的人：業務主管（全公司協助角色）可推；非負責業務、會計不可', () => {
+    const order = { ...orderOf(), status: '出貨中' };
+    expect(canAdvanceOrderStatus(order, 'sales_manager', '林雅婷')).toBe(true);
+    expect(canAdvanceOrderStatus(order, 'order_manager', '黃聖雯')).toBe(true);
+    expect(canAdvanceOrderStatus(order, 'sales', '陳映蓉')).toBe(false);
+    expect(canAdvanceOrderStatus(order, 'accountant', '陳美玲')).toBe(false);
+  });
+
+  it('業務主管直接推進成功，活動紀錄記業務主管；非負責業務直接呼叫被擋下、狀態不變', () => {
+    useOrdersStore.setState({
+      orders: store().orders.map((o) => (o.id === ORDER_ID ? { ...o, status: '出貨中' } : o)),
+    });
+    useSessionStore.setState({ role: 'sales', userName: '陳映蓉' });
+    expect(store().advanceOrderStatus(ORDER_ID).ok).toBe(false);
+    expect(orderOf().status).toBe('出貨中');
+    useSessionStore.setState({ role: 'sales_manager', userName: null });
+    expect(store().advanceOrderStatus(ORDER_ID)).toMatchObject({ ok: true, to: '訂單完成' });
+    expect(orderOf().activities.at(-1).actor).toBe('林雅婷');
   });
 });

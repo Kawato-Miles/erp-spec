@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs, switchRole } from '../_helpers.mjs';
+import { gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 import {
   activityItem,
   addInstallment,
@@ -13,6 +13,7 @@ import {
   editPaymentTermsNote,
   ORDER_0814_DELIVERY_NOTE,
   ORDER_0814_TERMS_NOTE,
+  openByNo,
   openTab,
   orderHeader,
   pickDate,
@@ -182,16 +183,23 @@ test('2.16 業務主管核准畫面帶出四格備註與各期收款項目，核
   await expect(orderHeader(page)).toContainText('審核通過');
 });
 
-test('2.17 草稿與待審兩態修改直接儲存不回審，只有可編輯角色看得到送審鈕', async ({ page }) => {
+test('2.17 草稿與待審兩態修改直接儲存不回審，只有有訂單編輯權的人看得到送審鈕', async ({ page }) => {
   test.setTimeout(240_000);
-  // 草稿態：送審鈕只有接單業務看得到（停用也照樣顯示）
+  // 草稿態：送審鈕給接單業務與六個全公司協助角色（停用也照樣顯示）
   await openAs(page, '業務', DETAIL);
   await expect(submitButton(page)).toHaveCount(1);
-  // 會計沒有訂單檢視活動，停在訂單詳情時被導回預設頁（見 2.20），不在這個迴圈裡
+  // 業務主管乙不是這張訂單的審核業務主管、印務主管不在業務線，都屬協助角色，看得到送審鈕
   for (const role of ['業務主管', '印務主管']) {
     await switchRole(page, role);
-    await expect(submitButton(page)).toHaveCount(0);
+    await expect(submitButton(page)).toHaveCount(1);
   }
+  // 非負責、不在分享成員的業務乙，訂單詳情被導回，看不到送審鈕（直連導回見 2.21）；會計見 2.20
+  await switchRole(page, '業務（陳映蓉）');
+  await expect(page).not.toHaveURL(/\/orders\/detail/, { timeout: 15_000 });
+  await expect(submitButton(page)).toHaveCount(0);
+  await switchRole(page, '業務');
+  await gotoInApp(page, '/orders');
+  await openByNo(page, 'ORD-2026-0814');
 
   // 前置：業務補齊送審條件後送審，停在待業務主管審核
   await switchRole(page, '業務');
