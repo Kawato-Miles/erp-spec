@@ -172,7 +172,11 @@
 
 ## 7. 驗收與收尾
 
-- [ ] 7.1 執行 `npm run test:smoke` 與第九、十、十四章 `npm run test:module`，全部通過；結果附在提交訊息
-- [ ] 7.2 情境目錄各節「依據」行指回 wiki 情境卡名，發現清單關掉已修項
-- [ ] 7.3 歸檔前依 config 規則處理 design.md § Open Questions：存量驗收條目缺的情境卡步驟經 wiki-amend 補卡後回填標註；待裁決項經 oq-manage 開 OQ 卡並雙向引用
-- [ ] 7.4 Linear 修正（PM-1356～1359、BE-424～426）由 Miles 另行觸發 linear-delivery，不在本 change 勾選範圍
+- [x] 7.1 執行 `npm run test:smoke` 與第九、十、十四章 `npm run test:module`，全部通過；結果附在提交訊息
+  - 結果（2026-10-20，erp prototype/production-stage 1d238957，一律單一工作程序）：smoke 主流程 1 項通過；第九章 21 項、第十章 52 項、第十四章 45 項全部通過（各另含登入設定 1 項）
+- [x] 7.2 情境目錄各節「依據」行指回 wiki 情境卡名，發現清單關掉已修項
+  - 結果（2026-10-20）：本 change 各節依據行皆指回現行卡名（無舊卡名殘留）；15.2 依據補註指標類無情境卡、見 XM-018；發現清單關閉 9.10 兩列
+- [x] 7.3 歸檔前依 config 規則處理 design.md § Open Questions：存量驗收條目缺的情境卡步驟經 wiki-amend 補卡後回填標註；待裁決項經 oq-manage 開 OQ 卡並雙向引用
+  - 結果（2026-10-20）：存量驗收條目回填 13 條情境標註；場內轉交與修正補 Slack 回報失敗副流程後回填 1 條；開 XM-018（印件詳情頁區塊與五指標共 16 條）與 PT-069（需轉交鎖定後走法 1 條）；既有標註改為現行卡名與分支短名。處置明細見 design.md § Open Questions
+- [x] 7.4 Linear 修正（PM-1356～1359、BE-424～426）由 Miles 另行觸發 linear-delivery，不在本 change 勾選範圍
+  - 結果：已由其他工作完成，PM-1356～1359、BE-424～427 於 2026-10-13～14 依 v7 寫入 Linear
