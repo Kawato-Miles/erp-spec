@@ -1069,7 +1069,8 @@ test('12.22 出貨人員對運送中的出貨單轉異常，理由必填並記�
   expect(await printItemCell(page, CHAIN4.printItemNo, '已出貨')).toBe('0');
   expect(await printItemCell(page, CHAIN4.printItemNo, '可出貨額度')).toBe('500');
   await page.getByText(CHAIN4.printItemName, { exact: true }).first().click();
-  await expect(page.getByText('印件基本資訊')).toBeVisible();
+  // 印件詳情頁在開發環境首次載入要即時編譯，常超過預設 5 秒，這一步放寬到 20 秒
+  await expect(page.getByText('印件基本資訊')).toBeVisible({ timeout: 20000 });
   await expect(descValue(page, '可出貨額度')).toHaveText('500');
 });
 
