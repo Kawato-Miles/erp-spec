@@ -264,9 +264,9 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
   });
 
   await test.step('第 3 站 印務主管 填兩件印件成本，業務 評估完成', async () => {
-    // 被指派的評估印務主管只填成本，沒有「評估完成」鈕
+    // 被指派的評估印務主管是編輯（代理）分享成員：這一站只填成本，頁首看得到「評估完成」但不按
     await switchRole(page, '印務主管');
-    await expect(button(page, '評估完成')).toHaveCount(0);
+    await expect(button(page, '評估完成')).toBeVisible();
     for (const name of [ITEM_A, ITEM_B]) {
       const itemPanel = drawer(page);
       await clickOpen(rowOf(page, name).getByRole('button').first(), itemPanel.getByLabel('成本估算（未稅）'));

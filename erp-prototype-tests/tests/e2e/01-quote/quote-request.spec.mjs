@@ -19,6 +19,7 @@ import {
   rowOf,
   salesFillCostAndCompleteEstimate,
   shareQuoteTo,
+  submitQuoteHeader,
   waitModalsClosed,
 } from './_local.mjs';
 
@@ -97,11 +98,12 @@ test('1.2 印務主管回填成本、業務按評估完成，系統留一筆報�
   await waitModalsClosed(page);
   await expect(quoteCurrentStep(page)).toHaveText('評估成本');
 
-  // 被指派的評估印務主管只填成本，沒有「評估完成」鈕，也看不到新增印件
+  // 被指派的評估印務主管是編輯（代理）分享成員：填成本之外，頁首有「評估完成」、印件報價頁有「新增印件」，
+  // 這裡只填成本、不按，狀態不動
   await switchRole(page, '印務主管');
   await fillCosts(page, ['甲印件', '乙印件'], 20);
-  await expect(button(page, '評估完成')).toHaveCount(0);
-  await expect(button(page, '新增印件')).toHaveCount(0);
+  await expect(button(page, '評估完成')).toBeVisible();
+  await expect(button(page, '新增印件')).toBeVisible();
   await expect(quoteCurrentStep(page)).toHaveText('評估成本');
 
   // 業務按評估完成：確認視窗只說建立報價紀錄，不提通知
@@ -275,13 +277,14 @@ test('1.6 從既有需求單複製建單', async ({ page }) => {
   await expect(field('稅額（5%）')).toContainText('2,450');
   await expect(field('含稅總額')).toContainText('51,450');
   // 評估印務主管帶入
-  await expect(field('評估印務')).toContainText('吳國豪');
+  await expect(field('評估印務主管')).toContainText('吳國豪');
 
-  // 報價紀錄、分享成員不帶入，歷史報價不帶進新單
+  // 報價紀錄、手動授予的分享成員不帶入，歷史報價不帶進新單；分享成員清單只剩系統列入的評估印務主管吳國豪
   await openTab(page, '報價紀錄');
   await expect(activeTabRows(page)).toHaveCount(0);
-  await openTab(page, '權限管理');
-  await expect(page.getByText('尚無授權人員')).toBeVisible();
+  await openTab(page, '分享成員');
+  await expect(activeTabRows(page)).toHaveCount(1);
+  await expect(activeTabRows(page).first()).toContainText('吳國豪');
 
   // 活動紀錄第一筆為「建立需求單」，不記來源需求單
   await openTab(page, '活動紀錄');
@@ -450,7 +453,7 @@ test('1.10 成交轉訂單印件的未扣急件內部完成日逐件帶入、空
   await expect(catalogRow.getByText('－').first()).toBeVisible();
 });
 
-test('1.12 需求單印件側板依五區顯示、印務只改成本版同版面', async ({ page }) => {
+test('1.12 需求單印件側板依五區顯示，評估印務主管開的側板同業務版', async ({ page }) => {
   test.setTimeout(90_000);
   const sections = ['基本資訊', '規格與製程', '審稿設定', '成本評估區', '參考附件'];
   // 以側板文字的先後位置驗區塊順序與欄位歸屬：從「基本資訊」起算，避開頂部說明提示裡的欄位名
@@ -515,30 +518,27 @@ test('1.12 需求單印件側板依五區顯示、印務只改成本版同版面
   await button(page, '送印務評估').click();
   await expect(quoteCurrentStep(page)).toHaveText('評估成本');
 
-  // 印務只改成本版：同樣五個區塊標題依序出現，只有成本估算與預計產線可編輯
+  // 評估印務主管是編輯（代理）分享成員：開的側板與業務版同一套，五個區塊標題與欄位順序相同，欄位全部可編輯
   await switchRole(page, '印務主管');
   await clickOpen(rowOf(page, '甲印件').getByRole('button').first(), panel.getByLabel('成本估算（未稅）'));
-  await expect(panel.getByText('僅能編輯成本估算（未稅）與預計產線，其餘欄位唯讀顯示。')).toBeVisible();
+  await expect(panel.getByText('僅能編輯成本估算')).toHaveCount(0);
   text = await layoutText(panel);
   expectInOrder(text, sections);
   expectInOrder(text, ['規格與製程', '數量', '單位', '包裝說明', '難易度', '預計產線', '審稿設定']);
   expectInOrder(text, ['審稿設定', '是否免審稿', '稿件備註', '成本評估區']);
   await expect(panel.getByText('印件檔案備註')).toHaveCount(0);
-  // 印務版同樣唯讀顯示印件內部完成日與印件預計交期，是否免審稿帶同一個提示圖示
   expectInOrder(text, ['規格與製程', '出貨方式', '印件內部完成日', '印件預計交期', '數量', '審稿設定']);
-  await expect(panel.getByLabel('印件內部完成日')).toHaveCount(0);
+  await expect(panel.getByLabel('印件內部完成日')).toBeEditable();
   await expect(panel.getByText('未扣急件內部完成日')).toHaveCount(0);
   await expectReviewExemptHint(panel);
   await expect(panel.getByLabel('成本估算（未稅）')).toBeEditable();
-  // 預計產線是多選下拉，搜尋框本身為 readonly，改驗未停用
   await expect(panel.getByLabel('預計產線')).toBeEnabled();
-  // 其餘欄位唯讀：不是表單欄位、沒有可綁定的輸入框
-  for (const label of ['項目名稱', '印件屬性', '數量', '單位', '包裝說明', '難易度', '單價（未稅）']) {
-    await expect(panel.getByLabel(label, { exact: true })).toHaveCount(0);
+  // 其餘欄位同樣是可填的表單欄位（不再唯讀）
+  for (const label of ['項目名稱', '數量', '難易度', '單價（未稅）']) {
+    await expect(panel.getByLabel(label, { exact: true }), label).toHaveCount(1);
   }
-  await expect(panel.getByRole('button', { name: /選擇檔案/ })).toHaveCount(0);
-  // 整個側板只剩兩個未停用的輸入元件：成本估算與預計產線（印件預計交期為停用輸入框）
-  await expect(panel.locator('input:not([disabled]), textarea:not([disabled])')).toHaveCount(2);
+  await expect(panel.getByLabel('項目名稱', { exact: true })).toBeEditable();
+  await expect(panel.getByLabel('單價（未稅）', { exact: true })).toBeEditable();
 });
 
 test('1.13 接單業務刪除需求單，列表不再出現', async ({ page }) => {
@@ -560,20 +560,29 @@ test('1.13 接單業務刪除需求單，列表不再出現', async ({ page }) =
   await expect(page.locator('tbody tr.ant-table-row').filter({ hasText: quoteNo })).toHaveCount(0);
 });
 
-test('1.13 評估印務主管看得到需求單但沒有編輯與刪除鈕', async ({ page }) => {
+test('1.13 評估印務主管在列表有編輯與刪除鈕，可刪除需求單', async ({ page }) => {
+  test.setTimeout(120_000);
   const title = '1.13 權限情境需求案';
   await openAs(page, '業務', '/quote-prototype');
   const quoteNo = await createQuoteHeader(page, { title, estimators: ['吳國豪'] });
 
-  // 評估印務主管因指派取得的編輯授權不含刪除；列表操作欄沒有任何按鈕
+  // 評估印務主管是編輯（代理）分享成員：列表操作欄有編輯與刪除兩顆圖示鈕
   await gotoInApp(page, '/quote-prototype');
   await switchRole(page, '印務主管');
   const row = rowOf(page, quoteNo);
   await expect(row).toBeVisible();
-  await expect(row.locator('td').last().locator('button')).toHaveCount(0);
+  await expect(row.locator('td').last().locator('button')).toHaveCount(2);
+
+  // 評估印務主管按刪除並確認，這張單從列表消失
+  await rowOf(page, quoteNo).locator('td').last().locator('button').nth(1).click();
+  const confirm = dialog(page);
+  await expect(confirm).toContainText(title);
+  await confirm.getByRole('button', { name: /確\s*認/ }).click();
+  await waitModalsClosed(page);
+  await expect(page.locator('tbody tr.ant-table-row').filter({ hasText: quoteNo })).toHaveCount(0);
 });
 
-test('1.14 需求單列表可見範圍依角色：印務主管看全部、業務主管與諮詢只看相關的單', async ({
+test('1.14 需求單列表可見範圍依活動清單：業務主管、印務主管看全公司，諮詢只看自己負責與被分享的單', async ({
   page,
 }) => {
   test.setTimeout(120_000);
@@ -584,29 +593,31 @@ test('1.14 需求單列表可見範圍依角色：印務主管看全部、業務
   await addItem(page, { name: '甲印件' });
   await button(page, '送印務評估').click();
 
-  // 業務主管：沒被分享前列表看不到這張單
-  await gotoInApp(page, '/quote-prototype');
-  await switchRole(page, '業務主管');
-  await expect(page.locator('tbody tr.ant-table-row').filter({ hasText: quoteNo })).toHaveCount(0);
-  // 諮詢：不是接單業務、建立者或被分享者，同樣看不到
-  await switchRole(page, '諮詢');
-  await expect(page.locator('tbody tr.ant-table-row').filter({ hasText: quoteNo })).toHaveCount(0);
-
-  // 業務分享給業務主管（檢視）後，業務主管看得到
-  await switchRole(page, '業務');
-  await page.getByRole('link', { name: quoteNo }).click();
-  await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
-  await shareQuoteTo(page, '林雅婷');
+  // 業務主管：沒被分享也看得到（全公司）；進詳情只有改派，沒有編輯、刪除、推進與複製
   await gotoInApp(page, '/quote-prototype');
   await switchRole(page, '業務主管');
   await expect(rowOf(page, quoteNo)).toBeVisible();
+  await expect(rowOf(page, quoteNo).locator('td').last().locator('button')).toHaveCount(0);
+  await page.getByRole('link', { name: quoteNo }).click();
+  await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
+  await expect(button(page, '改派')).toBeVisible();
+  for (const label of ['編輯', '評估完成', '流失', '新增印件']) {
+    await expect(button(page, label), label).toHaveCount(0);
+  }
+  await expect(page.getByRole('button', { name: '複製需求單' })).toHaveCount(0);
+
+  // 諮詢：不是接單業務也沒被分享，列表看不到
+  await gotoInApp(page, '/quote-prototype');
+  await switchRole(page, '諮詢');
+  await expect(page.locator('tbody tr.ant-table-row').filter({ hasText: quoteNo })).toHaveCount(0);
 
   // 印務主管：側欄有「需求單管理」，列表看得到全部需求單，含未被指派評估的單
   await switchRole(page, '印務主管');
   await expect(page.getByRole('menuitem', { name: '需求單管理' }).first()).toBeVisible();
   await expect(rowOf(page, quoteNo)).toBeVisible();
   await expect(rowOf(page, 'Q-20260601-01')).toBeVisible();
-  // 未被指派評估的單只能查閱：沒有編輯圖示與評估完成鈕
+  // 未被指派評估的單只能查閱：列表操作欄沒有按鈕，詳情沒有編輯圖示與評估完成鈕
+  await expect(rowOf(page, quoteNo).locator('td').last().locator('button')).toHaveCount(0);
   await page.getByRole('link', { name: quoteNo }).click();
   await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
   await expect(rowOf(page, '甲印件').getByRole('button')).toHaveCount(0);
@@ -628,7 +639,8 @@ test('1.15 業務主管改派需求單接單業務，離職交接清空分享成
   // 業務看不到改派入口
   await expect(button(page, '改派')).toHaveCount(0);
 
-  await shareQuoteTo(page, '林雅婷');
+  // 前置：先分享給一位同事（檢視），離職交接時要看到分享成員被清空
+  await shareQuoteTo(page, '蘇怡君');
   await gotoInApp(page, '/quote-prototype');
   await switchRole(page, '業務主管');
   await page.getByRole('link', { name: quoteNo }).click();
@@ -647,8 +659,11 @@ test('1.15 業務主管改派需求單接單業務，離職交接清空分享成
   // 接單業務換人、狀態不動；分享成員清空；活動紀錄留痕
   await expect(page.locator('.ant-descriptions').first()).toContainText('賴柏宇');
   await expect(quoteCurrentStep(page)).toHaveText('確認需求');
-  await openTab(page, '權限管理');
-  await expect(page.getByText('尚無授權人員')).toBeVisible();
+  // 手動授予的蘇怡君被清掉，清單只剩系統列入的評估印務主管吳國豪
+  await openTab(page, '分享成員');
+  await expect(activeTabRows(page)).toHaveCount(1);
+  await expect(activeTabRows(page).first()).toContainText('吳國豪');
+  await expect(page.locator('.ant-tabs-tabpane-active')).not.toContainText('蘇怡君');
   await openTab(page, '活動紀錄');
   const activity = page.locator('.ant-tabs-tabpane-active');
   await expect(activity).toContainText('林雅婷 改派接單業務為 賴柏宇（離職交接）：原業務離職，客戶交接給賴柏宇');
@@ -927,14 +942,14 @@ test('1.24 標記流失須選原因，流失後鎖定', async ({ page }) => {
   await expect(page.locator('.ant-tabs-tabpane-active')).toContainText('流失原因：價格因素');
 });
 
-test('1.25 被分享（編輯）者複製他人負責的需求單，建立者為複製者、接單業務沿用來源單', async ({ page }) => {
+test('1.25 被分享（編輯）者複製他人負責的需求單，新單的接單業務與建立者都是複製者', async ({ page }) => {
   test.setTimeout(120_000);
   // 起點：Q-20260601-01（接單業務洪嘉駿）；分享為情境內前置步驟
   await openAs(page, '業務', '/quote-prototype');
   await openQuoteDetail(page, 'Q-20260601-01');
   // 前置：洪嘉駿分享給張惠雯並改為編輯（代理）
   await shareQuoteTo(page, '張惠雯');
-  await openTab(page, '權限管理');
+  await openTab(page, '分享成員');
   await pickOption(page, rowOf(page, '張惠雯').locator('.ant-select'), '編輯（代理）');
   await expect(rowOf(page, '張惠雯')).toContainText('編輯（代理）');
 
@@ -947,9 +962,12 @@ test('1.25 被分享（編輯）者複製他人負責的需求單，建立者為
   await dialog(page).getByRole('button', { name: /確\s*認/ }).click();
   await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
 
-  // 接單業務沿用來源單（洪嘉駿），建立者為張惠雯
+  // 新單的接單業務是執行複製的張惠雯，不沿用來源單的洪嘉駿；張惠雯在新單上有編輯入口
   await expect(quoteCurrentStep(page)).toHaveText('確認需求');
-  await expect(page.locator('.ant-descriptions').first()).toContainText('洪嘉駿');
+  const header = page.locator('.ant-descriptions').first();
+  await expect(header).toContainText('張惠雯');
+  await expect(header).not.toContainText('洪嘉駿');
+  await expect(button(page, '編輯')).toBeVisible();
   const item = rowOf(page, '會員卡（客製燙金）');
   await expect(item).toContainText('5,000');
   await expect(item).toContainText('9.8');
@@ -958,13 +976,199 @@ test('1.25 被分享（編輯）者複製他人負責的需求單，建立者為
   await expect(amountField(page, '稅額（5%）')).toContainText('2,450');
   await expect(amountField(page, '含稅總額')).toContainText('51,450');
 
-  // 報價紀錄、分享成員不帶入
+  // 報價紀錄、手動授予的分享成員不帶入：清單只剩系統列入的評估印務主管，沒有張惠雯與洪嘉駿
   await openTab(page, '報價紀錄');
   await expect(activeTabRows(page)).toHaveCount(0);
-  await openTab(page, '權限管理');
-  await expect(page.getByText('尚無授權人員')).toBeVisible();
+  await openTab(page, '分享成員');
+  await expect(activeTabRows(page)).toHaveCount(1);
+  await expect(activeTabRows(page).first()).toContainText('吳國豪');
   await openTab(page, '活動紀錄');
   const activity = page.locator('.ant-tabs-tabpane-active');
   await expect(activity).toContainText('張惠雯 建立需求單');
   await expect(activity).not.toContainText('Q-20260601-01');
+
+  // 原業務洪嘉駿對新單沒有權限：列表沒有這張新單（來源單仍在），詳情被導回
+  const newUrl = page.url();
+  await switchRole(page, '業務');
+  await expect(page).not.toHaveURL(/quote-prototype\/detail/, { timeout: 15_000 });
+  expect(newUrl).toMatch(/quote-prototype\/detail/);
+});
+
+// ─── 單據權責修正第三批（OpenSpec change document-access-scope-alignment）：需求單依活動清單判斷 ───
+
+// 在列表以搜尋框找單號並打開詳情
+async function openQuoteByTitle(page, title) {
+  await gotoInApp(page, '/quote-prototype');
+  const link = rowOf(page, title).getByRole('link');
+  await link.click();
+  await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
+}
+
+test('1.26 建立者不因建立而看得到需求單：替業務乙建單的洪嘉駿看不到、直連導回', async ({ page }) => {
+  test.setTimeout(120_000);
+  const title = '1.26 替人建單情境案';
+  // 洪嘉駿替業務乙陳映蓉建立需求單（接單業務指定陳映蓉）
+  await openAs(page, '業務', '/quote-prototype');
+  await submitQuoteHeader(page, { title, sales: '陳映蓉' });
+  // 建立者的列表不列這張單
+  await expect(page.locator('tbody tr.ant-table-row').filter({ hasText: title })).toHaveCount(0);
+
+  // 接單業務陳映蓉看得到，進詳情頁
+  await switchRole(page, '業務（陳映蓉）');
+  await expect(rowOf(page, title)).toBeVisible();
+  await openQuoteByTitle(page, title);
+  const detailUrl = page.url();
+  expect(detailUrl).toMatch(/quote-prototype\/detail/);
+
+  // 切回洪嘉駿：停在這張單的詳情網址等同直連，被導回預設頁面，畫面不出現這張單
+  await switchRole(page, '業務');
+  await expect(page).not.toHaveURL(/quote-prototype\/detail/, { timeout: 15_000 });
+  await expect(page).toHaveURL(/\/quote-prototype/);
+  await expect(page.locator('body')).not.toContainText(title);
+});
+
+test('1.27 諮詢乙被分享（編輯）他人的需求單後可編輯、送評估；檢視層級不可', async ({ page }) => {
+  test.setTimeout(180_000);
+  const title = '1.27 被分享情境案';
+  // 前置：洪嘉駿建單（需求確認中，一筆印件），分享給蘇怡君（編輯）與張惠雯（檢視）
+  await openAs(page, '業務', '/quote-prototype');
+  const quoteNo = await createQuoteHeader(page, { title });
+  await addItem(page, { name: '甲印件', difficulty: 3 });
+  await shareQuoteTo(page, '蘇怡君');
+  await openTab(page, '分享成員');
+  await pickOption(page, rowOf(page, '蘇怡君').locator('.ant-select'), '編輯（代理）');
+  await expect(rowOf(page, '蘇怡君')).toContainText('編輯（代理）');
+  await shareQuoteTo(page, '張惠雯');
+
+  // 檢視層級的張惠雯：看得到單，沒有編輯、流失、送印務評估、新增印件、複製與分享管理入口
+  await gotoInApp(page, '/quote-prototype');
+  await switchRole(page, '諮詢');
+  await expect(rowOf(page, quoteNo)).toBeVisible();
+  await expect(rowOf(page, quoteNo).locator('td').last().locator('button')).toHaveCount(0);
+  await page.getByRole('link', { name: quoteNo }).click();
+  await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
+  await expect(detailTitle(page)).toContainText(title);
+  for (const label of ['編輯', '流失', '送印務評估', '新增印件']) {
+    await expect(button(page, label), label).toHaveCount(0);
+  }
+  await expect(page.getByRole('button', { name: '複製需求單' })).toHaveCount(0);
+  await expect(rowOf(page, '甲印件').getByRole('button')).toHaveCount(0);
+  await openTab(page, '分享成員');
+  await expect(button(page, '新增人員')).toHaveCount(0);
+  await openTab(page, '印件報價');
+
+  // 編輯層級的蘇怡君（諮詢乙，非接單業務）：可編輯、送印務評估，活動紀錄記她，接單業務不變
+  await switchRole(page, '諮詢（蘇怡君）');
+  await expect(page).toHaveURL(/quote-prototype\/detail/);
+  await expect(button(page, '編輯')).toBeVisible();
+  await expect(button(page, '新增印件')).toBeVisible();
+  await button(page, '送印務評估').click();
+  await expect(quoteCurrentStep(page)).toHaveText('評估成本');
+  await expect(page.locator('.ant-descriptions').first()).toContainText('洪嘉駿');
+  await openTab(page, '活動紀錄');
+  await expect(page.locator('.ant-tabs-tabpane-active')).toContainText('狀態由「需求確認中」變更為「待評估成本」');
+});
+
+test('1.28 評估印務主管列在分享成員清單：頁籤名分享成員，層級編輯，欄名評估印務主管', async ({ page }) => {
+  test.setTimeout(90_000);
+  const title = '1.28 分享成員情境案';
+  await openAs(page, '業務', '/quote-prototype');
+  await createQuoteHeader(page, { title, estimators: ['吳國豪'] });
+
+  // 頁籤叫「分享成員」，不再叫權限管理；基本資訊欄名叫「評估印務主管」，不再是「評估印務」
+  await expect(page.locator('.ant-tabs-tab', { hasText: '分享成員' })).toBeVisible();
+  await expect(page.locator('.ant-tabs-tab', { hasText: '權限管理' })).toHaveCount(0);
+  await expect(amountField(page, '評估印務主管')).toContainText('吳國豪');
+
+  // 清單列出吳國豪，層級為編輯（代理），由系統列入；沒有撤銷鈕與層級下拉（人選由評估印務主管欄管理）
+  await openTab(page, '分享成員');
+  await expect(activeTabRows(page)).toHaveCount(1);
+  const row = activeTabRows(page).first();
+  await expect(row).toContainText('吳國豪');
+  await expect(row).toContainText('編輯（代理）');
+  await expect(row).toContainText('系統');
+  await expect(row.locator('.ant-select')).toHaveCount(0);
+  await expect(row.getByRole('button')).toHaveCount(0);
+
+  // 業務手動授予另一位同事後清單變兩筆；吳國豪不再出現在新增人員的候選裡
+  await openTab(page, '印件報價');
+  await shareQuoteTo(page, '蘇怡君');
+  await openTab(page, '分享成員');
+  await expect(activeTabRows(page)).toHaveCount(2);
+  const panel = drawer(page);
+  await clickOpen(button(page, '新增人員'), panel.getByText('新增關聯人員'));
+  await expect(rowOf(panel, '吳國豪')).toHaveCount(0);
+  await expect(rowOf(panel, '蘇怡君')).toHaveCount(0);
+  await button(panel, '取消').click();
+  await waitModalsClosed(page);
+});
+
+test('1.29 只有業務、諮詢看到建立需求單；沒有需求單活動的角色側欄沒有需求單入口，停在詳情頁被導回', async ({ page }) => {
+  test.setTimeout(240_000);
+  await openAs(page, '業務', '/quote-prototype');
+  for (const role of ['業務', '諮詢']) {
+    await switchRole(page, role);
+    await expect(button(page, '新增'), role).toBeVisible();
+  }
+  // 有檢視、沒有建立活動的角色：列表在、沒有新增鈕
+  for (const role of ['業務主管', '印務主管', 'Supervisor']) {
+    await switchRole(page, role);
+    await expect(page.getByRole('menuitem', { name: '需求單管理' }).first(), role).toBeVisible();
+    await expect(button(page, '新增'), role).toHaveCount(0);
+  }
+  // 沒有任何需求單活動的角色：側欄沒有需求單入口
+  for (const role of ['會計', '生管', '訂單管理人', '審稿人員', '印務']) {
+    await switchRole(page, role);
+    await expect(page.locator('.ant-menu-item', { hasText: '需求單列表' }), role).toHaveCount(0);
+  }
+  // 停在需求單詳情頁（等同直連）切成這些角色，被導回預設頁面，畫面不出現這張單
+  for (const role of ['會計', '生管']) {
+    await switchRole(page, '業務');
+    await gotoInApp(page, '/quote-prototype');
+    await page.getByRole('link', { name: 'Q-20260601-01' }).click();
+    await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
+    await switchRole(page, role);
+    await expect(page, role).not.toHaveURL(/quote-prototype\/detail/, { timeout: 15_000 });
+    await expect(page.locator('body'), role).not.toContainText('Q-20260601-01');
+  }
+});
+
+test('1.30 Supervisor 改派需求單；業務、編輯分享成員、評估印務主管沒有改派入口；改派與分享為獨立入口', async ({ page }) => {
+  test.setTimeout(180_000);
+  const title = '1.30 改派情境案';
+  // 前置：洪嘉駿建單，評估印務主管吳國豪，分享給蘇怡君（編輯）
+  await openAs(page, '業務', '/quote-prototype');
+  const quoteNo = await createQuoteHeader(page, { title });
+  await shareQuoteTo(page, '蘇怡君');
+  await openTab(page, '分享成員');
+  await pickOption(page, rowOf(page, '蘇怡君').locator('.ant-select'), '編輯（代理）');
+  await expect(rowOf(page, '蘇怡君')).toContainText('編輯（代理）');
+
+  // 接單業務、編輯分享成員、評估印務主管都沒有改派入口
+  await expect(button(page, '改派')).toHaveCount(0);
+  await switchRole(page, '諮詢（蘇怡君）');
+  await expect(page).toHaveURL(/quote-prototype\/detail/);
+  await expect(button(page, '改派')).toHaveCount(0);
+  await switchRole(page, '印務主管');
+  await expect(page).toHaveURL(/quote-prototype\/detail/);
+  await expect(button(page, '改派')).toHaveCount(0);
+
+  // Supervisor 看得到單，改派給賴柏宇、理由選「業務調整」，活動紀錄記操作者為 Supervisor；
+  // 角色名顯示 Supervisor；改派與分享成員頁籤是兩個入口，分享成員不因改派而清空（非離職交接）
+  await gotoInApp(page, '/quote-prototype');
+  await switchRole(page, 'Supervisor');
+  await page.getByRole('link', { name: quoteNo }).click();
+  await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
+  const panel = drawer(page);
+  await clickOpen(button(page, '改派'), panel.getByText('改派理由分類（必選）'));
+  await pickOption(page, panel.locator('.ant-select').first(), '賴柏宇');
+  await pickOption(page, panel.locator('.ant-select').nth(1), '工作負荷平衡');
+  await button(panel, '確認').click();
+  await waitModalsClosed(page);
+  await expect(page.locator('.ant-descriptions').first()).toContainText('賴柏宇');
+  await openTab(page, '分享成員');
+  await expect(page.locator('.ant-tabs-tab', { hasText: '分享成員' })).toBeVisible();
+  await expect(rowOf(page, '蘇怡君')).toBeVisible();
+  await openTab(page, '活動紀錄');
+  await expect(page.locator('.ant-tabs-tabpane-active')).toContainText('王大明 改派接單業務為 賴柏宇（工作負荷平衡）');
 });

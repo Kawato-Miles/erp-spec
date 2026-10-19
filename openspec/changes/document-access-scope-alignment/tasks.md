@@ -151,13 +151,13 @@
 
 ## 3. 第三批：需求單
 
-- [ ] 3.1 測試先行：改 C01 至 C10、C26
-- [ ] 3.2 測試先行：新增 1.26 至 1.31 的測試；跑 `npm run test:module -- tests/e2e/01-quote` 確認新測試先失敗
-- [ ] 3.3 Prototype：需求單列表與詳情改由集中判斷；建立者不給權限；業務主管全公司
-- [ ] 3.4 Prototype：評估印務主管以編輯分享成員判定，並列入分享成員清單
-- [ ] 3.5 Prototype：改派開放 Supervisor；分享管理開放所有編輯分享成員
-- [ ] 3.6 Prototype：複製需求單的新單接單業務改為執行者；頁籤名「分享成員」、欄名「評估印務主管」
-- [ ] 3.7 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/01-quote` 通過；`npx vitest run tests/unit/quote` 通過
+- [x] 3.1 測試先行：改 C01 至 C10、C26
+- [x] 3.2 測試先行：新增 1.26 至 1.31 的測試；跑 `npm run test:module -- tests/e2e/01-quote` 確認新測試先失敗
+- [x] 3.3 Prototype：需求單列表與詳情改由集中判斷；建立者不給權限；業務主管全公司
+- [x] 3.4 Prototype：評估印務主管以編輯分享成員判定，並列入分享成員清單
+- [x] 3.5 Prototype：改派開放 Supervisor；分享管理開放所有編輯分享成員
+- [x] 3.6 Prototype：複製需求單的新單接單業務改為執行者；頁籤名「分享成員」、欄名「評估印務主管」
+- [x] 3.7 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/01-quote` 通過；`npx vitest run tests/unit/quote` 通過
 - [ ] 3.8 提交 erp 與 Sens
 
 ## 4. 第四批：工單與生產

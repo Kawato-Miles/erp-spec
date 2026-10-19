@@ -21,7 +21,7 @@ export async function clickOpen(clickTarget, appearTarget) {
 export const rowOf = (scope, text) =>
   scope.locator('tbody tr.ant-table-row').filter({ hasText: text }).first();
 
-// 需求單詳情頁的頁籤（印件報價／報價紀錄／權限管理／活動紀錄）共用同一個 Tabs，
+// 需求單詳情頁的頁籤（印件報價／報價紀錄／分享成員／活動紀錄）共用同一個 Tabs，
 // AntD 預設不會把非目前頁籤的內容從 DOM 移除（只是 CSS 隱藏），故裸的
 // 'tbody tr.ant-table-row' 會連同其他頁籤裡的表格一起算進去。查某頁籤的列數
 // 一律先 openTab 切過去，再用本函式限定在目前顯示的那個頁籤內找。
@@ -87,10 +87,10 @@ export async function pickDate(input, value) {
 }
 
 /**
- * 業務在需求單列表建一張新單頭並進入詳情頁。回傳新單號，操作結束時已在詳情頁。
- * 單頭已無任何交期欄——交期鏈的起點是印件層的「印件內部完成日」，逐列手填、無預設值。
+ * 在需求單列表開新增側板、填單頭並確認（不進詳情頁）。接單業務可指定別人：建立者不因建立而取得權限，
+ * 指定別人負責時建立者的列表上不會出現這張單，所以這裡不依列表找單號。
  */
-export async function createQuoteHeader(
+export async function submitQuoteHeader(
   page,
   {
     title,
@@ -113,8 +113,16 @@ export async function createQuoteHeader(
   await pickOption(page, panel.getByLabel('帳務公司'), billing);
   await button(panel, '確認').click();
   await waitModalsClosed(page);
+}
 
-  const listRow = rowOf(page, title);
+/**
+ * 業務在需求單列表建一張新單頭並進入詳情頁。回傳新單號，操作結束時已在詳情頁。
+ * 單頭已無任何交期欄——交期鏈的起點是印件層的「印件內部完成日」，逐列手填、無預設值。
+ * 建立者與接單業務須是同一人（預設洪嘉駿）：建立者不因建立而看得到單，指定別人負責請改用 submitQuoteHeader。
+ */
+export async function createQuoteHeader(page, options) {
+  await submitQuoteHeader(page, options);
+  const listRow = rowOf(page, options.title);
   const quoteNo = (await listRow.innerText()).match(/Q-\d{8}-\d{2}/)[0];
   await page.getByRole('link', { name: quoteNo }).click();
   await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
@@ -189,9 +197,9 @@ export async function salesFillCostAndCompleteEstimate(page, itemNames, cost = 2
   await completeEstimate(page);
 }
 
-/** 把目前這張需求單分享給某人（權限管理頁籤「新增人員」，層級預設檢視）。呼叫者須為可管理這張單的業務。 */
+/** 把目前這張需求單分享給某人（分享成員頁籤「新增人員」，層級預設檢視）。呼叫者須能管理這張單的分享成員。 */
 export async function shareQuoteTo(page, userName) {
-  await openTab(page, '權限管理');
+  await openTab(page, '分享成員');
   const panel = drawer(page);
   await clickOpen(button(page, '新增人員'), panel.getByText('新增關聯人員'));
   await rowOf(panel, userName).locator('input[type="checkbox"]').check();
