@@ -59,7 +59,7 @@ test('6.1 一件印件從放行到上產線的六站接力（原編號 72）', a
   // 第二站：印務主管在印件列表展開該印件、點工單編號進詳情按分派
   await switchRole(page, '印務主管');
   await goInApp(page, '/print-items', gotoInApp);
-  // 印件登記進印件總覽、印製狀態轉製程已確認
+  // 印件登記進印件列表、印製狀態轉製程已確認
   await expect(rowOf(page, 'PI-2026-0903')).toContainText('製程已確認');
   await rowOf(page, 'PI-2026-0903').locator('.ant-table-row-expand-icon').click();
   await expect(page.locator('.ant-table-expanded-row')).toContainText(workOrderNo);

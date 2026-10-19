@@ -995,11 +995,11 @@ test('12.21 出貨人員對第三方出貨單按拋單，系統生成物流單�
 
 // ── 12.22～12.25（2026-10-14）：異常、作廢、補附送達憑證 ──
 
-// 印件總覽某件印件列的某一欄文字（以表頭文字找欄序，已出貨與可出貨額度兩欄共用）
+// 印件列表某件印件列的某一欄文字（以表頭文字找欄序，已出貨與可出貨額度兩欄共用）
 const printItemCell = async (page, printItemNo, header) => {
   const headers = await page.locator('.ant-table-thead').first().locator('th').allInnerTexts();
   const index = headers.findIndex((h) => h.includes(header));
-  expect(index, `印件總覽找不到欄位 ${header}`).toBeGreaterThanOrEqual(0);
+  expect(index, `印件列表找不到欄位 ${header}`).toBeGreaterThanOrEqual(0);
   const row = page.locator('tr.ant-table-row').filter({ hasText: printItemNo }).first();
   return (await row.locator('td').nth(index).innerText()).trim();
 };
@@ -1037,7 +1037,7 @@ test('12.22 出貨人員對運送中的出貨單轉異常，理由必填並記�
   await expect(shipmentRow(page, vanNo).getByRole('button', { name: '異常' })).toHaveCount(0);
   await expect(shipmentRow(page, vanNo).getByRole('button', { name: '作廢' })).toHaveCount(0);
 
-  // 轉異常前：印件總覽已出貨 100、可出貨額度 400
+  // 轉異常前：印件列表已出貨 100、可出貨額度 400
   await switchRoleSafe(page, '印務主管');
   await gotoInAppSafe(page, '/print-items');
   expect(await printItemCell(page, CHAIN4.printItemNo, '已出貨')).toBe('100');
@@ -1063,7 +1063,7 @@ test('12.22 出貨人員對運送中的出貨單轉異常，理由必填並記�
   await expect(panel).toContainText('異常理由：客戶拒收');
   await closeDrawer(page);
 
-  // 印件總覽與印件詳情同時變：已出貨歸 0、可出貨額度加回 100
+  // 印件列表與印件詳情同時變：已出貨歸 0、可出貨額度加回 100
   await switchRoleSafe(page, '印務主管');
   await gotoInAppSafe(page, '/print-items');
   expect(await printItemCell(page, CHAIN4.printItemNo, '已出貨')).toBe('0');
@@ -1107,7 +1107,7 @@ test('12.23 業務對未離廠的出貨單作廢，理由必填並記轉入時�
   await expect(panel).toContainText('作廢原因：客戶改期');
   await closeDrawer(page);
 
-  // 額度加回：印件總覽可出貨額度回到 500
+  // 額度加回：印件列表可出貨額度回到 500
   await switchRoleSafe(page, '印務主管');
   await gotoInAppSafe(page, '/print-items');
   expect(await printItemCell(page, CHAIN4.printItemNo, '可出貨額度')).toBe('500');

@@ -130,7 +130,7 @@ test('8.5 交付產線後的欄位一路帶到現場報工（原編號 112）', 
   //（本鏈只報得動備料，計入完成度的「名片裁切分盒」尚未有產出，故完成數仍為 0）
   await switchRoleReliable(page, '印務');
   await gotoInAppStable(page, '/print-items');
-  // 印件總覽點的是印件名稱（印件編號欄為純文字），故取該列的第一個連結
+  // 印件列表點的是印件名稱（印件編號欄為純文字），故取該列的第一個連結
   await page
     .locator('tbody.ant-table-tbody > tr.ant-table-row', { hasText: 'PI-2026-0801' })
     .first()

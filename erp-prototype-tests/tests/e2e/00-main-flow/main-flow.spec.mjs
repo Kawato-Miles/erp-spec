@@ -518,7 +518,7 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
     await expect(rowOf(page, ITEM_A)).toHaveCount(0);
     await expect(rowOf(page, ITEM_B)).toHaveCount(0);
 
-    // 乙的第二張工單編號由印件總覽的展開列取得
+    // 乙的第二張工單編號由印件列表的展開列取得
     await goInApp(page, '/print-items', gotoInApp);
     await expandRow(page, ITEM_B);
     const expanded = await page.locator('.ant-table-expanded-row').last().innerText();
