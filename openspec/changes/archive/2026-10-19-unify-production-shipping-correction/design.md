@@ -10,7 +10,7 @@
 | 介面正本 | erp repo 分支 `prototype/production-stage`，已實作並經 Miles 試用 |
 | 驗收 | Sens `erp-prototype-tests/`，情境目錄第十、十一、十二章與 14.29～14.40 |
 | 相依 change | `production-dispatch-report-transfer-convergence`（下稱收斂 change）新增的 Requirement 是本 change 部分 MODIFIED 與 RENAMED 的底稿 |
-| 不進本 change | SHP-020、SHP-021、SHP-022、QC-010 未拍板的行為 |
+| 不進本 change | SHP-020、SHP-022、QC-010 未拍板的行為；SHP-021 已定案，由權限修正 change 承接 |
 
 ## Goals / Non-Goals
 
@@ -25,7 +25,7 @@
 ### Non-Goals
 
 - 拋單失敗的處置、第三方狀態對映、物流商配達回傳的介接（SHP-020）。
-- 建單人不在時誰改出貨明細（SHP-021）、移除單條出貨明細（SHP-022）。
+- 出貨單編輯與作廢的操作者（SHP-021 已定案，承諾見 shipment spec § 出貨單業務端操作的操作者依訂單編輯權）、移除單條出貨明細（SHP-022）。
 - 計入完成度任務報廢後已驗量的處理（QC-010）。
 - 外包廠與中國廠商任務經工單詳情報工與修正的 Prototype 入口（grill 第 42 題另案）。
 - 審稿難易度、發票等其他領域的「更正」用詞。
@@ -95,9 +95,9 @@
 | 本 change 早於收斂 change 歸檔時，RENAMED 與 MODIFIED 找不到底稿 | 歸檔順序固定：收斂 change 先歸檔；本 change 歸檔前，以歸檔後的主規格重新比對 MODIFIED 區塊 |
 | 品檢改為就地修正後，既有負數紀錄與新算法不相容 | 資料遷移把每組原紀錄與沖銷紀錄合併為一筆修正後的紀錄，沖銷紀錄轉成品檢修正紀錄（見 Migration Plan）；Prototype mock 已轉換 |
 | 併發重新檢核在 Prototype 無法重現（mock 存在單一瀏覽器記憶體） | Prototype 與純函式測試只驗「以當下數字判定」；同時寫入的行為留給後端實作時驗證 |
-| 揀貨不符擋下出貨後，建單人不在時無人改明細，單會一直停在待出貨 | 屬 SHP-021 未決範圍；期間由揀貨人員照實修正或由業務主管系統外協調，本 change 不另開路徑 |
+| 揀貨不符擋下出貨後，建單人不在時無人改明細，單會一直停在待出貨 | SHP-021 已定案：有該訂單編輯權者都可改明細（shipment spec § 出貨單業務端操作的操作者依訂單編輯權） |
 | 某條明細全數缺貨時揀貨數量無法填 0 或移除該條 | 屬 SHP-022；現況可作廢整張單重建 |
-| 處置修正在 Prototype 開放印務與印務主管，wiki 印件卡只寫印務 | spec 只寫「印務可修正、誰可修正見 wiki」，不擴大；落差列入 Open Questions |
+| 處置修正在 Prototype 開放印務與印務主管 | spec 只寫「印務可修正、誰可修正見 wiki」，執行角色以 wiki 活動清單為準 |
 
 ## Migration Plan
 
@@ -114,7 +114,6 @@
 
 | 項目 | 處理 |
 |------|------|
-| SHP-020、SHP-021、SHP-022、QC-010 | 既有 OQ 卡，相關行為不進本 change |
-| 報工與修正情境卡沒有「一次報多筆」分支；併發寫入沒有任何情境卡分支 | 本 change 的 Scenario 暫標最接近的步驟（報工照片擋下分支、報工修正或作廢分支等）；建議經 wiki-amend 補情境卡分支 |
-| order-management § 印件詳情頁工單與生產任務區塊有四條 Scenario 找不到情境卡步驟（開啟區塊、日期欄無值、實際成本段、跨印務可見） | 本 change 只改該 Requirement 一個用詞；四條 Scenario 未標情境，待補情境卡後再標 |
-| 處置修正的執行角色：Prototype 開放印務與印務主管，wiki 印件卡只寫印務 | 依 grill 隱含假設已列為待確認；需經 oq-manage 確認是否開卡 |
+| 拋單失敗與狀態對映、單條明細移除、報廢後已驗量 | 相關行為不進本 change → 對應 Vault OQ：[[SHP-020-ERP出貨單承接EC物流串接的狀態對映與拋單失敗處置]]、[[SHP-022-出貨明細全數缺貨時無法移除該條明細]]、[[QC-010-計入完成度任務報廢後待驗量變負]] |
+| order-management § 印件詳情頁工單與生產任務區塊有四條 Scenario 找不到情境卡步驟（開啟區塊、日期欄無值、實際成本段、跨印務可見） | 本 change 只改該 Requirement 一個用詞，四條 Scenario 維持未標情境 → 對應 Vault OQ：[[XM-018-查看類與指標類驗收條目沒有情境卡步驟可掛]] |
+| 處置修正的執行角色：Prototype 開放印務與印務主管 | 已解。決議與理由：執行角色依 wiki 活動清單定案，spec 只引用，不另開 OQ |
