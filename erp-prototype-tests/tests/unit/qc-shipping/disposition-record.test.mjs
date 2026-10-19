@@ -48,14 +48,25 @@ beforeEach(() => {
   });
 });
 
-describe('11.28 品檢缺口處置：入口只給印務與印務主管', () => {
+describe('11.28 品檢缺口處置：品檢人員沒有入口（處置操作者依工單編輯權，見 11.30）', () => {
   it('印務與印務主管有處置入口，品檢人員沒有；品檢人員直接呼叫被擋下且不寫入', () => {
-    expect(canDecideDisposition('print_officer').allowed).toBe(true);
-    expect(canDecideDisposition('print_manager').allowed).toBe(true);
-    expect(canDecideDisposition('qc_inspector').allowed).toBe(false);
+    const ownWorkOrder = { access: { userName: '周建宏', workOrders: [{ owner: '周建宏' }] } };
+    expect(canDecideDisposition('print_officer', ownWorkOrder.access).allowed).toBe(true);
+    expect(canDecideDisposition('print_manager', { userName: '吳國豪', workOrders: [] }).allowed).toBe(true);
+    expect(canDecideDisposition('qc_inspector', { userName: '郭淑芬', workOrders: [] }).allowed).toBe(false);
     const result = decide({ role: 'qc_inspector', qty: 10 });
     expect(result.ok).toBe(false);
     expect(dispositionOf()).toHaveLength(0);
+  });
+
+  it('11.30 非負責印務（不在旗下工單負責人與編輯分享成員內）直接呼叫被擋下且不寫入；負責印務與編輯分享成員通過', () => {
+    const owned = [{ owner: '周建宏', shared_members: [{ name: '陳映蓉', level: 'edit' }] }];
+    const blocked = decide({ role: 'print_officer', decided_by: '李佩珊', work_orders: owned, qty: 10 });
+    expect(blocked.ok).toBe(false);
+    expect(dispositionOf()).toHaveLength(0);
+    expect(decide({ role: 'print_officer', decided_by: '周建宏', work_orders: owned, qty: 10 }).ok).toBe(true);
+    expect(decide({ role: 'sales', decided_by: '陳映蓉', work_orders: owned, qty: 10 }).ok).toBe(true);
+    expect(dispositionOf()).toHaveLength(2);
   });
 });
 

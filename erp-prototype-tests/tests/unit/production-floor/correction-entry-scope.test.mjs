@@ -57,7 +57,7 @@ describe('14.31 轉交進度只列搬運量與點收量兩個數字', () => {
   });
 });
 
-describe('14.32 工單詳情的報工修正範圍＝工單詳情報工範圍', () => {
+describe('14.32 工單詳情的報工修正範圍＝工單詳情報工範圍（負責印務、編輯分享成員、印務主管全公司）', () => {
   const report = { id: 'wr-1', task_id: TASK_ID, reporter: '劉阿海' };
   const workOrder = { owner: '周建宏', shared_members: [{ name: '蔡明修', level: 'edit' }] };
   const opts = { source: REPORT_SOURCES.WORK_ORDER_DETAIL, workOrder };
@@ -68,9 +68,14 @@ describe('14.32 工單詳情的報工修正範圍＝工單詳情報工範圍', (
     expect(canEditWorkReport(report, 'print_officer', '蔡明修', task(), opts)).toBe(true);
   });
 
-  it('不是負責人也不是編輯分享成員的印務主管唯讀', () => {
-    expect(canEditWorkReport(report, 'print_manager', '吳國豪', task(), opts)).toBe(false);
-    expect(canVoidWorkReport(report, 'print_manager', '吳國豪', task(), opts)).toBe(false);
+  it('不是負責人也不是分享成員的印務主管，在工單詳情照樣可修正與作廢（全公司）', () => {
+    expect(canEditWorkReport(report, 'print_manager', '吳國豪', task(), opts)).toBe(true);
+    expect(canVoidWorkReport(report, 'print_manager', '吳國豪', task(), opts)).toBe(true);
+  });
+
+  it('不是負責人也不在分享成員的印務不可修正與作廢', () => {
+    expect(canEditWorkReport(report, 'print_officer', '郭俊賢', task(), opts)).toBe(false);
+    expect(canVoidWorkReport(report, 'print_officer', '郭俊賢', task(), opts)).toBe(false);
   });
 });
 
@@ -88,14 +93,32 @@ describe('14.35 我的生產任務、我的工作包只能修正與作廢自己�
     expect(canVoidWorkReport(proxied, 'master', '劉阿海', line, opts)).toBe(false);
   });
 
-  it('自己提交但任務已改派給別人（工作包指派師傅不是自己）→ 不可修正與作廢', () => {
+  it('修正與作廢只看報工人員：自己提交的、任務仍在自己工作包內，才有入口', () => {
     for (const source of [REPORT_SOURCES.MY_TASKS, REPORT_SOURCES.MY_PACKAGES]) {
-      const opts = { source, pkg: { id: 'wp-2', master: '陳金水' } };
-      expect(canEditWorkReport(own, 'master', '劉阿海', line, opts)).toBe(false);
-      expect(canVoidWorkReport(own, 'master', '劉阿海', line, opts)).toBe(false);
+      const opts = { source, pkg: mine };
+      expect(canEditWorkReport(own, 'master', '劉阿海', line, opts)).toBe(true);
+      expect(canVoidWorkReport(own, 'master', '劉阿海', line, opts)).toBe(true);
     }
-    // 任務已不在任何工作包內也不可
+  });
+
+  it('工作包改派後原師傅看不到原任務：自己提交的報工也沒有修正與作廢入口；新師傅不是報工人員，同樣沒有', () => {
+    for (const source of [REPORT_SOURCES.MY_TASKS, REPORT_SOURCES.MY_PACKAGES]) {
+      // 任務所屬工作包已改派陳金水：劉阿海的我的生產任務不再列這筆任務，pkg 為任務現在的工作包
+      const reassigned = { source, pkg: { id: 'wp-2', master: '陳金水' } };
+      expect(canEditWorkReport(own, 'master', '劉阿海', line, reassigned)).toBe(false);
+      expect(canVoidWorkReport(own, 'master', '劉阿海', line, reassigned)).toBe(false);
+      expect(canEditWorkReport(own, 'master', '陳金水', line, reassigned)).toBe(false);
+      expect(canVoidWorkReport(own, 'master', '陳金水', line, reassigned)).toBe(false);
+    }
+    // 任務已不在任何工作包內也看不到
     expect(canEditWorkReport(own, 'master', '劉阿海', line, { source: REPORT_SOURCES.MY_TASKS })).toBe(false);
+  });
+
+  it('改派後由所屬產線的生管在所有生產任務、所有工作包更正這筆報工', () => {
+    for (const source of [REPORT_SOURCES.ALL_TASKS, REPORT_SOURCES.ALL_PACKAGES]) {
+      expect(canEditWorkReport(own, 'production_planner', '許文傑', line, { source })).toBe(true);
+      expect(canVoidWorkReport(own, 'production_planner', '許文傑', line, { source })).toBe(true);
+    }
   });
 
   it('持有我的單元的非師傅角色也要自己提交且任務在自己工作包內，不因產線範圍放寬', () => {

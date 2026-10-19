@@ -228,7 +228,7 @@ test('14.14 工單列表只帶自己負責與被分享的（原編號 187）', a
   await expect(page.locator('.ant-table-tbody').first()).toContainText('PI-2026-0803');
 });
 
-test('14.15 工單分享頁籤的兩種層級與代理範圍（原編號 188）', async ({ page }) => {
+test('14.15 工單分享頁籤的兩種層級與代理範圍；印務主管可管理分享成員（原編號 188，2026-10-19 改寫）', async ({ page }) => {
   // 起點資料：鏈五 WO-2026-0901（負責印務周建宏，預置分享成員蔡明修一位且層級為檢視）
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0901');
 
@@ -263,13 +263,20 @@ test('14.15 工單分享頁籤的兩種層級與代理範圍（原編號 188）'
   await page.getByRole('button', { name: /取\s*消/ }).click({ force: true });
 
   // 最後切成印務主管重看同一個頁籤（同一張工單詳情頁不換頁，只換模擬角色）：
-  // 看得到同一份名單，但沒有新增鈕與移除鈕、層級下拉停用
+  // 印務主管（全公司）可管理分享成員：看得到同一份名單，有新增鈕與移除鈕、層級下拉可改，候選含非印務角色
   await switchRole(page, '印務主管');
   await page.getByRole('tab', { name: /分享（1）/ }).click();
   await expect(page.locator('body')).toContainText('蔡明修');
-  await expect(page.getByRole('button', { name: '新增分享成員' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '移除' })).toHaveCount(0);
-  await expect(page.locator('.ant-select', { hasText: '檢視' }).first().locator('input')).toBeDisabled();
+  await expect(page.getByRole('button', { name: '新增分享成員' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '移除' })).toHaveCount(1);
+  await expect(page.locator('.ant-select', { hasText: '檢視' }).first().locator('input')).toBeEnabled();
+  await page.getByRole('button', { name: '新增分享成員' }).click();
+  await page.locator('.ant-modal-content .ant-select').first().click();
+  const managerOptions = page.locator(
+    '.ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option',
+  );
+  await expect(managerOptions.filter({ hasText: '陳映蓉' })).toHaveCount(1); // 業務
+  await page.getByRole('button', { name: /取\s*消/ }).click({ force: true });
 });
 
 test('14.17 成本對照的顏色列同時呈現預估、實際與升降', async ({ page }) => {

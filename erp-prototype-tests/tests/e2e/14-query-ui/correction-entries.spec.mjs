@@ -50,7 +50,7 @@ test('14.31 工單詳情轉交進度欄只顯示搬運量與點收量兩個數�
   await expect(taskRows(page).filter({ hasText: '證書四色印刷' })).not.toContainText('良品 500／點收');
 });
 
-test('14.32 工單詳情的生產任務列按檢視開生產任務側板；負責印務可修正報工，其他人唯讀', async ({ page }) => {
+test('14.32 工單詳情的生產任務列按檢視開生產任務側板；負責印務與印務主管可修正與作廢報工，沒有編輯權的人唯讀（2026-10-19 改寫）', async ({ page }) => {
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0812');
   await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0812' })).toBeVisible({
     timeout: 20_000,
@@ -65,8 +65,18 @@ test('14.32 工單詳情的生產任務列按檢視開生產任務側板；負�
   await expect(firstReport.getByRole('button', { name: '作廢', exact: true })).toHaveCount(1);
   await page.getByRole('button', { name: '關閉' }).last().click();
 
-  // 切成不是這張工單負責人、也不是編輯分享成員的印務主管：同一個側板，報工唯讀
+  // 切成不是這張工單負責人、也不是編輯分享成員的印務主管：全公司範圍，同一個側板，報工照樣有修正與作廢
   await switchRole(page, '印務主管');
+  await certRow().getByRole('button', { name: '檢視', exact: true }).click();
+  drawer = drawerOf(page);
+  await expect(drawer).toContainText('報工紀錄');
+  const managerFirstReport = drawer.locator('tr.ant-table-row').first();
+  await expect(managerFirstReport.getByRole('button', { name: '修正', exact: true })).toHaveCount(1);
+  await expect(managerFirstReport.getByRole('button', { name: '作廢', exact: true })).toHaveCount(1);
+  await page.getByRole('button', { name: '關閉' }).last().click();
+
+  // 沒有這張工單編輯權的生管（許文傑不在分享成員）：看得到側板與報工紀錄，沒有修正與作廢
+  await switchRole(page, '生管');
   await certRow().getByRole('button', { name: '檢視', exact: true }).click();
   drawer = drawerOf(page);
   await expect(drawer).toContainText('報工紀錄');
@@ -165,4 +175,34 @@ test('14.35 我的生產任務的側板只能修正與作廢自己提交的報�
   const ownRow = drawer.locator('tr.ant-table-row', { hasText: '劉阿海' }).first();
   await expect(ownRow.getByRole('button', { name: '修正', exact: true })).toHaveCount(1);
   await expect(ownRow.getByRole('button', { name: '作廢', exact: true })).toHaveCount(1);
+});
+
+test('14.35 工作包改派後原師傅看不到原任務、沒有修正入口，由所屬產線的生管在所有生產任務更正（2026-10-19 新增）', async ({ page }) => {
+  // 起點資料：鏈四 PT-0820-3 書芯摺紙的唯一一筆報工由劉阿海提交，所屬工作包 WP-2026-0820-03 之後改派陳金水
+  await openAs(page, '師傅', '/production-floor/dispatch/mine');
+  const table = page.locator('.ant-table-tbody').first();
+  // 劉阿海還有其他任務在手上（確認清單有載入），但不再列出已改派的書芯摺紙
+  // （別的任務的製作細節文字會提到「書芯摺紙」，故以任務名稱欄的完整文字比對）
+  await expect(table).toContainText('海報四色印刷', { timeout: 20_000 });
+  await expect(table.getByText('書芯摺紙', { exact: true })).toHaveCount(0);
+  await gotoInApp(page, '/production-floor/work-packages/mine');
+  await expect(page.locator('.ant-table-tbody').first()).toContainText('WP-2026-0710-01', {
+    timeout: 20_000,
+  });
+  await expect(page.locator('.ant-table-tbody').first()).not.toContainText('WP-2026-0820-03');
+
+  // 裝訂產線的生管許文傑在所有生產任務開同一筆任務的側板：劉阿海提交的那筆有修正與作廢
+  await switchRole(page, '生管');
+  await gotoInApp(page, '/production-floor/dispatch');
+  const search = page.getByPlaceholder(/工單編號/).first();
+  await search.fill('WO-2026-0820');
+  await search.press('Enter');
+  // 任務名稱欄的完整文字比對（書芯印刷那列的製作細節也提到書芯摺紙）
+  await page.getByText('書芯摺紙', { exact: true }).first().click();
+  const drawer = drawerOf(page);
+  await expect(drawer).toContainText('報工紀錄');
+  const row = drawer.locator('tr.ant-table-row', { hasText: '劉阿海' }).first();
+  await expect(row).toBeVisible();
+  await expect(row.getByRole('button', { name: '修正', exact: true })).toHaveCount(1);
+  await expect(row.getByRole('button', { name: '作廢', exact: true })).toHaveCount(1);
 });

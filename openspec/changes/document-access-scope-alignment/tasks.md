@@ -91,7 +91,7 @@
 | 8.22 | 八 | 工單單據：印務主管預覽列印、非負責印務不可、生管異動後重印 | work-order〈工單單據預覽與列印的操作者依活動清單〉全部 Scenario | e2e（與 C20 同檔） |
 | 10.62 | 十 | 印務主管與業務（編輯分享）在工單詳情報工、修正、作廢；檢視層級不可；印務不得報別人的工單 | production-execution〈報工權限守門〉全部 Scenario | unit＋e2e |
 | 11.28 | 十一 | 待驗清單與品檢紀錄依角色範圍 | qc 全部 Scenario | e2e |
-| 11.29 | 十一 | 缺口處置、補做、短出結案限工單編輯權 | work-order〈非負責印務不能處置缺口〉〈編輯分享成員短出結案〉〈售後決議補做限工單編輯權〉 | unit |
+| 11.30 | 十一 | 缺口處置、修正處置、補做、短出結案限工單編輯權（落目錄時 11.29 已被缺口處置數量檢核使用，順延為 11.30） | work-order〈非負責印務不能處置缺口〉〈編輯分享成員短出結案〉〈售後決議補做限工單編輯權〉 | unit |
 | 12.22 | 十二 | 出貨單列表跟著訂單；業務主管與協助角色全公司；生管、品檢人員無入口 | shipment〈業務的出貨單列表只列自己負責訂單的單〉〈業務主管與協助角色看全公司出貨單〉、document-access〈沒有出貨單檢視列的角色看不到出貨管理〉〈活動清單沒有列出的角色看不到操作鈕〉 | e2e |
 | 12.23 | 十二 | 協助角色建草稿、作廢；印務（編輯分享）建立並作廢；改派後新業務可處置；現場動作不開放 | shipment〈出貨單業務端操作的操作者依訂單編輯權〉全部 Scenario | unit（與 C18 同檔）＋e2e |
 | 12.24 | 十二 | 出貨人員補附送達憑證 | shipment〈出貨人員於已送達後補附憑證〉 | e2e |
@@ -162,16 +162,16 @@
 
 ## 4. 第四批：工單與生產
 
-- [ ] 4.1 mock：依測試影響清單一、第 7 項確認報工紀錄與工作包改派資料
-- [ ] 4.2 測試先行：改 C19、C20、C21、C22、C23
-- [ ] 4.3 測試先行：新增 7.45、7.46、7.47、8.20、8.21、8.22、10.62、11.29 的測試；跑 `npm run test:module -- tests/e2e/07-process-planning tests/e2e/08-process-review-deliver tests/e2e/10-report-transfer` 確認新測試先失敗
-- [ ] 4.4 Prototype：工單側動作移除「先判印務」，改由集中判斷（含印務主管代做、編輯分享成員）
-- [ ] 4.5 Prototype：目的站點與產線修改開放印務主管於核可前；確樣需求開放印務主管
-- [ ] 4.6 Prototype：工單分享管理開放印務主管與編輯分享成員
-- [ ] 4.7 Prototype：工單單據預覽與列印依集中判斷
-- [ ] 4.8 Prototype：工單詳情的報工、修正、作廢依工單編輯權；師傅修正只看報工人員、限仍看得到任務時，工作包改派後由生管更正
-- [ ] 4.9 Prototype：缺口處置、補做、短出結案依工單編輯權
-- [ ] 4.10 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/07-process-planning tests/e2e/08-process-review-deliver tests/e2e/09-planner-dispatch tests/e2e/10-report-transfer tests/e2e/14-query-ui` 通過；`npx vitest run tests/unit/work-orders tests/unit/production-floor` 通過
+- [x] 4.1 mock：依測試影響清單一、第 7 項確認報工紀錄與工作包改派資料（原無此樣本：先改 MOCK-DATA-CHAIN，再改 PT-0820-3 的報工人員為劉阿海、工作包改派陳金水並補任務歷程一筆）
+- [x] 4.2 測試先行：改 C19（8.19 先前已改寫，本批確認仍通過）、C20、C21、C22、C23
+- [x] 4.3 測試先行：新增 7.45、7.46、7.47、8.20、8.21、8.22、10.62、11.30 的測試；跑 `npm run test:module -- tests/e2e/07-process-planning tests/e2e/08-process-review-deliver tests/e2e/10-report-transfer` 確認新測試先失敗
+- [x] 4.4 Prototype：工單側動作移除「先判印務」，改由集中判斷（含印務主管代做、編輯分享成員）
+- [x] 4.5 Prototype：目的站點與產線修改開放印務主管於核可前；確樣需求開放印務主管
+- [x] 4.6 Prototype：工單分享管理開放印務主管與編輯分享成員
+- [x] 4.7 Prototype：工單單據預覽與列印依集中判斷
+- [x] 4.8 Prototype：工單詳情的報工、修正、作廢依工單編輯權；師傅修正只看報工人員、限仍看得到任務時，工作包改派後由生管更正
+- [x] 4.9 Prototype：缺口處置、補做、短出結案依工單編輯權
+- [x] 4.10 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/07-process-planning tests/e2e/08-process-review-deliver tests/e2e/09-planner-dispatch tests/e2e/10-report-transfer tests/e2e/14-query-ui` 通過；`npx vitest run tests/unit/work-orders tests/unit/production-floor` 通過
 - [ ] 4.11 提交 erp 與 Sens
 
 ## 5. 第五批：出貨、售後、品檢

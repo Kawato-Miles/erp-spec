@@ -7,7 +7,8 @@ import { usePrintItemsStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 // 缺口是否補做與處置備註不在可修正欄位內。
 
 const PRINT_ITEM_NO = 'PI-TEST-DISP';
-const OFFICER = { by: '周建宏', role: 'print_officer' };
+// 周建宏是這件印件旗下工單的負責印務（處置操作者依工單編輯權，見 11.30）
+const OFFICER = { by: '周建宏', role: 'print_officer', work_orders: [{ owner: '周建宏' }] };
 
 const failedRecord = (failed, id = 'qc-d1') => ({
   id,

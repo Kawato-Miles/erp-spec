@@ -11,7 +11,7 @@ import {
 // 開發伺服器首次編譯各路由要數秒，測試逾時放寬
 test.describe.configure({ timeout: 120_000 });
 
-// 第八章 製程審核與交付產線：紙本單據（8.6 版式與欄位範圍、8.7 預覽與列印權限、8.8 急件標示）
+// 第八章 製程審核與交付產線：紙本單據（8.6 版式與欄位範圍、8.7 預覽與列印、8.8 急件標示、8.22 單據操作者依活動清單）
 
 // 單據本體那張紙的文字（排除頁上不印出的操作列）
 const sheetText = (page) =>
@@ -121,7 +121,7 @@ test('8.6 印務列印紙本工單，版式與欄位範圍固定且不含價格�
   expect(text).not.toContain('簽核');
 });
 
-test('8.7 送審前可預覽紙本，列印權限限印務與生管（原編號 169）', async ({ page }) => {
+test('8.7 送審前可預覽紙本；列印限負責印務、編輯分享成員、印務主管與生管（原編號 169，2026-10-19 改寫）', async ({ page }) => {
   // 送審前狀態（草稿）：負責印務看得到「預覽工單」
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0901');
   await expect(page.getByRole('button', { name: '列印紙本工單' })).toHaveCount(0);
@@ -177,8 +177,8 @@ test('8.7 送審前可預覽紙本，列印權限限印務與生管（原編號 
   await page.emulateMedia({ media: 'screen' });
 
   // 直接開送審前工單的列印網址而自己不是該工單的負責印務：另一個分頁以印務身分開啟，顯示沒有預覽權限。
-  // 對照組取 WO-2026-0905（草稿、尚未指派負責印務）；情境目錄寫的 WO-2026-0910 現況已是「製程審核完成」，
-  // 不落在送審前預覽的把關範圍（該狀態下印務與生管皆可列印，與負責人無關）
+  // 對照組取 WO-2026-0905（草稿、尚未指派負責印務）；WO-2026-0910 已是「製程審核完成」，
+  // 不落在送審前預覽的把關範圍，非負責印務的列印把關見 8.22
   const other = await page.context().newPage();
   await other.goto('/work-orders/print?id=wo-2026-0905');
   await switchRoleReliable(other, '印務');
@@ -386,4 +386,42 @@ test('8.13 確樣需求未勾選且負責印務未填電話時，表頭兩欄各
 
   // 不擋下列印
   await expect(page.getByRole('button', { name: /^列\s*印$/ })).toBeVisible();
+});
+
+test('8.22 工單單據的預覽與列印依活動清單：印務主管可預覽與列印、非負責印務不可列印、生管可列印', async ({ page }) => {
+  // 起點：WO-2026-0901（草稿，負責印務周建宏）、WO-2026-0908（製程審核完成，負責印務周建宏）、
+  // WO-2026-0910（製程審核完成，負責印務蔡明修）
+  await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0901');
+  await expect(page.getByRole('heading', { name: 'WO-2026-0901' })).toBeVisible({ timeout: 20_000 });
+  // 印務主管不是負責人也不在分享成員：送審前有預覽，可進預覽頁
+  await clickAndWaitUrl(
+    page,
+    page.getByRole('button', { name: '預覽工單' }),
+    /\/work-orders\/print\/?\?id=wo-2026-0901/,
+  );
+  await expect(page.getByText(/製程尚未經主管核可，此版不得作為現場作業依據/)).toBeVisible();
+
+  // 製程審核完成的單：印務主管直開列印網址可列印；非負責印務（周建宏對 WO-2026-0910）沒有列印權限
+  const other = await page.context().newPage();
+  await other.goto('/work-orders/print?id=wo-2026-0910');
+  await switchRoleReliable(other, '印務主管');
+  await expect(other.getByRole('button', { name: /^列\s*印$/ })).toBeVisible({ timeout: 20_000 });
+  await switchRoleReliable(other, '印務');
+  await expect(other.getByText('沒有列印權限')).toBeVisible();
+  // 生管（異動確認後重印）可列印，不看負責人
+  await switchRoleReliable(other, '生管');
+  await expect(other.getByRole('button', { name: /^列\s*印$/ })).toBeVisible();
+  await other.close();
+
+  // 詳情頁：非負責印務看不到列印鈕（WO-2026-0910 從印務主管視角進入後切成印務）
+  await clickAndWaitUrl(
+    page,
+    page.getByRole('button', { name: '回工單詳情' }).first(),
+    /\/work-orders\/detail/,
+  );
+  await openWorkOrderFromList(page, 'WO-2026-0910');
+  await expect(page.getByRole('button', { name: '列印紙本工單' })).toBeVisible();
+  await switchRoleReliable(page, '印務');
+  await expect(page.getByRole('heading', { name: 'WO-2026-0910' })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('button', { name: '列印紙本工單' })).toHaveCount(0);
 });

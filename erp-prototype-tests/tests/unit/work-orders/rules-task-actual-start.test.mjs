@@ -55,7 +55,7 @@ const workOrder = (status, owner, sharedMembers = []) => ({
   shared_members: sharedMembers,
 });
 
-describe('7.26 確樣需求限負責印務與其編輯（代理）成員，工單非終態全程可改', () => {
+describe('7.26 確樣需求限負責印務、編輯（代理）成員與印務主管，工單非終態全程可改', () => {
   it('製作中工單的負責印務可改（不鎖到草稿段）', () => {
     expect(proofRequirementEditGuard(workOrder('製作中', '周建宏'), 'print_officer', '周建宏').allowed).toBe(true);
   });
@@ -70,11 +70,18 @@ describe('7.26 確樣需求限負責印務與其編輯（代理）成員，工�
     expect(proofRequirementEditGuard(wo, 'print_officer', '蔡明修').allowed).toBe(false);
   });
 
-  it('業務、生管、師傅一律唯讀', () => {
+  it('印務主管不是負責人也不在分享成員，照樣可改（ACT-PLAN-035）', () => {
     const wo = workOrder('製作中', '周建宏');
-    for (const role of ['sales', 'production_planner', 'master', 'print_manager']) {
+    expect(proofRequirementEditGuard(wo, 'print_manager', '吳國豪').allowed).toBe(true);
+  });
+
+  it('業務、生管、師傅沒被分享（編輯）時一律唯讀；被分享（編輯）的業務可改', () => {
+    const wo = workOrder('製作中', '周建宏');
+    for (const role of ['sales', 'production_planner', 'master']) {
       expect(proofRequirementEditGuard(wo, role, '周建宏').allowed).toBe(false);
     }
+    const shared = workOrder('製作中', '周建宏', [{ name: '陳映蓉', level: 'edit' }]);
+    expect(proofRequirementEditGuard(shared, 'sales', '陳映蓉').allowed).toBe(true);
   });
 
   it('工單進終態（已完成、已取消）後唯讀', () => {

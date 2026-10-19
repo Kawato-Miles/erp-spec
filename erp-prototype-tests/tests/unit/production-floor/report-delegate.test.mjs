@@ -4,7 +4,7 @@ import {
   REPORT_CHANNELS,
   REPORT_SOURCES,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/permissions.js';
-import { isEditorOf } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/permissions.js';
+import { hasWorkOrderEditRight } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/permissions.js';
 
 // 情境 10.5「各入口範圍」、10.46「五個報工入口與三值提交管道」、10.47「越權只擋下」的權限判定
 //（畫面入口另在 e2e 10.5、10.46、10.47 驗）。
@@ -16,7 +16,7 @@ import { isEditorOf } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/w
 //     ALL_TASKS（所有生產任務）、MY_PACKAGES（我的工作包）、MY_TASKS（我的生產任務）；沒有印件詳情。
 //   REPORT_CHANNELS 三值：師傅自助、生產管理頁面代報、印務於工單詳情頁。
 //   checkReportPermission({ source, role, currentUser, task, pkg, workOrder }) → { allowed, channel, reason }
-//     工單詳情｜工單負責人或編輯（代理）分享成員（讀工單當下的值）
+//     工單詳情｜工單編輯權：負責印務、被分享（編輯）成員、印務主管（讀工單當下的值；見 10.62）
 //     所有工作包、所有生產任務｜任務的產線在操作者的所屬產線內
 //     我的工作包、我的生產任務｜任務所屬工作包的指派師傅是自己
 //   越權只擋下，不寫稽核日誌（store 不再有 logReportGuardBypass）。
@@ -63,10 +63,10 @@ describe('10.46 五個報工入口、三值提交管道；印件詳情沒有報�
   });
 });
 
-describe('10.5 工單詳情的報工範圍：負責人或編輯（代理）分享成員', () => {
+describe('10.5 工單詳情的報工範圍：負責人、編輯（代理）分享成員（與印務主管，見 10.62）', () => {
   it('交付後才授予的編輯（代理）成員，工單詳情頁報工放行', () => {
     const wo = workOrderWith([{ name: '周建宏', level: 'edit' }]);
-    expect(isEditorOf(wo, '周建宏')).toBe(true);
+    expect(hasWorkOrderEditRight(wo, 'print_officer', '周建宏')).toBe(true);
     const result = guard('print_officer', '周建宏', wo);
     expect(result.allowed).toBe(true);
     expect(result.channel).toBe('印務於工單詳情頁');
@@ -74,7 +74,7 @@ describe('10.5 工單詳情的報工範圍：負責人或編輯（代理）分�
 
   it('檢視層級的分享成員報不了工', () => {
     const wo = workOrderWith([{ name: '周建宏', level: 'view' }]);
-    expect(isEditorOf(wo, '周建宏')).toBe(false);
+    expect(hasWorkOrderEditRight(wo, 'print_officer', '周建宏')).toBe(false);
     expect(guard('print_officer', '周建宏', wo).allowed).toBe(false);
   });
 
@@ -92,7 +92,7 @@ describe('10.5 工單詳情的報工範圍：負責人或編輯（代理）分�
     expect(result.reason).toContain('編輯（代理）');
   });
 
-  it('負責人本人照舊放行；非印務角色一律沒有工單詳情這個管道', () => {
+  it('負責人本人照舊放行；沒被分享（編輯）的生管沒有工單詳情這個管道', () => {
     const wo = workOrderWith([]);
     expect(guard('print_officer', '蔡明修', wo).allowed).toBe(true);
     expect(guard('production_planner', '許文傑', wo).allowed).toBe(false);
