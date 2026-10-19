@@ -33,7 +33,7 @@ context: |
   Prototype 路徑：/Users/b-f-03-029/erp（實作 MUST 經 repo 內 skill prototype-from-prompt）；驗收測試在 Sens erp-prototype-tests/
 
   OpenSpec Specs（目錄結構見 openspec/specs/）：
-  - 涵蓋需求單 / 諮詢 / 訂單（含訂單帳務、訂單異動）/ 工單 / 生產管理 / 排程與工廠總覽 / 配方管理 / BOM 主檔 / 設備 / 審稿 / 品檢 / 出貨 / 派單 / 售後 / EC 等模組 specs，與業務情境等跨模組 specs（狀態列舉與欄位表歸 wiki、介面與互動歸 Prototype，spec 只承載系統行為；prototype 工程 specs 已於 2026-07-30 隨技術棧退場刪除）
+  - 涵蓋單據存取（跨模組權限判斷）/ 需求單 / 諮詢 / 訂單（含訂單帳務、訂單異動）/ 工單 / 生產管理 / 排程與工廠總覽 / 配方管理 / BOM 主檔 / 設備 / 審稿 / 品檢 / 出貨 / 派單 / 售後 / EC 等模組 specs，與業務情境等跨模組 specs（狀態列舉與欄位表歸 wiki、介面與互動歸 Prototype，spec 只承載系統行為；prototype 工程 specs 已於 2026-07-30 隨技術棧退場刪除）
 
   Notion 參考資源：
   - OQ Follow-up DB（對外確認版，現階段暫停推送）：https://www.notion.so/32c3886511fa808e9754ea1f18248d92
