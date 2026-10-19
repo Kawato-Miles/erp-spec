@@ -187,11 +187,11 @@
 
 ## 6. 第六批：帳務清單與輸出
 
-- [ ] 6.1 測試先行：新增 3.24 至 3.28 的測試；跑 `npm run test:module -- tests/e2e/03-payment` 確認新測試先失敗
-- [ ] 6.2 Prototype：訂單頁籤內收款項目、發票、款項紀錄、訂單異動的入口依集中判斷；取消已認列異動限審核業務主管本人
-- [ ] 6.3 Prototype：四張跨訂單清單依活動清單範圍，含被分享訂單；應收款項對業務、諮詢全公司
-- [ ] 6.4 Prototype：匯出對帳明細給看得到應收款項清單的人；匯出待退款報表限業務主管、會計、Supervisor
-- [ ] 6.5 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/03-payment` 通過；`npx vitest run tests/unit/payment` 通過
+- [x] 6.1 測試先行：新增 3.24 至 3.28 的測試；跑 `npm run test:module -- tests/e2e/03-payment` 確認新測試先失敗
+- [x] 6.2 Prototype：訂單頁籤內收款項目、發票、款項紀錄、訂單異動的入口依集中判斷；取消已認列異動限審核業務主管本人
+- [x] 6.3 Prototype：四張跨訂單清單依活動清單範圍，含被分享訂單；應收款項對業務、諮詢全公司
+- [x] 6.4 Prototype：匯出對帳明細給看得到應收款項清單的人；匯出待退款報表限業務主管、會計、Supervisor
+- [x] 6.5 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/03-payment` 通過；`npx vitest run tests/unit/payment` 通過
 - [ ] 6.6 提交 erp 與 Sens
 
 ## 7. 第七批：未實作操作補齊（依 design Q5，留在本變更最後做）
