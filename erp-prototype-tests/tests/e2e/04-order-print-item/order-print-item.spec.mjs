@@ -33,6 +33,8 @@ test('4.2 訂單類型只出現三個值（原編號 76）', async ({ page }) =>
 // 明寫「分界只有一條線：訂單是否已進入訂單完成或已取消……製作段也一樣」——購買數量與單價在
 // 訂單完成／取消前全程可直接改，製作段不鎖，加量改走加開印件只是另一條路徑而非唯一路徑。
 test('4.3 購買數量到訂單完成或已取消才鎖定，製作段仍可改（原編號 146）', async ({ page }) => {
+  // 跨三個角色、多次開頁，整章連跑時常超過預設 30 秒
+  test.setTimeout(90_000);
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=printItems');
   const row = page.locator('tr', { hasText: 'PI-2026-0710' });
   await row.getByRole('button', { name: '編輯印件' }).click();
@@ -66,21 +68,21 @@ test('4.3 購買數量到訂單完成或已取消才鎖定，製作段仍可改�
   await page.getByRole('tab', { name: /訂單項目/ }).click();
   const row2 = page.locator('tr', { hasText: 'PI-2026-0601' });
   await expect(row2.getByRole('button', { name: '編輯印件' })).toHaveCount(0);
-  // 清單剛重繪時第一次點擊可能落在尚未接上事件的節點，重試到印件詳情頁的內容出現為止。
-  // 判定用頁面內容不用網址：詳情頁以 router.push 開啟，網址可能晚一步才更新（見 README 執行注意事項）
-  const qtyValue = page
-    .locator('th.ant-descriptions-item-label')
-    .filter({ hasText: /^購買數量$/ })
-    .locator('xpath=following-sibling::td[1]');
   // 訂單項目分頁剛切過來時整張表會再重繪一次，先等這一列穩定再點，免得點在被換掉的節點上
   await expect(row2.getByRole('button', { name: '檢視印件' })).toBeVisible();
   await page.waitForTimeout(500);
+  // 第一次點擊可能落在尚未接上事件的節點：還停在訂單頁才重點，判定用印件詳情頁標題（網址可能晚一步更新）
+  const detailHeading = page.getByRole('heading', { name: /PI-2026-0601/ });
   await expect(async () => {
-    await row2.getByRole('button', { name: '檢視印件' }).click();
-    await expect(qtyValue).toBeVisible({ timeout: 5000 });
+    // 只在還停在訂單頁時才點：印件詳情頁的基本資訊表也有含印件編號的 tr，以列數判斷會誤點而卡 30 秒
+    if (!/print-items\/detail/.test(page.url())) {
+      await row2.getByRole('button', { name: '檢視印件' }).click();
+    }
+    await expect(detailHeading).toBeVisible({ timeout: 8000 });
   }).toPass({ intervals: [1000, 2000, 4000], timeout: 40000 });
-  // 唯讀顯示：Descriptions 表格版式，標籤 <th> 後緊接值 <td>，兩者純文字、無任何輸入框
-  await expect(qtyValue).toHaveText('5,000');
+  // 唯讀顯示：購買數量表頭後緊接值的儲存格，純文字、無任何輸入框（依表頭角色與名稱定位，不依 CSS class）
+  const qtyRow = page.getByRole('row').filter({ has: page.getByRole('rowheader', { name: '購買數量', exact: true }) });
+  await expect(qtyRow.getByRole('cell').first()).toHaveText('5,000');
 });
 
 test('4.4 討論串的通知對象取訂單管理人欄位（原編號 154）', async ({ page }) => {

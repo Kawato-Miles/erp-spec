@@ -176,13 +176,13 @@
 
 ## 5. 第五批：出貨、售後、品檢
 
-- [ ] 5.1 mock：依測試影響清單一、第 5、6 項改 `P/MOCK-DATA-CHAIN.md` 與對應 `mock-data.js`
-- [ ] 5.2 測試先行：改 C18
-- [ ] 5.3 測試先行：新增 11.28、12.22、12.23、12.25、12.26 的測試；跑 `npm run test:module -- tests/e2e/11-qc tests/e2e/12-shipping` 確認新測試先失敗
-- [ ] 5.4 Prototype：品檢待驗清單與品檢紀錄依角色範圍過濾
-- [ ] 5.5 Prototype：出貨單列表依訂單範圍；業務端操作依訂單編輯權，不看建單人
-- [ ] 5.6 Prototype：售後服務單列表依訂單範圍（不看開立者）；編輯、送出決議、結案、建訂單異動依訂單編輯權；會計只能檢視
-- [ ] 5.7 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/11-qc tests/e2e/12-shipping` 通過；`npx vitest run tests/unit/qc-shipping` 通過
+- [x] 5.1 mock：依測試影響清單一、第 5、6 項改 `P/MOCK-DATA-CHAIN.md` 與對應 `mock-data.js`
+- [x] 5.2 測試先行：改 C18
+- [x] 5.3 測試先行：新增 11.31、12.27、12.28、12.29、12.30 的測試（落目錄時 11.28、11.29、11.30、12.22 至 12.26 已被使用，順延）；跑 `npm run test:module -- tests/e2e/11-qc tests/e2e/12-shipping` 確認新測試先失敗
+- [x] 5.4 Prototype：品檢待驗清單與品檢紀錄依角色範圍過濾
+- [x] 5.5 Prototype：出貨單列表依訂單範圍；業務端操作依訂單編輯權，不看建單人
+- [x] 5.6 Prototype：售後服務單列表依訂單範圍（不看開立者）；編輯、送出決議、結案、建訂單異動依訂單編輯權；會計只能檢視
+- [x] 5.7 驗證：`npm run test:smoke` 通過；`npm run test:module -- tests/e2e/11-qc tests/e2e/12-shipping` 通過；`npx vitest run tests/unit/qc-shipping` 通過
 - [ ] 5.8 提交 erp 與 Sens
 
 ## 6. 第六批：帳務清單與輸出

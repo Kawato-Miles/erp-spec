@@ -671,10 +671,16 @@ test('12.15 列上動作鈕只長出合法的下一步，依角色、狀態與�
   await expect(pickupRow.getByRole('button', { name: '交付確認' })).toBeVisible();
   await expect(pickupRow.getByRole('button', { name: '出貨確認' })).toHaveCount(0);
 
-  // 印務主管看同一張單：列上只剩檢視，對話框歷程頁籤純唯讀
+  // 印務主管看同一張單：全公司協助角色有檢視、編輯、作廢三顆（C18，依訂單編輯權），沒有任何現場動作鈕；
+  // 對話框歷程頁籤純唯讀
   await switchRoleSafe(page, '印務主管');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await expect(shipmentRow(page, carrierNo).getByRole('button')).toHaveCount(1);
+  const managerRow = shipmentRow(page, carrierNo);
+  await expect(managerRow.getByRole('button', { name: '檢視' })).toBeVisible();
+  await expect(managerRow.getByRole('button', { name: '編輯' })).toBeVisible();
+  await expect(managerRow.getByRole('button', { name: '作廢' })).toBeVisible();
+  await expect(managerRow.getByRole('button', { name: '拋單' })).toHaveCount(0);
+  await expect(managerRow.getByRole('button')).toHaveCount(3);
   const readOnlyPanel = await openShipmentPanel(page, carrierNo);
   await readOnlyPanel.getByRole('tab', { name: '歷程' }).click();
   await expect(readOnlyPanel).toContainText('裝箱回報');

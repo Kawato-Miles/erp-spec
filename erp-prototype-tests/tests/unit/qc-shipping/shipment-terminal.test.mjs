@@ -113,12 +113,12 @@ describe('12.23 業務對未離廠的出貨單作廢', () => {
   it('業務與諮詢在未離廠三態有作廢（理由必填），出貨人員與揀貨人員沒有', () => {
     PRE_DEPARTURE.forEach((status) => {
       const shipment = shipmentOf('x', status);
-      const options = nextStatusOptions({ role: 'sales', shipment });
+      const options = nextStatusOptions({ role: 'sales', shipment, canVoid: true });
       expect(options.map((o) => o.status), status).toContain('已作廢');
       expect(options.find((o) => o.status === '已作廢').required).toEqual(['reason']);
-      expect(nextStatusOptions({ role: 'consultant', shipment }).map((o) => o.status)).toContain(
-        '已作廢',
-      );
+      expect(
+        nextStatusOptions({ role: 'consultant', shipment, canVoid: true }).map((o) => o.status),
+      ).toContain('已作廢');
       expect(
         nextStatusOptions({ role: 'shipper', shipment }).map((o) => o.status),
         status,
@@ -129,7 +129,7 @@ describe('12.23 業務對未離廠的出貨單作廢', () => {
   it('運送中與已送達沒有作廢：選項不出現，直接呼叫也不寫入', () => {
     ['運送中', '已送達'].forEach((status) => {
       expect(
-        nextStatusOptions({ role: 'sales', shipment: shipmentOf('x', status) }),
+        nextStatusOptions({ role: 'sales', shipment: shipmentOf('x', status), canVoid: true }),
         status,
       ).toEqual([]);
     });
