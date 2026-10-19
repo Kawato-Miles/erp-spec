@@ -512,47 +512,37 @@ QuoteRequest 資料模型 SHALL 保有 `payment_terms_note` 欄位（text，最�
 
 ### Requirement: 需求單詳情頁 Tabs 化版型
 
-需求單詳情頁 SHALL 採用 Tabs 化版型（依 DESIGN.md §6.3.1），結構：`ErpPageHeader → （條件性 inline banners）→ ErpDetailTabs（首位「資訊」Tab，defaultValue）`。
+需求單詳情頁 SHALL 以頁首、常駐基本資訊、頁籤三部分組成。版型以 Prototype 為正本，本 Requirement 只承載頁籤組成、預設頁籤與動作可見性的系統承諾。
 
-`ErpPageHeader` SHALL 包含：
-- 返回按鈕
-- 需求單案名（標題）
-- 需求單號 Badge（success 色系）
-- 主動作群（依活動清單與狀態條件顯示）：複製 / 編輯 / 流失 / 送印務評估 / 評估完成 / 進入議價 / 成交 / 重新報價 / 建立訂單 / 改派。誰可以做哪個動作，規則正本見 wiki〈了解需求活動清單〉、〈報價評估活動清單〉、〈成交建訂單活動清單〉、〈改派負責人活動清單〉。
+頁首 SHALL 顯示需求單案名、需求單號與主動作群。主動作群依活動清單與狀態條件顯示：複製 / 編輯 / 流失 / 送印務評估 / 評估完成 / 進入議價 / 成交 / 重新報價 / 建立訂單 / 改派。誰可以做哪個動作，規則正本見 wiki〈了解需求活動清單〉、〈報價評估活動清單〉、〈成交建訂單活動清單〉、〈改派負責人活動清單〉。
 
 業務主管於需求單詳情頁 MUST NOT 顯示任何業務主管專屬的審核動作（核可進入議價、核准成交、上次核可條件對照等動作均移除）。
 
-`ErpPageHeader` 與 `ErpDetailTabs` 之間 SHALL 保留條件性 inline banner 區（緊貼 Header 之下、Tabs 之上）：
-- 業務側：需求確認中狀態下未指定印務主管時的提示 banner
-- 動作錯誤訊息 banner
+基本資訊（狀態步驟條、主資訊欄位、報價金額）SHALL 常駐於頁籤上方，切換頁籤時 SHALL 持續可見；系統 SHALL NOT 另設「資訊」頁籤。
 
-需求單詳情頁 SHALL 包含 5 個 Tab（含條件隱藏 Tab），順序：`資訊（首位，defaultValue）→ 印件報價（{count}）→ 報價紀錄（{count}）→ 分享成員（{count}）→ 活動紀錄`。報價紀錄 Tab SHALL 對看得到該需求單的人一律顯示；誰看得到需求單，規則正本見 wiki〈售前單據檢視活動清單〉ACT-VPRE-001 至 ACT-VPRE-006。
+需求單詳情頁 SHALL 包含 4 個頁籤，順序：`印件報價（{count}）→ 報價紀錄（{count}）→ 分享成員（{count}）→ 活動紀錄`。進入頁面時 SHALL 預設停在「印件報價」。報價紀錄頁籤 SHALL 對看得到該需求單的人一律顯示；誰看得到需求單，規則正本見 wiki〈售前單據檢視活動清單〉ACT-VPRE-001 至 ACT-VPRE-006。
 
-「資訊」Tab 承載原 Tabs 之上的「基本資訊卡」：StatusStepper（5 步狀態步驟條）+ 主資訊欄位（業務 / 印務主管 / 客戶 / 等等）+ 收款備註 + 備註 + 流失原因 / 流失說明（status='流失' 時顯示）+ 報價金額橫排（報價輪次 / 小計 / 稅額 / 含稅總額）。
+**Priority**: P1
 
-#### Scenario: 業務進入需求單詳情頁預設停留資訊 Tab
+**Rationale**: 基本資訊是每個頁籤都要對照的上下文，常駐在上方比收進頁籤少一次切換。業務進頁後最常處理的是印件報價，所以預設停在印件報價。
+
+#### Scenario: 業務進入需求單詳情頁預設停在印件報價
 
 - **WHEN** 業務或業務主管進入需求單詳情頁
-- **THEN** 頁面載入完成時 SHALL 預設停留於「資訊」Tab（首位）
-- **AND** 「資訊」Tab 內 SHALL 顯示基本資訊卡（含 StatusStepper 5 步 + 主資訊欄位 + 報價金額橫排）
+- **THEN** 頁面載入完成時 SHALL 預設停在「印件報價」頁籤
+- **AND** 基本資訊 SHALL 顯示在頁籤上方，SHALL NOT 出現「資訊」頁籤
 
-#### Scenario: 需求單詳情頁 Tab 順序符合業務流先後
+#### Scenario: 需求單詳情頁頁籤順序符合業務流先後
 
-- **WHEN** 業務瀏覽需求單詳情頁的 Tab 列
-- **THEN** Tab 順序 SHALL 為：資訊 → 印件報價 → 報價紀錄 → 分享成員 → 活動紀錄
-- **AND** 「活動紀錄」SHALL 為末位（依 DESIGN.md §0.1 業務流先後 + 活動紀錄末位原則）
-- **AND** 「報價紀錄」Tab SHALL 對看得到該需求單的人一律顯示，SHALL NOT 依角色隱藏
-
-#### Scenario: 條件性 inline banner 位置
-
-- **WHEN** 需求單 `status === '需求確認中'` 且使用者為業務、且未指定印務主管
-- **THEN** `ErpPageHeader` 下方、`ErpDetailTabs` 上方 SHALL 顯示「尚未指定評估印務主管」提示 banner
-- **AND** banner SHALL NOT 出現在「資訊」Tab 內或其他 Tab 中
+- **WHEN** 業務瀏覽需求單詳情頁的頁籤列
+- **THEN** 頁籤順序 SHALL 為：印件報價 → 報價紀錄 → 分享成員 → 活動紀錄
+- **AND** 「活動紀錄」SHALL 為末位
+- **AND** 「報價紀錄」頁籤 SHALL 對看得到該需求單的人一律顯示，SHALL NOT 依角色隱藏
 
 #### Scenario: 業務主管於需求單詳情頁無動作按鈕
 
 - **WHEN** 業務主管開啟任一需求單詳情頁
-- **THEN** `ErpPageHeader` 動作群 MUST NOT 顯示「核可進入議價」、「核准成交」、「一鍵確認（條件未變）」任一按鈕
+- **THEN** 頁首動作群 MUST NOT 顯示「核可進入議價」、「核准成交」、「一鍵確認（條件未變）」任一按鈕
 - **AND** 內容區 MUST NOT 顯示「上次核可條件對照」banner
 - **AND** 業務主管的審核動作改於訂單詳情頁執行（見 [order-management spec](../order-management/spec.md) § 業務主管核准訂單）
 
