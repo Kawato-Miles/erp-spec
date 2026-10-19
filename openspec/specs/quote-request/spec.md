@@ -476,18 +476,15 @@ QuoteRequest 資料模型 SHALL 保有 `payment_terms_note` 欄位（text，最�
 - 返回按鈕
 - 需求單案名（標題）
 - 需求單號 Badge（success 色系）
-- 主動作群（依角色 / 狀態條件顯示）：
-  - 業務：複製 / 編輯 / 流失 / 送印務評估 / 進入議價 / 成交 / 重新報價 / 建立訂單
-  - PM 或業務：評估完成
-  - Supervisor：重新指定印務主管
+- 主動作群（依活動清單與狀態條件顯示）：複製 / 編輯 / 流失 / 送印務評估 / 評估完成 / 進入議價 / 成交 / 重新報價 / 建立訂單 / 改派。誰可以做哪個動作，規則正本見 wiki〈了解需求活動清單〉、〈報價評估活動清單〉、〈成交建訂單活動清單〉、〈改派負責人活動清單〉。
 
-業務主管於需求單詳情頁 MUST NOT 顯示任何業務主管專屬動作（核可進入議價、核准成交、上次核可條件對照等動作均移除）。業務主管於需求單為只讀檢視。
+業務主管於需求單詳情頁 MUST NOT 顯示任何業務主管專屬的審核動作（核可進入議價、核准成交、上次核可條件對照等動作均移除）。
 
 `ErpPageHeader` 與 `ErpDetailTabs` 之間 SHALL 保留條件性 inline banner 區（緊貼 Header 之下、Tabs 之上）：
 - 業務側：需求確認中狀態下未指定印務主管時的提示 banner
-- 動作錯誤訊息 banner（Supervisor 重新指定印務主管錯誤等）
+- 動作錯誤訊息 banner
 
-需求單詳情頁 SHALL 包含 5 個 Tab（含條件隱藏 Tab），順序：`資訊（首位，defaultValue）→ 印件報價（{count}）→ 報價紀錄（{count}，業務 / 業務主管 才顯示）→ 權限管理（{count}）→ 活動紀錄`。
+需求單詳情頁 SHALL 包含 5 個 Tab（含條件隱藏 Tab），順序：`資訊（首位，defaultValue）→ 印件報價（{count}）→ 報價紀錄（{count}）→ 分享成員（{count}）→ 活動紀錄`。報價紀錄 Tab SHALL 對看得到該需求單的人一律顯示；誰看得到需求單，規則正本見 wiki〈售前單據檢視活動清單〉ACT-VPRE-001 至 ACT-VPRE-006。
 
 「資訊」Tab 承載原 Tabs 之上的「基本資訊卡」：StatusStepper（5 步狀態步驟條）+ 主資訊欄位（業務 / 印務主管 / 客戶 / 等等）+ 收款備註 + 備註 + 流失原因 / 流失說明（status='流失' 時顯示）+ 報價金額橫排（報價輪次 / 小計 / 稅額 / 含稅總額）。
 
@@ -500,9 +497,9 @@ QuoteRequest 資料模型 SHALL 保有 `payment_terms_note` 欄位（text，最�
 #### Scenario: 需求單詳情頁 Tab 順序符合業務流先後
 
 - **WHEN** 業務瀏覽需求單詳情頁的 Tab 列
-- **THEN** Tab 順序 SHALL 為：資訊 → 印件報價 → 報價紀錄 → 權限管理 → 活動紀錄
+- **THEN** Tab 順序 SHALL 為：資訊 → 印件報價 → 報價紀錄 → 分享成員 → 活動紀錄
 - **AND** 「活動紀錄」SHALL 為末位（依 DESIGN.md §0.1 業務流先後 + 活動紀錄末位原則）
-- **AND** 「報價紀錄」Tab SHALL 在使用者非業務或業務主管時隱藏（沿用既有 `hidden: !(isSales || isSalesManager)` 邏輯）
+- **AND** 「報價紀錄」Tab SHALL 對看得到該需求單的人一律顯示，SHALL NOT 依角色隱藏
 
 #### Scenario: 條件性 inline banner 位置
 

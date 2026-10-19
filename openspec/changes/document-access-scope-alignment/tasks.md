@@ -201,13 +201,13 @@
 - [x] 7.3 Prototype：印務自行加開工單（負責人固定為加開者、送審時指定審核主管）
 - [x] 7.4 Prototype：出貨人員補附送達憑證（功能本體由另一工作階段先落地；本批確認權限符合 ACT-SHP-025，不重做）
 - [x] 7.5 驗證：`npm run test:smoke` 與 `npm run test:module -- tests/e2e/02-order-setup tests/e2e/07-process-planning tests/e2e/12-shipping` 通過
-- [ ] 7.6 提交 erp 與 Sens
+- [x] 7.6 提交 erp 與 Sens
 
 ## 8. 收尾
 
 - [ ] 8.1 合併前跑 `npm test` 全套，失敗數為 0；結果附在合併說明
-- [ ] 8.2 情境目錄各新節補「依據」wiki 卡名；`T/docs/findings-20260908.md` 關掉已修項
-- [ ] 8.3 archive 前手動清理下列既有 Requirement 的舊權限句（design D8），每項清理後 `openspec validate --strict` 通過：
+- [x] 8.2 情境目錄各新節補「依據」wiki 卡名；`T/docs/findings-20260908.md` 關掉已修項
+- [x] 8.3 archive 前手動清理下列既有 Requirement 的舊權限句（design D8），每項清理後 `openspec validate --strict` 通過：
   - order-management〈訂單列表權限與可見範圍〉：角色範圍段與「訂單管理人」「業務主管」兩則 Scenario 改引用檢視活動清單
   - order-management〈訂單詳情頁編輯型 Section 統一編輯時機與角色〉：角色表刪除，改引用活動清單
   - order-management〈業務送出訂單審核（草稿 → 待業務主管審核）〉：「印務主管（不參與訂單維護）」一句與〈只有訂單可編輯角色看得到送審按鈕〉Scenario
@@ -224,4 +224,4 @@
   - production-execution〈生產管理單元的權限與可見範圍〉：「主管（Supervisor）」用詞與權限名稱
   - qc〈待驗清單〉：「生管、印務、印務主管 SHALL 可唯讀檢視」與〈非品檢人員唯讀檢視〉Scenario
   - after-sales-ticket〈我的售後服務作業頁〉、〈業務主管全公司售後管理頁〉：「範圍為開立者本人」
-- [ ] 8.4 主動收尾：依 CLAUDE.md § 主動收尾掃本變更檔案有無 inline 待確認措辭；後端未解問題卡（AFT-16、ORD-058、QR-015）補記 Prototype 已改的事實
+- [x] 8.4 主動收尾：依 CLAUDE.md § 主動收尾掃本變更檔案有無 inline 待確認措辭；後端未解問題卡（AFT-16、ORD-058、QR-015）補記 Prototype 已改的事實
