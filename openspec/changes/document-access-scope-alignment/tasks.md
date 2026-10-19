@@ -205,7 +205,7 @@
 
 ## 8. 收尾
 
-- [ ] 8.1 合併前跑 `npm test` 全套，失敗數為 0；結果附在合併說明
+- [x] 8.1 合併前跑 `npm test` 全套，失敗數為 0；結果附在合併說明
 - [x] 8.2 情境目錄各新節補「依據」wiki 卡名；`T/docs/findings-20260908.md` 關掉已修項
 - [x] 8.3 archive 前手動清理下列既有 Requirement 的舊權限句（design D8），每項清理後 `openspec validate --strict` 通過：
   - order-management〈訂單列表權限與可見範圍〉：角色範圍段與「訂單管理人」「業務主管」兩則 Scenario 改引用檢視活動清單

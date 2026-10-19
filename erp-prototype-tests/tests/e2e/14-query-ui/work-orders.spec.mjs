@@ -210,12 +210,12 @@ test('14.14 工單列表只帶自己負責與被分享的（原編號 187）', a
   await expect(table).not.toContainText('WO-2026-0907');
   await expect(table).not.toContainText('WO-2026-0910');
 
-  // 印件列表只列旗下至少有一張工單對自己可見的印件：PI-2026-0803（旗下唯一工單 WO-2026-0910
-  // 的負責人為蔡明修）不在列，PI-2026-0710（負責人周建宏）仍在列
+  // 印件列表不跟工單列表收窄：印務依生產單據檢視活動清單 ACT-VPRD-005 看全公司印件，
+  // 旗下沒有自己工單的 PI-2026-0803（唯一工單 WO-2026-0910 的負責人為蔡明修）也在列，才能自行加開工單（7.48）
   await gotoInApp(page, '/print-items');
   const printItemTable = page.locator('.ant-table-tbody').first();
   await expect(printItemTable).toContainText('PI-2026-0710');
-  await expect(printItemTable).not.toContainText('PI-2026-0803');
+  await expect(printItemTable).toContainText('PI-2026-0803');
 
   // 切成印務主管重看同樣兩頁：兩頁都列全部，含尚未指派的
   await switchRole(page, '印務主管');
