@@ -10,8 +10,8 @@ import {
   validatePackingLines,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/shipping-rules.js';
 import {
-  nextStatusOptions,
-  SHIPMENT_LEVEL_KEY as S,
+  LOGISTICS_LEVEL_KEY as L,
+  logisticsActionsOf,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/next-status-options.js';
 import { shipmentStatusOf } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/logistics-rules.js';
 import {
@@ -23,7 +23,8 @@ import { useOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototyp
 import { box, departed, logistics, packedShipment } from './_fixtures.mjs';
 
 // 情境 12.5（揀貨數量與明細不符時照實填）、12.19（不符擋下出貨動作、業務改明細或揀貨人員修正後放行）、
-// 12.20（裝箱回報修正：每個被改的欄位一筆、原因必填、只限未出貨動作）、12.21（拋單生成物流單號與子單號）的驗算。
+// 12.20（裝箱回報修正：每個被改的欄位一筆、原因必填、只限未出貨動作）、12.21（拋單生成物流單號與子單號）的驗算
+//（依據 grill G31、G32：出貨動作在物流單列上逐筆執行，拋單失敗不算離廠、裝箱資料仍可修正）。
 
 const NO = 'PI-2026-0820';
 const NAME = '《山城記事》精裝書（128 頁）';
@@ -35,7 +36,7 @@ const detail = (qty, picked = null) => ({
   picked_qty: picked,
 });
 
-// 已裝箱、尚未執行過出貨動作的出貨單：10 箱新竹物流（不支援子母單，一箱一筆物流單，這裡只放兩箱）
+// 已裝箱、物流單都沒有離廠時間的出貨單：10 箱新竹物流（不支援子母單，一箱一筆物流單，這裡只放兩箱）
 const shipmentOf = (overrides = {}) => {
   const los = [logistics('SH-2026-9001-001', '已裝箱'), logistics('SH-2026-9001-002', '已裝箱')];
   return {
@@ -93,24 +94,26 @@ describe('12.19 揀貨不符的判定：任一條明細揀貨數量不等於出�
     expect(isPickingMismatch(null)).toBe(false);
   });
 
-  it('不符時出貨人員沒有出貨動作，各出貨方式都一樣', () => {
+  it('不符時出貨人員在物流單上沒有出貨動作，各出貨方式都一樣', () => {
     ['自取', '專車配送', '順豐', '新竹物流', '7-11 交貨便', '全家', '其他'].forEach((method) => {
       const sh = shipmentOf({ method, details: [detail(500, 480)] });
-      expect(nextStatusOptions({ role: 'shipper', shipment: sh })).toEqual([]);
+      sh.logistics_orders.forEach((lo) => {
+        expect(logisticsActionsOf({ role: 'shipper', shipment: sh, logistics: lo })).toEqual([]);
+      });
     });
   });
 
-  it('兩數相符後放行：第三方列拋單、專車列出貨確認、自取列標記可自取', () => {
-    const third = nextStatusOptions({ role: 'shipper', shipment: shipmentOf() });
-    expect(third.map((o) => o.key)).toEqual([S.DISPATCH]);
-    expect(third[0].label).toContain('拋單');
-    expect(third[0].required).toEqual([]);
-    expect(
-      nextStatusOptions({ role: 'shipper', shipment: shipmentOf({ method: '自取' }) })[0].label,
-    ).toContain('標記可自取');
-    expect(
-      nextStatusOptions({ role: 'shipper', shipment: shipmentOf({ method: '專車配送' }) })[0].label,
-    ).toContain('出貨確認');
+  it('兩數相符後放行：每筆已裝箱物流單各列一顆出貨動作（第三方拋單、專車出貨確認、自取標記可自取）', () => {
+    const third = shipmentOf();
+    third.logistics_orders.forEach((lo) => {
+      expect(logisticsActionsOf({ role: 'shipper', shipment: third, logistics: lo })).toEqual([L.DISPATCH]);
+    });
+    ['自取', '專車配送'].forEach((method) => {
+      const sh = shipmentOf({ method });
+      expect(
+        logisticsActionsOf({ role: 'shipper', shipment: sh, logistics: sh.logistics_orders[0] }),
+      ).toEqual([L.DISPATCH]);
+    });
   });
 });
 
@@ -286,23 +289,15 @@ describe('12.20 裝箱回報修正的差異判定', () => {
     ).toBe(false);
   });
 
-  it('只限未出貨動作的已裝箱：打包中、已執行過出貨動作、終態都不成立', () => {
+  it('只限未出貨動作的已裝箱：打包中、任一筆物流單已離廠、終態都不成立', () => {
     const outShipment = {
       ...base,
       logistics_orders: [departed('SH-2026-9001-001', '等待出貨'), logistics('SH-2026-9001-002', '已裝箱')],
-    };
-    const failedShipment = {
-      ...base,
-      logistics_orders: [
-        logistics('SH-2026-9001-001', '已裝箱', { dispatch_attempts: 1, dispatch_error: '拒收' }),
-        logistics('SH-2026-9001-002', '已裝箱'),
-      ],
     };
     const cases = [
       { ...base, status: '打包中' },
       { ...base, status: '已作廢' },
       outShipment,
-      failedShipment,
     ];
     cases.forEach((shipment) => {
       const result = build(
@@ -582,13 +577,13 @@ describe('12.20 裝箱回報修正寫入紀錄與歷程，並同步調整物流�
     expect(current().packing_corrections).toEqual([]);
   });
 
-  it('執行過出貨動作（含部分失敗）後鎖住，不可修正', () => {
+  it('任一筆物流單離廠（部分離廠）後鎖住，不可修正', () => {
     useQcShippingStore.setState({
       shipments: [
         {
           ...current(),
           logistics_orders: [
-            logistics('SH-2026-9001-001', '已裝箱', { dispatch_attempts: 1, dispatch_error: '拒收' }),
+            departed('SH-2026-9001-001', '等待出貨'),
             logistics('SH-2026-9001-002', '已裝箱'),
           ],
         },

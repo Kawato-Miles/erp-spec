@@ -11,8 +11,9 @@ import { departed, logistics, packedShipment } from './_fixtures.mjs';
 // 情境 12.15「列上動作鈕只列合法的下一步，依角色、出貨方式與物流單狀態過濾」的驗算
 //（畫面呈現另在 e2e 12.15 驗）。
 //
-// 出貨單層的動作（開始揀貨、完成裝箱回報、出貨動作、作廢出貨單）與物流單層的動作（單筆重試、重新同步、
-// 標記例外、送達確認、交付確認、補附送達憑證、下載、作廢物流單）各自只列合法的那幾個：
+// 出貨單層的動作（開始揀貨、完成裝箱回報、作廢出貨單）與物流單層的動作（出貨動作、重新同步、
+// 標記例外、送達確認、交付確認、補附送達憑證、下載、作廢物流單）各自只列合法的那幾個
+//（依據 grill G31：出貨動作只在物流單列上，出貨單層沒有批次入口；G32：不設單筆重試）：
 // 可選值錯一格就會讓現場推出一個狀態機不允許的轉換。
 
 const prePacking = (status, method = '新竹物流') => ({ status, method, details: [], logistics_orders: [] });
@@ -42,65 +43,25 @@ describe('揀貨人員', () => {
   });
 });
 
-describe('出貨人員的出貨動作（批次）依出貨方式命名，沒有要填的欄位', () => {
-  it('出貨單有在已裝箱的物流單時，各出貨方式都列出貨動作', () => {
-    const expected = {
-      自取: '標記可自取',
-      專車配送: '出貨確認',
-      順豐: '拋單',
-      新竹物流: '拋單',
-      '7-11 交貨便': '拋單',
-      全家: '拋單',
-      其他: '出貨確認',
-    };
-    for (const [method, label] of Object.entries(expected)) {
-      const options = nextStatusOptions({
-        role: 'shipper',
-        shipment: packed(method, [logistics('SH-TEST-0001-001', '已裝箱')]),
-      });
-      expect(options, method).toHaveLength(1);
-      expect(options[0].key).toBe(S.DISPATCH);
-      expect(options[0].label).toContain(label);
-      expect(options[0].required).toEqual([]);
-    }
-  });
-
-  it('只要還有一筆物流單在已裝箱就有（部分失敗後仍可批次再送）；全部送出後就沒有', () => {
-    const mixed = packed('7-11 交貨便', [
-      departed('SH-TEST-0001-001', '等待出貨'),
-      logistics('SH-TEST-0001-002', '已裝箱', { dispatch_attempts: 1, dispatch_error: '物流商拒收' }),
-    ]);
-    expect(keysOf('shipper', mixed)).toEqual([S.DISPATCH]);
-    const allOut = packed('7-11 交貨便', [
-      departed('SH-TEST-0001-001', '等待出貨'),
-      departed('SH-TEST-0001-002', '等待出貨'),
-    ]);
-    expect(keysOf('shipper', allOut)).toEqual([]);
-  });
-
-  it('揀貨不符時沒有出貨動作，各出貨方式都一樣；兩數相符後放行', () => {
+describe('出貨人員在出貨單層沒有出貨動作（G31：出貨動作只在物流單列上）', () => {
+  it('不論出貨方式、物流單狀態，出貨單層都沒有出貨動作', () => {
     ['自取', '專車配送', '順豐', '新竹物流', '7-11 交貨便', '全家', '其他'].forEach((method) => {
-      const sh = packed(method, [logistics('SH-TEST-0001-001', '已裝箱')]);
-      sh.details[0].picked_qty = 80;
+      const sh = packed(method, [
+        logistics('SH-TEST-0001-001', '已裝箱'),
+        departed('SH-TEST-0001-002', '等待出貨'),
+      ]);
       expect(keysOf('shipper', sh), method).toEqual([]);
-      sh.details[0].picked_qty = 100;
-      expect(keysOf('shipper', sh), method).toEqual([S.DISPATCH]);
     });
   });
 
-  it('所屬訂單已取消時沒有出貨動作', () => {
-    const sh = packed('順豐', [logistics('SH-TEST-0001-001', '已裝箱')]);
-    expect(keysOf('shipper', sh, { orderCancelled: true })).toEqual([]);
-  });
-
-  it('單還在揀貨之前（沒有物流單）時沒有出貨動作', () => {
+  it('單還在揀貨之前（沒有物流單）時也沒有', () => {
     expect(keysOf('shipper', prePacking('未處理'))).toEqual([]);
     expect(keysOf('shipper', prePacking('打包中'))).toEqual([]);
   });
 });
 
 describe('業務（作廢依訂單編輯權，由呼叫端判好 canVoid 傳入）', () => {
-  it('未處理、打包中與未執行過出貨動作的已裝箱都推得到已作廢，理由必填', () => {
+  it('未處理、打包中與物流單都沒有離廠時間的已裝箱都推得到已作廢，理由必填', () => {
     const shipments = [
       prePacking('未處理'),
       prePacking('打包中'),
@@ -113,13 +74,16 @@ describe('業務（作廢依訂單編輯權，由呼叫端判好 canVoid 傳入�
     }
   });
 
-  it('執行過出貨動作之後（含出貨失敗）整張單不能作廢：只能逐筆作廢物流單', () => {
-    const failed = packed('順豐', [
-      logistics('SH-TEST-0001-001', '已裝箱', { dispatch_attempts: 1, dispatch_error: '物流商拒收' }),
-    ]);
-    expect(keysOf('sales', failed, { canVoid: true })).toEqual([]);
+  it('任一筆物流單離廠之後整張單不能作廢：只能逐筆作廢物流單；拋單失敗不算離廠，仍可作廢', () => {
+    const failedOnly = packed('順豐', [logistics('SH-TEST-0001-001', '已裝箱')]);
+    expect(keysOf('sales', failedOnly, { canVoid: true })).toEqual([S.VOID]);
     const out = packed('順豐', [departed('SH-TEST-0001-001', '等待出貨')]);
     expect(keysOf('sales', out, { canVoid: true })).toEqual([]);
+    const partial = packed('7-11 交貨便', [
+      departed('SH-TEST-0001-001', '等待出貨'),
+      logistics('SH-TEST-0001-002', '已裝箱'),
+    ]);
+    expect(keysOf('sales', partial, { canVoid: true })).toEqual([]);
   });
 
   it('沒有訂單編輯權（canVoid 為否）時，角色是業務也沒有作廢：不再以角色名單判斷', () => {
@@ -241,17 +205,25 @@ describe('出貨人員對物流單：重新同步、標記例外、送達確認�
     ).toEqual([]);
   });
 
-  it('單筆重試：限已裝箱且有失敗原因、揀貨相符、訂單未取消', () => {
-    const failed = logistics('SH-TEST-0001-001', '已裝箱', {
-      dispatch_attempts: 1,
-      dispatch_error: '物流商拒收',
+  it('出貨動作：只在該筆物流單為已裝箱時出現，揀貨相符、訂單未取消；依出貨方式只有一顆（鈕名由方式決定）', () => {
+    ['自取', '專車配送', '順豐', '新竹物流', '7-11 交貨便', '全家', '其他'].forEach((method) => {
+      expect(logisticsKeys('shipper', method, logistics('SH-TEST-0001-001', '已裝箱')), method).toEqual([L.DISPATCH]);
     });
-    expect(logisticsKeys('shipper', '順豐', failed)).toEqual([L.RETRY]);
-    expect(logisticsKeys('shipper', '順豐', failed, { orderCancelled: true })).toEqual([]);
-    expect(logisticsKeys('shipper', '順豐', logistics('SH-TEST-0001-001', '已裝箱'))).toEqual([]);
-    const mismatch = packed('順豐', [failed]);
+    const fresh = logistics('SH-TEST-0001-001', '已裝箱');
+    expect(logisticsKeys('shipper', '順豐', fresh, { orderCancelled: true })).toEqual([]);
+    const mismatch = packed('順豐', [fresh]);
     mismatch.details[0].picked_qty = 90;
-    expect(logisticsActionsOf({ role: 'shipper', shipment: mismatch, logistics: failed })).toEqual([]);
+    expect(logisticsActionsOf({ role: 'shipper', shipment: mismatch, logistics: fresh })).toEqual([]);
+    // 已離廠的物流單沒有出貨動作；同單另一筆仍在已裝箱者各自有
+    const mixed = packed('7-11 交貨便', [departed('SH-TEST-0001-001', '等待出貨'), fresh]);
+    expect(logisticsActionsOf({ role: 'shipper', shipment: mixed, logistics: mixed.logistics_orders[0] })).not.toContain(L.DISPATCH);
+    expect(logisticsActionsOf({ role: 'shipper', shipment: mixed, logistics: fresh })).toEqual([L.DISPATCH]);
+  });
+
+  it('其他角色在物流單上沒有出貨動作', () => {
+    ['sales', 'picker', 'planner'].forEach((role) => {
+      expect(logisticsKeys(role, '順豐', logistics('SH-TEST-0001-001', '已裝箱')), role).not.toContain(L.DISPATCH);
+    });
   });
 });
 
@@ -264,14 +236,11 @@ describe('業務對物流單：作廢的開放狀態', () => {
       canVoid: true,
     }).includes(L.VOID);
 
-  it('已裝箱：出貨動作失敗後可作廢；從未執行過出貨動作時不可（改走作廢出貨單）', () => {
-    expect(
-      voidable('順豐', logistics('SH-TEST-0001-001', '已裝箱', { dispatch_attempts: 1, dispatch_error: '拒收' })),
-    ).toBe(true);
+  it('已裝箱：只在出貨單部分離廠時可作廢；沒有任何物流單離廠（含拋單失敗）時不可（改走作廢出貨單）', () => {
     expect(voidable('順豐', logistics('SH-TEST-0001-001', '已裝箱'))).toBe(false);
   });
 
-  it('已裝箱的物流單，同單其他物流單已離廠時（部分離廠，例如訂單取消後被擋下）也可作廢', () => {
+  it('部分離廠：同單其他物流單已離廠時（例如另一箱已送出才發現這一箱裝錯、或訂單取消後被擋下），已裝箱的物流單可作廢', () => {
     const waiting = logistics('SH-TEST-0001-002', '已裝箱');
     const shipment = packed('7-11 交貨便', [departed('SH-TEST-0001-001', '等待出貨'), waiting]);
     expect(

@@ -15,6 +15,7 @@ import {
   addBoxes,
   boxRows,
   closeShipmentPanel,
+  dispatchEach,
   dispatchRow,
   logisticsRows,
   openLogisticsAction,
@@ -405,9 +406,16 @@ test('12.6 標記可自取與拋單，出貨方式各走各的分流（原編號
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
 
-  // 自取：出貨動作的鈕名是「標記可自取」（不是出貨確認或拋單）；標記後物流單轉可自取，客戶到廠後才做交付確認
-  await expect(shipmentRow(page, pickupNo).getByRole('button', { name: '出貨確認' })).toHaveCount(0);
-  await expect(shipmentRow(page, pickupNo).getByRole('button', { name: '拋單' })).toHaveCount(0);
+  // G31：出貨單列上沒有任何出貨動作鈕，出貨動作只在出貨單對話框「物流單」表格的每一列
+  await expect(shipmentRow(page, pickupNo).getByRole('button', { name: '標記可自取' })).toHaveCount(0);
+  await expect(shipmentRow(page, carrierNo).getByRole('button', { name: '拋單' })).toHaveCount(0);
+  // 自取：物流單列上的出貨動作鈕名是「標記可自取」（不是出貨確認或拋單）；標記後物流單轉可自取，客戶到廠後才做交付確認
+  const pickupBefore = await openShipmentPanel(page, pickupNo);
+  const pickupLogistics = logisticsRows(pickupBefore).first();
+  await expect(pickupLogistics.getByRole('button', { name: '出貨確認', exact: true })).toHaveCount(0);
+  await expect(pickupLogistics.getByRole('button', { name: '拋單', exact: true })).toHaveCount(0);
+  await expect(pickupLogistics.getByRole('button', { name: '標記可自取', exact: true })).toBeVisible();
+  await closeShipmentPanel(page);
   await dispatchRow(page, pickupNo, '標記可自取', '確認標記可自取');
   await expect(page.getByText(/已標記可自取/).first()).toBeVisible();
   await expect(shipmentRow(page, pickupNo)).toContainText('已出貨');
@@ -422,12 +430,14 @@ test('12.6 標記可自取與拋單，出貨方式各走各的分流（原編號
   await expect(shipmentRow(page, pickupNo)).toContainText('已送達');
 
   // 第三方：列上鈕名是「拋單」，對話框沒有物流單號輸入欄、沒有重量欄；新竹物流不支援子母單，兩箱兩筆物流單、各自一個物流單號
-  await expect(shipmentRow(page, carrierNo).getByRole('button', { name: '出貨確認' })).toHaveCount(0);
-  const shipDialog = await clickRowAction(page, carrierNo, '拋單');
+  const shipDialog = await openLogisticsAction(page, carrierNo, '拋單', 0);
   await expect(shipDialog.getByLabel(/物流單號|托運單號/)).toHaveCount(0);
   await expect(shipDialog.getByLabel(/重量/)).toHaveCount(0);
   await shipDialog.getByRole('button', { name: '確認拋單' }).click();
-  await expect(page.getByText(/已拋單（2 筆）；物流單號 HCT-\d+、HCT-\d+/)).toBeVisible();
+  await expect(page.getByText(/已拋單；物流單號 HCT-\d+/)).toBeVisible();
+  // 第一筆拋單後出貨單仍取最落後（第二筆還在已裝箱），第二筆拋單後才轉等待出貨
+  await expect(shipmentRow(page, carrierNo)).toContainText('已裝箱');
+  await dispatchRow(page, carrierNo, '拋單', '確認拋單', 1);
   await expect(shipmentRow(page, carrierNo)).toContainText('等待出貨');
   await expect(shipmentRow(page, carrierNo)).toContainText(/HCT-\d+/);
 
@@ -466,7 +476,7 @@ test('12.7 三種出貨方式的憑證形式各自不同（原編號 129）', as
 
   // 第三方物流：拋單不填物流單號（由物流商回傳，原型由系統生成），直接確認即推得動
   await dispatchRow(page, carrierNo, '拋單', '確認拋單');
-  await expect(page.getByText(/已拋單（1 筆）/).first()).toBeVisible();
+  await expect(page.getByText(/已拋單；物流單號/).first()).toBeVisible();
 
   // 專車配送：出貨確認不附件即可轉已出貨
   await dispatchRow(page, vanNo, '出貨確認', '確認出貨');
@@ -519,7 +529,7 @@ test('12.8 累計送達達到購買數量，印件與訂單一起收尾（原編
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   await dispatchRow(page, shipmentNo, '拋單', '確認拋單');
-  await expect(page.getByText(/已拋單（1 筆）/).first()).toBeVisible();
+  await expect(page.getByText(/已拋單；物流單號/).first()).toBeVisible();
 
   // 物流商回傳到已送達（重新同步三次）：出貨單轉已送達並寫入送達數量，觸發收尾——印件轉已送達、訂單轉訂單完成
   const panel = await openShipmentPanel(page, shipmentNo);
@@ -704,20 +714,29 @@ test('12.15 列上動作鈕只長出合法的下一步，依角色、狀態與�
   await expect(shipmentRow(page, carrierNo)).toContainText('已裝箱');
   await pickAndPack(page, pickupNo, { pickedQty: 100, boxes: 2});
 
-  // 出貨人員在已裝箱依出貨方式分流：第三方是拋單、自取是標記可自取；物流單層的動作都不在列上
+  // 出貨人員：出貨單列上只有檢視（G31：出貨動作與其他物流單層動作都不在列上）；
+  // 出貨動作依出貨方式分流，在對話框物流單表格每一列：第三方是拋單、自取是標記可自取
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   const carrierRow = shipmentRow(page, carrierNo);
-  await expect(carrierRow.getByRole('button', { name: '拋單' })).toBeVisible();
-  await expect(carrierRow.getByRole('button', { name: '出貨確認' })).toHaveCount(0);
-  await expect(carrierRow.getByRole('button', { name: '標記可自取' })).toHaveCount(0);
-  await expect(carrierRow.getByRole('button', { name: '交付確認' })).toHaveCount(0);
-  await expect(carrierRow.getByRole('button', { name: '送達確認' })).toHaveCount(0);
-  await expect(carrierRow.getByRole('button', { name: '異常' })).toHaveCount(0);
-  await expect(carrierRow.getByRole('button')).toHaveCount(2);
+  for (const name of ['拋單', '出貨確認', '標記可自取', '交付確認', '送達確認', '異常']) {
+    await expect(carrierRow.getByRole('button', { name })).toHaveCount(0);
+  }
+  await expect(carrierRow.getByRole('button')).toHaveCount(1);
+  const carrierPanelView = await openShipmentPanel(page, carrierNo);
+  await expect(logisticsRows(carrierPanelView)).toHaveCount(2);
+  for (const row of [logisticsRows(carrierPanelView).nth(0), logisticsRows(carrierPanelView).nth(1)]) {
+    await expect(row.getByRole('button', { name: '拋單', exact: true })).toBeVisible();
+    await expect(row.getByRole('button', { name: '出貨確認', exact: true })).toHaveCount(0);
+    await expect(row.getByRole('button', { name: '標記可自取', exact: true })).toHaveCount(0);
+  }
+  await closeShipmentPanel(page);
   const pickupRow = shipmentRow(page, pickupNo);
-  await expect(pickupRow.getByRole('button', { name: '標記可自取' })).toBeVisible();
-  await expect(pickupRow.getByRole('button', { name: '出貨確認' })).toHaveCount(0);
+  await expect(pickupRow.getByRole('button')).toHaveCount(1);
+  const pickupPanelView = await openShipmentPanel(page, pickupNo);
+  await expect(logisticsRows(pickupPanelView).first().getByRole('button', { name: '標記可自取', exact: true })).toBeVisible();
+  await expect(logisticsRows(pickupPanelView).first().getByRole('button', { name: '出貨確認', exact: true })).toHaveCount(0);
+  await closeShipmentPanel(page);
 
   // 印務主管看同一張單：全公司協助角色有檢視、編輯、作廢三顆（C18，依訂單編輯權），沒有任何現場動作鈕；
   // 對話框歷程頁籤純唯讀
@@ -876,8 +895,11 @@ test('12.19 揀貨數量與明細不符時擋下出貨動作，業務改明細�
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   for (const no of [firstNo, secondNo]) {
     await expect(shipmentRow(page, no)).toContainText('揀貨不符');
-    await expect(shipmentRow(page, no).getByRole('button', { name: '拋單' })).toHaveCount(0);
     await expect(shipmentRow(page, no).getByRole('button')).toHaveCount(1);
+    const mismatchPanel = await openShipmentPanel(page, no);
+    await expect(logisticsRows(mismatchPanel)).toHaveCount(2);
+    await expect(mismatchPanel.getByRole('button', { name: '拋單', exact: true })).toHaveCount(0);
+    await closeShipmentPanel(page);
   }
 
   // 解除一：業務把第一張的出貨明細數量改為 80，兩數相符即放行
@@ -902,15 +924,17 @@ test('12.19 揀貨數量與明細不符時擋下出貨動作，業務改明細�
   await expect(page.getByText(/已修正裝箱回報/).first()).toBeVisible();
   await expect(shipmentRow(page, secondNo)).not.toContainText('揀貨不符');
 
-  // 兩張都放行：出貨人員列上長出拋單
+  // 兩張都放行：出貨人員在物流單表格的每一列長出拋單
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   for (const no of [firstNo, secondNo]) {
-    await expect(shipmentRow(page, no).getByRole('button', { name: '拋單' })).toBeVisible();
+    const releasedPanel = await openShipmentPanel(page, no);
+    await expect(releasedPanel.getByRole('button', { name: '拋單', exact: true })).toHaveCount(2);
+    await closeShipmentPanel(page);
   }
 });
 
-test('12.20 揀貨人員在已裝箱修正揀貨數量與裝箱明細，留修正紀錄並寫入歷程；出貨動作之後沒有修正鈕（2026-10-13 新增）', async ({
+test('12.20 揀貨人員在已裝箱修正揀貨數量與裝箱明細，留修正紀錄並寫入歷程；物流單離廠之後沒有修正鈕（2026-10-13 新增，G32 改依離廠時間判定）', async ({
   page,
 }) => {
   await setupShippableState(page, { passed: 500 });
@@ -932,7 +956,7 @@ test('12.20 揀貨人員在已裝箱修正揀貨數量與裝箱明細，留修�
   await report.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(shipmentRow(page, shipmentNo)).toContainText('已裝箱');
 
-  // 已裝箱、從未出貨動作且已有裝箱回報：列上長出「修正」；修正原因必填，沒填對話框不關
+  // 已裝箱、物流單都沒有離廠時間且已有裝箱回報：列上長出「修正」；修正原因必填，沒填對話框不關
   const fix = await clickRowAction(page, shipmentNo, '修正');
   await fillPackingLines(fix, [{ pickedQty: 500 }]);
   await fix.getByRole('button', { name: '新增一箱' }).click();
@@ -965,11 +989,13 @@ test('12.20 揀貨人員在已裝箱修正揀貨數量與裝箱明細，留修�
   await expect(panel).toContainText('清點後找到 20 張，多裝一箱');
   await closeShipmentPanel(page);
 
-  // 出貨人員拋單之後（執行過出貨動作），揀貨人員列上不再有修正鈕
+  // 出貨人員對其中一筆物流單拋單之後（有物流單離廠），揀貨人員列上不再有修正鈕
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await dispatchRow(page, shipmentNo, '拋單', '確認拋單');
-  await expect(shipmentRow(page, shipmentNo)).toContainText('等待出貨');
+  await dispatchRow(page, shipmentNo, '拋單', '確認拋單', 0);
+  const afterDispatch = await openShipmentPanel(page, shipmentNo);
+  await expect(logisticsRows(afterDispatch).first()).toContainText('等待出貨');
+  await closeShipmentPanel(page);
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   await expect(shipmentRow(page, shipmentNo).getByRole('button', { name: '修正' })).toHaveCount(0);
@@ -996,12 +1022,12 @@ test('12.21 出貨人員對第三方出貨單按拋單，系統生成物流單�
   // 還沒拋單：沒有下載物流單
   await expect(shipmentRow(page, carrierNo).getByRole('button', { name: '下載全部物流單' })).toHaveCount(0);
 
-  // 拋單：對話框沒有物流單號輸入欄、沒有重量欄
-  const dialog = await clickRowAction(page, carrierNo, '拋單');
+  // 拋單：物流單列上的鈕；對話框沒有物流單號輸入欄、沒有重量欄
+  const dialog = await openLogisticsAction(page, carrierNo, '拋單');
   await expect(dialog).toContainText(`拋單：${carrierNo}`);
   await expect(dialog.getByLabel(/重量/)).toHaveCount(0);
   await dialog.getByRole('button', { name: '確認拋單' }).click();
-  await expect(page.getByText(/已拋單（1 筆）/).first()).toBeVisible();
+  await expect(page.getByText(/已拋單；物流單號/).first()).toBeVisible();
 
   const carrierRow = shipmentRow(page, carrierNo);
   await expect(carrierRow).toContainText('等待出貨');
@@ -1431,8 +1457,13 @@ test('12.33 出貨單狀態由物流單計算：取最落後；任一物流單�
   const [sevenNo] = await setupPacked(page, [{ method: '7-11 交貨便' }]);
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await dispatchRow(page, sevenNo, '拋單', '確認拋單');
-  await expect(page.getByText(/已拋單（3 筆）/).first()).toBeVisible();
+  // 物流單逐筆拋單（G31）：只拋一筆時出貨單仍取最落後的已裝箱，三筆都拋完才轉等待出貨
+  await dispatchRow(page, sevenNo, '拋單', '確認拋單', 0);
+  await expect(page.getByText(/已拋單；物流單號/).first()).toBeVisible();
+  await expect(shipmentRow(page, sevenNo)).toContainText('已裝箱');
+  await dispatchRow(page, sevenNo, '拋單', '確認拋單', 1);
+  await expect(shipmentRow(page, sevenNo)).toContainText('已裝箱');
+  await dispatchRow(page, sevenNo, '拋單', '確認拋單', 2);
   await expect(shipmentRow(page, sevenNo)).toContainText('等待出貨');
 
   // 只有一筆往前走：出貨單仍取最落後的等待出貨
@@ -1465,8 +1496,8 @@ test('12.34 作廢物流單：逐印件填未送達數量回補額度，最後�
   const [sevenNo] = await setupPacked(page, [{ method: '7-11 交貨便' }]);
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await dispatchRow(page, sevenNo, '拋單', '確認拋單');
-  await expect(page.getByText(/已拋單（3 筆）/).first()).toBeVisible();
+  await dispatchEach(page, sevenNo, '拋單', '確認拋單', 3);
+  await expect(shipmentRow(page, sevenNo)).toContainText('等待出貨');
 
   const quotaOf = async () => {
     await switchRoleSafe(page, '印務主管');
@@ -1535,44 +1566,62 @@ test('12.35 自取客戶只載走一部分：交付確認時填未送達數量�
   expect(await printItemCell(page, CHAIN4.printItemNo, '已出貨')).toBe('70');
 });
 
-test('12.36 部分拋單失敗：失敗的留在已裝箱並顯示原因，裝箱資料鎖住，單筆重試成功後出貨單轉等待出貨', async ({
+test('12.36 拋單失敗：用訊息提示顯示物流商回傳的錯誤，物流單狀態不推進、沒有單筆重試；仍可修正裝箱資料，改箱規後再拋成功（G32）', async ({
   page,
 }) => {
   const [sfNo] = await setupPacked(page, [{ method: '順豐', boxes: 2, spec: /特大箱/ }]);
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await dispatchRow(page, sfNo, '拋單', '確認拋單');
-  await expect(page.getByText(/1 筆失敗/).first()).toBeVisible();
-  await expect(shipmentRow(page, sfNo)).toContainText('已裝箱');
 
-  // 物流單留在已裝箱，顯示失敗原因；出貨人員有單筆重試
+  // 拋單失敗：訊息提示顯示錯誤；對話框不關，再按一次確認仍失敗（箱規不改就一直失敗）
+  const failDialog = await openLogisticsAction(page, sfNo, '拋單');
+  await failDialog.getByRole('button', { name: '確認拋單' }).click();
+  await expect(page.getByText(/箱規與收件地址不符，無法配送/).first()).toBeVisible();
+  await expect(failDialog).toBeVisible();
+  await failDialog.getByRole('button', { name: '確認拋單' }).click();
+  await expect(page.getByText(/箱規與收件地址不符，無法配送/).last()).toBeVisible();
+  await failDialog.getByRole('button', { name: '取消' }).click();
+
+  // 物流單狀態不推進、沒有離廠時間、不存失敗原因；沒有單筆重試鈕，仍有拋單鈕
+  await expect(shipmentRow(page, sfNo)).toContainText('已裝箱');
   const panel = await openShipmentPanel(page, sfNo);
   await expect(logisticsRows(panel).first()).toContainText('已裝箱');
-  await expect(logisticsRows(panel).first()).toContainText('收件地址無法辨識');
-  await expect(logisticsRows(panel).first().getByRole('button', { name: '單筆重試' })).toBeVisible();
+  await expect(logisticsRows(panel).first()).not.toContainText('收件地址');
+  await expect(logisticsRows(panel).first().getByRole('button', { name: '單筆重試' })).toHaveCount(0);
+  await expect(logisticsRows(panel).first().getByRole('button', { name: '拋單', exact: true })).toBeVisible();
   await closeShipmentPanel(page);
 
-  // 執行過出貨動作（含失敗）後裝箱資料鎖住：揀貨人員列上沒有修正，業務沒有作廢整張、也沒有編輯
+  // 拋單失敗不算離廠：未出貨動作期間，揀貨人員仍有修正，業務仍可作廢整張與編輯；沒有物流單作廢（尚未部分離廠）
+  await switchRoleSafe(page, '業務');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await expect(shipmentRow(page, sfNo).getByRole('button', { name: '作廢', exact: true })).toHaveCount(1);
+  await expect(shipmentRow(page, sfNo).getByRole('button', { name: '編輯' })).toHaveCount(1);
+  const salesPanel = await openShipmentPanel(page, sfNo);
+  await expect(logisticsRows(salesPanel).first().getByRole('button', { name: '作廢物流單' })).toHaveCount(0);
+  await closeShipmentPanel(page);
+
+  // 揀貨人員把兩箱的箱規都改成順豐標準箱（修正原因必填）
+  await switchRoleSafe(page, '揀貨人員');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  const fix = await clickRowAction(page, sfNo, '修正');
+  await pickBoxSpec(page, fix, 0, '順豐標準箱 A');
+  await pickBoxSpec(page, fix, 1, '順豐標準箱 A');
+  await fix.getByLabel('修正原因').fill('特大箱規選錯，改為標準箱');
+  await fix.getByRole('button', { name: '送出修正' }).click();
+  await expect(page.getByText(/已修正裝箱回報/).first()).toBeVisible();
+
+  // 改箱規後再拋單成功：物流單轉等待出貨、寫入物流單號，出貨單轉等待出貨
+  await switchRoleSafe(page, '出貨人員');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await dispatchRow(page, sfNo, '拋單', '確認拋單');
+  await expect(page.getByText(/已拋單；物流單號 SF\d+/)).toBeVisible();
+  await expect(shipmentRow(page, sfNo)).toContainText('等待出貨');
+  await expect(shipmentRow(page, sfNo)).toContainText(/SF\d+/);
+
+  // 離廠之後裝箱資料鎖住：揀貨人員列上沒有修正
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   await expect(shipmentRow(page, sfNo).getByRole('button', { name: '修正' })).toHaveCount(0);
-  await switchRoleSafe(page, '業務');
-  await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await expect(shipmentRow(page, sfNo).getByRole('button', { name: '作廢' })).toHaveCount(0);
-  await expect(shipmentRow(page, sfNo).getByRole('button', { name: '編輯' })).toHaveCount(0);
-  // 業務可以逐筆作廢這筆失敗的物流單（出貨動作失敗後開放）
-  const salesPanel = await openShipmentPanel(page, sfNo);
-  await expect(logisticsRows(salesPanel).first().getByRole('button', { name: '作廢物流單' })).toHaveCount(1);
-  await closeShipmentPanel(page);
-
-  // 單筆重試成功：物流單轉等待出貨、寫入物流單號，出貨單轉等待出貨
-  await switchRoleSafe(page, '出貨人員');
-  await gotoInAppSafe(page, '/qc-shipping/shipments');
-  const retry = await openLogisticsAction(page, sfNo, '單筆重試');
-  await retry.getByRole('button', { name: '確認重試' }).click();
-  await expect(page.getByText(/重試成功；物流單號 SF\d+/)).toBeVisible();
-  await expect(shipmentRow(page, sfNo)).toContainText('等待出貨');
-  await expect(shipmentRow(page, sfNo)).toContainText(/SF\d+/);
 });
 
 test('12.37 裝箱明細：逐箱新增、每箱各自一張照片、可逐箱移除，沒有一次新增多箱', async ({ page }) => {
