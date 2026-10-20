@@ -143,8 +143,8 @@ def main():
                     elif name == "動作類型":
                         action_types.add(cells[0])
                     elif name == "單據代碼":
-                        lk = links(cells[1]) if len(cells) > 1 else []
-                        doc_codes[cells[0]] = lk[0] if lk else ""
+                        # 一個代碼可登記上層單據與沿用該代碼的下層單據（如出貨單與物流單）
+                        doc_codes[cells[0]] = set(links(cells[1])) if len(cells) > 1 else set()
                     elif name == "活動清單代碼":
                         lk = links(cells[1]) if len(cells) > 1 else []
                         list_codes[cells[0]] = lk[0] if lk else ""
@@ -198,8 +198,9 @@ def main():
                     err(rel(p), f"操作編號格式不符 OP-<代碼>-<三位流水號>：{oid}", raw)
                 elif m.group(1) not in doc_codes:
                     err(rel(p), f"單據代碼 {m.group(1)} 不在受控清單", raw)
-                elif doc_codes[m.group(1)] != p.stem:
-                    err(rel(p), f"單據代碼 {m.group(1)} 在受控清單登記為 [[{doc_codes[m.group(1)]}]]，不是本卡", raw)
+                elif p.stem not in doc_codes[m.group(1)]:
+                    reg = "、".join(f"[[{x}]]" for x in sorted(doc_codes[m.group(1)]))
+                    err(rel(p), f"單據代碼 {m.group(1)} 在受控清單登記為 {reg}，不含本卡", raw)
                 if oid in ops:
                     err(rel(p), f"操作編號卡內重複：{oid}", raw)
                 if oid in retired:
