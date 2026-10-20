@@ -264,3 +264,31 @@ test('12.31 已送達的物流單補附送達憑證只給出貨人員：接單�
   const proofEvent = panel.locator('tr, li, .ant-timeline-item, .ant-list-item').filter({ hasText: PROOF }).first();
   await expect(proofEvent).toContainText('曾志偉');
 });
+
+test('12.40 售後服務列表的接單業務篩選與欄位看所屬訂單的接單業務，不看開立者；檢視側板同口徑', async ({ page }) => {
+  // AS-20261015-01 屬於洪嘉駿負責的 ORD-2026-0601，由陳映蓉代開
+  await openAs(page, '業務主管', AFTER_SALES);
+  // 固定表頭會多渲染一份表頭，只驗看得到
+  await expect(page.locator('th', { hasText: '接單業務' }).first()).toBeVisible();
+  await expect(page.locator('th', { hasText: '業務 / 諮詢' })).toHaveCount(0);
+  await expect(ticketRow(page)).toContainText('洪嘉駿');
+  await expect(ticketRow(page)).not.toContainText('陳映蓉');
+
+  // 檢視側板的負責人同口徑
+  await ticketButton(page, '檢視').click();
+  const drawer = page.locator('.ant-drawer-content:visible').last();
+  await expect(drawer).toContainText(TICKET_NO);
+  await expect(drawer.locator('tr').filter({ hasText: '接單業務' })).toContainText('洪嘉駿');
+  await expect(drawer).not.toContainText('目前負責人');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.ant-drawer-content:visible')).toHaveCount(0);
+
+  // 接單業務篩選比對所屬訂單的接單業務
+  const ownerSelect = page.locator('.ant-select').filter({ hasText: '全部業務' }).first();
+  await ownerSelect.click();
+  await page.locator('.ant-select-dropdown:visible .ant-select-item-option', { hasText: '洪嘉駿' }).click();
+  await expect(ticketRow(page)).toBeVisible();
+  await page.locator('.ant-select').filter({ hasText: '洪嘉駿' }).first().click();
+  await page.locator('.ant-select-dropdown:visible .ant-select-item-option', { hasText: '張惠雯' }).click();
+  await expect(ticketRow(page)).toHaveCount(0);
+});
