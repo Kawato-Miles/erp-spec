@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { clickIntoDetail, openAs } from '../_helpers.mjs';
 import {
@@ -11,7 +12,7 @@ import {
   gotoShipmentList,
   newestShipmentNo,
   openCreateShipmentFromOrder,
-  addBoxesInBulk,
+  addBoxes,
   boxRows,
   closeShipmentPanel,
   dispatchRow,
@@ -285,29 +286,29 @@ test('12.3 揀貨人員開始揀貨並逐條回報裝箱，裝箱明細逐箱填
   await expect(page.getByText(/已開始揀貨/).first()).toBeVisible();
   await expect(shipmentRow(page, shipmentNo)).toContainText('打包中');
 
-  // 打包中：列上換成「裝箱回報」，對話框上方唯讀顯示裝箱指示，明細逐條有揀貨數量與每箱幾個兩個空欄（不預填）；
-  // 下方是裝箱明細：沒有單一的箱數與箱規欄，一次新增多箱或逐箱新增
+  // 打包中：列上換成「裝箱回報」，對話框上方唯讀顯示裝箱指示，明細逐條有揀貨數量一個空欄（不預填，沒有每箱幾個欄）；
+  // 下方是裝箱明細：沒有單一的箱數與箱規欄，只能逐箱新增（沒有一次新增多箱）
   const dialog = await clickRowAction(page, shipmentNo, '裝箱回報');
   await expect(dialog).toContainText(`裝箱回報：${shipmentNo}`);
   await expect(dialog).toContainText('裝箱指示');
   await expect(dialog).toContainText(CHAIN4.printItemNo);
   await expect(dialog).toContainText('裝箱明細');
-  await expect(dialog).toContainText('一次新增多箱');
+  await expect(dialog).not.toContainText('一次新增多箱');
+  await expect(dialog.getByLabel('一次新增箱數')).toHaveCount(0);
+  await expect(dialog.getByLabel(`每箱幾個 ${CHAIN4.printItemNo}`, { exact: true })).toHaveCount(0);
   await expect(dialog.getByLabel('箱數', { exact: true })).toHaveCount(0);
   await expect(dialog.getByLabel(`揀貨數量 ${CHAIN4.printItemNo}`, { exact: true })).toHaveValue('');
-  await expect(dialog.getByLabel(`每箱幾個 ${CHAIN4.printItemNo}`, { exact: true })).toHaveValue('');
-  await fillPackingLines(dialog, [{ pickedQty: 500, perBoxQty: 170 }]);
-  await addBoxesInBulk(page, dialog, { boxes: 3 });
+  await fillPackingLines(dialog, [{ pickedQty: 500 }]);
+  await addBoxes(page, dialog, { boxes: 3 });
   await expect(dialog.locator('.ant-table-tbody tr.ant-table-row').filter({ hasText: '新增' })).toHaveCount(3);
   await dialog.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(page.getByText(/裝箱回報完成，出貨單轉「已裝箱」/)).toBeVisible();
   await expect(shipmentRow(page, shipmentNo)).toContainText('已裝箱');
 
-  // 回頭看對話框：出貨明細列顯示揀貨數量與每箱幾個；裝箱明細三箱（箱序三位數）；順豐支援子母單，三箱合成一筆物流單
+  // 回頭看對話框：出貨明細列顯示揀貨數量；裝箱明細三箱（箱序三位數）；順豐支援子母單，三箱合成一筆物流單
   const after = await openShipmentPanel(page, shipmentNo);
   const itemRow = after.getByRole('row', { name: new RegExp(CHAIN4.printItemNo) }).first();
   await expect(itemRow).toContainText('500');
-  await expect(itemRow).toContainText('170');
   await expect(after).toContainText('裝箱明細');
   await expect(after).toContainText('物流單');
   await expect(boxRows(after)).toHaveCount(3);
@@ -322,7 +323,7 @@ test('12.3 揀貨人員開始揀貨並逐條回報裝箱，裝箱明細逐箱填
   await expect(after.getByRole('img', { name: /裝箱照\.jpg/ })).not.toHaveCount(0);
 });
 
-test('12.4 裝箱回報逐條填每箱幾個、至少一箱、每箱要有箱規與照片，缺一不放行（原編號 128）', async ({ page }) => {
+test('12.4 裝箱回報逐條填揀貨數量、至少一箱、每箱要有箱規與照片，缺一不放行（原編號 128）', async ({ page }) => {
   await setupShippableState(page, { passed: 500 });
   await switchRoleSafe(page, '業務');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
@@ -335,15 +336,14 @@ test('12.4 裝箱回報逐條填每箱幾個、至少一箱、每箱要有箱規
   await expect(shipmentRow(page, shipmentNo)).toContainText('打包中');
   const dialog = await clickRowAction(page, shipmentNo, '裝箱回報');
 
-  // 每箱幾個未填即送出應被擋下（逐條必填），對話框不關、單不推進
-  await fillPackingLines(dialog, [{ pickedQty: 500 }]);
-  await addBoxesInBulk(page, dialog, { boxes: 2 });
+  // 揀貨數量未填即送出應被擋下（逐條必填），對話框不關、單不推進
+  await addBoxes(page, dialog, { boxes: 2 });
   await dialog.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(dialog).toBeVisible();
   await expect(shipmentRow(page, shipmentNo)).toContainText('打包中');
 
-  // 補上每箱幾個、但把兩箱都移除（沒有任何裝箱明細）：擋下，提示至少一箱
-  await fillPackingLines(dialog, [{ perBoxQty: 250 }]);
+  // 補上揀貨數量、但把兩箱都移除（沒有任何裝箱明細）：擋下，提示至少一箱
+  await fillPackingLines(dialog, [{ pickedQty: 500 }]);
   const removeButtons = dialog.getByRole('button', { name: '移除這一箱' });
   await removeButtons.first().click();
   await removeButtons.first().click();
@@ -378,7 +378,7 @@ test('12.5 揀貨數量與明細不符時揀貨人員照實填、不自行改明
 
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await pickAndPack(page, shipmentNo, { pickedQty: 470, boxes: 2, perBoxQty: 235 });
+  await pickAndPack(page, shipmentNo, { pickedQty: 470, boxes: 2});
 
   // 出貨單仍轉已裝箱；警示訊息列出不符並說明不符未解除前不能執行出貨動作；列表在狀態旁標「揀貨不符」
   await expect(shipmentRow(page, shipmentNo)).toContainText('已裝箱');
@@ -399,8 +399,8 @@ test('12.6 標記可自取與拋單，出貨方式各走各的分流（原編號
 
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await pickAndPack(page, pickupNo, { pickedQty: 100, boxes: 2, perBoxQty: 50 });
-  await pickAndPack(page, carrierNo, { pickedQty: 100, boxes: 2, perBoxQty: 50 });
+  await pickAndPack(page, pickupNo, { pickedQty: 100, boxes: 2});
+  await pickAndPack(page, carrierNo, { pickedQty: 100, boxes: 2});
 
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
@@ -458,7 +458,7 @@ test('12.7 三種出貨方式的憑證形式各自不同（原編號 129）', as
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   for (const no of [carrierNo, vanNo, pickupNo]) {
-    await pickAndPack(page, no, { pickedQty: 100, boxes: 1, perBoxQty: 100 });
+    await pickAndPack(page, no, { pickedQty: 100, boxes: 1});
   }
 
   await switchRoleSafe(page, '出貨人員');
@@ -514,7 +514,7 @@ test('12.8 累計送達達到購買數量，印件與訂單一起收尾（原編
 
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await pickAndPack(page, shipmentNo, { pickedQty: 500, boxes: 10, perBoxQty: 50 });
+  await pickAndPack(page, shipmentNo, { pickedQty: 500, boxes: 10});
 
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
@@ -604,11 +604,12 @@ test('12.11 寄件資訊依訂單的帳務公司帶出', async ({ page }) => {
   await dialog.getByRole('button', { name: /取\s*消/ }).click();
   await gotoShipmentList(page);
 
-  // 既有那張單的對話框顯示同一份寄件資訊
-  await shipmentRow(page, CHAIN4.draftShipmentNo).getByText(CHAIN4.draftShipmentNo).click();
+  // 已成立的單（鏈一 SH-2026-0601，保密代寄＝否）的對話框顯示同一份寄件資訊
+  await shipmentRow(page, 'SH-2026-0601').getByText('SH-2026-0601').click();
   await expect(detailDrawer(page)).toContainText(
     '感官文化印刷｜02 2736 6566｜新北市中和區建康路 168 號 3 樓',
   );
+  await expect(detailDrawer(page)).not.toContainText('保密代寄');
 });
 
 test('12.12 收件三欄預設帶訂單聯絡人、可改', async ({ page }) => {
@@ -690,19 +691,18 @@ test('12.15 列上動作鈕只長出合法的下一步，依角色、狀態與�
   await confirmBox(page).getByRole('button', { name: '開始揀貨' }).click();
   await expect(shipmentRow(page, carrierNo)).toContainText('打包中');
 
-  // 打包中只有裝箱回報，對話框要填的欄位都在：逐條揀貨數量與每箱幾個、裝箱明細（一次新增多箱、逐箱箱規與照片）
+  // 打包中只有裝箱回報，對話框要填的欄位都在：逐條揀貨數量、裝箱明細（逐箱新增、箱規與照片）
   await expect(shipmentRow(page, carrierNo).getByRole('button', { name: '開始揀貨' })).toHaveCount(0);
   const packDialog = await clickRowAction(page, carrierNo, '裝箱回報');
   await expect(packDialog.getByLabel(`揀貨數量 ${CHAIN4.printItemNo}`, { exact: true })).toBeVisible();
-  await expect(packDialog.getByLabel(`每箱幾個 ${CHAIN4.printItemNo}`, { exact: true })).toBeVisible();
-  await expect(packDialog.getByLabel('一次新增箱數')).toBeVisible();
-  await expect(packDialog.locator('#bulk-box-spec')).toBeVisible();
+  await expect(packDialog.getByLabel(`每箱幾個 ${CHAIN4.printItemNo}`, { exact: true })).toHaveCount(0);
+  await expect(packDialog.getByLabel('一次新增箱數')).toHaveCount(0);
   await expect(packDialog.getByRole('button', { name: '新增一箱' })).toBeVisible();
-  await fillPackingLines(packDialog, [{ pickedQty: 100, perBoxQty: 50 }]);
-  await addBoxesInBulk(page, packDialog, { boxes: 2 });
+  await fillPackingLines(packDialog, [{ pickedQty: 100 }]);
+  await addBoxes(page, packDialog, { boxes: 2 });
   await packDialog.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(shipmentRow(page, carrierNo)).toContainText('已裝箱');
-  await pickAndPack(page, pickupNo, { pickedQty: 100, boxes: 2, perBoxQty: 50 });
+  await pickAndPack(page, pickupNo, { pickedQty: 100, boxes: 2});
 
   // 出貨人員在已裝箱依出貨方式分流：第三方是拋單、自取是標記可自取；物流單層的動作都不在列上
   await switchRoleSafe(page, '出貨人員');
@@ -868,8 +868,8 @@ test('12.19 揀貨數量與明細不符時擋下出貨動作，業務改明細�
 
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await pickAndPack(page, firstNo, { pickedQty: 80, boxes: 2, perBoxQty: 40 });
-  await pickAndPack(page, secondNo, { pickedQty: 80, boxes: 2, perBoxQty: 40 });
+  await pickAndPack(page, firstNo, { pickedQty: 80, boxes: 2});
+  await pickAndPack(page, secondNo, { pickedQty: 80, boxes: 2});
 
   // 不符：列表標「揀貨不符」，出貨人員列上沒有出貨動作鈕（不渲染，不是停用）
   await switchRoleSafe(page, '出貨人員');
@@ -927,8 +927,8 @@ test('12.20 揀貨人員在已裝箱修正揀貨數量與裝箱明細，留修�
   await expect(shipmentRow(page, shipmentNo).getByRole('button', { name: '修正' })).toHaveCount(0);
 
   const report = await clickRowAction(page, shipmentNo, '裝箱回報');
-  await fillPackingLines(report, [{ pickedQty: 480, perBoxQty: 48 }]);
-  await addBoxesInBulk(page, report, { boxes: 2 });
+  await fillPackingLines(report, [{ pickedQty: 480 }]);
+  await addBoxes(page, report, { boxes: 2 });
   await report.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(shipmentRow(page, shipmentNo)).toContainText('已裝箱');
 
@@ -987,9 +987,9 @@ test('12.21 出貨人員對第三方出貨單按拋單，系統生成物流單�
 
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await pickAndPack(page, carrierNo, { pickedQty: 100, boxes: 3, perBoxQty: 34 });
-  await pickAndPack(page, vanNo, { pickedQty: 100, boxes: 2, perBoxQty: 50 });
-  await pickAndPack(page, pickupNo, { pickedQty: 100, boxes: 2, perBoxQty: 50 });
+  await pickAndPack(page, carrierNo, { pickedQty: 100, boxes: 3});
+  await pickAndPack(page, vanNo, { pickedQty: 100, boxes: 2});
+  await pickAndPack(page, pickupNo, { pickedQty: 100, boxes: 2});
 
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
@@ -1076,7 +1076,7 @@ const shipVanOut = async (page, qty = 100) => {
   const vanNo = await createShipment(page, { qty, method: '專車配送' });
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await pickAndPack(page, vanNo, { pickedQty: qty, boxes: 2, perBoxQty: qty / 2 });
+  await pickAndPack(page, vanNo, { pickedQty: qty, boxes: 2});
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   await dispatchRow(page, vanNo, '出貨確認', '確認出貨');
@@ -1209,8 +1209,8 @@ test('12.23（已裝箱）已裝箱且從未出貨動作的單可作廢，物流
   const sentNo = await createShipment(page, { qty: 100, method: '專車配送' });
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await pickAndPack(page, packedNo, { pickedQty: 100, boxes: 2, perBoxQty: 50 });
-  await pickAndPack(page, sentNo, { pickedQty: 100, boxes: 2, perBoxQty: 50 });
+  await pickAndPack(page, packedNo, { pickedQty: 100, boxes: 2});
+  await pickAndPack(page, sentNo, { pickedQty: 100, boxes: 2});
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   await dispatchRow(page, sentNo, '出貨確認', '確認出貨');
@@ -1333,8 +1333,8 @@ test('12.25 補附送達憑證只在已送達或已自取：已出貨與可自�
   const pickupNo = await createShipment(page, { qty: 100, method: '自取' });
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  await pickAndPack(page, vanNo, { pickedQty: 100, boxes: 2, perBoxQty: 50 });
-  await pickAndPack(page, pickupNo, { pickedQty: 100, boxes: 2, perBoxQty: 50 });
+  await pickAndPack(page, vanNo, { pickedQty: 100, boxes: 2});
+  await pickAndPack(page, pickupNo, { pickedQty: 100, boxes: 2});
 
   // 已裝箱、已出貨：物流單沒有補附鈕
   await switchRoleSafe(page, '出貨人員');
@@ -1378,7 +1378,6 @@ const setupPacked = async (page, specs) => {
     await pickAndPack(page, numbers[i], {
       pickedQty: spec.qty ?? 100,
       boxes: spec.boxes ?? 3,
-      perBoxQty: 34,
       spec: spec.spec,
     });
   }
@@ -1418,7 +1417,8 @@ test('12.32 拆單規則：順豐三箱合成一筆物流單，7-11 交貨便三
   await shipmentRow(page, extraNo).getByRole('button', { name: '開始揀貨' }).click();
   await confirmBox(page).getByRole('button', { name: '開始揀貨' }).click();
   const dialog = await clickRowAction(page, extraNo, '裝箱回報');
-  await dialog.locator('#bulk-box-spec').click({ force: true });
+  await dialog.getByRole('button', { name: '新增一箱' }).click();
+  await dialog.locator('.ant-table-tbody .ant-select').first().click({ force: true });
   const options = page.locator('.ant-select-dropdown:visible').last();
   await expect(options).toContainText('7-11 材積 S');
   await expect(options).not.toContainText('順豐標準箱');
@@ -1575,7 +1575,7 @@ test('12.36 部分拋單失敗：失敗的留在已裝箱並顯示原因，裝�
   await expect(shipmentRow(page, sfNo)).toContainText(/SF\d+/);
 });
 
-test('12.37 裝箱明細：至少一箱、一次新增多箱每箱各存一份共用照片、可逐箱移除', async ({ page }) => {
+test('12.37 裝箱明細：逐箱新增、每箱各自一張照片、可逐箱移除，沒有一次新增多箱', async ({ page }) => {
   await setupShippableState(page, { passed: 500 });
   await switchRoleSafe(page, '業務');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
@@ -1586,8 +1586,9 @@ test('12.37 裝箱明細：至少一箱、一次新增多箱每箱各存一份�
   await confirmBox(page).getByRole('button', { name: '開始揀貨' }).click();
   const dialog = await clickRowAction(page, shipmentNo, '裝箱回報');
 
-  // 一次新增四箱：四列都帶共用照片（每列的上傳清單各有一張）
-  await addBoxesInBulk(page, dialog, { boxes: 4 });
+  // 逐箱新增四箱：四列各自一張照片（每列的上傳清單各有一張）；沒有一次新增多箱的入口
+  await expect(dialog.getByLabel('一次新增箱數')).toHaveCount(0);
+  await addBoxes(page, dialog, { boxes: 4 });
   const added = dialog.locator('.ant-table-tbody tr.ant-table-row').filter({ hasText: '新增' });
   await expect(added).toHaveCount(4);
   for (let i = 0; i < 4; i += 1) {
@@ -1596,7 +1597,7 @@ test('12.37 裝箱明細：至少一箱、一次新增多箱每箱各存一份�
   // 移除一箱剩三箱
   await dialog.getByRole('button', { name: '移除這一箱' }).first().click();
   await expect(added).toHaveCount(3);
-  await fillPackingLines(dialog, [{ pickedQty: 100, perBoxQty: 34 }]);
+  await fillPackingLines(dialog, [{ pickedQty: 100 }]);
   await dialog.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(page.getByText(/裝箱回報完成/).first()).toBeVisible();
 
@@ -1620,4 +1621,99 @@ test('12.38 出貨方式下拉七個值，沒有超商；7-11 交貨便與全家
     '全家',
     '其他',
   ]);
+});
+
+// ── 12.39（2026-10-20）：保密代寄 ──
+// 依據：G30（設計 shipment-logistics-split-20261020 § 五）。
+
+test('12.39 保密代寄：預設否帶帳務公司唯讀；勾選後三欄預填可改且必填；取消勾選回復；建立後唯讀；物流單與檔案顯示代寄名義', async ({
+  page,
+}) => {
+  await setupShippableState(page, { passed: 500 });
+  await switchRoleSafe(page, '業務');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+
+  // 預設不勾：寄件資訊唯讀顯示帳務公司，沒有三個輸入框
+  const dialog = await openCreateShipmentFromOrder(page);
+  const checkbox = dialog.getByRole('checkbox', { name: /保密代寄/ });
+  await expect(checkbox).not.toBeChecked();
+  await expect(dialog).toContainText('感官文化印刷｜02 2736 6566｜新北市中和區建康路 168 號 3 樓');
+  await expect(dialog.locator('#sender_brand_name')).toHaveCount(0);
+
+  // 勾選：三欄變輸入框，預填帳務公司現值
+  await checkbox.check();
+  await expect(dialog.locator('#sender_brand_name')).toHaveValue('感官文化印刷');
+  await expect(dialog.locator('#sender_phone')).toHaveValue('02 2736 6566');
+  await expect(dialog.locator('#sender_address')).toHaveValue('新北市中和區建康路 168 號 3 樓');
+
+  // 改過再取消勾選：回到帳務公司唯讀顯示；再勾選時不保留改過的值
+  await dialog.locator('#sender_brand_name').fill('晴禾選物');
+  await checkbox.uncheck();
+  await expect(dialog.locator('#sender_brand_name')).toHaveCount(0);
+  await expect(dialog).toContainText('感官文化印刷｜02 2736 6566｜新北市中和區建康路 168 號 3 樓');
+  await checkbox.check();
+  await expect(dialog.locator('#sender_brand_name')).toHaveValue('感官文化印刷');
+
+  // 三欄必填：品牌名稱清空，建立出貨單被擋下並列出缺項
+  await dialog.locator('#sender_brand_name').fill('');
+  await fillPlannedShipDate(dialog, '2026-09-10');
+  await pickShippingMethod(page, dialog, '順豐');
+  await fillItemQty(dialog, 100);
+  await dialog.getByRole('button', { name: '建立出貨單' }).click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText('寄件品牌名稱（單頭）');
+
+  // 補齊後建立
+  await dialog.locator('#sender_brand_name').fill('晴禾選物');
+  await dialog.locator('#sender_phone').fill('02-2755-0123');
+  await dialog.locator('#sender_address').fill('台北市大安區復興南路一段 200 號 5 樓');
+  await dialog.getByRole('button', { name: '建立出貨單' }).click();
+  await expect(page.getByText(/出貨單已成立（未處理）/).first()).toBeVisible();
+  await expect(dialog).toBeHidden();
+  await gotoShipmentList(page);
+  const shipmentNo = await newestShipmentNo(page);
+  const SENDER = '晴禾選物｜02-2755-0123｜台北市大安區復興南路一段 200 號 5 樓';
+
+  // 建立後唯讀：檢視顯示代寄名義，沒有勾選框與輸入框
+  const view = await openShipmentPanel(page, shipmentNo);
+  await expect(view).toContainText(`${SENDER}（保密代寄）`);
+  await expect(view.getByRole('checkbox', { name: /保密代寄/ })).toHaveCount(0);
+  await expect(view.locator('#sender_brand_name')).toHaveCount(0);
+  await closeShipmentPanel(page);
+
+  // 走到拋單：物流單表格上方與物流單檔案都用代寄名義
+  await switchRoleSafe(page, '揀貨人員');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await pickAndPack(page, shipmentNo, { pickedQty: 100, boxes: 2 });
+  await switchRoleSafe(page, '出貨人員');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await dispatchRow(page, shipmentNo, '拋單', '確認拋單');
+  await expect(page.getByText(/已拋單/).first()).toBeVisible();
+  const logistics = await openShipmentPanel(page, shipmentNo);
+  await expect(logistics).toContainText(`寄件人：${SENDER}`);
+  await closeShipmentPanel(page);
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    shipmentRow(page, shipmentNo).getByRole('button', { name: '下載全部物流單' }).click(),
+  ]);
+  const text = fs.readFileSync(await download.path(), 'utf8');
+  expect(text).toContain(`寄件人：${SENDER}`);
+  expect(text).not.toContain('感官文化印刷');
+});
+
+test('12.39（樣本）鏈四草稿 SH-2026-0820 為保密代寄，草稿編輯時勾選框已勾、三欄帶草稿的值', async ({
+  page,
+}) => {
+  await openAs(page, '業務', '/qc-shipping/shipments');
+  const view = await openShipmentPanel(page, CHAIN4.draftShipmentNo);
+  await expect(view).toContainText(
+    '晴禾選物｜02-2755-0123｜台北市大安區復興南路一段 200 號 5 樓（保密代寄）',
+  );
+  await closeShipmentPanel(page);
+
+  // 草稿在建立出貨單前可改
+  const edit = await openShipmentEdit(page, CHAIN4.draftShipmentNo);
+  await expect(edit.getByRole('checkbox', { name: /保密代寄/ })).toBeChecked();
+  await expect(edit.locator('#sender_brand_name')).toHaveValue('晴禾選物');
+  await expect(edit.locator('#sender_phone')).toHaveValue('02-2755-0123');
 });

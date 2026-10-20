@@ -30,7 +30,7 @@ const shipmentOf = (id, status, overrides = {}) => {
       order_no: ORDER_NO,
       status,
       method: '專車配送',
-      details: [{ print_item_no: NO, name: '終態樣本', qty: 100, picked_qty: null, per_box_qty: null }],
+      details: [{ print_item_no: NO, name: '終態樣本', qty: 100, picked_qty: null }],
       planned_details: [],
       packing_boxes: [],
       logistics_orders: [],

@@ -27,11 +27,11 @@ describe('揀貨人員', () => {
     expect(options[0]).toMatchObject({ key: S.START_PICKING, status: '打包中', required: [] });
   });
 
-  it('打包中只推得到已裝箱：逐條填揀貨數量與每箱幾個，再填裝箱明細（每箱箱規與照片）', () => {
+  it('打包中只推得到已裝箱：逐條填揀貨數量，再填裝箱明細（每箱箱規與照片）', () => {
     const options = nextStatusOptions({ role: 'picker', shipment: prePacking('打包中') });
     expect(options).toHaveLength(1);
     expect(options[0]).toMatchObject({ key: S.REPORT_PACKING, status: '已裝箱' });
-    expect(options[0].required).toEqual(['picked_qty', 'per_box_qty', 'packing_boxes']);
+    expect(options[0].required).toEqual(['picked_qty', 'packing_boxes']);
   });
 
   it('已裝箱之後與草稿、已作廢都不是揀貨人員的球（修正不是狀態轉換，列上鈕另判）', () => {

@@ -3,11 +3,11 @@ import { openAs } from '../_helpers.mjs';
 import { openShipmentPanel, shipmentRow } from '../11-qc/_setup.mjs';
 
 // 情境目錄 14.37、14.38（2026-10-13 新增）。
-// 起點資料：鏈一 SH-2026-0601（順豐、已送達；明細 PI-2026-0601 × 3,000、揀貨數量 3,000、每箱 600、五箱、一筆物流單，
+// 起點資料：鏈一 SH-2026-0601（順豐、已送達；明細 PI-2026-0601 × 3,000、揀貨數量 3,000、五箱、一筆物流單，
 // 裝箱照片只有檔名「裝箱照-SH0601-1.jpg」等，出貨單歷程五筆加物流單歷程四筆）、SH-2026-0602（自取），
 // 鏈四 SH-2026-0820（草稿，無裝箱照片）。
 
-test('14.37 出貨單對話框：單頭固定，出貨明細與歷程兩個頁籤；明細有完稿縮圖、揀貨數量、每箱幾個', async ({
+test('14.37 出貨單對話框：單頭固定，出貨明細與歷程兩個頁籤；明細有完稿縮圖、揀貨數量', async ({
   page,
 }) => {
   test.setTimeout(120_000);
@@ -40,21 +40,24 @@ test('14.37 出貨單對話框：單頭固定，出貨明細與歷程兩個頁�
   await expect(head).toContainText('誠品書店股份有限公司');
   await expect(head).toContainText('王思穎');
   await expect(head).toContainText('洪嘉駿');
+  // 保密代寄＝否：寄件資訊沿用帳務公司，不標保密代寄
+  await expect(head).toContainText('感官文化印刷');
+  await expect(head).not.toContainText('保密代寄');
 
   // 兩個頁籤：出貨明細、歷程；原側板的基本資訊與進度頁籤已不存在
   await expect(dialog.getByRole('tab')).toHaveText(['出貨明細', '歷程']);
 
-  // 出貨明細：欄位依序為完稿縮圖（固定左）、印件、出貨數量、揀貨數量、每箱幾個
+  // 出貨明細：欄位依序為完稿縮圖（固定左）、印件、出貨數量、揀貨數量
   const table = dialog.locator('.ant-table-wrapper').first();
   const heads = (await table.locator('.ant-table-thead th').allInnerTexts()).map((t) => t.trim());
-  expect(heads).toEqual(['完稿縮圖', '印件', '出貨數量', '揀貨數量', '每箱幾個']);
+  expect(heads).toEqual(['完稿縮圖', '印件', '出貨數量', '揀貨數量']);
   await expect(table.locator('thead th').nth(0)).toHaveClass(/ant-table-cell-fix-left/);
   const row = table.locator('tbody tr.ant-table-row').first();
   await expect(row.locator('td').nth(0).getByRole('img')).toHaveCount(1);
   await expect(row).toContainText('會員卡（客製燙金）');
   await expect(row.locator('td').nth(2)).toContainText('3,000');
   await expect(row.locator('td').nth(3)).toContainText('3,000');
-  await expect(row.locator('td').nth(4)).toContainText('600');
+  await expect(row.locator('td')).toHaveCount(4);
 
   // 表下方：裝箱明細（逐箱箱序、箱規、裝箱照片縮圖，只有檔名，顯示佔位圖，不顯示檔名、所屬物流單、子單號）與物流單表格；沒有重量
   await expect(dialog).toContainText('裝箱明細');

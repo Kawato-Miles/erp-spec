@@ -382,7 +382,7 @@ export async function createDraftShipment(
 
 /**
  * 在下拉裡選一個選項（舊的下拉即使關閉仍留在 DOM，選項清單須限定在當前可見的那個；點開後沒出現就再點一次）。
- * @param {string} selector 下拉本體的選擇器（例：#bulk-box-spec）
+ * @param {string} selector 下拉本體的選擇器（例：#receiver_name 之類的下拉選擇器）
  * @param {string|RegExp} [text] 要選的選項文字；沒給就選第一個
  */
 export async function pickFromSelect(page, dialog, selector, text) {
@@ -398,33 +398,42 @@ export async function pickFromSelect(page, dialog, selector, text) {
   }).toPass({ timeout: 20000 });
 }
 
-/** 裝箱明細：「一次新增多箱」輸入箱數、選箱規（預設第一個）、上傳共用照片、按「一次新增」（每箱各存一份照片） */
-export async function addBoxesInBulk(page, dialog, { boxes = 2, spec, photo = '裝箱照.jpg' } = {}) {
-  await dialog.getByLabel('一次新增箱數').fill(String(boxes));
-  await pickFromSelect(page, dialog, '#bulk-box-spec', spec);
-  await dialog
-    .getByRole('group', { name: '一次新增共用照片' })
-    .locator('input[type="file"]')
-    .setInputFiles(fakePhoto(photo));
-  await dialog.getByRole('button', { name: '一次新增', exact: true }).click();
+/**
+ * 裝箱明細：按 boxes 次「新增一箱」，每列選箱規（預設取該出貨方式的第一個）並上傳一張照片。
+ * 從沒有任何裝箱明細列的對話框起算（裝箱回報）；已有列時用 startIndex 指到新列的起點。
+ */
+export async function addBoxes(
+  page,
+  dialog,
+  { boxes = 2, spec, photo = '裝箱照.jpg', startIndex = 0 } = {},
+) {
+  for (let i = 0; i < boxes; i += 1) {
+    await dialog.getByRole('button', { name: '新增一箱' }).click();
+    await pickBoxSpec(page, dialog, startIndex + i, spec);
+    await dialog
+      .locator('.ant-table-tbody input[type="file"]')
+      .nth(startIndex + i)
+      .setInputFiles(fakePhoto(photo));
+  }
 }
 
-/** 裝箱明細表某一列（從 0 起）的箱規下拉選第一個選項 */
-export async function pickBoxSpec(page, dialog, rowIndex = 0) {
+/** 裝箱明細表某一列（從 0 起）的箱規下拉選一個選項；沒給 spec 就選第一個 */
+export async function pickBoxSpec(page, dialog, rowIndex = 0, spec) {
   await expect(async () => {
     await dialog.locator('.ant-table-tbody .ant-select').nth(rowIndex).click({ force: true });
-    await page
+    const options = page
       .locator('.ant-select-dropdown:visible')
       .last()
-      .locator('.ant-select-item-option')
-      .first()
-      .click({ timeout: 3000 });
+      .locator('.ant-select-item-option');
+    await (spec ? options.filter({ hasText: spec }).first() : options.first()).click({
+      timeout: 3000,
+    });
   }).toPass({ timeout: 20000 });
 }
 
 /**
- * 裝箱回報（或修正）對話框：逐條明細填揀貨數量與每箱幾個。欄位用 aria-label「揀貨數量 <印件編號>」「每箱幾個 <印件編號>」認。
- * @param {Array<{ printItemNo?: string, pickedQty?: number, perBoxQty?: number }>} lines
+ * 裝箱回報（或修正）對話框：逐條明細填揀貨數量。欄位用 aria-label「揀貨數量 <印件編號>」認。
+ * @param {Array<{ printItemNo?: string, pickedQty?: number }>} lines
  */
 export async function fillPackingLines(dialog, lines) {
   for (const line of lines) {
@@ -432,30 +441,27 @@ export async function fillPackingLines(dialog, lines) {
     if (line.pickedQty !== undefined) {
       await dialog.getByLabel(`揀貨數量 ${no}`, { exact: true }).fill(String(line.pickedQty));
     }
-    if (line.perBoxQty !== undefined) {
-      await dialog.getByLabel(`每箱幾個 ${no}`, { exact: true }).fill(String(line.perBoxQty));
-    }
   }
 }
 
 /**
  * 揀貨人員把一張未處理的出貨單走到已裝箱（開始揀貨 → 裝箱回報）。
- * 預設單一明細（PI-2026-0820）；多條明細時用 lines 逐條給。裝箱明細用「一次新增多箱」一次加 boxes 箱
- * （同箱規、共用一張照片；箱規預設取該出貨方式的第一個）。
- * @param {{ pickedQty?: number, perBoxQty?: number, boxes?: number, spec?: string|RegExp, lines?: Array }} options
+ * 預設單一明細（PI-2026-0820）；多條明細時用 lines 逐條給。裝箱明細逐箱新增 boxes 箱
+ * （同箱規、每箱一張照片；箱規預設取該出貨方式的第一個）。
+ * @param {{ pickedQty?: number, boxes?: number, spec?: string|RegExp, lines?: Array }} options
  */
 export async function pickAndPack(
   page,
   shipmentNo,
-  { pickedQty, perBoxQty = 50, boxes = 2, spec, lines } = {},
+  { pickedQty, boxes = 2, spec, lines } = {},
 ) {
   // 兩步都在列上：「開始揀貨」彈確認框 → 「裝箱回報」開對話框填該步要填的欄位
   await shipmentRow(page, shipmentNo).getByRole('button', { name: '開始揀貨' }).click();
   await confirmBox(page).getByRole('button', { name: '開始揀貨' }).click();
   await expect(page.getByText(/已開始揀貨/).first()).toBeVisible();
   const dialog = await clickRowAction(page, shipmentNo, '裝箱回報');
-  await fillPackingLines(dialog, lines ?? [{ pickedQty, perBoxQty }]);
-  await addBoxesInBulk(page, dialog, { boxes, spec });
+  await fillPackingLines(dialog, lines ?? [{ pickedQty }]);
+  await addBoxes(page, dialog, { boxes, spec });
   await dialog.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(page.getByText(/裝箱回報完成/).first()).toBeVisible();
 }

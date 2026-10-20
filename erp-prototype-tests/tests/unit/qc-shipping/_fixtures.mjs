@@ -65,7 +65,7 @@ export const packedShipment = ({
   client_name: '樣本客戶',
   status: '已裝箱',
   method,
-  details: [{ print_item_no: printItemNo, name, qty, picked_qty: qty, per_box_qty: 50 }],
+  details: [{ print_item_no: printItemNo, name, qty, picked_qty: qty }],
   planned_details: [],
   packing_boxes:
     boxes ?? logisticsOrders.map((l, i) => box(String(i + 1).padStart(3, '0'), l.logistics_order_no)),

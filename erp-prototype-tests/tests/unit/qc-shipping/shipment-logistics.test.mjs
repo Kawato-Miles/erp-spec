@@ -239,7 +239,7 @@ describe('12.36 出貨動作：第三方拋單、專車與其他出貨確認、�
     // 裝箱資料已鎖住（含部分失敗）
     expect(
       store().correctPacking('a', {
-        lines: [{ print_item_no: NO, picked_qty: 100, per_box_qty: 40 }],
+        lines: [{ print_item_no: NO, picked_qty: 100 }],
         boxes: get().packing_boxes.map((b) => ({ ...b })),
         reason: '想改',
         operator: '范姜宏',

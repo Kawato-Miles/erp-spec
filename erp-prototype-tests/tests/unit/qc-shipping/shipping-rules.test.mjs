@@ -28,12 +28,11 @@ import { box, departed, logistics, packedShipment } from './_fixtures.mjs';
 const NO = 'PI-2026-0820';
 const NAME = '《山城記事》精裝書（128 頁）';
 
-const detail = (qty, picked = null, perBox = null) => ({
+const detail = (qty, picked = null) => ({
   print_item_no: NO,
   name: NAME,
   qty,
   picked_qty: picked,
-  per_box_qty: perBox,
 });
 
 // 已裝箱、尚未執行過出貨動作的出貨單：10 箱新竹物流（不支援子母單，一箱一筆物流單，這裡只放兩箱）
@@ -54,7 +53,7 @@ const shipmentOf = (overrides = {}) => {
         box('002', 'SH-2026-9001-002', { box_spec: '新竹物流 60 公分箱' }),
       ],
     }),
-    details: [detail(500, 500, 50)],
+    details: [detail(500, 500)],
     ...overrides,
   };
 };
@@ -71,8 +70,8 @@ describe('12.19 揀貨不符的判定：任一條明細揀貨數量不等於出�
   it('一條不符就是不符，並列出是哪一條', () => {
     const sh = shipmentOf({
       details: [
-        detail(500, 500, 50),
-        { ...detail(300, 280, 28), print_item_no: 'PI-2026-0821', name: '海報' },
+        detail(500, 500),
+        { ...detail(300, 280), print_item_no: 'PI-2026-0821', name: '海報' },
       ],
     });
     expect(isPickingMismatch(sh)).toBe(true);
@@ -80,7 +79,7 @@ describe('12.19 揀貨不符的判定：任一條明細揀貨數量不等於出�
   });
 
   it('揀貨數量多於出貨數量同樣是不符', () => {
-    expect(isPickingMismatch(shipmentOf({ details: [detail(500, 520, 52)] }))).toBe(true);
+    expect(isPickingMismatch(shipmentOf({ details: [detail(500, 520)] }))).toBe(true);
   });
 
   it('還沒裝箱回報（揀貨數量為空）不判不符，也不算已有裝箱回報', () => {
@@ -96,7 +95,7 @@ describe('12.19 揀貨不符的判定：任一條明細揀貨數量不等於出�
 
   it('不符時出貨人員沒有出貨動作，各出貨方式都一樣', () => {
     ['自取', '專車配送', '順豐', '新竹物流', '7-11 交貨便', '全家', '其他'].forEach((method) => {
-      const sh = shipmentOf({ method, details: [detail(500, 480, 48)] });
+      const sh = shipmentOf({ method, details: [detail(500, 480)] });
       expect(nextStatusOptions({ role: 'shipper', shipment: sh })).toEqual([]);
     });
   });
@@ -115,24 +114,24 @@ describe('12.19 揀貨不符的判定：任一條明細揀貨數量不等於出�
   });
 });
 
-describe('12.3 裝箱回報逐條填揀貨數量與每箱幾個', () => {
-  it('兩個欄位逐條必填、不預填：缺一個即不通過', () => {
+describe('12.3 裝箱回報逐條填揀貨數量', () => {
+  it('揀貨數量逐條必填、不預填：缺漏即不通過', () => {
     const details = [detail(500)];
-    expect(validatePackingLines(details, [{ print_item_no: NO, picked_qty: 500 }]).ok).toBe(false);
-    expect(validatePackingLines(details, [{ print_item_no: NO, per_box_qty: 50 }]).ok).toBe(false);
+    expect(validatePackingLines(details, [{ print_item_no: NO, picked_qty: 500 }]).ok).toBe(true);
+    expect(validatePackingLines(details, [{ print_item_no: NO }]).ok).toBe(false);
     expect(validatePackingLines(details, []).ok).toBe(false);
   });
 
-  it('數值檢核：揀貨數量為 0 以上整數、每箱幾個為 1 以上整數', () => {
+  it('數值檢核：揀貨數量為 0 以上整數', () => {
     const details = [detail(500)];
     expect(
-      validatePackingLines(details, [{ print_item_no: NO, picked_qty: 0, per_box_qty: 50 }]).ok,
+      validatePackingLines(details, [{ print_item_no: NO, picked_qty: 0 }]).ok,
     ).toBe(true);
     expect(
-      validatePackingLines(details, [{ print_item_no: NO, picked_qty: -1, per_box_qty: 50 }]).ok,
+      validatePackingLines(details, [{ print_item_no: NO, picked_qty: -1 }]).ok,
     ).toBe(false);
     expect(
-      validatePackingLines(details, [{ print_item_no: NO, picked_qty: 500, per_box_qty: 0 }]).ok,
+      validatePackingLines(details, [{ print_item_no: NO, picked_qty: 1.5 }]).ok,
     ).toBe(false);
   });
 });
@@ -183,10 +182,10 @@ describe('12.21 拋單生成物流單號與子單號', () => {
 });
 
 describe('12.20 裝箱回報修正的差異判定', () => {
-  const base = shipmentOf({ details: [detail(500, 480, 48)] });
+  const base = shipmentOf({ details: [detail(500, 480)] });
   const spec = '新竹物流 60 公分箱';
   const next = (patch = {}) => ({
-    lines: [{ print_item_no: NO, picked_qty: 480, per_box_qty: 48 }],
+    lines: [{ print_item_no: NO, picked_qty: 480 }],
     boxes: [
       { box_no: '001', box_spec: spec, photos: ['裝箱照.jpg'], note: '' },
       { box_no: '002', box_spec: spec, photos: ['裝箱照.jpg'], note: '' },
@@ -199,7 +198,7 @@ describe('12.20 裝箱回報修正的差異判定', () => {
 
   it('修正原因必填，空白不行', () => {
     const result = build(
-      next({ reason: '   ', lines: [{ print_item_no: NO, picked_qty: 500, per_box_qty: 48 }] }),
+      next({ reason: '   ', lines: [{ print_item_no: NO, picked_qty: 500 }] }),
     );
     expect(result.ok).toBe(false);
     expect(result.error).toContain('修正原因');
@@ -212,7 +211,7 @@ describe('12.20 裝箱回報修正的差異判定', () => {
   it('一次改了揀貨數量與新增一箱，每個被改的欄位各一筆，其餘欄位不記', () => {
     const result = build(
       next({
-        lines: [{ print_item_no: NO, picked_qty: 500, per_box_qty: 48 }],
+        lines: [{ print_item_no: NO, picked_qty: 500 }],
         boxes: [
           ...next().boxes,
           { box_spec: spec, photos: [photo('第三箱.jpg')], note: '補裝' },
@@ -307,7 +306,7 @@ describe('12.20 裝箱回報修正的差異判定', () => {
     ];
     cases.forEach((shipment) => {
       const result = build(
-        next({ lines: [{ print_item_no: NO, picked_qty: 500, per_box_qty: 48 }] }),
+        next({ lines: [{ print_item_no: NO, picked_qty: 500 }] }),
         shipment,
       );
       expect(result.ok).toBe(false);
@@ -316,7 +315,7 @@ describe('12.20 裝箱回報修正的差異判定', () => {
 
   it('不符的判定隨修正重算：改為與出貨數量相同即解除', () => {
     const result = build(
-      next({ lines: [{ print_item_no: NO, picked_qty: 500, per_box_qty: 48 }] }),
+      next({ lines: [{ print_item_no: NO, picked_qty: 500 }] }),
     );
     expect(isPickingMismatch({ ...base, details: result.nextDetails })).toBe(false);
   });
@@ -362,9 +361,9 @@ const packingShipment = (method) => ({
 });
 
 describe('裝箱回報寫入明細、裝箱資料與物流單並留歷程', () => {
-  const lines = [{ print_item_no: NO, picked_qty: 480, per_box_qty: 48 }];
+  const lines = [{ print_item_no: NO, picked_qty: 480 }];
 
-  it('逐條揀貨數量與每箱幾個寫進明細，單頭不再有箱規與照片，箱數是計算值', () => {
+  it('逐條揀貨數量寫進明細，單頭不再有箱規與照片，箱數是計算值', () => {
     seed(packingShipment('新竹物流'));
     const result = useQcShippingStore.getState().reportPacking('sh-test-1', {
       lines,
@@ -375,7 +374,6 @@ describe('裝箱回報寫入明細、裝箱資料與物流單並留歷程', () =
     const sh = current();
     expect(sh.status).toBe('已裝箱');
     expect(sh.details[0].picked_qty).toBe(480);
-    expect(sh.details[0].per_box_qty).toBe(48);
     expect(sh.actual_qty).toBeUndefined();
     expect(sh.box_spec).toBeUndefined();
     expect(sh.packing_photos).toBeUndefined();
@@ -447,9 +445,9 @@ describe('裝箱回報寫入明細、裝箱資料與物流單並留歷程', () =
 });
 
 describe('12.19 業務改明細數量後重新判定不符，揀貨數量不被覆蓋', () => {
-  beforeEach(() => seed(shipmentOf({ details: [detail(500, 480, 48)] })));
+  beforeEach(() => seed(shipmentOf({ details: [detail(500, 480)] })));
 
-  it('明細數量改為 480 後兩數相符，揀貨數量與每箱幾個照舊', () => {
+  it('明細數量改為 480 後兩數相符，揀貨數量照舊', () => {
     expect(isPickingMismatch(current())).toBe(true);
     useQcShippingStore
       .getState()
@@ -459,7 +457,6 @@ describe('12.19 業務改明細數量後重新判定不符，揀貨數量不被�
     const sh = current();
     expect(sh.details[0].qty).toBe(480);
     expect(sh.details[0].picked_qty).toBe(480);
-    expect(sh.details[0].per_box_qty).toBe(48);
     expect(isPickingMismatch(sh)).toBe(false);
     expect(sh.history[sh.history.length - 1].category).toBe('編輯');
   });
@@ -467,7 +464,7 @@ describe('12.19 業務改明細數量後重新判定不符，揀貨數量不被�
   it('執行過出貨動作之後明細鎖住，改不動', () => {
     seed(
       shipmentOf({
-        details: [detail(500, 480, 48)],
+        details: [detail(500, 480)],
         logistics_orders: [departed('SH-2026-9001-001', '等待出貨'), logistics('SH-2026-9001-002', '已裝箱')],
       }),
     );
@@ -487,11 +484,11 @@ describe('12.20 裝箱回報修正寫入紀錄與歷程，並同步調整物流�
     { box_no: '002', box_spec: spec, photos: ['裝箱照.jpg'], note: '' },
     ...extra,
   ];
-  beforeEach(() => seed(shipmentOf({ details: [detail(500, 480, 48)] })));
+  beforeEach(() => seed(shipmentOf({ details: [detail(500, 480)] })));
 
   it('成立時更新明細與裝箱資料、每個被改的欄位一筆修正紀錄、歷程多一筆；新增箱產生新物流單', () => {
     const result = useQcShippingStore.getState().correctPacking('sh-test-1', {
-      lines: [{ print_item_no: NO, picked_qty: 500, per_box_qty: 50 }],
+      lines: [{ print_item_no: NO, picked_qty: 500 }],
       boxes: nextBoxes([boxInput(spec)]),
       reason: '清點後找到 20 張',
       operator: '范姜宏',
@@ -499,7 +496,6 @@ describe('12.20 裝箱回報修正寫入紀錄與歷程，並同步調整物流�
     expect(result.ok).toBe(true);
     const sh = current();
     expect(sh.details[0].picked_qty).toBe(500);
-    expect(sh.details[0].per_box_qty).toBe(50);
     expect(sh.packing_boxes.map((b) => b.box_no)).toEqual(['001', '002', '003']);
     expect(sh.logistics_orders.map((l) => l.logistics_order_no)).toEqual([
       'SH-2026-9001-001',
@@ -508,23 +504,23 @@ describe('12.20 裝箱回報修正寫入紀錄與歷程，並同步調整物流�
     ]);
     expect(sh.packing_boxes[2].logistics_order_no).toBe('SH-2026-9001-003');
     expect(sh.status).toBe('已裝箱');
-    expect(sh.packing_corrections).toHaveLength(3);
+    expect(sh.packing_corrections).toHaveLength(2);
     const last = sh.history[sh.history.length - 1];
     expect(last.category).toBe('裝箱回報修正');
     expect(last.remark).toContain('清點後找到 20 張');
-    expect(last.changes).toHaveLength(3);
+    expect(last.changes).toHaveLength(2);
   });
 
   it('刪除一箱時，一箱一筆的物流單隨之刪除；物流單序號不重用', () => {
     useQcShippingStore.getState().correctPacking('sh-test-1', {
-      lines: [{ print_item_no: NO, picked_qty: 480, per_box_qty: 48 }],
+      lines: [{ print_item_no: NO, picked_qty: 480 }],
       boxes: [nextBoxes()[0]],
       reason: '多裝了一箱',
       operator: '范姜宏',
     });
     expect(current().logistics_orders.map((l) => l.logistics_order_no)).toEqual(['SH-2026-9001-001']);
     useQcShippingStore.getState().correctPacking('sh-test-1', {
-      lines: [{ print_item_no: NO, picked_qty: 480, per_box_qty: 48 }],
+      lines: [{ print_item_no: NO, picked_qty: 480 }],
       boxes: [nextBoxes()[0], boxInput(spec)],
       reason: '又補一箱',
       operator: '范姜宏',
@@ -556,7 +552,7 @@ describe('12.20 裝箱回報修正寫入紀錄與歷程，並同步調整物流�
       }),
     );
     const result = useQcShippingStore.getState().correctPacking('sh-test-1', {
-      lines: [{ print_item_no: NO, picked_qty: 500, per_box_qty: 50 }],
+      lines: [{ print_item_no: NO, picked_qty: 500 }],
       boxes: [
         { box_no: '001', box_spec: spec2, photos: ['裝箱照.jpg'], note: '' },
         boxInput(spec2),
@@ -576,7 +572,7 @@ describe('12.20 裝箱回報修正寫入紀錄與歷程，並同步調整物流�
 
   it('沒填原因整筆擋下，單上什麼都不變', () => {
     const result = useQcShippingStore.getState().correctPacking('sh-test-1', {
-      lines: [{ print_item_no: NO, picked_qty: 500, per_box_qty: 48 }],
+      lines: [{ print_item_no: NO, picked_qty: 500 }],
       boxes: nextBoxes(),
       reason: '',
       operator: '范姜宏',
@@ -599,7 +595,7 @@ describe('12.20 裝箱回報修正寫入紀錄與歷程，並同步調整物流�
       ],
     });
     const result = useQcShippingStore.getState().correctPacking('sh-test-1', {
-      lines: [{ print_item_no: NO, picked_qty: 500, per_box_qty: 48 }],
+      lines: [{ print_item_no: NO, picked_qty: 500 }],
       boxes: nextBoxes(),
       reason: '想改',
       operator: '范姜宏',
@@ -611,7 +607,7 @@ describe('12.20 裝箱回報修正寫入紀錄與歷程，並同步調整物流�
 
 // ── MOCK-DATA-CHAIN 出貨段落的資料形狀（改 mock 的唯一正本是 MOCK-DATA-CHAIN.md） ──
 
-describe('出貨單 mock 形狀：揀貨數量與每箱幾個在明細，箱規與物流單號在子表，單頭不存', () => {
+describe('出貨單 mock 形狀：揀貨數量在明細，箱規與物流單號在子表，單頭不存', () => {
   const byNo = (no) => MOCK_SHIPMENTS.find((sh) => sh.shipment_no === no);
 
   it('三張單的單頭都沒有實際裝箱數量、箱規、裝箱照片、物流單號與離廠送達欄位，都有裝箱資料、物流單、修正紀錄與歷程陣列', () => {
@@ -622,6 +618,7 @@ describe('出貨單 mock 形狀：揀貨數量與每箱幾個在明細，箱規�
       ['shipped_at', 'shipped_by', 'delivered_at', 'delivered_by', 'delivery_proof'].forEach((k) =>
         expect(k in sh, k).toBe(false),
       );
+      sh.details.forEach((d) => expect('per_box_qty' in d).toBe(false));
       expect(Array.isArray(sh.packing_boxes)).toBe(true);
       expect(Array.isArray(sh.logistics_orders)).toBe(true);
       expect(Array.isArray(sh.packing_corrections)).toBe(true);
@@ -630,8 +627,8 @@ describe('出貨單 mock 形狀：揀貨數量與每箱幾個在明細，箱規�
   });
 
   it('SH-2026-0601 與 SH-2026-0602 明細照原值填：揀貨數量與出貨數量相符，送達數量等於揀貨數量', () => {
-    expect(byNo('SH-2026-0601').details[0]).toMatchObject({ qty: 3000, picked_qty: 3000, per_box_qty: 600, delivered_qty: 3000 });
-    expect(byNo('SH-2026-0602').details[0]).toMatchObject({ qty: 2000, picked_qty: 2000, per_box_qty: 1000, delivered_qty: 2000 });
+    expect(byNo('SH-2026-0601').details[0]).toMatchObject({ qty: 3000, picked_qty: 3000, delivered_qty: 3000 });
+    expect(byNo('SH-2026-0602').details[0]).toMatchObject({ qty: 2000, picked_qty: 2000, delivered_qty: 2000 });
     expect(isPickingMismatch(byNo('SH-2026-0601'))).toBe(false);
     expect(isPickingMismatch(byNo('SH-2026-0602'))).toBe(false);
   });
