@@ -1493,6 +1493,7 @@ test('12.33 出貨單狀態由物流單計算：取最落後；任一物流單�
 test('12.34 作廢物流單：逐印件填未送達數量回補額度，最後一筆系統預填、不可改，出貨單轉已作廢，額度共回補不重複', async ({
   page,
 }) => {
+  test.setTimeout(360_000); // 拋三筆、作廢三筆、切角色查額度四次，是本章最長的一條鏈，180 秒不夠
   const [sevenNo] = await setupPacked(page, [{ method: '7-11 交貨便' }]);
   await switchRoleSafe(page, '出貨人員');
   await gotoInAppSafe(page, '/qc-shipping/shipments');

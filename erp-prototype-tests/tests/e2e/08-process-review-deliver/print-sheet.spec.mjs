@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { expandPanel, gotoInApp, openAs } from '../_helpers.mjs';
+import { expandPanel, gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 import {
   cjkName,
   clickAndWaitUrl,
@@ -234,7 +234,9 @@ test('8.8（補）印件內部完成日為空時印據表頭印破折號', async
   // 鏈二 PI-2026-0710／WO-2026-0710：業務把印件的未扣急件內部完成日清空，印件內部完成日與
   // 印件預計交期同為空、非終態工單承接值同步為 null；印據表頭不留空白、不擋列印，印破折號
   //（work-order spec § 工單列印單據 Scenario「工單交期為空時印據表頭印「－」」）。
-  await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=printItems');
+  // 全套連跑時開發伺服器的部分程式區塊遲遲不回，load 事件等不到；頁面結構載入後即可操作，切角色會等畫面出現
+  await page.goto('/orders/detail?id=ORD-2026-0710&tab=printItems', { waitUntil: 'domcontentloaded' });
+  await switchRole(page, '業務');
   const row = page.locator('tr', { hasText: 'PI-2026-0710' });
   await row.getByRole('button', { name: '編輯印件' }).click();
   // 清除鈕只在 hover 時才顯示、位置常落在可視區外；直接對元素派送 click 事件繞開座標可視性檢查

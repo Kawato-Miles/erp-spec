@@ -315,13 +315,14 @@ export async function fillPlannedShipDate(dialog, date = '2026-09-10') {
   await input.press('Enter');
 }
 
-/** 建單對話框：選出貨方式（六值一欄） */
+/** 建單對話框：選出貨方式（七值一欄）。對話框剛開時點擊可能沒打開下拉，每次重試先確認下拉已開 */
 export async function pickShippingMethod(page, dialog, method) {
-  await dialog.locator('#method').click({ force: true });
+  const dropdown = page.locator('.ant-select-dropdown:visible').last();
   await expect(async () => {
-    await page
-      .locator('.ant-select-dropdown:visible')
-      .last()
+    if (!(await dropdown.isVisible())) {
+      await dialog.locator('#method').click({ force: true });
+    }
+    await dropdown
       .locator('.ant-select-item-option')
       .filter({ hasText: method })
       .first()
@@ -419,12 +420,13 @@ export async function addBoxes(
 
 /** 裝箱明細表某一列（從 0 起）的箱規下拉選一個選項；沒給 spec 就選第一個 */
 export async function pickBoxSpec(page, dialog, rowIndex = 0, spec) {
+  // 下拉已開時再點會把它關掉，所以每次重試只在下拉沒開時才點
+  const dropdown = page.locator('.ant-select-dropdown:visible').last();
   await expect(async () => {
-    await dialog.locator('.ant-table-tbody .ant-select').nth(rowIndex).click({ force: true });
-    const options = page
-      .locator('.ant-select-dropdown:visible')
-      .last()
-      .locator('.ant-select-item-option');
+    if (!(await dropdown.isVisible())) {
+      await dialog.locator('.ant-table-tbody .ant-select').nth(rowIndex).click({ force: true });
+    }
+    const options = dropdown.locator('.ant-select-item-option');
     await (spec ? options.filter({ hasText: spec }).first() : options.first()).click({
       timeout: 3000,
     });
