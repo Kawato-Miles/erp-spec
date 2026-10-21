@@ -6,6 +6,8 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   retries: 0,
+  // 頁內導覽輔助函式（gotoInApp）的重試預算是 40 秒，預設 30 秒的測試逾時會在重試完成前先中斷
+  timeout: 90_000,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: BASE_URL,
@@ -31,5 +33,7 @@ export default defineConfig({
     url: BASE_URL,
     reuseExistingServer: true,
     timeout: 120_000,
+    // 全套連跑近兩小時，開發伺服器的編譯快取持續累積，預設記憶體上限會用盡而中途停掉
+    env: { NODE_OPTIONS: '--max-old-space-size=6144' },
   },
 });
