@@ -23,7 +23,7 @@ import {
 import { box, departed, logistics, packedShipment } from './_fixtures.mjs';
 
 // 情境 12.32 至 12.38（出貨單裝箱資料與物流單拆分，設計 2026-10-20 § 六至 § 八）的規則驗算：
-// 拆單規則、出貨單狀態取最落後、例外使出貨單轉異常並可重新同步恢復、出貨動作與失敗重試、
+// 拆單規則、出貨單狀態取最落後、例外使出貨單轉異常並可重新同步恢復、物流單逐筆出貨動作與拋單失敗（G31、G32）、
 // 作廢物流單回補（含最後一筆預填、不重複回補）、自取部分交付、訂單取消連鎖、三個集合詞互斥。
 // 畫面呈現在 tests/e2e/12-shipping/shipping.spec.mjs。
 
@@ -146,7 +146,7 @@ describe('12.33 出貨單已裝箱之後的狀態由物流單計算：取最落�
   });
 });
 
-// ── 12.34 出貨動作（批次）、失敗與單筆重試 ──
+// ── 12.36 出貨動作：物流單逐筆執行（G31），拋單失敗不推進、不存失敗原因（G32） ──
 
 describe('12.36 出貨動作：第三方拋單、專車與其他出貨確認、自取標記可自取', () => {
   beforeEach(() => seed([]));
@@ -162,9 +162,8 @@ describe('12.36 出貨動作：第三方拋單、專車與其他出貨確認、�
 
   it('順豐拋單：物流單號、檔案、每箱子單號由系統回傳，物流單轉等待出貨並寫離廠時間，出貨單同為等待出貨', () => {
     seed([packed('順豐', 3)]);
-    const r = store().dispatchShipment('a', { operator: '曾志偉' });
+    const r = store().dispatchLogistics('a', 'SH-TEST-A-001', { operator: '曾志偉' });
     expect(r.ok).toBe(true);
-    expect(r.results.map((x) => x.ok)).toEqual([true]);
     const l = lo('SH-TEST-A-001');
     expect(l.status).toBe('等待出貨');
     expect(l.tracking_no).toMatch(/^SF\d{9}$/);
@@ -181,7 +180,7 @@ describe('12.36 出貨動作：第三方拋單、專車與其他出貨確認、�
     expect(shipmentActualShipDate(get())).toBe(l.left_at.slice(0, 10));
   });
 
-  it('不支援子母單的第三方（7-11 交貨便）：批次拋單，每筆物流單各自一個物流單號、沒有子單號', () => {
+  it('不支援子母單的第三方（7-11 交貨便）：每筆物流單各自拋單，各自一個物流單號、沒有子單號', () => {
     seed([
       sh({
         method: '7-11 交貨便',
@@ -192,7 +191,11 @@ describe('12.36 出貨動作：第三方拋單、專車與其他出貨確認、�
         ],
       }),
     ]);
-    store().dispatchShipment('a', { operator: '曾志偉' });
+    store().dispatchLogistics('a', 'SH-TEST-A-001', { operator: '曾志偉' });
+    // 只拋第一筆：第二筆仍在已裝箱，出貨單部分離廠
+    expect(lo('SH-TEST-A-002').status).toBe('已裝箱');
+    expect(isPartiallyDeparted(get())).toBe(true);
+    store().dispatchLogistics('a', 'SH-TEST-A-002', { operator: '曾志偉' });
     const nos = los().map((l) => l.tracking_no);
     expect(nos.every((n) => /^PYU-\d{9}$/.test(n))).toBe(true);
     expect(new Set(nos).size).toBe(2);
@@ -202,19 +205,67 @@ describe('12.36 出貨動作：第三方拋單、專車與其他出貨確認、�
   it('專車與其他出貨確認：物流單轉已出貨、沒有物流單號與檔案；自取標記可自取：物流單轉可自取', () => {
     ['專車配送', '其他'].forEach((m) => {
       seed([packed(m)]);
-      store().dispatchShipment('a', { operator: '曾志偉' });
+      store().dispatchLogistics('a', 'SH-TEST-A-001', { operator: '曾志偉' });
       expect(lo('SH-TEST-A-001').status, m).toBe('已出貨');
       expect(lo('SH-TEST-A-001').tracking_no, m).toBeNull();
       expect(lo('SH-TEST-A-001').left_at, m).toBeTruthy();
       expect(shipmentStatusOf(get()), m).toBe('已出貨');
     });
     seed([packed('自取')]);
-    store().dispatchShipment('a', { operator: '曾志偉' });
+    store().dispatchLogistics('a', 'SH-TEST-A-001', { operator: '曾志偉' });
     expect(lo('SH-TEST-A-001').status).toBe('可自取');
     expect(shipmentStatusOf(get())).toBe('已出貨');
   });
 
-  it('部分失敗：失敗的物流單留在已裝箱並寫失敗原因，其餘照常送出；出貨單仍是已裝箱（取最落後）、部分離廠', () => {
+  it('拋單失敗（G32）：回傳錯誤訊息，物流單狀態不推進、不存失敗原因與嘗試次數、沒有離廠時間；單與歷程不變', () => {
+    const failing = '7-11 材積 L（示意：拋單失敗）';
+    seed([
+      sh({
+        method: '7-11 交貨便',
+        logisticsOrders: [logistics('SH-TEST-A-001', '已裝箱')],
+        boxes: [box('001', 'SH-TEST-A-001', { box_spec: failing })],
+      }),
+    ]);
+    const before = JSON.stringify(get());
+    const r = store().dispatchLogistics('a', 'SH-TEST-A-001', { operator: '曾志偉' });
+    expect(r.ok).toBe(false);
+    expect(r.error).toBeTruthy();
+    expect(JSON.stringify(get())).toBe(before);
+    expect(lo('SH-TEST-A-001')).not.toHaveProperty('dispatch_error');
+    expect(lo('SH-TEST-A-001')).not.toHaveProperty('dispatch_attempts');
+    expect(lo('SH-TEST-A-001').left_at).toBeNull();
+    // 再按一次仍會重拋（沒有單筆重試動作）；每次都失敗，要改箱規後才拋得成功
+    expect(store().dispatchLogistics('a', 'SH-TEST-A-001', { operator: '曾志偉' }).ok).toBe(false);
+    expect(store().retryDispatch).toBeUndefined();
+  });
+
+  it('拋單失敗不算離廠：出貨單仍是未出貨動作，裝箱回報修正仍開放；改箱規後再拋成功', () => {
+    const failing = '7-11 材積 L（示意：拋單失敗）';
+    seed([
+      sh({
+        method: '7-11 交貨便',
+        logisticsOrders: [logistics('SH-TEST-A-001', '已裝箱')],
+        boxes: [box('001', 'SH-TEST-A-001', { box_spec: failing })],
+      }),
+    ]);
+    expect(store().dispatchLogistics('a', 'SH-TEST-A-001', { operator: '曾志偉' }).ok).toBe(false);
+    expect(isBeforeDispatchAction(get())).toBe(true);
+    expect(isPartiallyDeparted(get())).toBe(false);
+    const fixed = store().correctPacking('a', {
+      lines: [{ print_item_no: NO, picked_qty: 100 }],
+      boxes: [{ box_no: '001', box_spec: spec('7-11 交貨便'), photos: [{ name: '裝箱照.jpg', url: null }], note: '' }],
+      reason: '箱規選錯，改回正確箱規',
+      operator: '范姜宏',
+    });
+    expect(fixed.ok).toBe(true);
+    const retried = store().dispatchLogistics('a', 'SH-TEST-A-001', { operator: '曾志偉' });
+    expect(retried.ok).toBe(true);
+    expect(lo('SH-TEST-A-001').status).toBe('等待出貨');
+    expect(lo('SH-TEST-A-001').left_at).toBeTruthy();
+    expect(isFullyDeparted(get())).toBe(true);
+  });
+
+  it('部分離廠：一筆拋單成功、另一筆失敗；出貨單仍是已裝箱（取最落後）、部分離廠，裝箱資料鎖住；已裝箱那筆可作廢', () => {
     const failing = '7-11 材積 L（示意：拋單失敗）';
     seed([
       sh({
@@ -226,17 +277,16 @@ describe('12.36 出貨動作：第三方拋單、專車與其他出貨確認、�
         ],
       }),
     ]);
-    const r = store().dispatchShipment('a', { operator: '曾志偉' });
-    expect(r.results.map((x) => x.ok)).toEqual([true, false]);
+    expect(store().dispatchLogistics('a', 'SH-TEST-A-001', { operator: '曾志偉' }).ok).toBe(true);
+    expect(store().dispatchLogistics('a', 'SH-TEST-A-002', { operator: '曾志偉' }).ok).toBe(false);
     expect(lo('SH-TEST-A-001').status).toBe('等待出貨');
     expect(lo('SH-TEST-A-002').status).toBe('已裝箱');
-    expect(lo('SH-TEST-A-002').dispatch_error).toBeTruthy();
     expect(lo('SH-TEST-A-002').left_at).toBeNull();
     expect(shipmentStatusOf(get())).toBe('已裝箱');
     expect(isPartiallyDeparted(get())).toBe(true);
     expect(isFullyDeparted(get())).toBe(false);
     expect(shipmentActualShipDate(get())).toBeNull();
-    // 裝箱資料已鎖住（含部分失敗）
+    // 已有物流單離廠：裝箱資料鎖住
     expect(
       store().correctPacking('a', {
         lines: [{ print_item_no: NO, picked_qty: 100 }],
@@ -245,49 +295,33 @@ describe('12.36 出貨動作：第三方拋單、專車與其他出貨確認、�
         operator: '范姜宏',
       }).ok,
     ).toBe(false);
+    // 已裝箱的物流單在部分離廠時可作廢
+    expect(
+      store().voidLogistics('a', 'SH-TEST-A-002', { reason: '另一箱裝錯', undelivered: { [NO]: 50 }, operator: '洪嘉駿' }).ok,
+    ).toBe(true);
   });
 
-  it('單筆重試：只送失敗的那筆，成功後寫離廠時間、清失敗原因；批次動作不重送已離廠的', () => {
-    const failing = '7-11 材積 L（示意：拋單失敗）';
-    seed([
-      sh({
-        method: '7-11 交貨便',
-        logisticsOrders: [logistics('SH-TEST-A-001', '已裝箱'), logistics('SH-TEST-A-002', '已裝箱')],
-        boxes: [
-          box('001', 'SH-TEST-A-001', { box_spec: spec('7-11 交貨便') }),
-          box('002', 'SH-TEST-A-002', { box_spec: failing }),
-        ],
-      }),
-    ]);
-    store().dispatchShipment('a', { operator: '曾志偉' });
-    const firstTracking = lo('SH-TEST-A-001').tracking_no;
-    const r = store().retryDispatch('a', 'SH-TEST-A-002', { operator: '曾志偉' });
-    expect(r.ok).toBe(true);
-    expect(r.results[0].ok).toBe(true);
-    expect(lo('SH-TEST-A-002').status).toBe('等待出貨');
-    expect(lo('SH-TEST-A-002').dispatch_error).toBeNull();
-    expect(lo('SH-TEST-A-002').left_at).toBeTruthy();
-    expect(lo('SH-TEST-A-001').tracking_no).toBe(firstTracking);
-    expect(shipmentStatusOf(get())).toBe('等待出貨');
-    expect(isFullyDeparted(get())).toBe(true);
-    // 已全部離廠，沒有可重試也沒有可批次送出的
-    expect(store().retryDispatch('a', 'SH-TEST-A-002', { operator: '曾志偉' }).ok).toBe(false);
-    expect(store().dispatchShipment('a', { operator: '曾志偉' }).ok).toBe(false);
+  it('只有已裝箱的物流單可出貨動作：已離廠的不重送', () => {
+    seed([packed('順豐')]);
+    expect(store().dispatchLogistics('a', 'SH-TEST-A-001', { operator: '曾志偉' }).ok).toBe(true);
+    const tracking = lo('SH-TEST-A-001').tracking_no;
+    expect(store().dispatchLogistics('a', 'SH-TEST-A-001', { operator: '曾志偉' }).ok).toBe(false);
+    expect(lo('SH-TEST-A-001').tracking_no).toBe(tracking);
   });
 
-  it('揀貨不符時出貨動作與重試都被擋下，單與歷程不變', () => {
+  it('揀貨不符時出貨動作被擋下，單與歷程不變', () => {
     const base = packed('順豐');
     seed([{ ...base, details: [{ ...base.details[0], picked_qty: 80 }] }]);
-    const r = store().dispatchShipment('a', { operator: '曾志偉' });
+    const r = store().dispatchLogistics('a', 'SH-TEST-A-001', { operator: '曾志偉' });
     expect(r.ok).toBe(false);
     expect(r.error).toBe(PICKING_MISMATCH_HINT);
     expect(lo('SH-TEST-A-001').status).toBe('已裝箱');
     expect(hasDispatchActionDone(get())).toBe(false);
   });
 
-  it('所屬訂單已取消時出貨動作與重試都被擋下', () => {
+  it('所屬訂單已取消時出貨動作被擋下', () => {
     seed([packed('順豐')], { orderStatus: '已取消' });
-    const r = store().dispatchShipment('a', { operator: '曾志偉' });
+    const r = store().dispatchLogistics('a', 'SH-TEST-A-001', { operator: '曾志偉' });
     expect(r.ok).toBe(false);
     expect(r.error).toBe(ORDER_CANCELLED_HINT);
     expect(lo('SH-TEST-A-001').status).toBe('已裝箱');
@@ -514,7 +548,7 @@ describe('12.38 訂單取消連鎖：未出貨動作作廢、部分離廠擋下�
       method: '7-11 交貨便',
       logisticsOrders: [
         departed('SH-TEST-p-001', '等待出貨'),
-        logistics('SH-TEST-p-002', '已裝箱', { dispatch_attempts: 1, dispatch_error: '拒收' }),
+        logistics('SH-TEST-p-002', '已裝箱'),
       ],
     });
   const full = () =>
@@ -556,10 +590,9 @@ describe('12.38 訂單取消連鎖：未出貨動作作廢、部分離廠擋下�
     expect(shipmentStatusOf(get('p'))).toBe('已裝箱');
     expect(lo('SH-TEST-p-002', 'p').status).toBe('已裝箱');
     expect(shipmentStatusOf(get('f'))).toBe('運送中');
-    // 訂單已取消後，系統擋下出貨動作與重試
+    // 訂單已取消後，系統擋下出貨動作
     useOrdersStore.setState({ orders: [{ ...useOrdersStore.getState().orders[0], status: '已取消' }] });
-    expect(store().dispatchShipment('p', { operator: '曾志偉' }).ok).toBe(false);
-    expect(store().retryDispatch('p', 'SH-TEST-p-002', { operator: '曾志偉' }).ok).toBe(false);
+    expect(store().dispatchLogistics('p', 'SH-TEST-p-002', { operator: '曾志偉' }).ok).toBe(false);
     // 業務作廢那筆已裝箱的物流單（填未送達數量）
     const r = store().voidLogistics('p', 'SH-TEST-p-002', { reason: '訂單取消', undelivered: { [NO]: 50 }, operator: '洪嘉駿' });
     expect(r.ok).toBe(true);
@@ -577,15 +610,13 @@ describe('12.38 三個集合詞互斥，涵蓋草稿以外的全部未作廢出�
     },
     部分離廠: {
       shipment: sh({
-        logisticsOrders: [departed('L-1', '等待出貨'), logistics('L-2', '已裝箱', { dispatch_attempts: 1, dispatch_error: 'x' })],
+        logisticsOrders: [departed('L-1', '等待出貨'), logistics('L-2', '已裝箱')],
       }),
       expected: 'partial',
     },
-    全部失敗: {
-      shipment: sh({
-        logisticsOrders: [logistics('L-1', '已裝箱', { dispatch_attempts: 1, dispatch_error: 'x' })],
-      }),
-      expected: 'partial',
+    拋單全部失敗: {
+      shipment: sh({ logisticsOrders: [logistics('L-1', '已裝箱')] }),
+      expected: 'before',
     },
     全數離廠: {
       shipment: sh({ logisticsOrders: [departed('L-1', '運送中'), departed('L-2', '已送達')] }),
@@ -623,7 +654,7 @@ describe('12.38 三個集合詞互斥，涵蓋草稿以外的全部未作廢出�
     const part = sh({
       id: 'p',
       qty: 60,
-      logisticsOrders: [departed('L-1', '等待出貨'), logistics('L-2', '已裝箱', { dispatch_attempts: 1 })],
+      logisticsOrders: [departed('L-1', '等待出貨'), logistics('L-2', '已裝箱')],
     });
     expect(calcShippedQty(printItem, [full, part])).toBe(40);
   });

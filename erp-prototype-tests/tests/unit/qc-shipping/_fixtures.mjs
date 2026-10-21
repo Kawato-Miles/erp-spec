@@ -8,8 +8,6 @@ export const logistics = (no, status, extra = {}) => ({
   status,
   tracking_no: null,
   label_file: null,
-  dispatch_error: null,
-  dispatch_attempts: 0,
   left_at: null,
   left_by: null,
   delivered_at: null,
@@ -24,12 +22,11 @@ export const logistics = (no, status, extra = {}) => ({
   ...extra,
 });
 
-/** 已離廠的物流單（有離廠時間，出貨動作已執行過） */
+/** 已離廠的物流單（有離廠時間，出貨動作已成功執行過） */
 export const departed = (no, status, extra = {}) =>
   logistics(no, status, {
     left_at: '2026-10-01 10:00',
     left_by: '曾志偉',
-    dispatch_attempts: 1,
     ...extra,
   });
 

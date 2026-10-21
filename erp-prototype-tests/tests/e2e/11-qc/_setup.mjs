@@ -509,8 +509,20 @@ export async function resyncLogistics(page, shipmentNo, { times = 1, nth = 0 } =
   await closeShipmentPanel(page);
 }
 
-/** 出貨人員在列上按出貨動作（拋單、出貨確認、標記可自取）並確認 */
-export async function dispatchRow(page, shipmentNo, name, confirmName) {
-  const dialog = await clickRowAction(page, shipmentNo, name);
+/**
+ * 出貨人員對物流單表格第 nth 列按出貨動作（拋單、出貨確認、標記可自取）並確認（G31：出貨動作只在物流單列上，
+ * 出貨單列表與出貨單對話框底部都沒有批次入口）。拋單失敗時對話框不關，呼叫端自行斷言錯誤訊息。
+ * 函式名沿用 dispatchRow：舊測試以「列」為單位呼叫，第四參數 confirmName 照舊。
+ */
+export async function dispatchRow(page, shipmentNo, name, confirmName, nth = 0) {
+  const dialog = await openLogisticsAction(page, shipmentNo, name, nth);
   await dialog.getByRole('button', { name: confirmName }).click();
+}
+
+/** 對出貨單每一筆仍在已裝箱的物流單逐筆做出貨動作（count 為物流單筆數；一筆做完對話框關閉後再開下一筆） */
+export async function dispatchEach(page, shipmentNo, name, confirmName, count) {
+  for (let i = 0; i < count; i += 1) {
+    await dispatchRow(page, shipmentNo, name, confirmName, i);
+    await expect(actionDialog(page)).toHaveCount(0);
+  }
 }
