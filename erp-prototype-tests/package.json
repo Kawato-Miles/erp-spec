@@ -4,7 +4,7 @@
   "type": "module",
   "description": "ERP prototype 的自動化驗收：Vitest 測 (prototype)/_lib 純函式，Playwright 測畫面操作。測試碼放 Sens repo，erp repo 不加任何檔案。",
   "scripts": {
-    "test": "npm run test:unit && npm run test:e2e",
+    "test": "node scripts/full.mjs",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:smoke": "playwright test --grep @smoke",

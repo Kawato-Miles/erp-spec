@@ -13,7 +13,7 @@
 |----|------|------|------|
 | smoke | `npm run test:smoke` | 主流程一條：一件印件從需求單到訂單製作完成，33 站，站表見 `docs/main-flow.md` | 改 mock 或 prototype 後立刻跑 |
 | module | `npm run test:module -- tests/e2e/07-process-planning` | 該章全部 | 改單一模組時 |
-| full | `npm test` | Vitest 純函式加全部 Playwright | 分支合併回 develop 或開 PR 前跑一次；`npm run impact` 判「影響全站」時也跑 |
+| full | `npm test` | Vitest 純函式加全部 Playwright；Playwright 依章節分批，每批重新啟動開發伺服器（一次連跑近兩小時伺服器會失去反應） | 分支合併回 develop 或開 PR 前跑一次；`npm run impact` 判「影響全站」時也跑 |
 
 本機登入：erp main 版的免登入白名單只放行部分舊路由，工單等 prototype 頁會被導向登入頁。在本目錄建 `.env.local`（已忽略版控）寫入 `ERP_TEST_USERNAME` 與 `ERP_TEST_PASSWORD`，Playwright 會先登入一次並沿用狀態（`tests/e2e/auth.setup.mjs`）；白名單併回 main 後可不設。
 
