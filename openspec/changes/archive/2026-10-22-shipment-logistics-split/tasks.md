@@ -32,11 +32,11 @@
 
 ## 5. archive 前驗證
 
-- [ ] 5.1 Sens 測試專案跑 `npm test`（Vitest 加全部 Playwright），全部通過；fixme 條目在 `docs/findings-*.md` 有對應紀錄
-- [ ] 5.2 逐條比對本 change delta 的每條 Scenario 對到情境目錄節與測試（對照表見 design.md D-6）
-- [ ] 5.3 掃 design.md、proposal.md 的 Open Questions：第 1 項依 Miles 裁決處理；其餘已有 Vault OQ，原處已寫雙向引用
-- [ ] 5.4 檢查 delta 每個 Requirement 描述段無業務規則句重述、每條動到的 Scenario 有情境標註且指到存在的情境卡與步驟
-- [ ] 5.5 archive 後：shipment spec Purpose 段的範圍描述（「異常與作廢的額度回補」）改寫為新口徑；確認 ADDED 六條沒有與 main spec 舊描述並存
+- [x] 5.1 Sens 測試專案跑 `npm test`（Vitest 加全部 Playwright），全部通過；fixme 條目在 `docs/findings-*.md` 有對應紀錄（2026-10-22：npm test 分章節批次，單元 1,264 通過；端對端 399 通過、0 失敗、6 略過。6 項略過皆為 fixme，位於第一、二、五、六章，與本 change 無關，findings-20260908 均有紀錄）
+- [x] 5.2 逐條比對本 change delta 的每條 Scenario 對到情境目錄節與測試（對照表見 design.md D-6；131 條驗收條目中 125 條有情境標註，指到的 7 張情境卡與步驟號、分支點皆存在；其餘 6 條見 D-4、D-5，歸 XM-018）
+- [x] 5.3 掃 design.md、proposal.md 的 Open Questions：全流程驗證第 17 步口徑已於本 change 改寫（D-4）；其餘已有 Vault OQ，原處已寫引用
+- [x] 5.4 檢查 delta 每個 Requirement 描述段無業務規則句重述、每條動到的 Scenario 有情境標註且指到存在的情境卡與步驟（ADDED 與 MODIFIED 皆有 Priority 與 Rationale；描述段均以系統動作寫法表達）
+- [x] 5.5 archive 後：shipment spec Purpose 段的範圍描述（「異常與作廢的額度回補」）改寫為新口徑；確認 ADDED 六條沒有與 main spec 舊描述並存
 
 ## 測試影響清單
 

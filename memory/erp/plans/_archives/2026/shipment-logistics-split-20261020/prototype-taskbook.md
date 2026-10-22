@@ -3,7 +3,7 @@
 ## 〇、先讀（缺一不可）
 
 1. `/Users/b-f-03-029/erp-shipment-logistics/.claude/skills/prototype-from-prompt/SKILL.md`（設計規範唯一入口，照它的流程與禁止事項做；改既有頁沿用原 recipe 與元件）。
-2. 設計方案：`/Users/b-f-03-029/Sens/.claude/worktrees/optimistic-nobel-9c65fb/memory/erp/plans/shipment-logistics-split-20261020/design.md`（行為正本；本任務書與設計衝突時以設計為準並回報）。
+2. 設計方案：`/Users/b-f-03-029/Sens/.claude/worktrees/optimistic-nobel-9c65fb/memory/erp/plans/_archives/2026/shipment-logistics-split-20261020/design.md`（行為正本；本任務書與設計衝突時以設計為準並回報）。
 3. 句法：`/Users/b-f-03-029/.claude/output-styles/ste100-pm.md`、`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`（程式內中文註解、介面文字、回報都照它，台灣繁中，禁 emoji）。
 4. 載入 skill `andrej-karpathy-skills:karpathy-guidelines`（寫程式守則）。
 

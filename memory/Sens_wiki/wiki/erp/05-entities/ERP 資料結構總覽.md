@@ -9,8 +9,8 @@ source:
   - "Miles 2026-10-04 與 2026-10-06 拍板（同上 grill T1、第二輪 Q22）：轉交明細下掛點收紀錄、點收修改紀錄與搬運數量修改紀錄；報工紀錄下掛修改紀錄，與生產領域資料結構總覽一致"
   - "Miles 2026-10-12 拍板（Sens memory/erp/plans/linear-format-20261012/grill-decisions.md W1、W2、W4、X4、D1、R1）：需求單分享成員關聯、訂單與工單分享成員維護者（訂單含 Supervisor）、改派含 Supervisor"
   - "Miles 2026-10-12 拍板（生產與出貨修正機制統一 grill，Sens memory/erp/plans/production-ui-correction-20261012/grill.md）：新增品檢修正紀錄、處置修正紀錄、裝箱回報修正紀錄與出貨單歷程紀錄；修改紀錄改名修正紀錄；轉交量、轉交點收量改名搬運量、點收量"
-  - "Miles 2026-10-20 拍板（出貨單裝箱資料與物流單拆分 grill，Sens memory/erp/plans/shipment-logistics-split-20261020/grill.md G1、G4、G5、G7、G8、G20、G30；D2 依預設值落卡）：新增物流單、裝箱資料、未送達數量；出貨方式與箱規為系統設定；保密代寄＝是時寄件資訊存在出貨單。總覽差異見 design.md 末段"
-  - "Miles 2026-10-21 拍板（出貨單裝箱資料與物流單拆分 grill，Sens memory/erp/plans/shipment-logistics-split-20261020/grill.md G31、G32 與設計者補定）：出貨動作（拋單、出貨確認、標記可自取）只在物流單上逐筆執行，出貨單上沒有入口；拋單失敗時物流單狀態不推進，只在當下顯示拋單回傳的錯誤訊息、物流單不存失敗原因，不設單筆重試，再執行一次同一動作即重拋；未出貨動作改以物流單都沒有離廠時間判定，拋單失敗不算；已裝箱物流單在出貨單部分離廠時可作廢"
+  - "Miles 2026-10-20 拍板（出貨單裝箱資料與物流單拆分 grill，Sens memory/erp/plans/_archives/2026/shipment-logistics-split-20261020/grill.md G1、G4、G5、G7、G8、G20、G30；D2 依預設值落卡）：新增物流單、裝箱資料、未送達數量；出貨方式與箱規為系統設定；保密代寄＝是時寄件資訊存在出貨單。總覽差異見 design.md 末段"
+  - "Miles 2026-10-21 拍板（出貨單裝箱資料與物流單拆分 grill，Sens memory/erp/plans/_archives/2026/shipment-logistics-split-20261020/grill.md G31、G32 與設計者補定）：出貨動作（拋單、出貨確認、標記可自取）只在物流單上逐筆執行，出貨單上沒有入口；拋單失敗時物流單狀態不推進，只在當下顯示拋單回傳的錯誤訊息、物流單不存失敗原因，不設單筆重試，再執行一次同一動作即重拋；未出貨動作改以物流單都沒有離廠時間判定，拋單失敗不算；已裝箱物流單在出貨單部分離廠時可作廢"
 status: draft
 last-reviewed: 2026-10-20
 ---

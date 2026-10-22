@@ -7,7 +7,7 @@ source:
   - "sensation-api（EC 後端，develop 分支，2026-10-20 查證）`sens_admin/v1/serializers/logistics_serializers.py` L333-350 LogisticsCancelSerializer、`sens_admin/v1/views/logistics_views.py` L453-466：作廢只開放等待出貨（tallying、pending 兩值皆為等待出貨）"
   - "sensation-api `sens_admin/v1/views/logistics_views.py` L279-285、`logistics/tasks/batch_dispatch.py` L50-55、`logistics/logistics.py` L315-340：拋單成功即寫入物流商回傳的物流單號，物流狀態轉等待出貨；失敗記拋單失敗"
   - "sensation-api `logistics/sf/logistics.py` L326-339 handle_query（只以主單號查詢貨況）、`logistics/sf/actions/models/create.py` L175 包裹總件數、L200 與 L233 子單訊息與子運單號：順豐子母件"
-  - "Miles 2026-10-20 拍板（出貨單裝箱資料與物流單拆分 grill，Sens memory/erp/plans/shipment-logistics-split-20261020/grill.md G9、G19）：物流單狀態沿用 EC 物流狀態、ERP 接 EC 收斂後的值；順豐子單不回傳狀態，物流單看主單"
+  - "Miles 2026-10-20 拍板（出貨單裝箱資料與物流單拆分 grill，Sens memory/erp/plans/_archives/2026/shipment-logistics-split-20261020/grill.md G9、G19）：物流單狀態沿用 EC 物流狀態、ERP 接 EC 收斂後的值；順豐子單不回傳狀態，物流單看主單"
   - "sensation-api `logistics/hct/actions/trans_data_json.py` L21 件數預設 1，`logistics/hct/logistics.py` 拋單未帶件數：新竹物流子母單未串接"
   - "sensation-api `logistics/payuni/logistics.py` L50-58（7-11 交貨便拋單不帶寄件人）、`logistics/familymart/logistics.py` L159-166（全家寄件人取設定檔）"
   - "sensation-api `logistics/sf/logistics.py` L118-143、`logistics/hct/logistics.py` L48-64：順豐、新竹物流非保密代寄時用設定檔單一預設寄件人，保密代寄時用自訂寄件人"
