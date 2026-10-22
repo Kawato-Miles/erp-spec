@@ -15,8 +15,8 @@
 | W4 | 流程第 1 步就 `/opsx:new` 建 change；grill 開始前 change 資料夾沒有 precheck.md 就停下補跑 |
 | W5 | change 的 design.md 改為 plan-design 結構（本體＋必含段）；寫 specs 時在檔尾追加「規格與驗收對應」。只改本專案 schema（openspec/schemas/sens-spec-driven）與模板，移除部署與回滾段；OpenSpec 外部 skill 不動。查證：design 在相依鏈上為選填，apply、verify、archive 用 design 的方式與商業設計相容 |
 | W6 | 只用在新主題；進行中的 plans 資料夾（document-access-scope-20261013、linear-format-20261012、production-ui-correction-20261012、shipment-batch-dispatch-box-size-20261022）照舊流程收尾後搬 plans/_archives |
-| W8 | design 必含段④改為「拍板引用與隱含假設段」：首行寫拍板見同資料夾 grill.md，不謄錄，只列隱含假設清單；收件條件為 change 內有 grill.md 且④有隱含假設清單；稽核者仍讀 grill.md 驗 5-1 |
 | W7 | ERP 流程不用 `/opsx:propose`，改用 `/opsx:new` 加 `/opsx:continue` 分段產出；config 加規則：change 內沒有 Miles 拍板紀錄與 wiki 落卡紀錄時不寫 specs |
+| W8 | design 必含段④改為「拍板引用與隱含假設段」：首行寫拍板見同資料夾 grill.md，不謄錄，只列隱含假設清單；收件條件為 change 內有 grill.md 且④有隱含假設清單；稽核者仍讀 grill.md 驗 5-1 |
 
 ## 新流程
 
