@@ -38,15 +38,15 @@
 - [x] 5.3 箱規共用加自訂、裝箱資料長寬高帶入與選填、修正紀錄記長寬高；對應 3.4 轉綠
 - [x] 5.4 裝箱回報修正依項目開放、部分離廠時新增箱產生新物流單；對應 3.5 轉綠
 - [x] 5.5 出貨單模組列表與訂單出貨單頁籤改子母表（子表為物流單），兩處刪裝箱照片欄；對應 3.6、3.7 轉綠
-- [ ] 5.6 每項完成後依序跑 `npm run impact`、`npm run test:smoke`、受影響章 `npm run test:module -- tests/e2e/12-shipping`、`tests/e2e/14-query-ui`；動到 `_lib` 判「影響全站」時提交前跑 `npm test` 全套；erp 提交訊息附測試結果
+- [x] 5.6 每項完成後依序跑 `npm run impact`、`npm run test:smoke`、受影響章 `npm run test:module -- tests/e2e/12-shipping`、`tests/e2e/14-query-ui`；動到 `_lib` 判「影響全站」時提交前跑 `npm test` 全套；erp 提交訊息附測試結果
 
 ## 6. archive 前驗證
 
-- [ ] 6.1 Sens 測試專案跑 `npm test`（Vitest 加全部 Playwright），全部通過；fixme 條目在 `docs/findings-*.md` 有對應紀錄
-- [ ] 6.2 逐條比對 delta 的每條驗收條目對到情境目錄節與測試（對照 design.md D-6）
-- [ ] 6.3 掃 design.md、proposal.md 的 Open Questions：SHP-026、SHP-024 已有 Vault OQ，原處已寫引用
-- [ ] 6.4 檢查 delta 每個 Requirement 描述段無業務規則句重述、每條驗收條目有情境標註且指到存在的情境卡與步驟
-- [ ] 6.5 archive 後：shipment spec Purpose 段「逐筆物流單的出貨動作」改寫為含批次拋單；確認 ADDED 兩條沒有與 main spec 舊描述並存
+- [x] 6.1 Sens 測試專案跑 `npm test`（Vitest 加全部 Playwright），全部通過；fixme 條目在 `docs/findings-*.md` 有對應紀錄（Miles 2026-10-22 拍板不跑全套；已跑單元 1304、smoke、第十一、十二、十四章，見 erp 提交 02077dd4）
+- [x] 6.2 逐條比對 delta 的每條驗收條目對到情境目錄節與測試（對照 design.md D-6）
+- [x] 6.3 掃 design.md、proposal.md 的 Open Questions：SHP-026 已拍板封存（系統外處理），SHP-024 已有 Vault OQ，原處已寫引用
+- [x] 6.4 檢查 delta 每個 Requirement 描述段無業務規則句重述、每條驗收條目有情境標註且指到存在的情境卡與步驟
+- [x] 6.5 archive 後：shipment spec Purpose 段「逐筆物流單的出貨動作」改寫為含批次拋單；確認 ADDED 兩條沒有與 main spec 舊描述並存
 
 ## 測試影響清單
 
