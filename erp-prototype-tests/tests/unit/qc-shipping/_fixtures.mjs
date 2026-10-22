@@ -30,9 +30,13 @@ export const departed = (no, status, extra = {}) =>
     ...extra,
   });
 
+// 預設箱規取箱規主檔的「1 號箱」（45×30×15，所有出貨方式共用，grill G42）
 export const box = (boxNo, logisticsNo, extra = {}) => ({
   box_no: boxNo,
-  box_spec: 'A 箱（60×40×40）',
+  box_spec: '1 號箱',
+  length: 45,
+  width: 30,
+  height: 15,
   photos: ['裝箱照.jpg'],
   note: '',
   logistics_order_no: logisticsNo,

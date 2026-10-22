@@ -280,11 +280,22 @@ export async function clickRowAction(page, keyword, name) {
 export const shipmentRow = (page, keyword) =>
   page.locator('tr.ant-table-row').filter({ hasText: keyword }).first();
 
-// 列表最上面那一列＝最新建立的單（store 把新單放在陣列最前）
+// 列表最上面那一列＝最新建立的單（store 把新單放在陣列最前）。
+// 列表是子母表，第一格是展開鈕，所以從整列文字取出貨單編號
 export const newestShipmentNo = async (page) =>
-  (
-    await page.locator('tr.ant-table-row').first().locator('td').first().innerText()
-  ).trim();
+  (await page.locator('tr.ant-table-row').first().innerText()).match(/SH-\d{4}-\d{4}/)[0];
+
+/** 列上操作欄的動作鈕（子母表第一格是展開鈕，不算動作鈕；操作欄固定在最後一格） */
+export const rowActionButtons = (row) => row.locator('td').last().getByRole('button');
+
+/** 展開出貨單列表（或訂單出貨單頁籤）某一列，回展開後的物流單子表那一列（tr） */
+export async function expandShipmentRow(page, keyword) {
+  const row = shipmentRow(page, keyword);
+  await row.locator('.ant-table-row-expand-icon').click();
+  const expanded = row.locator('xpath=following-sibling::tr[1]');
+  await expect(expanded).toHaveClass(/ant-table-expanded-row/);
+  return expanded;
+}
 
 /** 回出貨管理列表，等列表本身畫出來（避免讀到前一頁殘留的表格列） */
 export async function gotoShipmentList(page) {
@@ -400,13 +411,15 @@ export async function pickFromSelect(page, dialog, selector, text) {
 }
 
 /**
- * 裝箱明細：按 boxes 次「新增一箱」，每列選箱規（預設取該出貨方式的第一個）並上傳一張照片。
+ * 裝箱明細：按 boxes 次「新增一箱」，每列選箱規（預設取選單第一個）並上傳一張照片。
  * 從沒有任何裝箱明細列的對話框起算（裝箱回報）；已有列時用 startIndex 指到新列的起點。
+ * notes 為逐箱的裝箱備註（陣列，從新增的第一箱起算；沒給的箱不填）。
+ * Prototype 以裝箱備註的「示意：物流商拒收」「示意：物流商逾時」模擬物流商回應（見情境目錄第十二章章首）。
  */
 export async function addBoxes(
   page,
   dialog,
-  { boxes = 2, spec, photo = '裝箱照.jpg', startIndex = 0 } = {},
+  { boxes = 2, spec, photo = '裝箱照.jpg', startIndex = 0, notes = [] } = {},
 ) {
   for (let i = 0; i < boxes; i += 1) {
     await dialog.getByRole('button', { name: '新增一箱' }).click();
@@ -415,8 +428,18 @@ export async function addBoxes(
       .locator('.ant-table-tbody input[type="file"]')
       .nth(startIndex + i)
       .setInputFiles(fakePhoto(photo));
+    if (notes[i]) {
+      await dialog.getByLabel('裝箱備註').nth(startIndex + i).fill(notes[i]);
+    }
   }
 }
+
+/** 裝箱明細表某一列（從 0 起）的長、寬、高輸入欄 */
+export const boxDimensionInputs = (dialog, rowIndex) => ({
+  length: dialog.getByLabel('長（公分）').nth(rowIndex),
+  width: dialog.getByLabel('寬（公分）').nth(rowIndex),
+  height: dialog.getByLabel('高（公分）').nth(rowIndex),
+});
 
 /** 裝箱明細表某一列（從 0 起）的箱規下拉選一個選項；沒給 spec 就選第一個 */
 export async function pickBoxSpec(page, dialog, rowIndex = 0, spec) {
@@ -455,7 +478,7 @@ export async function fillPackingLines(dialog, lines) {
 export async function pickAndPack(
   page,
   shipmentNo,
-  { pickedQty, boxes = 2, spec, lines } = {},
+  { pickedQty, boxes = 2, spec, lines, notes } = {},
 ) {
   // 兩步都在列上：「開始揀貨」彈確認框 → 「裝箱回報」開對話框填該步要填的欄位
   await shipmentRow(page, shipmentNo).getByRole('button', { name: '開始揀貨' }).click();
@@ -463,7 +486,7 @@ export async function pickAndPack(
   await expect(page.getByText(/已開始揀貨/).first()).toBeVisible();
   const dialog = await clickRowAction(page, shipmentNo, '裝箱回報');
   await fillPackingLines(dialog, lines ?? [{ pickedQty }]);
-  await addBoxes(page, dialog, { boxes, spec });
+  await addBoxes(page, dialog, { boxes, spec, notes });
   await dialog.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(page.getByText(/裝箱回報完成/).first()).toBeVisible();
 }
@@ -512,8 +535,8 @@ export async function resyncLogistics(page, shipmentNo, { times = 1, nth = 0 } =
 }
 
 /**
- * 出貨人員對物流單表格第 nth 列按出貨動作（拋單、出貨確認、標記可自取）並確認（G31：出貨動作只在物流單列上，
- * 出貨單列表與出貨單對話框底部都沒有批次入口）。拋單失敗時對話框不關，呼叫端自行斷言錯誤訊息。
+ * 出貨人員對物流單表格第 nth 列按出貨動作（拋單、出貨確認、標記可自取）並確認。拋單送出後先顯示處理中，
+ * 處理中結束才出結果；拋單失敗時對話框不關，呼叫端自行斷言錯誤訊息。批次拋單見 batchDispatch。
  * 函式名沿用 dispatchRow：舊測試以「列」為單位呼叫，第四參數 confirmName 照舊。
  */
 export async function dispatchRow(page, shipmentNo, name, confirmName, nth = 0) {
@@ -527,4 +550,27 @@ export async function dispatchEach(page, shipmentNo, name, confirmName, count) {
     await dispatchRow(page, shipmentNo, name, confirmName, i);
     await expect(actionDialog(page)).toHaveCount(0);
   }
+}
+
+/**
+ * 出貨人員在出貨單列上按「批次拋單」並確認，等處理中結束、結果列出來，回批次拋單對話框（結果還開著，呼叫端自行關閉）。
+ * @returns {Promise<import('@playwright/test').Locator>}
+ */
+export async function batchDispatch(page, shipmentNo) {
+  await shipmentRow(page, shipmentNo).getByRole('button', { name: '批次拋單', exact: true }).click();
+  const dialog = actionDialog(page);
+  await expect(dialog).toContainText(`批次拋單：${shipmentNo}`);
+  await dialog.getByRole('button', { name: '確認批次拋單' }).click();
+  await expect(dialog).toContainText(/拋單處理完成：成功 \d+ 筆、失敗 \d+ 筆/, { timeout: 15000 });
+  return dialog;
+}
+
+/** 批次拋單結果表的資料列（從 0 起；表頭含「結果」） */
+export const batchResultRows = (dialog) =>
+  dialog.locator('.ant-table').filter({ hasText: '結果' }).first().locator('tbody tr.ant-table-row');
+
+/** 關閉批次拋單的結果對話框 */
+export async function closeBatchResult(page) {
+  await actionDialog(page).getByRole('button', { name: /^關\s*閉$/ }).click();
+  await expect(page.locator('.ant-modal-content:visible')).toHaveCount(0);
 }
