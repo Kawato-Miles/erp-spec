@@ -45,8 +45,8 @@
 
 | 內容 | 處置 |
 |------|------|
-| 重拋被物流商拒絕（已建單）時取回物流單號並推進 | 排除，待 [SHP-026](../../../memory/Sens_wiki/wiki/erp/08-open-questions/SHP-026-拋單逾時後物流商才建單的重複建單風險.md) 拍板 |
-| ERP 已作廢、但物流商端已建單的托運單取消 | 排除，待 [SHP-026](../../../memory/Sens_wiki/wiki/erp/08-open-questions/SHP-026-拋單逾時後物流商才建單的重複建單風險.md) 拍板 |
+| 重拋被物流商拒絕（已建單）時取回物流單號並推進 | 不寫：SHP-026 已拍板為系統外人工補登 [SHP-026](../../../memory/Sens_wiki/wiki/erp/08-open-questions/_archives/2026/SHP-026-拋單逾時後物流商才建單的重複建單風險.md) |
+| ERP 已作廢、但物流商端已建單的托運單取消 | 不寫：SHP-026 已拍板不取消（物流商不收件、不計價） [SHP-026](../../../memory/Sens_wiki/wiki/erp/08-open-questions/_archives/2026/SHP-026-拋單逾時後物流商才建單的重複建單風險.md) |
 | 列表子母表、子表欄位、入口位置、處理中畫面樣式、兩處列表刪「裝箱照片」欄 | 介面內容，由 Prototype 承載，不寫 spec |
 | 尺寸送物流商、物流商尺寸上限把關、材積與運費、箱規維護介面與停用刪除、一次對多張出貨單拋單、自取與專車的批次出貨確認 | 範圍外（design.md § 九） |
 
@@ -73,5 +73,5 @@ grep `openspec/specs/` 其他模組：order-management、business-scenarios 的�
 
 | OQ | 議題 | 與本 change 的關係 |
 |----|------|------------------|
-| [SHP-026](../../../memory/Sens_wiki/wiki/erp/08-open-questions/SHP-026-拋單逾時後物流商才建單的重複建單風險.md) | 拋單逾時後物流商才建單、等待期間被作廢而物流商端已建單 | 本 change 只承諾逾時視為失敗、停在已裝箱；上表兩段排除 |
+| [SHP-026](../../../memory/Sens_wiki/wiki/erp/08-open-questions/_archives/2026/SHP-026-拋單逾時後物流商才建單的重複建單風險.md) | 拋單逾時後物流商才建單、等待期間被作廢而物流商端已建單 | 已拍板（系統外處理，規則見 wiki〈EC 物流串接約束〉「重複建單」）；本 change 只承諾逾時視為失敗、停在已裝箱 |
 | [SHP-024](../../../memory/Sens_wiki/wiki/erp/08-open-questions/SHP-024-實際出貨日取最晚離廠後的判定穩定性.md) | 實際出貨日取最晚離廠後的判定穩定性 | 部分離廠時新增箱會多一筆未離廠物流單，實際出貨日要等它也離廠；本 change 不改取法 |
