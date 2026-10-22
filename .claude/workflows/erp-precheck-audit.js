@@ -74,7 +74,7 @@ const AUDIT_SCHEMA = {
       },
     },
     relatedEntities: { type: 'array', items: { type: 'string' }, description: '連帶矩陣影響的實體清單' },
-    wikiCards: { type: 'array', items: { type: 'string' }, description: '本次設計定案後將被改寫的 wiki 商業邏輯卡（pre-check 不修；設計確認後、propose 前更新）' },
+    wikiCards: { type: 'array', items: { type: 'string' }, description: '本次設計定案後將被改寫的 wiki 商業邏輯卡（pre-check 不修；設計拍板後、寫 specs 前更新）' },
   },
   required: ['domain', 'loadedCards', 'matrix', 'gaps', 'oqCandidates', 'relatedEntities', 'wikiCards'],
 }
@@ -112,7 +112,7 @@ function auditPrompt(domain) {
 4. 業務情境卡類型 MUST 檢查變體判定（接力型 / 能力型 / 排程型）是否正確、步驟判準是否為可觀測業務結果。
 5. 業務邏輯卡類型 MUST 檢查連帶矩陣（連帶實體 / 跨模組影響）。
 6. 待修補項 MUST 指向「應 edit 補入的既有卡路徑」（禁新建抽象卡）。
-7. 列出本次設計定案後將被改寫的 wiki 商業邏輯卡（pre-check 不修；設計確認後、propose 前更新）。
+7. 列出本次設計定案後將被改寫的 wiki 商業邏輯卡（pre-check 不修；設計拍板後、寫 specs 前更新）。
 
 只回傳結構化結果，不要修改任何檔案。`
 }
@@ -165,5 +165,5 @@ return {
   relatedEntities: allEntities,
   wikiCardsToBackfill: allWikiCards,
   adversarialAssessments: clean.map((d) => ({ domain: d.domain, assessment: d.adversarial && d.adversarial.assessment })),
-  note: '主對話 agent 依此結果跑 Step 4 修補（edit 既有卡 + 標 OQ）+ Step 5 閉環驗證；wiki 商業邏輯卡於設計確認後、propose 前更新（不在 pre-check 修）。',
+  note: '主對話 agent 依此結果跑 Step 4 修補（edit 既有卡 + 標 OQ）+ Step 5 閉環驗證；wiki 商業邏輯卡於設計拍板後、寫 specs 前更新（不在 pre-check 修）。',
 }

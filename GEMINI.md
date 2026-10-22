@@ -30,7 +30,8 @@ Sens 是一個以規格驅動（Specification-driven）為核心的專案倉庫�
 | 指令 | 用途 |
 | :--- | :--- |
 | `/opsx:explore` | 在正式建立變更前，進行問題探索與方向驗證。 |
-| `/opsx:propose` | 在 `openspec/changes/` 建立新變更（包含提案、設計與任務清單）。 |
+| `/opsx:new` | 規劃第 1 步，在 `openspec/changes/` 建立新變更；規劃段產出（pre-check、grill、稽核）都放在這個資料夾。ERP 流程不用 `/opsx:propose`。 |
+| `/opsx:continue` | 分段產出：grill 後產提案與設計並送稽核；Miles 拍板且 wiki 落卡後產規格與任務清單。 |
 | `/opsx:apply` | 根據 `tasks.md` 在 Prototype 倉庫實作變更。 |
 | `/opsx:verify` | 執行測試 (Playwright/Vitest) 並驗證實作是否符合規格。 |
 | `/opsx:archive` | 將 Delta Specs 合併回主規格檔並歸檔變更。 |

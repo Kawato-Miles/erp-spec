@@ -35,7 +35,7 @@ description: >
 
 流程：判落點（哪張卡的哪一段）→ 依骨架與規範撰寫 → 稽核 → 標明異動卡 ＋ 追加 wiki/log.md。
 
-**BRD 先於 PRD 是順序約束，不是觸發條件**：正本卡要在 OpenSpec delta spec 之前到位，因為 delta spec 的 `## Why` 要引用正本卡當依據。這條約束何時生效，與本 skill 何時被觸發是兩件事。
+**BRD 先於 PRD 是順序約束，不是觸發條件**：正本卡要在 OpenSpec delta spec 之前到位，因為 delta specs 撰寫時要引用已落卡的正本卡。這條約束何時生效，與本 skill 何時被觸發是兩件事。
 
 ### 觸發判斷（以「要寫的內容屬哪個卡型」起算）
 
@@ -159,7 +159,7 @@ description: >
 
 **收斂掃描（必做）**：本次改動的每一句規則句，用 skill `obsidian-cli` 全庫搜尋關鍵詞，確認其餘出現處全部是引用或合法露出句、無第二份本體。發現第二份本體 → 回 Step 3 收斂；分不出哪份是本體 → 停下並排呈報。
 
-> **「完美是良善之敵」收尾紀律**：自審 PASS 後做完 Step 6 即可進入 propose，殘餘修飾（polish）進後續追蹤（follow-up）。
+> **「完美是良善之敵」收尾紀律**：自審 PASS 後做完 Step 6；本次落卡屬某個 OpenSpec change 時，提交後在該 change 資料夾 `grill.md` 檔尾追加「wiki 落卡紀錄」段（落卡卡名清單＋提交碼），即可進入寫 specs（`/opsx:continue`），殘餘修飾（polish）進後續追蹤（follow-up）。
 
 ### Step 6：下游更正（規則、情境步驟、欄位、狀態任一有實質異動時必做）
 
@@ -311,7 +311,7 @@ wiki 是規則與情境骨架的正本，下游各載體從它派生。wiki 改�
 - **`vault-ingest`**：管 raw 素材層的收與讀；mode B 判完落點後寫卡動作轉介本 skill。本 skill 若識別到「已驗證但未精練的素材」則反向轉介進 raw。
 - **`oq-manage`**：管 OQ 卡本身；本 skill 識別不確定項時觸發 mode B，OQ 拍板後決議落地到正本卡的動作轉介本 skill。
 - **`vault-audit`**：唯讀稽核（稽核維度）；mode C 要改卡時轉介本 skill。兩者一寫一讀。
-- **BRD 先於 PRD**：正本卡要在 OpenSpec delta spec 之前到位，delta spec 的 `## Why` 引用正本卡當依據。每次增修 MUST 追加 wiki/log.md 一筆（唯一操作史）。
+- **BRD 先於 PRD**：正本卡要在 OpenSpec delta spec 之前到位，delta specs 撰寫時引用已落卡的正本卡。每次增修 MUST 追加 wiki/log.md 一筆（唯一操作史）。
 
 ---
 

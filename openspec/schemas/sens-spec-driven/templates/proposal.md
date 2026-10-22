@@ -2,7 +2,7 @@
 
 ### Background
 
-<!-- 問題背景，MUST 引用 wiki 對應卡（相對路徑）-->
+<!-- 問題背景，MUST 引用 wiki 對應卡（相對路徑），也可引用同資料夾 grill.md 拍板紀錄 -->
 
 ### Problem Statement
 

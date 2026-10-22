@@ -132,7 +132,7 @@ Miles，印刷業 PM，負責下列產品：**ERP 系統**（生產排程 / 採�
   6. **若本次有 ≥ 5 個 Vault 卡異動 → 主動建議 Miles 跑 `vault-audit`**（稽核維度自審）
   7. **若本次對話累積 ≥ 1 條可寫入 raw 的素材（Prototype 試用反饋 / Miles 觀察 / 研究筆記 / 對話 highlight）→ 觸發 `vault-ingest` mode A**（claude-self-capture 須 Miles 確認、claude-research 須附真實 raw-source-link）
   8. **若本次對話結束時累積 status=raw ≥ 10 張 → 主動建議 Miles 跑 `vault-ingest` mode C**（批次掃描 raw 待處理清單）
-  9. **設計確認後、進入 `/opsx:propose` 前 MUST 先更新 wiki 商業邏輯卡**（依 `erp-planning-pre-check` 產出的「propose 前須先更新的 wiki 卡清單」執行），確保 ERP_Vault 商業邏輯正本（04-business-logic / 05-entities / 06-state-machines / 07-scenarios）先於 OpenSpec 定案。wiki 是 BRD（商業邏輯正本），OpenSpec 是 PRD（系統承諾與驗收條目），正確順序是先定 BRD 再寫 PRD；wiki 晚於 archive 才回補，spec 會混入狀態列舉、造成兩處重複維護
+  9. **設計經 Miles 拍板後、以 `/opsx:continue` 寫 specs 前 MUST 先更新 wiki 商業邏輯卡**（依 `erp-planning-pre-check` 產出的「寫 specs 前須先更新的 wiki 卡清單」，經 `wiki-amend` 執行），確保 ERP_Vault 商業邏輯正本（04-business-logic / 05-entities / 06-state-machines / 07-scenarios）先於 OpenSpec 定案。wiki 是 BRD（商業邏輯正本），OpenSpec 是 PRD（系統承諾與驗收條目），正確順序是先定 BRD 再寫 PRD；wiki 晚於 archive 才回補，spec 會混入狀態列舉、造成兩處重複維護
 - 判斷標準：本次對話是否決定了任何設計、欄位、流程、角色的新內容或修正 → 有則執行，無則跳過
 - Spec / BRD / 欄位 / 流程 / 角色有任何異動或設計方向確立時，主動收尾前依 § ERP 討論主動路由 § 變動性質分級觸發 `plan-audit` 稽核；純 OQ 文字更新或措辭修正跳過
 - 協作討論的觸發不限於正式寫 Spec：只要討論中有設計傾向出現，也應啟動；agent 先載入全部背景知識再進行
@@ -145,10 +145,10 @@ Miles，印刷業 PM，負責下列產品：**ERP 系統**（生產排程 / 採�
 |---------|----------------|---------|
 | 商業目標 / 痛點探索 | 「流程很慢」「客戶老是問」「想要做 XX」「現在的問題是…」 | 主對話直接探索：讀對應領域 Vault `04-business-logic/` ＋查 OQ；出現設計傾向時建議 Miles 下 `/grill` 進入正式規劃流 |
 | 功能設計有傾向（尚無 change）| 「我覺得應該這樣設計」「這個邏輯你怎麼看」「XX 要怎麼處理」 | `/opsx:explore` → **輕量商業邏輯衝突檢查**（讀對應領域 Vault `04-business-logic/` + 查 OQ、產衝突筆記、攤 A 繞過/B 推翻/C 待釐清 處置選項）；衝突筆記交後續 grill 與 plan-design 承接 |
-| 規格撰寫 / 變更 | 「寫 spec」「新增功能」「修改 XX 規格」「規劃文件」 | **新規劃流**（正本 wiki [[審查知識路由]] § 三）：`erp-planning-pre-check` 盤點 → grill 需求對齊（Miles 下 `/grill`，缺拍板紀錄不得進設計）→ 主對話設計（`plan-design` 必含段）→ `plan-audit` 稽核（rubric 判定值＋證據，量尺 [[規劃品質評分準則]]）→ 修正至全過 → Miles 拍板 → `wiki-amend` 落卡 → `/opsx:propose` |
+| 規格撰寫 / 變更 | 「寫 spec」「新增功能」「修改 XX 規格」「規劃文件」 | **新規劃流**（正本 wiki [[審查知識路由]] § 三）：`/opsx:new` 建 change → `erp-planning-pre-check` 盤點（產 precheck.md）→ grill 需求對齊（Miles 下 `/grill`，產 grill.md；change 內沒有 precheck.md 先補跑，缺拍板紀錄不得進設計）→ `/opsx:continue` 產 proposal 與 design（design 照 `plan-design` 必含段）→ `plan-audit` 稽核（rubric 判定值＋證據，量尺 [[規劃品質評分準則]]，產 audit-rN.md）→ 修正至全過 → Miles 拍板並裁決影響行為的未決 OQ → `wiki-amend` 落卡 → `/opsx:continue` 產 specs 與 tasks。產出全放 change 資料夾；ERP 流程不用 `/opsx:propose` |
 | 規格草稿驗收前審查 | `/opsx:verify` 前需最終確認 | 不另啟動（一致性由 plan-audit 標準 5 於設計階段涵蓋）|
 | 系統一致性 / 狀態機確認 | 「會不會跟 XX 衝突」「這個狀態怎麼設計」「資料怎麼連」 | 主對話讀 wiki `06-state-machines/` 各狀態機卡 + 各模組 spec 內嵌狀態機 Requirement 直接比對回答；涉及設計變動時進新規劃流（局部級）|
-| **規劃 ERP 功能 know-how 稽核（任何模組討論前）** | 「規劃」「設計」「修改 X 邏輯」+ 業務領域觸發詞（諮詢 / 報價 / 訂單 / 工單 / 審稿 / QC / 出貨 / 售後 / 款項 / 發票 / 收款 / 對帳 / OA / Payment / Invoice / PlannedInvoice / 退款 / 補收 / 折讓 / 期次 / 老化 等）| **第一句 MUST 跑 `erp-planning-pre-check` skill**（依 [[business-domain-taxonomy]] 檢索規約判領域——語意不確定先問 Miles——查領域 tag + `領域/全域` 出卡名清單、呈現後載入 → 雙軸量化稽核：領域 × 卡類型）+ ack 量化矩陣結果（每格 N/M/K 數字，禁「大致 OK」非量化結論）+ **MUST 列 BI-/ORD- 雙系列 open OQ 清單** + **MUST 依連帶矩陣列出本次變動的連帶影響範圍**（連帶實體）+ 修補既有卡（**禁新建抽象卡**，動筆步轉介 `wiki-amend`）+ Step 5 閉環驗證 + 反模式追蹤；執行者與稽核者分離（sub-agent 跑稽核 + 主對話 agent 跑修補）|
+| **規劃 ERP 功能 know-how 稽核（任何模組討論前）** | 「規劃」「設計」「修改 X 邏輯」+ 業務領域觸發詞（諮詢 / 報價 / 訂單 / 工單 / 審稿 / QC / 出貨 / 售後 / 款項 / 發票 / 收款 / 對帳 / OA / Payment / Invoice / PlannedInvoice / 退款 / 補收 / 折讓 / 期次 / 老化 等）| **第一句 MUST 跑 `erp-planning-pre-check` skill**；規劃結果會進 change 時，先 `/opsx:new` 再跑 pre-check，純探索討論只跑 pre-check（依 [[business-domain-taxonomy]] 檢索規約判領域——語意不確定先問 Miles——查領域 tag + `領域/全域` 出卡名清單、呈現後載入 → 雙軸量化稽核：領域 × 卡類型）+ ack 量化矩陣結果（每格 N/M/K 數字，禁「大致 OK」非量化結論）+ **MUST 列 BI-/ORD- 雙系列 open OQ 清單** + **MUST 依連帶矩陣列出本次變動的連帶影響範圍**（連帶實體）+ 修補既有卡（**禁新建抽象卡**，動筆步轉介 `wiki-amend`）+ Step 5 閉環驗證 + 反模式追蹤；執行者與稽核者分離（sub-agent 跑稽核 + 主對話 agent 跑修補）|
 | **識別到不確定項（任何時機）** | 「這個需確認」「先列 OQ」「待釐清」「待補」「[!question]」 | **立即觸發 `oq-manage` mode B 開獨立檔**（含去重流程），原處改 wiki link 引用；**不可只 inline 標注或用 callout** |
 | **識別到稽核誤判（任何時機）** | 「審錯了」「這不是缺漏」「分級判錯了」「規則太學術」「記下來」「這是誤判」| **立即觸發 `misjudgement-record` mode B 寫入 [[稽核誤判記錄]]**（去重 + 誤判紀錄要素提取，通則化者同步修 [[規劃品質評分準則]]）；**不可只口頭說「下次注意」** |
 | **Vault 健康檢查 / audit** | 「跑 vault audit」「audit vault」「Vault 健康」/ 主動：Vault 卡異動達主動收尾清單的建議門檻 / change archive 後 / 每 20+ commit | 觸發 `vault-audit` skill（稽核維度，範圍只讀 wiki/＋raw/ 唯讀；要改正本卡轉介 `wiki-amend`），產對話報告含「建議調查的新問題／該補的素材」段 + 追加 wiki/log.md（健檢(audit)） |
@@ -171,13 +171,16 @@ Miles，印刷業 PM，負責下列產品：**ERP 系統**（生產排程 / 採�
 
 **與 OpenSpec change 整合**：
 - `/opsx:explore` → 輕量商業邏輯衝突檢查（衝突筆記交後續 grill 與 plan-design 承接）
-- `/opsx:propose` → 前置條件：設計已過 plan-audit 全過＋Miles 拍板＋wiki 已落卡；proposal 承接拍板後設計，不重跑釐清
-- `/opsx:continue` / `/opsx:verify` 前 → 不另啟動稽核（一致性由 plan-audit 標準 5 於設計階段涵蓋）
+- `/opsx:new` → 新規劃流第 1 步；precheck.md、grill.md、audit-rN.md 與 proposal、design 都放這個 change 資料夾
+- `/opsx:continue`（產 proposal 與 design）→ 前置條件：change 內有 precheck.md 與 grill.md；產出送 `plan-audit`
+- `/opsx:continue`（產 specs 與 tasks）→ 前置條件：plan-audit 全過＋Miles 拍板（含影響行為的未決 OQ 已裁決或延後；延後的 OQ 只留在 Vault OQ 卡，不寫進 proposal、design、specs；change 內只在 grill.md 拍板紀錄記「延後：OQ 編號」）＋grill.md 檔尾有「wiki 落卡紀錄」段；寫 specs 時在 design.md 檔尾追加「規格與驗收對應」
+- ERP 流程不用 `/opsx:propose`
+- 寫 specs 與 tasks 的 `/opsx:continue`、`/opsx:verify` 前 → 不另啟動稽核（一致性由 plan-audit 標準 5 於設計階段涵蓋）
 - `/opsx:archive` 前 → 不觸發稽核
 
 **路由注意事項**：
 - 純澄清 / 查詢（「XX 術語是什麼」「狀態機在哪裡」）不觸發任何流程，直接回答
-- 設計產出缺必含段（含 grill 拍板紀錄段）時，plan-audit 收件即退件——grill 的強制力來自這道閘門
+- 設計產出缺必含段（含拍板引用與隱含假設段）或 change 內沒有 grill.md 時，plan-audit 收件即退件——grill 的強制力來自這道閘門
 - 稽核評分表全過後原樣呈 Miles，不由主對話改寫或美化
 - 規格撰寫統一透過 OpenSpec change 工作流
 - `erp-planning-pre-check` 與寫卡入口的消歧判準：問「這次是要規劃還沒定案的東西，還是把已定案的內容落卡」。前者跑 pre-check（規劃前盤點影響範圍與 know-how 缺口），後者直接走 `wiki-amend`；一段討論先規劃後落卡時兩個都跑，pre-check 在前
@@ -210,9 +213,10 @@ Miles，印刷業 PM，負責下列產品：**ERP 系統**（生產排程 / 採�
 **① 探索（Why）** → `/opsx:explore`
 釐清問題、驗證方向。讀此部分（§ 核心原則）理解設計思維。
 
-**② 建立變更（How to write）** → `/opsx:propose` 或 `/opsx:new` + `/opsx:continue`
-系統自動引導產出 proposal → delta specs → design → tasks。
-config.yaml rules 會自動注入 OQ 查詢與 proposal 前置條件（設計已過 plan-audit 稽核＋Miles 拍板＋wiki 已落卡）。
+**② 建立變更與設計（How to write）** → `/opsx:new` + `/opsx:continue`（ERP 流程不用 `/opsx:propose`）
+規劃第 1 步就建 change；change 資料夾是設計載體，precheck.md、grill.md、proposal.md、design.md、audit-rN.md 都放在裡面。
+設計經 plan-audit 全過、Miles 拍板、wiki 落卡後，再以 `/opsx:continue` 產 delta specs 與 tasks。
+config.yaml rules 會自動注入 OQ 查詢與寫 specs 的前置條件（grill.md 有 Miles 拍板紀錄與檔尾「wiki 落卡紀錄」段；影響行為的未決 OQ 已裁決或延後）。
 - 設計與稽核流程正本：wiki [[審查知識路由]] § 三＋[[規劃品質評分準則]]
 
 **③ 實作與驗證（How to verify）** → `/opsx:apply` + `/opsx:verify`
@@ -338,7 +342,7 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 |----------|------|--------|
 | **商業層查詢**（商業目標 / 角色 / 商業邏輯 / 實體關聯 / 狀態機 / 跨模組情境）| 讀 wiki 總入口 [wiki/index.md](memory/Sens_wiki/wiki/index.md)，依 `[[business-domain-taxonomy]]` 檢索規約定位對應領域卡（判領域 → 領域 tag 查卡名清單 → 呈現 → 載入；入口即 router，不在此重列深路徑） | OpenSpec spec § Requirements（系統承諾） |
 | **撰寫 OpenSpec change**（背景對齊）| Vault `04-business-logic/` + `05-entities/` + `03-roles/` 對應卡 → 引用至 proposal `## Why` | Notion 索引（`10-references/notion-index.md`） |
-| **撰寫 Spec / PRD** | 觸發 OpenSpec change 工作流（`/opsx:propose` 或 `/opsx:new`），背景資料由 Vault 對應卡引用 | — |
+| **撰寫 Spec / PRD** | 觸發 OpenSpec change 工作流（`/opsx:new` 加 `/opsx:continue`），背景資料由 Vault 對應卡引用 | — |
 | 情境驗證 / 補情境 | Vault `07-scenarios/`（業務情境卡；分層：骨架 `wiki/範本/範本 - 業務情境`／規範 `規範 - 業務情境`／範例 `範例 - 業務情境`）| Vault `03-roles/`（角色責任分配）、跨模組狀態追蹤表 `openspec/specs/business-scenarios/spec.md`（存量，隨 change 清；情境骨架以情境卡為準）|
 | 確認 / 解答 Open Question | Vault `08-open-questions/`（**內部正本**）+ 觸發 `oq-manage` skill | Notion OQ DB（對外確認版，見 § OQ 工作流）|
 | 業務情境 | Vault `07-scenarios/`（業務情境卡；分層：骨架 `wiki/範本/範本 - 業務情境`／規範 `規範 - 業務情境`／範例 `範例 - 業務情境`）| 各模組 spec 驗收條目（Scenario，Given/When/Then，標所屬情境卡步驟）、Vault `03-roles/` |

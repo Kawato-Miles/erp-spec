@@ -1,7 +1,7 @@
 ---
 name: plan-audit
 description: >
-  ERP／MES 規劃設計的稽核 skill：對 plan-design 產出的設計方案依「規劃品質評分準則」（wiki 11-review-knowledge，唯一正本）逐項判定（通過／部分通過／未通過）＋強制證據，產出評分表；結構性變更加跑對抗式情境推演。執行者與稽核者分離：設計在主對話、稽核派獨立 sub-agent。
+  ERP／MES 規劃設計的稽核 skill：對 change 的 proposal 與 design（design 照 plan-design 結構）依「規劃品質評分準則」（wiki 11-review-knowledge，唯一正本）逐項判定（通過／部分通過／未通過）＋強制證據，產出評分表；結構性變更加跑對抗式情境推演。執行者與稽核者分離：設計在主對話、稽核派獨立 sub-agent。
   觸發：plan-design 產出完成送審時；Miles 說「稽核這份設計」「跑 plan-audit」；復審（修正後重驗）。
   不適用：設計撰寫（用 plan-design）、規劃前 know-how 盤點（用 erp-planning-pre-check）、Vault 整體健康稽核（用 vault-audit）、交付文件稽核（用 linear-delivery）。
 ---
@@ -14,7 +14,7 @@ description: >
 
 ### 步驟 1：收件檢查（主對話執行，機械性）
 
-驗必含段是否齊備（準則卡 § 二）。缺任一段 → **直接退件**，不派稽核 agent、不進 rubric。這是 grill 對齊與自證責任的硬閘門。
+驗必含段是否齊備（準則卡 § 二）；必含段④另驗 change 內有 `grill.md`，且④有隱含假設清單。缺任一項 → **直接退件**，不派稽核 agent、不進 rubric。這是 grill 對齊與自證責任的硬閘門。
 
 ### 步驟 2：分級判定（主對話執行，先亮給 Miles）
 
@@ -28,7 +28,8 @@ description: >
 ### 步驟 3：派稽核 sub-agent（模型用 Opus，effort high）
 
 dispatch prompt 必含：
-- 設計方案全文（含必含段），不摘要、不刪減。
+- change 的 `proposal.md` 與 `design.md` 全文（design 含必含段），不摘要、不刪減。
+- change 的 `grill.md` 全文：稽核者據以比對設計未偏離拍板（準則卡 5-1）。
 - 準則卡全文或路徑（稽核者 MUST 先讀）。
 - 領域背景：依 [[business-domain-taxonomy]] 檢索規約載入的相關正本卡清單、wiki `07-scenarios/` 相關情境卡。
 - **該領域資料結構總覽卡 MUST 讀**（關聯與資料流唯一正本）——設計中的實體關係與資料流以它為比對基準（rubric 5-2）。該領域無總覽卡時：結構性變更依 [[規範 - 資料結構總覽]] 判斷表退回（建卡為設計前置步驟）；局部變動可續審，但評分表 MUST 明標「本次 5-2 無總覽基準、關係比對為逐卡人工」，不得靜默通過。
@@ -41,7 +42,7 @@ dispatch prompt 必含：
 
 ### 步驟 4：評分表（稽核產出的唯一格式)
 
-評分表存 `memory/erp/plans/<主題>/audit-rN.md`（N＝輪次，與設計方案 `design.md` 同資料夾；落點規則見 `plan-design` § 產出落點）。
+評分表存 change 資料夾 `openspec/changes/<名稱>/audit-rN.md`（N＝輪次，與 `design.md` 同資料夾；落點規則見 `plan-design` § 產出落點）。
 
 | 欄位 | 標準 |
 |------|------|
@@ -54,8 +55,8 @@ dispatch prompt 必含：
 
 - 任一「未通過」→ 退回主對話修正 → 回步驟 3 復審（復審可只重驗未通過項＋受修正牽動項）。
 - 全過 → 評分表原樣呈 Miles 拍板，**不由協調者改寫或美化**。
-- 拍板後接 `wiki-amend` 落卡（推演打出漏洞的有效對抗情境一併回寫 `07-scenarios/`）→ `/opsx:propose`。
-- 落卡與 propose 都完成後，把 `memory/erp/plans/<主題>/` 整夾搬到 `memory/erp/plans/_archives/<年>/<主題>/`。平層只留進行中的主題。
+- 拍板時一併列出本次涉及且影響行為的未決 OQ，逐題請 Miles 裁決或延後；裁決結果追加到 change 的 `grill.md`。延後的 OQ 只留在 Vault OQ 卡，不寫進 proposal、design、specs；change 內只在 grill.md 拍板紀錄記「延後：OQ 編號」。
+- 拍板後接 `wiki-amend` 落卡（推演打出漏洞的有效對抗情境一併回寫 `07-scenarios/`）；落卡完成後在 `grill.md` 檔尾追加「wiki 落卡紀錄」段（落卡卡名清單＋提交碼）→ `/opsx:continue` 產 specs 與 tasks。
 
 ## 誤判回饋
 
