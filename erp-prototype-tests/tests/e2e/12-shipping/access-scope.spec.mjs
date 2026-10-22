@@ -68,7 +68,8 @@ test('12.27 出貨單列表依角色過濾：業務與諮詢只列自己負責�
 test('12.27 沒有出貨單檢視活動的角色看不到出貨管理：側欄沒有入口，停在出貨管理頁切過去被導回', async ({ page }) => {
   for (const role of ['生管', '品檢人員', '會計', '師傅', '廠務', '審稿人員']) {
     await openAs(page, role, SHIPMENTS);
-    await expect(page).not.toHaveURL(/\/qc-shipping\/shipments/, { timeout: 15_000 });
+    // 導回要等預設頁編譯；開發伺服器連跑後段可能超過 15 秒
+    await expect(page).not.toHaveURL(/\/qc-shipping\/shipments/, { timeout: 60_000 });
     await expect(page.getByPlaceholder('請輸入出貨單編號、訂單編號，或客戶名稱')).toHaveCount(0);
     await expect(page.locator('.ant-menu-item[data-menu-id$="-/qc-shipping/shipments"]')).toHaveCount(0);
   }

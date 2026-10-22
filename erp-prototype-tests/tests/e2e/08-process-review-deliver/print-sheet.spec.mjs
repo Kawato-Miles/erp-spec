@@ -238,12 +238,15 @@ test('8.8（補）印件內部完成日為空時印據表頭印破折號', async
   await page.goto('/orders/detail?id=ORD-2026-0710&tab=printItems', { waitUntil: 'domcontentloaded' });
   await switchRole(page, '業務');
   const row = page.locator('tr', { hasText: 'PI-2026-0710' });
-  await row.getByRole('button', { name: '編輯印件' }).click();
   // 清除鈕只在 hover 時才顯示、位置常落在可視區外；直接對元素派送 click 事件繞開座標可視性檢查
   const dueDateClear = page
     .locator('.ant-form-item', { hasText: '未扣急件內部完成日' })
     .locator('.ant-picker-clear');
-  await dueDateClear.waitFor({ state: 'attached' });
+  // 頁面結構載入後可能尚未接上互動，第一次點擊會落空；重試到編輯表單出現
+  await expect(async () => {
+    if (!(await dueDateClear.count())) await row.getByRole('button', { name: '編輯印件' }).click();
+    await dueDateClear.waitFor({ state: 'attached', timeout: 5000 });
+  }).toPass({ timeout: 60000 });
   await dueDateClear.evaluate((el) => el.click());
   await page.getByRole('button', { name: '確認' }).click();
   await expect(
