@@ -11,7 +11,7 @@
 
 | 層 | 指令 | 內容 | 何時跑 |
 |----|------|------|------|
-| smoke | `npm run test:smoke` | 主流程一條：一件印件從需求單到訂單製作完成，33 站，站表見 `docs/main-flow.md` | 改 mock 或 prototype 後立刻跑 |
+| smoke | `npm run test:smoke` | 主流程一條：一件印件從需求單到訂單完成（含品檢與專車配送出貨），39 站，站表見 `docs/main-flow.md` | 改 mock 或 prototype 後立刻跑 |
 | module | `npm run test:module -- tests/e2e/07-process-planning` | 該章全部 | 改單一模組時 |
 | full | `npm test` | Vitest 純函式加全部 Playwright；Playwright 依章節分批，每批重新啟動開發伺服器（一次連跑近兩小時伺服器會失去反應） | 只在 Miles 指示時跑 |
 
