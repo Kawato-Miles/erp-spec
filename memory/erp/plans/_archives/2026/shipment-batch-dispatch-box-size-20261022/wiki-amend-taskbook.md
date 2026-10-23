@@ -10,7 +10,7 @@
    - 本次涉及卡型的規範與範例：規範 - 實體、規範 - 狀態機、規範 - 業務情境、規範 - 角色、規範 - 活動清單、規範 - 資料結構總覽（各自的範例卡）
 2. `/Users/b-f-03-029/.claude/output-styles/ste100-pm.md`、`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`（句法與用語；台灣繁體中文、禁中英夾雜、禁 emoji、列舉前不寫死數量詞）
 3. Sens_wiki 的 `memory/Sens_wiki/CLAUDE.md`（log 格式、連結規則：一律 [[完整卡名]]、禁別名）
-4. 設計正本：`memory/erp/plans/shipment-batch-dispatch-box-size-20261022/design.md`（§ 二～§ 七本體、§ 十一 wiki 衝突清單、總覽差異）
+4. 設計正本：`memory/erp/plans/_archives/2026/shipment-batch-dispatch-box-size-20261022/design.md`（§ 二～§ 七本體、§ 十一 wiki 衝突清單、總覽差異）
 5. 拍板正本：同目錄 `grill.md`（G37～G59；取代關係見 § 六之一、§ 七之一）
 
 ## 二、改卡範圍（以 design.md § 十一 為準，下表為索引）
@@ -35,7 +35,7 @@
 - 規則本體只寫在家卡（§ 六鎖定規則的家是出貨單狀態卡；裝箱資料欄位與箱規的家是出貨單卡）；其他卡只放 [[卡名]] 引用或規範允許的露出句，不自行重述規則。
 - 介面內容（子母表、處理中畫面樣式、入口位置、裝箱照片欄刪除）不進 wiki。
 - 條件判斷一律用狀態或集合詞，不寫「還有箱子沒寄出」類描述。
-- 來源欄格式比照既有：「Miles 2026-10-22 拍板（出貨單子母表、批次拋單與裝箱長寬高 grill，Sens memory/erp/plans/shipment-batch-dispatch-box-size-20261022/grill.md G..）：一句摘要」。舊的 G31 摘要句保留不改（屬溯源），新來源句寫明本次推翻 G31、G20。
+- 來源欄格式比照既有：「Miles 2026-10-22 拍板（出貨單子母表、批次拋單與裝箱長寬高 grill，Sens memory/erp/plans/_archives/2026/shipment-batch-dispatch-box-size-20261022/grill.md G..）：一句摘要」。舊的 G31 摘要句保留不改（屬溯源），新來源句寫明本次推翻 G31、G20。
 - 識別到不確定項：停下，在回報列出，不 inline 標注。
 - 動到活動清單、實體操作段、狀態機觸發操作、情境卡時，完成後在 repo 根目錄跑 `python3 .claude/skills/vault-audit/scripts/authority_check.py`，錯誤須為 0。
 - log.md：在檔首說明分隔線下方、既有條目最上方插一筆「納入(amend)」，變更行逐卡 [[卡名]]＋一句話，動機行寫業務理由（第三方物流一箱一筆逐筆拋單太慢；箱子實際尺寸要能對帳並向客人說明；部分離廠後一箱出錯不必作廢重開）。不得用 cat >> 追加。

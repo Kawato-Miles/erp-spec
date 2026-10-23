@@ -18,7 +18,7 @@
 1. `/Users/b-f-03-029/erp-shipment-logistics/.claude/skills/prototype-from-prompt/SKILL.md`（設計規範唯一入口，含它指定要讀的檔）。小改也要照它。
 2. 載入 skill `andrej-karpathy-skills:karpathy-guidelines` 的原則：只改需要改的、不加未要求的東西。
 3. change 正本：/Users/b-f-03-029/Sens/.claude/worktrees/shipping-logistics-features-dd104a/openspec/changes/shipment-batch-dispatch-box-size/（proposal、design、specs/shipment/spec.md、tasks.md）。**tasks.md 第 2～5 節就是你的工作清單，含測試影響清單**。
-4. 設計與拍板：同 Sens 目錄 memory/erp/plans/shipment-batch-dispatch-box-size-20261022/design.md、grill.md（§ 八介面內容、§ 二箱規十筆初始資料）。
+4. 設計與拍板：同 Sens 目錄 memory/erp/plans/_archives/2026/shipment-batch-dispatch-box-size-20261022/design.md、grill.md（§ 八介面內容、§ 二箱規十筆初始資料）。
 5. wiki 正本（業務規則以此為準）：memory/Sens_wiki/wiki/erp/05-entities/出貨單.md、物流單.md、06-state-machines/出貨單狀態.md、物流單狀態.md、07-scenarios/出貨與送達.md。
 6. 測試專案：erp-prototype-tests/README.md（§ 迭代檢核表）、docs/scenario-catalog.md 第十二章與 14.37、14.38。
 

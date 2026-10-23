@@ -4,7 +4,7 @@
 
 ## 一、開工前必讀與硬規則
 
-1. 第一包任務書 § 一、§ 二全部適用：/Users/b-f-03-029/Sens/memory/erp/plans/production-ui-correction-20261012/proto-pkg1-brief.md。
+1. 第一包任務書 § 一、§ 二全部適用：/Users/b-f-03-029/Sens/memory/erp/plans/_archives/2026/production-ui-correction-20261012/proto-pkg1-brief.md。
 2. erp 工作分支 `prototype/production-stage`，不要切換、不要 merge develop。
 3. **工作區有另一個工作階段（權限修正）的未提交改動**，包括 MOCK-DATA-CHAIN.md、orders/mock-data.js 等。動任何檔前先 `git diff -- <檔>` 看有沒有別人的改動：有就只在不重疊的位置加你的內容，並在交回時列出該檔；不要還原、不要覆寫別人的改動。
 4. 不 commit、不 git add。

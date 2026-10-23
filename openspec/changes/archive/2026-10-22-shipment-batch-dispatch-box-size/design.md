@@ -4,8 +4,8 @@
 
 | 內容 | 正本 |
 |------|------|
-| 拍板紀錄（G37～G59） | `memory/erp/plans/shipment-batch-dispatch-box-size-20261022/grill.md` |
-| 設計方案第二版（§ 十一主規格衝突清單、必含段） | `memory/erp/plans/shipment-batch-dispatch-box-size-20261022/design.md` |
+| 拍板紀錄（G37～G59） | `memory/erp/plans/_archives/2026/shipment-batch-dispatch-box-size-20261022/grill.md` |
+| 設計方案第二版（§ 十一主規格衝突清單、必含段） | `memory/erp/plans/_archives/2026/shipment-batch-dispatch-box-size-20261022/design.md` |
 | 稽核 | 同目錄 `audit-r1.md`、`audit-r2.md` |
 | 批次拋單、箱規共用、裝箱資料長寬高與帶入表、拆單表 | wiki〈出貨單〉 |
 | 拋單失敗與逾時、錯誤訊息只在處理結束時回給操作者 | wiki〈物流單〉〈物流單狀態〉 |
