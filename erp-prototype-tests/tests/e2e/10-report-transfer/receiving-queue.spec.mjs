@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { openAs, switchRole, gotoInApp } from '../_helpers.mjs';
-import { confirmDialog, dialogOf, receiveInQueue } from './_ch10.mjs';
+import { confirmDialog, dialogOf, filterQueueLine, receiveInQueue } from './_ch10.mjs';
 import {
   createTransferToQc,
   gotoInAppSafe,
@@ -47,9 +47,9 @@ test('10.8 點收佇列以轉交單為列，依所屬產線過濾，不分代點
   await switchRoleSafe(page, '生管');
   await gotoInAppSafe(page, '/production-floor/receiving');
   await expect(page.locator('tr.ant-table-row').filter({ hasText: '品檢線' })).toHaveCount(0);
-  for (const no of ['TT-20260830-002', 'TT-20260827-002']) {
-    await expect(page.locator('tr.ant-table-row', { hasText: no }).getByRole('button', { name: '點收', exact: true })).toBeVisible();
-  }
+  // 佇列依建單時間新到舊、一頁十筆：鏈九（2026-10）的單加入後 TT-20260827-002 落到第二頁，
+  // 兩張已送達的單到下方「只看未點收」篩選時再驗點收鈕
+  await expect(page.locator('tr.ant-table-row', { hasText: 'TT-20260830-002' }).getByRole('button', { name: '點收', exact: true })).toBeVisible();
   await expect(
     page.locator('tr.ant-table-row', { hasText: 'TT-20260831-008' }).getByRole('button', { name: '修正點收紀錄' }),
   ).toBeVisible();
@@ -59,6 +59,9 @@ test('10.8 點收佇列以轉交單為列，依所屬產線過濾，不分代點
   await statusSelect.click();
   await page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last().locator('.ant-select-item-option', { hasText: '只看未點收' }).click();
   await expect(rows).toHaveCount(2);
+  for (const no of ['TT-20260830-002', 'TT-20260827-002']) {
+    await expect(page.locator('tr.ant-table-row', { hasText: no }).getByRole('button', { name: '點收', exact: true })).toBeVisible();
+  }
   await statusSelect.click();
   await page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last().locator('.ant-select-item-option', { hasText: '只看已點收' }).click();
   await expect(page.locator('tr.ant-table-row', { hasText: 'TT-20260830-002' })).toHaveCount(0);
@@ -85,7 +88,8 @@ test('10.8 點收佇列以轉交單為列，依所屬產線過濾，不分代點
   await expect(row).toContainText('許文傑');
   await expect(page.getByText(/代點收/)).toHaveCount(0);
 
-  // TT-20260827-002 的點收對話框列出內卡 200 與信封 300 兩條
+  // TT-20260827-002 的點收對話框列出內卡 200 與信封 300 兩條（以目的產線篩選定位，理由同上）
+  await filterQueueLine(page, '手工產線');
   await page.locator('tr.ant-table-row', { hasText: 'TT-20260827-002' }).getByRole('button', { name: '點收', exact: true }).click();
   dialog = dialogOf(page, '點收');
   await expect(dialog.locator('tr', { hasText: '內卡四色印刷' }).locator('.ant-input-number-input')).toHaveValue(/^200$/);

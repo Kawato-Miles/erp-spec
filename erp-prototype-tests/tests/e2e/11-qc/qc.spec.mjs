@@ -34,7 +34,17 @@ const descValue = (page, label) =>
 
 // 印件列表點印件名稱開詳情（名稱為可點文字，非帶網址的連結）
 const openPrintItemDetail = async (page, name) => {
-  await page.getByText(name, { exact: true }).first().click();
+  // 印件列表依建立時間新到舊、每頁固定筆數，鏈九加入後較早的印件可能不在第一頁：
+  // 先用列表搜尋框篩到該印件（共用篩選元件按 Enter 才送出）
+  const search = page.getByPlaceholder('請輸入印件名稱／編號、訂單編號，或客戶名稱');
+  await search.fill(name);
+  await search.press('Enter');
+  // 列表剛掛載（或剛篩選重繪）時第一次點擊偶爾落在尚未接上事件的節點上，故重試到網址真的換掉為止
+  const link = page.getByText(name, { exact: true }).first();
+  await expect(async () => {
+    await link.click();
+    await expect(page).toHaveURL(/print-items\/detail/, { timeout: 3000 });
+  }).toPass({ timeout: 20000 });
   await expect(page.getByText('印件基本資訊')).toBeVisible();
 };
 
@@ -90,8 +100,15 @@ test('11.1 待驗清單依印件做出來的良品列出，不依轉交（原編
   await expect(pending).toContainText('0 ／ 0');
   await expect(pending.getByRole('button', { name: '驗收' })).toBeEnabled();
 
-  // 沒有良品也沒有品檢紀錄的印件不列（鏈二裁切未完成、鏈三尚未派工）
-  await expect(page.locator('tr.ant-table-row')).toHaveCount(2);
+  // 鏈九 PI-2026-0924：良品 3,000、已驗 3,000、待驗量 0，列留著（本週期已有品檢紀錄即列）；
+  // 內部完成日 2026-10-27 最晚，依內部完成日由近到遠排在最後一列
+  const chain9 = pendingRow(page, 'PI-2026-0924');
+  await expect(chain9).toContainText('3,000 ／ 0');
+  await expect(chain9).toContainText('0（已驗完）');
+  await expect(page.locator('tr.ant-table-row').last()).toContainText('PI-2026-0924');
+
+  // 沒有良品也沒有品檢紀錄的印件不列（鏈二裁切未完成、鏈三尚未派工）：只有鏈一、鏈四、鏈九三列
+  await expect(page.locator('tr.ant-table-row')).toHaveCount(3);
 
   // 只有品檢人員看得到操作欄：換成業務時整頁沒有驗收鈕，並提示要切換角色
   await switchRoleSafe(page, '業務');

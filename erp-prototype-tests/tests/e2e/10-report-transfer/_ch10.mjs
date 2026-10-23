@@ -40,6 +40,21 @@ export async function openTicketDrawer(page, ticketNo) {
   return drawer;
 }
 
+/**
+ * 點收佇列以「目的產線」篩選縮小範圍。佇列依建單時間新到舊、一頁十筆，
+ * 鏈九（2026-10）的轉交單加入後，較早的單（如手工產線的 TT-20260827-001／002）落到第二頁；
+ * 點收佇列沒有搜尋框，改用目的產線篩選定位（篩選狀態不跨換頁保留，每次進佇列都要重選）。
+ */
+export async function filterQueueLine(page, line) {
+  const select = page.locator('.ant-col', { hasText: '目的產線' }).locator('.ant-select');
+  await select.click();
+  await page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
+    .last()
+    .locator('.ant-select-item-option', { hasText: line })
+    .click();
+}
+
 /** 建單成立的提示：寫明已通知哪位負責廠務 */
 export const CREATED_TOAST = /已建立.*已通知負責廠務/;
 
@@ -107,6 +122,11 @@ export async function receiveInQueue(page, ticketNo, quantities = {}) {
  */
 export async function openPackageReports(page, packageNo, taskName, path = '/production-floor/work-packages') {
   await gotoInApp(page, path);
+  // 工作包列表一頁十筆，鏈九的工作包加入後較早的工作包（如 WP-2026-0601-01）落到第二頁：
+  // 先用搜尋框以工作包編號篩出（共用篩選元件按 Enter 才送出）
+  const search = page.getByPlaceholder('請輸入工作包編號、備註，或指派師傅');
+  await search.fill(packageNo);
+  await search.press('Enter');
   const pkgRow = page.locator('.ant-table-row', { hasText: packageNo }).first();
   // 同一頁停留時工作包列可能已展開（鈕名變「收起行」），已展開就不再點
   const expand = pkgRow.getByLabel('展開行');
