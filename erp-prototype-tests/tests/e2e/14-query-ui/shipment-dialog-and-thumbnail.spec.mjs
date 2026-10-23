@@ -4,7 +4,7 @@ import { expandShipmentRow, openShipmentPanel, shipmentRow } from '../11-qc/_set
 
 // 情境目錄 14.37、14.38（2026-10-13 新增，2026-10-22 改寫：裝箱明細加長寬高、兩處列表改子母表並刪裝箱照片欄）。
 // 起點資料：鏈一 SH-2026-0601（順豐、已送達；明細 PI-2026-0601 × 3,000、揀貨數量 3,000、五箱「1 號箱」45×30×15、
-// 一筆物流單，裝箱照片只有檔名「裝箱照-SH0601-1.jpg」等，出貨單歷程五筆加物流單歷程四筆）、SH-2026-0602（自取），
+// 一筆物流單，裝箱照片只有檔名「裝箱照-SH0601-1.jpg」等，出貨單歷程七筆加物流單歷程四筆）、SH-2026-0602（自取），
 // 鏈四 SH-2026-0820（草稿，沒有物流單）。
 
 const LOGISTICS_SUB_HEADS = ['物流單編號', '物流單號', '箱數', '狀態', '離廠時間', '送達時間', '例外理由', '操作'];
@@ -79,19 +79,25 @@ test('14.37 出貨單對話框：單頭固定，出貨明細與歷程兩個頁�
   await expect(dialog.getByRole('img', { name: /裝箱照片/ })).toHaveCount(5);
   await expect(dialog).not.toContainText('.jpg');
 
-  // 歷程：新到舊，出貨單五筆加物流單四筆共九筆；每筆帶時間、操作人、前後值與附件縮圖
+  // 歷程：新到舊，出貨單七筆加物流單四筆共十一筆；每筆帶時間、操作人、前後值與附件縮圖。
+  // 出貨單七筆：建立出貨單、開始揀貨、裝箱回報、拋單、物流商回傳已出貨、物流商回傳運送中、物流單全數送達轉已送達；
+  // 物流單四筆：拋單成功、物流商回傳已出貨、運送中、已送達（qc-shipping mock SH-2026-0601）
   await dialog.getByRole('tab', { name: '歷程' }).click();
   const timeline = dialog.locator('.ant-timeline');
-  await expect(timeline.locator('.ant-timeline-item')).toHaveCount(9);
+  await expect(timeline.locator('.ant-timeline-item')).toHaveCount(11);
   const items = await timeline.locator('.ant-timeline-item').allInnerTexts();
   expect(items[0]).toContain('2026-06-19 09:00');
   expect(items[0]).toContain('物流單 SH-2026-0601-001');
   expect(items[1]).toContain('物流單全數送達，出貨單轉已送達');
   expect(items[1]).toContain('運送中 → 已送達');
-  expect(items[6]).toContain('裝箱回報');
-  expect(items[6]).toContain('范姜宏');
-  expect(items[8]).toContain('建立出貨單');
-  await expect(timeline.locator('.ant-timeline-item').nth(6).getByRole('img')).toHaveCount(5);
+  // 物流商回傳的已出貨與運送中，出貨單與物流單各記一筆（共四筆）
+  expect(items.filter((t) => t.includes('物流商回傳：已出貨'))).toHaveLength(2);
+  expect(items.filter((t) => t.includes('物流商回傳：運送中'))).toHaveLength(2);
+  expect(items[8]).toContain('裝箱回報');
+  expect(items[8]).toContain('范姜宏');
+  expect(items[9]).toContain('開始揀貨');
+  expect(items[10]).toContain('建立出貨單');
+  await expect(timeline.locator('.ant-timeline-item').nth(8).getByRole('img')).toHaveCount(5);
 });
 
 test('14.38 出貨單列表為子母表：主層出貨單、展開為物流單子表；沒有裝箱照片欄（列表）', async ({ page }) => {

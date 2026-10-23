@@ -80,7 +80,8 @@ test('12.1 出貨單列表、預計出貨日欄與檢視對話框（原編號 29
   await expect(listHeader(page)).toContainText('預計出貨日');
   const draftRow = shipmentRow(page, CHAIN4.draftShipmentNo);
   await expect(draftRow).toContainText('草稿');
-  await expect(draftRow).toContainText('2026-09-10');
+  // 鏈四草稿 SH-2026-0820 的預計出貨日為 2026-09-07（客戶指定 9/9 收件，往前推出貨日；MOCK-DATA-CHAIN 鏈四）
+  await expect(draftRow).toContainText('2026-09-07');
   await expect(draftRow).toContainText('（預計）');
 
   // 草稿的對話框：上方固定單頭、下方兩個頁籤（出貨明細、歷程），不再有基本資訊與進度頁籤

@@ -10,6 +10,7 @@ import {
   dialogOf,
   editMoveQty,
   noticeOf,
+  filterQueueLine,
   openPackageReports,
   openTicketDrawer,
   subCell,
@@ -165,6 +166,7 @@ test('10.51 點收單一動作：每次新增一筆，第一筆轉已點收，�
   test.setTimeout(120_000);
   // 鏈外 TT-20260827-002（已送達；內卡 200、信封 300）：生管第一次點收內卡 200、信封 280
   await openAs(page, '生管', '/production-floor/receiving');
+  await filterQueueLine(page, '手工產線');
   const row = page.locator('tr.ant-table-row', { hasText: 'TT-20260827-002' });
   await row.getByRole('button', { name: '點收', exact: true }).click();
   let dialog = dialogOf(page, '點收');

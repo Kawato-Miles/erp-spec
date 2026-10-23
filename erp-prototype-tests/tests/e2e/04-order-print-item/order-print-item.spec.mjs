@@ -9,8 +9,8 @@ test('4.1 訂單詳情的印件印製狀態只出現九個值（原編號 65）'
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=printItems');
   const panel = page.getByRole('tabpanel');
   const row = panel.locator('tr', { hasText: 'PI-2026-0710' });
-  // 這件印件目前印製狀態為「部分工單製作中」，是九值之一
-  await expect(row.getByText('部分工單製作中', { exact: true })).toBeVisible();
+  // 這件印件只有一張工單、已開工，印製狀態為「製作中」，是九值之一
+  await expect(row.getByText('製作中', { exact: true })).toBeVisible();
   // 舊名詞不應出現在訂單項目分頁內容中
   await expect(panel.getByText('待生產', { exact: true })).toHaveCount(0);
   await expect(panel.getByText('生產中', { exact: true })).toHaveCount(0);
@@ -392,11 +392,20 @@ test('4.14 唯讀呈現處的印件內部完成日合併未扣急件那一天', 
   await gotoInApp(page, '/work-orders');
   const headers = page.locator('.ant-table-thead th');
   await expect(headers.filter({ hasText: '未扣急件內部完成日' })).toHaveCount(0);
+  // 列表依建立時間新到舊、每頁固定筆數，鏈九加入後 WO-2026-0820 不在第一頁：
+  // 先用搜尋框篩到該工單（共用篩選元件按 Enter 才送出）
+  const search = page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或客戶名稱');
+  await search.fill('WO-2026-0820');
+  await search.press('Enter');
   await expect(page.locator('tr', { hasText: 'WO-2026-0820' }).first()).toContainText(
     '2026-09-04（未扣急件 2026-09-09）',
   );
-  // 一般件不帶括號：這一頁只有急件那一張工單出現「未扣急件」，其餘各列只印一組日期
-  await expect(page.locator('.ant-table-tbody tr', { hasText: '未扣急件' })).toHaveCount(1);
+  // 一般件不帶括號：篩到鏈二 WO-2026-0710（一般件），只印一組日期 2026-09-14
+  await search.fill('WO-2026-0710');
+  await search.press('Enter');
+  const normalRow = page.locator('.ant-table-tbody tr', { hasText: 'WO-2026-0710' }).first();
+  await expect(normalRow).toContainText('2026-09-14');
+  await expect(normalRow).not.toContainText('未扣急件');
 });
 
 test('4.15 訂單項目的欄名統一為印件屬性與稿件備註，急件提示用印件內部完成日的定義', async ({

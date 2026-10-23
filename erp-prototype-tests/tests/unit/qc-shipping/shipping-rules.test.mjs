@@ -885,12 +885,17 @@ describe('出貨單 mock 形狀：揀貨數量在明細，箱規與物流單號�
     expect(shipmentStatusOf(sh)).toBe('已送達');
   });
 
-  it('已出貨的兩張各有五筆出貨單歷程：建立出貨單、開始揀貨、裝箱回報、出貨動作、送達', () => {
+  it('已送達的兩張出貨單歷程依序記下每一次狀態變化：順豐多兩筆物流商回傳（已出貨、運送中），自取五筆', () => {
     ['SH-2026-0601', 'SH-2026-0602'].forEach((no) => {
       const categories = byNo(no).history.map((h) => h.category);
       expect(categories.slice(0, 4)).toEqual(['建立出貨單', '開始揀貨', '裝箱回報', '拋單或出貨確認']);
-      expect(categories).toHaveLength(5);
     });
+    expect(byNo('SH-2026-0601').history.map((h) => h.category).slice(4)).toEqual([
+      '物流商回傳',
+      '物流商回傳',
+      '送達確認',
+    ]);
+    expect(byNo('SH-2026-0602').history).toHaveLength(5);
   });
 
   it('歷程時間與人員取自物流單既有欄位', () => {
