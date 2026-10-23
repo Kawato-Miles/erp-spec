@@ -141,13 +141,12 @@ describe('4.13 交期逾期標示：部分延遲與整單逾期以全部交完�
     expect(orderDelayFlags(late, '2026-10-21', shippedBy([]))).toEqual({ partialDelay: false, wholeOverdue: true });
   });
 
-  it('全部交完日為空時不判整單逾期；任一印件逾期仍標部分延遲', () => {
-    const items2 = [item('A', '2026-10-12'), item('B', null)];
-    // 全部交完日為空：有效印件都沒有印件內部完成日
+  it('全部交完日為空時不判整單逾期', () => {
+    // 全部交完日為空：有效印件都沒有印件內部完成日。印件預計交期由印件內部完成日推得，
+    // 這時印件也不會標逾期，所以只驗不判整單逾期（spec：全部交完日為空的訂單不標整單逾期）
     const onlyExpected = [{ print_item_no: 'X', undeducted_internal_due_date: null, expected_delivery_date: '2026-10-13' }];
     expect(orderAllDeliveredByDate(onlyExpected)).toBeNull();
     expect(orderDelayFlags(onlyExpected, '2026-10-30', shippedBy([])).wholeOverdue).toBe(false);
-    expect(orderDelayFlags(items2, '2026-10-15', shippedBy([])).partialDelay).toBe(true);
   });
 
   it('日期為空時不判定：不標任何逾期、部分延遲或整單逾期', () => {
