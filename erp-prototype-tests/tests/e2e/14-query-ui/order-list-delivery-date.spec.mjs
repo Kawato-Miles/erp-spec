@@ -5,6 +5,8 @@ import { openAs } from '../_helpers.mjs';
 // 訂單預計交貨日期＝尚未出貨的有效印件，其印件預計交期取最早一筆（衍生值、訂單不存欄）。
 // 訂單內部完成時間與全部交完日不上列表，只在訂單詳情呈現。
 // 期望值取自 openspec order-management § 訂單層衍生交期日期，不由實作反推。
+// 2026-10-23 改寫（change shipment-print-download-center K3）：部分延遲與整單逾期以全部交完日切開、互斥，
+// 母表同一列只標其中一種；「已出貨」改依出貨單全數離廠（SHP-028 裁決 A）。
 test('14.16 訂單列表顯示訂單預計交貨日期並可排序與區間篩選', async ({ page }) => {
   await openAs(page, '業務', '/orders');
   // 列表每頁十筆、依日期新到舊，不綁定特定編號在第一頁：只確認列表已載出訂單
@@ -49,4 +51,21 @@ test('14.16 訂單列表顯示訂單預計交貨日期並可排序與區間篩�
   await expect(expanded.getByRole('columnheader', { name: '印件預計交期' })).toBeVisible();
   await expect(expanded).toContainText('2026-09-14');
   await expect(expanded).toContainText('2026-09-15');
+
+  // 部分延遲與整單逾期互斥（K3）：母表每一列至多標其中一種；逐頁檢查到最後一頁
+  await page.getByRole('button', { name: /清空/ }).click();
+  await expect(rows).toHaveCount(before);
+  for (let guard = 0; guard < 20; guard += 1) {
+    const count = await rows.count();
+    for (let i = 0; i < count; i += 1) {
+      const text = await rows.nth(i).innerText();
+      expect(
+        text.includes('部分延遲') && text.includes('整單逾期'),
+        `訂單列同時標部分延遲與整單逾期：${text.match(/ORD-\d{4}-\d{4}/)?.[0]}`,
+      ).toBe(false);
+    }
+    const next = page.locator('.ant-pagination-next').first();
+    if ((await next.count()) === 0 || (await next.getAttribute('aria-disabled')) === 'true') break;
+    await next.click();
+  }
 });
