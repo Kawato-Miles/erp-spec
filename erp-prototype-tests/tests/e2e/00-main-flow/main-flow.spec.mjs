@@ -796,6 +796,8 @@ test('主流程：一件印件從需求單到訂單完成', { tag: '@smoke' }, a
     await expect(dialog.locator('.ant-modal-title')).toHaveText('建立出貨單');
     await fillPlannedShipDate(dialog, '2026-10-30');
     await pickShippingMethod(page, dialog, '專車配送');
+    // 需求單轉成的訂單沒有客戶地址（轉單不捏造），業務建單時填收件地址
+    await dialog.getByLabel('收件地址').fill('台北市內湖區瑞光路 513 巷 22 號');
     await dialog.getByRole('tab', { name: /出貨明細/ }).click();
     for (const item of [ITEM_A, ITEM_B]) {
       await expect(dialog.getByRole('row', { name: new RegExp(item) }).getByRole('spinbutton')).toHaveValue('100');

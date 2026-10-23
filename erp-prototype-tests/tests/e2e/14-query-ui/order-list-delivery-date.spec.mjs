@@ -26,7 +26,9 @@ test('14.16 訂單列表顯示訂單預計交貨日期並可排序與區間篩�
   const rows = page
     .locator('.ant-table')
     .first()
-    .locator('> .ant-table-container tbody.ant-table-tbody > tr.ant-table-row');
+    .locator('> .ant-table-container tbody.ant-table-tbody > tr.ant-table-row')
+    // 收合後的子表列仍留在頁面上（隱藏），只算看得見的母表列
+    .filter({ visible: true });
   const before = await rows.count();
   expect(before).toBeGreaterThan(1);
   await page.getByRole('columnheader', { name: '訂單預計交貨日期' }).click();
@@ -53,6 +55,7 @@ test('14.16 訂單列表顯示訂單預計交貨日期並可排序與區間篩�
   await expect(expanded).toContainText('2026-09-15');
 
   // 部分延遲與整單逾期互斥（K3）：母表每一列至多標其中一種；逐頁檢查到最後一頁
+  await orderRow.locator('.ant-table-row-expand-icon').click();
   await page.getByRole('button', { name: /清空/ }).click();
   await expect(rows).toHaveCount(before);
   for (let guard = 0; guard < 20; guard += 1) {

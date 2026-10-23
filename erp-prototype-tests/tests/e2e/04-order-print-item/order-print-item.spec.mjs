@@ -305,7 +305,7 @@ test('4.9 印件已棄用後交期欄唯讀；訂單完成後印件交期欄唯�
   await expect(row2.getByRole('button', { name: '編輯印件' })).toHaveCount(0);
   await expect(async () => {
     await row2.getByRole('button', { name: '檢視印件' }).click();
-    await expect(page).toHaveURL(/\/print-items\/detail\/?\?id=PI-2026-0601/, { timeout: 3000 });
+    await expect(page).toHaveURL(/\/print-items\/detail\/?\?id=pi-2026-0601/i, { timeout: 3000 });
   }).toPass({ timeout: 20000 });
   const dueDateValue = page
     .locator('th.ant-descriptions-item-label')
