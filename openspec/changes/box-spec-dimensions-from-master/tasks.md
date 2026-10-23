@@ -4,13 +4,13 @@
 
 ## 2. 情境目錄與測試（Sens `erp-prototype-tests/`，先紅後綠）
 
-- [ ] 2.1 改寫 12.44：選沒有記尺寸的箱規（K1 箱）長寬高照實空白、不開放填寫；修正時改成 K1 箱帶入空白並鎖住；用詞照實體卡操作名稱
-- [ ] 2.2 改寫對應單元測試（`tests/unit/qc-shipping/shipping-rules.test.mjs` 12.44）與畫面測試（`tests/e2e/12-shipping/shipping.spec.mjs` 12.44），確認先紅
+- [x] 2.1 改寫 12.44：選沒有記尺寸的箱規（K1 箱）長寬高照實空白、不開放填寫；修正時改成 K1 箱帶入空白並鎖住；用詞照實體卡操作名稱
+- [x] 2.2 改寫對應單元測試（`tests/unit/qc-shipping/shipping-rules.test.mjs` 12.44）與畫面測試（`tests/e2e/12-shipping/shipping.spec.mjs` 12.44），確認先紅
 
 ## 3. Prototype（erp，經 `prototype-from-prompt`）
 
-- [ ] 3.1 qc-shipping：選一筆箱規時長寬高照箱規帶入並鎖住（含空白）；只有自訂可填；3.x 轉綠
-- [ ] 3.2 `npm run impact`、`npm run test:smoke`、`npm run test:module -- tests/e2e/12-shipping`、單元測試；提交訊息附結果
+- [x] 3.1 qc-shipping：選一筆箱規時長寬高照箱規帶入並鎖住（含空白）；只有自訂可填；3.x 轉綠
+- [x] 3.2 `npm run impact`、`npm run test:smoke`、`npm run test:module -- tests/e2e/12-shipping`、單元測試；提交訊息附結果
 
 ## 4. 歸檔
 

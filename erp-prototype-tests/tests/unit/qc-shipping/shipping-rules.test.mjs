@@ -29,9 +29,9 @@ import { box, departed, logistics, packedShipment } from './_fixtures.mjs';
 
 // 情境 12.5（揀貨數量與明細不符時照實填）、12.19（不符擋下出貨動作、業務改明細或揀貨人員修正後放行）、
 // 12.20（裝箱回報修正：每個被改的欄位一筆、原因必填、依項目判斷可執行條件、併發時以當下條件重新檢核）、
-// 12.21（拋單生成物流單號與子單號）、12.32（箱規不分出貨方式）、12.44（箱規共用十筆加自訂、長寬高帶入）、
+// 12.21（拋單生成物流單號與子單號）、12.32（箱規不分出貨方式）、12.44（箱規共用十筆加自訂、長寬高照主檔帶入）、
 // 12.45（部分離廠後的修正項目）的驗算。
-// 依據：grill G31、G32（拋單失敗不算離廠）；G42～G46、G52（箱規共用與長寬高）；G49、G55（修正依項目）。
+// 依據：grill G31、G32（拋單失敗不算離廠）；G42～G46、G52、G60（箱規共用與長寬高）；G49、G55（修正依項目）。
 
 const NO = 'PI-2026-0820';
 const NAME = '《山城記事》精裝書（128 頁）';
@@ -164,7 +164,7 @@ describe('12.3 裝箱明細檢核：至少一箱、每箱箱規與至少一張�
   });
 });
 
-// ── 12.32、12.44 箱規共用與長寬高（grill G42～G46、G52） ──
+// ── 12.32、12.44 箱規共用與長寬高（grill G42～G46、G52、G60） ──
 
 describe('12.32 箱規選單列全部箱規加自訂，不分出貨方式', () => {
   it('箱規主檔十筆，名稱與長寬高照 grill § 二；K1 箱長寬高留空', () => {
@@ -203,7 +203,7 @@ describe('12.32 箱規選單列全部箱規加自訂，不分出貨方式', () =
   });
 });
 
-describe('12.44 長寬高依箱規帶入、清空或保留（出貨單卡「長、寬、高的帶入」表）', () => {
+describe('12.44 長寬高照箱規主檔帶入並鎖住、只有自訂可填（出貨單卡「長、寬、高的帶入」表）', () => {
   it('選有尺寸的箱規：帶入主檔長寬高並鎖住', () => {
     expect(dimensionsForSpecChange({ nextSpec: '1 號箱' })).toEqual({
       length: 45,
@@ -213,12 +213,12 @@ describe('12.44 長寬高依箱規帶入、清空或保留（出貨單卡「長�
     });
   });
 
-  it('選沒有尺寸的箱規（K1 箱）與選「自訂」：空白、選填手填', () => {
+  it('選沒有記尺寸的箱規（K1 箱）：照主檔空白並鎖住；選「自訂」：空白、選填手填', () => {
     expect(dimensionsForSpecChange({ nextSpec: 'K1 箱' })).toEqual({
       length: null,
       width: null,
       height: null,
-      locked: false,
+      locked: true,
     });
     expect(dimensionsForSpecChange({ nextSpec: '自訂' })).toEqual({
       length: null,
@@ -228,7 +228,26 @@ describe('12.44 長寬高依箱規帶入、清空或保留（出貨單卡「長�
     });
   });
 
-  it('修正時改成另一種有尺寸的箱規重新帶入；改成沒有尺寸的箱規清空；從箱規改成自訂保留原值可修改', () => {
+  it('箱規只記長、寬時照實帶入：長、寬帶主檔值，高空白，三欄都鎖住', () => {
+    const master = BOX_SPECS.find((b) => b.name === 'K1 箱');
+    master.length = 40;
+    master.width = 30;
+    try {
+      expect(dimensionsForSpecChange({ nextSpec: 'K1 箱' })).toEqual({
+        length: 40,
+        width: 30,
+        height: null,
+        locked: true,
+      });
+      expect(validatePackingBoxes([boxInput('K1 箱', { length: 40, width: 30 })]).ok).toBe(true);
+      expect(validatePackingBoxes([boxInput('K1 箱', { length: 40, width: 30, height: 10 })]).ok).toBe(false);
+    } finally {
+      master.length = null;
+      master.width = null;
+    }
+  });
+
+  it('裝箱回報修正改成另一筆箱規照主檔帶入並鎖住（K1 箱帶入空白）；從箱規改成自訂保留原值可修改', () => {
     const prevDims = { length: 45, width: 30, height: 15 };
     expect(dimensionsForSpecChange({ prevSpec: '1 號箱', prevDims, nextSpec: 'F13 箱' })).toEqual({
       length: 29,
@@ -240,7 +259,7 @@ describe('12.44 長寬高依箱規帶入、清空或保留（出貨單卡「長�
       length: null,
       width: null,
       height: null,
-      locked: false,
+      locked: true,
     });
     expect(dimensionsForSpecChange({ prevSpec: '1 號箱', prevDims, nextSpec: '自訂' })).toEqual({
       length: 45,
@@ -274,19 +293,30 @@ describe('12.44 長寬高依箱規帶入、清空或保留（出貨單卡「長�
     expect(current().packing_boxes).toEqual([]);
   });
 
-  it('選沒有尺寸的箱規時長寬高選填：K1 箱第一箱留空、第二箱 40×30×20，不擋下，兩箱箱規皆為 K1 箱', () => {
+  it('選沒有記尺寸的箱規時長寬高照實空白：K1 箱空白不擋下，完成後箱規為 K1 箱、長寬高無值', () => {
     seed(packingShipment('全家'));
     const result = useQcShippingStore.getState().reportPacking('sh-test-1', {
       lines: [{ print_item_no: NO, picked_qty: 500 }],
-      boxes: [boxInput('K1 箱'), boxInput('K1 箱', { length: 40, width: 30, height: 20 })],
+      boxes: [boxInput('K1 箱')],
       operator: '范姜宏',
     });
     expect(result.ok).toBe(true);
-    const [first, second] = current().packing_boxes;
+    const [first] = current().packing_boxes;
     expect(first.box_spec).toBe('K1 箱');
-    expect(second.box_spec).toBe('K1 箱');
     expect(dims(first)).toEqual([null, null, null]);
-    expect(dims(second)).toEqual([40, 30, 20]);
+  });
+
+  it('K1 箱的長寬高不開放填寫：繞過介面送出任何長寬高時擋下', () => {
+    seed(packingShipment('全家'));
+    const result = useQcShippingStore.getState().reportPacking('sh-test-1', {
+      lines: [{ print_item_no: NO, picked_qty: 500 }],
+      boxes: [boxInput('K1 箱', { length: 40, width: 30, height: 20 })],
+      operator: '范姜宏',
+    });
+    expect(result.ok).toBe(false);
+    expect(current().status).toBe('打包中');
+    expect(current().packing_boxes).toEqual([]);
+    expect(validatePackingBoxes([boxInput('K1 箱', { height: 20 })]).ok).toBe(false);
   });
 
   it('選自訂時長寬高選填、箱規存「自訂」不指向任何一筆箱規：第一箱 60×40×30、第二箱無值', () => {
@@ -311,7 +341,7 @@ describe('12.44 長寬高依箱規帶入、清空或保留（出貨單卡「長�
     expect(validatePackingBoxes([boxInput('自訂', { length: 0 })]).ok).toBe(false);
   });
 
-  it('修正時改箱規：第一箱改 F13 箱重新帶入 29、21、6；第二箱改 K1 箱清空；第三箱改自訂保留 45、30、15；修正紀錄第一、二箱各四筆、第三箱只有箱規一筆', () => {
+  it('裝箱回報修正改箱規：第一箱改 F13 箱帶入 29、21、6；第二箱改 K1 箱帶入空白；第三箱改自訂保留 45、30、15；修正紀錄第一、二箱各四筆、第三箱只有箱規一筆', () => {
     const sh = packedShipment({
       id: 'sh-test-1',
       shipmentNo: 'SH-2026-9001',

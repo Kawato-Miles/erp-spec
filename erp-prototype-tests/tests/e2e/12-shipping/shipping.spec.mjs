@@ -2001,7 +2001,7 @@ test('12.43 拋單處理中與逾時：處理中不能做其他操作，逾時�
   await expect(row.getByRole('button', { name: '拋單', exact: true })).toBeVisible();
 });
 
-test('12.44 箱規共用十筆加自訂，長寬高依箱規帶入並鎖住、沒有尺寸或自訂時選填', async ({ page }) => {
+test('12.44 箱規共用十筆加自訂，選一筆箱規時長寬高照主檔帶入並鎖住、只有自訂可選填', async ({ page }) => {
   await setupShippableState(page, { passed: 500 });
   await switchRoleSafe(page, '業務');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
@@ -2016,8 +2016,8 @@ test('12.44 箱規共用十筆加自訂，長寬高依箱規帶入並鎖住、�
   const report = await clickRowAction(page, familyNo, '裝箱回報');
   await fillPackingLines(report, [{ pickedQty: 100 }]);
   await addBoxes(page, report, { boxes: 1, spec: '1 號箱' });
-  await addBoxes(page, report, { boxes: 2, spec: 'K1 箱', startIndex: 1 });
-  await addBoxes(page, report, { boxes: 1, spec: '自訂', startIndex: 3 });
+  await addBoxes(page, report, { boxes: 1, spec: 'K1 箱', startIndex: 1 });
+  await addBoxes(page, report, { boxes: 2, spec: '自訂', startIndex: 2 });
 
   // 1 號箱：帶入 45、30、15 且不可改
   const first = boxDimensionInputs(report, 0);
@@ -2025,34 +2025,34 @@ test('12.44 箱規共用十筆加自訂，長寬高依箱規帶入並鎖住、�
   await expect(first.width).toHaveValue('30');
   await expect(first.height).toHaveValue('15');
   await expect(first.length).toBeDisabled();
-  // K1 箱：空白、可手填；第一箱留空，第二箱填 40、30、20
-  const k1a = boxDimensionInputs(report, 1);
-  await expect(k1a.length).toHaveValue('');
-  await expect(k1a.length).toBeEnabled();
-  const k1b = boxDimensionInputs(report, 2);
-  await k1b.length.fill('40');
-  await k1b.width.fill('30');
-  await k1b.height.fill('20');
-  // 自訂：空白、可手填，填 60、40、30
-  const custom = boxDimensionInputs(report, 3);
+  // K1 箱：主檔沒記尺寸，長寬高照實空白且不開放填寫
+  const k1 = boxDimensionInputs(report, 1);
+  for (const input of [k1.length, k1.width, k1.height]) {
+    await expect(input).toHaveValue('');
+    await expect(input).toBeDisabled();
+  }
+  // 自訂：空白、可手填；第一箱填 60、40、30，第二箱留空
+  const custom = boxDimensionInputs(report, 2);
   await expect(custom.length).toHaveValue('');
+  await expect(custom.length).toBeEnabled();
   await custom.length.fill('60');
   await custom.width.fill('40');
   await custom.height.fill('30');
+  await expect(boxDimensionInputs(report, 3).length).toBeEnabled();
   await report.getByRole('button', { name: '送出裝箱回報' }).click();
   await expect(page.getByText(/裝箱回報完成/).first()).toBeVisible();
 
-  // 裝箱明細：1 號箱 45、30、15；K1 箱第一箱無值、第二箱 40×30×20；自訂 60×40×30
+  // 裝箱明細：1 號箱 45、30、15；K1 箱無值；自訂第一箱 60×40×30、第二箱無值
   const panel = await openShipmentPanel(page, familyNo);
   const cells = async (i) =>
     (await boxRows(panel).nth(i).locator('td').allInnerTexts()).map((t) => t.trim()).slice(1, 5);
   expect(await cells(0)).toEqual(['1 號箱', '45', '30', '15']);
   expect(await cells(1)).toEqual(['K1 箱', '－', '－', '－']);
-  expect(await cells(2)).toEqual(['K1 箱', '40', '30', '20']);
-  expect(await cells(3)).toEqual(['自訂', '60', '40', '30']);
+  expect(await cells(2)).toEqual(['自訂', '60', '40', '30']);
+  expect(await cells(3)).toEqual(['自訂', '－', '－', '－']);
   await closeShipmentPanel(page);
 
-  // 修正時改箱規：三箱皆 1 號箱的 7-11 單，第一箱改 F13 箱重新帶入並鎖住、第二箱改 K1 箱清空、第三箱改自訂保留原值可修改
+  // 裝箱回報修正改箱規：三箱皆 1 號箱的 7-11 單，第一箱改 F13 箱帶入並鎖住、第二箱改 K1 箱帶入空白並鎖住、第三箱改自訂保留原值可修改
   await pickAndPack(page, sevenNo, { pickedQty: 100, boxes: 3, spec: '1 號箱' });
   const fix = await clickRowAction(page, sevenNo, '修正');
   await pickBoxSpec(page, fix, 0, 'F13 箱');
@@ -2064,8 +2064,10 @@ test('12.44 箱規共用十筆加自訂，長寬高依箱規帶入並鎖住、�
   await expect(d0.height).toHaveValue('6');
   await expect(d0.length).toBeDisabled();
   const d1 = boxDimensionInputs(fix, 1);
-  await expect(d1.length).toHaveValue('');
-  await expect(d1.length).toBeEnabled();
+  for (const input of [d1.length, d1.width, d1.height]) {
+    await expect(input).toHaveValue('');
+    await expect(input).toBeDisabled();
+  }
   const d2 = boxDimensionInputs(fix, 2);
   await expect(d2.length).toHaveValue('45');
   await expect(d2.width).toHaveValue('30');
