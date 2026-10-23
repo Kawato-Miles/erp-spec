@@ -68,7 +68,7 @@
 
 - [x] 4.1 改 `(prototype)/MOCK-DATA-CHAIN.md`：出貨單狀態加可出貨；物流單初始狀態改可出貨；刪離廠時間、實際出貨日、送達憑證；箱規固定選項改名「自訂箱規」；鏈一 SH-2026-0601 歷程照第三方新路徑（可出貨 → 等待出貨 → 運送中 → 已送達），送達改記物流商回傳；SH-2026-0602 補交付確認；ORD-2026-0601 活動「順豐送達確認」改記物流商回傳（mock-audit 中級與低級各一項）
 - [x] 4.2 MOCK-DATA-CHAIN 新增鏈九，取 mock-audit 提案（`/Users/b-f-03-029/Library/Application Support/Claude/side-session-notes/local_4026755b-e001-4ef1-98d9-b335da6ab83c/mock-audit-20261023.md` § 三），出貨單狀態改新模型：SH-2026-0921 專車配送 1,200 份 4 箱，可出貨，一筆物流單 SH-2026-0921-001 在可出貨（12.49 起點）；SH-2026-0922 順豐 600 份 3 箱，已裝箱、尚無物流單（待確認可出貨）；SH-2026-0923 7-11 交貨便 300 份，未處理；剩餘可出貨額度 900
-- [x] 4.3 MOCK-DATA-CHAIN 新增下載檔案模擬資料：五種狀態各至少一筆；建立人兩位出貨人員；部分成功與失敗附異常內容（「物流單編號：錯誤訊息原文」、「物流單編號：物流單已作廢」）；物流單編號取自鏈一與鏈九；含一筆 2026-01 建立、狀態成功的舊紀錄（12.53 不過期）
+- [x] 4.3 MOCK-DATA-CHAIN 新增下載檔案模擬資料：五種狀態各至少一筆；建立人兩位出貨人員；部分成功與失敗附異常內容（「物流單編號：錯誤訊息原文」；「物流單已作廢／已刪除」的格式由純函式驗，模擬資料不造已作廢的物流單）；物流單編號取自鏈一與鏈九、建立時間在該物流單確認可出貨之後；最早一筆 2026-06-18 建立、狀態成功（12.53 不過期）
 - [x] 4.4 MOCK-DATA-CHAIN 人員表補第二位出貨人員；已齊套的大貨印件補完工日（鏈一 PI-2026-0601 等），打樣印件與短出結案印件不填
 - [x] 4.5 依 4.1～4.4 改 `qc-shipping/_lib/mock-data.js`、`orders/mock-data.js`、`print-items/_lib/mock-data.js`、`(prototype)/_lib/people-roster.js`；下載檔案模擬資料放 qc-shipping 模組內
 - [x] 4.6 wiki 活動清單卡已增刪活動列（ACT-SHP-042～044、ACT-VDLV-016、ACT-OUT-017 新增；ACT-SHP-025、ACT-SHP-037、ACT-OUT-015 刪除），在 Sens 重跑 `scripts/gen-access-activities.mjs` 產生 `(prototype)/_lib/access-activities.js`；15.15 轉綠

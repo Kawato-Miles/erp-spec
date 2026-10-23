@@ -24,7 +24,7 @@ import {
 // Prototype 只用模擬資料呈現下載中心，不實作產檔與下載（grill § 七）：按列印即在下載中心新增一列（等待中），
 // 下載檔案狀態推進以純函式驗（tests/unit/qc-shipping/download-files.test.mjs），畫面只驗模擬資料列的五種狀態與異常內容。
 // 起點資料：下載檔案模擬資料五種狀態（等待中、處理中、成功、部分成功、失敗）各一筆以上，建立人兩位出貨人員，
-// 含一筆 2026-01 建立、狀態成功的舊紀錄；物流單編號取自鏈一與鏈九。
+// 最早兩筆 2026-06-18 建立、狀態成功；物流單編號取自鏈一與鏈九。
 // 第二位出貨人員的姓名由 MOCK-DATA-CHAIN 決定，本檔不寫死，只驗「建立人不是當前登入者」。
 
 test.describe.configure({ timeout: 180_000 });
@@ -159,8 +159,7 @@ test('12.52 下載檔案狀態：模擬資料五種狀態都在；部分成功�
       expect(['', '－', '-']).toContain(text);
     }
   }
-  // 模擬資料含一行「物流單已作廢」的異常內容（產檔前被作廢的物流單）
-  await expect(page.locator('.ant-layout-content')).toContainText(/SH-\d{4}-\d{4}-\d{3}：物流單已作廢/);
+  // 異常內容「物流單編號：物流單已作廢／已刪除」的格式由純函式測試驗，模擬資料不另造已作廢的物流單
 
   // 物流單筆數皆大於 0；失敗不重試、沒有重試鈕，也沒有刪除鈕
   for (let i = 0; i < count; i += 1) {
@@ -195,9 +194,9 @@ test('12.53 下載中心的檢視、下載與入口：欄位、篩選、新到�
   const sorted = [...times].sort().reverse();
   expect(times).toEqual(sorted);
 
-  // 不設保存期限：2026-01 建立、狀態成功的舊紀錄仍在，且可下載
-  const oldIndex = times.findIndex((t) => t.startsWith('2026-01'));
-  expect(oldIndex, '缺少 2026-01 建立的舊紀錄').toBeGreaterThanOrEqual(0);
+  // 不設保存期限：最早一筆（2026-06-18 建立、狀態成功）仍在，且可下載
+  const oldIndex = times.length - 1;
+  expect(times[oldIndex].startsWith('2026-06-18'), '最早一筆應為 2026-06-18 建立').toBe(true);
   expect(await downloadCell(page, oldIndex, '狀態')).toBe('成功');
   await expect(downloadButton(rows.nth(oldIndex))).toHaveCount(1);
 

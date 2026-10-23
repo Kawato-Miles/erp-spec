@@ -267,8 +267,9 @@ describe('12.53 下載中心：能進的人看全部資料列，只有可下載�
     });
   });
 
-  it('下載檔案不刪除也不過期：2026-01-05 建立的成功檔案仍在下載中心、可下載；系統沒有刪除下載檔案的動作', () => {
-    const old = MOCK_DOWNLOAD_FILES.find((f) => f.created_at.startsWith('2026-01-05'));
+  it('下載檔案不刪除也不過期：最早一筆（2026-06-18 建立）的成功檔案仍在下載中心、可下載；系統沒有刪除下載檔案的動作', () => {
+    const old = [...MOCK_DOWNLOAD_FILES].sort((a, b) => a.created_at.localeCompare(b.created_at))[0];
+    expect(old.created_at.startsWith('2026-06-18')).toBe(true);
     expect(old).toBeTruthy();
     expect(old.status).toBe('成功');
     expect(downloadCenterRows(MOCK_DOWNLOAD_FILES).map((r) => r.id)).toContain(old.id);
