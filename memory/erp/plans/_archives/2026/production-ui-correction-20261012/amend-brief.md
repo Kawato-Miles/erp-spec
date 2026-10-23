@@ -7,7 +7,7 @@ Miles 2026-10-12 已拍板設計。你是寫卡者，依下列規則修改 wiki 
 1. 句法：/Users/b-f-03-029/.claude/output-styles/ste100-pm.md；非商業術語：/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md。台灣繁中，禁 emoji，禁中英夾雜，禁簡體字。
 2. 共用規範：/Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/00-meta/卡片撰寫共用規範.md § 二、§ 三、§ 四、§ 四之二。
 3. 你要改的卡型的規範卡（`規範 - 實體`、`規範 - 狀態機`、`規範 - 角色`、`規範 - 商業邏輯`、`規範 - 業務情境`、`規範 - 資料結構總覽`，用 find 找）與對應範例卡。
-4. 設計正本：/Users/b-f-03-029/Sens/memory/erp/plans/production-ui-correction-20261012/design.md（第三版）與同資料夾 grill.md（第 1～40 題）。設計與 grill 衝突時以 design.md 為準；兩者都沒寫的事不要自行補。
+4. 設計正本：/Users/b-f-03-029/Sens/memory/erp/plans/_archives/2026/production-ui-correction-20261012/design.md（第三版）與同資料夾 grill.md（第 1～40 題）。設計與 grill 衝突時以 design.md 為準；兩者都沒寫的事不要自行補。
 
 ## 二、寫法鐵則
 
@@ -15,7 +15,7 @@ Miles 2026-10-12 已拍板設計。你是寫卡者，依下列規則修改 wiki 
 - 本體只寫「現在是什麼」，不寫「原本是 A、改成 B」。歷史不進正文。
 - 規則單一正本：規則本體只寫在它的家卡；其他卡只放 `[[卡名]]` 引用或該卡型規範允許的露出句，不用自己的話重寫規則。
 - 引用一律 `[[完整卡名]]`，禁別名 `|`。
-- frontmatter 的 `source` 加一行：`"Miles 2026-10-12 拍板（生產與出貨修正機制統一 grill，Sens memory/erp/plans/production-ui-correction-20261012/grill.md）：<本卡相關的一句摘要>"`；`last-reviewed` 改 2026-10-12。只加在你實際改了內容的卡。
+- frontmatter 的 `source` 加一行：`"Miles 2026-10-12 拍板（生產與出貨修正機制統一 grill，Sens memory/erp/plans/_archives/2026/production-ui-correction-20261012/grill.md）：<本卡相關的一句摘要>"`；`last-reviewed` 改 2026-10-12。只加在你實際改了內容的卡。
 - 權限：wiki 不寫權限名稱（如「管理點收佇列（產線）」），只寫「哪個單元有哪些操作」；角色卡只寫「通常使用哪些單元」。不寫「工廠平台只做現場」這類平台規則。
 - 識別到設計沒涵蓋的不確定項：停下，在回報中列出，不要寫 inline「待確認」或 `[!question]`。
 - 不改檔名、不搬檔、不動 `08-open-questions/`、`raw/`、`log.md`、`_archives/`，除非任務書明確指定。

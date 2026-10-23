@@ -51,6 +51,6 @@ answered-by: Miles
 
 代價：[[QR-003-需求單欄位修改規則與規格雛形落差]] 在 2026-07-31 拍板的七值退場，「客戶預算刪減」「客戶取消專案」兩類歸入「其他」。
 
-拍板：Miles，2026-10-12（Sens memory/erp/plans/linear-format-20261012/grill-decisions.md G1）。
+拍板：Miles，2026-10-12（Sens memory/erp/plans/_archives/2026/linear-format-20261012/grill-decisions.md G1）。
 
 落地去處：[[需求單]] 欄位表流失原因列已改為六選一；後端列舉與 Prototype 的流失原因常數已是六值，無須修改。

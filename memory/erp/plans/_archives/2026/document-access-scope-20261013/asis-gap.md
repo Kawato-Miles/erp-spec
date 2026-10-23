@@ -7,7 +7,7 @@
 | 項目 | 基準 |
 |------|------|
 | wiki 正本 | `memory/Sens_wiki/wiki/erp/`；卡名以 `[[卡名]]` 標示 |
-| 拍板 | `memory/erp/plans/linear-format-20261012/grill-decisions.md`（S、V、R、X4b、X4c、D1 至 D6 為最新） |
+| 拍板 | `memory/erp/plans/_archives/2026/linear-format-20261012/grill-decisions.md`（S、V、R、X4b、X4c、D1 至 D6 為最新） |
 | Prototype | erp repo 分支 `prototype/production-stage`，提交 `ecf5d06c`；下文路徑皆省略前綴 `/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/` |
 | 測試 | `/Users/b-f-03-029/Sens/erp-prototype-tests/`（提交 `f5b42bc` 時的版本） |
 | 舊盤點 | `downstream-list.md` § D、§ E 看的是 `prototype/dispatch-and-shipping` 分支；本檔已依現行分支重新核對行號 |

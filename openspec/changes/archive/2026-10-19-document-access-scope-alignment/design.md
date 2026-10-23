@@ -1,8 +1,8 @@
 ## Context
 
-wiki 已把「誰能對哪張單做什麼」收斂到活動清單卡，判讀規則在 [受控清單](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/受控清單.md)。拍板與驗證見 [grill](../../../memory/erp/plans/document-access-scope-20261013/grill.md) 與 [盲測紀錄](../../../memory/erp/plans/document-access-scope-20261013/blind-test-r1.md)；依 G64 本變更不重跑規劃稽核。
+wiki 已把「誰能對哪張單做什麼」收斂到活動清單卡，判讀規則在 [受控清單](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/受控清單.md)。拍板與驗證見 [grill](../../../memory/erp/plans/_archives/2026/document-access-scope-20261013/grill.md) 與 [盲測紀錄](../../../memory/erp/plans/_archives/2026/document-access-scope-20261013/blind-test-r1.md)；依 G64 本變更不重跑規劃稽核。
 
-Prototype 與驗收測試仍照舊權限。[落差盤點第二版](../../../memory/erp/plans/document-access-scope-20261013/asis-gap-v2.md) 列出 89 筆落差、29 筆測試衝突。
+Prototype 與驗收測試仍照舊權限。[落差盤點第二版](../../../memory/erp/plans/_archives/2026/document-access-scope-20261013/asis-gap-v2.md) 列出 89 筆落差、29 筆測試衝突。
 
 約束：
 
@@ -93,7 +93,7 @@ Prototype 與驗收測試仍照舊權限。[落差盤點第二版](../../../memo
 
 ## Open Questions
 
-本變更的待決事項已由 Miles 於 [grill](../../../memory/erp/plans/document-access-scope-20261013/grill.md) G66 決議，不另開 OQ 卡：
+本變更的待決事項已由 Miles 於 [grill](../../../memory/erp/plans/_archives/2026/document-access-scope-20261013/grill.md) G66 決議，不另開 OQ 卡：
 
 | 編號 | 事項 | 決議 |
 |------|------|------|

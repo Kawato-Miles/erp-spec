@@ -10,7 +10,7 @@ priority: medium
 audience: internal
 raised-at: 2026-10-12
 raised-by: Miles 與 Claude（單據存取範圍落卡）
-source-link: Sens memory/erp/plans/linear-format-20261012/grill-decisions.md D5、D6；sens-print-core apps/order/v1/admin/views/after_sales_ticket_views.py
+source-link: Sens memory/erp/plans/_archives/2026/linear-format-20261012/grill-decisions.md D5、D6；sens-print-core apps/order/v1/admin/views/after_sales_ticket_views.py
 related-vault:
   - "[[出貨與售後檢視活動清單]]"
   - "[[售後服務]]"

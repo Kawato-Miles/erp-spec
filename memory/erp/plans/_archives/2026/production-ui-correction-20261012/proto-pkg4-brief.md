@@ -4,7 +4,7 @@
 
 ## 一、開工前必讀與硬規則
 
-1. 第一包任務書 § 一、§ 二全部適用：/Users/b-f-03-029/Sens/memory/erp/plans/production-ui-correction-20261012/proto-pkg1-brief.md。
+1. 第一包任務書 § 一、§ 二全部適用：/Users/b-f-03-029/Sens/memory/erp/plans/_archives/2026/production-ui-correction-20261012/proto-pkg1-brief.md。
 2. erp 工作分支改為 `prototype/production-stage`（已切換在此分支；`prototype/dispatch-and-shipping` 已合回，不要用）。不要 merge develop。
 3. wiki 已同步改好：「齊套完成數」改名「完成數」；出貨單拿掉重量欄。用詞以 wiki 為準。
 4. 不 commit、不 git add。

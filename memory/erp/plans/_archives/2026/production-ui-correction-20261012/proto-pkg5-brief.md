@@ -4,7 +4,7 @@
 
 ## 一、開工前必讀與硬規則
 
-1. 第一包任務書 § 一、§ 二全部適用：/Users/b-f-03-029/Sens/memory/erp/plans/production-ui-correction-20261012/proto-pkg1-brief.md。
+1. 第一包任務書 § 一、§ 二全部適用：/Users/b-f-03-029/Sens/memory/erp/plans/_archives/2026/production-ui-correction-20261012/proto-pkg1-brief.md。
 2. erp 工作分支改為 `prototype/production-stage`（已在此分支，唯一長期分支）。不要切換、不要 merge develop。
 3. wiki 已更新，規則以 wiki 為準（/Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/）：
    - 權責看活動清單：04-business-logic/服務藍圖/ 下品檢活動清單、出貨活動清單、製程規劃活動清單；受控清單。
