@@ -15,7 +15,7 @@ artifacts:
 
       - **Why**：1-2 句描述問題或機會。背景段 MUST 以相對路徑引用 wiki
       對應卡（04-business-logic / 05-entities / 06-state-machines /
-      03-roles）。
+      03-roles），也可引用同資料夾 grill.md 拍板紀錄。
 
       - **What Changes**：變更項目條列。標記 **BREAKING** 的破壞性變更。
 
@@ -30,6 +30,40 @@ artifacts:
 
       保持精簡（1-2 頁），聚焦 why 不寫 how。
     requires: []
+
+  - id: design
+    generates: design.md
+    description: 商業層設計方案（plan-design 結構：本體＋必含段），送 plan-audit 稽核
+    template: design.md
+    instruction: >
+      建立設計方案。使用繁體中文撰寫。
+
+
+      撰寫時機：grill 完成後（change 內有 precheck.md 與 grill.md），
+      與 proposal 一起撰寫，兩者一起送 plan-audit 稽核。
+
+
+      結構與填寫標準的正本是 plan-design skill（.claude/skills/plan-design/SKILL.md
+      § 產出結構）與 wiki 規劃品質評分準則（memory/Sens_wiki/wiki/erp/
+      11-review-knowledge/規劃品質評分準則.md § 二）。撰寫前 MUST 先讀兩者，
+      本 instruction 不複寫內容。
+
+
+      段落：
+
+      - **本體**：商業層設計，範圍見 plan-design § 產出結構。
+
+      - **必含段**：① 邊界完整性表、② 管理指標段、③ 情境分類表、
+        ④ 拍板引用與隱含假設段、⑤ 守恆段。缺任一段 plan-audit 直接退件。
+        ④ 首行寫「拍板見同資料夾 grill.md」，不謄錄拍板內容，只列隱含假設清單。
+
+      - **規格與驗收對應**：wiki 落卡後寫 specs 時追加在檔尾；撰寫設計時不寫。
+        格式為表格三欄：驗收條目（Scenario 名）｜情境卡步驟｜情境目錄節號。
+
+
+      不寫實作程式碼。
+    requires:
+      - proposal
 
   - id: specs
     generates: specs/**/*.md
@@ -153,44 +187,6 @@ artifacts:
       3. 貼到 ## MODIFIED Requirements 下修改
 
       4. 標題必須完全匹配
-    requires:
-      - proposal
-
-  - id: design
-    generates: design.md
-    description: 技術設計文件（How to implement）
-    template: design.md
-    instruction: >
-      建立技術設計文件，說明如何實作。使用繁體中文撰寫。
-
-
-      建立條件（符合任一才建）：
-
-      - 跨模組變更或新架構模式
-
-      - 新外部相依或重大資料模型變更
-
-      - 安全、效能、遷移複雜度
-
-      - 需要在寫碼前先做技術決策
-
-
-      段落：
-
-      - **Context**：背景、現狀、約束
-
-      - **Goals / Non-Goals**：做什麼、明確排除什麼
-
-      - **Decisions**：技術選擇與理由（why X over Y）
-
-      - **Risks / Trade-offs**：已知限制、風險與緩解
-
-      - **Migration Plan**：部署步驟、回滾策略
-
-      - **Open Questions**：待解決的決策或未知
-
-
-      聚焦架構與方法，不寫逐行實作。
     requires:
       - proposal
 

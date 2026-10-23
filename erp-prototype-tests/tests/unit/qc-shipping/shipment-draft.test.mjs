@@ -15,6 +15,11 @@ import {
   shippingMethodProfileOf,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/mock-data.js';
 import { shipmentStatusOf } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/logistics-rules.js';
+import {
+  batchDispatchOf,
+  LOGISTICS_LEVEL_KEY,
+  logisticsActionsOf,
+} from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/next-status-options.js';
 import { departed, logistics, packedShipment } from './_fixtures.mjs';
 import { useOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/_lib/store.js';
 
@@ -149,6 +154,42 @@ describe('出貨方式一欄七值，各帶兩個屬性', () => {
 
   it('草稿還沒填出貨方式時不算第三方', () => {
     expect(isThirdPartyMethod(null)).toBe(false);
+  });
+});
+
+// ── 12.6 出貨動作依出貨方式分流，只有拋單方式的出貨單有批次拋單（shipment spec § 出貨與送達確認；grill G39） ──
+
+describe('12.6 出貨動作分流：自取出貨單上沒有任何出貨動作，新竹物流出貨單上只有批次拋單一顆', () => {
+  const pickup = packedShipment({ method: '自取', logisticsOrders: [logistics('SH-TEST-0001-001', '已裝箱')] });
+  const carrier = packedShipment({
+    method: '新竹物流',
+    logisticsOrders: [logistics('SH-TEST-0002-001', '已裝箱'), logistics('SH-TEST-0002-002', '已裝箱')],
+  });
+
+  it('出貨單層：自取沒有批次拋單，新竹物流有且可按', () => {
+    expect(batchDispatchOf({ role: 'shipper', shipment: pickup }).visible).toBe(false);
+    expect(batchDispatchOf({ role: 'shipper', shipment: carrier })).toEqual({
+      visible: true,
+      disabled: false,
+      reason: null,
+    });
+  });
+
+  it('物流單列：自取只有標記可自取（出貨動作鈕名由出貨方式決定），新竹物流兩筆各只有拋單', () => {
+    const keysOf = (sh, l) => logisticsActionsOf({ role: 'shipper', shipment: sh, logistics: l });
+    expect(keysOf(pickup, pickup.logistics_orders[0])).toEqual([LOGISTICS_LEVEL_KEY.DISPATCH]);
+    expect(dispatchLabelOf('自取')).toBe('標記可自取');
+    carrier.logistics_orders.forEach((l) => {
+      expect(keysOf(carrier, l)).toEqual([LOGISTICS_LEVEL_KEY.DISPATCH]);
+    });
+    expect(dispatchLabelOf('新竹物流')).toBe('拋單');
+  });
+
+  it('出貨確認與標記可自取沒有出貨單層的入口：專車配送、其他、自取都沒有批次', () => {
+    ['自取', '專車配送', '其他'].forEach((method) => {
+      const sh = packedShipment({ method, logisticsOrders: [logistics('SH-TEST-0003-001', '已裝箱')] });
+      expect(batchDispatchOf({ role: 'shipper', shipment: sh }).visible, method).toBe(false);
+    });
   });
 });
 

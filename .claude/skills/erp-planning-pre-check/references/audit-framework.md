@@ -19,7 +19,7 @@ last-reviewed: 2026-05-28
 - Miles 說「規劃 X 功能」「設計 Y」「修改 Z 邏輯」時
 - CLAUDE.md 路由「款項 / 發票 / 收款 / 對帳 / OA / 退款 / 補收」等觸發詞偵測到時
 - 規劃中遇到「Claude 不知道」MUST 立即再跑稽核（不能繞過去自編）
-- OpenSpec change 工作流（`/opsx:propose` / `/opsx:new`）背景對齊階段
+- 新規劃流第 2 步：`/opsx:new` 建 change 之後、grill 之前；報告存 change 資料夾的 `precheck.md`
 
 **不適用**：
 - 純查詢術語 / 狀態機（不涉及規劃）

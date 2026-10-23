@@ -102,7 +102,7 @@ grep -rnE "待補|待釐清" memory/Sens_wiki/wiki/erp/0[34567]*/ --include="*.m
 
 **方向正確**：`source` 禁指實作文件（OpenSpec／Prototype）；正確性根據＝分工正本或最上層外部依據（詳見 wiki-schema § 4.0）；兩卡互為 source 視為內容重複警訊；scenario 卡的 source 得並列狀態機卡為參考資料，但不得為唯一來源。
 
-**現況查證例外**：後端現行程式（sens-print-core／sensation-api 等已上線系統）得作為 `source` 的現況查證來源，與訪談同級——這類 source 回答「這些公式與參數憑什麼是對的」，刪了卡就變成無依據的宣稱。仍禁 OpenSpec spec 與 Prototype 原始碼（兩者是下游產物，方向顛倒）。正文引用照舊禁止，系統邊界要寫成商業語言（如「線上商品後台」「ERP 中台」），不寫 repo 名與 endpoint。
+**現況查證例外**：後端現行程式（sens-print-core／sensation-api 等已上線系統）得作為 `source` 的現況查證來源，與訪談同級——這類 source 回答「這些公式與參數憑什麼是對的」，刪了卡就變成無依據的宣稱。仍禁 OpenSpec spec 與 Prototype 原始碼（兩者是下游產物，方向顛倒）；OpenSpec change 資料夾內的 grill.md 拍板紀錄可作 `source`，寫成「change <名稱> grill.md G編號」、不寫路徑（見 wiki-schema § 4.0），寫成路徑者照下方搜尋報錯。正文引用照舊禁止，系統邊界要寫成商業語言（如「線上商品後台」「ERP 中台」），不寫 repo 名與 endpoint。
 
 **正文亦禁外連實作路徑**：frontmatter 之外，卡的正文與表格也不得出現 OpenSpec spec 或 Prototype 原始碼的路徑連結（實作對應屬 PRD 層；change 會 archive 或作廢、路徑必然失效）。歷史層豁免：`log.md`／`changelog.md`／`_archives/`／`raw/`；`08-open-questions/` 的 `source-link` 得記發現問題的實作位置（OQ 是問題單、非正本卡）。
 

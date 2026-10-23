@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-10-13
+last-reviewed: 2026-10-22
 ---
 
 # Wiki Schema（Formal）
@@ -101,10 +101,10 @@ tags:
 
 | 欄位 | 方向 | 用途 | 指向對象 | 硬規則 |
 |------|------|------|---------|--------|
-| `source` | 指**分工正本** | **正確性根據**（這張卡為什麼對 → 引用正本，不複寫）| 其他 Vault 卡（依分工：營運原則 / 共用規則 / 業務規則 / 流程狀態角色資料 / 操作步驟），或最上層的依據（法規 / 客戶訪談 / 產業慣例）；另可指兩類現況與拍板依據：後端程式碼路徑（作為現況依據，標明檔案路徑與用途）、Sens memory 計畫工作檔路徑（拍板紀錄與矩陣定案，標明檔名與條目編號）| **禁指 OpenSpec spec 與 Prototype 檔案**（兩者是下游派生，不是正確性來源）；後端程式碼與計畫工作檔可指，但只作現況與拍板依據，規則本體仍寫在卡內。兩卡互為 source＝內容重複的警訊，處理方式是重分工，不是留著互指 |
+| `source` | 指**分工正本** | **正確性根據**（這張卡為什麼對 → 引用正本，不複寫）| 其他 Vault 卡（依分工：營運原則 / 共用規則 / 業務規則 / 流程狀態角色資料 / 操作步驟），或最上層的依據（法規 / 客戶訪談 / 產業慣例）；另可指下列現況與拍板依據：後端程式碼路徑（作為現況依據，標明檔案路徑與用途）、Sens memory 計畫工作檔路徑（拍板紀錄與矩陣定案，標明檔名與條目編號）、OpenSpec change 資料夾內的 grill.md 拍板紀錄（寫成「change <名稱> grill.md G編號」，不寫路徑；change 封存時資料夾會搬移，完整路徑會失效）| **禁指 OpenSpec spec（`openspec/specs/`）與 Prototype 檔案**（兩者是下游派生，不是正確性來源）；change 資料夾只可指 grill.md；後端程式碼、計畫工作檔與 grill.md 可指，但只作現況與拍板依據，規則本體仍寫在卡內。兩卡互為 source＝內容重複的警訊，處理方式是重分工，不是留著互指 |
 
 - `source` 的依據鏈最終追至最上層依據（法規／訪談／產業慣例）。管理層決策以計畫工作檔或 log 條目為依據寫進 source，不在卡上複述決策內容；脈絡由 log 與 OQ 承載。
-- 連結不繞回自己由 § 六維度 15 lint 把關（`source` 鏈繞回自己報 Error、`source` 指向 OpenSpec 報 Error、`source` 指向 Prototype 報 Error）。
+- 連結不繞回自己由 § 六維度 15 lint 把關（`source` 鏈繞回自己報 Error、`source` 含 OpenSpec 路徑報 Error（引用 change 的 grill.md 一律寫「change <名稱> grill.md G編號」，不寫路徑）、`source` 指向 Prototype 報 Error）。
 
 ### type=meta
 

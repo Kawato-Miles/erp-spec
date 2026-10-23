@@ -12,21 +12,24 @@ description: >
 
 ## 前置檢查（缺一不可，缺了先補不動筆）
 
-1. `erp-planning-pre-check` 已跑，領域卡與連帶影響清單在手。
-2. grill 需求對齊已完成，有逐題拍板紀錄（問題＋拍板＋理由）。缺拍板紀錄＝對齊沒做完，回頭補，不得憑印象代填。
+1. `erp-planning-pre-check` 已跑，change 資料夾內有 `precheck.md`，領域卡與連帶影響清單在手。
+2. grill 需求對齊已完成，change 資料夾內的 `grill.md` 有逐題拍板紀錄（問題＋拍板＋理由）。缺拍板紀錄＝對齊沒做完，回頭補，不得憑印象代填。
 3. 讀正本量尺：[規劃品質評分準則](../../../memory/Sens_wiki/wiki/erp/11-review-knowledge/規劃品質評分準則.md)——設計照它寫，稽核照它驗，先讀 § 一設計準則與 § 二收件條件。
 4. 讀該領域**資料結構總覽卡**（關聯與資料流唯一正本，如 [生產領域資料結構總覽](../../../memory/Sens_wiki/wiki/erp/05-entities/生產領域資料結構總覽.md)）——設計涉及實體或關聯變動時，必含段①末尾 MUST 附「**總覽差異**」小節：本次動了哪幾條關聯（增／改／刪＋基數）。
 
-## 產出落點（規劃工作稿一主題一資料夾）
+## 產出落點（change 資料夾即設計載體）
 
-設計方案是規劃段的工作稿，不是正本：拍板後本體由 `wiki-amend` 寫進 wiki 卡，系統承諾與驗收條目由 `/opsx:propose` 寫進 change。工作稿要留著給稽核、復審與拍板溯源用，所以有固定落點與收尾。
+規劃段的產出都放在本主題的 OpenSpec change 資料夾 `openspec/changes/<名稱>/`。change 在規劃第 1 步以 `/opsx:new` 建立。設計方案就是 change 的 `design.md`，由 `/opsx:continue` 與 `proposal.md` 一起產出後送稽核。設計方案不是正本：拍板後本體由 `wiki-amend` 寫進 wiki 卡，系統承諾與驗收條目再由 `/opsx:continue` 寫成 change 的 specs。
 
-| 檔 | 落點 |
-|----|------|
-| pre-check 報告、grill 拍板紀錄、設計方案、plan-audit 評分表（每輪一份） | `memory/erp/plans/<主題>/`，檔名各為 `precheck.md`、`grill.md`、`design.md`、`audit-rN.md` |
-| wiki 落卡與 `/opsx:propose` 都完成後 | 整個資料夾搬到 `memory/erp/plans/_archives/<年>/<主題>/`，由 plan-audit 步驟 5 執行 |
+| 檔 | 產出步驟 |
+|----|---------|
+| `precheck.md` | `erp-planning-pre-check` |
+| `grill.md` | grill 需求對齊；Miles 拍板時的未決 OQ 裁決追加在同一檔；`wiki-amend` 完成後在檔尾追加「wiki 落卡紀錄」段（落卡卡名清單＋提交碼） |
+| `proposal.md`、`design.md` | `/opsx:continue`；design 照本 skill § 產出結構 |
+| `audit-rN.md` | `plan-audit`，每輪一份（N＝輪次） |
+| `design.md` 檔尾「規格與驗收對應」段 | wiki 落卡後以 `/opsx:continue` 寫 specs 時追加 |
 
-不放 repo 根目錄、不放 openspec change 目錄（change 的 design.md 是技術設計，不是這份）。
+封存不另搬：archive 時 OpenSpec 把整個 change 資料夾搬進 `openspec/changes/archive/`。
 
 ## 產出結構（設計方案＝本體＋必含段）
 
@@ -42,7 +45,7 @@ description: >
 | ① 邊界完整性表 | 每實體 × 建立／修改／作廢／查詢、每狀態 × 進入／離開路徑，逐格填；不適用附理由 | 留空格；「作廢：同一般邏輯」不指名哪條邏輯 |
 | ② 管理指標段 | 每指標列：指標名＋來源欄位（指到設計中真實存在的欄位）＋公式 | 「提升生產效率」無欄位無公式 |
 | ③ 情境分類表 | 主情境系統內／邊界系統內（註明吸收機制）／邊界系統外（協作要素：誰做＋照什麼作業程序＋資料怎麼回系統）／不支援（附理由） | 「人工處理」一句話帶過 |
-| ④ grill 拍板紀錄段 | 逐題：問題＋拍板＋理由，照實謄錄不改寫；加隱含假設清單（設計者自補、Miles 未明說的） | 摘要成「已與 Miles 對齊」 |
+| ④ 拍板引用與隱含假設段 | 首行寫「拍板見同資料夾 grill.md」，不謄錄拍板內容；其下逐條列隱含假設清單（設計者自補、Miles 未明說的） | 只寫「已與 Miles 對齊」、沒有隱含假設清單 |
 | ⑤ 守恆段 | 本次涉及的每一種「量」（金額／數量／庫存／產能／工時……依議題）各列流動等式：進 = 出 + 留存；該領域要守恆哪些量對照領域基準卡 | 只列帳務金額不列本次涉及的其他量；等式只顧單向 |
 
 ## 完成後

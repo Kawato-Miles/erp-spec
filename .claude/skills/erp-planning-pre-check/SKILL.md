@@ -2,7 +2,7 @@
 name: erp-planning-pre-check
 description: >
   ERP 規劃前 know-how 稽核 skill：規劃 ERP 功能前 MUST 跑稽核識別 Vault know-how 缺漏 / 錯誤並修補既有卡（不新建抽象卡），避免重複問已答過的真實狀況、設計跑偏。
-  觸發：Miles 說「規劃 X 功能」「設計 Y」「修改 Z 邏輯」「我要規劃」「我想做」；CLAUDE.md 路由偵測到「款項 / 發票 / 收款 / 對帳 / OA / 退款 / 補收」等觸發詞；規劃中遇到「不知道」MUST 立即再跑；OpenSpec change（`/opsx:propose` / `/opsx:new`）背景對齊階段。
+  觸發：Miles 說「規劃 X 功能」「設計 Y」「修改 Z 邏輯」「我要規劃」「我想做」；CLAUDE.md 路由偵測到「款項 / 發票 / 收款 / 對帳 / OA / 退款 / 補收」等觸發詞；規劃中遇到「不知道」MUST 立即再跑；新規劃流第 2 步（`/opsx:new` 建 change 之後、grill 之前）。
   不適用：純查詢術語 / 狀態機（不涉及規劃）、Vault 整體健康稽核（用 vault-audit）。
   雙軸稽核框架、執行者與稽核者分離、輸出格式見本文與 references/audit-framework.md。
 ---
@@ -23,6 +23,7 @@ ERP 規劃前 know-how 稽核工具。**禁繞過稽核直接設計 / 禁新建�
 
 **範圍**：
 - 只處理 ERP_Vault know-how 稽核（規劃前準備層）
+- 在新規劃流是第 2 步：`/opsx:new` 建 change 之後、grill 之前（流程正本見 wiki [[審查知識路由]] § 三）；grill 開始前 change 資料夾沒有 `precheck.md` 就停下補跑
 - 不處理 Vault 整體健康稽核（屬 vault-audit）
 
 **Anti-pattern**（**MUST NOT**）：
@@ -86,12 +87,12 @@ ERP 規劃前 know-how 稽核工具。**禁繞過稽核直接設計 / 禁新建�
 - 付款發票邏輯.md 缺「連帶矩陣」→ edit 該卡補入 7 實體連帶章節
 - 業務情境卡缺已知例外岔路 → edit `07-scenarios/` 對應卡補入延伸岔路（步驟判準須為可觀測業務結果）
 
-**產出「propose 前須先更新的 wiki 卡清單」**：
+**產出「寫 specs 前須先更新的 wiki 卡清單」**：
 
 - 稽核時 **MUST** 同時產出「涉及本主題的 ERP_Vault 商業邏輯卡清單」（`04-business-logic/` / `05-entities/` / `06-state-machines/` / `07-scenarios/` 內提及本主題的卡）
 - **pre-check 階段不修這些卡**（本次規劃尚未定案，提前改卡屬 premature documentation）
-- **設計確認後、進入 `/opsx:propose` 之前 MUST 先更新此清單中的 wiki 卡**（wiki 是 BRD 商業邏輯正本，OpenSpec 是 PRD 實作規格；正確順序是先定 BRD 再寫 PRD；wiki 晚於 archive 才回補，OpenSpec spec 會混入狀態列舉，造成兩處重複維護）
-- 此清單與「Step 4 修補既有卡」的區別：Step 4 修補的是「現況 know-how 缺漏 / 錯誤」（補既有真實狀況）；本清單列的是「本次設計定案後將被改寫的 wiki 商業邏輯卡」（設計確認後、propose 前執行）
+- **設計經 Miles 拍板後、以 `/opsx:continue` 寫 specs 之前 MUST 先經 `wiki-amend` 更新此清單中的 wiki 卡**（wiki 是 BRD 商業邏輯正本，OpenSpec 是 PRD 實作規格；正確順序是先定 BRD 再寫 PRD；wiki 晚於 archive 才回補，OpenSpec spec 會混入狀態列舉，造成兩處重複維護）
+- 此清單與「Step 4 修補既有卡」的區別：Step 4 修補的是「現況 know-how 缺漏 / 錯誤」（補既有真實狀況）；本清單列的是「本次設計定案後將被改寫的 wiki 商業邏輯卡」（設計拍板後、寫 specs 前執行）
 
 ### Step 5：閉環驗證（**禁 false completion**）
 
@@ -107,7 +108,7 @@ ERP 規劃前 know-how 稽核工具。**禁繞過稽核直接設計 / 禁新建�
 
 ## 三、輸出格式（量化稽核報告）
 
-稽核報告存 `memory/erp/plans/<主題>/precheck.md`（規劃工作稿落點規則見 `plan-design` § 產出落點）；對話 ack 照下方模板。
+稽核報告存 change 資料夾 `openspec/changes/<名稱>/precheck.md`（落點規則見 `plan-design` § 產出落點）；對話 ack 照下方模板。
 
 ### 對話 ack 模板
 
@@ -125,9 +126,9 @@ ERP 規劃前 know-how 稽核工具。**禁繞過稽核直接設計 / 禁新建�
 待修補（M 細項）：<列出 3-5 條最關鍵的>
 待確認 OQ（K 細項）：<列出 BI-/ORD- 等 ID>
 連帶矩陣影響範圍：<7 實體影響清單>
-wiki 商業邏輯卡清單（涉及本主題、propose 前須先更新）：<列出 04-business-logic / 05-entities / 06-state-machines / 07-scenarios 內受影響卡；pre-check 不修，設計確認後 propose 前更新>
+wiki 商業邏輯卡清單（涉及本主題、寫 specs 前須先更新）：<列出 04-business-logic / 05-entities / 06-state-machines / 07-scenarios 內受影響卡；pre-check 不修，設計拍板後、寫 specs 前更新>
 
-下一步：依稽核結果修補既有卡 + 標 OQ + Step 5 閉環驗證；wiki 商業邏輯卡待設計確認後、進入 propose 前更新（不在 pre-check 修、不等 archive 後才補）
+下一步：依稽核結果修補既有卡 + 標 OQ + Step 5 閉環驗證；wiki 商業邏輯卡待設計拍板後、寫 specs 前更新（不在 pre-check 修、不等 archive 後才補）
 ```
 
 ### wiki/log.md 追加

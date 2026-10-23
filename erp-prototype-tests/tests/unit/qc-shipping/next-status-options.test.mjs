@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  batchDispatchOf,
   LOGISTICS_LEVEL_KEY as L,
   logisticsActionsOf,
   nextStatusOptions,
@@ -13,8 +14,9 @@ import { departed, logistics, packedShipment } from './_fixtures.mjs';
 //
 // 出貨單層的動作（開始揀貨、完成裝箱回報、作廢出貨單）與物流單層的動作（出貨動作、重新同步、
 // 標記例外、送達確認、交付確認、補附送達憑證、下載、作廢物流單）各自只列合法的那幾個
-//（依據 grill G31：出貨動作只在物流單列上，出貨單層沒有批次入口；G32：不設單筆重試）：
-// 可選值錯一格就會讓現場推出一個狀態機不允許的轉換。
+//（依據 grill G31：出貨動作在物流單列上；G32：不設單筆重試）：可選值錯一格就會讓現場推出一個狀態機不允許的轉換。
+// 情境 12.42：拋單方式的出貨單另有批次拋單（G39），依出貨單狀態顯示、資料條件不符時停用並顯示理由（G56），
+// 只有能拋單的出貨人員看得到（G57）。批次拋單不是狀態轉換，另由 batchDispatchOf 判定。
 
 const prePacking = (status, method = '新竹物流') => ({ status, method, details: [], logistics_orders: [] });
 const packed = (method, los) => packedShipment({ method, logisticsOrders: los });
@@ -43,8 +45,8 @@ describe('揀貨人員', () => {
   });
 });
 
-describe('出貨人員在出貨單層沒有出貨動作（G31：出貨動作只在物流單列上）', () => {
-  it('不論出貨方式、物流單狀態，出貨單層都沒有出貨動作', () => {
+describe('出貨人員在出貨單層沒有狀態推進的動作（批次拋單另由 batchDispatchOf 判定）', () => {
+  it('不論出貨方式、物流單狀態，出貨單層都沒有狀態推進的動作', () => {
     ['自取', '專車配送', '順豐', '新竹物流', '7-11 交貨便', '全家', '其他'].forEach((method) => {
       const sh = packed(method, [
         logistics('SH-TEST-0001-001', '已裝箱'),
@@ -265,5 +267,82 @@ describe('業務對物流單：作廢的開放狀態', () => {
     const lo = departed('SH-TEST-0001-001', '等待出貨');
     expect(logisticsActionsOf({ role: 'sales', shipment: packed('順豐', [lo]), logistics: lo })).toEqual([]);
     expect(logisticsKeys('shipper', '順豐', lo)).not.toContain(L.VOID);
+  });
+});
+
+// ── 12.42 批次拋單的顯示與停用（shipment spec § 從出貨單批次拋單；grill G56、G57） ──
+
+describe('12.42 批次拋單依出貨單狀態與出貨方式渲染、揀貨不符與異常無已裝箱時停用', () => {
+  const THROW_METHODS = ['順豐', '新竹物流', '7-11 交貨便', '全家'];
+  const OTHER_METHODS = ['自取', '專車配送', '其他'];
+  const of = (shipment, role = 'shipper') => batchDispatchOf({ role, shipment });
+
+  it('出貨人員：已裝箱的新竹物流出貨單顯示；打包中、全部等待出貨的新竹物流出貨單與已裝箱的自取出貨單不渲染', () => {
+    expect(of(packed('新竹物流', [logistics('SH-TEST-0001-001', '已裝箱')]))).toEqual({
+      visible: true,
+      disabled: false,
+      reason: null,
+    });
+    expect(of(prePacking('打包中', '新竹物流')).visible).toBe(false);
+    expect(of(packed('新竹物流', [departed('SH-TEST-0001-001', '等待出貨')])).visible).toBe(false);
+    expect(of(packed('自取', [logistics('SH-TEST-0001-001', '已裝箱')])).visible).toBe(false);
+  });
+
+  it('揀貨人員與接單業務看不到批次拋單（沒有拋單權限）', () => {
+    const sh = packed('新竹物流', [logistics('SH-TEST-0001-001', '已裝箱')]);
+    ['picker', 'sales', 'consultant', 'print_manager', null].forEach((role) => {
+      expect(of(sh, role).visible, String(role)).toBe(false);
+    });
+  });
+
+  it('只有出貨動作為拋單的四種出貨方式有批次拋單', () => {
+    THROW_METHODS.forEach((method) => {
+      expect(of(packed(method, [logistics('SH-TEST-0001-001', '已裝箱')])).visible, method).toBe(true);
+    });
+    OTHER_METHODS.forEach((method) => {
+      expect(of(packed(method, [logistics('SH-TEST-0001-001', '已裝箱')])).visible, method).toBe(false);
+    });
+  });
+
+  it('只在出貨單狀態為已裝箱或異常時渲染；草稿、未處理、打包中、等待出貨、已出貨、運送中、已送達、已作廢都不渲染', () => {
+    ['草稿', '未處理', '打包中'].forEach((status) => {
+      expect(of(prePacking(status, '新竹物流')).visible, status).toBe(false);
+    });
+    [
+      ['等待出貨', [departed('L-1', '等待出貨')]],
+      ['已出貨', [departed('L-1', '已出貨')]],
+      ['運送中', [departed('L-1', '運送中')]],
+      ['已送達', [departed('L-1', '已送達')]],
+    ].forEach(([status, los]) => {
+      expect(of(packed('新竹物流', los)).visible, status).toBe(false);
+    });
+    expect(of({ ...packed('新竹物流', [departed('L-1', '已作廢')]), status: '已作廢' }).visible).toBe(false);
+    // 部分離廠仍是已裝箱：顯示
+    expect(of(packed('新竹物流', [departed('L-1', '等待出貨'), logistics('L-2', '已裝箱')])).visible).toBe(true);
+    // 異常且還有已裝箱物流單：顯示、可按
+    expect(of(packed('新竹物流', [departed('L-1', '例外事故'), logistics('L-2', '已裝箱')]))).toMatchObject({
+      visible: true,
+      disabled: false,
+    });
+  });
+
+  it('揀貨不符時批次拋單停用，理由為「揀貨數量與出貨明細不符」；業務改明細為 80 後恢復可按', () => {
+    const sh = packedShipment({
+      method: '全家',
+      qty: 100,
+      logisticsOrders: ['001', '002', '003'].map((n) => logistics(`SH-TEST-0001-${n}`, '已裝箱')),
+    });
+    sh.details[0].picked_qty = 80;
+    const btn = of(sh);
+    expect(btn).toMatchObject({ visible: true, disabled: true });
+    expect(btn.reason).toContain('揀貨數量與出貨明細不符');
+    const fixed = { ...sh, details: [{ ...sh.details[0], qty: 80 }] };
+    expect(of(fixed)).toEqual({ visible: true, disabled: false, reason: null });
+  });
+
+  it('出貨單為異常且底下沒有已裝箱的物流單時停用並顯示理由', () => {
+    const btn = of(packed('7-11 交貨便', [departed('L-1', '例外事故'), departed('L-2', '等待出貨')]));
+    expect(btn).toMatchObject({ visible: true, disabled: true });
+    expect(btn.reason).toBeTruthy();
   });
 });

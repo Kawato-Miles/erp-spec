@@ -22,6 +22,16 @@
       "autoPort": true
     },
     {
+      "name": "erp-shipment-logistics",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/b-f-03-029/erp-shipment-logistics/apps/erp && exec ./node_modules/.bin/next dev --port \"${PORT:-3031}\""
+      ],
+      "port": 3031,
+      "autoPort": true
+    },
+    {
       "name": "sens-erp-prototype",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
