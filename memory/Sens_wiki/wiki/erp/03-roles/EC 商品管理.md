@@ -4,7 +4,7 @@ tags:
   - 領域/售前
 source:
   - "Notion 核心角色權責表：https://www.notion.so/32e3886511fa81f09be5ed74c6f51306"
-  - "Miles 2026-10-13 拍板（wiki 權責結構重構 grill，Sens memory/erp/plans/document-access-scope-20261013/grill.md G5）：角色卡只留職位定位與分工理由，能做什麼改由活動清單卡承載"
+  - "Miles 2026-10-13 拍板（wiki 權責結構重構 grill，Sens memory/erp/plans/_archives/2026/document-access-scope-20261013/grill.md G5）：角色卡只留職位定位與分工理由，能做什麼改由活動清單卡承載"
   - "Miles 2026-10-14 拍板（同 grill，G59）：EC 商品管理角色卡只留職位定位，範圍外寫明 EC 商品不在 ERP 範圍"
 status: active
 last-reviewed: 2026-10-14

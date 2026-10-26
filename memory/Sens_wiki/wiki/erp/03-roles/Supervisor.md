@@ -3,10 +3,10 @@ type: role
 source:
   - "Notion 核心角色權責表：https://www.notion.so/91f2aa7094de4e129d65ff3069900a16"
   - "Miles 2026-09-24 拍板：主管在生產管理唯讀；2026-10-06 裁決：Supervisor 對生產管理五個產線單元唯讀檢視，操作不開放"
-  - "Miles 2026-10-12 拍板（Linear 三層格式改版 grill，Sens memory/erp/plans/linear-format-20261012/grill-decisions.md）：Supervisor 可改派諮詢單、需求單、訂單的接單業務（X4、X4c、D4：售後服務單不改派）"
+  - "Miles 2026-10-12 拍板（Linear 三層格式改版 grill，Sens memory/erp/plans/_archives/2026/linear-format-20261012/grill-decisions.md）：Supervisor 可改派諮詢單、需求單、訂單的接單業務（X4、X4c、D4：售後服務單不改派）"
   - "Miles 2026-10-12 拍板（同 grill，D1）：Supervisor 可管理訂單分享成員；例外限於存取與人力安排，不改單據內容"
-  - "Miles 2026-10-12 拍板（生產與出貨修正機制統一 grill，Sens memory/erp/plans/production-ui-correction-20261012/grill.md）：Supervisor 通常使用的生產管理單元為所有生產任務、所有工作包、待轉交任務、所有轉交單、點收佇列的唯讀檢視"
-  - "Miles 2026-10-13 拍板（wiki 權責結構重構 grill，Sens memory/erp/plans/document-access-scope-20261013/grill.md G5、G48）：角色卡只留職位定位與分工理由；對訂單有全公司範圍者可編輯訂單"
+  - "Miles 2026-10-12 拍板（生產與出貨修正機制統一 grill，Sens memory/erp/plans/_archives/2026/production-ui-correction-20261012/grill.md）：Supervisor 通常使用的生產管理單元為所有生產任務、所有工作包、待轉交任務、所有轉交單、點收佇列的唯讀檢視"
+  - "Miles 2026-10-13 拍板（wiki 權責結構重構 grill，Sens memory/erp/plans/_archives/2026/document-access-scope-20261013/grill.md G5、G48）：角色卡只留職位定位與分工理由；對訂單有全公司範圍者可編輯訂單"
 status: active
 last-reviewed: 2026-10-14
 tags:

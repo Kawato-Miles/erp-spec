@@ -14,7 +14,7 @@ source:
   - "sensation-api `logistics/hct/actions/trans_data_json.py` L21 件數預設 1，`logistics/hct/logistics.py` 拋單未帶件數：新竹物流子母單未串接"
   - "sensation-api `logistics/payuni/logistics.py` L50-58（7-11 交貨便拋單不帶寄件人）、`logistics/familymart/logistics.py` L159-166（全家寄件人取設定檔）"
   - "sensation-api `logistics/sf/logistics.py` L118-143、`logistics/hct/logistics.py` L48-64：順豐、新竹物流非保密代寄時用設定檔單一預設寄件人，保密代寄時用自訂寄件人"
-  - "sensation-api（2026-10-22 規劃抽驗，見 Sens memory/erp/plans/shipment-batch-dispatch-box-size-20261022/design.md § 十）`logistics/tasks/batch_dispatch.py`、`sens_admin/v1/serializers/logistics_serializers.py` L367-389：EC 批次拋單在背景逐筆執行、單筆失敗不影響其他筆；送出前不排除已成功或處理中的物流單，一次至多 30 筆"
+  - "sensation-api（2026-10-22 規劃抽驗，見 Sens memory/erp/plans/_archives/2026/shipment-batch-dispatch-box-size-20261022/design.md § 十）`logistics/tasks/batch_dispatch.py`、`sens_admin/v1/serializers/logistics_serializers.py` L367-389：EC 批次拋單在背景逐筆執行、單筆失敗不影響其他筆；送出前不排除已成功或處理中的物流單，一次至多 30 筆"
 status: draft
 last-reviewed: 2026-10-23
 ---

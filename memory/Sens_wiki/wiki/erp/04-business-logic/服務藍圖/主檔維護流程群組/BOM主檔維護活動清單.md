@@ -7,7 +7,7 @@ tags:
 source:
   - "[[材料主檔]]、[[工序主檔]]、[[裝訂主檔]] § 營運背景（原記載：主檔由印務維護，主檔維護先讓印務處理、後續視需要再細分）"
   - "印務角色卡（第 6a 批改寫前）職務範圍「BOM 三類主檔（材料、工序、裝訂）的項目與計價參數，不分工單、全體印務共同維護」與主要職責「BOM 三類主檔維護」"
-  - "Miles 2026-10-14 拍板（wiki 權責結構重構 grill，Sens memory/erp/plans/document-access-scope-20261013/grill.md G59）：主檔維護流程群組，每類主檔一張活動清單"
+  - "Miles 2026-10-14 拍板（wiki 權責結構重構 grill，Sens memory/erp/plans/_archives/2026/document-access-scope-20261013/grill.md G59）：主檔維護流程群組，每類主檔一張活動清單"
 status: draft
 last-reviewed: 2026-10-14
 ---

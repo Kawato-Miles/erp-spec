@@ -10,7 +10,7 @@
 
 撰寫：Sonnet（第 1 至 4 輪），第 4、5 輪間三處小修由主對話直接改。
 權限表：第 2 至 5 輪稽核皆確認與六張活動清單卡需求單列逐列一致。
-待辦：第二段盲測（題目 memory/erp/plans/linear-format-20261012/blind-test-stage2-quote-v7.md，待 Miles 看過題目）、第三段盲測（Miles 判定）、寫入 Linear。
+待辦：第二段盲測（題目 memory/erp/plans/_archives/2026/linear-format-20261012/blind-test-stage2-quote-v7.md，待 Miles 看過題目）、第三段盲測（Miles 判定）、寫入 Linear。
 
 ## 寫入 Linear（2026-10-20）
 
