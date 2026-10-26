@@ -1,6 +1,6 @@
 # 中台 - 品檢與出貨 Linear 更正草稿 v5（可出貨狀態、批次列印與下載中心、第三方物流依回傳推進）
 
-狀態：草稿，已依 Miles 2026-10-26 裁決修正（第三節第 1、2、6、9 點），未審查、未寫入 Linear。
+狀態：已於 2026-10-26 寫入 Linear（寫入紀錄見第四節）。本次交付記到 Prototype 提交 25837ff9（erp prototype/production-stage），Sens master 86f4397。
 取材：Linear 現行內容（2026-10-26 讀取，存於 current/，讀取方式見 current/_讀取紀錄.md）；wiki（worktree shipping-logistics-features-dd104a，分支 claude/shipment-print-center-bca02e，HEAD e0a21f7，落卡提交 8080388 與 2026-10-24 補單筆下載分支）；情境目錄第十二章、14.37、14.38、14.44、14.45（Sens 分支 claude/shipment-print-apply，HEAD 1e53d92）；Prototype（erp 分支 origin/prototype/shipment-print-download-center，提交 ded7eb50）。
 寫入原則：同 v4。既有票只傳 id 與 description；project 描述整段覆寫，save_project 同時帶原狀態 In Progress；各票主體「參考留言」連結的占位 `<v5 留言 id 前 8 碼>`，在留言寫入後回填。新開的票依 SKILL 開票順序，先在 PM team 建立再轉隊。
 
@@ -102,3 +102,25 @@
 ### 下一步
 
 12. **審查。** 本次含狀態機、多張票與新 project 結構件，依規範門檻值「免派稽核者」不適用，需走完整審查：出處核對（Opus）、第二段與第三段盲測。草稿只完成到步驟 3 自掃。
+
+## 四、寫入紀錄（2026-10-26）
+
+寫入前以 list_issues 讀回，各票 updatedAt 與 current/ 讀取時一致。依序：milestone 描述 → 新 Feature 票 PM-1460（PM team，不轉隊）→ project 描述（帶原狀態 In Progress，FE、BE 已在 teams）→ 新後端 Task 票（PM team 建立為 PM-1461，轉入 BE 成 BE-465）→ 新前端 Task 票（PM team 建立為 PM-1462，轉入 FE 成 FE-635，「不用自己做」直接寫 BE-465）→ 九則對照留言 → 回填參考留言連結並覆寫九張既有票（只傳 id 與 description）。每筆寫入後讀回，描述與 draft/ 一致（Linear 會把 issue 連結網址編碼、把清單編號前導空白正規化）；狀態、負責人、milestone、Label、parentId、projectId 都未變，BE-443～445 維持 In Review，驗收票 BE-462～464 未動。全部占位已回填，讀回無 `<v5`、`<新`、`回填>` 字樣。
+
+| 容器 | 網址 | 留言 id | 讀回後狀態／負責人／歸屬 |
+|---|---|---|---|
+| P-PM-246 | https://linear.app/sensationdeveloper/project/中台-品檢與出貨-555eb8966074 | — | In Progress；milestone「出貨單與出貨作業」描述已改 |
+| PM-1460（新） | https://linear.app/sensationdeveloper/issue/PM-1460 | — | Backlog／未指派／出貨單與出貨作業；Label Feature、PM、ERP；GitHub backlog #2769 |
+| BE-465（新） | https://linear.app/sensationdeveloper/issue/BE-465 | — | Backlog／未指派／parent PM-1460；Label Task、Backend、ERP；GitHub backlog #2770 |
+| FE-635（新） | https://linear.app/sensationdeveloper/issue/FE-635 | — | Backlog／未指派／parent PM-1460；Label Task、Frontend、ERP；GitHub backlog #2771 |
+| PM-1399 | https://linear.app/sensationdeveloper/issue/PM-1399 | 6361e239-78ca-4fba-906a-2a7f3b80e745 | Backlog／Miles／出貨單與出貨作業 |
+| PM-1400 | https://linear.app/sensationdeveloper/issue/PM-1400 | 37c993c3-c6c0-4d5f-b96c-8c712f8a8705 | Backlog／Miles／出貨單與出貨作業 |
+| PM-1401 | https://linear.app/sensationdeveloper/issue/PM-1401 | ab9736e9-5904-4723-ac45-c1e5a1bd6817 | Backlog／Miles／出貨單與出貨作業 |
+| BE-443 | https://linear.app/sensationdeveloper/issue/BE-443 | f4c44b81-55be-4b1a-8d9e-43e2a53f39f3 | In Review／Raymond／parent PM-1399 |
+| BE-444 | https://linear.app/sensationdeveloper/issue/BE-444 | a91efd99-c8b4-4866-8553-ea2b0e6ce766 | In Review／Raymond／parent PM-1400 |
+| BE-445 | https://linear.app/sensationdeveloper/issue/BE-445 | 0c747d9a-f747-446f-bfb3-82028d8e7e90 | In Review／Raymond／parent PM-1401 |
+| FE-609 | https://linear.app/sensationdeveloper/issue/FE-609 | 1e972b85-0def-427b-b514-592379312149 | Backlog／未指派／parent PM-1399 |
+| FE-610 | https://linear.app/sensationdeveloper/issue/FE-610 | c373f8a6-059e-4119-ab1d-77294172e0a1 | Backlog／未指派／parent PM-1400 |
+| FE-611 | https://linear.app/sensationdeveloper/issue/FE-611 | e94d38ca-4cf9-4933-9652-5af6af9a544c | Backlog／未指派／parent PM-1401 |
+
+未處理、留給 Miles：PM-1460 未指派負責人（其他 Feature 票負責人為 Miles，任務書未要求設定）；project 的 summary 欄仍是舊句「揀貨人員裝箱，出貨人員把貨交運並確認送達」，不在本次寫入範圍。請 Miles 開 project 頁確認三張狀態機圖渲染成圖。

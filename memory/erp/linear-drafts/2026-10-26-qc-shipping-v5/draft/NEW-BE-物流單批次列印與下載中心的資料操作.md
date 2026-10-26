@@ -1,6 +1,6 @@
 標題：[ Task ] - 物流單批次列印與下載中心的資料操作
 Label：Type/Task、Role/Backend、Product/ERP
-Parent：<新 Feature 票：物流單批次列印與下載中心>
+Parent：PM-1460
 狀態：新開（Miles 已同意開票；PM team 建立再轉入 BE team）
 
 ---
