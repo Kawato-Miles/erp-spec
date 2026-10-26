@@ -114,7 +114,7 @@
 
 指標的統計 SHALL NOT 依廠商類別排除任何批次——外發任務的報工由印務填報、欄位與場內同一組，一併進統計。漏單率的分母 SHALL NOT 以工單是否已交付產線設限——卡在製程確認或審核而逾任務預計完成日的工單同屬漏單要浮現的上游延誤；已取消工單 SHALL 排除，已完成工單因旗下任務有報工而自然不列，不另設狀態排除。單筆資料不全時該指標 SHALL NOT 計入該批統計，SHALL NOT 以零值代入。時間稼動率與設備綜合效率（OEE）SHALL NOT 實作——報工不收實際工時、設備主檔不維護班內工時，分子分母都沒有事實來源；理論節拍主檔亦缺，留掛點。
 
-**本 Requirement SHALL NOT 新增任務準時率**：任務實際完成日到位後才算得出這個數，是否納入另案評估（見 wiki [生產績效指標](../../../memory/Sens_wiki/wiki/erp/04-business-logic/領域知識/生產績效指標.md)）。印件準時交貨率屬北極星指標、不在本頁五指標之列，其錨點與分母見 [shipment spec § 實際出貨日與出貨準時判定](../shipment/spec.md)。
+**本 Requirement SHALL NOT 新增任務準時率**：任務實際完成日到位後才算得出這個數，是否納入另案評估（見 wiki [生產績效指標](../../../memory/Sens_wiki/wiki/erp/04-business-logic/領域知識/生產績效指標.md)）。印件準時完工率屬北極星指標、不在本頁五指標之列，算式見 wiki [北極星指標](../../../memory/Sens_wiki/wiki/erp/01-products/北極星指標.md)，完工日的寫入見 [order-management spec § 印件完工日寫入與準時完工判定](../order-management/spec.md)。
 
 **Priority**: P0
 

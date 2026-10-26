@@ -25,6 +25,10 @@ describe('15.15 人員名冊只有一份：模擬角色的每一位都在名冊�
     }
   });
 
+  it('名冊有兩位出貨人員：曾志偉與江俊賢（下載中心模擬資料的兩位建立人）', () => {
+    expect(ROSTER.filter((p) => p.role === 'shipper').map((p) => p.name)).toEqual(['曾志偉', '江俊賢']);
+  });
+
   it('名冊的「角色＋姓名」不重複', () => {
     const keys = ROSTER.map((p) => `${p.role}:${p.name}`);
     expect(new Set(keys).size).toBe(keys.length);
@@ -89,6 +93,14 @@ describe('2.20、2.26、1.29 側欄入口依檢視活動清單', () => {
     for (const role of ['production_planner', 'qc_inspector']) expect(labelsOf(role), role).not.toContain('出貨管理');
     for (const role of ['print_officer', 'print_manager', 'sales_manager', 'picker', 'shipper', 'sales', 'supervisor']) {
       expect(labelsOf(role), role).toContain('出貨管理');
+    }
+  });
+
+  it('12.53 下載中心在「品檢與出貨」群組：出貨人員有；業務、揀貨人員與其他角色沒有', () => {
+    const group = visibleMenuGroups('shipper').find((g) => g.name === '品檢與出貨');
+    expect(group.children.map((c) => c.label)).toContain('下載中心');
+    for (const role of ['sales', 'picker', 'sales_manager', 'print_manager', 'supervisor']) {
+      expect(labelsOf(role), role).not.toContain('下載中心');
     }
   });
 

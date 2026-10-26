@@ -5,12 +5,14 @@ import {
   clickRowAction,
   closeShipmentPanel,
   createShipment,
-  fakePhoto,
+  dispatchRow,
   gotoInAppSafe,
   logisticsRows,
   openLogisticsAction,
   openShipmentPanel,
+  pickAndPack,
   setupShippableState,
+  submitButton,
   shipmentRow,
   switchRoleSafe,
 } from '../11-qc/_setup.mjs';
@@ -146,6 +148,88 @@ test('12.28 協助角色在訂單詳情的出貨單頁籤有建立出貨單草�
   await expect(page.getByRole('button', { name: '建立出貨單草稿' })).toHaveCount(1);
 });
 
+test('12.28 確認可出貨與撤回確認可出貨只給揀貨人員；可出貨的單協助角色有作廢；列上沒有下載全部物流單與重新同步', async ({ page }) => {
+  await setupShippableState(page, { passed: 500 });
+  await switchRoleSafe(page, '業務');
+  await gotoInAppSafe(page, SHIPMENTS);
+  const shipmentNo = await createShipment(page, { qty: 100, method: '新竹物流' });
+
+  // 揀貨人員走到已裝箱：列上有確認可出貨（ACT-SHP-042）
+  await switchRoleSafe(page, '揀貨人員');
+  await gotoInAppSafe(page, SHIPMENTS);
+  await pickAndPack(page, shipmentNo, { pickedQty: 100, boxes: 2, confirm: false });
+  await expect(rowButton(page, shipmentNo, '確認可出貨')).toHaveCount(1);
+
+  // 接單業務與六個協助角色、出貨人員：已裝箱的單上沒有確認可出貨
+  for (const role of ['業務', ...HELPER_ROLES, '出貨人員']) {
+    await switchRoleSafe(page, role);
+    await gotoInAppSafe(page, SHIPMENTS);
+    await expect(rowButton(page, shipmentNo, '確認可出貨'), role).toHaveCount(0);
+  }
+
+  // 揀貨人員確認可出貨：列上換成撤回確認可出貨（ACT-SHP-043）
+  await switchRoleSafe(page, '揀貨人員');
+  await gotoInAppSafe(page, SHIPMENTS);
+  await shipmentRow(page, shipmentNo).getByRole('button', { name: '確認可出貨', exact: true }).click();
+  await submitButton(page.locator('.ant-modal-confirm:visible').last(), '確認可出貨').click();
+  await expect(page.getByText('已確認可出貨').first()).toBeVisible();
+  await expect(rowButton(page, shipmentNo, '撤回確認可出貨')).toHaveCount(1);
+
+  // 可出貨（物流單都在可出貨）：接單業務與六個協助角色有作廢，沒有撤回確認可出貨；出貨人員沒有撤回
+  for (const role of ['業務', ...HELPER_ROLES]) {
+    await switchRoleSafe(page, role);
+    await gotoInAppSafe(page, SHIPMENTS);
+    await expect(rowButton(page, shipmentNo, '作廢'), role).toHaveCount(1);
+    await expect(rowButton(page, shipmentNo, '撤回確認可出貨'), role).toHaveCount(0);
+  }
+  await switchRoleSafe(page, '出貨人員');
+  await gotoInAppSafe(page, SHIPMENTS);
+  await expect(rowButton(page, shipmentNo, '撤回確認可出貨')).toHaveCount(0);
+  // 列上與物流單列都沒有下載全部物流單、重新同步、補附送達憑證（G1、G3、G16）
+  await expect(rowButton(page, shipmentNo, '下載全部物流單')).toHaveCount(0);
+  const panel = await openShipmentPanel(page, shipmentNo);
+  for (const name of ['重新同步', '補附送達憑證', '下載全部物流單', '標記例外']) {
+    await expect(panel.getByRole('button', { name }), name).toHaveCount(0);
+  }
+  await closeShipmentPanel(page);
+});
+
+test('12.28 作廢物流單給訂單編輯權角色、不給現場角色：專車物流單在例外時接單業務與訂單管理人有作廢物流單，出貨人員沒有；接單業務沒有送達確認', async ({ page }) => {
+  // 第三方物流的例外只由物流商回傳產生（畫面無法推進，以純函式驗）；畫面以專車物流單的人工例外驗同一條權限
+  await setupShippableState(page, { passed: 500 });
+  await switchRoleSafe(page, '業務');
+  await gotoInAppSafe(page, SHIPMENTS);
+  const vanNo = await createShipment(page, { qty: 100, method: '專車配送' });
+  await switchRoleSafe(page, '揀貨人員');
+  await gotoInAppSafe(page, SHIPMENTS);
+  await pickAndPack(page, vanNo, { pickedQty: 100, boxes: 2 });
+  await switchRoleSafe(page, '出貨人員');
+  await gotoInAppSafe(page, SHIPMENTS);
+  await dispatchRow(page, vanNo, '出貨確認');
+  const markDialog = await openLogisticsAction(page, vanNo, '標記例外');
+  await markDialog.locator('.ant-select').first().click();
+  await page.locator('.ant-select-dropdown:visible .ant-select-item-option').filter({ hasText: '例外事故' }).first().click();
+  await markDialog.getByLabel('例外理由').fill('客戶拒收');
+  await submitButton(markDialog, '標記例外').click();
+  await expect(page.getByText('已標記例外').first()).toBeVisible();
+
+  for (const role of ['業務', '訂單管理人']) {
+    await switchRoleSafe(page, role);
+    await gotoInAppSafe(page, SHIPMENTS);
+    const panel = await openShipmentPanel(page, vanNo);
+    await expect(logisticsRows(panel).first().getByRole('button', { name: '作廢物流單' }), role).toHaveCount(1);
+    await expect(logisticsRows(panel).first().getByRole('button', { name: '送達確認' }), role).toHaveCount(0);
+    await closeShipmentPanel(page);
+  }
+  for (const role of ['出貨人員', '揀貨人員']) {
+    await switchRoleSafe(page, role);
+    await gotoInAppSafe(page, SHIPMENTS);
+    const panel = await openShipmentPanel(page, vanNo);
+    await expect(logisticsRows(panel).first().getByRole('button', { name: '作廢物流單' }), role).toHaveCount(0);
+    await closeShipmentPanel(page);
+  }
+});
+
 // ── 售後服務單 ──
 
 const AFTER_SALES = '/after-sales';
@@ -232,38 +316,6 @@ test('12.30 業務主管開檢視側板：有編輯與補述客戶反映；訂�
   await expect(tabDrawer.getByRole('button', { name: '編輯', exact: true })).toHaveCount(1);
 
   // 會計沒有訂單檢視，不經訂單頁籤；檢視層級以外的唯讀由 12.30 純函式驗
-});
-
-test('12.31 已送達的物流單補附送達憑證只給出貨人員：接單業務、編輯分享成員、六個協助角色與揀貨人員都沒有入口；補附後狀態不變、歷程記補附人', async ({ page }) => {
-  // 起點：鏈一 SH-2026-0601（順豐，已送達，ORD-2026-0601，接單業務洪嘉駿，陳映蓉為編輯層級分享成員）
-  // 補附送達憑證掛在物流單上，入口在出貨單對話框的物流單表格內
-  const PROOF = '補附送達憑證';
-  await openAs(page, '業務', SHIPMENTS);
-  await expect(shipmentRow(page, 'SH-2026-0601')).toContainText('已送達');
-  const roles = ['業務', '業務（陳映蓉）', ...HELPER_ROLES, '揀貨人員'];
-  for (const role of roles) {
-    await switchRoleSafe(page, role);
-    await gotoInAppSafe(page, SHIPMENTS);
-    await expect(shipmentRow(page, 'SH-2026-0601'), role).toContainText('已送達');
-    await expect(rowButton(page, 'SH-2026-0601', PROOF), role).toHaveCount(0);
-    const roPanel = await openShipmentPanel(page, 'SH-2026-0601');
-    await expect(logisticsRows(roPanel).first(), role).toBeVisible();
-    await expect(roPanel.getByRole('button', { name: PROOF }), role).toHaveCount(0);
-    await closeShipmentPanel(page);
-  }
-
-  // 出貨人員補附：單仍是已送達，物流單歷程多一筆補附送達憑證並帶補附人曾志偉
-  await switchRoleSafe(page, '出貨人員');
-  await gotoInAppSafe(page, SHIPMENTS);
-  const dialog = await openLogisticsAction(page, 'SH-2026-0601', PROOF);
-  await dialog.locator('input[type="file"]').setInputFiles(fakePhoto('簽收照片-補.jpg'));
-  await dialog.getByRole('button', { name: '送出憑證' }).click();
-  await expect(page.getByText(/已補附送達憑證/).first()).toBeVisible();
-  await expect(shipmentRow(page, 'SH-2026-0601')).toContainText('已送達');
-  const panel = await openShipmentPanel(page, 'SH-2026-0601');
-  await panel.getByRole('tab', { name: '歷程' }).click();
-  const proofEvent = panel.locator('tr, li, .ant-timeline-item, .ant-list-item').filter({ hasText: PROOF }).first();
-  await expect(proofEvent).toContainText('曾志偉');
 });
 
 test('12.40 售後服務列表的接單業務篩選與欄位看所屬訂單的接單業務，不看開立者；檢視側板同口徑', async ({ page }) => {

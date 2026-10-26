@@ -41,6 +41,14 @@ describe('15.15 活動表與 wiki 活動清單卡一致', () => {
     expect(protoRows.map(key).sort()).toEqual(wikiRows.map(key).sort());
   });
 
+  it('活動表列數為 572 列（wiki 活動清單卡新增 ACT-SHP-042～044、ACT-VDLV-016、ACT-OUT-017，刪除 ACT-SHP-025、ACT-SHP-037、ACT-OUT-015 後重算）', () => {
+    expect(wikiRows.length).toBe(572);
+    expect(protoRows.length).toBe(572);
+    const ids = new Set(protoRows.map((r) => r.id));
+    for (const id of ['ACT-SHP-042', 'ACT-SHP-043', 'ACT-SHP-044', 'ACT-VDLV-016', 'ACT-OUT-017']) expect(ids.has(id), id).toBe(true);
+    for (const id of ['ACT-SHP-025', 'ACT-SHP-037', 'ACT-OUT-015']) expect(ids.has(id), id).toBe(false);
+  });
+
   it('活動編號不重複', () => {
     const ids = protoRows.map((r) => r.id);
     expect(new Set(ids).size).toBe(ids.length);

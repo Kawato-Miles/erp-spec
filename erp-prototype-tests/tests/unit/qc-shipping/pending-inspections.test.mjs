@@ -83,6 +83,17 @@ describe('11.1 待驗清單依印件做出來的良品列出', () => {
     });
   });
 
+  it('鏈九 PI-2026-0924 分兩次驗畢 3,000，待驗量 0 的列留在清單上', () => {
+    // 完成數取末道工序投入 3,060（裁切摺紙投入 3,060、良品 3,000）
+    expect(rowOf('PI-2026-0924')).toMatchObject({
+      kitting_qty: 3060,
+      kitting_good_qty: 3000,
+      inspected_pass: 3000,
+      inspected_fail: 0,
+      pending_qty: 0,
+    });
+  });
+
   it('每一列帶所屬訂單編號與客戶名稱（自訂單帶出）', () => {
     expect(rowOf('PI-2026-0820')).toMatchObject({
       order_no: 'ORD-2026-0820',
@@ -97,7 +108,7 @@ describe('11.1 待驗清單依印件做出來的良品列出', () => {
   it('沒有良品也沒有品檢紀錄的印件不列（鏈二裁切未完成、鏈三尚未派工）', () => {
     expect(rowOf('PI-2026-0710')).toBeUndefined();
     expect(rowOf('PI-2026-0815')).toBeUndefined();
-    expect(rows).toHaveLength(2);
+    expect(rows).toHaveLength(3);
   });
 });
 
@@ -134,8 +145,8 @@ describe('11.22 待驗清單帶內部完成日、預計交期與急件標籤', (
     });
   });
 
-  it('預設排序為內部完成日由近到遠（鏈一 6/18 排在鏈四 9/04 之前）', () => {
-    expect(rows.map((r) => r.print_item_no)).toEqual(['PI-2026-0601', 'PI-2026-0820']);
+  it('預設排序為內部完成日由近到遠（鏈一 6/18、鏈四 9/04、鏈九 10/27）', () => {
+    expect(rows.map((r) => r.print_item_no)).toEqual(['PI-2026-0601', 'PI-2026-0820', 'PI-2026-0924']);
   });
 });
 

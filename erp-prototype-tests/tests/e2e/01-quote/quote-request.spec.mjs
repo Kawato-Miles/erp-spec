@@ -189,6 +189,11 @@ test('1.4 議價中申請重新評估，需求單退回待評估成本', async (
   test.setTimeout(90_000);
   // 起點：Q-20260908-01（鼎味餐飲集團冬季菜單桌卡，議價中，報價紀錄一筆）
   await openAs(page, '業務', '/quote-prototype');
+  // 列表每頁固定筆數、新單排前面（鏈九 Q-20260921-01 加入後 0908 被擠出第一頁）：
+  // 先用搜尋框篩到這張單再點（共用篩選元件按 Enter 才送出）
+  const search = page.getByPlaceholder('請輸入需求單編號、需求案名、或客戶名稱');
+  await search.fill('Q-20260908-01');
+  await search.press('Enter');
   await page.getByRole('link', { name: 'Q-20260908-01' }).click();
   await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
   await expect(quoteCurrentStep(page)).toHaveText('議價');

@@ -3,7 +3,9 @@ import {
   isPrintItemDelivered,
   useOrdersStore,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/_lib/store.js';
-import { departed, packedShipment } from '../qc-shipping/_fixtures.mjs';
+import { departed, logistics, packedShipment } from '../qc-shipping/_fixtures.mjs';
+import { useQcShippingStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/store.js';
+import { totalDeliveredQty } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/logistics-rules.js';
 
 // 情境 12.13（先做完的那一批可以先出）與 12.8 補充（殘留的草稿不卡收尾）的判定驗算。
 // 合成資料的理由：現行 mock 的鏈四訂單與印件都已在製作完成，構造不出「兩者皆製作中」的起點；
@@ -162,5 +164,47 @@ describe('12.8 補充 異常的出貨單視為未收尾，已作廢的單先排�
       ],
     });
     expect(isPrintItemDelivered(printItem, [shortDelivered])).toBe(false);
+  });
+});
+
+// ── 12.8 送達由物流商回傳推進（shipment spec 本 change delta § 送達後的收尾判定、§ 物流單狀態推進與物流商回傳） ──
+
+describe('12.8 送達由物流商回傳推進，不經重新同步；最後一張送達才收尾', () => {
+  it('最後一張送達才收尾：PI-TEST-A 購買 500、順豐一筆物流單在等待出貨；物流商回傳在途不收尾；回傳配達後出貨單已送達、送達數量 500、印件已送達、訂單完成', () => {
+    seedOrder({ orderStatus: '出貨中', itemStatus: '出貨中' });
+    useOrdersStore.setState({
+      orders: [{ ...orderNow(), print_items: orderNow().print_items.map((p) => (p.print_item_no === 'PI-TEST-B' ? { ...p, print_item_status: '已送達' } : p)) }],
+    });
+    useQcShippingStore.setState({
+      shipments: [
+        packedShipment({ id: 'sh-sf', orderNo: ORDER_NO, method: '順豐', printItemNo: 'PI-TEST-A', name: '甲印件', qty: 500, logisticsOrders: [logistics('SH-TEST-SF-001', '等待出貨', { tracking_no: 'SF1' })] }),
+      ],
+      downloadFiles: [],
+    });
+    const q = useQcShippingStore.getState();
+    q.receiveCarrierReply('sh-sf', 'SH-TEST-SF-001', { reply: '在途' });
+    expect(itemStatusOf('PI-TEST-A')).toBe('出貨中');
+    const r = useQcShippingStore.getState().receiveCarrierReply('sh-sf', 'SH-TEST-SF-001', { reply: '配達' });
+    expect(r.ok).toBe(true);
+    const sh = useQcShippingStore.getState().shipments[0];
+    expect(sh.details[0].delivered_qty).toBe(500);
+    expect(itemStatusOf('PI-TEST-A')).toBe('已送達');
+    expect(orderNow().status).toBe('訂單完成');
+    expect(useQcShippingStore.getState().syncLogistics).toBeUndefined();
+  });
+
+  it('補做超量送達不卡住判定：購買 300、出了 330 全數送達 → 成立', () => {
+    const over = packedShipment({ id: 'sh-over', printItemNo: 'PI-TEST-A', name: '甲印件', qty: 330, logisticsOrders: [logistics('L-1', '已送達')] });
+    expect(isPrintItemDelivered({ print_item_no: 'PI-TEST-A', ordered_qty: 300 }, [over])).toBe(true);
+  });
+
+  it('售後補做量於印件終態後送達只記數不動狀態：印件已送達（累計 1,000）後補出 100 送達 → 累計送達數 1,100、印件維持已送達', () => {
+    seedOrder({ orderStatus: '訂單完成', itemStatus: '已送達' });
+    const first = packedShipment({ id: 'sh-1', orderNo: ORDER_NO, printItemNo: 'PI-TEST-A', name: '甲印件', qty: 1000, logisticsOrders: [logistics('SH-1-001', '已送達')] });
+    const extra = packedShipment({ id: 'sh-2', shipmentNo: 'SH-TEST-0002', orderNo: ORDER_NO, method: '專車配送', printItemNo: 'PI-TEST-A', name: '甲印件', qty: 100, logisticsOrders: [logistics('SH-TEST-0002-001', '已出貨')] });
+    useQcShippingStore.setState({ shipments: [first, extra], downloadFiles: [] });
+    expect(useQcShippingStore.getState().confirmLogisticsDelivery('sh-2', 'SH-TEST-0002-001', { operator: '曾志偉' }).ok).toBe(true);
+    expect(totalDeliveredQty(useQcShippingStore.getState().shipments, 'PI-TEST-A')).toBe(1100);
+    expect(itemStatusOf('PI-TEST-A')).toBe('已送達');
   });
 });

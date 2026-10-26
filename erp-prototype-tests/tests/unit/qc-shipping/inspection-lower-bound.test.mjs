@@ -1,5 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { usePrintItemsStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/print-items/_lib/store.js';
+import { useOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/_lib/store.js';
+import {
+  occupiedDetailsOf,
+  useQcShippingStore,
+} from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/store.js';
+import { canEditShipmentDetails } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/shipping-rules.js';
+import { boxedShipment, logistics, packedShipment } from './_fixtures.mjs';
 
 // 情境 11.18「品檢修正受三條界線約束，違反即整筆擋下」與 11.23「品檢紀錄與品檢修正都必附品檢照片至少一張」
 // 的判定驗算（畫面呈現另在 e2e 11.23、11.24～11.27 驗）。
@@ -262,5 +269,98 @@ describe('11.23 品檢紀錄與品檢修正都必附品檢照片至少一張', (
   it('照片檢核排在界線之前：兩條都違反時回照片那一句', () => {
     const result = correct({ passed_qty: 510, failed_qty: 20, photos: [] });
     expect(result).toEqual({ ok: false, error: '品檢照片至少一張' });
+  });
+});
+
+// ── 11.18、11.26、11.32 通過下限接上出貨單的佔用（shipment spec 本 change delta § 數量帳守恆鏈、§ 揀貨與裝箱回報） ──
+// 佔用由 occupiedDetailsOf 自出貨單算出後帶入品檢修正（品檢站頁的取數方式）；出貨單狀態改新模型（可出貨、物流單）。
+
+const BIG = 'PI-TEST-BIG';
+const seedBig = (passed, shipments) => {
+  usePrintItemsStore.setState({
+    qcRecords: [
+      { id: 'qc-big', print_item_no: BIG, print_item_name: '大量樣本', passed_qty: passed, failed_qty: 0, fail_reason: null, photos: ['品檢照-大量樣本-01.jpg'], inspected_at: '2026-09-18 10:00', inspector: '郭淑芬' },
+    ],
+    printItems: [{ print_item_no: BIG, name: '大量樣本', dispositions: [] }],
+  });
+  useOrdersStore.setState({
+    orders: [{ id: 'ord-big', order_no: 'ORD-TEST-BIG', client_name: '樣本客戶', status: '出貨中', activities: [], print_items: [] }],
+  });
+  useQcShippingStore.setState({ shipments, downloadFiles: [] });
+};
+const occupied = () => occupiedDetailsOf(BIG, useQcShippingStore.getState().shipments);
+const correctBig = (passed) =>
+  usePrintItemsStore.getState().correctInspection({
+    record_id: 'qc-big',
+    passed_qty: passed,
+    failed_qty: 0,
+    fail_reason: null,
+    photos: ['品檢照-大量樣本-01.jpg'],
+    reason: '複驗發現誤記',
+    occupied: occupied(),
+    ...INSPECTOR,
+  });
+const bigShipment = (kind, qty, extra = {}) => {
+  const base = { id: 'sh-big', shipmentNo: 'SH-TEST-BIG', orderNo: 'ORD-TEST-BIG', printItemNo: BIG, name: '大量樣本', qty, ...extra };
+  return kind === 'boxed' ? boxedShipment(base) : packedShipment(base);
+};
+const updateDetails = (qty) =>
+  useQcShippingStore.getState().updateShipmentDetails('sh-big', [{ print_item_no: BIG, name: '大量樣本', qty }], { operator: '洪嘉駿' });
+const passedNow = () => usePrintItemsStore.getState().qcRecords.find((r) => r.id === 'qc-big').passed_qty;
+
+describe('11.18 異常出貨單仍計入品檢修正的通過下限', () => {
+  it('完工良品數 500、一張明細 100 的出貨單為異常（物流單在例外）：修正為 450 成立；修正為 80 擋下並列出該單與數量 100', () => {
+    seedBig(500, [bigShipment('packed', 100, { method: '專車配送', logisticsOrders: [logistics('SH-TEST-BIG-001', '例外事故', { exception_source: 'manual' })] })]);
+    expect(occupied()).toEqual([{ shipment_no: 'SH-TEST-BIG', qty: 100 }]);
+    const low = correctBig(80);
+    expect(low.ok).toBe(false);
+    expect(low.error).toContain('SH-TEST-BIG');
+    expect(low.error).toContain('100');
+    expect(correctBig(450).ok).toBe(true);
+  });
+});
+
+describe('11.26 差的是帳上總數時業務先調低明細、品檢再修正（尚未確認可出貨）', () => {
+  it('通過累計 3,950 全被一張已裝箱的出貨單佔用、揀貨 3,500：品檢修正 3,500 先被擋下並列出 3,950；確認可出貨被揀貨不符擋下；業務把明細改為 3,500 後揀貨相符、品檢修正成立、完工良品數 3,500', () => {
+    seedBig(3950, [bigShipment('boxed', 3950, { picked: 3500, method: '新竹物流', boxCount: 2 })]);
+    const first = correctBig(3500);
+    expect(first.ok).toBe(false);
+    expect(first.error).toContain('SH-TEST-BIG');
+    expect(first.error).toMatch(/3,?950/);
+    expect(useQcShippingStore.getState().confirmShippable('sh-big', { operator: '范姜宏' }).ok).toBe(false);
+    expect(canEditShipmentDetails(useQcShippingStore.getState().shipments[0])).toBe(true);
+    expect(updateDetails(3500).ok).toBe(true);
+    expect(correctBig(3500).ok).toBe(true);
+    expect(passedNow()).toBe(3500);
+    expect(occupied()).toEqual([{ shipment_no: 'SH-TEST-BIG', qty: 3500 }]);
+  });
+
+  it('品檢修正不得使完工良品數低於出貨明細佔用：3,950 中一張 950 的單尚未確認可出貨 → 修正 3,500 擋下；明細改為 500 後成立，完工良品數與累計已出貨數量皆 3,500', () => {
+    const other = packedShipment({ id: 'sh-other', shipmentNo: 'SH-TEST-OTHER', orderNo: 'ORD-TEST-BIG', printItemNo: BIG, name: '大量樣本', qty: 3000, method: '順豐', logisticsOrders: [logistics('SH-TEST-OTHER-001', '運送中')] });
+    seedBig(3950, [other, bigShipment('boxed', 950, { method: '新竹物流', boxCount: 1 })]);
+    expect(correctBig(3500).ok).toBe(false);
+    expect(passedNow()).toBe(3950);
+    expect(updateDetails(500).ok).toBe(true);
+    expect(correctBig(3500).ok).toBe(true);
+    expect(occupied().reduce((a, o) => a + o.qty, 0)).toBe(3500);
+  });
+});
+
+describe('11.32 出貨單已確認可出貨時先撤回再調低明細', () => {
+  it('3,950 中一張 950 的單已確認可出貨（2 筆可出貨）：品檢修正擋下；撤回前編輯出貨單不開放明細數量；揀貨人員撤回後業務改為 500、品檢修正成立，完工良品數與累計已出貨數量皆 3,500', () => {
+    const other = packedShipment({ id: 'sh-other', shipmentNo: 'SH-TEST-OTHER', orderNo: 'ORD-TEST-BIG', printItemNo: BIG, name: '大量樣本', qty: 3000, method: '順豐', logisticsOrders: [logistics('SH-TEST-OTHER-001', '運送中')] });
+    const locked = bigShipment('packed', 950, { method: '新竹物流', logisticsOrders: [logistics('SH-TEST-BIG-001'), logistics('SH-TEST-BIG-002')] });
+    seedBig(3950, [other, locked]);
+    expect(correctBig(3500).ok).toBe(false);
+    const big = () => useQcShippingStore.getState().shipments.find((x) => x.id === 'sh-big');
+    expect(canEditShipmentDetails(big())).toBe(false);
+    expect(updateDetails(500).ok).toBe(false);
+    expect(big().details[0].qty).toBe(950);
+    expect(useQcShippingStore.getState().withdrawShippable('sh-big', { operator: '范姜宏' }).ok).toBe(true);
+    expect(canEditShipmentDetails(big())).toBe(true);
+    expect(updateDetails(500).ok).toBe(true);
+    expect(correctBig(3500).ok).toBe(true);
+    expect(passedNow()).toBe(3500);
+    expect(occupied().reduce((a, o) => a + o.qty, 0)).toBe(3500);
   });
 });

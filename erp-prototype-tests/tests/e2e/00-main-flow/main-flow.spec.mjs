@@ -22,9 +22,26 @@ import {
   addInstallment,
 } from './_flow-helpers.mjs';
 import { assignMover } from '../10-report-transfer/_ch10.mjs';
+import {
+  addBoxes,
+  boxRows,
+  clickRowAction,
+  closeShipmentPanel,
+  confirmShippable,
+  fillPlannedShipDate,
+  inspectAtQc,
+  logisticsRows,
+  openCreateShipmentFromOrder,
+  openLogisticsAction,
+  openShipmentPanel,
+  pickShippingMethod,
+  shipmentRow,
+  startPicking,
+  submitButton,
+} from '../11-qc/_setup.mjs';
 
-// 主流程 smoke（驗收依據：docs/main-flow.md 的 31 站站表）。
-// 一件案子從需求單建單一路走到訂單製作完成，全程只在同一次瀏覽器連線內完成：
+// 主流程 smoke（驗收依據：docs/main-flow.md 的站表，2026-10-23 延伸到第 39 站）。
+// 一件案子從需求單建單一路走到訂單完成（第 34～39 站：品檢 → 建出貨單（專車配送）→ 裝箱 → 確認可出貨 → 出貨確認 → 送達確認），全程只在同一次瀏覽器連線內完成：
 // 第一步 openAs 之後一律 gotoInApp 與 switchRole，記憶體裡的模擬資料不可被整頁重載清掉。
 // 起點全程從零建，只依賴客戶、材料、設備、人員主檔。
 //
@@ -195,7 +212,7 @@ async function completeReview(page, name, result) {
   await waitModalsClosed(page);
 }
 
-test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, async ({ page }) => {
+test('主流程：一件印件從需求單到訂單完成', { tag: '@smoke' }, async ({ page }) => {
   test.setTimeout(20 * 60 * 1000);
   // 單一動作與斷言的等待上限：走不通的站要當場失敗，不要把整條測試的 20 分鐘耗在一顆按鈕上
   page.setDefaultTimeout(30_000);
@@ -207,6 +224,7 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
   let woB2 = '';
   let packageNo = '';
   let ticketNo = '';
+  let shipmentNo = '';
 
   await test.step('第 0 站 暖機：預先載入全部會用到的路由', async () => {
     await warmUp(page, [
@@ -217,6 +235,7 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
       '/work-orders', '/work-orders/detail', '/work-orders/review-queue',
       '/production-floor/dispatch', '/production-floor/work-packages', '/production-floor/pending-moves',
       '/production-floor/transfers', '/production-floor/receiving',
+      '/qc-shipping/inspection', '/qc-shipping/shipments',
     ]);
   });
 
@@ -758,5 +777,108 @@ test('主流程：一件印件從需求單到製作完成', { tag: '@smoke' }, a
     await openTab(page, '訂單項目');
     await expect(rowOf(page, ITEM_A).getByText('製作完成', { exact: true })).toBeVisible();
     await expect(rowOf(page, ITEM_B).getByText('製作完成', { exact: true })).toBeVisible();
+  });
+  await test.step('第 34 站 品檢人員 對甲、乙驗收通過', async () => {
+    // 球交給品檢：兩件印件都在待驗清單；各驗收通過購買數量 100
+    await switchRole(page, '品檢人員');
+    for (const item of [ITEM_A, ITEM_B]) {
+      await inspectAtQc(page, { passed: 100, failed: 0, printItemNo: item });
+    }
+    // 留痕：訂單項目看得到兩件的完工良品數（可出貨額度長出 100）
+    await switchRole(page, '業務');
+    await goInApp(page, '/print-items', gotoInApp);
+    for (const item of [ITEM_A, ITEM_B]) await expect(rowOf(page, item)).toBeVisible();
+  });
+
+  await test.step('第 35 站 業務 建專車配送出貨單', async () => {
+    // 從訂單詳情的出貨單頁籤建立；甲、乙兩件合在同一張，數量預設帶剩餘應出量 100
+    const dialog = await openCreateShipmentFromOrder(page, orderNo);
+    await expect(dialog.locator('.ant-modal-title')).toHaveText('建立出貨單');
+    await fillPlannedShipDate(dialog, '2026-10-30');
+    await pickShippingMethod(page, dialog, '專車配送');
+    // 需求單轉成的訂單沒有客戶地址（轉單不捏造），業務建單時填收件地址
+    await dialog.getByLabel('收件地址').fill('台北市內湖區瑞光路 513 巷 22 號');
+    await dialog.getByRole('tab', { name: /出貨明細/ }).click();
+    for (const item of [ITEM_A, ITEM_B]) {
+      await expect(dialog.getByRole('row', { name: new RegExp(item) }).getByRole('spinbutton')).toHaveValue('100');
+    }
+    await submitButton(dialog, '建立出貨單').click();
+    await expect(page.getByText('已建立出貨單').first()).toBeVisible();
+    await waitModalsClosed(page);
+    // 單據狀態未處理；訂單轉出貨中；球交給揀貨人員
+    await goInApp(page, '/qc-shipping/shipments', gotoInApp);
+    const row = page.locator('tr.ant-table-row').filter({ hasText: orderNo }).first();
+    await expect(row).toContainText('未處理');
+    shipmentNo = (await row.innerText()).match(/SH-\d{4}-\d{4}/)[0];
+    await goInApp(page, '/orders', gotoInApp);
+    await expect(rowOf(page, orderNo).getByText('出貨中', { exact: true })).toBeVisible();
+  });
+
+  await test.step('第 36 站 揀貨人員 開始揀貨與裝箱回報、尚無物流單', async () => {
+    await switchRole(page, '揀貨人員');
+    await goInApp(page, '/qc-shipping/shipments', gotoInApp);
+    await startPicking(page, shipmentNo);
+    await expect(shipmentRow(page, shipmentNo)).toContainText('打包中');
+    const report = await clickRowAction(page, shipmentNo, '裝箱回報');
+    // 兩條明細各填揀貨數量 100
+    const picked = report.getByLabel(/^揀貨數量 /);
+    await expect(picked).toHaveCount(2);
+    for (let i = 0; i < 2; i += 1) await picked.nth(i).fill('100');
+    await addBoxes(page, report, { boxes: 2 });
+    await submitButton(report, '裝箱回報').click();
+    await expect(page.getByText('已裝箱回報').first()).toBeVisible();
+    await expect(shipmentRow(page, shipmentNo)).toContainText('已裝箱');
+    // 完成裝箱回報不產生物流單
+    const panel = await openShipmentPanel(page, shipmentNo);
+    await expect(boxRows(panel)).toHaveCount(2);
+    await expect(logisticsRows(panel)).toHaveCount(0);
+    await closeShipmentPanel(page);
+  });
+
+  await test.step('第 37 站 揀貨人員 確認可出貨、產生一筆可出貨物流單', async () => {
+    await confirmShippable(page, shipmentNo);
+    await expect(shipmentRow(page, shipmentNo)).toContainText('可出貨');
+    // 專車配送不拆單：一筆物流單 -001 在可出貨；歷程記確認可出貨與物流單編號
+    const panel = await openShipmentPanel(page, shipmentNo);
+    await expect(logisticsRows(panel)).toHaveCount(1);
+    await expect(logisticsRows(panel).first()).toContainText(`${shipmentNo}-001`);
+    await expect(logisticsRows(panel).first()).toContainText('可出貨');
+    await panel.getByRole('tab', { name: '歷程' }).click();
+    await expect(panel.locator('.ant-timeline-item').filter({ hasText: '確認可出貨' }).first()).toContainText(`${shipmentNo}-001`);
+    await closeShipmentPanel(page);
+  });
+
+  await test.step('第 38 站 出貨人員 出貨確認', async () => {
+    // 球交給出貨人員：物流單列上有出貨確認
+    await switchRole(page, '出貨人員');
+    await goInApp(page, '/qc-shipping/shipments', gotoInApp);
+    const dialog = await openLogisticsAction(page, shipmentNo, '出貨確認');
+    await submitButton(dialog, '出貨確認').click();
+    await expect(page.getByText('已出貨確認').first()).toBeVisible();
+    await waitModalsClosed(page);
+    await expect(shipmentRow(page, shipmentNo)).toContainText('已出貨');
+  });
+
+  await test.step('第 39 站 出貨人員 送達確認不附照片、印件已送達、訂單完成', async () => {
+    const dialog = await openLogisticsAction(page, shipmentNo, '送達確認');
+    await expect(dialog.locator('input[type="file"]')).toHaveCount(0);
+    await submitButton(dialog, '送達確認').click();
+    await expect(page.getByText('已送達確認').first()).toBeVisible();
+    await waitModalsClosed(page);
+    await expect(shipmentRow(page, shipmentNo)).toContainText('已送達');
+    // 留痕：物流單歷程有出貨確認與送達確認
+    const panel = await openShipmentPanel(page, shipmentNo);
+    await panel.getByRole('tab', { name: '歷程' }).click();
+    await expect(panel).toContainText('出貨確認');
+    await expect(panel).toContainText('送達確認');
+    await closeShipmentPanel(page);
+    // 印件甲乙已送達、訂單完成
+    await switchRole(page, '業務');
+    await goInApp(page, '/orders', gotoInApp);
+    await expect(rowOf(page, orderNo).getByText('訂單完成', { exact: true })).toBeVisible();
+    await page.locator('a', { hasText: orderNo }).first().click();
+    await openTab(page, '訂單項目');
+    await expect(rowOf(page, ITEM_A).getByText('已送達', { exact: true })).toBeVisible();
+    await expect(rowOf(page, ITEM_B).getByText('已送達', { exact: true })).toBeVisible();
   });
 });

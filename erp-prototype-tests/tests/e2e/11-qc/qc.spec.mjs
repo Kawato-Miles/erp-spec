@@ -18,7 +18,11 @@ import {
   pickFailReason,
   receiveAtQc,
   createShipment,
+  pickAndPack,
+  shipmentRow,
+  submitButton,
   switchRoleSafe,
+  withdrawShippable,
 } from './_setup.mjs';
 
 // 11.8 要跨四個角色與四個頁面推完一段轉交鏈，單條情境的時間拉得比預設長
@@ -30,7 +34,17 @@ const descValue = (page, label) =>
 
 // 印件列表點印件名稱開詳情（名稱為可點文字，非帶網址的連結）
 const openPrintItemDetail = async (page, name) => {
-  await page.getByText(name, { exact: true }).first().click();
+  // 印件列表依建立時間新到舊、每頁固定筆數，鏈九加入後較早的印件可能不在第一頁：
+  // 先用列表搜尋框篩到該印件（共用篩選元件按 Enter 才送出）
+  const search = page.getByPlaceholder('請輸入印件名稱／編號、訂單編號，或客戶名稱');
+  await search.fill(name);
+  await search.press('Enter');
+  // 列表剛掛載（或剛篩選重繪）時第一次點擊偶爾落在尚未接上事件的節點上，故重試到網址真的換掉為止
+  const link = page.getByText(name, { exact: true }).first();
+  await expect(async () => {
+    await link.click();
+    await expect(page).toHaveURL(/print-items\/detail/, { timeout: 3000 });
+  }).toPass({ timeout: 20000 });
   await expect(page.getByText('印件基本資訊')).toBeVisible();
 };
 
@@ -86,8 +100,15 @@ test('11.1 待驗清單依印件做出來的良品列出，不依轉交（原編
   await expect(pending).toContainText('0 ／ 0');
   await expect(pending.getByRole('button', { name: '驗收' })).toBeEnabled();
 
-  // 沒有良品也沒有品檢紀錄的印件不列（鏈二裁切未完成、鏈三尚未派工）
-  await expect(page.locator('tr.ant-table-row')).toHaveCount(2);
+  // 鏈九 PI-2026-0924：良品 3,000、已驗 3,000、待驗量 0，列留著（本週期已有品檢紀錄即列）；
+  // 內部完成日 2026-10-27 最晚，依內部完成日由近到遠排在最後一列
+  const chain9 = pendingRow(page, 'PI-2026-0924');
+  await expect(chain9).toContainText('3,000 ／ 0');
+  await expect(chain9).toContainText('0（已驗完）');
+  await expect(page.locator('tr.ant-table-row').last()).toContainText('PI-2026-0924');
+
+  // 沒有良品也沒有品檢紀錄的印件不列（鏈二裁切未完成、鏈三尚未派工）：只有鏈一、鏈四、鏈九三列
+  await expect(page.locator('tr.ant-table-row')).toHaveCount(3);
 
   // 只有品檢人員看得到操作欄：換成業務時整頁沒有驗收鈕，並提示要切換角色
   await switchRoleSafe(page, '業務');
@@ -657,29 +678,18 @@ test('11.25 修正後總數超過本筆原合計被擋下，提示新到的量�
   await expect(pendingRow(page)).toContainText('450 ／ 0');
 });
 
-test('11.26 出貨明細已佔用全部通過量時，修正調低通過被擋下並列出出貨單', async ({ page }) => {
-  await openAs(page, '品檢人員', '/qc-shipping/inspection');
-  await inspectAtQc(page, { passed: 500, failed: 0 });
-
-  // 業務在訂單建立出貨單（明細 500），佔用全部通過量
-  await switchRoleSafe(page, '業務');
-  const shipmentNo = await createShipment(page, { qty: 500 });
-
-  // 品檢人員把通過改為 400、不通過改為 100（總數不變）：被通過下限擋下並列出出貨單
-  await switchRoleSafe(page, '品檢人員');
-  await gotoInAppSafe(page, '/qc-shipping/inspection');
-  let dialog = await openCorrectDialog(page);
+// 品檢修正被出貨明細佔用擋下時，品檢人員填修正對話框的共用步驟（通過 400、不通過 100、原因色差）
+const submitCorrection400 = async (page) => {
+  const dialog = await openCorrectDialog(page);
   await dialog.getByLabel('通過數量', { exact: true }).fill('400');
   await dialog.getByLabel('不通過數量', { exact: true }).fill('100');
   await pickFailReason(page, dialog, '色差／偏色');
   await dialog.getByLabel('修正原因').fill('揀貨發現瑕疵');
   await dialog.getByRole('button', { name: '送出修正' }).click();
-  await expect(page.getByText(new RegExp(`${shipmentNo}.*500|500.*${shipmentNo}`)).first()).toBeVisible();
-  await expect(page.getByText(/已修正品檢紀錄/)).toHaveCount(0);
-  await page.keyboard.press('Escape');
-  await expect(pendingRow(page)).toContainText('500 ／ 0');
+};
 
-  // 業務先把出貨明細改為 400
+// 業務把出貨單明細數量改為 400（只在確認可出貨前開放）
+const lowerShipmentQty = async (page, shipmentNo) => {
   await switchRoleSafe(page, '業務');
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   const panel = await openShipmentEdit(page, shipmentNo);
@@ -688,18 +698,83 @@ test('11.26 出貨明細已佔用全部通過量時，修正調低通過被擋�
     .getByRole('row', { name: new RegExp(CHAIN4.printItemNo) })
     .getByRole('spinbutton')
     .fill('400');
-  await panel.getByRole('button', { name: '儲存明細數量' }).click();
-  await expect(page.getByText(/已更新|已儲存|明細數量/).first()).toBeVisible();
+  await submitButton(panel, '儲存明細數量').click();
+  await expect(page.getByText('已儲存明細數量').first()).toBeVisible();
+};
+
+test('11.26 尚未確認可出貨時，出貨明細已佔用全部通過量：品檢修正調低通過被擋下並列出出貨單，業務先調低明細、品檢再修正', async ({ page }) => {
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+  await inspectAtQc(page, { passed: 500, failed: 0 });
+
+  // 業務在訂單建立出貨單（明細 500），佔用全部通過量；揀貨人員清點後照實填揀貨數量 400，停在已裝箱（尚未確認可出貨）
+  await switchRoleSafe(page, '業務');
+  const shipmentNo = await createShipment(page, { qty: 500 });
+  await switchRoleSafe(page, '揀貨人員');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await pickAndPack(page, shipmentNo, { pickedQty: 400, boxes: 2, confirm: false });
+  await expect(shipmentRow(page, shipmentNo)).toContainText('揀貨不符');
+
+  // 品檢人員把通過改為 400、不通過改為 100（總數不變）：被通過下限擋下並列出出貨單與數量 500
+  await switchRoleSafe(page, '品檢人員');
+  await gotoInAppSafe(page, '/qc-shipping/inspection');
+  await submitCorrection400(page);
+  await expect(page.getByText(new RegExp(`${shipmentNo}.*500|500.*${shipmentNo}`)).first()).toBeVisible();
+  await expect(page.getByText(/已修正品檢紀錄/)).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await expect(pendingRow(page)).toContainText('500 ／ 0');
+
+  // 業務先把出貨明細改為 400（已裝箱、尚未確認可出貨，明細數量仍可改）：揀貨相符
+  await lowerShipmentQty(page, shipmentNo);
+  await expect(shipmentRow(page, shipmentNo)).not.toContainText('揀貨不符');
 
   // 品檢人員再修正，這次成立
   await switchRoleSafe(page, '品檢人員');
   await gotoInAppSafe(page, '/qc-shipping/inspection');
-  dialog = await openCorrectDialog(page);
-  await dialog.getByLabel('通過數量', { exact: true }).fill('400');
-  await dialog.getByLabel('不通過數量', { exact: true }).fill('100');
-  await pickFailReason(page, dialog, '色差／偏色');
-  await dialog.getByLabel('修正原因').fill('揀貨發現瑕疵');
-  await dialog.getByRole('button', { name: '送出修正' }).click();
+  await submitCorrection400(page);
+  await expect(page.getByText(/已修正品檢紀錄/).first()).toBeVisible();
+  await expect(pendingRow(page)).toContainText('400 ／ 100');
+});
+
+test('11.32 出貨單已確認可出貨時，先撤回確認可出貨、業務再調低明細，品檢修正才成立', async ({ page }) => {
+  await openAs(page, '品檢人員', '/qc-shipping/inspection');
+  await inspectAtQc(page, { passed: 500, failed: 0 });
+
+  // 業務建立出貨單（明細 500）；揀貨人員裝箱回報 500、兩箱並確認可出貨，兩筆物流單在可出貨
+  await switchRoleSafe(page, '業務');
+  const shipmentNo = await createShipment(page, { qty: 500, method: '新竹物流' });
+  await switchRoleSafe(page, '揀貨人員');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await pickAndPack(page, shipmentNo, { pickedQty: 500, boxes: 2 });
+
+  // 第一次品檢修正：被通過下限擋下
+  await switchRoleSafe(page, '品檢人員');
+  await gotoInAppSafe(page, '/qc-shipping/inspection');
+  await submitCorrection400(page);
+  await expect(page.getByText(new RegExp(`${shipmentNo}.*500|500.*${shipmentNo}`)).first()).toBeVisible();
+  await expect(page.getByText(/已修正品檢紀錄/)).toHaveCount(0);
+  await page.keyboard.press('Escape');
+
+  // 撤回前：業務編輯出貨單時出貨明細數量不開放
+  await switchRoleSafe(page, '業務');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  const locked = await openShipmentEdit(page, shipmentNo);
+  await locked.getByRole('tab', { name: /出貨明細/ }).click();
+  await expect(
+    locked.getByRole('row', { name: new RegExp(CHAIN4.printItemNo) }).getByRole('spinbutton'),
+  ).toHaveCount(0);
+  await locked.getByRole('button', { name: /^(關\s*閉|取\s*消)$/ }).click();
+
+  // 揀貨人員撤回確認可出貨；業務把明細改為 400
+  await switchRoleSafe(page, '揀貨人員');
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  await withdrawShippable(page, shipmentNo);
+  await expect(shipmentRow(page, shipmentNo)).toContainText('已裝箱');
+  await lowerShipmentQty(page, shipmentNo);
+
+  // 品檢人員再送出同一筆修正：成立，完工良品數與累計已出貨數量皆為 400
+  await switchRoleSafe(page, '品檢人員');
+  await gotoInAppSafe(page, '/qc-shipping/inspection');
+  await submitCorrection400(page);
   await expect(page.getByText(/已修正品檢紀錄/).first()).toBeVisible();
   await expect(pendingRow(page)).toContainText('400 ／ 100');
 });

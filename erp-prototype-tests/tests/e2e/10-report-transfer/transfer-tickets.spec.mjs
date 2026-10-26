@@ -39,9 +39,10 @@ test('10.3 轉交單子母表、五個狀態與明細（原編號 23）', async 
     '操作',
   ]);
   await expect(page.getByRole('columnheader', { name: '廠內執行者' })).toHaveCount(0);
-  // 依建單時間新到舊：第一列是建單最晚的 TT-20260831-008（2026-08-31 16:30）
+  // 依建單時間新到舊：第一列是建單最晚的 TT-20261019-001（鏈九，2026-10-19 09:00；
+  // 鏈九三張轉交單建單於 2026-10-08、10-14、10-19，晚於原先最晚的 TT-20260831-008 2026-08-31 16:30）
   const firstRow = page.locator('tbody > tr.ant-table-row').first();
-  await expect(firstRow).toContainText('TT-20260831-008');
+  await expect(firstRow).toContainText('TT-20261019-001');
 
   const mainRow = page.locator('tr.ant-table-row', { hasText: 'TT-20260830-002' }).first();
   await expect(mainRow).toContainText('簡俊男');
@@ -300,10 +301,10 @@ test('10.10 歷程只追加；點收紀錄作廢與搬運數量修正各記一�
 test('10.13 用建單時間查卡在搬運那一段的轉交單（原編號 118）', async ({ page }) => {
   await openAs(page, '生管', '/production-floor/transfers');
 
-  // 建單時間區間選一段現行日期（TT-20260828-001 建單於 2026-08-25）：篩掉不在區間內的單
+  // 建單時間區間選一段現行日期（TT-20260828-001 建單於 2026-08-28）：篩掉不在區間內的單
   const createdInputs = page.locator('.ant-col', { hasText: '建單時間區間' }).locator('input');
-  await createdInputs.nth(0).fill('2026-08-24');
-  await createdInputs.nth(1).fill('2026-08-26');
+  await createdInputs.nth(0).fill('2026-08-27');
+  await createdInputs.nth(1).fill('2026-08-28');
   await page.keyboard.press('Enter');
   await expect(page.getByText('TT-20260828-001')).toBeVisible(); // 建單時間在區間內
   await expect(page.getByText('TT-20260830-002')).toHaveCount(0); // 建單時間晚於區間，篩掉
