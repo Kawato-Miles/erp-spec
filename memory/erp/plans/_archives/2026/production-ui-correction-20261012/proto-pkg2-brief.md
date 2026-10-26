@@ -4,7 +4,7 @@
 
 ## 一、開工前必讀
 
-1. 第一包任務書的 § 一、§ 二（必讀清單與硬規則全部適用）：/Users/b-f-03-029/Sens/memory/erp/plans/production-ui-correction-20261012/proto-pkg1-brief.md。
+1. 第一包任務書的 § 一、§ 二（必讀清單與硬規則全部適用）：/Users/b-f-03-029/Sens/memory/erp/plans/_archives/2026/production-ui-correction-20261012/proto-pkg1-brief.md。
 2. wiki 正本（規則以此為準）：/Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/05-entities/品檢紀錄.md（§ 品檢修正規則與單筆檢核、品檢修正界線、品檢修正紀錄子表、轉介鏈表）、05-entities/印件.md（§ 品檢缺口處置、處置修正界線、處置修正紀錄子表）、07-scenarios/品檢通過入庫.md、07-scenarios/QC不通過補生產.md、05-entities/報工紀錄.md § 修正與作廢（修正定義、責任原則、已修正判定）。
 3. 設計：同資料夾 design.md § 一、§ 二；grill.md 第 20、27、28、33、34、39 題。
 

@@ -7,7 +7,7 @@ source:
   - "Slack 頻道訊息與討論串回覆介面（第三方介面契約；以頻道與訊息連結定位討論串）"
   - "後端現況查證：sens-print-core `apps/quote/tasks/notify_quote_created.py`、`apps/quote/tasks/notify_quote_re_evaluation.py`、`apps/quote/services/quote_transition_service.py`（2026-09-24 核對）"
   - "Miles 2026-09-23 拍板：需求單 Slack 通知照後端現況，只在進入待評估成本時通知；規則落外部約束卡"
-  - "Miles 2026-10-12 拍板（Sens memory/erp/plans/linear-format-20261012/grill-decisions.md J3）：需求單欄位名改為需求案名"
+  - "Miles 2026-10-12 拍板（Sens memory/erp/plans/_archives/2026/linear-format-20261012/grill-decisions.md J3）：需求單欄位名改為需求案名"
 tags:
   - 領域/售前
 ---

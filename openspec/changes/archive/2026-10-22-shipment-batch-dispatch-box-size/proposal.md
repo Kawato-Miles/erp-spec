@@ -20,7 +20,7 @@
 - 資料結構：[履約與售後資料結構總覽](../../../memory/Sens_wiki/wiki/erp/05-entities/履約與售後資料結構總覽.md)
 - 情境骨架：[出貨與送達](../../../memory/Sens_wiki/wiki/erp/07-scenarios/出貨與送達.md)（主流程第 4、5 步；副流程「批次拋單部分失敗」「部分離廠後一箱被物流商拒收」「拋單逾時或等待期間被別人先寫入」）
 
-規劃工作稿：[grill.md](../../../memory/erp/plans/shipment-batch-dispatch-box-size-20261022/grill.md)（G37～G59 拍板）、[design.md](../../../memory/erp/plans/shipment-batch-dispatch-box-size-20261022/design.md)（第二版，§ 十一為主規格衝突清單）。
+規劃工作稿：[grill.md](../../../memory/erp/plans/_archives/2026/shipment-batch-dispatch-box-size-20261022/grill.md)（G37～G59 拍板）、[design.md](../../../memory/erp/plans/_archives/2026/shipment-batch-dispatch-box-size-20261022/design.md)（第二版，§ 十一為主規格衝突清單）。
 
 ### Problem Statement
 

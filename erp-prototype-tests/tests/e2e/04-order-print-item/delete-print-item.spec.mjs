@@ -107,7 +107,7 @@ test('4.19 可刪到零件、差額提示不擋刪除、出貨單草稿自動移
   await expect(panel.getByRole('row', { name: /PI-2026-0842/ })).toHaveCount(0);
   await pickDate(panel.locator('#planned_ship_date'), '2026-10-30');
   await panel.getByRole('button', { name: '儲存草稿' }).click();
-  await expect(page.getByText(/出貨單草稿已建立/).first()).toBeVisible();
+  await expect(page.getByText(/已儲存草稿/).first()).toBeVisible();
   await waitModalsClosed(page);
   const draftRow = activePane(page).locator('tbody tr.ant-table-row').filter({ hasText: '草稿' }).first();
   await expect(draftRow).toContainText('名片');

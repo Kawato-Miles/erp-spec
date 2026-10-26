@@ -2,7 +2,7 @@
 
 ### Background
 
-2026-10-12 生產與出貨介面修正 grill 共五十六題拍板，設計稿經規劃稽核三輪後由 Miles 拍板。wiki 已落卡（提交 718f51b、7995c14、96ba2e8、6b65371、a748db4）。工作稿正本在 `memory/erp/plans/production-ui-correction-20261012/`（grill.md、design.md、audit-r1～r3）。本 change 只把系統承諾與驗收條目同步到 OpenSpec，不重跑釐清。
+2026-10-12 生產與出貨介面修正 grill 共五十六題拍板，設計稿經規劃稽核三輪後由 Miles 拍板。wiki 已落卡（提交 718f51b、7995c14、96ba2e8、6b65371、a748db4）。工作稿正本在 `memory/erp/plans/_archives/2026/production-ui-correction-20261012/`（grill.md、design.md、audit-r1～r3）。本 change 只把系統承諾與驗收條目同步到 OpenSpec，不重跑釐清。
 
 本次對照的 wiki 正本卡：
 

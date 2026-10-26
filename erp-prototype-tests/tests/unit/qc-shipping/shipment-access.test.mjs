@@ -1,15 +1,19 @@
 // 情境目錄 12.27、12.28（單據權責修正第五批）：出貨單的可見範圍跟著訂單、業務端操作的操作者依訂單編輯權。
-// 範圍看所屬訂單的接單業務與分享成員，不看出貨單的建單人；現場動作（揀貨、裝箱、拋單、出貨確認、送達確認、
-// 補附送達憑證）維持揀貨與出貨人員，不隨訂單編輯權開放。
+// 範圍看所屬訂單的接單業務與分享成員，不看出貨單的建單人；現場動作（揀貨、裝箱、確認可出貨與撤回、拋單、出貨確認、
+// 送達確認、標記例外、列印物流單）維持揀貨與出貨人員，不隨訂單編輯權開放。作廢物流單依訂單編輯權（ACT-SHP-039～041）。
 // 依據：出貨與售後檢視活動清單（ACT-VDLV-001 至 007、014）、出貨活動清單（ACT-SHP-001 至 033）、
 // 受控清單 § 訂單關聯單據的編輯權。畫面見 tests/e2e/12-shipping/access-scope.spec.mjs。
 import { describe, expect, it } from 'vitest';
 import {
-  attachDeliveryProofOf,
+  LOGISTICS_LEVEL_KEY as L,
+  logisticsActionsOf,
   nextStatusOptions,
+  SHIPMENT_LEVEL_KEY as S,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/next-status-options.js';
+import { boxedShipment, logistics, packedShipment } from './_fixtures.mjs';
 import {
   canCreateShipmentDraft,
+  canVoidLogistics,
   canDeleteShipmentDraft,
   canEditShipment,
   canFinalizeShipment,
@@ -50,6 +54,7 @@ const OPS = [
   ['刪除出貨單草稿', canDeleteShipmentDraft],
   ['建立出貨單', canFinalizeShipment],
   ['作廢出貨單', canVoidShipment],
+  ['作廢物流單', canVoidLogistics],
 ];
 
 describe('12.28 出貨單業務端操作：接單業務、編輯分享成員、六個全公司協助角色', () => {
@@ -90,24 +95,33 @@ describe('12.28 出貨單業務端操作：接單業務、編輯分享成員、�
     expect(canVoidShipment(reassigned, 'sales', '賴柏宇')).toBe(false);
   });
 
-  it('現場動作不隨訂單編輯權開放：業務、業務主管等看不到任何現場下一步，也沒有補附送達憑證', () => {
-    const states = ['未處理', '打包中', '已裝箱', '運送中'];
-    const delivered = { status: '已送達', method: '新竹物流' };
-    const deliveredLogistics = { status: '已送達' };
+  it('現場動作不隨訂單編輯權開放：業務、業務主管等在未處理沒有開始揀貨，在已裝箱與可出貨沒有確認可出貨與撤回', () => {
+    const states = [
+      { status: '未處理', method: '新竹物流', details: [], logistics_orders: [] },
+      { status: '打包中', method: '新竹物流', details: [], logistics_orders: [] },
+      boxedShipment({ method: '新竹物流' }),
+      packedShipment({ method: '新竹物流', logisticsOrders: [logistics('L-1')] }),
+    ];
     for (const [role] of [['sales'], ['consultant'], ...HELPERS]) {
-      for (const status of states) {
-        const options = nextStatusOptions({ role, shipment: { status, method: '新竹物流' } });
-        expect(options.filter((o) => o.key !== 'void')).toEqual([]);
+      for (const shipment of states) {
+        const options = nextStatusOptions({ role, shipment, canVoid: true });
+        expect(options.filter((o) => o.key !== S.VOID)).toEqual([]);
       }
-      expect(
-        attachDeliveryProofOf({ role, shipment: delivered, logistics: deliveredLogistics }).allowed,
-      ).toBe(false);
     }
-    // 補附送達憑證只給出貨人員（ACT-SHP-025）
-    expect(
-      attachDeliveryProofOf({ role: 'shipper', shipment: delivered, logistics: deliveredLogistics })
-        .allowed,
-    ).toBe(true);
+    expect(nextStatusOptions({ role: 'picker', shipment: states[0] }).map((o) => o.key)).toEqual([S.START_PICKING]);
+  });
+
+  it('編輯權角色作廢物流單、現場角色沒有作廢物流單：新竹物流單在物流商回傳例外時，接單業務與訂單管理人看得到作廢，出貨人員看不到；接單業務看不到送達確認', () => {
+    const lo = logistics('L-1', '例外事故', { exception_source: 'carrier' });
+    const shipment = packedShipment({ method: '新竹物流', logisticsOrders: [lo] });
+    const keysFor = (role, name) =>
+      logisticsActionsOf({ role, shipment, logistics: lo, canVoid: canVoidLogistics(ORDER, role, name) });
+    expect(keysFor('sales', '洪嘉駿')).toContain(L.VOID);
+    expect(keysFor('order_manager', '黃聖雯')).toContain(L.VOID);
+    expect(keysFor('shipper', '曾志偉')).not.toContain(L.VOID);
+    expect(keysFor('sales', '洪嘉駿')).not.toContain(L.DELIVER);
+    expect(canVoidLogistics(ORDER, 'shipper', '曾志偉')).toBe(false);
+    expect(canVoidLogistics(ORDER, 'picker', '范姜宏')).toBe(false);
   });
 });
 

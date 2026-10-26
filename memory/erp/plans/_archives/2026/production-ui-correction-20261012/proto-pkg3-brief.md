@@ -4,7 +4,7 @@
 
 ## 一、開工前必讀
 
-1. 第一包任務書 § 一、§ 二（必讀清單與硬規則全部適用）：/Users/b-f-03-029/Sens/memory/erp/plans/production-ui-correction-20261012/proto-pkg1-brief.md。
+1. 第一包任務書 § 一、§ 二（必讀清單與硬規則全部適用）：/Users/b-f-03-029/Sens/memory/erp/plans/_archives/2026/production-ui-correction-20261012/proto-pkg1-brief.md。
 2. wiki 正本（規則與欄位以此為準）：/Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/05-entities/出貨單.md（出貨明細子表、包裝欄位、物流單號、物流單、裝箱回報修正紀錄、歷程紀錄）、06-state-machines/出貨單狀態.md（§ 揀貨不符與裝箱回報修正、轉換表）、07-scenarios/出貨與送達.md、03-roles/揀貨人員.md、出貨人員.md、業務.md、05-entities/報工紀錄.md § 修正與作廢。
 3. 設計：同資料夾 design.md § 六；grill.md 第 7、18、21～24、29、32、36、37、44 題。
 

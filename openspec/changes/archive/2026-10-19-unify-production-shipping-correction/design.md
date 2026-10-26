@@ -1,6 +1,6 @@
 ## Context
 
-2026-10-12 的 grill 把生產與出貨各處的「修改」「更正」統一成「修正」，並翻案品檢誤記、揀貨數量層級與揀貨不符的處置。商業規則已落在 wiki，本 change 只把系統承諾同步到 OpenSpec。設計正本是 `memory/erp/plans/production-ui-correction-20261012/`（grill.md 第 1～56 題、design.md 第三版、audit-r1～r3），本文件不重述規則，只寫系統怎麼兌現承諾的取捨。
+2026-10-12 的 grill 把生產與出貨各處的「修改」「更正」統一成「修正」，並翻案品檢誤記、揀貨數量層級與揀貨不符的處置。商業規則已落在 wiki，本 change 只把系統承諾同步到 OpenSpec。設計正本是 `memory/erp/plans/_archives/2026/production-ui-correction-20261012/`（grill.md 第 1～56 題、design.md 第三版、audit-r1～r3），本文件不重述規則，只寫系統怎麼兌現承諾的取捨。
 
 現況與約束：
 

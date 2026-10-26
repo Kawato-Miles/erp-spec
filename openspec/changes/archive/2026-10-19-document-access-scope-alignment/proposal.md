@@ -15,9 +15,9 @@
 
 | 依據 | 內容 |
 |------|------|
-| [grill 拍板紀錄](../../../memory/erp/plans/document-access-scope-20261013/grill.md) | C1、C2、G1 至 G66；G64 確認本變更免規劃稽核 |
-| [盲測紀錄](../../../memory/erp/plans/document-access-scope-20261013/blind-test-r1.md) | 三輪試點撰寫與查詢盲測；最終權限表盲測三位受測者訂單 59 組、工單 34 組全對 |
-| [落差盤點第二版](../../../memory/erp/plans/document-access-scope-20261013/asis-gap-v2.md) | Prototype 89 筆落差、29 筆測試衝突、未覆蓋清單 |
+| [grill 拍板紀錄](../../../memory/erp/plans/_archives/2026/document-access-scope-20261013/grill.md) | C1、C2、G1 至 G66；G64 確認本變更免規劃稽核 |
+| [盲測紀錄](../../../memory/erp/plans/_archives/2026/document-access-scope-20261013/blind-test-r1.md) | 三輪試點撰寫與查詢盲測；最終權限表盲測三位受測者訂單 59 組、工單 34 組全對 |
+| [落差盤點第二版](../../../memory/erp/plans/_archives/2026/document-access-scope-20261013/asis-gap-v2.md) | Prototype 89 筆落差、29 筆測試衝突、未覆蓋清單 |
 
 ### Problem Statement
 

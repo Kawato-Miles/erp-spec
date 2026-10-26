@@ -6,7 +6,7 @@
 
 1. erp repo skill：/Users/b-f-03-029/erp/.claude/skills/prototype-from-prompt/SKILL.md，以及它列的 `Designs.md` §6.5／§6.6、`docs/component-catalog.md`、`apps/erp/src/app/(prototype)/README.md`。本任務是「修改既有 prototype」：沿用既有頁面結構與元件，不重挑配方。
 2. 回覆與註解語言：/Users/b-f-03-029/.claude/output-styles/ste100-pm.md。台灣繁中，禁 emoji，禁簡體字。
-3. 設計依據：/Users/b-f-03-029/Sens/memory/erp/plans/production-ui-correction-20261012/design.md 與 grill.md（第 1～41 題）。wiki 正本已更新，用詞以 wiki 為準：/Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/ 下 [[報工紀錄]]、[[報工規則]]、[[生產任務]]、[[轉交單]]、[[轉交單狀態]]、[[印件生產流程]]。
+3. 設計依據：/Users/b-f-03-029/Sens/memory/erp/plans/_archives/2026/production-ui-correction-20261012/design.md 與 grill.md（第 1～41 題）。wiki 正本已更新，用詞以 wiki 為準：/Users/b-f-03-029/Sens/memory/Sens_wiki/wiki/erp/ 下 [[報工紀錄]]、[[報工規則]]、[[生產任務]]、[[轉交單]]、[[轉交單狀態]]、[[印件生產流程]]。
 4. 測試專案：/Users/b-f-03-029/Sens/erp-prototype-tests/README.md（撰寫規約、執行注意、迭代檢核表全部照做）。
 
 ## 二、硬規則
