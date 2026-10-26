@@ -9,8 +9,8 @@ test('4.1 訂單詳情的印件印製狀態只出現九個值（原編號 65）'
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0710&tab=printItems');
   const panel = page.getByRole('tabpanel');
   const row = panel.locator('tr', { hasText: 'PI-2026-0710' });
-  // 這件印件目前印製狀態為「部分工單製作中」，是九值之一
-  await expect(row.getByText('部分工單製作中', { exact: true })).toBeVisible();
+  // 這件印件只有一張工單、已開工，印製狀態為「製作中」，是九值之一
+  await expect(row.getByText('製作中', { exact: true })).toBeVisible();
   // 舊名詞不應出現在訂單項目分頁內容中
   await expect(panel.getByText('待生產', { exact: true })).toHaveCount(0);
   await expect(panel.getByText('生產中', { exact: true })).toHaveCount(0);
@@ -305,7 +305,7 @@ test('4.9 印件已棄用後交期欄唯讀；訂單完成後印件交期欄唯�
   await expect(row2.getByRole('button', { name: '編輯印件' })).toHaveCount(0);
   await expect(async () => {
     await row2.getByRole('button', { name: '檢視印件' }).click();
-    await expect(page).toHaveURL(/\/print-items\/detail\/?\?id=pi-2026-0601/, { timeout: 3000 });
+    await expect(page).toHaveURL(/\/print-items\/detail\/?\?id=pi-2026-0601/i, { timeout: 3000 });
   }).toPass({ timeout: 20000 });
   const dueDateValue = page
     .locator('th.ant-descriptions-item-label')
@@ -392,11 +392,20 @@ test('4.14 唯讀呈現處的印件內部完成日合併未扣急件那一天', 
   await gotoInApp(page, '/work-orders');
   const headers = page.locator('.ant-table-thead th');
   await expect(headers.filter({ hasText: '未扣急件內部完成日' })).toHaveCount(0);
+  // 列表依建立時間新到舊、每頁固定筆數，鏈九加入後 WO-2026-0820 不在第一頁：
+  // 先用搜尋框篩到該工單（共用篩選元件按 Enter 才送出）
+  const search = page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或客戶名稱');
+  await search.fill('WO-2026-0820');
+  await search.press('Enter');
   await expect(page.locator('tr', { hasText: 'WO-2026-0820' }).first()).toContainText(
     '2026-09-04（未扣急件 2026-09-09）',
   );
-  // 一般件不帶括號：這一頁只有急件那一張工單出現「未扣急件」，其餘各列只印一組日期
-  await expect(page.locator('.ant-table-tbody tr', { hasText: '未扣急件' })).toHaveCount(1);
+  // 一般件不帶括號：篩到鏈二 WO-2026-0710（一般件），只印一組日期 2026-09-14
+  await search.fill('WO-2026-0710');
+  await search.press('Enter');
+  const normalRow = page.locator('.ant-table-tbody tr', { hasText: 'WO-2026-0710' }).first();
+  await expect(normalRow).toContainText('2026-09-14');
+  await expect(normalRow).not.toContainText('未扣急件');
 });
 
 test('4.15 訂單項目的欄名統一為印件屬性與稿件備註，急件提示用印件內部完成日的定義', async ({
@@ -444,4 +453,23 @@ test('4.15 訂單項目的欄名統一為印件屬性與稿件備註，急件提
   const drawer = page.locator('.ant-drawer-content-wrapper');
   await expect(drawer.getByLabel('稿件備註')).toBeVisible();
   await expect(drawer.getByText('印件檔案備註')).toHaveCount(0);
+});
+
+// 15.17 印件準時完工率的判定（2026-10-23 新增，change shipment-print-download-center H9、H10）：
+// 印件新增唯讀欄位「完工日」＝旗下工單首次全部完成（齊套）那一天，系統寫入、之後不變；判定與指標算式在純函式測試
+//（tests/unit/delivery-chain/print-item-completion-date.test.mjs），畫面只驗印件詳情有完工日欄。
+// 起點資料：鏈一 PI-2026-0601 已齊套、有完工日（MOCK-DATA-CHAIN 補值）；鏈二 PI-2026-0710 部分工單製作中、尚未齊套。
+test('15.17 印件準時完工率的判定：印件詳情顯示完工日，已齊套的印件有日期、未齊套的顯示破折號', async ({ page }) => {
+  test.setTimeout(90_000);
+  const completionValue = (p) =>
+    p.locator('xpath=//th[normalize-space(.)="完工日"]/following-sibling::td[1]').first();
+
+  await openAs(page, '業務', '/print-items/detail?id=PI-2026-0601');
+  await expect(page.getByText('印件基本資訊')).toBeVisible({ timeout: 20000 });
+  await expect(page.getByText('完工日', { exact: true }).first()).toBeVisible();
+  await expect(completionValue(page)).toHaveText(/^\d{4}-\d{2}-\d{2}$/);
+
+  await openAs(page, '業務', '/print-items/detail?id=PI-2026-0710');
+  await expect(page.getByText('印件基本資訊')).toBeVisible({ timeout: 20000 });
+  await expect(completionValue(page)).toHaveText('－');
 });

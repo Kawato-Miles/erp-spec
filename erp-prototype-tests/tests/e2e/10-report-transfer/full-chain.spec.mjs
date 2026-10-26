@@ -113,6 +113,11 @@ test('10.14 最後一筆報工把工單、印件、訂單一路推到製作完�
   // 訂單詳情：印件列、訂單狀態與活動紀錄
   await switchRole(page, 'Supervisor');
   await gotoInApp(page, '/orders');
+  // 訂單列表依建立時間新到舊、每頁固定筆數，鏈九加入後 ORD-2026-0815 不在第一頁：
+  // 先用搜尋框篩到該訂單（共用篩選元件按 Enter 才送出）
+  const orderSearch = page.getByPlaceholder('請輸入訂單編號、客戶名稱、案名，或印件名稱／編號');
+  await orderSearch.fill('ORD-2026-0815');
+  await orderSearch.press('Enter');
   await page.getByText('ORD-2026-0815', { exact: true }).click();
   await expect(page.getByText('製作完成').first()).toBeVisible();
   await page.getByRole('tab', { name: '活動紀錄' }).click();
@@ -132,9 +137,11 @@ test('10.11 一批貨從報工走到可出貨的全鏈（原編號 105）', asyn
   await confirmDialog(receiveDialog);
   await expect(page.getByText(/已點收/).last()).toBeVisible();
 
-  // 手工產線到料量由 0 變成點收量，裁切成型任務可以報工了
+  // 手工產線到料量由 0 變成點收量，裁切成型任務可以報工了。
+  // 裁切成型在鏈二工作包 WP-2026-0710-02（李榮發）；以工作包編號定位，
+  // 不用師傅名取第一列（鏈九 WP-2026-0921-02 也指派李榮發、建立較新、排在前面）
   await gotoInApp(page, '/production-floor/work-packages');
-  const pkgRow = page.locator('.ant-table-row', { hasText: '李榮發' }).first();
+  const pkgRow = page.locator('.ant-table-row', { hasText: 'WP-2026-0710-02' }).first();
   await pkgRow.getByRole('button', { name: '報工' }).click();
   const dialog = page.locator('.ant-modal-body');
   const taskRow = dialog.locator('tr', { hasText: '裁切成型' });
@@ -153,7 +160,12 @@ test('10.11 一批貨從報工走到可出貨的全鏈（原編號 105）', asyn
 
   await switchRole(page, '品檢人員');
   await gotoInApp(page, '/qc-shipping/inspection');
-  await page.getByRole('button', { name: '驗收' }).last().click();
+  // 以印件編號定位鏈二海報那一列（PI-2026-0710），不取最後一列：待驗清單依內部完成日由近到遠排序，
+  // 鏈九 PI-2026-0924（內部完成日 2026-10-27、已驗完、驗收鈕停用）排在最後
+  await page
+    .locator('tr.ant-table-row', { hasText: 'PI-2026-0710' })
+    .getByRole('button', { name: '驗收' })
+    .click();
   await page.getByRole('spinbutton', { name: '* 通過數量' }).fill('1180');
   // 品檢照片至少一張才送得出（通過與不通過都要拍）
   await page

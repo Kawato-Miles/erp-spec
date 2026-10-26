@@ -235,6 +235,13 @@ export async function setupArrivedAtQc(page) {
 }
 
 // ── 第十二章共用：出貨單 ──
+//
+// 2026-10-23 改版（change shipment-print-download-center）：
+// - 完成裝箱回報不產生物流單；揀貨人員按「確認可出貨」時才產生物流單，物流單初始狀態為「可出貨」。
+// - 「撤回確認可出貨」刪除全部物流單、出貨單回到已裝箱。
+// - 第三方物流只依物流商回傳推進；畫面上沒有「重新同步」，也不加模擬物流商回傳的示意鈕。
+//   e2e 要把第三方物流單推到已送達時，走出貨人員的送達確認（配達回傳沒進來時的備援）。
+// - 介面字樣照 Sens memory/shared/ui-wording.md：送出鈕文字＝動作名稱；成功訊息為「已＋動作名稱」。
 
 // 出貨單對話框（建單、單頭與明細編輯、檢視共用同一顆，比照工單新增生產任務對話框；
 // 上方固定單頭、下方分出貨明細與歷程兩個頁籤）。狀態推進在列上動作鈕開的另一種對話框裡，
@@ -251,6 +258,15 @@ export const confirmBox = (page) => page.locator('.ant-modal-confirm:visible').l
 export const createShipmentDialog = shipmentPanel;
 export const draftShipmentDialog = shipmentPanel;
 
+/**
+ * 對話框或確認框的送出鈕：文字＝動作名稱（ui-wording.md 第一節）。
+ * AntD 會在兩個中文字的按鈕文字中間插空白（「拋單」顯示為「拋 單」），所以比對時容許字間空白，且整段相符。
+ */
+export const submitButton = (scope, label) =>
+  scope.getByRole('button', {
+    name: new RegExp(`^\\s*${label.split('').map((c) => c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s*')}\\s*$`),
+  });
+
 /** 列上的「檢視」圖示鈕：開這張單的唯讀對話框 */
 export async function openShipmentPanel(page, keyword) {
   await shipmentRow(page, keyword).getByRole('button', { name: '檢視' }).click();
@@ -258,7 +274,7 @@ export async function openShipmentPanel(page, keyword) {
   return shipmentPanel(page);
 }
 
-/** 列上的「編輯」圖示鈕：開這張單的編輯模式對話框（只有建單人看得到這顆鈕） */
+/** 列上的「編輯」圖示鈕：開這張單的編輯模式對話框 */
 export async function openShipmentEdit(page, keyword) {
   await shipmentRow(page, keyword).getByRole('button', { name: '編輯' }).click();
   await expect(shipmentPanel(page)).toBeVisible();
@@ -266,8 +282,8 @@ export async function openShipmentEdit(page, keyword) {
 }
 
 /**
- * 按列上某顆動作鈕（開始揀貨、裝箱回報、出貨確認、交付確認、送達確認、異常、作廢、刪除），
- * 回它開出來的對話框。確認框（開始揀貨、刪除）用 confirmBox 另取。
+ * 按列上某顆動作鈕（裝箱回報、修正、作廢等），回它開出來的對話框。
+ * 確認框（開始揀貨、確認可出貨、撤回確認可出貨、刪除）用 confirmBox 另取。
  */
 export async function clickRowAction(page, keyword, name) {
   await shipmentRow(page, keyword).getByRole('button', { name, exact: true }).click();
@@ -281,11 +297,11 @@ export const shipmentRow = (page, keyword) =>
   page.locator('tr.ant-table-row').filter({ hasText: keyword }).first();
 
 // 列表最上面那一列＝最新建立的單（store 把新單放在陣列最前）。
-// 列表是子母表，第一格是展開鈕，所以從整列文字取出貨單編號
+// 列表是子母表，第一格是勾選框或展開鈕，所以從整列文字取出貨單編號
 export const newestShipmentNo = async (page) =>
   (await page.locator('tr.ant-table-row').first().innerText()).match(/SH-\d{4}-\d{4}/)[0];
 
-/** 列上操作欄的動作鈕（子母表第一格是展開鈕，不算動作鈕；操作欄固定在最後一格） */
+/** 列上操作欄的動作鈕（勾選框與展開鈕不算動作鈕；操作欄固定在最後一格） */
 export const rowActionButtons = (row) => row.locator('td').last().getByRole('button');
 
 /** 展開出貨單列表（或訂單出貨單頁籤）某一列，回展開後的物流單子表那一列（tr） */
@@ -305,7 +321,7 @@ export async function gotoShipmentList(page) {
 
 /**
  * 從訂單詳情的「出貨單」頁籤打開建單對話框（出貨單只能從這裡建，出貨管理列表沒有新增入口）。
- * 對話框鎖定這張訂單，不提供選訂單的下拉。呼叫前須已切為該訂單的建單人（接單業務或編輯（代理）成員）。
+ * 對話框標題為「建立出貨單」（G18），鎖定這張訂單，不提供選訂單的下拉。
  * @returns {Promise<import('@playwright/test').Locator>} 建單對話框
  */
 export async function openCreateShipmentFromOrder(page, orderNo = CHAIN4.orderNo) {
@@ -355,7 +371,7 @@ export async function fillItemQty(dialog, qty, printItemNo = CHAIN4.printItemNo)
  * 從訂單詳情的出貨單頁籤開對話框 → 填單頭 → 填出貨印件數量 → 按「建立出貨單」，
  * 完成後回到出貨管理頁（呼叫端接著在列表上操作）。
  * 這一顆按鈕在新建入口沒有直達未處理的路——系統先落一張草稿、同一個動作立刻把它推成未處理，
- * 所以列表只會多一張單（見情境 12.2）。
+ * 所以列表只會多一張單（見情境 12.2）。成功訊息為「已建立出貨單」。
  * @returns {Promise<string>} 新單的出貨單編號
  */
 export async function createShipment(
@@ -365,17 +381,17 @@ export async function createShipment(
   const dialog = await openCreateShipmentFromOrder(page, orderNo);
   await fillPlannedShipDate(dialog, date);
   await pickShippingMethod(page, dialog, method);
-  await fillItemQty(dialog, qty);
-  await dialog.getByRole('button', { name: '建立出貨單' }).click();
-  await expect(page.getByText(/出貨單已成立（未處理）/).first()).toBeVisible();
-  // 側板關閉後仍留在 DOM（只是隱藏），故等它隱藏而不是等它消失
+  if (qty !== undefined) await fillItemQty(dialog, qty);
+  await submitButton(dialog, '建立出貨單').click();
+  await expect(page.getByText('已建立出貨單').first()).toBeVisible();
+  // 對話框關閉後仍留在 DOM（只是隱藏），故等它隱藏而不是等它消失
   await expect(dialog).toBeHidden();
   await gotoShipmentList(page);
   return newestShipmentNo(page);
 }
 
 /**
- * 業務建一張草稿（呼叫前須已切為業務）；完成後回到出貨管理頁。
+ * 業務建一張草稿（呼叫前須已切為業務）；完成後回到出貨管理頁。成功訊息為「已儲存草稿」。
  * @returns {Promise<string>} 新草稿的出貨單編號
  */
 export async function createDraftShipment(
@@ -385,8 +401,8 @@ export async function createDraftShipment(
   const dialog = await openCreateShipmentFromOrder(page, orderNo);
   await fillPlannedShipDate(dialog, date);
   if (qty !== undefined) await fillItemQty(dialog, qty);
-  await dialog.getByRole('button', { name: '儲存草稿' }).click();
-  await expect(page.getByText(/出貨單草稿已建立/).first()).toBeVisible();
+  await submitButton(dialog, '儲存草稿').click();
+  await expect(page.getByText('已儲存草稿').first()).toBeVisible();
   await expect(dialog).toBeHidden();
   await gotoShipmentList(page);
   return newestShipmentNo(page);
@@ -394,7 +410,7 @@ export async function createDraftShipment(
 
 /**
  * 在下拉裡選一個選項（舊的下拉即使關閉仍留在 DOM，選項清單須限定在當前可見的那個；點開後沒出現就再點一次）。
- * @param {string} selector 下拉本體的選擇器（例：#receiver_name 之類的下拉選擇器）
+ * @param {string} selector 下拉本體的選擇器
  * @param {string|RegExp} [text] 要選的選項文字；沒給就選第一個
  */
 export async function pickFromSelect(page, dialog, selector, text) {
@@ -469,26 +485,61 @@ export async function fillPackingLines(dialog, lines) {
   }
 }
 
+/** 揀貨人員按列上「開始揀貨」並在確認框確認（未處理 → 打包中） */
+export async function startPicking(page, shipmentNo) {
+  await shipmentRow(page, shipmentNo).getByRole('button', { name: '開始揀貨', exact: true }).click();
+  await submitButton(confirmBox(page), '開始揀貨').click();
+  await expect(page.getByText('已開始揀貨').first()).toBeVisible();
+}
+
 /**
- * 揀貨人員把一張未處理的出貨單走到已裝箱（開始揀貨 → 裝箱回報）。
+ * 揀貨人員按列上「確認可出貨」並在確認框確認（已裝箱 → 可出貨，系統同時產生物流單）。
+ * expectSuccess=false 時不等成功訊息，由呼叫端自行斷言擋下的訊息。
+ */
+export async function confirmShippable(page, shipmentNo, { expectSuccess = true } = {}) {
+  await shipmentRow(page, shipmentNo).getByRole('button', { name: '確認可出貨', exact: true }).click();
+  const box = confirmBox(page);
+  await expect(box).toContainText(`確認可出貨：${shipmentNo}`);
+  await submitButton(box, '確認可出貨').click();
+  if (expectSuccess) await expect(page.getByText('已確認可出貨').first()).toBeVisible();
+}
+
+/** 揀貨人員按列上「撤回確認可出貨」並在確認框確認（可出貨 → 已裝箱，系統刪除全部物流單） */
+export async function withdrawShippable(page, shipmentNo, { expectSuccess = true } = {}) {
+  await shipmentRow(page, shipmentNo)
+    .getByRole('button', { name: '撤回確認可出貨', exact: true })
+    .click();
+  const box = confirmBox(page);
+  await expect(box).toContainText(`撤回確認可出貨：${shipmentNo}`);
+  await submitButton(box, '撤回確認可出貨').click();
+  if (expectSuccess) await expect(page.getByText('已撤回確認可出貨').first()).toBeVisible();
+}
+
+/**
+ * 揀貨人員把一張未處理的出貨單走到已裝箱（開始揀貨 → 裝箱回報），預設接著確認可出貨（共用動線，tasks 3.28）。
  * 預設單一明細（PI-2026-0820）；多條明細時用 lines 逐條給。裝箱明細逐箱新增 boxes 箱
- * （同箱規、每箱一張照片；箱規預設取該出貨方式的第一個）。
- * @param {{ pickedQty?: number, boxes?: number, spec?: string|RegExp, lines?: Array }} options
+ * （同箱規、每箱一張照片；箱規預設取選單第一個）。
+ * confirm=false 時停在已裝箱、沒有物流單（驗揀貨不符、已裝箱修正或確認可出貨本身的情境用）。
+ * 揀貨不符時一律不確認（確認會被擋下）。
+ * @param {{ pickedQty?: number, boxes?: number, spec?: string|RegExp, lines?: Array, notes?: Array, confirm?: boolean }} options
  */
 export async function pickAndPack(
   page,
   shipmentNo,
-  { pickedQty, boxes = 2, spec, lines, notes } = {},
+  { pickedQty, boxes = 2, spec, lines, notes, confirm = true } = {},
 ) {
   // 兩步都在列上：「開始揀貨」彈確認框 → 「裝箱回報」開對話框填該步要填的欄位
-  await shipmentRow(page, shipmentNo).getByRole('button', { name: '開始揀貨' }).click();
-  await confirmBox(page).getByRole('button', { name: '開始揀貨' }).click();
-  await expect(page.getByText(/已開始揀貨/).first()).toBeVisible();
+  await startPicking(page, shipmentNo);
   const dialog = await clickRowAction(page, shipmentNo, '裝箱回報');
   await fillPackingLines(dialog, lines ?? [{ pickedQty }]);
   await addBoxes(page, dialog, { boxes, spec, notes });
-  await dialog.getByRole('button', { name: '送出裝箱回報' }).click();
-  await expect(page.getByText(/裝箱回報完成/).first()).toBeVisible();
+  await submitButton(dialog, '裝箱回報').click();
+  await expect(page.getByText('已裝箱回報').first()).toBeVisible();
+  await expect(shipmentRow(page, shipmentNo)).toContainText('已裝箱');
+  if (confirm) {
+    await confirmShippable(page, shipmentNo);
+    await expect(shipmentRow(page, shipmentNo)).toContainText('可出貨');
+  }
 }
 
 // ── 第十二章共用：出貨單對話框裡的物流單 ──
@@ -514,7 +565,7 @@ export const boxRows = (dialog) =>
 
 /**
  * 開出貨單對話框，按物流單表格第 nth 列（從 0 起）的某顆動作鈕，回它開出來的動作對話框
- * （物流單層動作鈕會先關掉出貨單對話框再開動作對話框；重新同步與下載沒有對話框，不走這支）。
+ * （物流單層動作鈕會先關掉出貨單對話框再開動作對話框；下載物流單沒有對話框，不走這支）。
  */
 export async function openLogisticsAction(page, shipmentNo, name, nth = 0) {
   const panel = await openShipmentPanel(page, shipmentNo);
@@ -524,32 +575,48 @@ export async function openLogisticsAction(page, shipmentNo, name, nth = 0) {
   return dialog;
 }
 
-/** 開出貨單對話框，對物流單表格第 nth 列按「重新同步」times 次（每次模擬物流商回傳往前一格），最後關閉對話框 */
-export async function resyncLogistics(page, shipmentNo, { times = 1, nth = 0 } = {}) {
-  const panel = await openShipmentPanel(page, shipmentNo);
-  for (let i = 0; i < times; i += 1) {
-    await logisticsRows(panel).nth(nth).getByRole('button', { name: '重新同步', exact: true }).click();
-    await expect(page.getByText(/已重新同步/).last()).toBeVisible();
+/**
+ * 出貨人員對物流單表格第 nth 列按出貨動作（拋單、出貨確認、標記可自取），在動作對話框按同名的送出鈕。
+ * 拋單送出後先顯示處理中，處理中結束才出結果；成功訊息為「已＋動作名稱」（已拋單、已出貨確認、已標記可自取）。
+ * 拋單失敗時對話框不關，呼叫端用 expectSuccess=false 自行斷言錯誤訊息。批次拋單見 batchDispatch。
+ */
+export async function dispatchRow(page, shipmentNo, name, { nth = 0, expectSuccess = true } = {}) {
+  const dialog = await openLogisticsAction(page, shipmentNo, name, nth);
+  await submitButton(dialog, name).click();
+  if (expectSuccess) await expect(page.getByText(`已${name}`).last()).toBeVisible({ timeout: 15000 });
+  return dialog;
+}
+
+/** 對出貨單每一筆仍在可出貨的物流單逐筆做出貨動作（count 為物流單筆數；一筆做完對話框關閉後再開下一筆） */
+export async function dispatchEach(page, shipmentNo, name, count) {
+  for (let i = 0; i < count; i += 1) {
+    await dispatchRow(page, shipmentNo, name, { nth: i });
+    await expect(page.locator('.ant-modal-content:visible')).toHaveCount(0);
   }
-  await closeShipmentPanel(page);
 }
 
 /**
- * 出貨人員對物流單表格第 nth 列按出貨動作（拋單、出貨確認、標記可自取）並確認。拋單送出後先顯示處理中，
- * 處理中結束才出結果；拋單失敗時對話框不關，呼叫端自行斷言錯誤訊息。批次拋單見 batchDispatch。
- * 函式名沿用 dispatchRow：舊測試以「列」為單位呼叫，第四參數 confirmName 照舊。
+ * 出貨人員對物流單按「送達確認」（第三方物流為配達回傳沒進來時的備援，開放於等待出貨、運送中、例外；
+ * 專車配送、其他在已出貨）。不附照片（G1）。第三方物流要回填物流商配達時間。
  */
-export async function dispatchRow(page, shipmentNo, name, confirmName, nth = 0) {
-  const dialog = await openLogisticsAction(page, shipmentNo, name, nth);
-  await dialog.getByRole('button', { name: confirmName }).click();
-}
-
-/** 對出貨單每一筆仍在已裝箱的物流單逐筆做出貨動作（count 為物流單筆數；一筆做完對話框關閉後再開下一筆） */
-export async function dispatchEach(page, shipmentNo, name, confirmName, count) {
-  for (let i = 0; i < count; i += 1) {
-    await dispatchRow(page, shipmentNo, name, confirmName, i);
-    await expect(actionDialog(page)).toHaveCount(0);
+export async function confirmDelivered(
+  page,
+  shipmentNo,
+  { nth = 0, deliveredTime, undelivered } = {},
+) {
+  const dialog = await openLogisticsAction(page, shipmentNo, '送達確認', nth);
+  await expect(dialog.locator('input[type="file"]')).toHaveCount(0);
+  if (deliveredTime) {
+    const field = dialog.getByLabel('物流商配達時間');
+    await field.click();
+    await field.fill(deliveredTime);
+    await field.press('Enter');
   }
+  if (undelivered !== undefined) {
+    await dialog.getByLabel(`未送達數量 ${CHAIN4.printItemNo}`, { exact: true }).fill(String(undelivered));
+  }
+  await submitButton(dialog, '送達確認').click();
+  await expect(page.getByText('已送達確認').last()).toBeVisible();
 }
 
 /**
@@ -560,7 +627,7 @@ export async function batchDispatch(page, shipmentNo) {
   await shipmentRow(page, shipmentNo).getByRole('button', { name: '批次拋單', exact: true }).click();
   const dialog = actionDialog(page);
   await expect(dialog).toContainText(`批次拋單：${shipmentNo}`);
-  await dialog.getByRole('button', { name: '確認批次拋單' }).click();
+  await submitButton(dialog, '批次拋單').click();
   await expect(dialog).toContainText(/拋單處理完成：成功 \d+ 筆、失敗 \d+ 筆/, { timeout: 15000 });
   return dialog;
 }
@@ -573,4 +640,40 @@ export const batchResultRows = (dialog) =>
 export async function closeBatchResult(page) {
   await actionDialog(page).getByRole('button', { name: /^關\s*閉$/ }).click();
   await expect(page.locator('.ant-modal-content:visible')).toHaveCount(0);
+}
+
+// ── 第十二章共用：批次列印與下載中心（G4～G17） ──
+
+/** 下載中心路徑（側邊選單「品檢與出貨」群組；只開給出貨人員，G14、G15） */
+export const DOWNLOAD_CENTER = '/qc-shipping/download-center';
+
+/** 出貨管理列表上方的「列印」鈕（只對出貨人員顯示；沒有勾選時停用，G21 同場預設） */
+export const printButton = (page) =>
+  page.locator('.ant-layout-content').getByRole('button', { name: /^\s*列\s*印\s*$/ });
+
+/** 出貨管理母列（出貨單）的勾選框；勾母列＝勾底下全部未作廢物流單（G5） */
+export const shipmentCheckbox = (page, shipmentNo) => shipmentRow(page, shipmentNo).getByRole('checkbox').first();
+
+/** 展開後物流單子列的勾選框（子列可單選，G5） */
+export const logisticsCheckbox = (expanded, logisticsNo) =>
+  expanded.locator('tbody tr.ant-table-row').filter({ hasText: logisticsNo }).first().getByRole('checkbox');
+
+/** 下載中心的資料列（新到舊） */
+export const downloadRows = (page) =>
+  page.locator('.ant-layout-content .ant-table-tbody tr.ant-table-row');
+
+/** 下載中心表頭文字 */
+export const downloadHeads = async (page) =>
+  (await page.locator('.ant-layout-content .ant-table-thead').first().locator('th').allInnerTexts())
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+/** 下載中心某一列某一欄的文字（以表頭文字找欄序） */
+export async function downloadCell(page, rowIndex, header) {
+  const heads = (
+    await page.locator('.ant-layout-content .ant-table-thead').first().locator('th').allInnerTexts()
+  ).map((t) => t.trim());
+  const index = heads.indexOf(header);
+  expect(index, `下載中心找不到欄位 ${header}`).toBeGreaterThanOrEqual(0);
+  return (await downloadRows(page).nth(rowIndex).locator('td').nth(index).innerText()).trim();
 }

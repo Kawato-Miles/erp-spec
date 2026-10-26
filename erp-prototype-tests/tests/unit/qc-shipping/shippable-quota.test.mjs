@@ -123,11 +123,11 @@ describe('出貨單上的兩個數', () => {
     const at = (id, qty, los) =>
       packedShipment({ id, printItemNo: 'PI-2026-0820', qty, logisticsOrders: los });
     const shipments = [
-      at('sh-1', 100, [logistics('a-001', '已裝箱')]),
+      at('sh-1', 100, [logistics('a-001', '可出貨')]),
       at('sh-2', 200, [departed('b-001', '運送中')]),
       at('sh-3', 150, [departed('c-001', '已送達')]),
       at('sh-4', 50, [departed('d-001', '例外事故')]),
-      at('sh-5', 70, [departed('e-001', '等待出貨'), logistics('e-002', '已裝箱')]),
+      at('sh-5', 70, [departed('e-001', '等待出貨'), logistics('e-002', '可出貨')]),
       shipment('sh-6', '已作廢', 80),
     ];
     // 全數離廠者：sh-2（200）、sh-3（150）、sh-4（50，異常仍算已離廠）＝400；sh-5 只離廠一部分、sh-1 未離廠

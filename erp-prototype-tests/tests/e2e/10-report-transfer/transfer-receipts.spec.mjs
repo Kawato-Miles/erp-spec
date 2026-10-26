@@ -8,6 +8,7 @@ import {
   dialogOf,
   editReport,
   formItemOf,
+  filterQueueLine,
   noticeOf,
   openPackageReports,
   openTicketDrawer,
@@ -45,6 +46,7 @@ test('10.27 點收單一動作：逐條填實際量，第一筆轉已點收；�
   // 生管在點收佇列點收：對話框每條明細一列（帶目的站點），點收數量可改、可填備註
   await switchRole(page, '生管');
   await gotoInApp(page, '/production-floor/receiving');
+  await filterQueueLine(page, '手工產線');
   await page.locator('tr.ant-table-row', { hasText: 'TT-20260827-002' }).getByRole('button', { name: '點收', exact: true }).click();
   const dialog = dialogOf(page, '點收');
   await expect(dialog).toContainText('裁切站');
@@ -156,6 +158,7 @@ test('10.30 收貨人點錯數修正點收數量與備註並填原因；點收�
   test.setTimeout(120_000);
   // 點收佇列的「修正點收紀錄」：每條明細帶目前的點收數量與備註，另多一格必填的修改原因
   await openAs(page, '生管', '/production-floor/receiving');
+  await filterQueueLine(page, '手工產線');
   const row = page.locator('tr.ant-table-row', { hasText: 'TT-20260827-001' });
   await row.getByRole('button', { name: '修正點收紀錄' }).click();
   const dialog = dialogOf(page, '修正');
@@ -412,6 +415,7 @@ test('10.59 點收時每條明細都要填且大於 0，任一條未填擋下整
   test.setTimeout(120_000);
   // 生管在點收佇列對 TT-20260827-002 按點收：信封清空、只留內卡 200 送出 → 整次擋下
   await openAs(page, '生管', '/production-floor/receiving');
+  await filterQueueLine(page, '手工產線');
   await page.locator('tr.ant-table-row', { hasText: 'TT-20260827-002' }).getByRole('button', { name: '點收', exact: true }).click();
   const dialog = dialogOf(page, '點收');
   const cardInput = dialog.locator('tr', { hasText: '內卡四色印刷' }).locator('.ant-input-number-input');
@@ -431,6 +435,7 @@ test('10.59 點收時每條明細都要填且大於 0，任一條未填擋下整
 
   // 兩條都填後成立：單轉已點收
   await gotoInApp(page, '/production-floor/receiving');
+  await filterQueueLine(page, '手工產線');
   await page.locator('tr.ant-table-row', { hasText: 'TT-20260827-002' }).getByRole('button', { name: '點收', exact: true }).click();
   const again = dialogOf(page, '點收');
   await again.locator('tr', { hasText: '內卡四色印刷' }).locator('.ant-input-number-input').fill('200');

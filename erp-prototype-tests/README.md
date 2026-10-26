@@ -11,13 +11,13 @@
 
 | 層 | 指令 | 內容 | 何時跑 |
 |----|------|------|------|
-| smoke | `npm run test:smoke` | 主流程一條：一件印件從需求單到訂單製作完成，33 站，站表見 `docs/main-flow.md` | 改 mock 或 prototype 後立刻跑 |
+| smoke | `npm run test:smoke` | 主流程一條：一件印件從需求單到訂單完成（含品檢與專車配送出貨），39 站，站表見 `docs/main-flow.md` | 改 mock 或 prototype 後立刻跑 |
 | module | `npm run test:module -- tests/e2e/07-process-planning` | 該章全部 | 改單一模組時 |
-| full | `npm test` | Vitest 純函式加全部 Playwright；Playwright 依章節分批，每批重新啟動開發伺服器（一次連跑近兩小時伺服器會失去反應） | 分支合併回 develop 或開 PR 前跑一次；`npm run impact` 判「影響全站」時也跑 |
+| full | `npm test` | Vitest 純函式加全部 Playwright；Playwright 依章節分批，每批重新啟動開發伺服器（一次連跑近兩小時伺服器會失去反應） | 只在 Miles 指示時跑 |
 
 本機登入：erp main 版的免登入白名單只放行部分舊路由，工單等 prototype 頁會被導向登入頁。在本目錄建 `.env.local`（已忽略版控）寫入 `ERP_TEST_USERNAME` 與 `ERP_TEST_PASSWORD`，Playwright 會先登入一次並沿用狀態（`tests/e2e/auth.setup.mjs`）；白名單併回 main 後可不設。
 
-Playwright 會自動在 3020 埠啟動 erp 開發伺服器（已在跑則沿用；跑久出現 ChunkLoadError 就先 `pkill -f "next dev --port 3020"`）。erp 每次提交前跑 smoke 加影響章即可，全套留到分支合併回 develop 或開 PR 前；commit 訊息附「測試 N 項通過」。
+Playwright 會自動在 3020 埠啟動 erp 開發伺服器（已在跑則沿用；跑久出現 ChunkLoadError 就先 `pkill -f "next dev --port 3020"`）。erp 每次提交前跑 smoke 加影響章即可；全套只在 Miles 指示時跑；commit 訊息附「測試 N 項通過」。
 
 ## 依據文件
 
@@ -61,7 +61,7 @@ Playwright 會自動在 3020 埠啟動 erp 開發伺服器（已在跑則沿用�
 | 派工 | 任務書帶測試影響清單與 mock 三步順序（先 MOCK-DATA-CHAIN、再 mock-data.js、再測試） | sub-agent 交回程式加測試 |
 | 實作後 | `npm run impact`（對映 erp 改動到章與測試）→ `npm run test:smoke` → 該章 `npm run test:module -- tests/e2e/<章>` | 三段結果 |
 | 提交前 | smoke 加影響章通過即可提交；commit 訊息附 smoke／模組兩個結果。影響清單為空且未改測試時，訊息寫明「無測試影響」理由 | erp 提交 |
-| 合併或開 PR 前 | `npm test` 全套跑一次；`npm run impact` 判「影響全站」（動到 `_lib`／`_components`／`layout`）時提交前就跑全套 | PR 說明附全套結果 |
+| 合併或開 PR 前 | 不另跑全套；PR 說明附 smoke 與影響章結果。全套 `npm test` 只在 Miles 指示時跑 | PR 說明附測試結果 |
 | 收尾 | 情境目錄該節更新（含「依據」wiki 卡名）、發現清單關掉已修項 | Sens 提交 |
 
 `npm run impact` 預設取 erp 工作區未提交變更加最近一筆提交；`npm run impact -- HEAD~3` 取範圍；`npm run impact -- --paths <檔>...` 直接給路徑。
