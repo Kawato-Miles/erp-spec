@@ -102,9 +102,9 @@
 
 ## 7. archive 後手改
 
-- [ ] 7.1 `openspec/specs/production-overview/spec.md`「五指標」Requirement 末句：「印件準時交貨率……見 shipment spec § 實際出貨日與出貨準時判定」改為印件準時完工率，引用 wiki [北極星指標](../../../memory/Sens_wiki/wiki/erp/01-products/北極星指標.md) 與 order-management spec § 印件完工日寫入與準時完工判定
-- [ ] 7.2 `openspec/specs/shipment/spec.md` Purpose 段：補確認可出貨與撤回確認可出貨、列印物流單經下載中心；範圍「主要」補同兩項；確認 RENAMED 後的「物流單例外」標題生效
-- [ ] 7.3 grep `openspec/specs/` 全目錄的「實際出貨日」「離廠時間」「送達憑證」「重新同步」「下載全部物流單」「未出貨動作」「印件準時交貨率」；完成條件：每一處已改寫，或屬 REMOVED 說明段
+- [x] 7.1 `openspec/specs/production-overview/spec.md`「五指標」Requirement 末句：「印件準時交貨率……見 shipment spec § 實際出貨日與出貨準時判定」改為印件準時完工率，引用 wiki [北極星指標](../../../memory/Sens_wiki/wiki/erp/01-products/北極星指標.md) 與 order-management spec § 印件完工日寫入與準時完工判定
+- [x] 7.2 `openspec/specs/shipment/spec.md` Purpose 段：補確認可出貨與撤回確認可出貨、列印物流單經下載中心；範圍「主要」補同兩項；確認 RENAMED 後的「物流單例外」標題生效
+- [x] 7.3 grep `openspec/specs/` 全目錄的「實際出貨日」「離廠時間」「送達憑證」「重新同步」「下載全部物流單」「未出貨動作」「印件準時交貨率」；完成條件：每一處已改寫，或屬 REMOVED 說明段
 
 ## 測試影響清單
 
