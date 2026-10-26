@@ -2354,7 +2354,9 @@ test('12.47 有物流單不在可出貨時沒有撤回確認可出貨；已列�
 
 test('12.49 單筆下載物流單檔案：鏈九 SH-2026-0921-001 還沒拋單也可下載，含出貨明細、不進下載中心', async ({ page }) => {
   // 起點：鏈九 ORD-2026-0921，SH-2026-0921 專車配送 4 箱、可出貨，一筆物流單 SH-2026-0921-001 在可出貨
-  await openAs(page, '出貨人員', DOWNLOAD_CENTER);
+  // 先開出貨管理再進下載中心：直接開下載中心時，角色切換前的預設角色可能先被導回預設頁面
+  await openAs(page, '出貨人員', '/qc-shipping/shipments');
+  await gotoInAppSafe(page, DOWNLOAD_CENTER);
   await expect(downloadRows(page).first()).toBeVisible();
   const countBefore = await downloadRows(page).count();
   await gotoInAppSafe(page, '/qc-shipping/shipments');

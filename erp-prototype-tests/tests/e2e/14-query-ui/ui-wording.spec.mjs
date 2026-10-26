@@ -83,9 +83,12 @@ test('14.45 介面字樣：出貨管理、出貨單對話框、訂單出貨單�
   await expectSubmitIsAction(report, '裝箱回報');
   await report.getByRole('button', { name: '新增一箱' }).click();
   await report.locator('.ant-table-tbody .ant-select').first().click({ force: true });
-  const options = page.locator('.ant-select-dropdown:visible').last().locator('.ant-select-item-option');
+  // 前一個下拉收合動畫可能還留在頁面上，輪詢到箱規下拉的選項出現再比對
+  const options = page.locator('.ant-select-dropdown:visible .ant-select-item-option');
+  await expect
+    .poll(async () => (await options.allInnerTexts()).map((t) => t.trim()), { timeout: 10_000 })
+    .toContain('自訂箱規');
   const optionTexts = (await options.allInnerTexts()).map((t) => t.trim());
-  expect(optionTexts).toContain('自訂箱規');
   expect(optionTexts).not.toContain('自訂');
   await page.keyboard.press('Escape');
   await report.getByRole('button', { name: '移除這一箱' }).first().click();
