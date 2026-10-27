@@ -9,11 +9,12 @@ import {
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/_lib/delivery-chain.js';
 import { MOCK_ORDERS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/mock-data.js';
 import { MOCK_SHIPMENTS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/mock-data.js';
-import { logistics, packedShipment } from '../qc-shipping/_fixtures.mjs';
+import { departed, dispatched, packedShipment, undispatched } from '../qc-shipping/_fixtures.mjs';
 
 // 2.4 訂單層衍生值、2.5 逾期標示（情境目錄 4.11、4.12、4.13）
 // 期望值取自 order-management spec（本 change delta）§ 訂單層衍生交期日期、§ 交期逾期標示。
-// 「已出貨」＝含該印件的出貨單有任一張屬全數離廠（依物流單狀態判定）；物流單在可出貨或等待出貨時仍算尚未出貨。
+// 「已出貨」＝含該印件的出貨單有任一張屬全數離廠（依物流單貨態判定）；物流單貨態在待出貨時
+// （未拋單、或已拋單成功等物流商收件）仍算尚未出貨。
 
 const item = (no, undeducted, overrides = {}) => ({
   print_item_no: no,
@@ -48,14 +49,17 @@ describe('4.11 訂單層三個衍生日期', () => {
   });
 });
 
-// 一張只含某件印件的出貨單，物流單狀態依參數（全數離廠＝全部未作廢物流單都已離廠）
+// 一張只含某件印件的出貨單（順豐），物流單依參數：'未拋單'＝貨態待出貨、還沒拋單；
+// '拋單成功'＝已拋單成功、貨態仍待出貨；其餘為貨態（全數離廠＝全部未作廢物流單都已離廠）
+const logisticsOf = (id, s) =>
+  s === '未拋單' ? undispatched(id) : s === '拋單成功' ? dispatched(id) : departed(id, s);
 const shipmentOf = (printItemNo, statuses, extra = {}) =>
   packedShipment({
     id: `sh-${printItemNo}`,
     shipmentNo: `SH-TEST-${printItemNo}`,
     printItemNo,
     method: '順豐',
-    logisticsOrders: statuses.map((s, i) => logistics(`SH-TEST-${printItemNo}-00${i + 1}`, s)),
+    logisticsOrders: statuses.map((s, i) => logisticsOf(`SH-TEST-${printItemNo}-0${i + 1}`, s)),
     ...extra,
   });
 const shippedBy = (shipments) => (i) => isPrintItemShipped(shipments, i.print_item_no);
@@ -74,12 +78,12 @@ describe('4.12 訂單預計交貨日期依全數離廠滾動', () => {
     expect(orderExpectedDeliveryDate(items, shippedBy(shipments))).toBe('2026-10-15');
   });
 
-  it('物流單在等待出貨時不算已出貨、逾期也不跳筆：A 已拋單在等待出貨、系統日期 2026-10-16，仍顯示 2026-10-13', () => {
-    const shipments = [shipmentOf('A', ['等待出貨'])];
+  it('物流單貨態在待出貨時不算已出貨、逾期也不跳筆：A 已拋單成功、貨態仍待出貨、系統日期 2026-10-16，仍顯示 2026-10-13', () => {
+    const shipments = [shipmentOf('A', ['拋單成功'])];
     expect(isPrintItemShipped(shipments, 'A')).toBe(false);
     expect(orderExpectedDeliveryDate(items, shippedBy(shipments))).toBe('2026-10-13');
-    expect(isPrintItemShipped([shipmentOf('A', ['可出貨'])], 'A')).toBe(false);
-    expect(isPrintItemShipped([shipmentOf('A', ['運送中', '等待出貨'])], 'A')).toBe(false);
+    expect(isPrintItemShipped([shipmentOf('A', ['未拋單'])], 'A')).toBe(false);
+    expect(isPrintItemShipped([shipmentOf('A', ['運送中', '拋單成功'])], 'A')).toBe(false);
   });
 
   it('全部印件出貨後停在最後一筆：三件的出貨單皆屬全數離廠，顯示 2026-10-20', () => {
@@ -112,8 +116,8 @@ describe('4.13 交期逾期標示：部分延遲與整單逾期以全部交完�
     expect(printItemOverdueWorkingDays(item('A', '2026-10-12'), '2026-10-15')).toBe(2);
   });
 
-  it('物流單在等待出貨時印件仍標逾期、訂單標部分延遲：2026-10-14 拋單成功在等待出貨 → 逾期 1 個工作天、部分延遲、不標整單逾期', () => {
-    const shipments = [shipmentOf('PI-2026-0821', ['等待出貨'])];
+  it('物流單貨態在待出貨時印件仍標逾期、訂單標部分延遲：2026-10-14 拋單成功、貨態仍待出貨 → 逾期 1 個工作天、部分延遲、不標整單逾期', () => {
+    const shipments = [shipmentOf('PI-2026-0821', ['拋單成功'])];
     const shipped = isPrintItemShipped(shipments, 'PI-2026-0821');
     expect(printItemOverdueWorkingDays(items[0], '2026-10-14', shipped)).toBe(1);
     expect(orderDelayFlags(items, '2026-10-14', shippedBy(shipments))).toEqual({ partialDelay: true, wholeOverdue: false });

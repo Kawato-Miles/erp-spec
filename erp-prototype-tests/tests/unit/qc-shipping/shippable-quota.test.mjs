@@ -5,7 +5,7 @@ import {
   detailsTotalQty,
   validateShipmentQuota,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/store.js';
-import { departed, logistics, packedShipment } from './_fixtures.mjs';
+import { departed, dispatched, packedShipment, undispatched } from './_fixtures.mjs';
 
 // 情境 12.2「額度即時檢核並整張擋下」與 12.4「回報總數與明細數量並排」的數字驗算
 // （畫面呈現另在 e2e 12.2、12.4 驗）。
@@ -53,7 +53,7 @@ describe('可出貨額度', () => {
       id: 'sh-1',
       printItemNo: 'PI-2026-0820',
       qty: 200,
-      logisticsOrders: [departed('SH-1-001', '例外事故', { exception_source: 'manual' })],
+      logisticsOrders: [departed('SH-1-01', '例外事故', { exception_source: 'manual' })],
     });
     expect(calcShippableQty(printItem, [abnormal], qcRecords)).toBe(280);
   });
@@ -64,10 +64,10 @@ describe('可出貨額度', () => {
       printItemNo: 'PI-2026-0820',
       qty: 200,
       logisticsOrders: [
-        departed('SH-1-001', '已作廢', {
+        departed('SH-1-01', '已作廢', {
           undelivered: [{ print_item_no: 'PI-2026-0820', qty: 60 }],
         }),
-        departed('SH-1-002', '等待出貨'),
+        dispatched('SH-1-02'),
       ],
     });
     expect(calcShippableQty(printItem, [sh], qcRecords)).toBe(480 - 140);
@@ -123,14 +123,15 @@ describe('出貨單上的兩個數', () => {
     const at = (id, qty, los) =>
       packedShipment({ id, printItemNo: 'PI-2026-0820', qty, logisticsOrders: los });
     const shipments = [
-      at('sh-1', 100, [logistics('a-001', '可出貨')]),
-      at('sh-2', 200, [departed('b-001', '運送中')]),
-      at('sh-3', 150, [departed('c-001', '已送達')]),
-      at('sh-4', 50, [departed('d-001', '例外事故')]),
-      at('sh-5', 70, [departed('e-001', '等待出貨'), logistics('e-002', '可出貨')]),
+      at('sh-1', 100, [undispatched('a-01')]),
+      at('sh-2', 200, [departed('b-01', '運送中')]),
+      at('sh-3', 150, [departed('c-01', '已送達')]),
+      at('sh-4', 50, [departed('d-01', '例外事故')]),
+      at('sh-5', 70, [departed('e-01', '運送中'), dispatched('e-02')]),
       shipment('sh-6', '已作廢', 80),
     ];
-    // 全數離廠者：sh-2（200）、sh-3（150）、sh-4（50，異常仍算已離廠）＝400；sh-5 只離廠一部分、sh-1 未離廠
+    // 全數離廠者：sh-2（200）、sh-3（150）、sh-4（50，異常仍算已離廠）＝400；
+    // sh-5 只離廠一部分（一筆運送中、一筆拋單成功但貨態仍待出貨）、sh-1 未離廠
     expect(calcShippedQty(printItem, shipments)).toBe(400);
   });
 
@@ -140,7 +141,7 @@ describe('出貨單上的兩個數', () => {
       printItemNo: 'PI-2026-0820',
       qty: 200,
       logisticsOrders: [
-        departed('a-001', '已送達', { undelivered: [{ print_item_no: 'PI-2026-0820', qty: 20 }] }),
+        departed('a-01', '已送達', { undelivered: [{ print_item_no: 'PI-2026-0820', qty: 20 }] }),
       ],
     });
     expect(calcShippedQty(printItem, [sh])).toBe(180);

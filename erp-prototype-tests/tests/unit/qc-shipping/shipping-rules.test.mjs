@@ -1,14 +1,19 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
   buildPackingCorrection,
   canCorrectPacking,
   confirmShippableCheck,
+  describeBoxes,
   dimensionsForSpecChange,
   generateSubTrackingNo,
   generateTrackingNo,
   hasPackingReport,
   isPickingMismatch,
+  MIN_CUSTOM_DIMENSION,
   mismatchedDetails,
+  missingReceiverFields,
+  missingSenderFields,
+  normalizeSenderFields,
   packingCorrectionScope,
   validatePackingBoxes,
   validatePackingLines,
@@ -18,22 +23,30 @@ import {
   BOX_SPEC_OPTIONS,
   BOX_SPECS,
   CUSTOM_BOX_SPEC,
+  describeShipmentSender,
+  formatAddress,
+  isValidZip,
   MOCK_SHIPMENTS,
+  receiverAddressOf,
+  SENDER_BY_ACCOUNT_COMPANY,
+  shipmentNoOf,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/mock-data.js';
 import { useQcShippingStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/store.js';
 import { useOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/_lib/store.js';
-import { box, boxedShipment, logistics, packedShipment } from './_fixtures.mjs';
+import { box, boxedShipment, departed, dispatched, logistics, packedShipment, undispatched } from './_fixtures.mjs';
 
 // 情境 12.3（完成裝箱回報不產生物流單）、12.5（揀貨不符照實回報、擋下確認可出貨）、12.19（業務改明細或揀貨人員修正後放行）、
-// 12.20（裝箱回報修正：已裝箱時留紀錄不牽動物流單；確認可出貨後只開放所屬物流單未離廠的箱）、12.21（物流單號與子單號）、
-// 12.32、12.44（箱規共用十筆加自訂箱規、長寬高照箱規帶入）、12.37（逐箱新增、新增箱先顯示下一個箱序）的驗算。
-// 期望值取自 shipment spec（本 change delta）§ 揀貨與裝箱回報、§ 箱規選擇與長寬高帶入、§ 出貨單歷程紀錄。
-// 自訂箱規的輸入形狀：{ custom: true, box_spec: 手填名稱 }（box_spec 等於「自訂箱規」時同樣視為自訂箱規、名稱即預設值）；
-// 存檔時 box_spec 存手填名稱、custom 為 true，不指向任何一筆箱規（見 api-contract.md）。
+// 12.20、12.45（裝箱回報修正只在已裝箱、整批取代、一次一筆修正紀錄；確認可出貨後全關）、12.21（物流單號與子單號）、
+// 12.32、12.44（箱規共用十筆加自訂箱規、材積與預估運費、長寬高照箱規帶入、自訂箱規不存名稱）、
+// 12.37（逐箱新增、新增箱先顯示下一個箱序）、12.57（收件與寄件地址四欄、郵遞區號 3 碼或 5 碼）的驗算。
+// 期望值取自出貨對齊後端第一版決定表（Miles 2026-10-27 拍板）與 wiki 出貨單 § 揀貨與裝箱回報、§ 箱規、§ 歷程紀錄。
+// 自訂箱規的輸入形狀：{ custom: true } 或 box_spec 為「自訂箱規」；存檔時 box_spec 存「自訂箱規」、custom 為 true，
+// 不存名稱、不指向任何一筆箱規，長寬高三欄必填、最小 0.1 公分、最多一位小數。
 
 const NO = 'PI-2026-0820';
 const NAME = '《山城記事》精裝書（128 頁）';
 const ORDER_NO = 'ORD-TEST-PICK';
+const SHIPMENT_NO = 'SH-2026-10-30001';
 
 const detail = (qty, picked = null) => ({ print_item_no: NO, name: NAME, qty, picked_qty: picked });
 
@@ -41,7 +54,7 @@ const detail = (qty, picked = null) => ({ print_item_no: NO, name: NAME, qty, pi
 const shipmentOf = (overrides = {}) => ({
   ...boxedShipment({
     id: 'sh-test-1',
-    shipmentNo: 'SH-2026-9001',
+    shipmentNo: SHIPMENT_NO,
     orderNo: ORDER_NO,
     method: '新竹物流',
     printItemNo: NO,
@@ -53,22 +66,23 @@ const shipmentOf = (overrides = {}) => ({
   ...overrides,
 });
 
-// 已確認可出貨的出貨單（一箱一筆物流單）
-const confirmedOf = (method, statuses, qty = 100) =>
+// 已確認可出貨的出貨單（一箱一筆物流單）；list 為物流單陣列
+const confirmedOf = (method, list, qty = 100) =>
   packedShipment({
     id: 'sh-test-1',
-    shipmentNo: 'SH-2026-9001',
+    shipmentNo: SHIPMENT_NO,
     orderNo: ORDER_NO,
     method,
     printItemNo: NO,
     name: NAME,
     qty,
-    logisticsOrders: statuses.map((s, i) => logistics(`SH-2026-9001-00${i + 1}`, s)),
+    logisticsOrders: list,
   });
+const lgNo = (n) => `${SHIPMENT_NO}-0${n}`;
 
 const photo = (name) => ({ name, url: null });
 const boxInput = (spec, extra = {}) => ({ box_spec: spec, photos: [photo('裝箱照.jpg')], note: '', ...extra });
-const customInput = (name, extra = {}) => boxInput(name, { custom: true, ...extra });
+const customInput = (extra = {}) => boxInput(CUSTOM_BOX_SPEC, { custom: true, ...extra });
 const dims = (b) => [b.length ?? null, b.width ?? null, b.height ?? null];
 
 const seed = (shipment) => {
@@ -85,7 +99,7 @@ const store = () => useQcShippingStore.getState();
 // 打包中、尚未裝箱回報的單
 const packingShipment = (method) => ({
   id: 'sh-test-1',
-  shipment_no: 'SH-2026-9001',
+  shipment_no: SHIPMENT_NO,
   order_no: ORDER_NO,
   status: '打包中',
   method,
@@ -161,15 +175,9 @@ describe('12.3 裝箱回報逐條填揀貨數量', () => {
 
   it('數值檢核：揀貨數量為 0 以上整數', () => {
     const details = [detail(500)];
-    expect(
-      validatePackingLines(details, [{ print_item_no: NO, picked_qty: 0 }]).ok,
-    ).toBe(true);
-    expect(
-      validatePackingLines(details, [{ print_item_no: NO, picked_qty: -1 }]).ok,
-    ).toBe(false);
-    expect(
-      validatePackingLines(details, [{ print_item_no: NO, picked_qty: 1.5 }]).ok,
-    ).toBe(false);
+    expect(validatePackingLines(details, [{ print_item_no: NO, picked_qty: 0 }]).ok).toBe(true);
+    expect(validatePackingLines(details, [{ print_item_no: NO, picked_qty: -1 }]).ok).toBe(false);
+    expect(validatePackingLines(details, [{ print_item_no: NO, picked_qty: 1.5 }]).ok).toBe(false);
   });
 });
 
@@ -180,12 +188,12 @@ describe('12.3 裝箱明細檢核：至少一箱、每箱箱規與至少一張�
     expect(result.error).toContain('至少');
   });
 
-  it('每箱箱規必填；箱規要是箱規主檔或自訂箱規', () => {
+  it('每箱箱規必填；箱規要是箱規主檔或自訂箱規（自訂箱規要填齊長寬高）', () => {
     expect(validatePackingBoxes([boxInput(undefined)]).ok).toBe(false);
     expect(validatePackingBoxes([boxInput('順豐標準箱 A（40×30×30）')]).ok).toBe(false);
     expect(validatePackingBoxes([boxInput('1 號箱')]).ok).toBe(true);
-    expect(validatePackingBoxes([boxInput(CUSTOM_BOX_SPEC)]).ok).toBe(true);
-    expect(validatePackingBoxes([customInput('展架長箱')]).ok).toBe(true);
+    expect(validatePackingBoxes([boxInput(CUSTOM_BOX_SPEC, { length: 60, width: 40, height: 30 })]).ok).toBe(true);
+    expect(validatePackingBoxes([customInput({ length: 60, width: 40, height: 30 })]).ok).toBe(true);
   });
 
   it('每箱至少一張照片，缺一箱就整批不通過', () => {
@@ -209,7 +217,7 @@ describe('12.3 揀貨兩步推進並逐條、逐箱回報：完成裝箱回報�
     expect(shipmentStatusOf(sh)).toBe('已裝箱');
     expect(sh.logistics_orders).toEqual([]);
     expect(sh.details[0].picked_qty).toBe(500);
-    expect(sh.packing_boxes.map((b) => [b.box_no, b.box_spec, b.logistics_order_no])).toEqual([
+    expect(sh.packing_boxes.map((b) => [b.box_no, b.box_spec, b.logistics_id])).toEqual([
       ['001', '1 號箱', null],
       ['002', '1 號箱', null],
       ['003', '馬克杯箱', null],
@@ -219,7 +227,7 @@ describe('12.3 揀貨兩步推進並逐條、逐箱回報：完成裝箱回報�
     const packing = sh.history.at(-1);
     expect(packing.actor).toBe('范姜宏');
     expect(packing.attachments.map((a) => a.name)).toEqual(['裝箱照.jpg', '裝箱照.jpg', '裝箱照.jpg']);
-    expect(JSON.stringify(packing.changes)).not.toContain('SH-2026-9001-001');
+    expect(JSON.stringify(packing.changes)).not.toContain(lgNo(1));
   });
 
   it('單頭不存箱規、照片與揀貨總數，箱數是計算值', () => {
@@ -280,6 +288,21 @@ describe('12.32、12.44 箱規選單列全部箱規加自訂箱規，不分出�
     BOX_SPECS.forEach((b) => expect('shipping_method' in b, b.name).toBe(false));
   });
 
+  it('每筆箱規記材積與預估運費（十筆值照決定表）', () => {
+    expect(BOX_SPECS.map((b) => [b.name, b.volume, b.est_freight])).toEqual([
+      ['F12 箱', 35, 75],
+      ['N3 箱（3 號箱）', 60, 75],
+      ['F13 箱', 61, 75],
+      ['K1 箱', 70, 75],
+      ['MIX 箱（新 Mix 散件）', 75, 75],
+      ['300 拼圖箱', 86, 105],
+      ['1 號箱', 90, 105],
+      ['感官箱', 92, 105],
+      ['馬克杯箱', 131, 150],
+      ['1000 拼圖箱（地墊箱）', 143, 150],
+    ]);
+  });
+
   it('箱規選單列全部箱規加自訂箱規，不分出貨方式：十筆箱規、最後一項為「自訂箱規」', () => {
     expect(BOX_SPEC_OPTIONS).toHaveLength(11);
     expect(BOX_SPEC_OPTIONS.slice(0, 10)).toEqual(BOX_SPECS.map((b) => b.name));
@@ -332,34 +355,59 @@ describe('12.44 長寬高照箱規帶入並鎖住，只有自訂箱規可填（�
     expect(dimensionsForSpecChange({ prevSpec: '1 號箱', prevDims, nextSpec: 'K1 箱' })).toEqual({ length: null, width: null, height: null, locked: true });
   });
 
-  it('選自訂箱規時名稱必填、長寬高選填：第三箱名稱清空時整筆擋下、維持打包中；補回後第一箱存「展架長箱」60×40×30、第二箱存「自訂箱規」無長寬高；三箱都不指向任何一筆箱規', () => {
+  it('選自訂箱規時不存名稱、長寬高三欄必填：第三箱缺高時整筆擋下、維持打包中；補齊後三箱都存「自訂箱規」與手填長寬高、不指向任何一筆箱規', () => {
     seed(packingShipment('專車配送'));
     const lines = [{ print_item_no: NO, picked_qty: 500 }];
-    const first = customInput('展架長箱', { length: 60, width: 40, height: 30 });
-    const second = customInput(CUSTOM_BOX_SPEC);
-    const blocked = store().reportPacking('sh-test-1', { lines, boxes: [first, second, customInput('')], operator: '范姜宏' });
+    const first = customInput({ length: 60, width: 40, height: 30 });
+    const second = customInput({ length: 12.5, width: 8, height: 0.1 });
+    const blocked = store().reportPacking('sh-test-1', {
+      lines,
+      boxes: [first, second, customInput({ length: 100, width: 20 })],
+      operator: '范姜宏',
+    });
     expect(blocked.ok).toBe(false);
+    expect(blocked.error).toBe('第 3 箱選自訂箱規，高必填（公分）');
     expect(current().status).toBe('打包中');
-    const ok = store().reportPacking('sh-test-1', { lines, boxes: [first, second, customInput('長條箱')], operator: '范姜宏' });
+    const ok = store().reportPacking('sh-test-1', {
+      lines,
+      boxes: [first, second, customInput({ length: 100, width: 20, height: 20, box_name: '展架長箱' })],
+      operator: '范姜宏',
+    });
     expect(ok.ok).toBe(true);
     const [b1, b2, b3] = current().packing_boxes;
-    expect([b1.box_spec, ...dims(b1)]).toEqual(['展架長箱', 60, 40, 30]);
-    expect([b2.box_spec, ...dims(b2)]).toEqual(['自訂箱規', null, null, null]);
+    expect([b1.box_spec, ...dims(b1)]).toEqual(['自訂箱規', 60, 40, 30]);
+    expect([b2.box_spec, ...dims(b2)]).toEqual(['自訂箱規', 12.5, 8, 0.1]);
+    expect([b3.box_spec, ...dims(b3)]).toEqual(['自訂箱規', 100, 20, 20]);
     [b1, b2, b3].forEach((b) => {
       expect(b.custom).toBe(true);
       expect(BOX_SPECS.some((m) => m.name === b.box_spec)).toBe(false);
     });
+    expect(JSON.stringify(current().packing_boxes)).not.toContain('展架長箱');
   });
 
-  it('手填的長寬高要是大於 0 的數字、最多一位小數', () => {
-    expect(validatePackingBoxes([customInput(CUSTOM_BOX_SPEC, { length: 40.5, width: 30, height: 20 })]).ok).toBe(true);
-    expect(validatePackingBoxes([customInput(CUSTOM_BOX_SPEC, { length: 40.55, width: 30, height: 20 })]).ok).toBe(false);
-    expect(validatePackingBoxes([customInput(CUSTOM_BOX_SPEC, { length: -1 })]).ok).toBe(false);
-    expect(validatePackingBoxes([customInput(CUSTOM_BOX_SPEC, { length: 0 })]).ok).toBe(false);
+  it('自訂箱規的長寬高三欄必填：缺任一欄擋下並指出第幾箱缺哪一欄', () => {
+    expect(validatePackingBoxes([{ ...customInput({ width: 30, height: 20 }), box_no: '001' }]).error).toBe(
+      '第 001 箱選自訂箱規，長必填（公分）',
+    );
+    expect(validatePackingBoxes([customInput({ length: 40, height: 20 })]).error).toBe('第 1 箱選自訂箱規，寬必填（公分）');
+    expect(validatePackingBoxes([customInput({ length: 40, width: 30 })]).error).toBe('第 1 箱選自訂箱規，高必填（公分）');
+    expect(validatePackingBoxes([customInput()]).ok).toBe(false);
   });
 
-  it('裝箱回報修正改箱規，長寬高照箱規帶入，改成自訂箱規保留原值：第一箱 F13 箱 29、21、6；第二箱 K1 箱空白；第三箱自訂箱規保留 45、30、15；修正紀錄第一、二箱各四筆、第三箱只有箱規一筆', () => {
-    seed({ ...boxedShipment({ id: 'sh-test-1', shipmentNo: 'SH-2026-9001', orderNo: ORDER_NO, method: '7-11 交貨便', printItemNo: NO, name: NAME, qty: 500, boxCount: 3 }) });
+  it('手填的長寬高最小 0.1 公分、最多一位小數：0.1 與 40.5 通過，0.05、0、負數與 40.55 擋下', () => {
+    expect(MIN_CUSTOM_DIMENSION).toBe(0.1);
+    expect(validatePackingBoxes([customInput({ length: 40.5, width: 30, height: 20 })]).ok).toBe(true);
+    expect(validatePackingBoxes([customInput({ length: 0.1, width: 0.1, height: 0.1 })]).ok).toBe(true);
+    expect(validatePackingBoxes([customInput({ length: 40.55, width: 30, height: 20 })]).ok).toBe(false);
+    expect(validatePackingBoxes([customInput({ length: 0.05, width: 30, height: 20 })]).ok).toBe(false);
+    expect(validatePackingBoxes([customInput({ length: 0, width: 30, height: 20 })]).ok).toBe(false);
+    const neg = validatePackingBoxes([{ ...customInput({ length: -1, width: 30, height: 20 }), box_no: '001' }]);
+    expect(neg.ok).toBe(false);
+    expect(neg.error).toBe('第 001 箱的長最小 0.1 公分，最多一位小數');
+  });
+
+  it('裝箱回報修正改箱規，長寬高照箱規帶入，改成自訂箱規保留原值：第一箱 F13 箱 29、21、6；第二箱 K1 箱空白；第三箱自訂箱規 45、30、15；修正紀錄一筆，修正前後各三箱', () => {
+    seed({ ...boxedShipment({ id: 'sh-test-1', shipmentNo: SHIPMENT_NO, orderNo: ORDER_NO, method: '7-11 交貨便', printItemNo: NO, name: NAME, qty: 500, boxCount: 3 }) });
     const result = store().correctPacking('sh-test-1', {
       lines: [{ print_item_no: NO, picked_qty: 500 }],
       boxes: [
@@ -375,17 +423,22 @@ describe('12.44 長寬高照箱規帶入並鎖住，只有自訂箱規可填（�
     expect([b1.box_spec, ...dims(b1)]).toEqual(['F13 箱', 29, 21, 6]);
     expect([b2.box_spec, ...dims(b2)]).toEqual(['K1 箱', null, null, null]);
     expect([b3.box_spec, ...dims(b3)]).toEqual(['自訂箱規', 45, 30, 15]);
-    expect(current().packing_corrections.map((c) => c.field)).toEqual([
-      '第 001 箱 箱規', '第 001 箱 長', '第 001 箱 寬', '第 001 箱 高',
-      '第 002 箱 箱規', '第 002 箱 長', '第 002 箱 寬', '第 002 箱 高',
-      '第 003 箱 箱規',
+    expect(current().packing_corrections).toHaveLength(1);
+    const [record] = current().packing_corrections;
+    expect(record.before.boxes.map((b) => [b.box_spec, ...dims(b)])).toEqual([
+      ['1 號箱', 45, 30, 15],
+      ['1 號箱', 45, 30, 15],
+      ['1 號箱', 45, 30, 15],
     ]);
-    const len1 = current().packing_corrections.find((c) => c.field === '第 001 箱 長');
-    expect([len1.before, len1.after]).toEqual([45, 29]);
+    expect(record.after.boxes.map((b) => [b.box_spec, ...dims(b)])).toEqual([
+      ['F13 箱', 29, 21, 6],
+      ['K1 箱', null, null, null],
+      ['自訂箱規', 45, 30, 15],
+    ]);
   });
 
   it('每箱各存一份長寬高：箱規主檔日後改尺寸，已存的裝箱資料不跟著變', () => {
-    const stored = MOCK_SHIPMENTS.find((x) => x.shipment_no === 'SH-2026-0601').packing_boxes[0];
+    const stored = MOCK_SHIPMENTS.find((x) => x.id === 'sh-0601').packing_boxes[0];
     const master = BOX_SPECS.find((b) => b.name === stored.box_spec);
     const before = dims(stored);
     const originalLength = master.length;
@@ -412,7 +465,7 @@ describe('12.21 拋單生成物流單號與子單號', () => {
   });
 });
 
-describe('12.20 裝箱回報修正的差異判定', () => {
+describe('12.20 裝箱回報修正：整批取代，一次一筆修正紀錄（修正前後整批內容含照片）', () => {
   const base = shipmentOf({ details: [detail(500, 480)] });
   const spec = '1 號箱';
   const next = (patch = {}) => ({
@@ -428,9 +481,7 @@ describe('12.20 裝箱回報修正的差異判定', () => {
     buildPackingCorrection({ shipment, next: n, actor: '范姜宏', at: '2026-10-13 10:00' });
 
   it('修正原因必填，空白不行', () => {
-    const result = build(
-      next({ reason: '   ', lines: [{ print_item_no: NO, picked_qty: 500 }] }),
-    );
+    const result = build(next({ reason: '   ', lines: [{ print_item_no: NO, picked_qty: 500 }] }));
     expect(result.ok).toBe(false);
     expect(result.error).toContain('修正原因');
   });
@@ -439,68 +490,61 @@ describe('12.20 裝箱回報修正的差異判定', () => {
     expect(build(next()).ok).toBe(false);
   });
 
-  it('一次改了揀貨數量與新增一箱，每個被改的欄位各一筆，其餘欄位不記', () => {
+  it('一次改了揀貨數量與新增一箱：只產生一筆修正紀錄，修正前與修正後各是整批內容（逐條揀貨數量、整批箱子含照片），記修正人、時間與原因', () => {
     const result = build(
       next({
         lines: [{ print_item_no: NO, picked_qty: 500 }],
-        boxes: [
-          ...next().boxes,
-          { box_spec: spec, photos: [photo('第三箱.jpg')], note: '補裝' },
-        ],
+        boxes: [...next().boxes, { box_spec: spec, photos: [photo('第三箱.jpg')], note: '補裝' }],
       }),
     );
     expect(result.ok).toBe(true);
-    expect(result.entries).toHaveLength(2);
-    const [qtyEntry, boxEntry] = result.entries;
-    expect(qtyEntry.field).toContain('揀貨數量');
-    expect(qtyEntry.before).toBe(480);
-    expect(qtyEntry.after).toBe(500);
-    expect(boxEntry.field).toBe('新增第 003 箱');
-    expect(boxEntry.after).toBe(spec);
-    result.entries.forEach((e) => {
-      expect(e.corrected_by).toBe('范姜宏');
-      expect(e.corrected_at).toBe('2026-10-13 10:00');
-      expect(e.reason).toBe('清點後找到 20 張');
+    expect(result.entries).toBeUndefined();
+    const { record } = result;
+    expect(record).toMatchObject({
+      corrected_by: '范姜宏',
+      corrected_at: '2026-10-13 10:00',
+      reason: '清點後找到 20 張',
     });
+    expect(record.id).toBeTruthy();
+    expect(record.before.lines).toEqual([{ print_item_no: NO, name: NAME, picked_qty: 480 }]);
+    expect(record.after.lines).toEqual([{ print_item_no: NO, name: NAME, picked_qty: 500 }]);
+    expect(record.before.boxes.map((b) => [b.box_no, b.box_spec, b.photos])).toEqual([
+      ['001', spec, ['裝箱照.jpg']],
+      ['002', spec, ['裝箱照.jpg']],
+    ]);
+    expect(record.after.boxes.map((b) => [b.box_no, b.box_spec, b.photos, b.note])).toEqual([
+      ['001', spec, ['裝箱照.jpg'], ''],
+      ['002', spec, ['裝箱照.jpg'], ''],
+      ['003', spec, [photo('第三箱.jpg')], '補裝'],
+    ]);
     expect(result.nextDetails[0].picked_qty).toBe(500);
     expect(result.nextDetails[0].qty).toBe(500);
     expect(result.nextBoxes.map((b) => b.box_no)).toEqual(['001', '002', '003']);
+    expect(result.nextBoxes.every((b) => b.logistics_id === null)).toBe(true);
   });
 
-  it('刪除一箱、改箱規、改備註、換照片各記一筆；刪除與換照片留修正前的照片；至少留一箱', () => {
+  it('刪除一箱、改箱規、改備註、換照片：修正後整批只剩改過的第 001 箱，修正前整批保留兩箱與原照片；至少留一箱', () => {
     const result = build(
       next({
-        boxes: [
-          {
-            box_no: '001',
-            box_spec: '馬克杯箱',
-            photos: [photo('新裝箱照.jpg')],
-            note: '易碎',
-          },
-        ],
+        boxes: [{ box_no: '001', box_spec: '馬克杯箱', photos: [photo('新裝箱照.jpg')], note: '易碎' }],
       }),
     );
     expect(result.ok).toBe(true);
-    const fields = result.entries.map((e) => e.field);
-    expect(fields).toEqual(
-      expect.arrayContaining([
-        '刪除第 002 箱',
-        '第 001 箱 箱規',
-        '第 001 箱 備註',
-        '第 001 箱 照片',
-      ]),
-    );
-    expect(result.entries.find((e) => e.field === '第 001 箱 照片').before_photos).toEqual(['裝箱照.jpg']);
-    expect(result.entries.find((e) => e.field === '刪除第 002 箱').before_photos).toEqual(['裝箱照.jpg']);
+    const { record } = result;
+    expect(record.before.boxes.map((b) => [b.box_no, b.box_spec, b.photos, b.note])).toEqual([
+      ['001', spec, ['裝箱照.jpg'], ''],
+      ['002', spec, ['裝箱照.jpg'], ''],
+    ]);
+    expect(record.after.boxes.map((b) => [b.box_no, b.box_spec, b.photos, b.note])).toEqual([
+      ['001', '馬克杯箱', [photo('新裝箱照.jpg')], '易碎'],
+    ]);
     expect(build(next({ boxes: [] })).ok).toBe(false);
   });
 
   it('新增箱的箱序接在最大箱序之後，刪過的箱序不重用', () => {
     const shipment = { ...base, box_seq: 5 };
     const result = build(
-      next({
-        boxes: [{ box_no: '001', box_spec: spec, photos: ['裝箱照.jpg'], note: '' }, boxInput(spec)],
-      }),
+      next({ boxes: [{ box_no: '001', box_spec: spec, photos: ['裝箱照.jpg'], note: '' }, boxInput(spec)] }),
       shipment,
     );
     expect(result.ok).toBe(true);
@@ -508,50 +552,43 @@ describe('12.20 裝箱回報修正的差異判定', () => {
   });
 
   it('每箱至少一張照片、箱規要是箱規主檔或自訂箱規', () => {
-    expect(
-      build(next({ boxes: [{ box_no: '001', box_spec: spec, photos: [], note: '' }] })).ok,
-    ).toBe(false);
-    expect(
-      build(next({ boxes: [{ box_no: '001', box_spec: 'A 箱（60×40×40）', photos: ['x.jpg'], note: '' }] }))
-        .ok,
-    ).toBe(false);
+    expect(build(next({ boxes: [{ box_no: '001', box_spec: spec, photos: [], note: '' }] })).ok).toBe(false);
+    expect(build(next({ boxes: [{ box_no: '001', box_spec: 'A 箱（60×40×40）', photos: ['x.jpg'], note: '' }] })).ok).toBe(false);
   });
 
-  it('打包中、已作廢不成立；確認可出貨之後改揀貨數量不成立（揀貨數量只在已裝箱）', () => {
-    const outShipment = {
+  it('只在已裝箱時成立：打包中、已作廢、已確認（有物流單）都不成立', () => {
+    const confirmed = {
       ...base,
-      status: '可出貨',
-      logistics_orders: [logistics('SH-2026-9001-001', '等待出貨'), logistics('SH-2026-9001-002', '可出貨')],
-      packing_boxes: base.packing_boxes.map((b, i) => ({ ...b, logistics_order_no: `SH-2026-9001-00${i + 1}` })),
+      status: '已確認',
+      logistics_orders: [undispatched(lgNo(1)), undispatched(lgNo(2))],
+      packing_boxes: base.packing_boxes.map((b, i) => ({ ...b, logistics_id: lgNo(i + 1) })),
     };
-    const cases = [
-      { ...base, status: '打包中' },
-      { ...base, status: '已作廢' },
-      outShipment,
-    ];
-    cases.forEach((shipment) => {
-      const result = build(
-        next({ lines: [{ print_item_no: NO, picked_qty: 500 }] }),
-        shipment,
-      );
+    [{ ...base, status: '打包中' }, { ...base, status: '已作廢' }, confirmed].forEach((shipment) => {
+      const result = build(next({ lines: [{ print_item_no: NO, picked_qty: 500 }] }), shipment);
       expect(result.ok).toBe(false);
     });
   });
 
   it('不符的判定隨修正重算：改為與出貨數量相同即解除', () => {
-    const result = build(
-      next({ lines: [{ print_item_no: NO, picked_qty: 500 }] }),
-    );
+    const result = build(next({ lines: [{ print_item_no: NO, picked_qty: 500 }] }));
     expect(isPickingMismatch({ ...base, details: result.nextDetails })).toBe(false);
+  });
+
+  it('describeBoxes 把整批箱子寫成一行：箱序、箱規、長寬高、照片檔名、備註', () => {
+    expect(
+      describeBoxes([
+        { box_no: '001', box_spec: '1 號箱', length: 45, width: 30, height: 15, photos: ['a.jpg', photo('b.jpg')], note: '易碎' },
+        { box_no: '002', box_spec: 'K1 箱', length: null, width: null, height: null, photos: [], note: '' },
+      ]),
+    ).toBe('第 001 箱 1 號箱 45×30×15，照片 a.jpg、b.jpg，備註 易碎；第 002 箱 K1 箱 －×－×－，照片 －');
   });
 });
 
 // ── store：改明細、裝箱回報修正 ──
 
 describe('12.19 業務改明細或揀貨人員修正揀貨數量後放行', () => {
-  it('兩張新竹（明細 100、揀貨 80、各 2 箱）：業務把第一張明細改為 80、揀貨人員把第二張揀貨數量修正為 100 → 兩張不符解除、都能確認可出貨；第一張未出到的 20 留在可出貨額度', () => {
-    const one = { ...shipmentOf({ details: [detail(100, 80)] }) };
-    seed(one);
+  it('兩張新竹（明細 100、揀貨 80、各 2 箱）：業務把第一張明細改為 80、揀貨人員把第二張揀貨數量修正為 100 → 兩張不符解除、都能確認可出貨', () => {
+    seed(shipmentOf({ details: [detail(100, 80)] }));
     const edited = store().updateShipmentDetails('sh-test-1', [{ print_item_no: NO, name: NAME, qty: 80 }], { operator: '洪嘉駿' });
     expect(edited.ok).toBe(true);
     expect(current().details[0]).toMatchObject({ qty: 80, picked_qty: 80 });
@@ -572,15 +609,15 @@ describe('12.19 業務改明細或揀貨人員修正揀貨數量後放行', () =
   });
 
   it('確認可出貨之後明細數量鎖住，改不動', () => {
-    seed(confirmedOf('新竹物流', ['可出貨', '可出貨'], 500));
+    seed(confirmedOf('新竹物流', [undispatched(lgNo(1)), undispatched(lgNo(2))], 500));
     const r = store().updateShipmentDetails('sh-test-1', [{ print_item_no: NO, name: NAME, qty: 480 }], { operator: '洪嘉駿' });
     expect(r.ok).toBe(false);
     expect(current().details[0].qty).toBe(500);
   });
 });
 
-describe('12.20 已裝箱時裝箱回報修正留紀錄、不牽動物流單', () => {
-  it('新竹明細 500、揀貨 480、2 箱：第一次沒填原因擋下不變；第二次把揀貨改 500、新增一箱、刪第 1 箱 → 每個被改欄位一筆紀錄、第 1 箱照片留修正前、新箱 003、沒有物流單、歷程一筆裝箱回報修正、維持已裝箱', () => {
+describe('12.20 已裝箱時裝箱回報修正整批取代、留一筆紀錄、不產生物流單', () => {
+  it('新竹明細 500、揀貨 480、2 箱：第一次沒填原因擋下不變；第二次把揀貨改 500、新增一箱、刪第 1 箱 → 一筆修正紀錄（前後整批）、新箱 003、沒有物流單、歷程一筆「裝箱回報修正（整批取代）」含前後值與修正前後照片、維持已裝箱', () => {
     seed(shipmentOf({ details: [detail(500, 480)] }));
     const next = {
       lines: [{ print_item_no: NO, picked_qty: 500 }],
@@ -595,14 +632,37 @@ describe('12.20 已裝箱時裝箱回報修正留紀錄、不牽動物流單', (
     expect(sh.details[0].picked_qty).toBe(500);
     expect(sh.packing_boxes.map((b) => b.box_no)).toEqual(['002', '003']);
     expect(sh.logistics_orders).toEqual([]);
-    expect(sh.packing_boxes.every((b) => b.logistics_order_no === null)).toBe(true);
-    const fields = sh.packing_corrections.map((c) => c.field);
-    expect(fields).toEqual(expect.arrayContaining(['揀貨數量 ' + NAME, '刪除第 001 箱', '新增第 003 箱']));
-    expect(sh.packing_corrections.find((c) => c.field === '刪除第 001 箱').before_photos).toEqual(['裝箱照.jpg']);
+    expect(sh.packing_boxes.every((b) => b.logistics_id === null)).toBe(true);
+
+    expect(sh.packing_corrections).toHaveLength(1);
+    const [record] = sh.packing_corrections;
+    expect(record.before.boxes.map((b) => b.box_no)).toEqual(['001', '002']);
+    expect(record.after.boxes.map((b) => b.box_no)).toEqual(['002', '003']);
+    expect(record.reason).toBe('清點後找到 20 張');
+    expect(record.corrected_by).toBe('范姜宏');
+
     const last = sh.history.at(-1);
     expect(last.category).toBe('裝箱回報修正');
-    expect(last.remark).toContain('清點後找到 20 張');
+    expect(last.event).toBe('裝箱回報修正（整批取代）');
+    expect(last.remark).toBe('修正原因：清點後找到 20 張');
+    expect(last.changes).toContainEqual({ field: `揀貨數量 ${NAME}`, before: 480, after: 500 });
+    const boxChange = last.changes.find((c) => c.field === '裝箱資料');
+    expect(boxChange.before).toBe(describeBoxes(record.before.boxes));
+    expect(boxChange.after).toBe(describeBoxes(record.after.boxes));
+    expect(last.before_attachments.map((a) => a.name)).toEqual(['裝箱照.jpg', '裝箱照.jpg']);
+    expect(last.attachments.map((a) => a.name)).toEqual(['裝箱照.jpg', '新箱.jpg']);
     expect(shipmentStatusOf(sh)).toBe('已裝箱');
+  });
+
+  it('再修正一次再多一筆：兩次修正各一筆紀錄、各一筆歷程', () => {
+    seed(shipmentOf({ details: [detail(500, 480)] }));
+    store().correctPacking('sh-test-1', { lines: [{ print_item_no: NO, picked_qty: 490 }], boxes: keep(current()), reason: '第一次', operator: '范姜宏' });
+    store().correctPacking('sh-test-1', { lines: [{ print_item_no: NO, picked_qty: 500 }], boxes: keep(current()), reason: '第二次', operator: '范姜宏' });
+    expect(current().packing_corrections.map((r) => [r.before.lines[0].picked_qty, r.after.lines[0].picked_qty, r.reason])).toEqual([
+      [480, 490, '第一次'],
+      [490, 500, '第二次'],
+    ]);
+    expect(current().history.filter((h) => h.category === '裝箱回報修正')).toHaveLength(2);
   });
 
   it('至少保留一箱：刪光全部箱擋下', () => {
@@ -611,60 +671,183 @@ describe('12.20 已裝箱時裝箱回報修正留紀錄、不牽動物流單', (
   });
 });
 
-describe('12.20、12.45 裝箱回報修正依項目開放：已裝箱四項都開放；確認可出貨後只開放所屬物流單在可出貨或等待出貨的箱', () => {
+describe('12.20、12.45 裝箱回報修正只在已裝箱時可做：已裝箱全開，確認可出貨之後全關', () => {
   it('已裝箱（尚未確認可出貨）：揀貨數量、新增箱、刪除箱、修改每一箱都開放', () => {
     expect(packingCorrectionScope(shipmentOf())).toEqual({ pickedQty: true, deleteBox: true, addBox: true, editableBoxNos: ['001', '002'] });
     expect(canCorrectPacking(shipmentOf())).toBe(true);
   });
 
-  it('確認可出貨後只開放所屬物流單還沒離廠的箱：7-11 三箱（運送中、等待出貨、可出貨）→ 只開放第 2、3 箱；改第 2 箱照片與第 3 箱備註成立，物流單狀態與筆數不變', () => {
-    seed(confirmedOf('7-11 交貨便', ['運送中', '等待出貨', '可出貨']));
-    expect(packingCorrectionScope(current())).toEqual({ pickedQty: false, deleteBox: false, addBox: false, editableBoxNos: ['002', '003'] });
-    const before = current().logistics_orders.map((l) => [l.logistics_order_no, l.status]);
-    const r = store().correctPacking('sh-test-1', {
-      lines: [{ print_item_no: NO, picked_qty: 100 }],
-      boxes: keep(current(), { '002': { photos: [photo('重拍.jpg')] }, '003': { note: '易碎' } }),
-      reason: '照片拍錯、補備註',
-      operator: '范姜宏',
+  it('確認可出貨之後不論物流單貨態都全關：7-11 三筆（未拋單、拋單成功待出貨、運送中）與全部未拋單都沒有可修正項目', () => {
+    const none = { pickedQty: false, deleteBox: false, addBox: false, editableBoxNos: [] };
+    const mixed = confirmedOf('7-11 交貨便', [undispatched(lgNo(1)), dispatched(lgNo(2)), departed(lgNo(3), '運送中')]);
+    const fresh = confirmedOf('7-11 交貨便', [undispatched(lgNo(1)), undispatched(lgNo(2))]);
+    [mixed, fresh].forEach((sh) => {
+      expect(packingCorrectionScope(sh)).toEqual(none);
+      expect(canCorrectPacking(sh)).toBe(false);
     });
-    expect(r.ok).toBe(true);
-    expect(current().logistics_orders.map((l) => [l.logistics_order_no, l.status])).toEqual(before);
   });
 
-  it('確認可出貨後繞過介面送出修改已離廠物流單底下的箱、刪箱或改揀貨數量：整筆擋下、什麼都不變', () => {
-    seed(confirmedOf('7-11 交貨便', ['運送中', '等待出貨', '可出貨']));
+  it('確認可出貨之後繞過介面送出修正（改照片、改備註、改箱規、改揀貨數量）：整筆擋下、什麼都不變', () => {
+    seed(confirmedOf('7-11 交貨便', [undispatched(lgNo(1)), dispatched(lgNo(2)), departed(lgNo(3), '運送中')]));
     const before = JSON.stringify(current());
     [
-      { lines: [{ print_item_no: NO, picked_qty: 90 }], boxes: keep(current()) },
-      { lines: [{ print_item_no: NO, picked_qty: 100 }], boxes: keep(current()).filter((b) => b.box_no !== '003') },
+      { lines: [{ print_item_no: NO, picked_qty: 100 }], boxes: keep(current(), { '002': { photos: [photo('重拍.jpg')] } }) },
+      { lines: [{ print_item_no: NO, picked_qty: 100 }], boxes: keep(current(), { '001': { note: '易碎' } }) },
       { lines: [{ print_item_no: NO, picked_qty: 100 }], boxes: keep(current(), { '001': f13 }) },
+      { lines: [{ print_item_no: NO, picked_qty: 90 }], boxes: keep(current()) },
     ].forEach((a) => {
       expect(store().correctPacking('sh-test-1', { ...a, reason: '想改', operator: '范姜宏' }).ok).toBe(false);
     });
     expect(JSON.stringify(current())).toBe(before);
   });
 
-  it('全數離廠後沒有任何項目可修正，揀貨人員沒有修正', () => {
-    const sh = confirmedOf('7-11 交貨便', ['運送中', '運送中']);
-    expect(packingCorrectionScope(sh)).toEqual({ pickedQty: false, deleteBox: false, addBox: false, editableBoxNos: [] });
-    expect(canCorrectPacking(sh)).toBe(false);
-  });
-
   it('打包中與已作廢沒有修正', () => {
     expect(canCorrectPacking(shipmentOf({ status: '打包中', details: [detail(500)] }))).toBe(false);
-    expect(canCorrectPacking({ ...confirmedOf('順豐', ['已作廢']), status: '已作廢' })).toBe(false);
+    expect(canCorrectPacking({ ...confirmedOf('順豐', [logistics(lgNo(1), '已作廢')]), status: '已作廢' })).toBe(false);
+    expect(canCorrectPacking(shipmentOf({ status: '已作廢' }))).toBe(false);
+  });
+});
+
+// ── 12.57 收件與寄件地址四欄 ──
+
+describe('12.57 收件與寄件地址拆成郵遞區號、縣市、區、地址四欄；郵遞區號 3 碼或 5 碼', () => {
+  const receiver = (patch = {}) => ({
+    receiver_name: '王思穎',
+    receiver_phone: '',
+    receiver_zip: '110',
+    receiver_city: '台北市',
+    receiver_district: '信義區',
+    receiver_address: '菸廠路 88 號 5 樓',
+    ...patch,
+  });
+  const sender = (patch = {}) => ({
+    confidential_sender: true,
+    sender_brand_name: '晴禾選物',
+    sender_phone: '02-2755-0123',
+    sender_zip: '106',
+    sender_city: '台北市',
+    sender_district: '大安區',
+    sender_address: '復興南路一段 200 號 5 樓',
+    ...patch,
+  });
+
+  it('郵遞區號只收 3 碼或 5 碼數字', () => {
+    expect(isValidZip('110')).toBe(true);
+    expect(isValidZip('11061')).toBe(true);
+    ['', '11', '1106', '110611', '11A', '一一〇'].forEach((z) => expect(isValidZip(z), z).toBe(false));
+  });
+
+  it('宅配（順豐、新竹物流）收件人與地址四欄齊全、收件電話空白時沒有缺漏（電話在確認可出貨時才檢查）', () => {
+    expect(missingReceiverFields(receiver({ method: '順豐' }))).toEqual([]);
+    expect(missingReceiverFields(receiver({ method: '新竹物流' }))).toEqual([]);
+  });
+
+  it('宅配四欄全空時依序列出收件人、收件郵遞區號、收件縣市、收件區、收件地址；只填空白視同沒填', () => {
+    expect(missingReceiverFields({ method: '順豐' }).map((f) => f.label)).toEqual([
+      '收件人',
+      '收件郵遞區號',
+      '收件縣市',
+      '收件區',
+      '收件地址',
+    ]);
+    expect(missingReceiverFields(receiver({ method: '順豐', receiver_city: '  ' })).map((f) => f.key)).toEqual(['receiver_city']);
+  });
+
+  it('超商不需要收件地址；自取、專車、其他只要收件地址欄', () => {
+    expect(missingReceiverFields({ method: '全家', receiver_name: '王思穎' })).toEqual([]);
+    expect(missingReceiverFields({ method: '專車配送', receiver_name: '王思穎' }).map((f) => f.key)).toEqual(['receiver_address']);
+    expect(
+      missingReceiverFields({ method: '自取', receiver_name: '王思穎', receiver_address: '台北市信義區菸廠路 88 號 5 樓' }),
+    ).toEqual([]);
+  });
+
+  it('收件郵遞區號有填時要 3 碼或 5 碼：4 碼列出格式錯誤，3 碼與 5 碼通過', () => {
+    expect(missingReceiverFields(receiver({ method: '順豐', receiver_zip: '1106' }))).toEqual([
+      { key: 'receiver_zip_format', label: '收件郵遞區號（3 碼或 5 碼）' },
+    ]);
+    expect(missingReceiverFields(receiver({ method: '順豐', receiver_zip: '110' }))).toEqual([]);
+    expect(missingReceiverFields(receiver({ method: '順豐', receiver_zip: '11061' }))).toEqual([]);
+  });
+
+  it('保密代寄未勾選時不檢核寄件資訊', () => {
+    expect(missingSenderFields({ confidential_sender: false })).toEqual([]);
+  });
+
+  it('保密代寄勾選時寄件人、寄件電話、寄件郵遞區號、寄件縣市、寄件區、寄件地址六欄全部必填', () => {
+    expect(missingSenderFields(sender())).toEqual([]);
+    expect(missingSenderFields(sender({ sender_zip: '' })).map((f) => f.key)).toEqual(['sender_zip']);
+    expect(missingSenderFields({ confidential_sender: true }).map((f) => f.label)).toEqual([
+      '寄件人',
+      '寄件電話',
+      '寄件郵遞區號',
+      '寄件縣市',
+      '寄件區',
+      '寄件地址',
+    ]);
+  });
+
+  it('寄件郵遞區號有填時要 3 碼或 5 碼', () => {
+    expect(missingSenderFields(sender({ sender_zip: '10' }))).toEqual([
+      { key: 'sender_zip_format', label: '寄件郵遞區號（3 碼或 5 碼）' },
+    ]);
+    expect(missingSenderFields(sender({ sender_zip: '106' }))).toEqual([]);
+  });
+
+  it('寄件資訊整理：勾選時存寄件人、電話、郵遞區號、縣市、區、地址六欄（去頭尾空白）；未勾選時六欄清空', () => {
+    expect(normalizeSenderFields(sender({ sender_brand_name: '  晴禾選物 ', sender_zip: ' 106 ' }))).toEqual({
+      confidential_sender: true,
+      sender_brand_name: '晴禾選物',
+      sender_phone: '02-2755-0123',
+      sender_zip: '106',
+      sender_city: '台北市',
+      sender_district: '大安區',
+      sender_address: '復興南路一段 200 號 5 樓',
+    });
+    expect(normalizeSenderFields({ ...sender(), confidential_sender: false })).toEqual({
+      confidential_sender: false,
+      sender_brand_name: null,
+      sender_phone: null,
+      sender_zip: null,
+      sender_city: null,
+      sender_district: null,
+      sender_address: null,
+    });
+  });
+
+  it('四欄地址合成一行：郵遞區號空白隔開、其餘三欄相連；缺的欄位略過；全空回 null', () => {
+    expect(formatAddress({ zip: '110', city: '台北市', district: '信義區', address: '菸廠路 88 號 5 樓' })).toBe('110 台北市信義區菸廠路 88 號 5 樓');
+    expect(formatAddress({ city: '台北市', district: '信義區', address: '菸廠路 88 號 5 樓' })).toBe('台北市信義區菸廠路 88 號 5 樓');
+    expect(formatAddress({})).toBeNull();
+    expect(receiverAddressOf(MOCK_SHIPMENTS.find((x) => x.id === 'sh-0601'))).toBe('110 台北市信義區菸廠路 88 號 5 樓');
+  });
+
+  it('帳務公司寄件資訊為寄件人、電話＋地址四欄；一行顯示為「品牌｜電話｜郵遞區號 縣市區地址」', () => {
+    expect(SENDER_BY_ACCOUNT_COMPANY.SSP).toEqual({
+      brand_name: '感官文化印刷',
+      phone: '02 2736 6566',
+      zip: '235',
+      city: '新北市',
+      district: '中和區',
+      address: '建康路 168 號 3 樓',
+    });
+    expect(describeShipmentSender({ confidential_sender: false, sender_company_code: 'SSP' }, null)).toBe(
+      '感官文化印刷｜02 2736 6566｜235 新北市中和區建康路 168 號 3 樓',
+    );
+    expect(describeShipmentSender(MOCK_SHIPMENTS.find((x) => x.id === 'sh-0820'), { account_company: 'SSP' })).toBe(
+      '晴禾選物｜02-2755-0123｜106 台北市大安區復興南路一段 200 號 5 樓',
+    );
   });
 });
 
 // ── MOCK-DATA-CHAIN 出貨段落的資料形狀（改 mock 的唯一正本是 MOCK-DATA-CHAIN.md） ──
 
-describe('出貨單 mock 形狀：揀貨數量在明細，箱規與物流單號在子表；沒有實際出貨日、離廠時間與送達憑證', () => {
-  const byNo = (no) => MOCK_SHIPMENTS.find((sh) => sh.shipment_no === no);
+describe('出貨單 mock 形狀：揀貨數量在明細，箱規與物流單號在子表；物流單以我方自編單號識別、沒有獨立歷程', () => {
+  const byId = (id) => MOCK_SHIPMENTS.find((sh) => sh.id === id);
 
-  it('每張單的單頭都沒有實際出貨日、實際裝箱數量、箱規、照片、物流單號與送達欄位；物流單沒有離廠時間與送達憑證', () => {
+  it('每張單的單頭都沒有實際出貨日、實際裝箱數量、箱規、照片、物流單號與送達欄位；物流單沒有離廠時間、送達憑證、單一狀態欄與歷程（以我方自編單號識別）', () => {
     MOCK_SHIPMENTS.forEach((sh) => {
       ['actual_qty', 'per_box_qty', 'box_spec', 'packing_photos', 'tracking_no', 'boxes', 'actual_ship_date'].forEach((k) =>
-        expect(k in sh, `${sh.shipment_no} ${k}`).toBe(false),
+        expect(k in sh, `${sh.id} ${k}`).toBe(false),
       );
       ['shipped_at', 'shipped_by', 'delivered_at', 'delivered_by', 'delivery_proof'].forEach((k) => expect(k in sh, k).toBe(false));
       expect(Array.isArray(sh.packing_boxes)).toBe(true);
@@ -672,61 +855,83 @@ describe('出貨單 mock 形狀：揀貨數量在明細，箱規與物流單號�
       expect(Array.isArray(sh.packing_corrections)).toBe(true);
       expect(Array.isArray(sh.history)).toBe(true);
       sh.logistics_orders.forEach((l) => {
-        ['left_at', 'left_by', 'delivery_proof'].forEach((k) => expect(k in l, `${l.logistics_order_no} ${k}`).toBe(false));
+        ['left_at', 'left_by', 'delivery_proof', 'logistics_order_no', 'status', 'history'].forEach((k) =>
+          expect(k in l, `${l.own_order_no} ${k}`).toBe(false),
+        );
+        expect(l.own_order_no.startsWith(`${sh.shipment_no}-`), l.own_order_no).toBe(true);
       });
+      sh.packing_boxes.forEach((b) => expect('logistics_order_no' in b, `${sh.id} ${b.box_no}`).toBe(false));
     });
   });
 
-  it('SH-2026-0601 與 SH-2026-0602 明細照原值填：揀貨數量與出貨數量相符，送達數量等於揀貨數量', () => {
-    expect(byNo('SH-2026-0601').details[0]).toMatchObject({ qty: 3000, picked_qty: 3000, delivered_qty: 3000 });
-    expect(byNo('SH-2026-0602').details[0]).toMatchObject({ qty: 2000, picked_qty: 2000, delivered_qty: 2000 });
+  it('出貨單編號格式為 SH-年-月-日加當日流水號（至少三碼）；草稿沒有編號、顯示「－」', () => {
+    MOCK_SHIPMENTS.filter((sh) => sh.status !== '草稿').forEach((sh) =>
+      expect(sh.shipment_no, sh.id).toMatch(/^SH-\d{4}-\d{2}-\d{2}\d{3,}$/),
+    );
+    expect(byId('sh-0601').shipment_no).toBe('SH-2026-06-18001');
+    expect(byId('sh-0820').shipment_no).toBeNull();
+    expect(shipmentNoOf(byId('sh-0820'))).toBe('－');
   });
 
-  it('SH-2026-0601 是順豐五箱、一筆物流單、五個子單號，送達由物流商回傳（確認人為物流商同步），由物流單算出已送達', () => {
-    const sh = byNo('SH-2026-0601');
+  it('SH-2026-06-18001 與 SH-2026-06-22001 明細照原值填：揀貨數量與出貨數量相符，送達數量等於揀貨數量', () => {
+    expect(byId('sh-0601').details[0]).toMatchObject({ qty: 3000, picked_qty: 3000, delivered_qty: 3000 });
+    expect(byId('sh-0602').details[0]).toMatchObject({ qty: 2000, picked_qty: 2000, delivered_qty: 2000 });
+  });
+
+  it('SH-2026-06-18001 是順豐五箱、一筆物流單（我方自編單號 -01、拋單成功、貨態已送達）、五個子單號，送達由物流商回傳（確認人為物流商同步），由物流單算出已送達', () => {
+    const sh = byId('sh-0601');
     expect(sh.method).toBe('順豐');
     expect(sh.packing_boxes).toHaveLength(5);
     expect(sh.logistics_orders).toHaveLength(1);
-    expect(sh.logistics_orders[0]).toMatchObject({ logistics_order_no: 'SH-2026-0601-001', status: '已送達', delivered_by: '物流商同步' });
+    expect(sh.logistics_orders[0]).toMatchObject({
+      own_order_no: 'SH-2026-06-18001-01',
+      dispatch_status: '拋單成功',
+      cargo_status: '已送達',
+      delivered_by: '物流商同步',
+    });
     expect(sh.logistics_orders[0].tracking_no).toMatch(/^SF/);
+    expect(sh.packing_boxes.every((b) => b.logistics_id === sh.logistics_orders[0].id)).toBe(true);
     expect(new Set(sh.packing_boxes.map((b) => b.sub_tracking_no)).size).toBe(5);
     expect(shipmentStatusOf(sh)).toBe('已送達');
   });
 
-  it('SH-2026-0601 歷程照第三方新路徑：建立出貨單、開始揀貨、裝箱回報、確認可出貨、拋單或出貨確認（可出貨 → 等待出貨）、物流商回傳（運送中）、物流商回傳（已送達）；沒有已出貨', () => {
-    const sh = byNo('SH-2026-0601');
+  it('SH-2026-06-18001 歷程照第三方新路徑：建立出貨單、開始揀貨、裝箱回報、確認可出貨、拋單成功（已確認 → 待出貨）、貨態更新（運送中）、貨態更新（已送達）；沒有已出貨', () => {
+    const sh = byId('sh-0601');
     expect(sh.history.map((h) => h.category)).toEqual([
       '建立出貨單',
       '開始揀貨',
       '裝箱回報',
       '確認可出貨',
-      '拋單或出貨確認',
-      '物流商回傳',
-      '物流商回傳',
+      '拋單成功',
+      '貨態更新',
+      '貨態更新',
     ]);
     const statusAfters = sh.history.flatMap((h) => h.changes ?? []).filter((c) => c.field === '出貨單狀態').map((c) => c.after);
-    expect(statusAfters).toEqual(['未處理', '打包中', '已裝箱', '可出貨', '等待出貨', '運送中', '已送達']);
+    expect(statusAfters).toEqual(['未處理', '打包中', '已裝箱', '已確認', '待出貨', '運送中', '已送達']);
     expect(sh.history[0].actor).toBe(sh.created_by);
   });
 
-  it('SH-2026-0602 是自取兩箱、一筆物流單，已自取、沒有外部物流單號；歷程補交付確認：建立出貨單、開始揀貨、裝箱回報、確認可出貨、拋單或出貨確認（標記可自取）、交付確認', () => {
-    const sh = byNo('SH-2026-0602');
+  it('SH-2026-06-22001 是自取兩箱、一筆物流單，已自取、沒有拋單狀態與外部物流單號；歷程：建立出貨單、開始揀貨、裝箱回報、確認可出貨、出貨確認或標記可自取、交付確認', () => {
+    const sh = byId('sh-0602');
     expect(sh.method).toBe('自取');
-    expect(sh.logistics_orders[0]).toMatchObject({ status: '已自取', tracking_no: null });
+    expect(sh.logistics_orders[0]).toMatchObject({ cargo_status: '已自取', dispatch_status: null, tracking_no: null });
     expect(shipmentStatusOf(sh)).toBe('已送達');
-    expect(sh.history.map((h) => h.category)).toEqual(['建立出貨單', '開始揀貨', '裝箱回報', '確認可出貨', '拋單或出貨確認', '交付確認']);
+    expect(sh.history.map((h) => h.category)).toEqual(['建立出貨單', '開始揀貨', '裝箱回報', '確認可出貨', '出貨確認或標記可自取', '交付確認']);
   });
 
-  it('出貨單歷程的出貨動作時間取自物流單歷程的同一事件', () => {
-    const sh = byNo('SH-2026-0601');
-    const ship = sh.history.find((h) => h.category === '拋單或出貨確認');
-    const loShip = sh.logistics_orders[0].history.find((h) => h.category === '拋單或出貨確認');
-    expect(ship.at).toBe(loShip.at);
-    expect(ship.actor).toBe(loShip.actor);
+  it('物流單沒有獨立歷程：物流單的事件記在出貨單歷程，事件文字帶「（物流單 <我方自編單號>）」', () => {
+    const sh = byId('sh-0601');
+    const own = sh.logistics_orders[0].own_order_no;
+    const events = sh.history.filter((h) => ['拋單成功', '貨態更新'].includes(h.category));
+    expect(events).toHaveLength(3);
+    events.forEach((h) => expect(h.event).toContain(`（物流單 ${own}）`));
   });
 
-  it('草稿 SH-2026-0820 的明細、裝箱資料、物流單與歷程皆空', () => {
-    const draft = byNo('SH-2026-0820');
+  it('草稿（鏈四，客戶晨光文創）沒有出貨單編號；明細、裝箱資料、物流單與歷程皆空', () => {
+    const draft = byId('sh-0820');
+    expect(draft.status).toBe('草稿');
+    expect(draft.client_name).toContain('晨光文創');
+    expect(draft.shipment_no).toBeNull();
     expect(draft.details).toEqual([]);
     expect(draft.packing_boxes).toEqual([]);
     expect(draft.logistics_orders).toEqual([]);

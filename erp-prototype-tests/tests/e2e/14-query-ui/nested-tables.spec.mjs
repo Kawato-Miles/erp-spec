@@ -8,7 +8,7 @@ import { openAs } from '../_helpers.mjs';
 // 子表有自己的表頭；每列可展開；沒有子列時顯示「沒有資料」。
 // 樣式一致以展開列底色比對：nestedTableCss 把展開列的儲存格改成 surface 底色，五處取到的底色要相同。
 //
-// 起點資料：出貨管理鏈一 SH-2026-0601（有物流單）、鏈四 SH-2026-0820（草稿，沒有物流單）；
+// 起點資料：出貨管理鏈一 SH-2026-06-18001（有物流單）、鏈四晨光文創的出貨單草稿（沒有出貨單編號、沒有物流單，以客戶名稱認列）；
 // 訂單出貨單頁籤鏈一 ORD-2026-0601；訂單列表第一頁；訂單發票區鏈二 ORD-2026-0710（發票 SSP-26081201）；
 // 需求單詳情鏈一 Q-20260601-01（id=1）的報價紀錄頁籤。
 
@@ -44,15 +44,15 @@ test('14.44 子母表樣式五處一致：出貨管理、訂單出貨單頁籤�
 }) => {
   const backgrounds = {};
 
-  // 一、出貨管理：有物流單的 SH-2026-0601 與沒有物流單的草稿 SH-2026-0820
+  // 一、出貨管理：有物流單的 SH-2026-06-18001 與沒有物流單的鏈四草稿
   await openAs(page, '業務', '/qc-shipping/shipments');
-  const shipRow = page.locator('tr.ant-table-row').filter({ hasText: 'SH-2026-0601' }).first();
+  const shipRow = page.locator('tr.ant-table-row').filter({ hasText: 'SH-2026-06-18001' }).first();
   await shipRow.locator('.ant-table-row-expand-icon').click();
   const shipExpanded = shipRow.locator('xpath=following-sibling::tr[1]');
   await expect(shipExpanded).toHaveClass(/ant-table-expanded-row/);
   await expectSubTable(shipExpanded, '出貨管理');
   backgrounds['出貨管理'] = await expandedBackground(shipExpanded);
-  const draftRow = page.locator('tr.ant-table-row').filter({ hasText: 'SH-2026-0820' }).first();
+  const draftRow = page.locator('tr.ant-table-row').filter({ hasText: '晨光文創' }).first();
   await draftRow.locator('.ant-table-row-expand-icon').click();
   const draftExpanded = draftRow.locator('xpath=following-sibling::tr[1]');
   await expect(draftExpanded).toContainText('沒有資料');

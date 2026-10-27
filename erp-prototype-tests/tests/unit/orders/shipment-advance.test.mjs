@@ -3,7 +3,7 @@ import {
   isPrintItemDelivered,
   useOrdersStore,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/_lib/store.js';
-import { departed, logistics, packedShipment } from '../qc-shipping/_fixtures.mjs';
+import { departed, dispatched, packedShipment } from '../qc-shipping/_fixtures.mjs';
 import { useQcShippingStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/store.js';
 import { totalDeliveredQty } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/logistics-rules.js';
 
@@ -101,7 +101,7 @@ const deliveredShipment = packedShipment({
   printItemNo: 'PI-TEST-A',
   name: '甲印件',
   qty: 500,
-  logisticsOrders: [departed('SH-TEST-0001-001', '已送達')],
+  logisticsOrders: [departed('SH-TEST-0001-01', '已送達')],
 });
 
 // 草稿的印件列存在預計出貨印件、正式明細為空：收尾判定只認正式明細
@@ -132,7 +132,7 @@ describe('12.8 補充 異常的出貨單視為未收尾，已作廢的單先排�
     printItemNo: 'PI-TEST-A',
     name: '甲印件',
     qty: 100,
-    logisticsOrders: [departed('SH-TEST-0002-001', '例外事故', { exception_source: 'manual' })],
+    logisticsOrders: [departed('SH-TEST-0002-01', '例外事故', { exception_source: 'manual' })],
   });
   const voidedShipment = packedShipment({
     id: 'sh-void',
@@ -140,7 +140,7 @@ describe('12.8 補充 異常的出貨單視為未收尾，已作廢的單先排�
     name: '甲印件',
     qty: 100,
     status: '已作廢',
-    logisticsOrders: [departed('SH-TEST-0003-001', '已作廢')],
+    logisticsOrders: [departed('SH-TEST-0003-01', '已作廢')],
   });
 
   it('同一件印件另有一張異常的單時不收尾：異常不回補、仍佔用，要等例外物流單處理完', () => {
@@ -158,7 +158,7 @@ describe('12.8 補充 異常的出貨單視為未收尾，已作廢的單先排�
       name: '甲印件',
       qty: 500,
       logisticsOrders: [
-        departed('SH-TEST-0004-001', '已送達', {
+        departed('SH-TEST-0004-01', '已送達', {
           undelivered: [{ print_item_no: 'PI-TEST-A', qty: 100 }],
         }),
       ],
@@ -170,21 +170,21 @@ describe('12.8 補充 異常的出貨單視為未收尾，已作廢的單先排�
 // ── 12.8 送達由物流商回傳推進（shipment spec 本 change delta § 送達後的收尾判定、§ 物流單狀態推進與物流商回傳） ──
 
 describe('12.8 送達由物流商回傳推進，不經重新同步；最後一張送達才收尾', () => {
-  it('最後一張送達才收尾：PI-TEST-A 購買 500、順豐一筆物流單在等待出貨；物流商回傳在途不收尾；回傳配達後出貨單已送達、送達數量 500、印件已送達、訂單完成', () => {
+  it('最後一張送達才收尾：PI-TEST-A 購買 500、順豐一筆物流單已拋單成功、貨態待出貨；物流商回傳在途不收尾；回傳配達後出貨單已送達、送達數量 500、印件已送達、訂單完成', () => {
     seedOrder({ orderStatus: '出貨中', itemStatus: '出貨中' });
     useOrdersStore.setState({
       orders: [{ ...orderNow(), print_items: orderNow().print_items.map((p) => (p.print_item_no === 'PI-TEST-B' ? { ...p, print_item_status: '已送達' } : p)) }],
     });
     useQcShippingStore.setState({
       shipments: [
-        packedShipment({ id: 'sh-sf', orderNo: ORDER_NO, method: '順豐', printItemNo: 'PI-TEST-A', name: '甲印件', qty: 500, logisticsOrders: [logistics('SH-TEST-SF-001', '等待出貨', { tracking_no: 'SF1' })] }),
+        packedShipment({ id: 'sh-sf', orderNo: ORDER_NO, method: '順豐', printItemNo: 'PI-TEST-A', name: '甲印件', qty: 500, logisticsOrders: [dispatched('SH-TEST-SF-01', { tracking_no: 'SF1' })] }),
       ],
       downloadFiles: [],
     });
     const q = useQcShippingStore.getState();
-    q.receiveCarrierReply('sh-sf', 'SH-TEST-SF-001', { reply: '在途' });
+    q.receiveCarrierReply('sh-sf', 'SH-TEST-SF-01', { reply: '在途' });
     expect(itemStatusOf('PI-TEST-A')).toBe('出貨中');
-    const r = useQcShippingStore.getState().receiveCarrierReply('sh-sf', 'SH-TEST-SF-001', { reply: '配達' });
+    const r = useQcShippingStore.getState().receiveCarrierReply('sh-sf', 'SH-TEST-SF-01', { reply: '配達' });
     expect(r.ok).toBe(true);
     const sh = useQcShippingStore.getState().shipments[0];
     expect(sh.details[0].delivered_qty).toBe(500);
@@ -194,16 +194,16 @@ describe('12.8 送達由物流商回傳推進，不經重新同步；最後一�
   });
 
   it('補做超量送達不卡住判定：購買 300、出了 330 全數送達 → 成立', () => {
-    const over = packedShipment({ id: 'sh-over', printItemNo: 'PI-TEST-A', name: '甲印件', qty: 330, logisticsOrders: [logistics('L-1', '已送達')] });
+    const over = packedShipment({ id: 'sh-over', printItemNo: 'PI-TEST-A', name: '甲印件', qty: 330, logisticsOrders: [departed('L-1', '已送達')] });
     expect(isPrintItemDelivered({ print_item_no: 'PI-TEST-A', ordered_qty: 300 }, [over])).toBe(true);
   });
 
   it('售後補做量於印件終態後送達只記數不動狀態：印件已送達（累計 1,000）後補出 100 送達 → 累計送達數 1,100、印件維持已送達', () => {
     seedOrder({ orderStatus: '訂單完成', itemStatus: '已送達' });
-    const first = packedShipment({ id: 'sh-1', orderNo: ORDER_NO, printItemNo: 'PI-TEST-A', name: '甲印件', qty: 1000, logisticsOrders: [logistics('SH-1-001', '已送達')] });
-    const extra = packedShipment({ id: 'sh-2', shipmentNo: 'SH-TEST-0002', orderNo: ORDER_NO, method: '專車配送', printItemNo: 'PI-TEST-A', name: '甲印件', qty: 100, logisticsOrders: [logistics('SH-TEST-0002-001', '已出貨')] });
+    const first = packedShipment({ id: 'sh-1', orderNo: ORDER_NO, printItemNo: 'PI-TEST-A', name: '甲印件', qty: 1000, logisticsOrders: [departed('SH-1-01', '已送達')] });
+    const extra = packedShipment({ id: 'sh-2', shipmentNo: 'SH-TEST-0002', orderNo: ORDER_NO, method: '專車配送', printItemNo: 'PI-TEST-A', name: '甲印件', qty: 100, logisticsOrders: [departed('SH-TEST-0002-01', '已出貨')] });
     useQcShippingStore.setState({ shipments: [first, extra], downloadFiles: [] });
-    expect(useQcShippingStore.getState().confirmLogisticsDelivery('sh-2', 'SH-TEST-0002-001', { operator: '曾志偉' }).ok).toBe(true);
+    expect(useQcShippingStore.getState().confirmLogisticsDelivery('sh-2', 'SH-TEST-0002-01', { operator: '曾志偉' }).ok).toBe(true);
     expect(totalDeliveredQty(useQcShippingStore.getState().shipments, 'PI-TEST-A')).toBe(1100);
     expect(itemStatusOf('PI-TEST-A')).toBe('已送達');
   });

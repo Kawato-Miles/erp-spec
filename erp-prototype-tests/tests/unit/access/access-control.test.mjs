@@ -174,12 +174,11 @@ describe('12.53 活動清單沒有列出的角色進不了下載中心', () => {
     }
   });
 
-  it('確認可出貨與撤回確認可出貨只給揀貨人員（ACT-SHP-042、043）；業務沒有', () => {
-    for (const op of ['OP-SHP-023', 'OP-SHP-024']) {
-      expect(canDo(person('picker', '范姜宏'), op, {}), op).toBe(true);
-      expect(canDo(person('sales', '洪嘉駿'), op, { '訂單 接單業務': '洪嘉駿' }), op).toBe(false);
-      expect(canDo(person('shipper', '曾志偉'), op, {}), op).toBe(false);
-    }
+  it('確認可出貨只給揀貨人員（ACT-SHP-042）；業務與出貨人員沒有', () => {
+    const op = 'OP-SHP-023';
+    expect(canDo(person('picker', '范姜宏'), op, {})).toBe(true);
+    expect(canDo(person('sales', '洪嘉駿'), op, { '訂單 接單業務': '洪嘉駿' })).toBe(false);
+    expect(canDo(person('shipper', '曾志偉'), op, {})).toBe(false);
   });
 
   it('重新同步、補附送達憑證、下載全部物流單已不在活動表', () => {
