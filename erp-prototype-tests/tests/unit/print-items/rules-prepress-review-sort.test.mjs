@@ -6,23 +6,25 @@ import {
   compareOrdersByReviewSortKey,
   isPrintItemUrgent,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/prepress-review/_lib/selectors.js';
+import { nextWorkingDay } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/_lib/delivery-chain.js';
 
 // 5.13 待審清單依印件內部完成日排序、空值排最後（2.13 排序鍵純函式）
 // prepress-review spec § 待審清單排序與停滯規則：待審清單（含待審訂單模組）依印件
 //「印件內部完成日」近者優先排序，空值排在有值之後，同組依印件編號排序；不用建立時間先進先出。
-// 印件不存這個日期欄，印件內部完成日一律由業務壓的「未扣急件內部完成日」減急件選項凍結天數
-//（以工作天計）推導（order-management spec § 印件內部完成日推導）。
-// 排序鍵取的是**扣急件之後**的值：急件已扣在印件內部完成日裡，排序時不必再算一次急件。
+// 印件內部完成日一律由業務填的「印件預計交期」往前減 1 個工作天推導，急件選項不參與
+//（order-management spec § 印件內部完成日推導，急件新定義 2026-10-27）。
+// 急件只做標示、不影響排序：急件在線下單不再因扣天數而排前，除非業務把預計交期壓早。
 // 畫面上母列以「訂單」為單位呈現（ReviewOrderList.js defaultExpandAllRows，
 // 排序只作用在 orders.sort(compareOrdersByReviewSortKey)），故用訂單級的排序鍵函式驗算；
 // 每張測試訂單只掛一件印件時，訂單的排序鍵等於該印件自身的內部完成日，等同驗證 spec Scenario
 // 「審稿人員名下三件待審印件」的排序結果。
 
-const item = (printItemNo, undeductedDate, overrides = {}) => ({
+// 第二參數為「印件內部完成日」：以其下一個工作天當印件預計交期，推回來即為該日
+const item = (printItemNo, internalDate, overrides = {}) => ({
   print_item_no: printItemNo,
   review_status: '等待審稿',
   print_item_status: '製程已確認',
-  undeducted_internal_due_date: undeductedDate,
+  expected_delivery_date: internalDate ? nextWorkingDay(internalDate) : null,
   urgent_option_days: 0,
   ...overrides,
 });
@@ -31,7 +33,6 @@ const order = (orderNo, items) => ({ order_no: orderNo, status: '製作等待中
 
 describe('5.13 待審清單依印件內部完成日排序、空值排最後', () => {
   it('依印件內部完成日近者優先排序（spec 範例 09-18、09-20、09-25）', () => {
-    // 一般件（凍結天數 0）：印件內部完成日等於未扣急件內部完成日
     const orders = [
       order('ORD-A', [item('PI-A', '2026-09-21')]), // 印件內部完成日 2026-09-21
       order('ORD-B', [item('PI-B', '2026-09-25')]), // 印件內部完成日 2026-09-25
@@ -41,7 +42,7 @@ describe('5.13 待審清單依印件內部完成日排序、空值排最後', ()
     expect(sorted).toEqual(['ORD-C', 'ORD-A', 'ORD-B']);
   });
 
-  it('未扣急件內部完成日未填（印件內部完成日為空）者排在有值之後', () => {
+  it('印件預計交期未填（印件內部完成日為空）者排在有值之後', () => {
     const orders = [
       order('ORD-EMPTY', [item('PI-EMPTY', null)]),
       order('ORD-LATE', [item('PI-LATE', '2026-09-21')]), // 印件內部完成日 2026-09-21
@@ -51,15 +52,15 @@ describe('5.13 待審清單依印件內部完成日排序、空值排最後', ()
     expect(sorted).toEqual(['ORD-EARLY', 'ORD-LATE', 'ORD-EMPTY']);
   });
 
-  it('急件件排在未扣值較早的一般件之前（排序鍵取扣急件之後的值）', () => {
-    // 甲：未扣值 2026-10-15、一般件 → 印件內部完成日 2026-10-15
-    // 乙：未扣值 2026-10-16、凍結天數 3 → 印件內部完成日 2026-10-13
+  it('急件只做標示、不影響排序：內部完成日較晚的急件仍排在一般件之後', () => {
+    // 甲：一般件 → 印件內部完成日 2026-10-15
+    // 乙：三天急件（凍結天數 3）→ 印件內部完成日 2026-10-16（急件不扣日期）
     const orders = [
-      order('ORD-甲', [item('PI-甲', '2026-10-15')]),
       order('ORD-乙', [item('PI-乙', '2026-10-16', { urgent_option_days: 3 })]),
+      order('ORD-甲', [item('PI-甲', '2026-10-15')]),
     ];
     const sorted = [...orders].sort(compareOrdersByReviewSortKey).map((o) => o.order_no);
-    expect(sorted).toEqual(['ORD-乙', 'ORD-甲']);
+    expect(sorted).toEqual(['ORD-甲', 'ORD-乙']);
   });
 
   it('全數待審印件皆已收斂或無交期時排到最後，訂單本身不受此影響出清單', () => {
@@ -105,6 +106,14 @@ describe('6.5 急單標示取印件急件選項，不誤讀訂單層欄位', () 
     expect(isPrintItemUrgent(urgentItem)).toBe(true);
     expect(isPrintItemUrgent(normalItem)).toBe(false);
   });
+
+  it('急單標示判準為凍結天數大於 0：延後型（−2）不標', () => {
+    const delayed = item('PI-DELAY', '2026-09-20', {
+      urgent_option_days: -2,
+      urgent_option_name: '延後 2 天',
+    });
+    expect(isPrintItemUrgent(delayed)).toBe(false);
+  });
 });
 
 // 5.15 母列的印件預計交期取旗下未收斂印件最早的那一個（2.12）
@@ -140,7 +149,7 @@ describe('5.15 母列的印件預計交期取旗下未收斂印件最早的那�
     expect(computeOrderDaysToDeadline(target, Date.parse('2026-10-15T00:00:00Z'))).toBe(2);
   });
 
-  it('旗下印件的未扣急件內部完成日全部留空時取值為空，距交期天數同樣為空', () => {
+  it('旗下印件的印件預計交期全部留空時取值為空，距交期天數同樣為空', () => {
     const blank = order('ORD-BLANK', [item('PI-B1', null), item('PI-B2', null)]);
     expect(computeOrderDeadline(blank)).toBeNull();
     expect(computeOrderDaysToDeadline(blank)).toBeNull();

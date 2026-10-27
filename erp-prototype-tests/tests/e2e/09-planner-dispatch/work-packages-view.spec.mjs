@@ -87,10 +87,10 @@ test('9.5 師傅在我的工作包只看得到自己被指派的工作包（原�
   await expect(page.getByRole('button', { name: '取消工作包' })).toHaveCount(0);
 });
 
-test('9.11 現場三頁的印件內部完成日印合併格式', async ({ page }) => {
-  // 起點資料：鏈四 WO-2026-0820（三天急件，印件內部完成日 2026-09-04、未扣急件 2026-09-09）
-  // 與鏈三 WO-2026-0815（一般件，兩個日期同為 2026-10-02）
-  // 期望值取自 Miles 2026-09-21 拍板的合併格式與工作天算式，不由實作反推。
+test('9.11 現場三頁的印件內部完成日只印一組日期，急件任務帶急件標注', async ({ page }) => {
+  // 起點資料：鏈四 WO-2026-0820（三天急件，印件預計交期 2026-09-07、印件內部完成日 2026-09-04）
+  // 與鏈三 WO-2026-0815（一般件，印件內部完成日 2026-10-02）
+  // 期望值取自 order-management spec § 印件內部完成日推導（急件新定義 2026-10-27）：急件不改日期
   // 三頁的順序先開工廠總覽：它在側欄另一個群組，站內導頁進得去、出得來（見 9.7）
   await openAs(page, '生管', '/production-floor/schedule');
   const scheduleRow = page
@@ -101,18 +101,21 @@ test('9.11 現場三頁的印件內部完成日印合併格式', async ({ page }
   await expect(scheduleRow).toContainText('2026-10-02');
   await expect(scheduleRow.getByText('未扣急件')).toHaveCount(0);
 
-  // 生產任務管理：待派清單只有鏈三四筆（一般件），只印一組日期、不加括號
+  // 生產任務管理：待派清單只有鏈三四筆（一般件），只印一組日期、不帶急件標注
   await gotoInApp(page, '/production-floor/dispatch');
   const dispatchRow = page.locator('tr', { hasText: '牛皮紙 150g 備料' }).first();
   await expect(dispatchRow).toContainText('2026-10-02');
   await expect(dispatchRow.getByText('未扣急件')).toHaveCount(0);
+  await expect(dispatchRow.getByText('急件', { exact: true })).toHaveCount(0);
 
-  // 工作包管理：展開鏈四任一包，旗下任務的印件內部完成日帶括號印出未扣值
+  // 工作包管理：鏈四的包帶急件標注；展開後旗下任務的印件內部完成日只印 2026-09-04
   await gotoInApp(page, '/production-floor/work-packages');
   const urgentPkg = page.locator('tr', { hasText: 'WP-2026-0820-01' });
+  await expect(urgentPkg.getByText('急件', { exact: true })).toBeVisible();
   await urgentPkg.getByLabel('展開行').click();
   const urgentTasks = urgentPkg.locator('xpath=following-sibling::tr[1]');
-  await expect(urgentTasks).toContainText('2026-09-04（未扣急件 2026-09-09）');
+  await expect(urgentTasks).toContainText('2026-09-04');
+  await expect(urgentTasks).not.toContainText('未扣急件');
 });
 
 test('9.13 工作包的師傅不可改，換人走取消工作包後重新打包；取消即刪除，報工不帶工作包連結', async ({ page }) => {

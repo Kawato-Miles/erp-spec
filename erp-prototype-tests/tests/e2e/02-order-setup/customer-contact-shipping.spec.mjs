@@ -35,19 +35,15 @@ test('2.5 訂單客戶與窗口聯絡人維護（商業需求覆蓋矩陣 B）',
   await expect(button(page, '切換窗口聯絡人')).toBeVisible();
 });
 
-// fixme：情境 2.5 要求「填審稿前預計出貨日與審稿後預計出貨日」，但出貨資訊卡目前沒有這兩個
-// 欄位的編輯入口——headerActions 只有「變更出貨方式」一顆按鈕（開的側板只有出貨方式一個下拉），
-// 審稿前／審稿後預計出貨日在 Descriptions 內一律唯讀顯示（orders/_components/detail/InfoTab.js
-// SHIPPING_FIELDS 沒有對應的可編輯欄，也沒有第二顆「編輯」鈕）。與 prototype 不符，不改測試迎合、
-// 不改 prototype，回報待裁決。
-test.fixme(
-  '2.5（未實作段）出貨資訊卡的審稿前／審稿後預計出貨日可各自獨立填寫',
-  async ({ page }) => {
-    await openScenario(page, '業務', '/orders', { openAs, switchRole });
-    await openByNo(page, 'ORD-2026-0710');
-    await openTab(page, '資訊');
-    await expect(page.getByLabel('審稿前預計出貨日')).toBeVisible();
-    await page.getByLabel('審稿前預計出貨日').fill('2026-09-18');
-    await expect(page.getByLabel('審稿後預計出貨日')).toBeVisible();
-  },
-);
+// 2.5 兩個預計出貨日：急件新定義（OpenSpec change rush-order-definition，Miles 2026-10-27）後，
+// 審稿前與審稿後預計出貨日只屬線上單（由系統推算，推算規則待 ORD-061 拍板、Prototype 尚未實作），
+// 線下單不顯示這兩欄，也沒有編輯入口。
+test('2.5 線下單的出貨資訊卡不顯示審稿前與審稿後預計出貨日', async ({ page }) => {
+  await openScenario(page, '業務', '/orders', { openAs, switchRole });
+  await openByNo(page, 'ORD-2026-0710');
+  await openTab(page, '資訊');
+  // 出貨資訊卡仍在（出貨方式照常顯示）
+  await expect(page.locator('th.ant-descriptions-item-label', { hasText: '出貨方式' }).first()).toBeVisible();
+  await expect(page.getByText('審稿前預計出貨日')).toHaveCount(0);
+  await expect(page.getByText('審稿後預計出貨日')).toHaveCount(0);
+});

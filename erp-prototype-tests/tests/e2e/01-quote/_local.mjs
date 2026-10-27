@@ -117,7 +117,7 @@ export async function submitQuoteHeader(
 
 /**
  * 業務在需求單列表建一張新單頭並進入詳情頁。回傳新單號，操作結束時已在詳情頁。
- * 單頭已無任何交期欄——交期鏈的起點是印件層的「印件內部完成日」，逐列手填、無預設值。
+ * 單頭已無任何交期欄——交期鏈的起點是印件項目的「印件預計交期」，逐列手填、無預設值。
  * 建立者與接單業務須是同一人（預設洪嘉駿）：建立者不因建立而看得到單，指定別人負責請改用 submitQuoteHeader。
  */
 export async function createQuoteHeader(page, options) {
@@ -132,7 +132,7 @@ export async function createQuoteHeader(page, options) {
 /**
  * 在詳情頁新增一筆印件項目。difficulty／unitPrice／costEstimate 為 null 時該欄留空
  * （用於測試「缺漏即擋下轉換」）。
- * undeductedInternalDueDate 選填：不傳＝維持空白（欄位本來就沒有預設值，覆蓋「這件還沒談定
+ * expectedDeliveryDate 選填（印件預計交期）：不傳＝維持空白（欄位本來就沒有預設值，覆蓋「這件還沒談定
  * 交期」的情境）；傳字串＝填成該日期。
  */
 export async function addItem(
@@ -144,7 +144,7 @@ export async function addItem(
     difficulty = 3,
     unitPrice,
     costEstimate,
-    undeductedInternalDueDate,
+    expectedDeliveryDate,
   },
 ) {
   const panel = drawer(page);
@@ -157,9 +157,9 @@ export async function addItem(
   if (costEstimate != null) {
     await panel.getByLabel('成本估算（未稅）').fill(String(costEstimate));
   }
-  if (undeductedInternalDueDate) {
-    // 需求單不標示急件，側板可填日期欄標為「印件內部完成日」（底層仍存未扣值欄位）
-    await pickDate(panel.getByLabel('印件內部完成日'), undeductedInternalDueDate);
+  if (expectedDeliveryDate) {
+    // 需求單印件項目只有一格日期欄「印件預計交期」，轉訂單直接帶入印件（急件新定義 2026-10-27）
+    await pickDate(panel.getByLabel('印件預計交期'), expectedDeliveryDate);
   }
   await button(panel, '確認').click();
   await waitModalsClosed(page);

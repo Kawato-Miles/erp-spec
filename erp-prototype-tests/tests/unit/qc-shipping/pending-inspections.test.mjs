@@ -178,7 +178,8 @@ describe('11.22 沒有內部完成日的印件排最後，同日依最後一次�
         {
           print_item_no: 'PI-TEST-LATE',
           name: '晚報工',
-          undeducted_internal_due_date: '2026-09-30',
+          // 印件預計交期 2026-10-01（四）→ 印件內部完成日 2026-09-30（三）
+          expected_delivery_date: '2026-10-01',
           urgent_option_id: 'UO-001',
           urgent_option_name: '一般件',
           urgent_option_days: 0,
@@ -186,7 +187,8 @@ describe('11.22 沒有內部完成日的印件排最後，同日依最後一次�
         {
           print_item_no: 'PI-TEST-EARLY',
           name: '早報工',
-          undeducted_internal_due_date: '2026-09-30',
+          // 印件預計交期 2026-10-01（四）→ 印件內部完成日 2026-09-30（三）
+          expected_delivery_date: '2026-10-01',
           urgent_option_id: 'UO-001',
           urgent_option_name: '一般件',
           urgent_option_days: 0,
@@ -194,7 +196,7 @@ describe('11.22 沒有內部完成日的印件排最後，同日依最後一次�
         {
           print_item_no: 'PI-TEST-NODATE',
           name: '沒談定日期',
-          undeducted_internal_due_date: null,
+          expected_delivery_date: null,
           urgent_option_id: 'UO-001',
           urgent_option_name: '一般件',
           urgent_option_days: 0,

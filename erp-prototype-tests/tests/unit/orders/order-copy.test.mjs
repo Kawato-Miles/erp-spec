@@ -117,8 +117,11 @@ describe('2.28 複製訂單：新訂單的接單業務為執行複製的人', ()
     expect(copy.print_items.map((p) => [p.name, p.ordered_qty, p.unit_price_untaxed, p.spec_notes])).toEqual(
       source.print_items.map((p) => [p.name, p.ordered_qty, p.unit_price_untaxed, p.spec_notes]),
     );
-    expect(copy.print_items.map((p) => p.undeducted_internal_due_date)).toEqual(
-      source.print_items.map((p) => p.undeducted_internal_due_date),
+    // 各印件的印件預計交期、推得的印件內部完成日與急件選項原值帶入（急件新定義 2026-10-27）
+    expect(
+      copy.print_items.map((p) => [p.expected_delivery_date, p.delivery_date, p.urgent_option_id]),
+    ).toEqual(
+      source.print_items.map((p) => [p.expected_delivery_date, p.delivery_date, p.urgent_option_id]),
     );
     expect(copy.other_fees.map((f) => f.amount_untaxed)).toEqual(source.other_fees.map((f) => f.amount_untaxed));
     expect(copy.total_amount_taxed).toBe(source.total_amount_taxed);

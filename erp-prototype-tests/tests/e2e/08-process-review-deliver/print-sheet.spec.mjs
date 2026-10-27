@@ -49,7 +49,7 @@ test('8.6 印務列印紙本工單，版式與欄位範圍固定且不含價格�
     ['印件名稱', '名片', '印務', '周建宏'],
     // 電話取負責印務在人員資料的聯絡電話（周建宏已填）
     ['印件數量', '123', '電話', '02-2721-5588 #211'],
-    // 表頭日期欄為「印件內部完成日」：PI-2026-0801 未扣急件內部完成日 2026-09-09、一般件不扣天數
+    // 表頭日期欄為「印件內部完成日」：PI-2026-0801 印件預計交期 2026-09-10 往前減 1 個工作天
     ['工單日期', '2026-09-03', '印件內部完成日', '2026-09-09'],
   ];
   for (const [k1, v1, k2, v2] of pairs) {
@@ -189,11 +189,13 @@ test('8.7 送審前可預覽紙本；列印限負責印務、編輯分享成員�
 test('8.8 急件工單的紙本標示與印件內部完成日（原編號 170）', async ({ page }) => {
   await openAs(page, '印務', '/work-orders/print?id=wo-2026-0820');
 
-  // 表頭日期欄為「印件內部完成日」：PI-2026-0820 未扣急件內部完成日 2026-09-09 往前數三個
-  // 工作天（9/8、9/7、9/4）＝ 2026-09-04；有扣減時括號帶未扣值
+  // 表頭日期欄為「印件內部完成日」：取工單承接的那一格，PI-2026-0820 印件預計交期 2026-09-07（一）
+  // 往前減 1 個工作天＝ 2026-09-04（五）；三天急件不改日期、只在表頭帶急件標注
   const infoTable = page.locator('table').first();
   const dueRow = infoTable.locator('tr').filter({ hasText: '印件內部完成日' }).first();
-  await expect(dueRow).toContainText('2026-09-04（未扣急件 2026-09-09）');
+  await expect(dueRow).toContainText('2026-09-04');
+  await expect(dueRow).not.toContainText('未扣急件');
+  await expect(infoTable.getByText('＊急件')).toBeVisible();
 
   // 明細每一列的製作細節欄列首都有紅色急件標記
   const detailRows = page.locator('table').nth(1).locator('tbody tr');
@@ -206,8 +208,8 @@ test('8.8 急件工單的紙本標示與印件內部完成日（原編號 170）
     await expect(mark).toHaveCSS('color', 'rgb(226, 52, 29)');
   }
 
-  // 一般件的對照組（錨例 WO-2026-0908／PI-2026-0801）：沒有急件標記，
-  // 印件內部完成日＝未扣急件內部完成日 2026-09-09（一般件凍結天數 0，兩者同一天、不加括號）
+  // 一般件的對照組（錨例 WO-2026-0908／PI-2026-0801）：表頭與明細都沒有急件標記，
+  // 印件內部完成日 2026-09-09（印件預計交期 2026-09-10 往前減 1 個工作天）
   await clickAndWaitUrl(
     page,
     page.getByRole('button', { name: '回工單詳情' }).first(),
@@ -231,8 +233,8 @@ test('8.8 急件工單的紙本標示與印件內部完成日（原編號 170）
 });
 
 test('8.8（補）印件內部完成日為空時印據表頭印破折號', async ({ page }) => {
-  // 鏈二 PI-2026-0710／WO-2026-0710：業務把印件的未扣急件內部完成日清空，印件內部完成日與
-  // 印件預計交期同為空、非終態工單承接值同步為 null；印據表頭不留空白、不擋列印，印破折號
+  // 鏈二 PI-2026-0710／WO-2026-0710：業務把印件的印件預計交期清空，印件內部完成日同為空、
+  // 非終態工單承接的兩欄同步為 null；印據表頭不留空白、不擋列印，印破折號
   //（work-order spec § 工單列印單據 Scenario「工單交期為空時印據表頭印「－」」）。
   // 全套連跑時開發伺服器的部分程式區塊遲遲不回，load 事件等不到；頁面結構載入後即可操作，切角色會等畫面出現
   await page.goto('/orders/detail?id=ORD-2026-0710&tab=printItems', { waitUntil: 'domcontentloaded' });
@@ -240,7 +242,7 @@ test('8.8（補）印件內部完成日為空時印據表頭印破折號', async
   const row = page.locator('tr', { hasText: 'PI-2026-0710' });
   // 清除鈕只在 hover 時才顯示、位置常落在可視區外；直接對元素派送 click 事件繞開座標可視性檢查
   const dueDateClear = page
-    .locator('.ant-form-item', { hasText: '未扣急件內部完成日' })
+    .locator('.ant-form-item', { hasText: '印件預計交期' })
     .locator('.ant-picker-clear');
   // 頁面結構載入後可能尚未接上互動，第一次點擊會落空；重試到編輯表單出現
   await expect(async () => {
@@ -250,7 +252,7 @@ test('8.8（補）印件內部完成日為空時印據表頭印破折號', async
   await dueDateClear.evaluate((el) => el.click());
   await page.getByRole('button', { name: '確認' }).click();
   await expect(
-    page.getByText(/印件內部完成日重算為「未定」、印件預計交期已依新的印件內部完成日重算為「未定」/),
+    page.getByText(/印件內部完成日重算為「未定」/),
   ).toBeVisible();
   await expect(row.getByText('－').first()).toBeVisible();
 

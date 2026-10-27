@@ -10,7 +10,14 @@ export default defineConfig({
     alias: [
       { find: '@shared', replacement: SHARED_ROOT },
       { find: '@', replacement: ERP_APP_SRC },
-      { find: ERP_DEFAULT_ROOT, replacement: ERP_ROOT },
+      // 以正規式錨定開頭、且排除已經指到工作副本的路徑：工作副本放在主 repo 底下
+      // （.claude/worktrees/…）時，改寫後的路徑仍以主 repo 前綴開頭，字串別名會再套一次而重複
+      {
+        find: new RegExp(
+          `^${ERP_DEFAULT_ROOT.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?!/\\.claude/worktrees/)`,
+        ),
+        replacement: ERP_ROOT,
+      },
     ],
     extensions: ['.js', '.jsx', '.mjs', '.json'],
   },
