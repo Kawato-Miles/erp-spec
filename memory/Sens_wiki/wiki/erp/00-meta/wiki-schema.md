@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-10-22
+last-reviewed: 2026-10-27
 ---
 
 # Wiki Schema（Formal）
@@ -21,8 +21,8 @@ last-reviewed: 2026-10-22
 | `role` | 角色 R&R | `03-roles/` |
 | `service-blueprint` | 服務藍圖（公司提供什麼服務、階段與階段先後） | `04-business-logic/服務藍圖/` |
 | `activity-list` | 活動清單（服務藍圖一個階段的活動：誰在什麼範圍做哪個操作） | `04-business-logic/服務藍圖/<藍圖名>/` |
-| `controlled-list` | 受控清單（範圍用詞、動作類型、單據代碼、活動清單代碼的值域正本；全庫一張） | `04-business-logic/營運規則/` |
-| `process-architecture` | 流程架構（類別與流程群組的歸屬正本；全庫一張） | `04-business-logic/營運規則/` |
+| `controlled-list` | 受控清單（範圍用詞、動作類型、單據代碼、活動清單代碼的值域正本；全庫一張） | `04-business-logic/` |
+| `process-architecture` | 流程架構（類別與流程群組的歸屬正本；全庫一張） | `04-business-logic/` |
 | `business-rule` | 商業規則（決策邏輯、領域知識、外部約束） | `04-business-logic/` 各子目錄 |
 | `entity` | 資料模型實體 | `05-entities/` |
 | `structure-overview` | 資料結構總覽（ER 圖＋單據流＋資料流＋關聯明細表；全系統一張為關聯唯一正本，領域各一張為領域視角） | `05-entities/`（與該領域實體卡同層） |
@@ -84,7 +84,7 @@ tags:
 | `answered` | OQ 已解答 |
 | `cancelled` | OQ 取消（已不適用）|
 | `raw` | raw 卡剛寫入，待精練 |
-| `reviewed` | raw 卡已分析，等待 Miles 確認 |
+| `reviewed` | raw 卡已分析，等待使用者確認 |
 | `ingested` | raw 卡內容已寫入既有 vault 卡 / 升級為 OQ |
 
 ## 四、各 type 必填 Frontmatter 欄位
@@ -216,7 +216,7 @@ last-reviewed: 2026-09-01
 ---
 ```
 
-- 全庫一張：[[受控清單]]，放 `04-business-logic/營運規則/`；不設 `mutability`。
+- 全庫一張：[[受控清單]]，放 `04-business-logic/`（與規範、範例同層，不進營運規則目錄）；不設 `mutability`。
 - 段落比照 [[範本 - 商業規則]] 的卡頂引言、現況、規則、為什麼這樣定、適用範圍、範圍外、相關卡；「規則」段每類值域一張表（值／定義），不寫例子段。
 - 只登記值域與定義，不寫誰能做什麼、不寫流程；新增值先改本卡，再在引用處使用（取號規約見 § 七 操作編號與活動編號）。
 
@@ -234,7 +234,7 @@ last-reviewed: 2026-09-01
 ---
 ```
 
-- 全庫一張：[[流程架構]]，放 `04-business-logic/營運規則/`；不設 `mutability`。
+- 全庫一張：[[流程架構]]，放 `04-business-logic/`（與規範、範例同層，不進營運規則目錄）；不設 `mutability`。
 - 段落比照 [[範本 - 商業規則]] 的卡頂引言、現況、規則、為什麼這樣定、適用範圍、範圍外、相關卡；「規則」段承載層級表與「類別｜判準｜流程群組」表。
 - 只登記類別與流程群組的歸屬，不寫階段（屬 `service-blueprint`）；新增流程群組先登記本卡再建群組卡（判準見 `04-business-logic/規範 - 商業邏輯.md` § 二）。
 
@@ -338,7 +338,7 @@ status: open | answered | cancelled   # 嚴格限此值域，禁 resolved / clos
 priority: high | medium | low
 audience: internal | external
 # audience 判斷問句：「誰能回答這個問題？」
-#   internal＝開發迭代待確認議題（Miles 或內部討論可拍板）
+#   internal＝開發迭代待確認議題（使用者或內部討論可拍板）
 #   external＝要與業務單位確認的未知內容（商業層面：現場實務／客戶慣例／計價緣由），彙整推送 Notion Follow-up DB
 raised-at: YYYY-MM-DD
 raised-by: <誰提出>
@@ -349,7 +349,7 @@ related-oq:
   - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名
 related-change:                     # 承接此問題的 OpenSpec change 名（可多值）；無則刪整個欄位
   - <change 名>
-expected-resolution-at: YYYY-MM-DD 或里程碑文字（如「上線前」「MES 設計階段」）  # 一律選填；何時確認由 Miles 排程，開卡時不代填時點、不硬填假日期
+expected-resolution-at: YYYY-MM-DD 或里程碑文字（如「上線前」「MES 設計階段」）  # 一律選填；何時確認由使用者排程，開卡時不代填時點、不硬填假日期
 answered-at: YYYY-MM-DD  # 拍板時填
 answered-by: <拍板者>
 notion-url: <external 推送 Notion 後回填>
@@ -381,7 +381,7 @@ ingested-to:                                           # status=ingested 時填
 ```
 
 **防止 AI 拿自己寫的東西當依據再生內容的規約**：
-- `claude-self-capture` 必須 Miles 確認才寫入
+- `claude-self-capture` 必須使用者確認才寫入
 - `claude-research` 必須附真實 raw-source-link，無來源不寫
 - `miles-upload` 必須附真實 raw-source-link（原始檔出處）+ 原檔搬進 `raw/_attachments/<檔名>` + 在 `attached-files` 列出
 - raw 卡是「已驗證素材的歸檔」，不是 AI 自編內容的暫存區
@@ -394,7 +394,7 @@ ingested-to:                                           # status=ingested 時填
 | `01-products/` | `product-vision` / `phase` / `metric` |
 | `wiki/跨產品/`、`wiki/編輯器/`（vault 層，跨主題） | `glossary`（行業語言術語表）|
 | `03-roles/` | `role` / `meta`（`規範 - 角色.md`）/ `example`（`範例 - 角色.md`）|
-| `04-business-logic/` | `service-blueprint` / `business-rule` / `process-architecture` / `controlled-list`（後兩者只在 `營運規則/`）/ `meta`（`規範 - 商業邏輯.md`／`規範 - 活動清單.md`）/ `example`（`範例 - 服務藍圖.md`／`範例 - 商業規則.md`／`範例 - 活動清單.md`）|
+| `04-business-logic/` | `service-blueprint` / `business-rule` / `process-architecture` / `controlled-list`（後兩者各一張，放本目錄頂層）/ `meta`（`規範 - 商業邏輯.md`／`規範 - 活動清單.md`）/ `example`（`範例 - 服務藍圖.md`／`範例 - 商業規則.md`／`範例 - 活動清單.md`）|
 | `04-business-logic/服務藍圖/<藍圖名>/` | `activity-list`（只放該藍圖各階段的活動清單卡）|
 | `05-entities/` | `entity` / `meta`（`規範 - 實體.md`）/ `example`（`範例 - 實體.md`）|
 | `06-state-machines/` | `state-machine` / `meta`（`規範 - 狀態機.md`）/ `example`（`範例 - 狀態機.md`）|
@@ -437,16 +437,17 @@ ingested-to:                                           # status=ingested 時填
 
 > 商業規則卡內的「單條規則」以**業務語意命名的連結指向位置**標識，供 scenario 等下游卡跨卡 wiki link 引用單條規則。撰寫規範見 `04-business-logic/規範 - 商業邏輯.md`。
 
-- 規則的連結指向位置用**業務語意命名**（如 `#補收免審`、`#諮詢取消半額退費`），**不用流水號**（如 `#R1`）
+- 定位點＝規則單元表的「單元名」欄（單元表見 `04-business-logic/規範 - 商業邏輯.md` § 四）：**業務語意命名**（如 `#補收免審`、`#諮詢取消半額退費`），**不用流水號**（如 `#R1`）
 - 理由：流水號重排 / 重用會讓連回來的連結斷掉；用業務語意命名時改規則只改內容、定位點不變，跨卡引用不斷鏈
-- 引用方式：`[[<業務邏輯卡>#<業務語意定位點>]]`（如 `[[付款發票邏輯#補收免審]]`）
+- 引用方式只有一種：`[[<業務邏輯卡>#<單元名>]]`（如 `[[訂單異動規則#補收免審]]`）；不以「`[[卡]] § 段名`」引用規則單元（§ 形式只用於引用實體卡、狀態機卡等的段落）
+- 單元名一經使用不改、不重用；改名視同新單元，舊名在單元表尾保留一列指向新名，斷鏈由 vault-audit lint 偵測
 - 既有 `#R1` 等流水號定位點 MUST 一次性遷移為業務語意命名（遷移機制見 `wiki-amend` skill），遷移後由 vault-audit lint 偵測斷鏈兜底
 
 ### 活動清單卡
 
 - 卡名：`<階段名>活動清單.md`；階段名取所屬服務藍圖該階段 `###` 標題去掉序號
 - 落點：`04-business-logic/服務藍圖/<藍圖名>/`
-- 卡名全庫唯一；兩條藍圖出現同名階段時，與 Miles 確認後改用可區分的階段名，不自行加前綴
+- 卡名全庫唯一；兩條藍圖出現同名階段時，與使用者確認後改用可區分的階段名，不自行加前綴
 
 ### 操作編號與活動編號
 
@@ -529,11 +530,12 @@ ingested-to:                                           # status=ingested 時填
 | `process-architecture` | 類別與流程群組的歸屬 | 階段與階段先後（屬 service-blueprint）/ 活動（屬 activity-list）/ 值域（屬 controlled-list）|
 | `controlled-list` | 範圍用詞、動作類型、單據代碼、活動清單代碼的值域與定義 | 誰能做什麼（屬 activity-list）/ 操作定義（屬 entity）/ 規則判準（屬 business-rule）|
 | `activity-list` | 一個階段的活動（活動編號 / 活動 / 執行角色 / 範圍 / 依據欄位 / 操作）| 活動先後（屬 scenario）/ 狀態轉換（屬 state-machine）/ 操作與欄位定義（屬 entity）/ 分工理由（屬 role）/ 檢視與輸出活動（屬單據存取流程群組）|
-| `business-rule` | 商業規則 / 領域知識 / 外部約束 | 情境格式模板 / UI 措辭 / 完整實體 Data Model / 欄位定義 / 誰能做什麼（屬 activity-list）|
+| `business-rule` | 規則單元表：做法（公司的選擇與理由）與底線（跨單據必須成立的關係式）/ 領域知識 / 外部約束 | 操作前提與擋下條件（屬 entity 操作段）/ 各狀態可改內容（屬 state-machine）/ 清單組成（屬 entity 具名清單段）/ 計算框架中間值（升格為 entity 欄位）/ 系統行為承諾（屬 OpenSpec）/ 主題索引（屬 structure-overview）/ 情境格式模板 / UI 措辭 / 欄位定義 / 誰能做什麼（屬 activity-list）|
 | `scenario` | 跨模組端到端情境（活動先後 / 引用轉換 / 本情境才有的判斷 / 具體例子）| 行為者欄（屬 activity-list）/ 轉換條件（屬 state-machine）/ 計價公式細節（屬 business-logic）/ UI 措辭（歸 Prototype）|
-| `entity` | 實體欄位 / 操作 / 關聯 / 狀態名 | 角色名與誰能做什麼（屬 activity-list）/ 業務流程敘述（屬 business-logic / scenario）|
+| `entity` | 實體欄位（含算式與同筆檢核）/ 操作（含前提）/ 具名清單 / 關聯 / 狀態名 | 角色名與誰能做什麼（屬 activity-list）/ 業務流程敘述（屬 scenario）/ 底線式子本體與做法（屬 business-rule）|
 | `role` | 職位定位 / 分工理由 / 關切點 / 預期阻力 | 可見範圍與逐條職責（屬 activity-list）/ 跨角色流程細節（屬 scenario）/ 實體欄位定義 |
-| `state-machine` | 狀態定義 / 轉換條件 / 觸發操作 | 角色名與誰能做什麼（屬 activity-list）/ 業務情境敘述（屬 scenario）/ UI 措辭 |
+| `state-machine` | 狀態定義 / 轉換條件 / 觸發操作 / 各狀態可改內容 | 角色名與誰能做什麼（屬 activity-list）/ 業務情境敘述（屬 scenario）/ UI 措辭 / 不改變狀態的操作的前提（屬 entity）|
+| `structure-overview` | 實體關聯（基數）/ 單據流 / 資料流（哪張單的哪個欄位流到哪、某主題的數值與規則單元各在哪張卡）| 欄位表 / 狀態列舉與轉換 / 公式本體（屬 entity / state-machine / business-rule）|
 
 ### 11.2 共通原則
 

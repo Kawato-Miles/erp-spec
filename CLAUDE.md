@@ -183,7 +183,7 @@ Miles，印刷業 PM，負責下列產品：**ERP 系統**（生產排程 / 採�
 - 設計產出缺必含段（含拍板引用與隱含假設段）或 change 內沒有 grill.md 時，plan-audit 收件即退件——grill 的強制力來自這道閘門
 - 稽核評分表全過後原樣呈 Miles，不由主對話改寫或美化
 - 規格撰寫統一透過 OpenSpec change 工作流
-- `erp-planning-pre-check` 與寫卡入口的消歧判準：問「這次是要規劃還沒定案的東西，還是把已定案的內容落卡」。前者跑 pre-check（規劃前盤點影響範圍與 know-how 缺口），後者直接走 `wiki-amend`；一段討論先規劃後落卡時兩個都跑，pre-check 在前
+- `erp-planning-pre-check`、正本重構流與寫卡入口的消歧判準：問「這次是規劃還沒定案的東西、重構已有的正本、還是把已定案的內容落卡」。規劃走新規劃流（先跑 pre-check 盤點影響範圍與 know-how 缺口）；重構走正本重構流（正本 wiki [[審查知識路由]] § 三，第一階段先定規範與標竿卡）；落卡直接走 `wiki-amend`；一段討論先規劃後落卡時兩個都跑，pre-check 在前
 
 ---
 
@@ -243,6 +243,14 @@ delta specs 合併回 main specs，歸檔 change。
 
 **結尾必加**：當前執行模型的署名（格式 `Co-Authored-By: {現行模型名} <noreply@anthropic.com>`，依系統提示中的實際模型填寫，不寫死版本）
 **每次修改 `memory/` 後，連同 CLAUDE.md 一起 commit，commit 完成後 hook 會自動 push。**
+
+**工作環境與合併（本 repo 專用）**：
+
+| 規則 | 內容 |
+|------|------|
+| 代理一律用工作樹 | 任何代理（主對話、子工作階段、sub-agent）改本 repo 的檔案一律在自己的工作樹（git worktree）與分支作業，不在主檢出改檔。派工一律用 `memory/shared/派工任務書範本.md`，基線的規範版本必須已在 master |
+| 主檢出不切分支 | 主檢出（`/Users/b-f-03-029/Sens`）是 Miles 的 Obsidian 視窗，永遠停在 master；不在主檢出 `git checkout` 其他分支、不在主檢出提交。主檢出只做 `git pull --ff-only` |
+| 分支完成直接快轉合併 master、不開 PR | 完成的定義：分支的改動依當次拍板的規範做完，且分支沒有自己改規範、範本、範例卡（規範只由主對話依 Miles 拍板改）。合併步驟固定：先 `git fetch origin` 比對 origin/master；能快轉就 `git push origin <分支>:master`；不能快轉就先 rebase 到最新 master 再推，不用合併提交（merge commit）；推完在主檢出 `git pull --ff-only` 讓 Obsidian 看到。Prototype repo（erp）不適用，仍走 PR |
 
 ---
 
@@ -304,7 +312,7 @@ Plan mode 是 PM 與 Claude 對齊「要做什麼」的最後閘門。Plan 必�
 - 全域偏好（回覆風格、語言與用語、文件迭代分層）正本在 `~/.claude/CLAUDE.md`；sub-agent 不會自動拿到該檔，需要遵守時明讀
 - Spec 格式：**OpenSpec**（`openspec/specs/`）為工作版本（正本）；對開發的發布以 Linear 為唯一正本（經 `linear-delivery` skill 交付，內容自包含，不再使用 Notion 作為 BRD 發布版）。變更管理使用 OpenSpec change 工作流
 - **Prototype / 介面設計**：Prototype 一律在 `erp` repo（本地路徑 `/Users/b-f-03-029/erp`，統一 design system、前端直串，開分支＋前端主管 PR 合併；工作模式見 memory `project_erp_repo_prototype_workflow`，實作 MUST 經 repo 內 skill `prototype-from-prompt`）
-- **Prototype mock 與測試同步**（2026-09-08 拍板）：`(prototype)/MOCK-DATA-CHAIN.md` 是 mock 資料唯一正本；改 mock 的順序固定為先改 MOCK-DATA-CHAIN、再改各模組 `mock-data.js`、最後跑 Sens repo 的 prototype 測試專案（Vitest 純函式＋Playwright 畫面，目錄見 memory `project_prototype_test_strategy_20260908`）並更新對應測試。改動後先跑 smoke（`npm run test:smoke`，主流程一條）、改哪章跑哪章，通過即可提交；全套 `npm test` 只在 Miles 指示時跑，合併或開 PR 前也不主動跑，commit 訊息附測試結果（2026-10-23 拍板）。sub-agent 拿不到本檔，派 prototype 任務時主對話 MUST 把這條寫進任務書，任務書並 MUST 含「測試影響清單」段（改哪些既有測試、新增哪些情境、mock 動哪裡；依 `erp-prototype-tests/docs/scenario-catalog.md` 節號列）。介面迭代不進 OpenSpec 也一樣，閘門在派工與提交：實作後先 `npm run impact` 對映影響再跑；規劃功能而漏掉測試撰寫視同未完成。檢核表見 `erp-prototype-tests/README.md § 迭代檢核表`。畫面測試（Playwright）派工規則：同一時間只允許一個代理人跑畫面測試；跑測試前 erp 的修改必須全部完成，測試期間不改 erp 檔；畫面測試一律在背景執行，不讓指令時間上限中斷（中斷會遺留沒有主程序管理的開發伺服器，佔住測試埠號）。erp repo 不加任何測試檔、不動 erp skill 與 `(prototype)/README.md`
+- **Prototype mock 與測試同步**（2026-09-08 拍板）：`(prototype)/MOCK-DATA-CHAIN.md` 是 mock 資料唯一正本；改 mock 的順序固定為先改 MOCK-DATA-CHAIN、再改各模組 `mock-data.js`、最後跑 Sens repo 的 prototype 測試專案（Vitest 純函式＋Playwright 畫面，目錄見 memory `project_prototype_test_strategy_20260908`）並更新對應測試。改動後先跑 smoke（`npm run test:smoke`，主流程一條）、改哪章跑哪章，通過即可提交；全套 `npm test` 只在 Miles 指示時跑，合併或開 PR 前也不主動跑，commit 訊息附測試結果（2026-10-23 拍板）。派工一律用 `memory/shared/派工任務書範本.md`；測試影響清單是該範本的 Prototype 附加段，本條由任務書引用。介面迭代不進 OpenSpec 也一樣，閘門在派工與提交：實作後先 `npm run impact` 對映影響再跑；規劃功能而漏掉測試撰寫視同未完成。檢核表見 `erp-prototype-tests/README.md § 迭代檢核表`。畫面測試（Playwright）派工規則：同一時間只允許一個代理人跑畫面測試；跑測試前 erp 的修改必須全部完成，測試期間不改 erp 檔；畫面測試一律在背景執行，不讓指令時間上限中斷（中斷會遺留沒有主程序管理的開發伺服器，佔住測試埠號）。erp repo 不加任何測試檔、不動 erp skill 與 `(prototype)/README.md`
 - **ERP 平台限制**：辦公角色（業務、印務、生管、會計等）僅支援電腦版（桌機瀏覽器）；**現場回報介面例外開放手機寬度**，範圍寫死於下列介面——師傅報工、品檢記錄、貨運單點收秤重、揀貨裝箱回報、出貨／送達確認（師傅、品檢人員、揀貨人員、出貨人員四角色在現場以手機寬度操作同一套頁面）；廠務轉交回報走 Slack 表單通道（正本在系統、通知帶單預填、保留補登路徑、身分對映四前提）。決策脈絡見 Vault OQ PT-001 決議（已封存）
 - 優先非同步溝通
 - 寫或改程式碼時載入 skill `andrej-karpathy-skills:karpathy-guidelines`

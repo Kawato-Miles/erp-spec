@@ -486,7 +486,7 @@
 
 ### Requirement: 數量帳守恆鏈
 
-系統 SHALL 維持印件層數量帳的守恆鏈：**產出數量 ≥ 良品數 ≥ 完工良品數 ≥ 累計已出貨數量 ≥ 累計送達數**。各欄位的定義與算式正本見 wiki [印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md) 與 [齊套邏輯](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/齊套邏輯.md)，本 spec 不複寫欄位表與公式。
+系統 SHALL 維持印件層數量帳的底線：待驗量不為負、可出貨額度不為負、累計已出貨數量不低於累計送達數（底線正本見 wiki [生產數量一致性](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/生產數量一致性.md)）。各欄位的定義與算式正本見 wiki [印件](../../../memory/Sens_wiki/wiki/erp/05-entities/印件.md)，本 spec 不複寫欄位表與公式。
 
 凡呈現或檢核可出貨額度之處 SHALL 一律採 wiki 印件可出貨額度欄的口徑；回補 SHALL 只以累計已出貨數量的重算實現（見 § 可出貨額度的回補入口），SHALL NOT 另加回補項。
 
