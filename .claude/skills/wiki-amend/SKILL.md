@@ -110,7 +110,7 @@ description: >
 
 沿 directional anchor 反查，**列出本次變動的回補清單**（Jama 變更影響分析法 + Sens 連帶矩陣）：
 
-1. 沿七實體連帶矩陣（[[付款發票邏輯#五B、七實體連帶矩陣]]）攤開連帶影響範圍。
+1. 沿七實體連帶矩陣（[[帳務規劃連帶矩陣#七實體連帶矩陣]]）攤開連帶影響範圍。
 2. 沿正本卡 backlink 反查所有 wiki link 引用該規則的下游卡（規則卡 / state-machine / entity / role / scenario）。
 3. 量化每個受影響領域（雙軸：領域 × 卡類型，每格 N/M/K 數字；**禁「大致 OK」非量化結論**，對齊 CLAUDE.md）。
 4. 比較回補的 benefit / 工時 / 風險定優先。
