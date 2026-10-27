@@ -21,8 +21,8 @@ last-reviewed: 2026-10-27
 | `role` | 角色 R&R | `03-roles/` |
 | `service-blueprint` | 服務藍圖（公司提供什麼服務、階段與階段先後） | `04-business-logic/服務藍圖/` |
 | `activity-list` | 活動清單（服務藍圖一個階段的活動：誰在什麼範圍做哪個操作） | `04-business-logic/服務藍圖/<藍圖名>/` |
-| `controlled-list` | 受控清單（範圍用詞、動作類型、單據代碼、活動清單代碼的值域正本；全庫一張） | `04-business-logic/營運規則/` |
-| `process-architecture` | 流程架構（類別與流程群組的歸屬正本；全庫一張） | `04-business-logic/營運規則/` |
+| `controlled-list` | 受控清單（範圍用詞、動作類型、單據代碼、活動清單代碼的值域正本；全庫一張） | `04-business-logic/` |
+| `process-architecture` | 流程架構（類別與流程群組的歸屬正本；全庫一張） | `04-business-logic/` |
 | `business-rule` | 商業規則（決策邏輯、領域知識、外部約束） | `04-business-logic/` 各子目錄 |
 | `entity` | 資料模型實體 | `05-entities/` |
 | `structure-overview` | 資料結構總覽（ER 圖＋單據流＋資料流＋關聯明細表；全系統一張為關聯唯一正本，領域各一張為領域視角） | `05-entities/`（與該領域實體卡同層） |
@@ -216,7 +216,7 @@ last-reviewed: 2026-09-01
 ---
 ```
 
-- 全庫一張：[[受控清單]]，放 `04-business-logic/營運規則/`；不設 `mutability`。
+- 全庫一張：[[受控清單]]，放 `04-business-logic/`（與規範、範例同層，不進營運規則目錄）；不設 `mutability`。
 - 段落比照 [[範本 - 商業規則]] 的卡頂引言、現況、規則、為什麼這樣定、適用範圍、範圍外、相關卡；「規則」段每類值域一張表（值／定義），不寫例子段。
 - 只登記值域與定義，不寫誰能做什麼、不寫流程；新增值先改本卡，再在引用處使用（取號規約見 § 七 操作編號與活動編號）。
 
@@ -234,7 +234,7 @@ last-reviewed: 2026-09-01
 ---
 ```
 
-- 全庫一張：[[流程架構]]，放 `04-business-logic/營運規則/`；不設 `mutability`。
+- 全庫一張：[[流程架構]]，放 `04-business-logic/`（與規範、範例同層，不進營運規則目錄）；不設 `mutability`。
 - 段落比照 [[範本 - 商業規則]] 的卡頂引言、現況、規則、為什麼這樣定、適用範圍、範圍外、相關卡；「規則」段承載層級表與「類別｜判準｜流程群組」表。
 - 只登記類別與流程群組的歸屬，不寫階段（屬 `service-blueprint`）；新增流程群組先登記本卡再建群組卡（判準見 `04-business-logic/規範 - 商業邏輯.md` § 二）。
 
@@ -394,7 +394,7 @@ ingested-to:                                           # status=ingested 時填
 | `01-products/` | `product-vision` / `phase` / `metric` |
 | `wiki/跨產品/`、`wiki/編輯器/`（vault 層，跨主題） | `glossary`（行業語言術語表）|
 | `03-roles/` | `role` / `meta`（`規範 - 角色.md`）/ `example`（`範例 - 角色.md`）|
-| `04-business-logic/` | `service-blueprint` / `business-rule` / `process-architecture` / `controlled-list`（後兩者只在 `營運規則/`）/ `meta`（`規範 - 商業邏輯.md`／`規範 - 活動清單.md`）/ `example`（`範例 - 服務藍圖.md`／`範例 - 商業規則.md`／`範例 - 活動清單.md`）|
+| `04-business-logic/` | `service-blueprint` / `business-rule` / `process-architecture` / `controlled-list`（後兩者各一張，放本目錄頂層）/ `meta`（`規範 - 商業邏輯.md`／`規範 - 活動清單.md`）/ `example`（`範例 - 服務藍圖.md`／`範例 - 商業規則.md`／`範例 - 活動清單.md`）|
 | `04-business-logic/服務藍圖/<藍圖名>/` | `activity-list`（只放該藍圖各階段的活動清單卡）|
 | `05-entities/` | `entity` / `meta`（`規範 - 實體.md`）/ `example`（`範例 - 實體.md`）|
 | `06-state-machines/` | `state-machine` / `meta`（`規範 - 狀態機.md`）/ `example`（`範例 - 狀態機.md`）|
