@@ -112,6 +112,25 @@ describe('7.28 核可後的排程超期標示', () => {
     const wo = workOrder('2026-10-15', [task('2026-10-19')], { status: '製作完成' });
     expect(isScheduleOverrun(wo)).toBe(false);
   });
+
+  it('改是否急件不觸發判定：所屬印件是否急件為是或否，排程超期與硬擋結果相同（7.30、7.32）', () => {
+    // work-order spec Scenario「改是否急件不觸發排程超期」：急件不改任何日期，判定只看兩個日期
+    const tasks = [task('2026-10-16')];
+    const asUrgent = (isUrgent, status) =>
+      workOrder('2026-10-15', tasks, {
+        status,
+        print_item: { print_item_no: 'PI-TEST', delivery_date: '2026-10-15', is_urgent: isUrgent },
+      });
+    expect(isScheduleOverrun(asUrgent(true, '製作中'))).toBe(isScheduleOverrun(asUrgent(false, '製作中')));
+    expect(scheduleBlockOf(asUrgent(true, '草稿'))).toEqual(scheduleBlockOf(asUrgent(false, '草稿')));
+    // 未超期的工單勾了急件也不會變成超期
+    const ok = (isUrgent) =>
+      workOrder('2026-10-15', [task('2026-10-14')], {
+        status: '製作中',
+        print_item: { print_item_no: 'PI-TEST', delivery_date: '2026-10-15', is_urgent: isUrgent },
+      });
+    expect(isScheduleOverrun(ok(true))).toBe(false);
+  });
 });
 
 describe('15.13 工單準時判定取凍結的印件內部完成日', () => {

@@ -6,16 +6,14 @@ import {
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/_lib/delivery-chain.js';
 import { applyPrintItemDueDate } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/due-date-sync.js';
 
-// 印件預計交期往前減 1 個工作天得印件內部完成日；急件不參與（情境目錄 4.5、4.6）
+// 印件預計交期往前減 1 個工作天得印件內部完成日；是否急件不參與（情境目錄 4.5、4.6）
 // 期望值取自 order-management spec § 印件內部完成日推導、§ 印件預計交期變更的重算與同步
 //（OpenSpec change rush-order-definition，Miles 2026-10-27 急件新定義）。
 
-const item = (expected, urgentDays = 0, overrides = {}) => ({
+const item = (expected, isUrgent = false, overrides = {}) => ({
   print_item_no: 'PI-2026-0388',
   expected_delivery_date: expected,
-  urgent_option_id: urgentDays === 0 ? 'UO-001' : urgentDays > 0 ? 'UO-003' : 'UO-005',
-  urgent_option_name: urgentDays === 0 ? '一般件' : urgentDays > 0 ? '三天急件' : '延後 2 天',
-  urgent_option_days: urgentDays,
+  is_urgent: isUrgent,
   ...overrides,
 });
 
@@ -36,15 +34,15 @@ describe('4.5 業務填印件預計交期，系統往前減 1 個工作天得印
     expect(derivePrintItemInternalDueDate(item('2026-10-17'))).toBe('2026-10-16');
   });
 
-  it('急件選項不影響推導：三天急件與延後 2 天都得 2026-10-12', () => {
-    expect(derivePrintItemInternalDueDate(item('2026-10-13', 3))).toBe('2026-10-12');
-    expect(derivePrintItemInternalDueDate(item('2026-10-13', -2))).toBe('2026-10-12');
-    expect(derivePrintItemExpectedDeliveryDate(item('2026-10-13', 3))).toBe('2026-10-13');
+  it('是否急件不影響推導：是否急件為是或否都得 2026-10-12', () => {
+    expect(derivePrintItemInternalDueDate(item('2026-10-13', true))).toBe('2026-10-12');
+    expect(derivePrintItemInternalDueDate(item('2026-10-13', false))).toBe('2026-10-12');
+    expect(derivePrintItemExpectedDeliveryDate(item('2026-10-13', true))).toBe('2026-10-13');
   });
 
-  it('印件預計交期為空時印件內部完成日為空、不依急件天數計算', () => {
-    expect(derivePrintItemInternalDueDate(item(null, 3))).toBeNull();
-    expect(derivePrintItemExpectedDeliveryDate(item(null, 3))).toBeNull();
+  it('印件預計交期為空時印件內部完成日為空，是否急件為是也一樣', () => {
+    expect(derivePrintItemInternalDueDate(item(null, true))).toBeNull();
+    expect(derivePrintItemExpectedDeliveryDate(item(null, true))).toBeNull();
   });
 
   it('早於今日照實回傳、不校正為今日（今天 2026-10-20 填 2026-10-13 得 2026-10-12）', () => {
@@ -52,7 +50,7 @@ describe('4.5 業務填印件預計交期，系統往前減 1 個工作天得印
   });
 });
 
-describe('4.6 改印件預計交期重算與同步非終態工單；改急件選項不重算', () => {
+describe('4.6 改印件預計交期重算與同步非終態工單；改是否急件不重算', () => {
   const workOrders = () => [
     {
       id: 'wo-making',
@@ -107,9 +105,9 @@ describe('4.6 改印件預計交期重算與同步非終態工單；改急件選
     expect(next[0].print_item).not.toHaveProperty('undeducted_internal_due_date');
   });
 
-  it('改急件選項不重算：一般件改三天急件，兩個日期維持 2026-10-13 與 2026-10-12', () => {
-    const before = item('2026-10-13', 0);
-    const after = { ...before, urgent_option_id: 'UO-003', urgent_option_days: 3 };
+  it('改是否急件不重算：否改為是，兩個日期維持 2026-10-13 與 2026-10-12', () => {
+    const before = item('2026-10-13', false);
+    const after = { ...before, is_urgent: true };
     expect(derivePrintItemInternalDueDate(after)).toBe(derivePrintItemInternalDueDate(before));
     expect(derivePrintItemExpectedDeliveryDate(after)).toBe('2026-10-13');
   });

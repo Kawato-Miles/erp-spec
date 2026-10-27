@@ -20,6 +20,7 @@ import {
   salesFillCostAndCompleteEstimate,
   shareQuoteTo,
   submitQuoteHeader,
+  URGENT_REMINDER,
   waitModalsClosed,
 } from './_local.mjs';
 
@@ -143,7 +144,14 @@ test('1.3 業務談定單價、標記成交並一鍵轉出訂單', async ({ page
   const title = '1.3 情境需求案';
   await openAs(page, '業務', '/quote-prototype');
   const quoteNo = await createQuoteHeader(page, { title });
-  await addItem(page, { name: '名片印件', quantity: '123', unitPrice: '5.29' });
+  // 名片印件在需求單勾是否急件、填印件預計交期 2026-10-13（二）：轉訂單帶入作為預設值（rush-order-definition）
+  await addItem(page, {
+    name: '名片印件',
+    quantity: '123',
+    unitPrice: '5.29',
+    expectedDeliveryDate: '2026-10-13',
+    urgent: true,
+  });
   // 海報印件單價刻意留空，驗證缺漏擋下成交
   await addItem(page, { name: '海報印件', quantity: '50', unitPrice: null });
   await button(page, '送印務評估').click();
@@ -175,6 +183,24 @@ test('1.3 業務談定單價、標記成交並一鍵轉出訂單', async ({ page
   await expect(page).toHaveURL(/orders\/detail/, { timeout: 40_000 });
   const heading = await detailTitle(page).innerText();
   expect(heading).toContain(title);
+
+  // 是否急件自需求單帶入作為預設值：名片印件列帶急件標注、海報印件不帶；
+  // 開啟名片印件的編輯側板，是否急件為勾起、交期欄旁即顯示提示，日期不因急件改變
+  //（order-management spec § 是否急件為是時的交期確認提示「需求單轉入是否急件為是時開啟印件即顯示提示」）
+  await page.getByRole('tab', { name: /訂單項目/ }).click();
+  const cardRow = page.locator('tr', { hasText: '名片印件' }).first();
+  await expect(cardRow.getByText('急件', { exact: true })).toBeVisible();
+  await expect(page.locator('tr', { hasText: '海報印件' }).first().getByText('急件', { exact: true })).toHaveCount(0);
+  await cardRow.getByRole('button', { name: '編輯印件' }).click();
+  const itemDrawer = page.locator('.ant-drawer-content').last();
+  await expect(itemDrawer.locator('#is_urgent')).toBeChecked();
+  await expect(itemDrawer.getByText(URGENT_REMINDER)).toBeVisible();
+  await expect(itemDrawer.locator('#expected_delivery_date')).toHaveValue('2026-10-13');
+  await expect(
+    itemDrawer.locator('.ant-form-item', { hasText: '印件內部完成日' }).locator('input'),
+  ).toHaveValue('2026-10-12');
+  await itemDrawer.getByRole('button', { name: /取\s*消/ }).click();
+  await waitModalsClosed(page);
 
   // 需求單掛上訂單編號，頁首改顯示「查看訂單」，同一張需求單不會被建出第二張訂單
   await gotoInApp(page, '/quote-prototype');
@@ -297,6 +323,23 @@ test('1.6 從既有需求單複製建單', async ({ page }) => {
   await expect(activity).toContainText('洪嘉駿 建立需求單');
   await expect(activity).not.toContainText('Q-20260601-01');
   await expect(activity).not.toContainText('複製建立');
+
+  // 複製帶入是否急件原值：鏈四 Q-20260820-01 的印件項目是否急件為是、印件預計交期 2026-09-07，
+  // 複製後新單同一列照原值帶入，交期欄旁顯示提示（quote-request spec § 印件項目管理
+  // 「複製需求單時印件預計交期與是否急件照原值帶入」）
+  await gotoInApp(page, '/quote-prototype');
+  const search = page.getByPlaceholder('請輸入需求單編號、需求案名、或客戶名稱');
+  await search.fill('Q-20260820-01');
+  await search.press('Enter');
+  await page.getByRole('link', { name: 'Q-20260820-01' }).click();
+  await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
+  await page.getByRole('button', { name: '複製需求單' }).click();
+  await dialog(page).getByRole('button', { name: /確\s*認/ }).click();
+  await expect(quoteCurrentStep(page)).toHaveText('確認需求');
+  const urgentRow = rowOf(page, '《山城記事》精裝書（128 頁）');
+  await expect(urgentRow).toContainText('2026-09-07');
+  await expect(urgentRow.getByText(URGENT_REMINDER)).toBeVisible();
+  await expect(urgentRow.getByRole('cell', { name: '是', exact: true })).toBeVisible();
 });
 
 test('1.7 需求單參考附件可挑選檔案並列出檔名，再上傳新版時舊版保留', async ({ page }) => {
@@ -404,31 +447,43 @@ test('1.9 需求單狀態只出現六個值，顯示名依 wiki', async ({ page 
   await expect(steps.last()).toHaveClass(/ant-steps-item-finish/);
 });
 
-test('1.10 成交轉訂單印件項目的印件預計交期逐件帶入、空的就留空', async ({ page }) => {
-  test.setTimeout(90_000);
+test('1.10 成交轉訂單印件項目的印件預計交期與是否急件逐件帶入、空的就留空', async ({ page }) => {
+  test.setTimeout(120_000);
   const title = '1.10 情境需求案';
   await openAs(page, '業務', '/quote-prototype');
-  await createQuoteHeader(page, { title });
+  const quoteNo = await createQuoteHeader(page, { title });
 
   // 新增印件項目時需求單側板的印件預計交期一律空白、無預設值（需求單單頭已無交期欄可預填）；
-  // 需求單不顯示印件內部完成日（急件新定義 2026-10-27）
+  // 是否急件預設不勾；需求單不顯示印件內部完成日
   const panel = drawer(page);
   await clickOpen(button(page, '新增印件'), panel.getByLabel('項目名稱'));
   await expect(panel.getByLabel('印件預計交期')).toHaveValue('');
   await expect(panel.getByText('印件內部完成日')).toHaveCount(0);
+  await expect(panel.locator('#is_urgent')).not.toBeChecked();
+  await expect(panel.getByText(URGENT_REMINDER)).toHaveCount(0);
+  // 勾選是否急件：交期欄旁常駐提示、不跳出對話框；取消勾選即消失（quote-request spec § 印件項目管理）
+  await panel.locator('#is_urgent').check();
+  await expect(panel.getByText(URGENT_REMINDER)).toBeVisible();
+  await expect(page.locator('.ant-modal-content:visible')).toHaveCount(0);
+  await panel.locator('#is_urgent').uncheck();
+  await expect(panel.getByText(URGENT_REMINDER)).toHaveCount(0);
   await button(panel, '取消').click();
   await waitModalsClosed(page);
 
-  // 名片印件填談定的印件預計交期 2026-09-08（週二）；型錄印件不填，代表還沒跟客戶談定
+  // 名片印件填談定的印件預計交期 2026-09-08（週二）並勾是否急件；型錄印件不填日期、不勾，代表還沒跟客戶談定
   await addItem(page, {
     name: '名片印件',
     quantity: '100',
     unitPrice: '10',
     expectedDeliveryDate: '2026-09-08',
+    urgent: true,
   });
   await addItem(page, { name: '型錄印件', quantity: '50', unitPrice: '20' });
-  // 列表只有印件預計交期一欄，沒有印件內部完成日欄、沒有急件標注
+  // 列表只有印件預計交期一欄，沒有印件內部完成日欄、沒有急件標注；勾起者的交期旁常駐提示
   await expect(rowOf(page, '名片印件')).toContainText('2026-09-08');
+  await expect(rowOf(page, '名片印件').getByText(URGENT_REMINDER)).toBeVisible();
+  await expect(rowOf(page, '型錄印件').getByText(URGENT_REMINDER)).toHaveCount(0);
+  await expect(rowOf(page, '名片印件').getByText('急件', { exact: true })).toHaveCount(0);
   await expect(page.locator('th', { hasText: '印件內部完成日' })).toHaveCount(0);
 
   await button(page, '送印務評估').click();
@@ -453,6 +508,25 @@ test('1.10 成交轉訂單印件項目的印件預計交期逐件帶入、空的
   const catalogRow = page.locator('tr', { hasText: '型錄印件' });
   await expect(catalogRow).not.toContainText('2026-09-08');
   await expect(catalogRow.getByText('－').first()).toBeVisible();
+
+  // 是否急件帶入作為預設值：名片印件帶急件標注、型錄印件不帶
+  await expect(cardRow.getByText('急件', { exact: true })).toBeVisible();
+  await expect(catalogRow.getByText('急件', { exact: true })).toHaveCount(0);
+
+  // 之後在訂單取消名片印件的是否急件：不改日期，需求單那一列維持勾起（改訂單不回寫需求單）
+  await cardRow.getByRole('button', { name: '編輯印件' }).click();
+  const itemDrawer = page.locator('.ant-drawer-content').last();
+  await itemDrawer.locator('#is_urgent').uncheck();
+  await expect(itemDrawer.getByText(URGENT_REMINDER)).toHaveCount(0);
+  await itemDrawer.getByRole('button', { name: /確\s*認/ }).click();
+  await waitModalsClosed(page);
+  await expect(cardRow.getByText('急件', { exact: true })).toHaveCount(0);
+  await expect(cardRow).toContainText('2026-09-07');
+
+  await gotoInApp(page, '/quote-prototype');
+  await page.getByRole('link', { name: quoteNo }).click();
+  await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
+  await expect(rowOf(page, '名片印件').getByText(URGENT_REMINDER)).toBeVisible();
 });
 
 test('1.12 需求單印件側板依五區顯示，評估印務主管開的側板同業務版', async ({ page }) => {
@@ -495,7 +569,7 @@ test('1.12 需求單印件側板依五區顯示，評估印務主管開的側板
   expectInOrder(text, sections);
   expectInOrder(text, ['規格與製程', '數量', '單位', '包裝說明', '難易度', '預計產線', '審稿設定']);
   expectInOrder(text, ['成本評估區', '成本估算（未稅）', '單價（未稅）', '小計（未稅）', '利潤率', '參考附件']);
-  // 規格與製程區只有一格可填日期（印件預計交期）；需求單不顯示印件內部完成日、不設急件選項
+  // 規格與製程區只有一格可填日期（印件預計交期）；需求單不顯示印件內部完成日；是否急件為勾選框、不是下拉
   expectInOrder(text, ['規格與製程', '出貨方式', '印件預計交期', '數量', '審稿設定']);
   await expect(panel.locator('.ant-form-item-label').filter({ hasText: /^印件預計交期$/ })).toHaveCount(1);
   await expect(panel.getByText('印件內部完成日')).toHaveCount(0);

@@ -32,6 +32,8 @@ describe('4.17 加開印件的新印件，印務印件檔案與檔案備註為�
       name: '促銷立牌 A1（第二批）',
       type: '大貨印件',
       copy_from_id: SOURCE_ID,
+      // 訂單已離開草稿：加開存檔必填印件預計交期（order-management spec § 印件預計交期依階段必填檢核）
+      expected_delivery_date: '2026-11-20',
     });
     const items = orderOf().print_items;
     expect(items).toHaveLength(count + 1);

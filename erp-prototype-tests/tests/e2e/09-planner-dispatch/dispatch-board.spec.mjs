@@ -133,7 +133,7 @@ test('9.7 工廠總覽待排區顯示印件內部完成日（原編號 81）', a
   await expect(page.getByText('待排區（已交付產線、未入工作包）')).toBeVisible();
 });
 
-// 本欄顯示印件的「印件內部完成日」＝印件預計交期往前減 1 個工作天（急件不參與）。待排區只列
+// 本欄顯示印件的「印件內部完成日」＝印件預計交期往前減 1 個工作天（是否急件不參與）。待排區只列
 // 鏈三 WO-2026-0815 的四筆待接收任務（package_id 為空，見 MOCK-DATA-CHAIN.md），無法換其他鏈驗證。
 // PI-2026-0815 印件預計交期 2026-10-05（一），印件內部完成日 2026-10-02（五），只印一組日期；
 // production-floor/_lib/mock-data.js 的 print_item_delivery_date 與 print-items、work-orders
@@ -210,17 +210,17 @@ test('9.10 沒接收、沒打包也能報工；未交付與前置未到料才擋
   await expect(page.getByRole('button', { name: /報工/ })).toHaveCount(0);
 });
 
-// 9.23 生產任務列表與派工畫面帶急件標注，改急件選項後即時更新（OpenSpec change rush-order-definition，
-// production-execution spec § 生產任務與轉交單明細的急件標注）：依所屬工單的所屬印件推算，凍結天數大於 0 才標；
-// 只做標示，不改任務日期、不擋合併打包。
-// 起點：鏈三 PI-2026-0815（一般件）旗下四筆待派任務；業務把它改成三天急件後，生管重新開啟。
-test('9.23 生產任務列表與派工畫面帶急件標注，改急件選項後即時更新', async ({ page }) => {
+// 9.23 生產任務列表與派工畫面帶急件標注，勾選是否急件後即時更新（OpenSpec change rush-order-definition，
+// production-execution spec § 生產任務與轉交單明細的急件標注）：依所屬工單的所屬印件推算，是否急件為是、
+// 且印件非已棄用才標；只做標示，不改任務日期、不擋合併打包。
+// 起點：鏈三 PI-2026-0815（是否急件否）旗下四筆待派任務；業務勾選它的是否急件後，生管重新開啟。
+test('9.23 生產任務列表與派工畫面帶急件標注，勾選是否急件後即時更新', async ({ page }) => {
   await openAs(page, '生管', '/production-floor/dispatch');
   const row1 = page.locator('tr', { has: page.getByText('牛皮紙 150g 備料', { exact: true }) });
   await expect(row1).toBeVisible();
   await expect(row1.getByText('急件', { exact: true })).toHaveCount(0);
 
-  // 業務改急件選項：一般件 → 三天急件（只改標注，不改任何日期）
+  // 業務勾選是否急件：否 → 是（只改標注，不改任何日期）
   await switchRole(page, '業務');
   await gotoInApp(page, '/orders');
   await page.getByPlaceholder(/請輸入訂單編號/).fill('ORD-2026-0815');
@@ -229,9 +229,9 @@ test('9.23 生產任務列表與派工畫面帶急件標注，改急件選項後
   await page.getByRole('tab', { name: /訂單項目/ }).click();
   const itemRow = page.locator('tr', { hasText: 'PI-2026-0815' }).first();
   await itemRow.getByRole('button', { name: '編輯印件' }).click();
-  await page.locator('.ant-select:has(#urgent_option_id)').click();
-  await page.locator('.ant-select-dropdown').last().getByText(/三天急件/).click();
-  await page.getByRole('button', { name: '確認' }).click();
+  const drawer = page.locator('.ant-drawer-content').last();
+  await drawer.locator('#is_urgent').check();
+  await drawer.getByRole('button', { name: /確\s*認/ }).click();
   await expect(page.locator('.ant-drawer-content-wrapper')).toHaveCount(0);
 
   // 生管重新開啟所有生產任務：該筆任務列帶急件標注，印件內部完成日維持 2026-10-02

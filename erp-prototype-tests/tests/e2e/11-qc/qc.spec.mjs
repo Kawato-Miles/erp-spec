@@ -311,10 +311,10 @@ test('11.7 品檢站在桌機是表格，窄視窗靠側欄收合與橫向捲動
   await expect(page.getByText('待驗量＝做出來的良品 − 已驗量，只看做出來多少')).toBeVisible();
   await expect(pendingRow(page)).toContainText(CHAIN4.orderNo);
   await expect(pendingRow(page)).toContainText(CHAIN4.clientName);
-  // 內部完成日、預計交期與急件標籤三欄自訂單模組的印件帶出
+  // 內部完成日、預計交期與急件標籤三欄自訂單模組的印件帶出；PI-2026-0820 是否急件為是，急件欄掛「急件」
   await expect(pendingRow(page)).toContainText('2026-09-04');
   await expect(pendingRow(page)).toContainText('2026-09-07');
-  await expect(pendingRow(page)).toContainText('三天急件');
+  await expect(pendingRow(page).getByText('急件', { exact: true })).toBeVisible();
   const doneRow = pendingRow(page, 'PI-2026-0601');
   await doneRow.getByLabel('展開行').click();
   const records = expandedRecords(page, 'PI-2026-0601');
@@ -556,35 +556,42 @@ test('11.22 品檢站列表帶內部完成日、預計交期與急件標籤，�
 }) => {
   await openAs(page, '品檢人員', '/qc-shipping/inspection');
 
-  // 三欄的值自訂單模組的印件帶出；一般件不掛標籤
+  // 三欄的值自訂單模組的印件帶出；急件欄依急件標注（是否急件為是、印件非已棄用）掛「急件」，否則顯示無值符號
+  //（rush-order-definition：品檢站急件欄與篩選依是否急件，不再帶急件選項名稱）
   const chain1 = pendingRow(page, 'PI-2026-0601');
   await expect(chain1).toContainText('2026-06-18');
   await expect(chain1).toContainText('2026-06-22');
-  await expect(chain1).not.toContainText('一般件');
+  await expect(chain1.getByText('急件', { exact: true })).toHaveCount(0);
   const chain4 = pendingRow(page, CHAIN4.printItemNo);
   await expect(chain4).toContainText('2026-09-04');
   await expect(chain4).toContainText('2026-09-07');
-  await expect(chain4).toContainText('三天急件');
+  await expect(chain4.getByText('急件', { exact: true })).toBeVisible();
 
   // 預設排序為內部完成日由近到遠：鏈一（6/18）排在鏈四（9/04）之前
   const rows = page.locator('tr.ant-table-row');
   await expect(rows.first()).toContainText('PI-2026-0601');
   await expect(rows.nth(1)).toContainText(CHAIN4.printItemNo);
 
-  // 急件選項多選：只留三天急件時鏈一那一列消失
+  // 急件篩選為單選「急件／非急件」：選「急件」時鏈一那一列消失；改選「非急件」時只剩鏈一這類
   const content = page.locator('.ant-layout-content');
+  // 篩選區第二個下拉為急件（第一個為待驗狀態），沿用本條原本的定位方式
   const urgentSelect = content.locator('.ant-select').nth(1);
-  await urgentSelect.click();
-  await page
-    .locator('.ant-select-dropdown:visible')
-    .last()
-    .locator('.ant-select-item-option')
-    .filter({ hasText: '三天急件' })
-    .first()
-    .click();
-  await page.keyboard.press('Escape');
+  const pickUrgent = async (label) => {
+    await urgentSelect.click();
+    await page
+      .locator('.ant-select-dropdown:visible')
+      .last()
+      .locator('.ant-select-item-option')
+      .filter({ hasText: new RegExp(`^${label}$`) })
+      .first()
+      .click();
+  };
+  await pickUrgent('急件');
   await expect(page.getByText('PI-2026-0601')).toHaveCount(0);
   await expect(pendingRow(page, CHAIN4.printItemNo)).toBeVisible();
+  await pickUrgent('非急件');
+  await expect(pendingRow(page, 'PI-2026-0601')).toBeVisible();
+  await expect(page.getByText(CHAIN4.printItemNo)).toHaveCount(0);
 
   // 清空篩選把四項一起清掉，兩列都回來
   await page.getByRole('button', { name: '清空' }).first().click();

@@ -70,12 +70,45 @@ describe('急件新定義的 mock 日期鏈', () => {
     expect(bad).toEqual([]);
   });
 
-  it('鏈四三天急件 PI-2026-0820：預計交期 2026-09-07、內部完成日 2026-09-04（急件不扣日期）', () => {
+  it('鏈四急件 PI-2026-0820：是否急件為是，預計交期 2026-09-07、內部完成日 2026-09-04（急件不扣日期）', () => {
     const p = orderItems.find((x) => x.print_item_no === 'PI-2026-0820');
-    expect(p).toMatchObject({ urgent_option_days: 3, expected_delivery_date: '2026-09-07', delivery_date: '2026-09-04' });
+    expect(p).toMatchObject({ is_urgent: true, expected_delivery_date: '2026-09-07', delivery_date: '2026-09-04' });
   });
 
-  it('需求單印件項目的印件預計交期＝成交後訂單印件的值', () => {
+  it('每件印件的是否急件一律有值（是／否），不帶任何急件選項或天數快照欄', () => {
+    const bad = orderItems
+      .filter((p) => typeof p.is_urgent !== 'boolean' || Object.keys(p).some((k) => k.startsWith('urgent_option')))
+      .map((p) => p.print_item_no);
+    expect(bad).toEqual([]);
+  });
+
+  it('需求單印件項目的是否急件一律有值（是／否）', () => {
+    const bad = MOCK_QUOTES.flatMap((q) =>
+      (q.items ?? []).filter((x) => typeof x.is_urgent !== 'boolean').map((x) => `${q.quote_no}／${x.name}`),
+    );
+    expect(bad).toEqual([]);
+  });
+
+  it('線下單離開草稿且未進終態時，有效印件都有印件預計交期（留空樣本只在草稿訂單與線上單）', () => {
+    const TERMINAL = ['訂單完成', '已取消'];
+    const bad = MOCK_ORDERS.filter(
+      (o) => o.order_type === '線下單' && o.status !== '草稿' && !TERMINAL.includes(o.status),
+    ).flatMap((o) =>
+      (o.print_items ?? [])
+        .filter((p) => p.print_item_status !== '已棄用' && !p.expected_delivery_date)
+        .map((p) => `${o.order_no}／${p.print_item_no}`),
+    );
+    expect(bad).toEqual([]);
+  });
+
+  it('留空樣本：草稿訂單 ORD-2026-0814 三件與線上單 ORD-2026-0816 三件的印件預計交期皆空', () => {
+    const blanks = (no) =>
+      MOCK_ORDERS.find((o) => o.order_no === no).print_items.map((p) => p.expected_delivery_date ?? null);
+    expect(blanks('ORD-2026-0814')).toEqual([null, null, null]);
+    expect(blanks('ORD-2026-0816')).toEqual([null, null, null]);
+  });
+
+  it('需求單印件項目的印件預計交期＝成交後訂單印件的值（PI-2026-0903 與 Q-20260903-01 同為 2026-10-06）', () => {
     const bad = [];
     for (const q of MOCK_QUOTES) {
       const order = MOCK_ORDERS.find((o) => o.source_quote_no === q.quote_no);

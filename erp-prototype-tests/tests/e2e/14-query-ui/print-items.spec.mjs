@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { clickIntoDetail, openAs, switchRole } from '../_helpers.mjs';
+import { clickIntoDetail, gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 
 // 本機測試常與其他 sub-agent 並行、系統負載偏高，放寬本檔逾時
 test.setTimeout(60_000);
@@ -273,19 +273,21 @@ test('14.27 有工單但一筆生產任務都沒有時，兩個預估欄顯示�
 });
 
 // 14.47 印件列表與印件詳情的急件標注（OpenSpec change rush-order-definition，order-management spec
-// § 印件急件標注）：凍結天數大於 0 才標、已棄用不標，判準與訂單、工單同一支。
-test('14.47 印件列表與印件詳情帶急件標注，一般件不標', async ({ page }) => {
+// § 印件是否急件、§ 訂單急件標注）：印件是否急件為是、且印製維度非已棄用才標，判準與訂單、工單同一支；
+// 印件列表與詳情只讀訂單模組那一筆印件，不另存急件欄。
+test('14.47 印件列表與印件詳情帶急件標注，是否急件為否與已棄用的印件不標', async ({ page }) => {
+  test.setTimeout(120_000);
   await openAs(page, '印務主管', '/print-items');
   const search = page.getByPlaceholder(/請輸入印件名稱／編號/);
 
-  // 鏈四 PI-2026-0820（三天急件）：列表的印件名稱旁帶標注
+  // 鏈四 PI-2026-0820（是否急件為是）：列表的印件名稱旁帶標注
   await search.fill('PI-2026-0820');
   await page.keyboard.press('Enter');
   const urgentRow = page.locator('.ant-table-row', { hasText: 'PI-2026-0820' }).first();
   await expect(urgentRow).toBeVisible();
   await expect(urgentRow.getByText('急件', { exact: true })).toBeVisible();
 
-  // 鏈七 PI-2026-0904（一般件）：不標
+  // 鏈七 PI-2026-0904（是否急件否）：不標
   await search.fill('PI-2026-0904');
   await page.keyboard.press('Enter');
   const normalRow = page.locator('.ant-table-row', { hasText: 'PI-2026-0904' }).first();
@@ -300,4 +302,25 @@ test('14.47 印件列表與印件詳情帶急件標注，一般件不標', async
   const noCell = page.locator('th.ant-descriptions-item-label:has-text("印件編號") + td').first();
   await expect(noCell).toContainText('PI-2026-0820');
   await expect(noCell.getByText('急件', { exact: true })).toBeVisible();
+
+  // 業務把 PI-2026-0820 取消製作（印製維度轉已棄用）：該印件的詳情不再標注，是否急件值不變
+  await switchRole(page, '業務');
+  await gotoInApp(page, '/orders');
+  await page.getByPlaceholder(/請輸入訂單編號/).fill('ORD-2026-0820');
+  await page.keyboard.press('Enter');
+  await clickIntoDetail(page, 'ORD-2026-0820', /orders\/detail/);
+  await page.getByRole('tab', { name: /訂單項目/ }).click();
+  const itemRow = page.locator('tr', { hasText: 'PI-2026-0820' }).first();
+  await itemRow.getByRole('button', { name: '取消製作' }).click();
+  await page.locator('.ant-modal-confirm-btns').getByRole('button', { name: '取消製作' }).click();
+  await expect(page.getByText(/已棄用印件「.*」/)).toBeVisible();
+  await expect(async () => {
+    if (!/print-items\/detail/.test(page.url())) {
+      await itemRow.getByRole('button', { name: '檢視印件' }).click();
+    }
+    await expect(page).toHaveURL(/print-items\/detail/, { timeout: 8000 });
+  }).toPass({ intervals: [1000, 2000, 4000], timeout: 40000 });
+  const noCellAfter = page.locator('th.ant-descriptions-item-label:has-text("印件編號") + td').first();
+  await expect(noCellAfter).toContainText('PI-2026-0820');
+  await expect(noCellAfter.getByText('急件', { exact: true })).toHaveCount(0);
 });

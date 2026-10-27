@@ -1,6 +1,7 @@
 // 情境目錄 2.14～2.17、4.18～4.20：線下單送審條件、核准當下重檢、成立前刪除印件。
 // 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的 order-management
-// 規格差異檔 Scenario THEN；規則正本 wiki [[訂單狀態]]「草稿 → 待業務主管審核」列、
+// 規格差異檔 Scenario THEN；送審條件另加「有效印件都有印件預計交期」取自 change rush-order-definition
+// 的 order-management 差異檔 § 業務送出訂單審核；規則正本 wiki [[訂單狀態]]「草稿 → 待業務主管審核」列、
 // [[明細時點分界]] § 階段一的印件存廢子分界。畫面操作的驗收見 tests/e2e/02-order-setup/ 與
 // tests/e2e/04-order-print-item/。
 //
@@ -8,7 +9,8 @@
 // 本檔訂下的介面（由 tasks 4.1、4.2 實作）：
 //   permissions.js
 //     missingReviewConditions(order) → 缺項清單（字串陣列，依序：訂單須知、交貨備註、付款備註、
-//       收款條件備註、至少一期收款項目）；齊備時為空陣列
+//       收款條件備註、至少一期收款項目，再逐件列出缺印件預計交期的有效印件）；齊備時為空陣列
+//     printItemsMissingExpectedDelivery(order) → 缺印件預計交期的有效印件（線下單才檢查）
 //     canSubmitOrderForReview(order, role, userName) → 「送主管審核」顯示對象（草稿態、負責該單的業務或諮詢）
 //     canDeletePrintItem(order, role, userName) → 印件列「刪除」顯示對象（線下單審核段、負責該單的業務或諮詢）
 //   store.js（useOrdersStore）
@@ -24,6 +26,12 @@ import { useSessionStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototy
 const ORDER_ID = 'ORD-2026-0814';
 const STICKER_ID = 'pi-2026-0843'; // 貼紙 700 × 2.5 ＝ 1,750
 const ALL_MISSING_LABELS = ['訂單須知', '交貨備註', '付款備註', '收款條件備註', '至少一期收款項目'];
+// ORD-2026-0814 三件印件的印件預計交期留空（送審缺日期的具名樣本），缺項逐件列出
+const MISSING_DATE_LABELS = [
+  '「名片」（PI-2026-0841）缺印件預計交期',
+  '「DM」（PI-2026-0842）缺印件預計交期',
+  '「貼紙」（PI-2026-0843）缺印件預計交期',
+];
 
 const initialOrders = useOrdersStore.getState().orders;
 const store = () => useOrdersStore.getState();
@@ -42,9 +50,13 @@ const installment = (description, amount_taxed, extra = {}) => ({
   ...extra,
 });
 
-// 四格備註齊、兩期未取消收款項目（3,938＋9,188）的草稿單：ORD-2026-0814 補完送審條件後的樣子
+// 四格備註齊、兩期未取消收款項目（3,938＋9,188）、三件印件都填了印件預計交期的草稿單：
+// ORD-2026-0814 補完送審條件後的樣子（前置：三件印件逐件補填 2026-11-10）
+const withDates = (items, date = '2026-11-10') =>
+  items.map((p) => ({ ...p, expected_delivery_date: date }));
 const completeDraft = (patch = {}) => ({
   ...orderOf(),
+  print_items: withDates(orderOf().print_items),
   order_note: '印刷色差以打樣為準',
   delivery_note: '宅配至青硯文具倉庫',
   payment_note: '匯款後請提供後五碼',
@@ -65,11 +77,12 @@ beforeEach(() => {
 });
 
 describe('2.14 線下單送審條件不齊時列出缺項，已取消的收款項目不算數', () => {
-  it('起點資料 ORD-2026-0814 缺交貨備註、收款條件備註、至少一期收款項目三項', () => {
+  it('起點資料 ORD-2026-0814 缺交貨備註、收款條件備註、至少一期收款項目三項，再逐件列出三件印件缺印件預計交期', () => {
     expect(perms.missingReviewConditions(orderOf())).toEqual([
       '交貨備註',
       '收款條件備註',
       '至少一期收款項目',
+      ...MISSING_DATE_LABELS,
     ]);
   });
 
@@ -107,7 +120,7 @@ describe('2.14 線下單送審條件不齊時列出缺項，已取消的收款�
     const result = store().submitForReview(ORDER_ID);
     expect(result).toMatchObject({
       ok: false,
-      missing: ['交貨備註', '收款條件備註', '至少一期收款項目'],
+      missing: ['交貨備註', '收款條件備註', '至少一期收款項目', ...MISSING_DATE_LABELS],
     });
     expect(orderOf().status).toBe('草稿');
     expect(orderOf().activities).toHaveLength(before);
@@ -119,6 +132,45 @@ describe('2.14 線下單送審條件不齊時列出缺項，已取消的收款�
     expect(result).toMatchObject({ ok: true });
     expect(orderOf().status).toBe('待業務主管審核');
     expect(lastActivity()).toMatchObject({ actor: '洪嘉駿', action: '送主管審核' });
+  });
+
+  it('有效印件缺印件預計交期時不能送審：只列乙，已棄用的丙不列；乙填 2026-11-12 後送審推進', () => {
+    // order-management spec Scenario「有效印件缺印件預計交期時不能送審並列出缺日期的印件」：
+    // 甲（名片）2026-11-10、乙（DM）空、丙（貼紙）空但已棄用
+    const [甲, 乙, 丙] = orderOf().print_items;
+    seedOrder(
+      completeDraft({
+        billing_installments: [installment('全額', 13126)],
+        print_items: [
+          { ...甲, expected_delivery_date: '2026-11-10' },
+          { ...乙, expected_delivery_date: null },
+          { ...丙, expected_delivery_date: null, print_item_status: '已棄用' },
+        ],
+      }),
+    );
+    expect(perms.printItemsMissingExpectedDelivery(orderOf()).map((p) => p.print_item_no)).toEqual([
+      'PI-2026-0842',
+    ]);
+    expect(perms.missingReviewConditions(orderOf())).toEqual(['「DM」（PI-2026-0842）缺印件預計交期']);
+    expect(store().submitForReview(ORDER_ID)).toMatchObject({ ok: false });
+    expect(orderOf().status).toBe('草稿');
+    // 草稿期間可空：補填乙的日期照常存檔
+    expect(store().updatePrintItem(ORDER_ID, 乙.id, { expected_delivery_date: '2026-11-12' }).ok).toBe(true);
+    expect(perms.missingReviewConditions(orderOf())).toEqual([]);
+    expect(store().submitForReview(ORDER_ID)).toMatchObject({ ok: true });
+    expect(orderOf().status).toBe('待業務主管審核');
+  });
+
+  it('線上單與諮詢訂單不檢查印件預計交期（線上單 ORD-2026-0816 三件留空也不列）', () => {
+    const online = store().orders.find((o) => o.id === 'ORD-2026-0816');
+    expect(online.print_items.every((p) => !p.expected_delivery_date)).toBe(true);
+    expect(perms.printItemsMissingExpectedDelivery(online)).toEqual([]);
+    expect(
+      perms.printItemsMissingExpectedDelivery({
+        order_type: '諮詢訂單',
+        print_items: [{ print_item_no: 'X', name: 'X', expected_delivery_date: null }],
+      }),
+    ).toEqual([]);
   });
 });
 

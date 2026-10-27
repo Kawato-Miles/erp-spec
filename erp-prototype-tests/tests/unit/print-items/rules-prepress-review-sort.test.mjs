@@ -11,9 +11,9 @@ import { nextWorkingDay } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototyp
 // 5.13 待審清單依印件內部完成日排序、空值排最後（2.13 排序鍵純函式）
 // prepress-review spec § 待審清單排序與停滯規則：待審清單（含待審訂單模組）依印件
 //「印件內部完成日」近者優先排序，空值排在有值之後，同組依印件編號排序；不用建立時間先進先出。
-// 印件內部完成日一律由業務填的「印件預計交期」往前減 1 個工作天推導，急件選項不參與
-//（order-management spec § 印件內部完成日推導，急件新定義 2026-10-27）。
-// 急件只做標示、不影響排序：急件在線下單不再因扣天數而排前，除非業務把預計交期壓早。
+// 印件內部完成日一律由業務填的「印件預計交期」往前減 1 個工作天推導，是否急件不參與
+//（order-management spec § 印件內部完成日推導，OpenSpec change rush-order-definition）。
+// 急件只做標示、不影響排序：急件不會因是否急件為是而排前，除非業務把預計交期壓早。
 // 畫面上母列以「訂單」為單位呈現（ReviewOrderList.js defaultExpandAllRows，
 // 排序只作用在 orders.sort(compareOrdersByReviewSortKey)），故用訂單級的排序鍵函式驗算；
 // 每張測試訂單只掛一件印件時，訂單的排序鍵等於該印件自身的內部完成日，等同驗證 spec Scenario
@@ -25,7 +25,7 @@ const item = (printItemNo, internalDate, overrides = {}) => ({
   review_status: '等待審稿',
   print_item_status: '製程已確認',
   expected_delivery_date: internalDate ? nextWorkingDay(internalDate) : null,
-  urgent_option_days: 0,
+  is_urgent: false,
   ...overrides,
 });
 
@@ -52,15 +52,26 @@ describe('5.13 待審清單依印件內部完成日排序、空值排最後', ()
     expect(sorted).toEqual(['ORD-EARLY', 'ORD-LATE', 'ORD-EMPTY']);
   });
 
-  it('急件只做標示、不影響排序：內部完成日較晚的急件仍排在一般件之後', () => {
-    // 甲：一般件 → 印件內部完成日 2026-10-15
-    // 乙：三天急件（凍結天數 3）→ 印件內部完成日 2026-10-16（急件不扣日期）
-    const orders = [
-      order('ORD-乙', [item('PI-乙', '2026-10-16', { urgent_option_days: 3 })]),
-      order('ORD-甲', [item('PI-甲', '2026-10-15')]),
-    ];
+  it('急件不改變排序鍵：甲（否，內部完成日 2026-10-15）排在乙（是，2026-10-16）之前，乙帶急單標示、甲不帶', () => {
+    // prepress-review spec Scenario「急件不改變排序鍵」：乙的印件預計交期 2026-10-19（一）、是否急件為是
+    const 甲 = item('PI-甲', '2026-10-15');
+    const 乙 = item('PI-乙', '2026-10-16', { is_urgent: true });
+    expect(乙.expected_delivery_date).toBe('2026-10-19');
+    const orders = [order('ORD-乙', [乙]), order('ORD-甲', [甲])];
     const sorted = [...orders].sort(compareOrdersByReviewSortKey).map((o) => o.order_no);
     expect(sorted).toEqual(['ORD-甲', 'ORD-乙']);
+    expect(isPrintItemUrgent(乙)).toBe(true);
+    expect(isPrintItemUrgent(甲)).toBe(false);
+  });
+
+  it('取消是否急件後急單標示即時消失，印件內部完成日與排序位置不變', () => {
+    const before = item('PI-丙', '2026-10-12', { is_urgent: true });
+    const after = { ...before, is_urgent: false };
+    expect(isPrintItemUrgent(before)).toBe(true);
+    expect(isPrintItemUrgent(after)).toBe(false);
+    const other = order('ORD-丁', [item('PI-丁', '2026-10-14')]);
+    const rank = (x) => [order('ORD-丙', [x]), other].sort(compareOrdersByReviewSortKey).map((o) => o.order_no);
+    expect(rank(after)).toEqual(rank(before));
   });
 
   it('全數待審印件皆已收斂或無交期時排到最後，訂單本身不受此影響出清單', () => {
@@ -90,29 +101,22 @@ describe('5.13 待審清單依印件內部完成日排序、空值排最後', ()
   });
 });
 
-// tasks.md 任務 6.5（prepress-review spec § 待審清單排序與停滯規則 Scenario「急單標示取印件
-// 急件選項」）：急單標示只取印件的急件選項凍結天數，訂單層已無任何形式的急件欄位。
-// 補一筆迴歸測試，防止未來又誤讀訂單層欄位。
-describe('6.5 急單標示取印件急件選項，不誤讀訂單層欄位', () => {
-  it('isPrintItemUrgent 只依印件自身的急件選項判定', () => {
-    const urgentItem = item('PI-URGENT', '2026-09-20', {
-      urgent_option_days: 3,
-      urgent_option_name: '三天急件',
-      is_urgent: false, // 刻意放矛盾值：若函式誤讀外層（訂單層）欄位就會判成非急件
-    });
-    const normalItem = item('PI-NORMAL', '2026-09-20', {
-      is_urgent: true, // 一般件本身凍結天數為 0，即使外層帶 is_urgent: true 也不判成急件
-    });
-    expect(isPrintItemUrgent(urgentItem)).toBe(true);
-    expect(isPrintItemUrgent(normalItem)).toBe(false);
+// 6.5／5.13（prepress-review spec § 待審清單排序與停滯規則 Scenario「急單標示取印件的急件標注」）：
+// 急單標示只看印件的是否急件與印製維度，訂單層沒有急件欄位。
+describe('6.5 急單標示取印件的急件標注，不誤讀訂單層欄位', () => {
+  it('名片（是）帶急單標示、型錄（否）不帶、貼紙（是但已棄用）不帶', () => {
+    const 名片 = item('PI-名片', '2026-09-20', { is_urgent: true });
+    const 型錄 = item('PI-型錄', '2026-09-20', { is_urgent: false });
+    const 貼紙 = item('PI-貼紙', '2026-09-20', { is_urgent: true, print_item_status: '已棄用' });
+    expect(isPrintItemUrgent(名片)).toBe(true);
+    expect(isPrintItemUrgent(型錄)).toBe(false);
+    expect(isPrintItemUrgent(貼紙)).toBe(false);
   });
 
-  it('急單標示判準為凍結天數大於 0：延後型（−2）不標', () => {
-    const delayed = item('PI-DELAY', '2026-09-20', {
-      urgent_option_days: -2,
-      urgent_option_name: '延後 2 天',
-    });
-    expect(isPrintItemUrgent(delayed)).toBe(false);
+  it('外層（訂單）帶任何急件值都不影響：判定只讀印件自身', () => {
+    const normalItem = item('PI-NORMAL', '2026-09-20', { is_urgent: false });
+    const fakeOrder = { is_urgent: true, print_items: [normalItem] };
+    expect(isPrintItemUrgent(fakeOrder.print_items[0])).toBe(false);
   });
 });
 

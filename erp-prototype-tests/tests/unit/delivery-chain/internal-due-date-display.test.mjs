@@ -24,8 +24,8 @@ describe('4.14 印件內部完成日的唯讀呈現只印一組日期', () => {
     expect(formatInternalDueDate(null, { dash: '未定' })).toBe('未定');
   });
 
-  it('由印件推導：鏈四三天急件樣本，預計交期 2026-09-07 只印 2026-09-04、不帶括號', () => {
-    const item = { expected_delivery_date: '2026-09-07', urgent_option_days: 3 };
+  it('由印件推導：鏈四急件樣本（是否急件為是），預計交期 2026-09-07 只印 2026-09-04、不帶括號', () => {
+    const item = { expected_delivery_date: '2026-09-07', is_urgent: true };
     expect(printItemInternalDueDateText(item)).toBe('2026-09-04');
   });
 

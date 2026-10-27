@@ -177,7 +177,9 @@ test('12.51、12.59 批次列印：勾母列等於勾底下全部未作廢物流
 test('12.52 下載檔案狀態：只有處理中、成功、部分成功、失敗四種；模擬資料四筆；部分成功與失敗的異常內容每筆物流單一行，以物流單號開頭', async ({
   page,
 }) => {
-  await openAs(page, '出貨人員', DOWNLOAD_CENTER);
+  // 先以有入口的出貨管理頁進場、切成出貨人員，再由側欄進下載中心：直接整頁載入下載中心時，存取守衛可能在角色切換前就導走
+  await openAs(page, '出貨人員', SHIPMENTS);
+  await gotoInAppSafe(page, DOWNLOAD_CENTER);
   const rows = downloadRows(page);
   await expect(rows.first()).toBeVisible();
   await expect(rows).toHaveCount(4);

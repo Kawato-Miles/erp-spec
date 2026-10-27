@@ -6,6 +6,9 @@ import { switchRole } from '../_helpers.mjs';
 
 // ─── 基礎操作工具（複製自 00-main-flow/_flow-helpers.mjs） ───
 
+// 是否急件為勾起時，印件預計交期欄旁常駐的交期確認提示（wiki 急件規則 § 急件要確認印件預計交期）
+export const URGENT_REMINDER = '此印件為急件，請確認印件預計交期';
+
 export const spaced = (label) => new RegExp(`${label.split('').join('\\s*')}$`);
 export const button = (scope, label) => scope.getByRole('button', { name: spaced(label) });
 export const dialog = (page) => page.locator('.ant-modal-content:visible').last();
@@ -134,6 +137,8 @@ export async function createQuoteHeader(page, options) {
  * （用於測試「缺漏即擋下轉換」）。
  * expectedDeliveryDate 選填（印件預計交期）：不傳＝維持空白（欄位本來就沒有預設值，覆蓋「這件還沒談定
  * 交期」的情境）；傳字串＝填成該日期。
+ * urgent 選填（是否急件）：預設不勾；true＝勾選，側板的印件預計交期欄旁隨即常駐提示
+ * 「此印件為急件，請確認印件預計交期」（rush-order-definition，quote-request spec § 印件項目管理）。
  */
 export async function addItem(
   page,
@@ -145,6 +150,7 @@ export async function addItem(
     unitPrice,
     costEstimate,
     expectedDeliveryDate,
+    urgent = false,
   },
 ) {
   const panel = drawer(page);
@@ -160,6 +166,10 @@ export async function addItem(
   if (expectedDeliveryDate) {
     // 需求單印件項目只有一格日期欄「印件預計交期」，轉訂單直接帶入印件（急件新定義 2026-10-27）
     await pickDate(panel.getByLabel('印件預計交期'), expectedDeliveryDate);
+  }
+  if (urgent) {
+    await panel.locator('#is_urgent').check();
+    await expect(panel.getByText(URGENT_REMINDER)).toBeVisible();
   }
   await button(panel, '確認').click();
   await waitModalsClosed(page);

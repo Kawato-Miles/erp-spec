@@ -191,6 +191,23 @@ test('3.13 線下單草稿態即可規劃收款項目，待審期間可改且變
   await billingPanel.locator('#payment_terms_note').fill('3.13 訂金三成回簽後匯款、尾款交貨後 30 天');
   await button(billingPanel, '確認').click();
   await expect(page.getByText('已更新發票與收款').last()).toBeVisible();
+  await waitModalsClosed(page);
+
+  // 三件印件逐件補填印件預計交期：線下單送主管審核時有效印件都要有日期
+  //（OpenSpec change rush-order-definition，order-management spec § 業務送出訂單審核）
+  await openTab(page, '訂單項目');
+  for (const printItemNo of ['PI-2026-0841', 'PI-2026-0842', 'PI-2026-0843']) {
+    const itemRow = page.locator('tbody tr.ant-table-row').filter({ hasText: printItemNo }).first();
+    await itemRow.getByRole('button', { name: '編輯印件' }).click();
+    const itemDrawer = drawer(page);
+    await pickDate(itemDrawer.locator('#expected_delivery_date'), '2026-11-20');
+    // 這張單的印件難易度原本留空，編輯印件側板的難易度為必填，順手補上才存得了檔
+    const difficulty = itemDrawer.locator('#difficulty_level');
+    if (!(await difficulty.inputValue())) await difficulty.fill('3');
+    await button(itemDrawer, '確認').click();
+    await expect(page.getByText(/已更新印件/).last()).toBeVisible();
+    await waitModalsClosed(page);
+  }
 
   await button(page, '送主管審核').click();
   await expect(orderHeader(page)).toContainText('待業務主管審核');

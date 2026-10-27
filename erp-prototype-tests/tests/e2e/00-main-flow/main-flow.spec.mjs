@@ -20,6 +20,7 @@ import {
   waitModalsClosed,
   fillOrderNotes,
   addInstallment,
+  pickDate,
 } from './_flow-helpers.mjs';
 import { assignMover } from '../10-report-transfer/_ch10.mjs';
 import {
@@ -65,6 +66,8 @@ const reviewRow = (page, text) =>
 const CASE_NAME = '主流程 smoke 誠品週年慶';
 const ITEM_A = '主流程印件甲';
 const ITEM_B = '主流程印件乙';
+// 兩件印件的印件預計交期（需求單填、轉訂單帶入）：取遠於全程任何任務日期的一天，不觸發排程把關
+const ITEM_EXPECTED_DELIVERY = '2026-12-28';
 // 目的站點是產線底下的站點（Miles 2026-10-06 拍板；站點清單為假資料，待 PT-067 取代）：
 // 備料送到數位產線的印刷站，轉交單單頭記目的產線、明細記目的站點
 const PRINT_STATION = '印刷站';
@@ -258,7 +261,9 @@ test('主流程：一件印件從需求單到訂單完成', { tag: '@smoke' }, a
     await expect(listRow.getByText('需求確認中', { exact: true })).toBeVisible();
     quoteNo = (await listRow.innerText()).match(/Q-\d{8}-\d{2}/)[0];
 
-    // 進詳情建兩件印件，各填難易度與單價
+    // 進詳情建兩件印件，各填難易度、單價與印件預計交期。
+    // 印件預計交期在需求單選填，但線下單送主管審核時有效印件都要有值（OpenSpec change
+    // rush-order-definition，order-management spec § 業務送出訂單審核），故在報價時就填上，轉訂單直接帶入
     await page.getByRole('link', { name: quoteNo }).click();
     await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
     for (const name of [ITEM_A, ITEM_B]) {
@@ -269,6 +274,7 @@ test('主流程：一件印件從需求單到訂單完成', { tag: '@smoke' }, a
       await itemPanel.getByLabel('數量').fill('100');
       await pickOption(page, itemPanel.getByLabel('難易度'), '3');
       await itemPanel.getByLabel('單價（未稅）').fill('50');
+      await pickDate(itemPanel.getByLabel('印件預計交期'), ITEM_EXPECTED_DELIVERY);
       await button(itemPanel, '確認').click();
       await waitModalsClosed(page);
       await expect(page.getByText(name, { exact: true }).first()).toBeVisible();
@@ -327,7 +333,8 @@ test('主流程：一件印件從需求單到訂單完成', { tag: '@smoke' }, a
   });
 
   await test.step('第 6 站 業務 補齊送審條件後送業務主管審核', async () => {
-    // 送審條件：四格備註皆有值、至少一期未取消的收款項目。收款條件備註已自需求單帶入，
+    // 送審條件：四格備註皆有值、至少一期未取消的收款項目、有效印件都有印件預計交期（第 1 站已填、轉訂單帶入）。
+    // 收款條件備註已自需求單帶入，
     // 其餘三格與收款項目在送審前由業務補齊（金額不必等於應收總額）。
     await expect(button(page, '送主管審核')).toBeDisabled();
     await fillOrderNotes(page, {

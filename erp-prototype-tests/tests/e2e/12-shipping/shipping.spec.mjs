@@ -2510,8 +2510,9 @@ test('12.56 確認可出貨時依出貨方式檢查收件電話：7-11 交貨便
 });
 
 // 12.60 出貨明細帶印件急件標注、單頭不顯示（OpenSpec change rush-order-definition，shipment spec
-// § 出貨明細帶出印件急件標注）：一張出貨單可同時出多件印件，急件與否屬於印件，所以只標在明細。
-// 起點：鏈四草稿（PI-2026-0820，三天急件）與鏈一 SH-2026-06-18001（PI-2026-0601，一般件）。
+// § 出貨明細帶出印件急件標注）：一張出貨單可同時出多件印件，急件與否屬於印件，所以只標在明細；
+// 標注依印件即時推算（是否急件為是、且印件非已棄用才標），印件取消勾選後明細隨之更新。
+// 起點：鏈四草稿（PI-2026-0820，是否急件為是）與鏈一 SH-2026-06-18001（PI-2026-0601，是否急件否）。
 test('12.60 出貨明細帶印件急件標注、出貨單單頭不顯示', async ({ page }) => {
   await openAs(page, '業務', '/qc-shipping/shipments');
   // 單頭（列表母列）不顯示急件標注
@@ -2529,4 +2530,24 @@ test('12.60 出貨明細帶印件急件標注、出貨單單頭不顯示', async
   const normalLine = normal.locator('tr', { hasText: 'PI-2026-0601' }).first();
   await expect(normalLine).toBeVisible();
   await expect(normalLine.getByText('急件', { exact: true })).toHaveCount(0);
+  await closeDrawer(page);
+
+  // 業務取消 PI-2026-0820 的是否急件：鏈四草稿的出貨明細那一列不再帶標注
+  //（shipment spec「印件勾選是否急件後出貨明細隨之更新」）
+  await gotoInAppSafe(page, '/orders');
+  await page.getByPlaceholder(/請輸入訂單編號/).fill('ORD-2026-0820');
+  await page.keyboard.press('Enter');
+  await clickIntoDetail(page, 'ORD-2026-0820', /orders\/detail/);
+  await page.getByRole('tab', { name: /訂單項目/ }).click();
+  await page.locator('tr', { hasText: CHAIN4.printItemNo }).first().getByRole('button', { name: '編輯印件' }).click();
+  const itemDrawer = page.locator('.ant-drawer-content').last();
+  await itemDrawer.locator('#is_urgent').uncheck();
+  await itemDrawer.getByRole('button', { name: /確\s*認/ }).click();
+  await expect(page.locator('.ant-drawer-content-wrapper')).toHaveCount(0);
+  await gotoInAppSafe(page, '/qc-shipping/shipments');
+  const after = await openShipmentEdit(page, MOCK_DRAFT_KEY);
+  await after.getByRole('tab', { name: '出貨明細' }).click();
+  const afterLine = after.locator('tr', { hasText: CHAIN4.printItemNo }).first();
+  await expect(afterLine).toBeVisible();
+  await expect(afterLine.getByText('急件', { exact: true })).toHaveCount(0);
 });

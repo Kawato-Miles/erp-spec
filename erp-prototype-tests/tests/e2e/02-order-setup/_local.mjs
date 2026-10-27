@@ -149,7 +149,11 @@ export const fakeFile = (name, mimeType = 'application/pdf') => ({
  * 從需求單建一張新的草稿訂單（沿用主流程第 1、5 站的做法，濃縮成一件印件、單一角色接力）。
  * 回傳時已切回「業務」角色，頁面停在訂單詳情。
  */
-export async function buildDraftOrder(page, { openAs, switchRole, gotoInApp }, { caseName, itemName, qty = '100', unitPrice = '50' }) {
+export async function buildDraftOrder(
+  page,
+  { openAs, switchRole, gotoInApp },
+  { caseName, itemName, qty = '100', unitPrice = '50', expectedDelivery = '2026-12-28' },
+) {
   await openAs(page, '業務', '/quote-prototype');
   const panel = drawer(page);
   await clickOpen(button(page, '新增'), panel.getByLabel('需求案名'));
@@ -176,6 +180,8 @@ export async function buildDraftOrder(page, { openAs, switchRole, gotoInApp }, {
   await itemPanel.getByLabel('數量').fill(qty);
   await pickOption(page, itemPanel.getByLabel('難易度'), '3');
   await itemPanel.getByLabel('單價（未稅）').fill(unitPrice);
+  // 印件預計交期在需求單選填；送主管審核時有效印件都要有值（rush-order-definition），報價時先填好、轉訂單帶入
+  if (expectedDelivery) await pickDate(itemPanel.getByLabel('印件預計交期'), expectedDelivery);
   await button(itemPanel, '確認').click();
   await waitModalsClosed(page);
   await expect(page.getByText(itemName, { exact: true }).first()).toBeVisible();
@@ -220,7 +226,8 @@ export const submitButton = (page) => button(page, '送主管審核');
 /**
  * 送審缺項文字。畫面約定（tasks 4.1 實作依此）：條件不齊時「送主管審核」停用，
  * 操作列旁出現一段含「尚缺」的文字，缺項依序以頓號分隔
- * （訂單須知、交貨備註、付款備註、收款條件備註、至少一期收款項目）。
+ * （訂單須知、交貨備註、付款備註、收款條件備註、至少一期收款項目，再逐件列出
+ * 「「印件名稱」（印件編號）缺印件預計交期」；已棄用印件不列——rush-order-definition）。
  */
 export const reviewMissing = (page) => page.getByText(/尚缺/).first();
 
@@ -280,7 +287,8 @@ export async function cancelInstallment(page, description, reason) {
 
 /**
  * 前置：ORD-2026-0814 補齊送審條件（同情境 2.1 起點資料的前置）——
- * 補填交貨備註與收款條件備註，新增兩期收款項目（訂金 3,938、尾款 9,188）。
+ * 補填交貨備註與收款條件備註，新增兩期收款項目（訂金 3,938、尾款 9,188），
+ * 三件印件逐件補填印件預計交期 2026-11-20。
  * 呼叫前頁面須已停在 ORD-2026-0814 詳情、身分為業務。
  */
 export const ORDER_0814_INSTALLMENTS = [
@@ -290,10 +298,39 @@ export const ORDER_0814_INSTALLMENTS = [
 export const ORDER_0814_DELIVERY_NOTE = '宅配至青硯文具倉庫，收貨前電話聯絡許小姐';
 export const ORDER_0814_TERMS_NOTE = '訂金 30% 回簽後匯款、尾款出貨前結清';
 
+// ORD-2026-0814 三件印件（印件預計交期留空，送審缺日期的具名樣本）與前置補填的日期
+export const ORDER_0814_ITEMS = [
+  { name: '名片', no: 'PI-2026-0841' },
+  { name: 'DM', no: 'PI-2026-0842' },
+  { name: '貼紙', no: 'PI-2026-0843' },
+];
+export const ORDER_0814_EXPECTED_DELIVERY = '2026-11-20';
+
+/** 業務在訂單項目頁籤開某件印件的編輯印件側板，填印件預計交期後確認 */
+export async function fillItemExpectedDelivery(page, printItemNo, date) {
+  await openTab(page, '訂單項目');
+  const row = page.locator('tbody tr.ant-table-row').filter({ hasText: printItemNo }).first();
+  const panel = drawer(page);
+  await clickOpen(row.getByRole('button', { name: '編輯印件' }), panel.locator('#expected_delivery_date'));
+  await pickDate(panel.locator('#expected_delivery_date'), date);
+  // ORD-2026-0814 的印件難易度原本留空（成交轉訂單時沒有帶入），編輯印件側板的難易度為必填，順手補上才存得了檔
+  const difficulty = panel.locator('#difficulty_level');
+  if (!(await difficulty.inputValue())) await difficulty.fill('3');
+  await button(panel, '確認').click();
+  await expect(page.getByText(/已更新印件/).last()).toBeVisible();
+  await waitModalsClosed(page);
+}
+
+/** 前置：ORD-2026-0814 三件印件逐件補填印件預計交期（草稿期間可空，送審時才檢查） */
+export async function fillExpectedDelivery0814(page, date = ORDER_0814_EXPECTED_DELIVERY) {
+  for (const item of ORDER_0814_ITEMS) await fillItemExpectedDelivery(page, item.no, date);
+}
+
 export async function completeReviewConditions0814(page) {
   await editOrderNotes(page, { delivery_note: ORDER_0814_DELIVERY_NOTE });
   await editPaymentTermsNote(page, ORDER_0814_TERMS_NOTE);
   for (const item of ORDER_0814_INSTALLMENTS) await addInstallment(page, item);
+  await fillExpectedDelivery0814(page);
 }
 
 /** 前置：補齊送審條件後送主管審核，停在待業務主管審核（審核業務主管林雅婷） */

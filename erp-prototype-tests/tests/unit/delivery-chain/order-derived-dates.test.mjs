@@ -22,9 +22,7 @@ import { departed, dispatched, packedShipment, undispatched } from '../qc-shippi
 const item = (no, internal, overrides = {}) => ({
   print_item_no: no,
   expected_delivery_date: internal ? nextWorkingDay(internal) : null,
-  urgent_option_id: 'UO-001',
-  urgent_option_name: '一般件',
-  urgent_option_days: 0,
+  is_urgent: false,
   ...overrides,
 });
 
@@ -142,10 +140,10 @@ describe('4.13 交期逾期標示：部分延遲與整單逾期以全部交完�
   });
 
   it('印件預計交期改晚後依重算的全部交完日重新判定：印件甲由 2026-10-20 改為 2026-10-23、系統日期 2026-10-21 → 內部完成日 2026-10-22、全部交完日 2026-10-23，甲不標逾期、訂單不標任何延遲', () => {
-    const before = [{ print_item_no: '甲', expected_delivery_date: '2026-10-20', urgent_option_days: 0 }];
+    const before = [{ print_item_no: '甲', expected_delivery_date: '2026-10-20', is_urgent: false }];
     expect(orderAllDeliveredByDate(before)).toBe('2026-10-20');
     expect(orderDelayFlags(before, '2026-10-21', shippedBy([]))).toEqual({ partialDelay: false, wholeOverdue: true });
-    const late = [{ print_item_no: '甲', expected_delivery_date: '2026-10-23', urgent_option_days: 0 }];
+    const late = [{ print_item_no: '甲', expected_delivery_date: '2026-10-23', is_urgent: false }];
     expect(orderInternalCompletionDate(late)).toBe('2026-10-22');
     expect(orderAllDeliveredByDate(late)).toBe('2026-10-23');
     expect(printItemOverdueWorkingDays(late[0], '2026-10-21', false)).toBeNull();
@@ -153,7 +151,7 @@ describe('4.13 交期逾期標示：部分延遲與整單逾期以全部交完�
   });
 
   it('預計交期落週六時全部交完日照實晚於預計交期：2026-10-17（六）→ 內部完成日 2026-10-16、全部交完日 2026-10-19', () => {
-    const sat = [{ print_item_no: '甲', expected_delivery_date: '2026-10-17', urgent_option_days: 0 }];
+    const sat = [{ print_item_no: '甲', expected_delivery_date: '2026-10-17', is_urgent: false }];
     expect(orderInternalCompletionDate(sat)).toBe('2026-10-16');
     expect(orderAllDeliveredByDate(sat)).toBe('2026-10-19');
   });

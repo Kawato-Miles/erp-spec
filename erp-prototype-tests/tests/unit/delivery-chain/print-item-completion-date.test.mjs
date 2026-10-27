@@ -18,7 +18,7 @@ const poster = (overrides = {}) => ({
   type: '大貨印件',
   print_item_status: '製作中',
   expected_delivery_date: '2026-11-11',
-  urgent_option_days: 0,
+  is_urgent: false,
   completion_date: null,
   short_closed: false,
   ...overrides,

@@ -11,6 +11,10 @@ import {
   dialog,
   editOrderNotes,
   editPaymentTermsNote,
+  fillExpectedDelivery0814,
+  fillItemExpectedDelivery,
+  ORDER_0814_EXPECTED_DELIVERY,
+  ORDER_0814_ITEMS,
   ORDER_0814_DELIVERY_NOTE,
   ORDER_0814_TERMS_NOTE,
   openByNo,
@@ -25,9 +29,11 @@ import {
 
 // 情境目錄 2.14～2.17：線下單送審條件、核准當下重檢、草稿與待審兩態直接儲存。
 // 起點資料一律為鏈外 ORD-2026-0814（草稿；訂單須知與付款備註有值，交貨備註與收款條件備註為空，
-// 尚無收款項目；三件印件名片 651、DM 9,900、貼紙 1,750，運費 200，應收總額 13,126）。
+// 尚無收款項目；三件印件名片 651、DM 9,900、貼紙 1,750，運費 200，應收總額 13,126；
+// 三件印件的印件預計交期皆留空，是送審缺日期的具名樣本）。
 // 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的 order-management
-// 規格差異檔 Scenario THEN。依據 wiki [[訂單成立確認]]、[[收款項目規劃]]、[[訂單印件規格維護]]。
+// 規格差異檔 Scenario THEN；「有效印件都有印件預計交期」取自 change rush-order-definition 的
+// order-management 差異檔 § 業務送出訂單審核。依據 wiki [[訂單成立確認]]、[[收款項目規劃]]、[[訂單印件規格維護]]。
 // 缺項文字與刪除鈕的畫面約定見 ./_local.mjs 的 reviewMissing、deletePrintItemRow、deleteFeeRow。
 const ORDER_NO = 'ORD-2026-0814';
 const DETAIL = `/orders/detail?id=${ORDER_NO}`;
@@ -36,12 +42,15 @@ test('2.14 線下單送審條件不齊時按鈕停用並列出缺項，已取消
   test.setTimeout(180_000);
   await openAs(page, '業務', DETAIL);
 
-  // 起點：按鈕停用，缺項列三項
+  // 起點：按鈕停用，缺項列交貨備註、收款條件備註、至少一期收款項目，再逐件列出三件印件缺印件預計交期
   await expect(submitButton(page)).toBeDisabled();
   const missing = reviewMissing(page);
   await expect(missing).toContainText('交貨備註');
   await expect(missing).toContainText('收款條件備註');
   await expect(missing).toContainText('至少一期收款項目');
+  for (const item of ORDER_0814_ITEMS) {
+    await expect(missing).toContainText(`「${item.name}」（${item.no}）缺印件預計交期`);
+  }
   await expect(missing).not.toContainText('訂單須知');
   await expect(missing).not.toContainText('付款備註');
 
@@ -53,8 +62,21 @@ test('2.14 線下單送審條件不齊時按鈕停用並列出缺項，已取消
   await expect(reviewMissing(page)).not.toContainText('收款條件備註');
   await expect(submitButton(page)).toBeDisabled();
 
-  // 三項補齊後按鈕可按，缺項文字消失
+  // 三項補齊後按鈕仍停用：缺項只剩三件印件的印件預計交期
   await addInstallment(page, { description: '全額', amount: 13126 });
+  await expect(submitButton(page)).toBeDisabled();
+  await expect(reviewMissing(page)).not.toContainText('至少一期收款項目');
+  await expect(reviewMissing(page)).toContainText('缺印件預計交期');
+
+  // 逐件補填印件預計交期（草稿期間可空，照常存檔）：補一件少一件
+  const [first, ...rest] = ORDER_0814_ITEMS;
+  await fillItemExpectedDelivery(page, first.no, ORDER_0814_EXPECTED_DELIVERY);
+  await expect(reviewMissing(page)).not.toContainText(`（${first.no}）`);
+  await expect(reviewMissing(page)).toContainText(`（${rest[0].no}）缺印件預計交期`);
+  await expect(submitButton(page)).toBeDisabled();
+  for (const item of rest) await fillItemExpectedDelivery(page, item.no, ORDER_0814_EXPECTED_DELIVERY);
+
+  // 全部補齊後按鈕可按，缺項文字消失
   await expect(submitButton(page)).toBeEnabled();
   await expect(page.getByText(/尚缺/)).toHaveCount(0);
 
@@ -78,6 +100,8 @@ test.describe('2.15 收款項目合計不一致、沒有印件、應收總額 0 
     // 前置：補填交貨備註與收款條件備註
     await editOrderNotes(page, { delivery_note: ORDER_0814_DELIVERY_NOTE });
     await editPaymentTermsNote(page, ORDER_0814_TERMS_NOTE);
+    // 前置：三件印件逐件補填印件預計交期（有效印件都要有日期才送得出審核）
+    await fillExpectedDelivery0814(page);
 
     await addInstallment(page, { description: '訂金', amount: 3938 });
     const alert = page.getByRole('alert').filter({ hasText: '收款項目合計與應收總額不一致' });

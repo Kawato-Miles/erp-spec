@@ -190,7 +190,8 @@ test('8.8 急件工單的紙本標示與印件內部完成日（原編號 170）
   await openAs(page, '印務', '/work-orders/print?id=wo-2026-0820');
 
   // 表頭日期欄為「印件內部完成日」：取工單承接的那一格，PI-2026-0820 印件預計交期 2026-09-07（一）
-  // 往前減 1 個工作天＝ 2026-09-04（五）；三天急件不改日期、只在表頭帶急件標注
+  // 往前減 1 個工作天＝ 2026-09-04（五）；PI-2026-0820 是否急件為是，急件不改日期、只在表頭帶急件標注
+  //（work-order spec § 工單與生產任務的急件標示「工單單據表頭帶出急件標注」）
   const infoTable = page.locator('table').first();
   const dueRow = infoTable.locator('tr').filter({ hasText: '印件內部完成日' }).first();
   await expect(dueRow).toContainText('2026-09-04');
@@ -230,48 +231,6 @@ test('8.8 急件工單的紙本標示與印件內部完成日（原編號 170）
     .first();
   await expect(normalDueRow).toContainText('2026-09-09');
   await expect(normalDueRow.getByText('未扣急件')).toHaveCount(0);
-});
-
-test('8.8（補）印件內部完成日為空時印據表頭印破折號', async ({ page }) => {
-  // 鏈二 PI-2026-0710／WO-2026-0710：業務把印件的印件預計交期清空，印件內部完成日同為空、
-  // 非終態工單承接的兩欄同步為 null；印據表頭不留空白、不擋列印，印破折號
-  //（work-order spec § 工單列印單據 Scenario「工單交期為空時印據表頭印「－」」）。
-  // 全套連跑時開發伺服器的部分程式區塊遲遲不回，load 事件等不到；頁面結構載入後即可操作，切角色會等畫面出現
-  await page.goto('/orders/detail?id=ORD-2026-0710&tab=printItems', { waitUntil: 'domcontentloaded' });
-  await switchRole(page, '業務');
-  const row = page.locator('tr', { hasText: 'PI-2026-0710' });
-  // 清除鈕只在 hover 時才顯示、位置常落在可視區外；直接對元素派送 click 事件繞開座標可視性檢查
-  const dueDateClear = page
-    .locator('.ant-form-item', { hasText: '印件預計交期' })
-    .locator('.ant-picker-clear');
-  // 頁面結構載入後可能尚未接上互動，第一次點擊會落空；重試到編輯表單出現
-  await expect(async () => {
-    if (!(await dueDateClear.count())) await row.getByRole('button', { name: '編輯印件' }).click();
-    await dueDateClear.waitFor({ state: 'attached', timeout: 5000 });
-  }).toPass({ timeout: 60000 });
-  await dueDateClear.evaluate((el) => el.click());
-  await page.getByRole('button', { name: '確認' }).click();
-  await expect(
-    page.getByText(/印件內部完成日重算為「未定」/),
-  ).toBeVisible();
-  await expect(row.getByText('－').first()).toBeVisible();
-
-  await switchRoleReliable(page, '印務');
-  // 目前站在訂單詳情頁（非工單詳情頁），gotoWorkOrderList／openWorkOrderFromList 假設呼叫端
-  // 已在工單模組內、靠頁首返回鍵離開，這裡改直接以側欄站內導頁到工單列表再搜尋
-  await gotoInApp(page, '/work-orders');
-  const search = page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或客戶名稱');
-  await search.fill('WO-2026-0710');
-  await search.press('Enter');
-  await page.getByText('WO-2026-0710', { exact: true }).first().click();
-  await clickAndWaitUrl(
-    page,
-    page.getByRole('button', { name: '列印紙本工單' }),
-    /\/work-orders\/print/,
-  );
-  const infoTable = page.locator('table').first();
-  const dueRow = infoTable.locator('tr').filter({ hasText: '印件內部完成日' }).first();
-  await expect(dueRow).toContainText('－');
 });
 
 // 8.11／8.12 共用：單據表頭中某一列（備註、確樣需求、品檢需求、製程說明各跨欄一列）的值

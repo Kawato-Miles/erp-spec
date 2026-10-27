@@ -514,14 +514,15 @@ const captionOf = (page, label) =>
     .first();
 
 test('14.26（急件）摘要卡的印件內部完成日只印一組日期，頁首帶急件標注', async ({ page }) => {
-  // 起點資料：鏈四 WO-2026-0820（三天急件；印件預計交期 2026-09-07、印件內部完成日 2026-09-04）
-  // 期望值取自 order-management spec § 印件內部完成日推導（急件新定義 2026-10-27）：急件不改日期，
-  // 摘要卡副標行不再放未扣值。摘要卡的日期一律以斜線格式呈現（YYYY/MM/DD）
+  // 起點資料：鏈四 WO-2026-0820（PI-2026-0820 是否急件為是；印件預計交期 2026-09-07、印件內部完成日 2026-09-04）
+  // 期望值取自 order-management spec § 印件內部完成日推導「是否急件不影響推導」與 work-order spec
+  // § 工單與生產任務的急件標示：急件不改日期、摘要卡副標行不放附註；頁首只標「急件」，不帶選項名稱或天數。
+  // 摘要卡的日期一律以斜線格式呈現（YYYY/MM/DD）
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0820');
   await expect(cellValueOf(page, '印件內部完成日')).toHaveText('2026/09/04');
   expect((await captionOf(page, '印件內部完成日').innerText()).trim()).toBe('');
   await expect(cellValueOf(page, '印件預計交期')).toHaveText('2026/09/07');
   await expect(
-    page.locator('h4', { hasText: 'WO-2026-0820' }).locator('..').getByText('急件・三天急件', { exact: true }),
+    page.locator('h4', { hasText: 'WO-2026-0820' }).locator('..').getByText('急件', { exact: true }),
   ).toBeVisible();
 });

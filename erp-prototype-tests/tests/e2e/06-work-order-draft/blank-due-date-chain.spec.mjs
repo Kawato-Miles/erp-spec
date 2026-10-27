@@ -11,34 +11,56 @@ import {
   openTab,
 } from './_local-helpers.mjs';
 
-// 6.13 交期一路留空時五個畫面照實留白、不當機
-// 起點：鏈六 ORD-2026-0903 旗下 PI-2026-0903（印件預計交期留空、印件內部完成日同為空、尚無工單）。
-// 印件預計交期是選填，留空是常態不是特例（MOCK-DATA-CHAIN.md § 交期欄位）：
-// 印件內部完成日與工單承接值一路同為空，沿途每一個要顯示交期的畫面都要照實留白、不得拋出例外。
-test('6.13 交期一路留空時五個畫面照實留白、不當機', async ({ page }) => {
+// 6.13 交期一路留空時工單相關畫面照實留白、不當機
+// 線下單離開草稿後有效印件一律有印件預計交期（rush-order-definition，order-management spec
+// § 印件預計交期依階段必填檢核），留空走到工單的路徑只剩線上單：線上單印件沒有本欄的來源。
+// 起點：鏈外線上單 ORD-2026-0816（等待付款，三件印件日期皆空）。前置：業務以手動推進代替電商付款回寫，
+// 推到「已付款」（訂單成立）；新增一件免審印件、不填日期，系統依線上單自動到位建立工單草稿
+//（不經待確認製作細節佇列），之後印件內部完成日與工單承接值一路同為空。
+test('6.13 交期一路留空時工單相關畫面照實留白、不當機', async ({ page }) => {
   test.setTimeout(300_000);
 
-  // 一、待確認製作細節佇列：該列的印件內部完成日欄照實留白
-  await openScenario(page, '訂單管理人', '/orders/production-detail-queue', {
+  // 一、前置：業務把 ORD-2026-0816 由等待付款推進到已付款
+  await openScenario(page, '業務', '/orders/detail?id=ORD-2026-0816&tab=printItems', {
     openAs,
     switchRole,
   });
-  const queueRow = rowOf(page, 'PI-2026-0903');
-  await expect(queueRow).toBeVisible();
-  await expect(queueRow).toContainText('-');
-  // 頁面沒有因為空值當掉：佇列標題與該列都在
-  await expect(page.getByText('秋季菜單摺頁 A4 對摺', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: /推\s*進\s*狀\s*態/ }).click();
+  const advanceModal = dialog(page);
+  await expect(advanceModal).toContainText('推進至「已付款」');
+  await advanceModal.getByRole('button', { name: /推進一格/ }).click();
+  await expect(page.locator('.ant-modal-content:visible')).toHaveCount(0);
 
-  await queueRow.getByLabel('確認製作細節').click();
-  const confirmModal = dialog(page);
-  await button(confirmModal, '確認製作細節').click();
-  const toast = await page.locator('.ant-message-notice-content').last().innerText();
+  // 新增一件免審印件，印件預計交期留空（線上單不套用必填檢核）：系統自動到位並建立工單草稿
+  await page.getByRole('button', { name: '新增印件' }).click();
+  const addModal = page.locator('.ant-modal-content:visible').last();
+  await expect(addModal.getByText('印件名稱')).toBeVisible();
+  await page.getByLabel('印件名稱').fill('6.13 留空印件');
+  await addModal.getByText('大貨印件', { exact: true }).click();
+  await page.getByLabel('購買數量').fill('2000');
+  await page.locator('.ant-select:has(#unit)').click();
+  const unitDropdown = page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last();
+  await unitDropdown.locator('.rc-virtual-list-holder').evaluate((el) => {
+    el.scrollTop = el.scrollHeight;
+  });
+  await unitDropdown.locator('.ant-select-item-option', { hasText: '張' }).click();
+  await page.locator('#unit_price_untaxed').fill('8');
+  await page.locator('#difficulty_level').fill('3');
+  await addModal.locator('.ant-switch').first().click();
+  await expect(addModal.locator('#expected_delivery_date')).toHaveValue('');
+  await addModal.getByRole('button', { name: '新增印件', exact: true }).click();
+  const toast = await page
+    .locator('.ant-message-notice-content')
+    .filter({ hasText: '工單草稿' })
+    .last()
+    .innerText();
   const workOrderNo = toast.match(/WO-\d{4}-\d{4}/)[0];
+  // 訂單項目該列的兩個日期欄照實留白
+  await expect(rowOf(page, '6.13 留空印件')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
 
   // 二、印務主管指派負責印務（工單要有負責人，印務才進得了製程規劃）
   await switchRole(page, '印務主管');
-  await goInApp(page, '/print-items', gotoInApp);
-  await rowOf(page, 'PI-2026-0903').locator('.ant-table-row-expand-icon').click();
+  await goInApp(page, '/work-orders', gotoInApp);
   await openByNo(page, workOrderNo);
   await button(page, '分派').click();
   const assignModal = dialog(page);

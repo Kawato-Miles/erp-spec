@@ -124,24 +124,28 @@ describe('11.22 待驗清單帶內部完成日、預計交期與急件標籤', (
   });
   const rowOf = (printItemNo) => rows.find((r) => r.print_item_no === printItemNo);
 
-  it('鏈一 PI-2026-0601 為一般件：兩個日期照印件推導，急件標籤為空', () => {
+  it('鏈一 PI-2026-0601 是否急件為否：兩個日期照印件推導，不帶急件標注', () => {
     expect(rowOf('PI-2026-0601')).toMatchObject({
       internal_due_date: '2026-06-18',
       expected_delivery_date: '2026-06-22',
-      urgent_option_name: '一般件',
-      urgent_option_days: 0,
-      urgency_label: null,
+      urgent_marked: false,
     });
   });
 
-  it('鏈四 PI-2026-0820 為三天急件：標籤取凍結的選項名稱', () => {
+  it('鏈四 PI-2026-0820 是否急件為是：帶急件標注，日期不因急件改變', () => {
     expect(rowOf('PI-2026-0820')).toMatchObject({
       internal_due_date: '2026-09-04',
       expected_delivery_date: '2026-09-07',
-      urgent_option_name: '三天急件',
-      urgent_option_days: 3,
-      urgency_label: '三天急件',
+      urgent_marked: true,
     });
+  });
+
+  it('每列只帶急件標注（是／否），不帶急件選項名稱或天數', () => {
+    const OLD_KEYS = ['urgent_option_id', 'urgent_option_name', 'urgent_option_days', 'urgency_label'];
+    for (const r of rows) {
+      expect(typeof r.urgent_marked).toBe('boolean');
+      expect(OLD_KEYS.filter((k) => k in r)).toEqual([]);
+    }
   });
 
   it('預設排序為內部完成日由近到遠（鏈一 6/18、鏈四 9/04、鏈九 10/27）', () => {
@@ -180,26 +184,20 @@ describe('11.22 沒有內部完成日的印件排最後，同日依最後一次�
           name: '晚報工',
           // 印件預計交期 2026-10-01（四）→ 印件內部完成日 2026-09-30（三）
           expected_delivery_date: '2026-10-01',
-          urgent_option_id: 'UO-001',
-          urgent_option_name: '一般件',
-          urgent_option_days: 0,
+          is_urgent: false,
         },
         {
           print_item_no: 'PI-TEST-EARLY',
           name: '早報工',
           // 印件預計交期 2026-10-01（四）→ 印件內部完成日 2026-09-30（三）
           expected_delivery_date: '2026-10-01',
-          urgent_option_id: 'UO-001',
-          urgent_option_name: '一般件',
-          urgent_option_days: 0,
+          is_urgent: false,
         },
         {
           print_item_no: 'PI-TEST-NODATE',
           name: '沒談定日期',
           expected_delivery_date: null,
-          urgent_option_id: 'UO-001',
-          urgent_option_name: '一般件',
-          urgent_option_days: 0,
+          is_urgent: false,
         },
       ],
     },

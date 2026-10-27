@@ -174,14 +174,15 @@ export const quoteCurrentStep = (page) =>
   page.locator('.ant-steps-item-process .ant-steps-item-title');
 
 // ─── 送審條件（change order-review-gate-invoice-draft-transfer-receipt）───
-// 線下單送主管審核前須四格備註皆有值、至少一期未取消的收款項目；第 6 站送審前由業務補齊。
+// 線下單送主管審核前須四格備註皆有值、至少一期未取消的收款項目、有效印件都有印件預計交期；
+// 印件預計交期於第 1 站在需求單填好、轉訂單帶入，其餘於第 6 站送審前由業務補齊。
 
 /** 詳情頁某個分區（PanelBlock）的標題列：以 level 5 標題定位，取最近一個含按鈕的祖先容器 */
 const panelSection = (page, heading) =>
   page.getByRole('heading', { name: heading, level: 5 }).locator('xpath=ancestor::div[.//button][1]');
 
 /** 填 AntD DatePicker：填入 YYYY-MM-DD 文字後按 Enter 確認 */
-async function pickDate(input, value) {
+export async function pickDate(input, value) {
   await input.click();
   await input.fill(value);
   await input.press('Enter');

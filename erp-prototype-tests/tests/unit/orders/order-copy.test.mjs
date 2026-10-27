@@ -117,11 +117,11 @@ describe('2.28 複製訂單：新訂單的接單業務為執行複製的人', ()
     expect(copy.print_items.map((p) => [p.name, p.ordered_qty, p.unit_price_untaxed, p.spec_notes])).toEqual(
       source.print_items.map((p) => [p.name, p.ordered_qty, p.unit_price_untaxed, p.spec_notes]),
     );
-    // 各印件的印件預計交期、推得的印件內部完成日與急件選項原值帶入（急件新定義 2026-10-27）
+    // 各印件的印件預計交期、推得的印件內部完成日與是否急件原值帶入（order-management spec § 訂單複製功能）
     expect(
-      copy.print_items.map((p) => [p.expected_delivery_date, p.delivery_date, p.urgent_option_id]),
+      copy.print_items.map((p) => [p.expected_delivery_date, p.delivery_date, p.is_urgent]),
     ).toEqual(
-      source.print_items.map((p) => [p.expected_delivery_date, p.delivery_date, p.urgent_option_id]),
+      source.print_items.map((p) => [p.expected_delivery_date, p.delivery_date, p.is_urgent]),
     );
     expect(copy.other_fees.map((f) => f.amount_untaxed)).toEqual(source.other_fees.map((f) => f.amount_untaxed));
     expect(copy.total_amount_taxed).toBe(source.total_amount_taxed);
@@ -184,5 +184,25 @@ describe('2.28 複製訂單：新訂單的接單業務為執行複製的人', ()
     useSessionStore.setState({ role: 'sales', userName: '陳映蓉' });
     expect(store().duplicateOrder('ORD-2026-0710').ok).toBe(false);
     expect(store().orders).toHaveLength(countBefore);
+  });
+});
+
+// 4.10（order-management spec Scenario「複製帶入各印件的印件預計交期與是否急件原值」）：
+// 來源印件是否急件為是時，新訂單對應印件的是否急件為是、日期原值帶入；購買的急件選項不帶入。
+describe('4.10 複製訂單帶入是否急件原值，不帶購買的急件選項', () => {
+  const store = () => useOrdersStore.getState();
+  it('複製鏈四 ORD-2026-0820：PI-2026-0820 的對應印件是否急件為是，預計交期 2026-09-07、內部完成日 2026-09-04', () => {
+    useSessionStore.setState({ role: 'order_manager', userName: '黃聖雯' });
+    const result = store().duplicateOrder('ORD-2026-0820');
+    expect(result.ok).toBe(true);
+    const copied = store().getOrder(result.id).print_items[0];
+    expect(copied).toMatchObject({
+      is_urgent: true,
+      expected_delivery_date: '2026-09-07',
+      delivery_date: '2026-09-04',
+    });
+    expect(copied.print_item_no).not.toBe('PI-2026-0820');
+    expect(copied.purchased_urgent_name ?? null).toBeNull();
+    expect(copied.purchased_urgent_days ?? null).toBeNull();
   });
 });
