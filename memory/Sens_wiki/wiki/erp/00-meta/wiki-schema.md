@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-10-22
+last-reviewed: 2026-10-27
 ---
 
 # Wiki Schema（Formal）
@@ -437,9 +437,10 @@ ingested-to:                                           # status=ingested 時填
 
 > 商業規則卡內的「單條規則」以**業務語意命名的連結指向位置**標識，供 scenario 等下游卡跨卡 wiki link 引用單條規則。撰寫規範見 `04-business-logic/規範 - 商業邏輯.md`。
 
-- 規則的連結指向位置用**業務語意命名**（如 `#補收免審`、`#諮詢取消半額退費`），**不用流水號**（如 `#R1`）
+- 定位點＝規則單元表的「單元名」欄（單元表見 `04-business-logic/規範 - 商業邏輯.md` § 四）：**業務語意命名**（如 `#補收免審`、`#諮詢取消半額退費`），**不用流水號**（如 `#R1`）
 - 理由：流水號重排 / 重用會讓連回來的連結斷掉；用業務語意命名時改規則只改內容、定位點不變，跨卡引用不斷鏈
-- 引用方式：`[[<業務邏輯卡>#<業務語意定位點>]]`（如 `[[付款發票邏輯#補收免審]]`）
+- 引用方式只有一種：`[[<業務邏輯卡>#<單元名>]]`（如 `[[付款發票邏輯#補收免審]]`）；不以「`[[卡]] § 段名`」引用規則單元（§ 形式只用於引用實體卡、狀態機卡等的段落）
+- 單元名一經使用不改、不重用；改名視同新單元，舊名在單元表尾保留一列指向新名，斷鏈由 vault-audit lint 偵測
 - 既有 `#R1` 等流水號定位點 MUST 一次性遷移為業務語意命名（遷移機制見 `wiki-amend` skill），遷移後由 vault-audit lint 偵測斷鏈兜底
 
 ### 活動清單卡
@@ -529,11 +530,12 @@ ingested-to:                                           # status=ingested 時填
 | `process-architecture` | 類別與流程群組的歸屬 | 階段與階段先後（屬 service-blueprint）/ 活動（屬 activity-list）/ 值域（屬 controlled-list）|
 | `controlled-list` | 範圍用詞、動作類型、單據代碼、活動清單代碼的值域與定義 | 誰能做什麼（屬 activity-list）/ 操作定義（屬 entity）/ 規則判準（屬 business-rule）|
 | `activity-list` | 一個階段的活動（活動編號 / 活動 / 執行角色 / 範圍 / 依據欄位 / 操作）| 活動先後（屬 scenario）/ 狀態轉換（屬 state-machine）/ 操作與欄位定義（屬 entity）/ 分工理由（屬 role）/ 檢視與輸出活動（屬單據存取流程群組）|
-| `business-rule` | 商業規則 / 領域知識 / 外部約束 | 情境格式模板 / UI 措辭 / 完整實體 Data Model / 欄位定義 / 誰能做什麼（屬 activity-list）|
+| `business-rule` | 規則單元表：做法（公司的選擇與理由）與底線（跨單據必須成立的關係式）/ 領域知識 / 外部約束 | 操作前提與擋下條件（屬 entity 操作段）/ 各狀態可改內容（屬 state-machine）/ 清單組成（屬 entity 具名清單段）/ 計算框架中間值（升格為 entity 欄位）/ 系統行為承諾（屬 OpenSpec）/ 主題索引（屬 structure-overview）/ 情境格式模板 / UI 措辭 / 欄位定義 / 誰能做什麼（屬 activity-list）|
 | `scenario` | 跨模組端到端情境（活動先後 / 引用轉換 / 本情境才有的判斷 / 具體例子）| 行為者欄（屬 activity-list）/ 轉換條件（屬 state-machine）/ 計價公式細節（屬 business-logic）/ UI 措辭（歸 Prototype）|
-| `entity` | 實體欄位 / 操作 / 關聯 / 狀態名 | 角色名與誰能做什麼（屬 activity-list）/ 業務流程敘述（屬 business-logic / scenario）|
+| `entity` | 實體欄位（含算式與同筆檢核）/ 操作（含前提）/ 具名清單 / 關聯 / 狀態名 | 角色名與誰能做什麼（屬 activity-list）/ 業務流程敘述（屬 scenario）/ 底線式子本體與做法（屬 business-rule）|
 | `role` | 職位定位 / 分工理由 / 關切點 / 預期阻力 | 可見範圍與逐條職責（屬 activity-list）/ 跨角色流程細節（屬 scenario）/ 實體欄位定義 |
-| `state-machine` | 狀態定義 / 轉換條件 / 觸發操作 | 角色名與誰能做什麼（屬 activity-list）/ 業務情境敘述（屬 scenario）/ UI 措辭 |
+| `state-machine` | 狀態定義 / 轉換條件 / 觸發操作 / 各狀態可改內容 | 角色名與誰能做什麼（屬 activity-list）/ 業務情境敘述（屬 scenario）/ UI 措辭 / 不改變狀態的操作的前提（屬 entity）|
+| `structure-overview` | 實體關聯（基數）/ 單據流 / 資料流（哪張單的哪個欄位流到哪、某主題的數值與規則單元各在哪張卡）| 欄位表 / 狀態列舉與轉換 / 公式本體（屬 entity / state-machine / business-rule）|
 
 ### 11.2 共通原則
 
