@@ -271,3 +271,33 @@ test('14.27 有工單但一筆生產任務都沒有時，兩個預估欄顯示�
   await expect(page.locator('body')).not.toContainText('100.0%');
   await expect(page.getByText(/^預估利潤 NT\$ [\d,]+$/)).toHaveCount(0);
 });
+
+// 14.47 印件列表與印件詳情的急件標注（OpenSpec change rush-order-definition，order-management spec
+// § 印件急件標注）：凍結天數大於 0 才標、已棄用不標，判準與訂單、工單同一支。
+test('14.47 印件列表與印件詳情帶急件標注，一般件不標', async ({ page }) => {
+  await openAs(page, '印務主管', '/print-items');
+  const search = page.getByPlaceholder(/請輸入印件名稱／編號/);
+
+  // 鏈四 PI-2026-0820（三天急件）：列表的印件名稱旁帶標注
+  await search.fill('PI-2026-0820');
+  await page.keyboard.press('Enter');
+  const urgentRow = page.locator('.ant-table-row', { hasText: 'PI-2026-0820' }).first();
+  await expect(urgentRow).toBeVisible();
+  await expect(urgentRow.getByText('急件', { exact: true })).toBeVisible();
+
+  // 鏈七 PI-2026-0904（一般件）：不標
+  await search.fill('PI-2026-0904');
+  await page.keyboard.press('Enter');
+  const normalRow = page.locator('.ant-table-row', { hasText: 'PI-2026-0904' }).first();
+  await expect(normalRow).toBeVisible();
+  await expect(normalRow.getByText('急件', { exact: true })).toHaveCount(0);
+
+  // 印件詳情：急件印件的印件編號旁帶標注
+  await search.fill('PI-2026-0820');
+  await page.keyboard.press('Enter');
+  await urgentRow.locator('a').first().click();
+  await expect(page).toHaveURL(/print-items\/detail/);
+  const noCell = page.locator('th.ant-descriptions-item-label:has-text("印件編號") + td').first();
+  await expect(noCell).toContainText('PI-2026-0820');
+  await expect(noCell.getByText('急件', { exact: true })).toBeVisible();
+});

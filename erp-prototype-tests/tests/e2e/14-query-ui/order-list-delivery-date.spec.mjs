@@ -43,7 +43,7 @@ test('14.16 訂單列表顯示訂單預計交貨日期並可排序與區間篩�
   await expect(rows).toHaveCount(before);
 
   // 印件子列有印件內部完成日與印件預計交期兩欄，值為該印件自己的推導值
-  //（PI-2026-0710：未扣急件內部完成日 2026-09-14、一般件不扣天數，預計交期為下一個工作天 2026-09-15）
+  //（PI-2026-0710：印件預計交期 2026-09-15，往前減 1 個工作天得印件內部完成日 2026-09-14）
   await search.fill('ORD-2026-0710');
   await search.press('Enter');
   const orderRow = page.locator('tr', { hasText: 'ORD-2026-0710' }).first();
@@ -71,4 +71,49 @@ test('14.16 訂單列表顯示訂單預計交貨日期並可排序與區間篩�
     if ((await next.count()) === 0 || (await next.getAttribute('aria-disabled')) === 'true') break;
     await next.click();
   }
+});
+
+// 14.46 訂單急件標注與急件篩選（OpenSpec change rush-order-definition，order-management spec § 訂單急件標注、
+// § 訂單列表權限與可見範圍）：任一有效印件凍結天數大於 0 即標注；延後型與一般件不標；
+// 列表提供「急件」篩選條件、作用於角色可見訂單集，不依急件自動排序。
+test('14.46 訂單列表帶訂單急件標注並可篩選急件', async ({ page }) => {
+  await openAs(page, '訂單管理人', '/orders');
+  await expect(page.getByText(/ORD-\d{4}-\d{4}/).first()).toBeVisible();
+  const rows = page
+    .locator('.ant-table')
+    .first()
+    .locator('> .ant-table-container tbody.ant-table-tbody > tr.ant-table-row')
+    .filter({ visible: true });
+  const search = page.getByRole('textbox', { name: /請輸入訂單編號/ });
+
+  // 鏈四 ORD-2026-0820（三天急件）帶標注；延後型 ORD-2026-0913 不帶
+  await search.fill('ORD-2026-0820');
+  await search.press('Enter');
+  await expect(rows.first().getByText('急件', { exact: true })).toBeVisible();
+  await search.fill('ORD-2026-0913');
+  await search.press('Enter');
+  await expect(rows).toHaveCount(1);
+  await expect(rows.first().getByText('急件', { exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: /清空/ }).click();
+
+  // 篩選「急件」：只列被標注的訂單，每一列都帶急件標注
+  const urgentFilter = page
+    .locator('.ant-col')
+    .filter({ has: page.getByText('急件', { exact: true }) })
+    .locator('.ant-select')
+    .first();
+  await urgentFilter.click();
+  await page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
+    .last()
+    .locator('.ant-select-item-option', { hasText: '急件' })
+    .click();
+  await expect(rows.first()).toBeVisible();
+  const count = await rows.count();
+  expect(count).toBeGreaterThan(0);
+  for (let i = 0; i < count; i += 1) {
+    await expect(rows.nth(i).getByText('急件', { exact: true })).toBeVisible();
+  }
+  await expect(page.locator('tr.ant-table-row', { hasText: 'ORD-2026-0820' })).toHaveCount(1);
+  await expect(page.locator('tr.ant-table-row', { hasText: 'ORD-2026-0913' })).toHaveCount(0);
 });

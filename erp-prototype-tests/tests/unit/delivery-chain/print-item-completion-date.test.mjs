@@ -11,13 +11,13 @@ import { MOCK_PRINT_ITEMS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(protot
 // 完工日在旗下工單首次全部完成（齊套）那一天寫入、之後不改；短出結案與打樣印件不寫。
 // 準時完工率以完工日比對印件內部完成日即時算出，不另存判定結果。
 
-// 大貨印件「乙海報」：印件內部完成日 2026-11-10（二）＝未扣急件內部完成日 2026-11-10、一般件不扣
+// 大貨印件「乙海報」：印件預計交期 2026-11-11（三）往前減 1 個工作天得印件內部完成日 2026-11-10（二）
 const poster = (overrides = {}) => ({
   print_item_no: 'PI-TEST-POSTER',
   name: '乙海報',
   type: '大貨印件',
   print_item_status: '製作中',
-  undeducted_internal_due_date: '2026-11-10',
+  expected_delivery_date: '2026-11-11',
   urgent_option_days: 0,
   completion_date: null,
   short_closed: false,
@@ -42,7 +42,7 @@ describe('15.17 印件準時完工率的判定', () => {
   });
 
   it('印件內部完成日為空時寫入完工日但不計入指標', () => {
-    const blank = poster({ undeducted_internal_due_date: null });
+    const blank = poster({ expected_delivery_date: null });
     const written = completionDateToWrite({ printItem: blank, kittedOn: '2026-11-10' });
     expect(written).toBe('2026-11-10');
     const item = { ...blank, completion_date: written };
@@ -51,7 +51,8 @@ describe('15.17 印件準時完工率的判定', () => {
   });
 
   it('印件內部完成日事後改動時判定依改動後的值；沒有完工日與已棄用的印件不計入', () => {
-    const late = poster({ completion_date: '2026-11-11', undeducted_internal_due_date: '2026-11-12' });
+    // 業務把印件預計交期改為 2026-11-13（五），印件內部完成日重算為 2026-11-12（四）
+    const late = poster({ completion_date: '2026-11-11', expected_delivery_date: '2026-11-13' });
     expect(printItemOnTimeCompletion(late)).toEqual({ counted: true, onTime: true });
     expect(printItemOnTimeCompletion(poster()).counted).toBe(false);
     expect(printItemOnTimeCompletion(poster({ completion_date: '2026-11-10', print_item_status: '已棄用' })).counted).toBe(false);

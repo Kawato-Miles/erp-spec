@@ -359,7 +359,7 @@ test('14.22 工單頁的印件基本資訊只列工單要用的欄位，欄序�
   const basic = basicPanelOf(page);
   await expect(labelsOf(basic)).toHaveText(WORK_ORDER_PRINT_ITEM_LABELS);
 
-  // 唯讀呈現處不再單獨列未扣急件那一欄（併進印件內部完成日一欄）
+  // 印件已無未扣急件內部完成日欄（急件新定義 2026-10-27），任何呈現處都不列
   await expect(
     basic.locator('.ant-descriptions-item-label', { hasText: '未扣急件內部完成日' }),
   ).toHaveCount(0);
@@ -384,7 +384,7 @@ test('14.22 工單頁的印件基本資訊只列工單要用的欄位，欄序�
   expect(itemLabels).toContain('訂單編號');
   expect(itemLabels).toContain('客戶名稱');
   expect(itemLabels).not.toContain('所屬訂單');
-  // 印件詳情頁的日期組同樣帶這兩欄，且同樣不再單獨列未扣急件那一欄
+  // 印件詳情頁的日期組同樣帶這兩欄，且同樣沒有未扣急件那一欄
   for (const label of SHARED_DATE_LABELS) expect(itemLabels).toContain(label);
   expect(itemLabels).not.toContain('未扣急件內部完成日');
   expect(itemLabels.indexOf('印件預計交期')).toBeLessThan(itemLabels.indexOf('訂單預計交貨日期'));
@@ -464,7 +464,7 @@ test('14.25 工單詳情三張資訊卡預設收合，點標題列展開', async
   await expect(panelBlock(page, '工單資訊')).toHaveCount(0);
 });
 
-test('14.26 工單摘要卡每一格都留副標行，印件內部完成日的未扣值收在副標', async ({ page }) => {
+test('14.26 工單摘要卡每一格都留副標行，印件內部完成日的副標行留白', async ({ page }) => {
   // 起點資料：鏈二 WO-2026-0710（印務身分看得到預估利潤率那一格）
   // 期望值取自 Miles 2026-09-21 指示（摘要卡改用共用統計卡元件帶副標的樣式）
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0710');
@@ -495,7 +495,7 @@ test('14.26 工單摘要卡每一格都留副標行，印件內部完成日的�
   }
   expect(new Set(tops).size).toBe(1);
 
-  // 一般件（PI-2026-0710 未扣值與扣後同一天）：印件內部完成日那一格的副標行留白佔位
+  // 印件內部完成日那一格的副標行留白佔位（急件不改日期，沒有附註可放）
   expect((await captionOf(page, '印件內部完成日').innerText()).trim()).toBe('');
 });
 
@@ -513,11 +513,15 @@ const captionOf = (page, label) =>
     )
     .first();
 
-test('14.26（急件）摘要卡的印件內部完成日主值單行、未扣值在副標行', async ({ page }) => {
-  // 起點資料：鏈四 WO-2026-0820（三天急件；印件內部完成日 2026-09-04、未扣急件內部完成日 2026-09-09）
-  // 期望值取自 Miles 2026-09-22 拍板：摘要卡是合併格式的例外，主值只放扣後日期、未扣值放副標行。
-  // 摘要卡的日期一律以斜線格式呈現（YYYY/MM/DD）
+test('14.26（急件）摘要卡的印件內部完成日只印一組日期，頁首帶急件標注', async ({ page }) => {
+  // 起點資料：鏈四 WO-2026-0820（三天急件；印件預計交期 2026-09-07、印件內部完成日 2026-09-04）
+  // 期望值取自 order-management spec § 印件內部完成日推導（急件新定義 2026-10-27）：急件不改日期，
+  // 摘要卡副標行不再放未扣值。摘要卡的日期一律以斜線格式呈現（YYYY/MM/DD）
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0820');
   await expect(cellValueOf(page, '印件內部完成日')).toHaveText('2026/09/04');
-  await expect(captionOf(page, '印件內部完成日')).toHaveText('未扣急件 2026/09/09');
+  expect((await captionOf(page, '印件內部完成日').innerText()).trim()).toBe('');
+  await expect(cellValueOf(page, '印件預計交期')).toHaveText('2026/09/07');
+  await expect(
+    page.locator('h4', { hasText: 'WO-2026-0820' }).locator('..').getByText('急件・三天急件', { exact: true }),
+  ).toBeVisible();
 });

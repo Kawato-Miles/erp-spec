@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   isPrintItemShipped,
+  nextWorkingDay,
   orderAllDeliveredByDate,
   orderDelayFlags,
   orderExpectedDeliveryDate,
@@ -16,9 +17,11 @@ import { departed, dispatched, packedShipment, undispatched } from '../qc-shippi
 // 「已出貨」＝含該印件的出貨單有任一張屬全數離廠（依物流單貨態判定）；物流單貨態在待出貨時
 // （未拋單、或已拋單成功等物流商收件）仍算尚未出貨。
 
-const item = (no, undeducted, overrides = {}) => ({
+// 第二參數為「印件內部完成日」：急件新定義後源頭是印件預計交期，這裡以內部完成日的下一個工作天
+// 回推預計交期（內部完成日皆為工作天時，預計交期減 1 個工作天剛好回到它）
+const item = (no, internal, overrides = {}) => ({
   print_item_no: no,
-  undeducted_internal_due_date: undeducted,
+  expected_delivery_date: internal ? nextWorkingDay(internal) : null,
   urgent_option_id: 'UO-001',
   urgent_option_name: '一般件',
   urgent_option_days: 0,
@@ -138,19 +141,29 @@ describe('4.13 交期逾期標示：部分延遲與整單逾期以全部交完�
     expect(printItemOverdueWorkingDays(items[0], '2026-10-21', false)).not.toBeNull();
   });
 
-  it('印件預計交期改晚到全部交完日之後仍只看全部交完日：印件甲改為 2026-10-23、系統日期 2026-10-21 → 甲不標逾期、訂單標整單逾期', () => {
-    const late = [item('甲', '2026-10-19', { expected_delivery_date: '2026-10-23' })];
-    expect(orderAllDeliveredByDate(late)).toBe('2026-10-20');
+  it('印件預計交期改晚後依重算的全部交完日重新判定：印件甲由 2026-10-20 改為 2026-10-23、系統日期 2026-10-21 → 內部完成日 2026-10-22、全部交完日 2026-10-23，甲不標逾期、訂單不標任何延遲', () => {
+    const before = [{ print_item_no: '甲', expected_delivery_date: '2026-10-20', urgent_option_days: 0 }];
+    expect(orderAllDeliveredByDate(before)).toBe('2026-10-20');
+    expect(orderDelayFlags(before, '2026-10-21', shippedBy([]))).toEqual({ partialDelay: false, wholeOverdue: true });
+    const late = [{ print_item_no: '甲', expected_delivery_date: '2026-10-23', urgent_option_days: 0 }];
+    expect(orderInternalCompletionDate(late)).toBe('2026-10-22');
+    expect(orderAllDeliveredByDate(late)).toBe('2026-10-23');
     expect(printItemOverdueWorkingDays(late[0], '2026-10-21', false)).toBeNull();
-    expect(orderDelayFlags(late, '2026-10-21', shippedBy([]))).toEqual({ partialDelay: false, wholeOverdue: true });
+    expect(orderDelayFlags(late, '2026-10-21', shippedBy([]))).toEqual({ partialDelay: false, wholeOverdue: false });
+  });
+
+  it('預計交期落週六時全部交完日照實晚於預計交期：2026-10-17（六）→ 內部完成日 2026-10-16、全部交完日 2026-10-19', () => {
+    const sat = [{ print_item_no: '甲', expected_delivery_date: '2026-10-17', urgent_option_days: 0 }];
+    expect(orderInternalCompletionDate(sat)).toBe('2026-10-16');
+    expect(orderAllDeliveredByDate(sat)).toBe('2026-10-19');
   });
 
   it('全部交完日為空時不判整單逾期', () => {
-    // 全部交完日為空：有效印件都沒有印件內部完成日。印件預計交期由印件內部完成日推得，
-    // 這時印件也不會標逾期，所以只驗不判整單逾期（spec：全部交完日為空的訂單不標整單逾期）
-    const onlyExpected = [{ print_item_no: 'X', undeducted_internal_due_date: null, expected_delivery_date: '2026-10-13' }];
-    expect(orderAllDeliveredByDate(onlyExpected)).toBeNull();
-    expect(orderDelayFlags(onlyExpected, '2026-10-30', shippedBy([])).wholeOverdue).toBe(false);
+    // 全部交完日為空：有效印件都沒有印件預計交期，印件內部完成日同為空
+    //（spec：全部交完日為空的訂單不標整單逾期）
+    const noDate = [{ print_item_no: 'X', expected_delivery_date: null }];
+    expect(orderAllDeliveredByDate(noDate)).toBeNull();
+    expect(orderDelayFlags(noDate, '2026-10-30', shippedBy([])).wholeOverdue).toBe(false);
   });
 
   it('日期為空時不判定：不標任何逾期、部分延遲或整單逾期', () => {

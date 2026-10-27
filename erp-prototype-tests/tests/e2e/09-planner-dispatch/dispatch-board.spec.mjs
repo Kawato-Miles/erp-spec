@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openAs, gotoInApp, switchRole } from '../_helpers.mjs';
+import { openAs, gotoInApp, switchRole, clickIntoDetail } from '../_helpers.mjs';
 // 表頭定位取欄的工具放在第八章（工單詳情的生產任務列表是群組表頭），9.2 的最後一步回工單詳情看交付狀態
 import { expectCell, openWorkOrderFromList } from '../08-process-review-deliver/_page-helpers.mjs';
 
@@ -133,9 +133,9 @@ test('9.7 工廠總覽待排區顯示印件內部完成日（原編號 81）', a
   await expect(page.getByText('待排區（已交付產線、未入工作包）')).toBeVisible();
 });
 
-// 本欄顯示印件的「印件內部完成日」＝未扣急件內部完成日扣掉急件凍結天數（工作天）。待排區只列
+// 本欄顯示印件的「印件內部完成日」＝印件預計交期往前減 1 個工作天（急件不參與）。待排區只列
 // 鏈三 WO-2026-0815 的四筆待接收任務（package_id 為空，見 MOCK-DATA-CHAIN.md），無法換其他鏈驗證。
-// PI-2026-0815 為一般件（凍結 0 天），未扣值與扣後同為 2026-10-02，故合併格式只印一組日期；
+// PI-2026-0815 印件預計交期 2026-10-05（一），印件內部完成日 2026-10-02（五），只印一組日期；
 // production-floor/_lib/mock-data.js 的 print_item_delivery_date 與 print-items、work-orders
 // 兩模組的 delivery_date 一致。
 test('9.7（補）待排區印件內部完成日欄位取值正確', async ({ page }) => {
@@ -143,7 +143,7 @@ test('9.7（補）待排區印件內部完成日欄位取值正確', async ({ pa
   const table = page.locator('.ant-table').last();
   const row = table.locator('tr', { hasText: 'WO-2026-0815' }).first();
   await expect(row.getByText('2026-10-02', { exact: true })).toBeVisible();
-  // 一般件不加括號：未扣值與扣後同一天時只印一組日期
+  // 只印一組日期、不帶任何括號附註
   await expect(row.getByText('未扣急件')).toHaveCount(0);
 });
 
@@ -208,4 +208,42 @@ test('9.10 沒接收、沒打包也能報工；未交付與前置未到料才擋
   await page.getByText('牛皮紙手提袋', { exact: true }).first().click();
   await expect(page.getByText('PI-2026-0815').first()).toBeVisible();
   await expect(page.getByRole('button', { name: /報工/ })).toHaveCount(0);
+});
+
+// 9.23 生產任務列表與派工畫面帶急件標注，改急件選項後即時更新（OpenSpec change rush-order-definition，
+// production-execution spec § 生產任務與轉交單明細的急件標注）：依所屬工單的所屬印件推算，凍結天數大於 0 才標；
+// 只做標示，不改任務日期、不擋合併打包。
+// 起點：鏈三 PI-2026-0815（一般件）旗下四筆待派任務；業務把它改成三天急件後，生管重新開啟。
+test('9.23 生產任務列表與派工畫面帶急件標注，改急件選項後即時更新', async ({ page }) => {
+  await openAs(page, '生管', '/production-floor/dispatch');
+  const row1 = page.locator('tr', { has: page.getByText('牛皮紙 150g 備料', { exact: true }) });
+  await expect(row1).toBeVisible();
+  await expect(row1.getByText('急件', { exact: true })).toHaveCount(0);
+
+  // 業務改急件選項：一般件 → 三天急件（只改標注，不改任何日期）
+  await switchRole(page, '業務');
+  await gotoInApp(page, '/orders');
+  await page.getByPlaceholder(/請輸入訂單編號/).fill('ORD-2026-0815');
+  await page.keyboard.press('Enter');
+  await clickIntoDetail(page, 'ORD-2026-0815', /orders\/detail/);
+  await page.getByRole('tab', { name: /訂單項目/ }).click();
+  const itemRow = page.locator('tr', { hasText: 'PI-2026-0815' }).first();
+  await itemRow.getByRole('button', { name: '編輯印件' }).click();
+  await page.locator('.ant-select:has(#urgent_option_id)').click();
+  await page.locator('.ant-select-dropdown').last().getByText(/三天急件/).click();
+  await page.getByRole('button', { name: '確認' }).click();
+  await expect(page.locator('.ant-drawer-content-wrapper')).toHaveCount(0);
+
+  // 生管重新開啟所有生產任務：該筆任務列帶急件標注，印件內部完成日維持 2026-10-02
+  await switchRole(page, '生管');
+  await gotoInApp(page, '/production-floor/dispatch');
+  await expect(row1.getByText('急件', { exact: true })).toBeVisible();
+  await expect(row1).toContainText('2026-10-02');
+
+  // 派工畫面：勾選後開啟，任務列同樣帶急件標注
+  await row1.locator('input[type="checkbox"]').check();
+  await page.getByRole('button', { name: /派工（1）/ }).click();
+  await expect(page.getByText('派工內容（1）')).toBeVisible();
+  await expect(page.locator('.ant-modal-body').getByText('急件', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: '取消', exact: true }).click();
 });

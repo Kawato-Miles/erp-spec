@@ -538,3 +538,31 @@ test('10.40 建轉交單選負責廠務與預計轉交日，系統只通知負�
   await gotoInApp(page, '/production-floor/transfers');
   await expect(page.locator('tr.ant-table-row', { hasText: ticketNo }).first().getByRole('button', { name: '編輯' })).toHaveCount(0);
 });
+
+// 10.63 轉交單明細帶急件標注、單頭不帶（OpenSpec change rush-order-definition，production-execution spec
+// § 生產任務與轉交單明細的急件標注）：明細列依來源生產任務的所屬印件即時推算（凍結天數大於 0 才標），
+// 轉交單一張可混不同工單的明細，所以單頭不標。
+// 起點：鏈四 TT-20260826-001（明細屬 PI-2026-0820，三天急件）與鏈二 TT-20260828-001（PI-2026-0710，一般件）。
+test('10.63 轉交單明細帶急件標注、單頭不帶', async ({ page }) => {
+  await openAs(page, '生管', '/production-floor/transfers');
+  const ticketSearch = page.getByPlaceholder('請輸入轉交單編號、印件名稱／編號、來源任務，或負責廠務');
+
+  await ticketSearch.fill('TT-20260826-001');
+  await ticketSearch.press('Enter');
+  const urgentTicket = page.locator('tr.ant-table-row', { hasText: 'TT-20260826-001' }).first();
+  await expect(urgentTicket).toBeVisible();
+  // 單頭不顯示急件標注
+  await expect(urgentTicket.getByText('急件', { exact: true })).toHaveCount(0);
+  await urgentTicket.locator('.ant-table-row-expand-icon').click();
+  const urgentDetail = page.locator('tr.ant-table-expanded-row').first();
+  await expect(urgentDetail.getByText('急件', { exact: true }).first()).toBeVisible();
+
+  await ticketSearch.fill('TT-20260828-001');
+  await ticketSearch.press('Enter');
+  const normalTicket = page.locator('tr.ant-table-row', { hasText: 'TT-20260828-001' }).first();
+  await expect(normalTicket).toBeVisible();
+  await normalTicket.locator('.ant-table-row-expand-icon').click();
+  const normalDetail = page.locator('tr.ant-table-expanded-row').filter({ hasText: 'PI-2026-0710' }).first();
+  await expect(normalDetail).toBeVisible();
+  await expect(normalDetail.getByText('急件', { exact: true })).toHaveCount(0);
+});

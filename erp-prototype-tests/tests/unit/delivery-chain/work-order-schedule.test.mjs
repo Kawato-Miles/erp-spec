@@ -94,6 +94,24 @@ describe('7.28 核可後的排程超期標示', () => {
       isScheduleOverrun(workOrder(null, [task('2026-10-19')], { status: '製作中' })),
     ).toBe(false);
   });
+
+  // 既存缺陷修正（rush-order-definition 稽核 5-3）：已核可狀態集取 wiki〈工單狀態〉——
+  // 製程審核完成、工單已交付、製作中、異動；工單沒有「製作完成」這一態
+  it('製作段的異動狀態超期也標示', () => {
+    const wo = workOrder('2026-10-15', [task('2026-10-19')], { status: '異動' });
+    expect(isScheduleOverrun(wo)).toBe(true);
+  });
+
+  it('工單已交付與製作中超期都標示', () => {
+    for (const status of ['工單已交付', '製作中']) {
+      expect(isScheduleOverrun(workOrder('2026-10-15', [task('2026-10-19')], { status }))).toBe(true);
+    }
+  });
+
+  it('工單沒有的「製作完成」狀態不列入已核可狀態集', () => {
+    const wo = workOrder('2026-10-15', [task('2026-10-19')], { status: '製作完成' });
+    expect(isScheduleOverrun(wo)).toBe(false);
+  });
 });
 
 describe('15.13 工單準時判定取凍結的印件內部完成日', () => {
