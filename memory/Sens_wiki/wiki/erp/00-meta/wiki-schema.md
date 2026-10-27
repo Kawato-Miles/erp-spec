@@ -84,7 +84,7 @@ tags:
 | `answered` | OQ 已解答 |
 | `cancelled` | OQ 取消（已不適用）|
 | `raw` | raw 卡剛寫入，待精練 |
-| `reviewed` | raw 卡已分析，等待 Miles 確認 |
+| `reviewed` | raw 卡已分析，等待使用者確認 |
 | `ingested` | raw 卡內容已寫入既有 vault 卡 / 升級為 OQ |
 
 ## 四、各 type 必填 Frontmatter 欄位
@@ -338,7 +338,7 @@ status: open | answered | cancelled   # 嚴格限此值域，禁 resolved / clos
 priority: high | medium | low
 audience: internal | external
 # audience 判斷問句：「誰能回答這個問題？」
-#   internal＝開發迭代待確認議題（Miles 或內部討論可拍板）
+#   internal＝開發迭代待確認議題（使用者或內部討論可拍板）
 #   external＝要與業務單位確認的未知內容（商業層面：現場實務／客戶慣例／計價緣由），彙整推送 Notion Follow-up DB
 raised-at: YYYY-MM-DD
 raised-by: <誰提出>
@@ -349,7 +349,7 @@ related-oq:
   - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名
 related-change:                     # 承接此問題的 OpenSpec change 名（可多值）；無則刪整個欄位
   - <change 名>
-expected-resolution-at: YYYY-MM-DD 或里程碑文字（如「上線前」「MES 設計階段」）  # 一律選填；何時確認由 Miles 排程，開卡時不代填時點、不硬填假日期
+expected-resolution-at: YYYY-MM-DD 或里程碑文字（如「上線前」「MES 設計階段」）  # 一律選填；何時確認由使用者排程，開卡時不代填時點、不硬填假日期
 answered-at: YYYY-MM-DD  # 拍板時填
 answered-by: <拍板者>
 notion-url: <external 推送 Notion 後回填>
@@ -381,7 +381,7 @@ ingested-to:                                           # status=ingested 時填
 ```
 
 **防止 AI 拿自己寫的東西當依據再生內容的規約**：
-- `claude-self-capture` 必須 Miles 確認才寫入
+- `claude-self-capture` 必須使用者確認才寫入
 - `claude-research` 必須附真實 raw-source-link，無來源不寫
 - `miles-upload` 必須附真實 raw-source-link（原始檔出處）+ 原檔搬進 `raw/_attachments/<檔名>` + 在 `attached-files` 列出
 - raw 卡是「已驗證素材的歸檔」，不是 AI 自編內容的暫存區
@@ -447,7 +447,7 @@ ingested-to:                                           # status=ingested 時填
 
 - 卡名：`<階段名>活動清單.md`；階段名取所屬服務藍圖該階段 `###` 標題去掉序號
 - 落點：`04-business-logic/服務藍圖/<藍圖名>/`
-- 卡名全庫唯一；兩條藍圖出現同名階段時，與 Miles 確認後改用可區分的階段名，不自行加前綴
+- 卡名全庫唯一；兩條藍圖出現同名階段時，與使用者確認後改用可區分的階段名，不自行加前綴
 
 ### 操作編號與活動編號
 
