@@ -1,7 +1,6 @@
 # UI 業務規範（框架無關）
 
 > **定位**：本檔記錄 ERP 介面的業務型行為規範，與 UI 框架（shadcn/ui / Ant Design / 其他）無關。
-> **視覺規範正本**：`sens-erp-prototype/DESIGN.md`（tokens、元件、字型）。
 > **適用範圍**：ERP 系統所有模組介面（Prototype / 實作）。
 > **撰寫原則**：描述「該做什麼行為」而非「用哪個元件」。
 
@@ -225,7 +224,7 @@ Footer（可選）：關閉 + 編輯
 所有業務狀態（需求單、訂單、工單、生產任務、QC、出貨等）必須用 Badge 呈現，不可用純文字。
 
 規範重點：
-- 狀態顏色對應使用專案 token（詳見 `sens-erp-prototype/src/index.css` 的 `--status-*`）
+- 狀態顏色對應使用專案 token
 - 狀態文字需與狀態機定義一致（詳見 wiki `06-state-machines/` 各狀態機卡 + 各模組 spec 內嵌狀態機 Requirement）
 - 同一狀態在所有頁面的顏色必須一致
 - 停用/作廢狀態使用 muted / neutral 色

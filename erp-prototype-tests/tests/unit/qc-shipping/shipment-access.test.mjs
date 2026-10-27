@@ -1,5 +1,5 @@
 // 情境目錄 12.27、12.28（單據權責修正第五批）：出貨單的可見範圍跟著訂單、業務端操作的操作者依訂單編輯權。
-// 範圍看所屬訂單的接單業務與分享成員，不看出貨單的建單人；現場動作（揀貨、裝箱、確認可出貨與撤回、拋單、出貨確認、
+// 範圍看所屬訂單的接單業務與分享成員，不看出貨單的建單人；現場動作（揀貨、裝箱、確認可出貨、拋單、出貨確認、
 // 送達確認、標記例外、列印物流單）維持揀貨與出貨人員，不隨訂單編輯權開放。作廢物流單依訂單編輯權（ACT-SHP-039～041）。
 // 依據：出貨與售後檢視活動清單（ACT-VDLV-001 至 007、014）、出貨活動清單（ACT-SHP-001 至 033）、
 // 受控清單 § 訂單關聯單據的編輯權。畫面見 tests/e2e/12-shipping/access-scope.spec.mjs。
@@ -10,7 +10,7 @@ import {
   nextStatusOptions,
   SHIPMENT_LEVEL_KEY as S,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/next-status-options.js';
-import { boxedShipment, logistics, packedShipment } from './_fixtures.mjs';
+import { boxedShipment, logistics, packedShipment, undispatched } from './_fixtures.mjs';
 import {
   canCreateShipmentDraft,
   canVoidLogistics,
@@ -95,12 +95,12 @@ describe('12.28 出貨單業務端操作：接單業務、編輯分享成員、�
     expect(canVoidShipment(reassigned, 'sales', '賴柏宇')).toBe(false);
   });
 
-  it('現場動作不隨訂單編輯權開放：業務、業務主管等在未處理沒有開始揀貨，在已裝箱與可出貨沒有確認可出貨與撤回', () => {
+  it('現場動作不隨訂單編輯權開放：業務、業務主管等在未處理沒有開始揀貨，在已裝箱與已確認沒有確認可出貨', () => {
     const states = [
       { status: '未處理', method: '新竹物流', details: [], logistics_orders: [] },
       { status: '打包中', method: '新竹物流', details: [], logistics_orders: [] },
       boxedShipment({ method: '新竹物流' }),
-      packedShipment({ method: '新竹物流', logisticsOrders: [logistics('L-1')] }),
+      packedShipment({ method: '新竹物流', logisticsOrders: [undispatched('L-1')] }),
     ];
     for (const [role] of [['sales'], ['consultant'], ...HELPERS]) {
       for (const shipment of states) {

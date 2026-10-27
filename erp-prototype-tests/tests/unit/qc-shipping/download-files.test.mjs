@@ -2,41 +2,51 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { useOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/_lib/store.js';
 import {
   canDownloadFile,
+  DOWNLOAD_FILE_RETENTION_DAYS,
+  DOWNLOAD_FILE_STATUS,
   DOWNLOADABLE_STATUSES,
   downloadCenterRows,
   finishDownloadFile,
+  isDownloadFileExpired,
   planPrintFiles,
-  printableLogisticsNosOf,
-  startDownloadFile,
+  selectableLogisticsIdsOf,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/download-files.js';
-import { MOCK_DOWNLOAD_FILES } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/mock-data.js';
+import { MOCK_DOWNLOAD_FILES, MOCK_SHIPMENTS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/mock-data.js';
 import {
   DOWNLOAD_NOT_READY_HINT,
   useQcShippingStore,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/store.js';
-import { logistics, packedShipment } from './_fixtures.mjs';
+import { dispatched, logistics, packedShipment, undispatched } from './_fixtures.mjs';
 
-// 情境 12.51 批次列印、12.52 下載檔案狀態、12.53 下載中心的檢視與下載。
-// 期望值取自 download-center spec（本 change 新增）三條 Requirement 的驗收條目。
-// Prototype 不產檔（grill § 七）：下載檔案的狀態與異常內容以純函式判定，產檔出錯以 failures 參數模擬。
+// 情境 12.51 批次列印、12.52 下載檔案狀態、12.53 下載中心的檢視與下載、12.59 保存 7 天與只印拋單成功。
+// 對齊後端第一版（Miles 2026-10-27 拍板）：下載檔案沒有等待中，建立即為處理中；只能列印拋單成功的物流單，
+// 勾選範圍內任一筆不能列印就整批不受理；檔案保存 7 天；有入口的人看得到全部人的紀錄，也可只篩自己的。
+// Prototype 不產檔：下載檔案的狀態與異常內容以純函式判定，產檔出錯以 failures 參數（以物流單內部識別為鍵）模擬。
 // 角色與入口（業務進不了下載中心）在 tests/unit/access/access-control.test.mjs 與 menu-and-roster.test.mjs。
 
 const ORDER_NO = 'ORD-TEST-DLF';
-const at = '2026-10-23 10:00';
+const pad2 = (n) => String(n).padStart(2, '0');
+const stampOf = (d) =>
+  `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+// 下載檔案的建立時間取當下，才落在 7 天保存期限內（store 的下載以當下時間判期限）
+const at = stampOf(new Date());
 
-const shipmentOf = (id, method, statuses, extra = {}) =>
+/**
+ * 一張出貨單，specs 逐筆指定物流單：'d'＝拋單成功（物流單號 T-<我方自編單號>）、'u'＝未拋單、'v'＝已作廢（拋單成功後作廢）。
+ * 物流單內部識別與我方自編單號取同一個值：<出貨單編號>-01、-02…
+ */
+const shipmentOf = (no, method, specs) =>
   packedShipment({
-    id,
-    shipmentNo: id,
+    id: no,
+    shipmentNo: no,
     orderNo: ORDER_NO,
     method,
-    logisticsOrders: statuses.map((s, i) => {
-      const no = `${id}-${String(i + 1).padStart(3, '0')}`;
-      return s === '可出貨'
-        ? logistics(no, '可出貨')
-        : logistics(no, s, { tracking_no: `T-${no}`, label_file: `物流單-T-${no}.pdf` });
+    logisticsOrders: specs.map((s, i) => {
+      const id = `${no}-${pad2(i + 1)}`;
+      if (s === 'u') return undispatched(id);
+      if (s === 'v') return dispatched(id, { cargo_status: '已作廢', label_file: `物流單-T-${id}.pdf` });
+      return dispatched(id, { label_file: `物流單-T-${id}.pdf` });
     }),
-    ...extra,
   });
 
 const seed = (shipments, downloadFiles = []) => {
@@ -50,177 +60,176 @@ const seed = (shipments, downloadFiles = []) => {
 
 const store = () => useQcShippingStore.getState();
 const byType = (files, type) => files.find((f) => f.file_type === type);
-const statusesOf = (shipments) => shipments.flatMap((s) => s.logistics_orders.map((l) => l.status));
+const stateOf = (shipments) =>
+  shipments.flatMap((s) => s.logistics_orders.map((l) => `${l.dispatch_status}/${l.cargo_status}`));
 
 // ── 12.51 批次列印 ──
 
 describe('12.51 批次列印：依按下列印當下的涵蓋範圍決定產哪幾份、每份收哪幾筆', () => {
-  it('列印新竹物流三筆已拋單物流單：建立物流單列印（3）與新竹托運總表（3）兩筆下載檔案，皆等待中、建立人與時間為這次列印；物流單狀態不變', () => {
-    const shipments = [shipmentOf('SH-2026-1020', '新竹物流', ['等待出貨', '等待出貨', '等待出貨'])];
-    const r = planPrintFiles({
-      shipments,
-      logisticsOrderNos: ['SH-2026-1020-001', 'SH-2026-1020-002', 'SH-2026-1020-003'],
-      at,
-      actor: '曾志偉',
-    });
+  it('列印新竹物流三筆拋單成功的物流單：建立物流單列印（3）與新竹托運總表（3）兩筆下載檔案，皆處理中、建立人與時間為這次列印；物流單的拋單狀態與貨態不變', () => {
+    const shipments = [shipmentOf('SH-2026-10-20001', '新竹物流', ['d', 'd', 'd'])];
+    const ids = ['SH-2026-10-20001-01', 'SH-2026-10-20001-02', 'SH-2026-10-20001-03'];
+    const r = planPrintFiles({ shipments, logisticsIds: ids, at, actor: '曾志偉' });
     expect(r.ok).toBe(true);
     expect(r.files.map((f) => f.file_type).sort()).toEqual(['新竹托運總表', '物流單列印'].sort());
     r.files.forEach((f) => {
-      expect(f).toMatchObject({ status: '等待中', logistics_count: 3, created_at: at, created_by: '曾志偉', error_lines: [], file: null });
+      expect(f).toMatchObject({
+        status: '處理中',
+        logistics_ids: ids,
+        logistics_count: 3,
+        created_at: at,
+        created_by: '曾志偉',
+        error_lines: [],
+        file: null,
+      });
     });
-    expect(statusesOf(shipments)).toEqual(['等待出貨', '等待出貨', '等待出貨']);
+    expect(stateOf(shipments)).toEqual(Array(3).fill('拋單成功/待出貨'));
   });
 
-  it('跨出貨單列印時托運總表只收已拋單者：順豐 1 筆已拋單、新竹 2 筆已拋單 1 筆可出貨 → 物流單列印 4、順豐托運總表 1、新竹托運總表 2；新竹第 3 筆只進物流單列印', () => {
+  it('跨出貨單列印：順豐 1 筆、新竹物流 2 筆皆拋單成功 → 物流單列印 3、順豐托運總表 1、新竹托運總表 2', () => {
     const shipments = [
-      shipmentOf('SH-2026-1021', '順豐', ['等待出貨']),
-      shipmentOf('SH-2026-1022', '新竹物流', ['等待出貨', '等待出貨', '可出貨']),
+      shipmentOf('SH-2026-10-21001', '順豐', ['d']),
+      shipmentOf('SH-2026-10-22001', '新竹物流', ['d', 'd']),
     ];
     const r = planPrintFiles({
       shipments,
-      logisticsOrderNos: ['SH-2026-1021-001', 'SH-2026-1022-001', 'SH-2026-1022-002', 'SH-2026-1022-003'],
+      logisticsIds: ['SH-2026-10-21001-01', 'SH-2026-10-22001-01', 'SH-2026-10-22001-02'],
       at,
       actor: '曾志偉',
     });
     expect(r.files).toHaveLength(3);
-    expect(byType(r.files, '物流單列印').logistics_count).toBe(4);
-    expect(byType(r.files, '順豐托運總表').logistics_order_nos).toEqual(['SH-2026-1021-001']);
-    expect(byType(r.files, '新竹托運總表').logistics_order_nos).toEqual(['SH-2026-1022-001', 'SH-2026-1022-002']);
-    expect(byType(r.files, '物流單列印').logistics_order_nos).toContain('SH-2026-1022-003');
-    expect(byType(r.files, '新竹托運總表').logistics_order_nos).not.toContain('SH-2026-1022-003');
+    expect(byType(r.files, '物流單列印').logistics_count).toBe(3);
+    expect(byType(r.files, '順豐托運總表').logistics_ids).toEqual(['SH-2026-10-21001-01']);
+    expect(byType(r.files, '新竹托運總表').logistics_ids).toEqual(['SH-2026-10-22001-01', 'SH-2026-10-22001-02']);
   });
 
-  it('按下列印之後才拋單的物流單不補進已建立的托運總表；重新列印依當下涵蓋範圍另建新的下載檔案', () => {
-    seed([
-      shipmentOf('SH-2026-1021', '順豐', ['等待出貨']),
-      shipmentOf('SH-2026-1022', '新竹物流', ['等待出貨', '等待出貨', '可出貨']),
-    ]);
-    const scope = ['SH-2026-1021-001', 'SH-2026-1022-001', 'SH-2026-1022-002', 'SH-2026-1022-003'];
-    const first = store().printLogistics({ logisticsOrderNos: scope, operator: '曾志偉' });
+  it('按下列印之後才作廢的物流單不回頭改已建立的下載檔案；重新列印依當下勾選範圍另建新的下載檔案', () => {
+    seed([shipmentOf('SH-2026-10-22001', '新竹物流', ['d', 'd'])]);
+    const scope = ['SH-2026-10-22001-01', 'SH-2026-10-22001-02'];
+    const first = store().printLogistics({ logisticsIds: scope, operator: '曾志偉' });
     expect(first.ok).toBe(true);
     const hct = byType(first.files, '新竹托運總表');
     expect(hct.id).toBeTruthy();
-    expect(store().dispatchLogistics('SH-2026-1022', 'SH-2026-1022-003', { operator: '曾志偉' }).ok).toBe(true);
+    expect(
+      store().voidLogistics('SH-2026-10-22001', 'SH-2026-10-22001-02', { reason: '客戶改單', operator: '業務甲' }).ok,
+    ).toBe(true);
     const kept = store().downloadFiles.find((f) => f.id === hct.id);
     expect(kept.logistics_count).toBe(2);
-    expect(kept.logistics_order_nos).not.toContain('SH-2026-1022-003');
+    expect(kept.logistics_ids).toEqual(scope);
 
-    const again = store().printLogistics({ logisticsOrderNos: scope, operator: '曾志偉' });
-    expect(byType(again.files, '新竹托運總表').logistics_count).toBe(3);
+    const again = store().printLogistics({ logisticsIds: ['SH-2026-10-22001-01'], operator: '曾志偉' });
+    expect(again.ok).toBe(true);
+    expect(byType(again.files, '新竹托運總表').logistics_count).toBe(1);
     expect(store().downloadFiles).toHaveLength(first.files.length + again.files.length);
   });
 
-  it('只有順豐與新竹物流另產托運總表；7-11 交貨便、全家、專車只產物流單列印；已作廢的物流單不收', () => {
+  it('只有順豐與新竹物流另產托運總表；7-11 交貨便、全家只產物流單列印', () => {
     const shipments = [
-      shipmentOf('SH-T-711', '7-11 交貨便', ['等待出貨', '已作廢']),
-      shipmentOf('SH-T-CAR', '專車配送', ['可出貨']),
+      shipmentOf('SH-2026-10-23001', '7-11 交貨便', ['d']),
+      shipmentOf('SH-2026-10-23002', '全家', ['d']),
     ];
     const r = planPrintFiles({
       shipments,
-      logisticsOrderNos: ['SH-T-711-001', 'SH-T-711-002', 'SH-T-CAR-001'],
+      logisticsIds: ['SH-2026-10-23001-01', 'SH-2026-10-23002-01'],
       at,
       actor: '曾志偉',
     });
     expect(r.files.map((f) => f.file_type)).toEqual(['物流單列印']);
-    expect(r.files[0].logistics_order_nos).toEqual(['SH-T-711-001', 'SH-T-CAR-001']);
+    expect(r.files[0].logistics_ids).toEqual(['SH-2026-10-23001-01', 'SH-2026-10-23002-01']);
   });
 
-  it('勾母列等於勾底下全部未作廢物流單；勾選範圍沒有任何未作廢物流單時不能列印', () => {
-    const sh = shipmentOf('SH-T-FM', '全家', ['可出貨', '已作廢', '等待出貨']);
-    expect(printableLogisticsNosOf(sh)).toEqual(['SH-T-FM-001', 'SH-T-FM-003']);
-    const none = planPrintFiles({ shipments: [sh], logisticsOrderNos: ['SH-T-FM-002'], at, actor: '曾志偉' });
+  it('勾母列等於勾底下全部未作廢物流單；沒有勾選任何物流單時不能列印', () => {
+    const sh = shipmentOf('SH-2026-10-24001', '全家', ['d', 'v', 'u']);
+    expect(selectableLogisticsIdsOf(sh)).toEqual(['SH-2026-10-24001-01', 'SH-2026-10-24001-03']);
+    const none = planPrintFiles({ shipments: [sh], logisticsIds: [], at, actor: '曾志偉' });
     expect(none.ok).toBe(false);
     expect(none.error).toBeTruthy();
+    expect(none.files).toEqual([]);
   });
 });
 
 // ── 12.52 下載檔案狀態 ──
 
-describe('12.52 下載檔案狀態：開始產檔轉處理中，產檔結束依結果轉成功、部分成功或失敗', () => {
-  const waiting = (nos, type = '物流單列印') => ({
+describe('12.52 下載檔案狀態：沒有等待中，建立即為處理中，產檔結束依結果轉成功、部分成功或失敗', () => {
+  const processing = (ids, type = '物流單列印') => ({
     id: 'DLF-TEST-1',
     file_type: type,
-    status: '等待中',
-    logistics_order_nos: nos,
-    logistics_count: nos.length,
+    status: '處理中',
+    logistics_ids: ids,
+    logistics_count: ids.length,
     created_at: at,
     created_by: '曾志偉',
     error_lines: [],
     file: null,
   });
 
-  it('全部產出時轉成功：先轉處理中，結束時轉成功、異常內容為空、檔案寫入', () => {
-    const shipments = [shipmentOf('SH-T-A', '新竹物流', ['等待出貨', '等待出貨', '等待出貨'])];
-    const file = waiting(['SH-T-A-001', 'SH-T-A-002', 'SH-T-A-003']);
-    const processing = startDownloadFile(file);
-    expect(processing.status).toBe('處理中');
-    const done = finishDownloadFile(processing, { shipments });
+  it('下載檔案狀態只有處理中、成功、部分成功、失敗四種，沒有等待中', () => {
+    expect(Object.values(DOWNLOAD_FILE_STATUS).sort()).toEqual(['處理中', '成功', '部分成功', '失敗'].sort());
+  });
+
+  it('全部產出時由處理中直接轉成功：異常內容為空、檔案寫入', () => {
+    seed([shipmentOf('SH-2026-10-20001', '新竹物流', ['d', 'd', 'd'])]);
+    const printed = store().printLogistics({
+      logisticsIds: ['SH-2026-10-20001-01', 'SH-2026-10-20001-02', 'SH-2026-10-20001-03'],
+      operator: '曾志偉',
+    });
+    const fileId = byType(printed.files, '物流單列印').id;
+    expect(store().downloadFiles.find((f) => f.id === fileId).status).toBe('處理中');
+    expect(store().processDownloadFile(fileId).ok).toBe(true);
+    const done = store().downloadFiles.find((f) => f.id === fileId);
     expect(done.status).toBe('成功');
     expect(done.error_lines).toEqual([]);
     expect(done.file).toBeTruthy();
   });
 
-  it('產檔前一筆物流單被作廢時轉部分成功：十筆中 SH-2026-0901-003 已作廢 → 異常內容一行、物流單筆數維持 10＝9＋1', () => {
-    const statuses = Array.from({ length: 10 }, (_, i) => (i === 2 ? '已作廢' : '等待出貨'));
-    const shipments = [shipmentOf('SH-2026-0901', '7-11 交貨便', statuses)];
-    const nos = Array.from({ length: 10 }, (_, i) => `SH-2026-0901-${String(i + 1).padStart(3, '0')}`);
-    const done = finishDownloadFile(startDownloadFile(waiting(nos)), { shipments });
+  it('產檔前一筆物流單被作廢時轉部分成功：十筆中第 3 筆已作廢 → 異常內容一行、以物流單號開頭，物流單筆數維持 10＝9＋1', () => {
+    const specs = Array.from({ length: 10 }, (_, i) => (i === 2 ? 'v' : 'd'));
+    const shipments = [shipmentOf('SH-2026-09-01001', '7-11 交貨便', specs)];
+    const ids = Array.from({ length: 10 }, (_, i) => `SH-2026-09-01001-${pad2(i + 1)}`);
+    const done = finishDownloadFile(processing(ids), { shipments });
     expect(done.status).toBe('部分成功');
-    expect(done.error_lines).toEqual(['SH-2026-0901-003：物流單已作廢']);
+    expect(done.error_lines).toEqual(['T-SH-2026-09-01001-03：物流單已作廢']);
     expect(done.logistics_count).toBe(10);
     expect(done.logistics_count).toBe(9 + done.error_lines.length);
     expect(done.file).toBeTruthy();
   });
 
-  it('撤回確認可出貨刪除物流單後產檔轉失敗：異常內容三行「物流單編號：物流單已刪除」、檔案不寫入', () => {
-    seed([shipmentOf('SH-2026-1023', '全家', ['可出貨', '可出貨', '可出貨'])]);
-    const printed = store().printLogistics({
-      logisticsOrderNos: ['SH-2026-1023-001', 'SH-2026-1023-002', 'SH-2026-1023-003'],
-      operator: '曾志偉',
-    });
-    const fileId = byType(printed.files, '物流單列印').id;
-    expect(store().withdrawShippable('SH-2026-1023', { operator: '范姜宏' }).ok).toBe(true);
-    const r = store().processDownloadFile(fileId);
-    expect(r.ok).toBe(true);
-    const done = store().downloadFiles.find((f) => f.id === fileId);
+  it('全部物流單都產不出時轉失敗、檔案不寫入', () => {
+    const shipments = [shipmentOf('SH-2026-10-23001', '全家', ['v', 'v'])];
+    const done = finishDownloadFile(processing(['SH-2026-10-23001-01', 'SH-2026-10-23001-02']), { shipments });
     expect(done.status).toBe('失敗');
     expect(done.error_lines).toEqual([
-      'SH-2026-1023-001：物流單已刪除',
-      'SH-2026-1023-002：物流單已刪除',
-      'SH-2026-1023-003：物流單已刪除',
+      'T-SH-2026-10-23001-01：物流單已作廢',
+      'T-SH-2026-10-23001-02：物流單已作廢',
     ]);
     expect(done.file).toBeNull();
   });
 
-  it('產檔出錯的物流單記錯誤訊息原文：順豐托運總表兩筆一筆出錯 → 部分成功、異常內容一行含編號與原文', () => {
+  it('產檔出錯的物流單記錯誤訊息原文：順豐托運總表兩筆一筆出錯 → 部分成功、異常內容一行以物流單號開頭並附原文', () => {
     const shipments = [
-      shipmentOf('SH-T-S1', '順豐', ['等待出貨']),
-      shipmentOf('SH-T-S2', '順豐', ['等待出貨']),
+      shipmentOf('SH-2026-10-21001', '順豐', ['d']),
+      shipmentOf('SH-2026-10-21002', '順豐', ['d']),
     ];
-    const done = finishDownloadFile(startDownloadFile(waiting(['SH-T-S1-001', 'SH-T-S2-001'], '順豐托運總表')), {
+    const done = finishDownloadFile(processing(['SH-2026-10-21001-01', 'SH-2026-10-21002-01'], '順豐托運總表'), {
       shipments,
-      failures: { 'SH-T-S2-001': '物流商標籤服務逾時（code 504）' },
+      failures: { 'SH-2026-10-21002-01': '物流商標籤服務逾時（code 504）' },
     });
     expect(done.status).toBe('部分成功');
-    expect(done.error_lines).toEqual(['SH-T-S2-001：物流商標籤服務逾時（code 504）']);
-  });
-
-  it('缺物流商標籤的物流單照常產出：一筆還沒拋單、在可出貨 → 不寫異常內容，轉成功', () => {
-    const shipments = [shipmentOf('SH-T-B', '新竹物流', ['等待出貨', '可出貨'])];
-    const done = finishDownloadFile(startDownloadFile(waiting(['SH-T-B-001', 'SH-T-B-002'])), { shipments });
-    expect(done.status).toBe('成功');
-    expect(done.error_lines).toEqual([]);
+    expect(done.error_lines).toEqual(['T-SH-2026-10-21002-01：物流商標籤服務逾時（code 504）']);
   });
 
   it('失敗不重試，重新列印另建新紀錄：失敗的那一筆維持失敗；系統沒有重試與通知的動作', () => {
-    const failed = { ...waiting(['SH-T-C-001'], '順豐托運總表'), status: '失敗', error_lines: ['SH-T-C-001：物流單已作廢'] };
-    expect(startDownloadFile(failed)).toEqual(failed);
+    const failed = {
+      ...processing(['SH-2026-10-21003-01'], '順豐托運總表'),
+      status: '失敗',
+      error_lines: ['T-SH-2026-10-21003-01：產檔服務回應逾時，請重新列印'],
+    };
     expect(finishDownloadFile(failed, { shipments: [] })).toEqual(failed);
 
-    seed([shipmentOf('SH-T-C', '順豐', ['等待出貨'])], [failed]);
-    const r = store().printLogistics({ logisticsOrderNos: ['SH-T-C-001'], operator: '曾志偉' });
+    seed([shipmentOf('SH-2026-10-21003', '順豐', ['d'])], [failed]);
+    const r = store().printLogistics({ logisticsIds: ['SH-2026-10-21003-01'], operator: '曾志偉' });
     expect(r.ok).toBe(true);
-    expect(r.files.every((f) => f.status === '等待中')).toBe(true);
+    expect(r.files.every((f) => f.status === '處理中')).toBe(true);
     expect(store().downloadFiles.find((f) => f.id === failed.id).status).toBe('失敗');
     expect(store().retryDownloadFile).toBeUndefined();
     expect(store().notifyDownloadFile).toBeUndefined();
@@ -233,19 +242,23 @@ describe('12.52 下載檔案狀態：開始產檔轉處理中，產檔結束依�
 
 // ── 12.53 下載中心的檢視與下載 ──
 
-describe('12.53 下載中心：能進的人看全部資料列，只有可下載的狀態能下載，不刪不過期', () => {
-  beforeEach(() => seed([shipmentOf('SH-T-D', '新竹物流', ['等待出貨', '等待出貨'])], []));
+describe('12.53 下載中心：有入口的人看全部人的紀錄、可只篩自己的，只有可下載的狀態能下載', () => {
+  beforeEach(() => seed([shipmentOf('SH-2026-10-25001', '新竹物流', ['d', 'd'])], []));
 
-  it('出貨人員看得到別人建立的下載檔案：甲列印產生兩筆，下載中心列出這兩筆、建立人為甲', () => {
-    store().printLogistics({ logisticsOrderNos: ['SH-T-D-001', 'SH-T-D-002'], operator: '曾志偉' });
+  it('有入口的人看得到全部人的紀錄，也可用建立人篩選只看自己的：甲、乙各列印一次，下載中心兩人的都列出；篩甲只剩甲的', () => {
+    store().printLogistics({ logisticsIds: ['SH-2026-10-25001-01'], operator: '曾志偉' });
+    store().printLogistics({ logisticsIds: ['SH-2026-10-25001-02'], operator: '江俊賢' });
     const rows = downloadCenterRows(store().downloadFiles);
-    expect(rows).toHaveLength(2);
-    expect(rows.every((r) => r.created_by === '曾志偉')).toBe(true);
+    expect(rows).toHaveLength(4);
+    expect(new Set(rows.map((r) => r.created_by))).toEqual(new Set(['曾志偉', '江俊賢']));
+    const mine = downloadCenterRows(store().downloadFiles, { createdBy: '曾志偉' });
+    expect(mine).toHaveLength(2);
+    expect(mine.every((r) => r.created_by === '曾志偉')).toBe(true);
   });
 
   it('成功與部分成功的檔案可下載：下載後狀態不變、可再次下載', () => {
-    const ok = { id: 'D-OK', file_type: '物流單列印', status: '成功', logistics_order_nos: ['X-001'], logistics_count: 1, created_at: at, created_by: '曾志偉', error_lines: [], file: 'a.pdf' };
-    const partial = { ...ok, id: 'D-PART', status: '部分成功', logistics_order_nos: ['X-001', 'X-002'], logistics_count: 2, error_lines: ['X-002：物流單已作廢'], file: 'b.pdf' };
+    const ok = { id: 'D-OK', file_type: '物流單列印', status: '成功', logistics_ids: ['X-01'], logistics_count: 1, created_at: at, created_by: '曾志偉', error_lines: [], file: 'a.pdf' };
+    const partial = { ...ok, id: 'D-PART', status: '部分成功', logistics_ids: ['X-01', 'X-02'], logistics_count: 2, error_lines: ['T-X-02：物流單已作廢'], file: 'b.pdf' };
     seed([], [ok, partial]);
     for (const f of [ok, partial]) {
       expect(canDownloadFile(f)).toBe(true);
@@ -255,9 +268,9 @@ describe('12.53 下載中心：能進的人看全部資料列，只有可下載�
     }
   });
 
-  it('等待中、處理中、失敗的檔案不可下載：繞過介面送出下載擋下', () => {
-    const base = { file_type: '物流單列印', logistics_order_nos: ['X-001'], logistics_count: 1, created_at: at, created_by: '曾志偉', error_lines: [], file: null };
-    const files = ['等待中', '處理中', '失敗'].map((status, i) => ({ ...base, id: `D-${i}`, status }));
+  it('處理中、失敗的檔案不可下載：繞過介面送出下載擋下', () => {
+    const base = { file_type: '物流單列印', logistics_ids: ['X-01'], logistics_count: 1, created_at: at, created_by: '曾志偉', error_lines: [], file: null };
+    const files = ['處理中', '失敗'].map((status, i) => ({ ...base, id: `D-${i}`, status }));
     seed([], files);
     files.forEach((f) => {
       expect(canDownloadFile(f), f.status).toBe(false);
@@ -267,21 +280,12 @@ describe('12.53 下載中心：能進的人看全部資料列，只有可下載�
     });
   });
 
-  it('下載檔案不刪除也不過期：最早一筆（2026-06-18 建立）的成功檔案仍在下載中心、可下載；系統沒有刪除下載檔案的動作', () => {
-    const old = [...MOCK_DOWNLOAD_FILES].sort((a, b) => a.created_at.localeCompare(b.created_at))[0];
-    expect(old.created_at.startsWith('2026-06-18')).toBe(true);
-    expect(old).toBeTruthy();
-    expect(old.status).toBe('成功');
-    expect(downloadCenterRows(MOCK_DOWNLOAD_FILES).map((r) => r.id)).toContain(old.id);
-    expect(canDownloadFile(old)).toBe(true);
-    expect(store().deleteDownloadFile).toBeUndefined();
-  });
-
   it('下載中心依建立時間新到舊排列，可依檔案類型、狀態、建立人篩選', () => {
     const rows = downloadCenterRows(MOCK_DOWNLOAD_FILES);
     const times = rows.map((r) => r.created_at);
     expect(times).toEqual([...times].sort().reverse());
     const sf = downloadCenterRows(MOCK_DOWNLOAD_FILES, { fileType: '順豐托運總表' });
+    expect(sf.length).toBeGreaterThan(0);
     expect(sf.every((r) => r.file_type === '順豐托運總表')).toBe(true);
     const failed = downloadCenterRows(MOCK_DOWNLOAD_FILES, { status: '失敗' });
     expect(failed.length).toBeGreaterThan(0);
@@ -290,18 +294,106 @@ describe('12.53 下載中心：能進的人看全部資料列，只有可下載�
     expect(mine.every((r) => r.created_by === '曾志偉')).toBe(true);
   });
 
-  it('下載檔案模擬資料：五種狀態各至少一筆、建立人有兩位出貨人員、部分成功與失敗附異常內容', () => {
-    ['等待中', '處理中', '成功', '部分成功', '失敗'].forEach((s) => {
+  it('下載檔案模擬資料：狀態只用處理中、成功、部分成功、失敗；建立人有兩位出貨人員；失敗附異常內容且以物流單號開頭；全部在保存期限內', () => {
+    MOCK_DOWNLOAD_FILES.forEach((f) => {
+      expect(['處理中', '成功', '部分成功', '失敗'], f.id).toContain(f.status);
+    });
+    ['處理中', '成功', '失敗'].forEach((s) => {
       expect(MOCK_DOWNLOAD_FILES.some((f) => f.status === s), s).toBe(true);
     });
     expect(new Set(MOCK_DOWNLOAD_FILES.map((f) => f.created_by)).size).toBeGreaterThanOrEqual(2);
+    const trackingNos = MOCK_SHIPMENTS.flatMap((sh) => sh.logistics_orders ?? []).map((l) => l.tracking_no).filter(Boolean);
     MOCK_DOWNLOAD_FILES.filter((f) => ['部分成功', '失敗'].includes(f.status)).forEach((f) => {
       expect(f.error_lines.length, f.id).toBeGreaterThan(0);
-      f.error_lines.forEach((line) => expect(line, f.id).toMatch(/^SH-2026-\d{4}-\d{3}：.+/));
+      f.error_lines.forEach((line) => {
+        const [head] = line.split('：');
+        expect(trackingNos, f.id).toContain(head);
+      });
     });
     MOCK_DOWNLOAD_FILES.forEach((f) => {
-      expect(f.logistics_count, f.id).toBe(f.logistics_order_nos.length);
+      expect(f.logistics_count, f.id).toBe(f.logistics_ids.length);
       expect(Boolean(f.file), f.id).toBe(DOWNLOADABLE_STATUSES.includes(f.status));
     });
+    expect(downloadCenterRows(MOCK_DOWNLOAD_FILES)).toHaveLength(MOCK_DOWNLOAD_FILES.length);
+  });
+});
+
+// ── 12.59 下載檔案保存 7 天、只能列印拋單成功的物流單 ──
+
+describe('12.59 下載檔案保存 7 天、只能列印拋單成功的物流單', () => {
+  const file = {
+    id: 'D-RET',
+    file_type: '物流單列印',
+    status: '成功',
+    logistics_ids: ['X-01'],
+    logistics_count: 1,
+    created_at: '2026-10-20 10:00',
+    created_by: '曾志偉',
+    error_lines: [],
+    file: 'x.pdf',
+  };
+  const exactlySeven = new Date(2026, 9, 27, 10, 0);
+  const pastSeven = new Date(2026, 9, 27, 10, 1);
+
+  it('保存天數為 7 天', () => {
+    expect(DOWNLOAD_FILE_RETENTION_DAYS).toBe(7);
+  });
+
+  it('建立後剛好 7 天仍在保存期限內：未過期、可下載、下載中心列得出來', () => {
+    expect(isDownloadFileExpired(file, exactlySeven)).toBe(false);
+    expect(canDownloadFile(file, exactlySeven)).toBe(true);
+    expect(downloadCenterRows([file], { now: exactlySeven }).map((f) => f.id)).toEqual(['D-RET']);
+  });
+
+  it('超過 7 天即過期：不能下載、下載中心不再列出', () => {
+    expect(isDownloadFileExpired(file, pastSeven)).toBe(true);
+    expect(canDownloadFile(file, pastSeven)).toBe(false);
+    expect(downloadCenterRows([file], { now: pastSeven })).toEqual([]);
+  });
+
+  it('過期的成功檔案繞過介面送出下載擋下', () => {
+    const old = { ...file, created_at: stampOf(new Date(Date.now() - 8 * 24 * 60 * 60 * 1000)) };
+    seed([], [old]);
+    const r = store().downloadFile(old.id);
+    expect(r.ok).toBe(false);
+    expect(r.error).toBe(DOWNLOAD_NOT_READY_HINT);
+  });
+
+  it('勾選範圍內有一筆未拋單：整批不受理、不建立任何下載檔案，訊息列出那一筆的我方自編單號', () => {
+    seed([shipmentOf('SH-2026-10-26001', '新竹物流', ['d', 'd', 'u'])]);
+    const r = store().printLogistics({
+      logisticsIds: ['SH-2026-10-26001-01', 'SH-2026-10-26001-02', 'SH-2026-10-26001-03'],
+      operator: '曾志偉',
+    });
+    expect(r.ok).toBe(false);
+    expect(r.error).toBe('只能列印拋單成功的物流單，整批不受理：SH-2026-10-26001-03');
+    expect(store().downloadFiles).toEqual([]);
+  });
+
+  it('拋單失敗、已作廢、自取專車其他（沒有拋單狀態）的物流單都不能列印，整批不受理', () => {
+    const failed = packedShipment({
+      id: 'SH-2026-10-26002',
+      shipmentNo: 'SH-2026-10-26002',
+      orderNo: ORDER_NO,
+      method: '順豐',
+      logisticsOrders: [logistics('SH-2026-10-26002-01', '待出貨', { dispatch_status: '拋單失敗', dispatch_error: '物流商拒收' })],
+    });
+    const voided = shipmentOf('SH-2026-10-26003', '全家', ['v']);
+    const car = packedShipment({
+      id: 'SH-2026-10-26004',
+      shipmentNo: 'SH-2026-10-26004',
+      orderNo: ORDER_NO,
+      method: '專車配送',
+      logisticsOrders: [undispatched('SH-2026-10-26004-01')],
+    });
+    const ok = shipmentOf('SH-2026-10-26005', '全家', ['d']);
+    const shipments = [failed, voided, car, ok];
+    for (const id of ['SH-2026-10-26002-01', 'SH-2026-10-26003-01', 'SH-2026-10-26004-01']) {
+      const r = planPrintFiles({ shipments, logisticsIds: ['SH-2026-10-26005-01', id], at, actor: '曾志偉' });
+      expect(r.ok, id).toBe(false);
+      expect(r.files, id).toEqual([]);
+      expect(r.error, id).toMatch(/^只能列印拋單成功的物流單，整批不受理：/);
+    }
+    expect(planPrintFiles({ shipments, logisticsIds: ['SH-2026-10-26005-01'], at, actor: '曾志偉' }).ok).toBe(true);
   });
 });

@@ -4,7 +4,7 @@
 Sens 是一個以規格驅動（Specification-driven）為核心的專案倉庫，主要負責**印刷業 ERP / MES 系統**（生產排程 / 客戶訂單管理 / BOM 管理）與 **B2C Saas 線上商品編輯器**的規格定義。本 Repo 是業務邏輯與系統需求的「唯一事實來源」（Single Source of Truth）。
 
 - **核心技術：** OpenSpec (需求管理)、Markdown (文件化)、自定義 Claude Agents 與 Skills。
-- **關聯專案：** 實際的 ERP Prototype 位於獨立倉庫 `sens-erp-prototype` (React + TypeScript + Tailwind + shadcn/ui)。你只能作為需求參考的來源，不可以直接編。
+- **關聯專案：** 實際的 ERP Prototype 位於 `erp` repo（本地路徑 `/Users/b-f-03-029/erp`）。你只能作為需求參考的來源，不可以直接編。
 - **核心策略：** SSD 開發流程，從 BRD 作為商業需求來源，並嚴格遵守台灣在地化繁體中文術語。
 ---
 

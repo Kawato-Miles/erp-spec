@@ -16,6 +16,8 @@ import {
   openLogisticsAction,
   openShipmentPanel,
   pickAndPack,
+  pickShippingMethod,
+  SHIPMENT_NO_PATTERN,
   setupShippableState,
   shipmentRow,
   startPicking,
@@ -25,12 +27,20 @@ import {
 // 情境目錄 14.37、14.38（2026-10-13 新增，2026-10-22 改寫：裝箱明細加長寬高、兩處列表改子母表並刪裝箱照片欄；
 // 2026-10-23 改寫：單頭刪實際出貨日、建立時標題「建立出貨單」、說明文字依 G21 三表、物流單子表刪離廠時間欄與
 // 補附送達憑證、出貨管理每列有勾選框）。
-// 起點資料：鏈一 SH-2026-0601（順豐、已送達；明細 PI-2026-0601 × 3,000、揀貨數量 3,000、五箱「1 號箱」45×30×15、
-// 一筆物流單，裝箱照片只有檔名，歷程照第三方新路徑：可出貨 → 等待出貨 → 運送中 → 已送達）、SH-2026-0602（自取），
-// 鏈四 SH-2026-0820（草稿，沒有物流單）。
+// 起點資料：鏈一 SH-2026-06-18001（順豐、已送達；明細 PI-2026-0601 × 3,000、揀貨數量 3,000、五箱「1 號箱」45×30×15、
+// 一筆物流單（我方自編單號 SH-2026-06-18001-01、物流單號 SF1400020601），裝箱照片只有檔名；
+// 歷程只有出貨單歷程，物流單事件也記在裡面：已確認 → 拋單成功（待出貨）→ 貨態更新運送中 → 貨態更新已送達）、
+// SH-2026-06-22001（自取），鏈四晨光文創的出貨單草稿（沒有出貨單編號、沒有物流單）。
+// 出貨模組對齊後端第一版：單頭收件欄位為收件人、收件電話、收件地址（郵遞區號、縣市、區、地址四欄合成一行）；
+// 物流單表格欄位為我方自編單號、物流單號、箱數、拋單狀態（只有第三方物流）、貨態、送達時間、例外理由、操作。
 // G21 三表：openspec/changes/shipment-print-download-center/g21-ui-text.md（A 刪除、B 保留縮短、C 新增）。
 
-const LOGISTICS_SUB_HEADS = ['物流單編號', '物流單號', '箱數', '狀態', '送達時間', '例外理由', '操作'];
+// 第三方物流（順豐）的物流單表格欄位；自取、專車配送、其他沒有拋單狀態欄
+const LOGISTICS_SUB_HEADS = ['我方自編單號', '物流單號', '箱數', '拋單狀態', '貨態', '送達時間', '例外理由', '操作'];
+const CHAIN1_NO = 'SH-2026-06-18001';
+const CHAIN1_OWN_NO = 'SH-2026-06-18001-01';
+// 鏈四草稿沒有出貨單編號，以客戶名稱認列（模擬資料裡晨光文創只有這一張出貨單）
+const DRAFT = '晨光文創';
 
 // G21 A 表：出貨單對話框單頭的欄位標籤只留欄位名稱，必填用星號
 const REMOVED_LABEL_TEXTS = [
@@ -40,18 +50,19 @@ const REMOVED_LABEL_TEXTS = [
   '備註（選填）',
 ];
 
-test('14.37 出貨單對話框：單頭固定，出貨明細與歷程兩個頁籤；明細有完稿縮圖、揀貨數量；單頭沒有實際出貨日', async ({
+test('14.37 出貨單對話框：單頭固定，收件人、收件電話、收件地址分列；出貨明細與歷程兩個頁籤；明細有完稿縮圖、揀貨數量；歷程只有出貨單歷程；單頭沒有實際出貨日', async ({
   page,
 }) => {
   test.setTimeout(120_000);
   await openAs(page, '業務', '/qc-shipping/shipments');
-  const dialog = await openShipmentPanel(page, 'SH-2026-0601');
+  const dialog = await openShipmentPanel(page, CHAIN1_NO);
 
   // 檢視時標題為「出貨單編號＋狀態」（G18）
-  await expect(dialog.locator('.ant-modal-header')).toContainText('SH-2026-0601');
+  await expect(dialog.locator('.ant-modal-header')).toContainText(CHAIN1_NO);
   await expect(dialog.locator('.ant-modal-header')).toContainText('已送達');
 
-  // 上方固定單頭，不分頁：十一項資訊都在頁籤之外（頁籤列之前的區塊）；實際出貨日已刪（H7）
+  // 上方固定單頭，不分頁：十三項資訊都在頁籤之外（頁籤列之前的區塊）；實際出貨日已刪（H7）；
+  // 收件欄位為收件人、收件電話、收件地址三項，收件地址由郵遞區號、縣市、區、地址四欄合成一行
   const head = dialog.locator('.ant-modal-body > div').first();
   for (const label of [
     '出貨單編號',
@@ -59,7 +70,8 @@ test('14.37 出貨單對話框：單頭固定，出貨明細與歷程兩個頁�
     '出貨方式',
     '箱數',
     '出貨單預計出貨日',
-    '收件人與電話',
+    '收件人',
+    '收件電話',
     '收件地址',
     '寄件資訊',
     '裝箱指示',
@@ -69,6 +81,9 @@ test('14.37 出貨單對話框：單頭固定，出貨明細與歷程兩個頁�
     await expect(head).toContainText(label);
   }
   await expect(head).not.toContainText('實際出貨日');
+  for (const gone of ['收件人與電話', '收件人手機', '收件人市話']) await expect(head).not.toContainText(gone);
+  await expect(head).toContainText('02-2775-5977');
+  await expect(head).toContainText('110 台北市信義區菸廠路 88 號 5 樓');
   await expect(head).toContainText('ORD-2026-0601');
   await expect(head).toContainText('誠品書店股份有限公司');
   await expect(head).toContainText('王思穎');
@@ -104,27 +119,35 @@ test('14.37 出貨單對話框：單頭固定，出貨明細與歷程兩個頁�
   );
   expect(firstBox.slice(0, 5)).toEqual(['001', '1 號箱', '45', '30', '15']);
   await expect(dialog).toContainText('SF1400020601001');
-  await expect(dialog).toContainText('物流單編號');
-  await expect(dialog).toContainText('SH-2026-0601-001');
+  // 物流單以我方自編單號與物流單號識別，沒有物流單編號；裝箱明細的所屬物流單顯示我方自編單號
+  await expect(dialog).toContainText('我方自編單號');
+  await expect(dialog).not.toContainText('物流單編號');
+  await expect(dialog).toContainText(CHAIN1_OWN_NO);
+  await expect(boxTable.locator('tbody tr.ant-table-row').first()).toContainText(CHAIN1_OWN_NO);
   for (const gone of ['重量', '離廠時間', '送達憑證', '寄件人：']) await expect(dialog).not.toContainText(gone);
   await expect(dialog).toContainText('裝箱照片');
   await expect(dialog.getByRole('img', { name: /裝箱照片/ })).toHaveCount(5);
   await expect(dialog).not.toContainText('.jpg');
 
-  // 歷程：新到舊，時間、操作人、前後值與附件縮圖；第三方新路徑，送達記物流商回傳
+  // 歷程：只有出貨單歷程（物流單沒有獨立歷程，物流單事件記在出貨單歷程、事件文字帶「（物流單 我方自編單號）」）；
+  // 新到舊，時間、操作人、前後值與附件縮圖；第三方新路徑，送達由物流商同步的貨態更新寫入
   await dialog.getByRole('tab', { name: '歷程' }).click();
   const timeline = dialog.locator('.ant-timeline');
+  await expect(timeline).toHaveCount(1);
   const items = await timeline.locator('.ant-timeline-item').allInnerTexts();
   expect(items.length).toBeGreaterThan(5);
-  expect(items[0]).toContain('物流單 SH-2026-0601-001');
-  expect(items[0]).toContain('物流商回傳');
-  expect(items.some((t) => t.includes('運送中 → 已送達'))).toBe(true);
+  expect(items[0]).toContain(`貨態更新：配達（物流單 ${CHAIN1_OWN_NO}）`);
+  expect(items[0]).toContain('物流商同步');
+  expect(items.some((t) => t.includes('貨態：運送中 → 已送達'))).toBe(true);
+  expect(items.some((t) => t.includes(`拋單成功（物流單 ${CHAIN1_OWN_NO}）`))).toBe(true);
+  expect(items.some((t) => t.includes('拋單狀態：未拋單 → 拋單成功'))).toBe(true);
   expect(items.some((t) => t.includes('確認可出貨'))).toBe(true);
   expect(items.some((t) => t.includes('已出貨'))).toBe(false);
   const packIndex = items.findIndex((t) => t.includes('裝箱回報') && !t.includes('修正'));
   expect(items[packIndex]).toContain('范姜宏');
   await expect(timeline.locator('.ant-timeline-item').nth(packIndex).getByRole('img')).toHaveCount(5);
   expect(items[items.length - 1]).toContain('建立出貨單');
+  expect(items[items.length - 1]).toContain(`出貨單編號：－ → ${CHAIN1_NO}`);
 });
 
 test('14.37 建立時標題為「建立出貨單」，欄位標籤只留名稱、必填用星號；草稿的物流單表格顯示沒有資料（G18、G21 A 表）', async ({
@@ -135,16 +158,39 @@ test('14.37 建立時標題為「建立出貨單」，欄位標籤只留名稱�
   const dialog = await openCreateShipmentFromOrder(page);
   await expect(dialog.locator('.ant-modal-title')).toHaveText('建立出貨單');
   for (const text of REMOVED_LABEL_TEXTS) await expect(dialog).not.toContainText(text);
-  // 必填用星號：出貨方式、收件人、收件地址三欄的標籤帶必填標記
-  for (const id of ['method', 'receiver_name', 'receiver_address']) {
+  // 收件電話只有一欄，沒有收件人手機、收件人市話
+  await expect(dialog.getByLabel('收件電話', { exact: true })).toHaveCount(1);
+  for (const gone of ['收件人手機', '收件人市話']) await expect(dialog).not.toContainText(gone);
+  // 建單預填：客戶聯絡地址整串帶進收件地址欄，郵遞區號、縣市、區留空
+  await expect(dialog.getByLabel('收件地址', { exact: true })).toHaveValue(CHAIN4.contactAddress);
+  for (const label of ['收件郵遞區號', '收件縣市', '收件區']) {
+    await expect(dialog.getByLabel(label, { exact: true })).toHaveValue('');
+  }
+  // 必填用星號：出貨方式、收件人一律必填；收件電話送出時不必填（確認可出貨時依物流商檢查）
+  for (const id of ['method', 'receiver_name']) {
     await expect(dialog.locator(`label[for="${id}"]`)).toHaveClass(/ant-form-item-required/);
   }
+  await expect(dialog.locator('label[for="receiver_phone"]')).not.toHaveClass(/ant-form-item-required/);
+  // 收件地址必填範圍依出貨方式：宅配地址四欄全部必填；超商不需要收件地址；自取、專車配送、其他只要收件地址那一欄
+  const ADDRESS_IDS = ['receiver_zip', 'receiver_city', 'receiver_district', 'receiver_address'];
+  const expectRequired = async (method, requiredIds) => {
+    await pickShippingMethod(page, dialog, method);
+    for (const id of ADDRESS_IDS) {
+      const label = dialog.locator(`label[for="${id}"]`);
+      if (requiredIds.includes(id)) await expect(label, `${method} ${id}`).toHaveClass(/ant-form-item-required/);
+      else await expect(label, `${method} ${id}`).not.toHaveClass(/ant-form-item-required/);
+    }
+  };
+  await expectRequired('新竹物流', ADDRESS_IDS);
+  await expectRequired('7-11 交貨便', []);
+  await expectRequired('專車配送', ['receiver_address']);
   await expect(dialog).not.toContainText('實際出貨日');
   await dialog.getByRole('button', { name: /取\s*消/ }).click();
 
-  // 草稿沒有物流單：物流單表格用元件預設的「沒有資料」，不寫「尚未裝箱回報，還沒有物流單」
+  // 草稿沒有物流單：物流單表格用元件預設的「沒有資料」，不寫「尚未裝箱回報，還沒有物流單」；草稿沒有出貨單編號
   await gotoInAppSafe(page, '/qc-shipping/shipments');
-  const draft = await openShipmentPanel(page, CHAIN4.draftShipmentNo);
+  const draft = await openShipmentPanel(page, DRAFT);
+  await expect(draft).not.toContainText(SHIPMENT_NO_PATTERN);
   await expect(draft).not.toContainText('尚未裝箱回報，還沒有物流單');
   await expect(draft).not.toContainText('寄件人：');
 });
@@ -192,8 +238,8 @@ test('14.37 現場動作對話框的說明文字依 G21 三表：裝箱回報、
   await expect(mismatchPanel).toContainText(`揀貨數量與出貨明細不符：${CHAIN4.printItemName}`);
   await mismatchPanel.getByRole('button', { name: /^(關\s*閉|取\s*消)$/ }).click();
 
-  // 修正對話框：不能改的列直接唯讀，不另寫「已離廠或已作廢物流單底下的箱不能修改……」（A 表）
-  const fix = await clickRowAction(page, hctNo, '修正');
+  // 修正對話框（裝箱回報修正只在已裝箱，用停在已裝箱的那張單）：不另寫「已離廠或已作廢物流單底下的箱不能修改……」（A 表）
+  const fix = await clickRowAction(page, mismatchNo, '修正');
   await expect(fix).not.toContainText('已離廠或已作廢物流單底下的箱不能修改');
   await expect(fix).not.toContainText('請由業務作廢物流單');
   await fix.getByRole('button', { name: /取\s*消/ }).click();
@@ -231,7 +277,7 @@ test('14.37 訂單出貨單頁籤沒有訂單終態時的兩則長說明（G21 A
   // 鏈一 ORD-2026-0601 已訂單完成：建立鈕依條件顯示或隱藏，不另寫說明
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0601');
   await page.getByRole('tab', { name: /出貨/ }).first().click();
-  await expect(page.locator('.ant-tabs-tabpane-active')).toContainText('SH-2026-0601');
+  await expect(page.locator('.ant-tabs-tabpane-active')).toContainText(CHAIN1_NO);
   await expect(page.locator('.ant-tabs-tabpane-active')).not.toContainText('這張訂單已達終態');
 });
 
@@ -249,21 +295,22 @@ test('14.38 出貨單列表為子母表：主層出貨單、每列有勾選框�
   expect(heads).not.toContain('實際裝箱數量');
   expect(heads).not.toContain('托運單號');
   const pickedCol = heads.findIndex((h) => h.startsWith('揀貨數量'));
-  await expect(shipmentRow(page, 'SH-2026-0601').locator('td').nth(pickedCol)).toContainText('3,000／3,000');
+  await expect(shipmentRow(page, CHAIN1_NO).locator('td').nth(pickedCol)).toContainText('3,000／3,000');
 
   // 每一列有勾選框（批次列印用，G5）；表頭有全選勾選框
-  for (const no of ['SH-2026-0601', 'SH-2026-0602']) {
+  for (const no of [CHAIN1_NO, 'SH-2026-06-22001']) {
     await expect(shipmentRow(page, no).getByRole('checkbox')).toHaveCount(1);
   }
 
   // 預設收合；每列都可展開；物流單子表沒有離廠時間欄
   await expect(page.locator('tr.ant-table-expanded-row:visible')).toHaveCount(0);
-  const expanded = await expandShipmentRow(page, 'SH-2026-0601');
+  const expanded = await expandShipmentRow(page, CHAIN1_NO);
   const subHeads = (await expanded.locator('thead th').allInnerTexts()).map((t) => t.trim()).filter(Boolean);
   expect(subHeads).toEqual(LOGISTICS_SUB_HEADS);
   const subRow = expanded.locator('tbody tr.ant-table-row').first();
-  await expect(subRow).toContainText('SH-2026-0601-001');
+  await expect(subRow).toContainText(CHAIN1_OWN_NO);
   await expect(subRow).toContainText('SF1400020601');
+  await expect(subRow).toContainText('拋單成功');
   await expect(subRow).toContainText('已送達');
   // 操作沿用物流單表格的動作鈕：已送達的物流單只有下載物流單，沒有補附送達憑證（G1）
   await expect(subRow.getByRole('button', { name: '補附送達憑證' })).toHaveCount(0);
@@ -273,7 +320,7 @@ test('14.38 出貨單列表為子母表：主層出貨單、每列有勾選框�
 test('14.38 草稿沒有物流單，展開後顯示沒有資料（列表）', async ({ page }) => {
   test.setTimeout(120_000);
   await openAs(page, '業務', '/qc-shipping/shipments');
-  const expanded = await expandShipmentRow(page, 'SH-2026-0820');
+  const expanded = await expandShipmentRow(page, DRAFT);
   const subHeads = (await expanded.locator('thead th').allInnerTexts()).map((t) => t.trim()).filter(Boolean);
   expect(subHeads).toEqual(LOGISTICS_SUB_HEADS);
   await expect(expanded).toContainText('沒有資料');
@@ -286,7 +333,7 @@ test('14.38 訂單詳情出貨單頁籤為子母表，沒有裝箱照片欄（�
   await page.getByRole('tab', { name: /出貨/ }).first().click();
   const tabRow = page
     .locator('.ant-tabs-tabpane-active tr.ant-table-row')
-    .filter({ hasText: 'SH-2026-0601' })
+    .filter({ hasText: CHAIN1_NO })
     .first();
   await expect(tabRow).toBeVisible();
   const tabHeads = (
@@ -301,6 +348,6 @@ test('14.38 訂單詳情出貨單頁籤為子母表，沒有裝箱照片欄（�
   await expect(expanded).toHaveClass(/ant-table-expanded-row/);
   const subHeads = (await expanded.locator('thead th').allInnerTexts()).map((t) => t.trim()).filter(Boolean);
   expect(subHeads).toEqual(LOGISTICS_SUB_HEADS);
-  await expect(expanded.locator('tbody tr.ant-table-row').first()).toContainText('SH-2026-0601-001');
+  await expect(expanded.locator('tbody tr.ant-table-row').first()).toContainText(CHAIN1_OWN_NO);
 });
 

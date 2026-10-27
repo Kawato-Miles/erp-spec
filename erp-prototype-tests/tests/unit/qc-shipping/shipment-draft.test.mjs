@@ -1,8 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
   calcRemainingToShipQty,
+  DETAILS_ITEMS_LOCKED_HINT,
+  DETAILS_LOCKED_HINT,
   displayDetailsOf,
   displayDetailsTotalQty,
+  nextShipmentNoOf,
   SETTLED_ALREADY_HINT,
   useQcShippingStore,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/store.js';
@@ -11,6 +14,7 @@ import {
   dispatchLabelOf,
   isThirdPartyMethod,
   senderCompanyCodeOf,
+  shipmentNoOf,
   SHIPPING_METHOD_OPTIONS,
   shippingMethodProfileOf,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/mock-data.js';
@@ -20,14 +24,15 @@ import {
   LOGISTICS_LEVEL_KEY,
   logisticsActionsOf,
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/next-status-options.js';
-import { logistics, packedShipment } from './_fixtures.mjs';
+import { boxedShipment, departed, dispatched, packedShipment, undispatched } from './_fixtures.mjs';
 import { isFullyDeparted, isNotDeparted, isPartiallyDeparted } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/qc-shipping/_lib/logistics-rules.js';
 import { isPrintItemShipped } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/_lib/delivery-chain.js';
 import { useOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/_lib/store.js';
 
 // 情境 12.1（清單與側板呈現草稿的預計值）、12.2（出貨印件預設數量、六值出貨方式、新建入口
 // 一律先落草稿）、12.6 與 12.7（第三方判定、送達的終態守衛）、12.11（寄件資訊依帳務公司、
-// 成立那一刻凍住代號）的數字與取值驗算。
+// 成立那一刻凍住代號）、12.58（出貨單編號送出時產生，草稿沒有編號；草稿期間不記歷程；
+// 送出後只能改出貨明細數量）的數字與取值驗算。
 
 const printItem = { print_item_no: 'PI-2026-0820', ordered_qty: 500 };
 
@@ -58,7 +63,7 @@ describe('出貨印件的預設數量（剩餘應出量）', () => {
       id: 'sh-1',
       printItemNo: 'PI-2026-0820',
       qty: 200,
-      logisticsOrders: [logistics('SH-1-001', '已送達')],
+      logisticsOrders: [departed('SH-1-01', '已送達')],
     });
     expect(calcRemainingToShipQty(printItem, [delivered])).toBe(300);
   });
@@ -69,7 +74,7 @@ describe('出貨印件的預設數量（剩餘應出量）', () => {
       id: 'sh-1',
       printItemNo: 'PI-2026-0820',
       qty: 200,
-      logisticsOrders: [logistics('SH-1-001', '例外事故', { exception_source: 'manual' })],
+      logisticsOrders: [departed('SH-1-01', '例外事故', { exception_source: 'manual' })],
     });
     expect(calcRemainingToShipQty(printItem, [abnormal])).toBe(300);
   });
@@ -162,10 +167,10 @@ describe('出貨方式一欄七值，各帶兩個屬性', () => {
 // ── 12.6 出貨動作依出貨方式分流，只有拋單方式的出貨單有批次拋單（shipment spec § 出貨與送達確認；grill G39） ──
 
 describe('12.6 出貨動作分流：自取出貨單上沒有任何出貨動作，新竹物流出貨單上只有批次拋單一顆', () => {
-  const pickup = packedShipment({ method: '自取', logisticsOrders: [logistics('SH-TEST-0001-001', '可出貨')] });
+  const pickup = packedShipment({ method: '自取', logisticsOrders: [undispatched('SH-TEST-0001-01')] });
   const carrier = packedShipment({
     method: '新竹物流',
-    logisticsOrders: [logistics('SH-TEST-0002-001', '可出貨'), logistics('SH-TEST-0002-002', '可出貨')],
+    logisticsOrders: [undispatched('SH-TEST-0002-01'), undispatched('SH-TEST-0002-02')],
   });
 
   it('出貨單層：自取沒有批次拋單，新竹物流有且可按', () => {
@@ -187,15 +192,15 @@ describe('12.6 出貨動作分流：自取出貨單上沒有任何出貨動作�
     expect(dispatchLabelOf('新竹物流')).toBe('拋單');
   });
 
-  it('出貨動作在物流單為可出貨時出現；物流單列沒有重新同步', () => {
+  it('出貨動作在物流單貨態為待出貨且未拋單成功時出現；已拋單成功的物流單沒有出貨動作；物流單列沒有重新同步', () => {
     expect(LOGISTICS_LEVEL_KEY.RESYNC).toBeUndefined();
-    const waiting = packedShipment({ method: '新竹物流', logisticsOrders: [logistics('SH-TEST-0002-001', '等待出貨')] });
+    const waiting = packedShipment({ method: '新竹物流', logisticsOrders: [dispatched('SH-TEST-0002-01')] });
     expect(logisticsActionsOf({ role: 'shipper', shipment: waiting, logistics: waiting.logistics_orders[0] })).not.toContain(LOGISTICS_LEVEL_KEY.DISPATCH);
   });
 
   it('出貨確認與標記可自取沒有出貨單層的入口：專車配送、其他、自取都沒有批次', () => {
     ['自取', '專車配送', '其他'].forEach((method) => {
-      const sh = packedShipment({ method, logisticsOrders: [logistics('SH-TEST-0003-001', '可出貨')] });
+      const sh = packedShipment({ method, logisticsOrders: [undispatched('SH-TEST-0003-01')] });
       expect(batchDispatchOf({ role: 'shipper', shipment: sh }).visible, method).toBe(false);
     });
   });
@@ -248,7 +253,10 @@ const HEADER = {
   method: '順豐',
   receiver_name: '周雅文',
   receiver_phone: '02-2790-6611',
-  receiver_address: '台北市內湖區文德路 168 號 3 樓',
+  receiver_zip: '114',
+  receiver_city: '台北市',
+  receiver_district: '內湖區',
+  receiver_address: '文德路 168 號 3 樓',
   packing_note: '',
   note: '',
 };
@@ -355,13 +363,13 @@ describe('12.11 成立那一刻記下帳務公司代號，名稱電話地址仍�
 const transitShipment = () =>
   packedShipment({
     id: 'sh-test-transit',
-    shipmentNo: 'SH-2026-9001',
+    shipmentNo: 'SH-2026-09-01001',
     orderNo: ORDER_NO,
     method: '順豐',
     printItemNo: DETAILS[0].print_item_no,
     name: DETAILS[0].name,
     qty: DETAILS[0].qty,
-    logisticsOrders: [logistics('SH-2026-9001-001', '運送中', { tracking_no: 'SF-9001' })],
+    logisticsOrders: [departed('SH-2026-09-01001-01', '運送中', { tracking_no: 'SF-9001' })],
   });
 
 describe('12.7 送達確認與交付確認不附照片；第三方以物流商回傳為主、送達確認為備援；後到者不改任何欄位', () => {
@@ -373,19 +381,19 @@ describe('12.7 送達確認與交付確認不附照片；第三方以物流商�
   it('人工送達確認先寫入後，第二次送達確認改不動任何欄位', () => {
     const written = useQcShippingStore
       .getState()
-      .confirmLogisticsDelivery('sh-test-transit', 'SH-2026-9001-001', {
+      .confirmLogisticsDelivery('sh-test-transit', 'SH-2026-09-01001-01', {
         operator: '吳孟哲',
         delivered_at: '2026-09-20 10:00',
       });
     expect(written.ok).toBe(true);
     const first = shipmentById('sh-test-transit').logistics_orders[0];
-    expect(first.status).toBe('已送達');
+    expect(first.cargo_status).toBe('已送達');
     expect(first.delivered_by).toBe('吳孟哲');
     expect(shipmentStatusOf(shipmentById('sh-test-transit'))).toBe('已送達');
 
     const late = useQcShippingStore
       .getState()
-      .confirmLogisticsDelivery('sh-test-transit', 'SH-2026-9001-001', {
+      .confirmLogisticsDelivery('sh-test-transit', 'SH-2026-09-01001-01', {
         operator: '范姜宏',
       });
     expect(late.ok).toBe(false);
@@ -396,24 +404,25 @@ describe('12.7 送達確認與交付確認不附照片；第三方以物流商�
     expect('delivery_proof' in after).toBe(false);
   });
 
-  it('還沒拋單（可出貨）的物流單不接受送達確認，狀態不變', () => {
+  it('還沒拋單成功（拋單狀態未拋單、貨態待出貨）的物流單不接受送達確認，貨態不變', () => {
     useQcShippingStore.setState({
       shipments: [
         packedShipment({
           id: 'sh-test-transit',
           method: '順豐',
           printItemNo: DETAILS[0].print_item_no,
-          logisticsOrders: [logistics('SH-2026-9001-001', '可出貨')],
+          logisticsOrders: [undispatched('SH-2026-09-01001-01')],
         }),
       ],
     });
     const result = useQcShippingStore
       .getState()
-      .confirmLogisticsDelivery('sh-test-transit', 'SH-2026-9001-001', {
+      .confirmLogisticsDelivery('sh-test-transit', 'SH-2026-09-01001-01', {
         operator: '吳孟哲',
       });
     expect(result.ok).toBe(false);
-    expect(shipmentById('sh-test-transit').logistics_orders[0].status).toBe('可出貨');
+    expect(shipmentById('sh-test-transit').logistics_orders[0].cargo_status).toBe('待出貨');
+    expect(shipmentById('sh-test-transit').logistics_orders[0].dispatch_status).toBe('未拋單');
   });
 
   it('第三方送達由物流商回傳推進（receiveCarrierReply）；沒有重新同步與補附送達憑證的動作', () => {
@@ -426,11 +435,11 @@ describe('12.7 送達確認與交付確認不附照片；第三方以物流商�
   it('專車送達確認不附照片：已出貨的專車物流單不傳任何附件即成立，物流單轉已送達', () => {
     useQcShippingStore.setState({
       shipments: [
-        packedShipment({ id: 'sh-car', method: '專車配送', orderNo: ORDER_NO, printItemNo: DETAILS[0].print_item_no, qty: 100, logisticsOrders: [logistics('SH-CAR-001', '已出貨')] }),
+        packedShipment({ id: 'sh-car', method: '專車配送', orderNo: ORDER_NO, printItemNo: DETAILS[0].print_item_no, qty: 100, logisticsOrders: [departed('SH-CAR-01', '已出貨')] }),
       ],
     });
-    expect(useQcShippingStore.getState().confirmLogisticsDelivery('sh-car', 'SH-CAR-001', { operator: '曾志偉' }).ok).toBe(true);
-    expect(shipmentById('sh-car').logistics_orders[0].status).toBe('已送達');
+    expect(useQcShippingStore.getState().confirmLogisticsDelivery('sh-car', 'SH-CAR-01', { operator: '曾志偉' }).ok).toBe(true);
+    expect(shipmentById('sh-car').logistics_orders[0].cargo_status).toBe('已送達');
   });
 
   it('後到者看到的提示只有一句，送達確認共用同一份文字', () => {
@@ -447,5 +456,137 @@ describe('12.2 草稿不使印件算已出貨：不屬任一集合詞、沒有�
     expect(isPrintItemShipped([draft], 'PI-2026-0820')).toBe(false);
     expect([isNotDeparted(draft), isPartiallyDeparted(draft), isFullyDeparted(draft)]).toEqual([false, false, false]);
     expect(draft.logistics_orders).toEqual([]);
+  });
+});
+
+// ── 12.58 出貨單編號送出時產生，草稿沒有編號 ──
+
+const pad2 = (n) => String(n).padStart(2, '0');
+const todayPrefix = () => {
+  const d = new Date();
+  return `SH-${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+};
+
+describe('12.58 出貨單編號送出時產生（SH-年-月-日加當日流水號），草稿沒有編號', () => {
+  beforeEach(() => {
+    seedOrder('SSP');
+    useQcShippingStore.setState({ shipments: [] });
+  });
+
+  it('草稿沒有出貨單編號，畫面顯示破折號', () => {
+    const id = newDraft();
+    expect(shipmentById(id).shipment_no).toBeNull();
+    expect(shipmentNoOf(shipmentById(id))).toBe('－');
+  });
+
+  it('送出時產生出貨單編號：SH-年-月-日加當日流水號三碼，當日第一張為 001', () => {
+    const id = newDraft();
+    useQcShippingStore.getState().finalizeShipment(id, { details: DETAILS, ...HEADER });
+    expect(shipmentById(id).shipment_no).toBe(`${todayPrefix()}001`);
+    expect(shipmentById(id).shipment_no).toMatch(/^SH-\d{4}-\d{2}-\d{2}\d{3,}$/);
+  });
+
+  it('同日第二張送出的流水 +1；先建的草稿後送出也照送出順序取號', () => {
+    const first = newDraft();
+    const second = newDraft();
+    useQcShippingStore.getState().finalizeShipment(second, { details: DETAILS, ...HEADER });
+    useQcShippingStore.getState().finalizeShipment(first, { details: DETAILS, ...HEADER });
+    expect(shipmentById(second).shipment_no).toBe(`${todayPrefix()}001`);
+    expect(shipmentById(first).shipment_no).toBe(`${todayPrefix()}002`);
+  });
+
+  it('流水號依日期各自起算、至少三碼：別日的編號不影響當日流水', () => {
+    const now = new Date(2026, 9, 20, 9, 0);
+    expect(nextShipmentNoOf([], now)).toBe('SH-2026-10-20001');
+    expect(
+      nextShipmentNoOf(
+        [{ shipment_no: 'SH-2026-10-19007' }, { shipment_no: 'SH-2026-10-20001' }, { shipment_no: null }],
+        now,
+      ),
+    ).toBe('SH-2026-10-20002');
+    expect(nextShipmentNoOf([{ shipment_no: 'SH-2026-10-20999' }], now)).toBe('SH-2026-10-201000');
+  });
+
+  it('草稿期間不記歷程：建草稿、改草稿都不寫歷程；送出時記一筆建立出貨單，含出貨單編號的前後值', () => {
+    const id = newDraft();
+    expect(shipmentById(id).history).toEqual([]);
+    useQcShippingStore.getState().updateDraft(id, { note: '改備註' });
+    expect(shipmentById(id).history).toEqual([]);
+    useQcShippingStore.getState().finalizeShipment(id, { details: DETAILS, ...HEADER });
+    const history = shipmentById(id).history;
+    expect(history).toHaveLength(1);
+    expect(history[0].category).toBe('建立出貨單');
+    expect(history[0].changes).toContainEqual({ field: '出貨單編號', before: null, after: `${todayPrefix()}001` });
+    expect(history[0].changes).toContainEqual({ field: '出貨單狀態', before: '草稿', after: '未處理' });
+  });
+});
+
+describe('12.58 送出後只能改出貨明細數量：不能增刪印件、數量最小 1，確認可出貨之後鎖住', () => {
+  const TWO = [
+    { print_item_no: 'PI-A', name: '印件甲', qty: 100, picked_qty: null },
+    { print_item_no: 'PI-B', name: '印件乙', qty: 50, picked_qty: null },
+  ];
+  const unprocessed = (status = '未處理') => ({
+    id: 'sh-edit',
+    shipment_no: 'SH-2026-10-20001',
+    order_no: ORDER_NO,
+    status,
+    method: '順豐',
+    details: TWO,
+    planned_details: [],
+    packing_boxes: [],
+    logistics_orders: [],
+    packing_corrections: [],
+    history: [],
+  });
+  const edit = (details) =>
+    useQcShippingStore.getState().updateShipmentDetails('sh-edit', details, { operator: '洪嘉駿' });
+
+  it('未處理、打包中、已裝箱時可改數量，改的那一條記一筆編輯歷程', () => {
+    ['未處理', '打包中'].forEach((status) => {
+      useQcShippingStore.setState({ shipments: [unprocessed(status)] });
+      const r = edit([{ print_item_no: 'PI-A', qty: 80 }, { print_item_no: 'PI-B', qty: 50 }]);
+      expect(r.ok, status).toBe(true);
+      expect(shipmentById('sh-edit').details.map((d) => d.qty), status).toEqual([80, 50]);
+      expect(shipmentById('sh-edit').history.at(-1).changes, status).toEqual([
+        { field: '出貨明細 印件甲數量', before: 100, after: 80 },
+      ]);
+    });
+    useQcShippingStore.setState({ shipments: [boxedShipment({ id: 'sh-edit', qty: 100 })] });
+    expect(edit([{ print_item_no: 'PI-TEST', qty: 90 }]).ok).toBe(true);
+    expect(shipmentById('sh-edit').details[0].qty).toBe(90);
+  });
+
+  it('增加印件或移除印件整筆擋下，明細不變', () => {
+    useQcShippingStore.setState({ shipments: [unprocessed()] });
+    const removed = edit([{ print_item_no: 'PI-A', qty: 100 }]);
+    expect(removed).toEqual({ ok: false, error: DETAILS_ITEMS_LOCKED_HINT });
+    const added = edit([
+      { print_item_no: 'PI-A', qty: 100 },
+      { print_item_no: 'PI-B', qty: 50 },
+      { print_item_no: 'PI-C', qty: 10 },
+    ]);
+    expect(added).toEqual({ ok: false, error: DETAILS_ITEMS_LOCKED_HINT });
+    const swapped = edit([{ print_item_no: 'PI-A', qty: 100 }, { print_item_no: 'PI-C', qty: 50 }]);
+    expect(swapped).toEqual({ ok: false, error: DETAILS_ITEMS_LOCKED_HINT });
+    expect(shipmentById('sh-edit').details).toEqual(TWO);
+    expect(shipmentById('sh-edit').history).toEqual([]);
+  });
+
+  it('數量最小 1：改成 0、負數或非整數整筆擋下；改成 1 成立', () => {
+    useQcShippingStore.setState({ shipments: [unprocessed()] });
+    [0, -5, 1.5].forEach((qty) => {
+      expect(edit([{ print_item_no: 'PI-A', qty }, { print_item_no: 'PI-B', qty: 50 }]).ok, String(qty)).toBe(false);
+    });
+    expect(shipmentById('sh-edit').details).toEqual(TWO);
+    expect(edit([{ print_item_no: 'PI-A', qty: 1 }, { print_item_no: 'PI-B', qty: 50 }]).ok).toBe(true);
+  });
+
+  it('已確認可出貨之後數量鎖住：直接呼叫也不寫入', () => {
+    useQcShippingStore.setState({
+      shipments: [packedShipment({ id: 'sh-edit', qty: 100, logisticsOrders: [undispatched('SH-EDIT-01')] })],
+    });
+    expect(edit([{ print_item_no: 'PI-TEST', qty: 80 }])).toEqual({ ok: false, error: DETAILS_LOCKED_HINT });
+    expect(shipmentById('sh-edit').details[0].qty).toBe(100);
   });
 });

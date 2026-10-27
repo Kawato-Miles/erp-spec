@@ -796,8 +796,10 @@ test('主流程：一件印件從需求單到訂單完成', { tag: '@smoke' }, a
     await expect(dialog.locator('.ant-modal-title')).toHaveText('建立出貨單');
     await fillPlannedShipDate(dialog, '2026-10-30');
     await pickShippingMethod(page, dialog, '專車配送');
-    // 需求單轉成的訂單沒有客戶地址（轉單不捏造），業務建單時填收件地址
-    await dialog.getByLabel('收件地址').fill('台北市內湖區瑞光路 513 巷 22 號');
+    // 需求單轉成的訂單沒有客戶地址（轉單不捏造），業務建單時填收件地址（縣市、區、地址三欄必填，郵遞區號選填）
+    await dialog.getByLabel('收件縣市', { exact: true }).fill('台北市');
+    await dialog.getByLabel('收件區', { exact: true }).fill('內湖區');
+    await dialog.getByLabel('收件地址', { exact: true }).fill('瑞光路 513 巷 22 號');
     await dialog.getByRole('tab', { name: /出貨明細/ }).click();
     for (const item of [ITEM_A, ITEM_B]) {
       await expect(dialog.getByRole('row', { name: new RegExp(item) }).getByRole('spinbutton')).toHaveValue('100');
@@ -809,7 +811,8 @@ test('主流程：一件印件從需求單到訂單完成', { tag: '@smoke' }, a
     await goInApp(page, '/qc-shipping/shipments', gotoInApp);
     const row = page.locator('tr.ant-table-row').filter({ hasText: orderNo }).first();
     await expect(row).toContainText('未處理');
-    shipmentNo = (await row.innerText()).match(/SH-\d{4}-\d{4}/)[0];
+    // 出貨單編號送出時才產生：SH-年-月-日加當日流水號至少三碼
+    shipmentNo = (await row.innerText()).match(/SH-\d{4}-\d{2}-\d{5,}/)[0];
     await goInApp(page, '/orders', gotoInApp);
     await expect(rowOf(page, orderNo).getByText('出貨中', { exact: true })).toBeVisible();
   });
@@ -835,16 +838,16 @@ test('主流程：一件印件從需求單到訂單完成', { tag: '@smoke' }, a
     await closeShipmentPanel(page);
   });
 
-  await test.step('第 37 站 揀貨人員 確認可出貨、產生一筆可出貨物流單', async () => {
+  await test.step('第 37 站 揀貨人員 確認可出貨、產生一筆貨態待出貨的物流單', async () => {
     await confirmShippable(page, shipmentNo);
-    await expect(shipmentRow(page, shipmentNo)).toContainText('可出貨');
-    // 專車配送不拆單：一筆物流單 -001 在可出貨；歷程記確認可出貨與物流單編號
+    await expect(shipmentRow(page, shipmentNo)).toContainText('已確認');
+    // 專車配送不拆單：一筆物流單（我方自編單號 -01）貨態待出貨、沒有拋單狀態；歷程記確認可出貨與我方自編單號
     const panel = await openShipmentPanel(page, shipmentNo);
     await expect(logisticsRows(panel)).toHaveCount(1);
-    await expect(logisticsRows(panel).first()).toContainText(`${shipmentNo}-001`);
-    await expect(logisticsRows(panel).first()).toContainText('可出貨');
+    await expect(logisticsRows(panel).first()).toContainText(`${shipmentNo}-01`);
+    await expect(logisticsRows(panel).first()).toContainText('待出貨');
     await panel.getByRole('tab', { name: '歷程' }).click();
-    await expect(panel.locator('.ant-timeline-item').filter({ hasText: '確認可出貨' }).first()).toContainText(`${shipmentNo}-001`);
+    await expect(panel.locator('.ant-timeline-item').filter({ hasText: '確認可出貨' }).first()).toContainText(`${shipmentNo}-01`);
     await closeShipmentPanel(page);
   });
 
@@ -866,7 +869,7 @@ test('主流程：一件印件從需求單到訂單完成', { tag: '@smoke' }, a
     await expect(page.getByText('已送達確認').first()).toBeVisible();
     await waitModalsClosed(page);
     await expect(shipmentRow(page, shipmentNo)).toContainText('已送達');
-    // 留痕：物流單歷程有出貨確認與送達確認
+    // 留痕：出貨單歷程有出貨確認與送達確認（物流單沒有獨立歷程）
     const panel = await openShipmentPanel(page, shipmentNo);
     await panel.getByRole('tab', { name: '歷程' }).click();
     await expect(panel).toContainText('出貨確認');

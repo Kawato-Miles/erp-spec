@@ -29,8 +29,19 @@ import {
 
 test.describe.configure({ timeout: 240_000 });
 
-// 已刪除的欄位與操作（H6、H7、G1、G3、G16）
-const REMOVED_WORDS = ['實際出貨日', '離廠時間', '送達憑證', '重新同步', '下載全部物流單'];
+// 已刪除的欄位與操作（H6、H7、G1、G3、G16），以及出貨模組對齊後端第一版改掉的舊名詞
+//（物流單編號改為我方自編單號與物流單號、等待出貨改名待出貨、撤回確認可出貨已刪除、下載檔案狀態沒有等待中）
+const REMOVED_WORDS = [
+  '實際出貨日',
+  '離廠時間',
+  '送達憑證',
+  '重新同步',
+  '下載全部物流單',
+  '物流單編號',
+  '等待出貨',
+  '撤回確認可出貨',
+  '等待中',
+];
 // 送出鈕不得是泛用字（ui-wording.md：送出鈕文字＝動作名稱）
 const GENERIC_SUBMIT = /^\s*(確\s*定|送\s*出|確\s*認|OK)\s*$/;
 
@@ -64,8 +75,8 @@ test('14.45 介面字樣：出貨管理、出貨單對話框、訂單出貨單�
 
   // 出貨管理列表：已刪除字樣不出現；檢視時標題為「出貨單編號＋狀態」
   await expectNoRemovedWords(page.locator('.ant-layout-content'), '出貨管理');
-  const view = await openShipmentPanel(page, 'SH-2026-0601');
-  await expect(view.locator('.ant-modal-title')).toContainText('SH-2026-0601');
+  const view = await openShipmentPanel(page, 'SH-2026-06-18001');
+  await expect(view.locator('.ant-modal-title')).toContainText('SH-2026-06-18001');
   await expect(view.locator('.ant-modal-title')).toContainText('已送達');
   await expectNoRemovedWords(view, '出貨單對話框（檢視）');
   await view.getByRole('tab', { name: '歷程' }).click();
@@ -105,10 +116,9 @@ test('14.45 介面字樣：出貨管理、出貨單對話框、訂單出貨單�
   await expectSubmitIsAction(confirmBox(page), '確認可出貨');
   await submitButton(confirmBox(page), '確認可出貨').click();
   await expect(page.getByText('已確認可出貨').first()).toBeVisible();
-  // 撤回確認可出貨確認框：送出鈕＝「撤回確認可出貨」（不送出）
-  await shipmentRow(page, hctNo).getByRole('button', { name: '撤回確認可出貨', exact: true }).click();
-  await expectSubmitIsAction(confirmBox(page), '撤回確認可出貨');
-  await confirmBox(page).getByRole('button', { name: /取\s*消/ }).click();
+  // 確認後出貨單為已確認，列上沒有撤回確認可出貨
+  await expect(shipmentRow(page, hctNo)).toContainText('已確認');
+  await expect(shipmentRow(page, hctNo).getByRole('button', { name: '撤回確認可出貨', exact: true })).toHaveCount(0);
 
   // 出貨人員：批次動作叫「批次拋單」（批次＋動作），送出鈕同名；列印鈕叫「列印」（通用動詞）；拋單對話框送出鈕＝「拋單」
   await switchRoleSafe(page, '出貨人員');
@@ -141,7 +151,7 @@ test('14.45 介面字樣：出貨管理、出貨單對話框、訂單出貨單�
 
 test('14.45 介面字樣：鏈一已送達樣本的物流單動作（出貨人員）沒有已刪除的操作，訂單出貨單頁籤同', async ({ page }) => {
   await openAs(page, '出貨人員', '/qc-shipping/shipments');
-  const panel = await openShipmentPanel(page, 'SH-2026-0601');
+  const panel = await openShipmentPanel(page, 'SH-2026-06-18001');
   for (const name of ['重新同步', '補附送達憑證', '下載全部物流單']) {
     await expect(panel.getByRole('button', { name })).toHaveCount(0);
   }

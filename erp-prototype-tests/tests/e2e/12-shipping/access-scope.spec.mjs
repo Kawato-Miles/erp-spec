@@ -20,14 +20,17 @@ import {
 // 單據權責修正第五批（OpenSpec change document-access-scope-alignment）：出貨單與售後服務單的範圍跟著所屬訂單。
 // 出貨單：業務、諮詢看自己負責與被分享訂單底下的單，業務主管與協助角色全公司；業務端操作看訂單編輯權，不看建單人；
 // 現場動作維持揀貨與出貨人員。售後服務單：範圍跟著訂單、不看開立者，會計只能看。
-// 起點資料：鏈一 SH-2026-0601、SH-2026-0602（ORD-2026-0601，接單業務洪嘉駿，陳映蓉為編輯層級分享成員，另有售後服務單 AS-20261015-01，
-// 由陳映蓉代開）；鏈四 SH-2026-0820（草稿，ORD-2026-0820，接單業務洪嘉駿，建單人賴柏宇，陳映蓉為檢視層級分享成員）。
+// 起點資料：鏈一 SH-2026-06-18001、SH-2026-06-22001（ORD-2026-0601，接單業務洪嘉駿，陳映蓉為編輯層級分享成員，另有售後服務單 AS-20261015-01，
+// 由陳映蓉代開）；鏈四晨光文創的出貨單草稿（ORD-2026-0820，接單業務洪嘉駿，建單人賴柏宇，陳映蓉為檢視層級分享成員）。
+// 草稿沒有出貨單編號（送出時才產生），列表編號欄顯示「－」，本檔以客戶名稱認草稿列。
 // 情境依據：出貨與售後檢視活動清單、出貨活動清單、售後受理與結案與處理活動清單、受控清單 § 訂單關聯單據的編輯權。
 
 test.describe.configure({ timeout: 180_000 });
 
 const SHIPMENTS = '/qc-shipping/shipments';
-const ALL_THREE = ['SH-2026-0601', 'SH-2026-0602', 'SH-2026-0820'];
+// 鏈四草稿沒有出貨單編號，以客戶名稱認列（模擬資料裡晨光文創只有這一張出貨單）
+const DRAFT = '晨光文創';
+const ALL_THREE = ['SH-2026-06-18001', 'SH-2026-06-22001', DRAFT];
 const HELPER_ROLES = ['業務主管', '訂單管理人', '印務主管', '印務', '審稿主管', 'Supervisor'];
 
 const rowCount = (page) => page.locator('tr.ant-table-row');
@@ -62,8 +65,8 @@ test('12.27 出貨單列表依角色過濾：業務與諮詢只列自己負責�
   // 揀貨人員與出貨人員看全公司，草稿不列（草稿不是出貨指令）
   for (const role of ['揀貨人員', '出貨人員']) {
     await switchRoleSafe(page, role);
-    await expectListed(page, ['SH-2026-0601', 'SH-2026-0602']);
-    await expectNotListed(page, ['SH-2026-0820']);
+    await expectListed(page, ['SH-2026-06-18001', 'SH-2026-06-22001']);
+    await expectNotListed(page, [DRAFT]);
   }
 });
 
@@ -83,22 +86,22 @@ test('12.27 沒有出貨單檢視活動的角色看不到出貨管理：側欄�
 });
 
 test('12.28 出貨單草稿的編輯與刪除看訂單編輯權，不看建單人：現任接單業務與協助角色有，原建單人、檢視分享成員沒有', async ({ page }) => {
-  // SH-2026-0820 建單人賴柏宇，訂單現任接單業務洪嘉駿：洪嘉駿處置得了
+  // 鏈四草稿建單人賴柏宇，訂單現任接單業務洪嘉駿：洪嘉駿處置得了
   await openAs(page, '業務', SHIPMENTS);
-  await expect(rowButton(page, 'SH-2026-0820', '編輯')).toHaveCount(1);
-  await expect(rowButton(page, 'SH-2026-0820', '刪除')).toHaveCount(1);
+  await expect(rowButton(page, DRAFT, '編輯')).toHaveCount(1);
+  await expect(rowButton(page, DRAFT, '刪除')).toHaveCount(1);
 
   // 陳映蓉只有檢視層級：看得到、沒有編輯與刪除
   await switchRoleSafe(page, '業務（陳映蓉）');
-  await expect(rowButton(page, 'SH-2026-0820', '檢視')).toHaveCount(1);
-  await expect(rowButton(page, 'SH-2026-0820', '編輯')).toHaveCount(0);
-  await expect(rowButton(page, 'SH-2026-0820', '刪除')).toHaveCount(0);
+  await expect(rowButton(page, DRAFT, '檢視')).toHaveCount(1);
+  await expect(rowButton(page, DRAFT, '編輯')).toHaveCount(0);
+  await expect(rowButton(page, DRAFT, '刪除')).toHaveCount(0);
 
   // 協助角色全公司：業務主管有編輯與刪除
   for (const role of HELPER_ROLES) {
     await switchRoleSafe(page, role);
-    await expect(rowButton(page, 'SH-2026-0820', '編輯'), role).toHaveCount(1);
-    await expect(rowButton(page, 'SH-2026-0820', '刪除'), role).toHaveCount(1);
+    await expect(rowButton(page, DRAFT, '編輯'), role).toHaveCount(1);
+    await expect(rowButton(page, DRAFT, '刪除'), role).toHaveCount(1);
   }
 });
 
@@ -148,7 +151,7 @@ test('12.28 協助角色在訂單詳情的出貨單頁籤有建立出貨單草�
   await expect(page.getByRole('button', { name: '建立出貨單草稿' })).toHaveCount(1);
 });
 
-test('12.28 確認可出貨與撤回確認可出貨只給揀貨人員；可出貨的單協助角色有作廢；列上沒有下載全部物流單與重新同步', async ({ page }) => {
+test('12.28 確認可出貨只給揀貨人員；已確認的單沒有撤回確認可出貨，業務與協助角色也沒有作廢（作廢出貨單只限未處理）；列上沒有下載全部物流單與重新同步', async ({ page }) => {
   await setupShippableState(page, { passed: 500 });
   await switchRoleSafe(page, '業務');
   await gotoInAppSafe(page, SHIPMENTS);
@@ -160,31 +163,30 @@ test('12.28 確認可出貨與撤回確認可出貨只給揀貨人員；可出�
   await pickAndPack(page, shipmentNo, { pickedQty: 100, boxes: 2, confirm: false });
   await expect(rowButton(page, shipmentNo, '確認可出貨')).toHaveCount(1);
 
-  // 接單業務與六個協助角色、出貨人員：已裝箱的單上沒有確認可出貨
+  // 接單業務與六個協助角色、出貨人員：已裝箱的單上沒有確認可出貨；作廢出貨單只限未處理，已裝箱也沒有作廢
   for (const role of ['業務', ...HELPER_ROLES, '出貨人員']) {
     await switchRoleSafe(page, role);
     await gotoInAppSafe(page, SHIPMENTS);
     await expect(rowButton(page, shipmentNo, '確認可出貨'), role).toHaveCount(0);
+    await expect(rowButton(page, shipmentNo, '作廢'), role).toHaveCount(0);
   }
 
-  // 揀貨人員確認可出貨：列上換成撤回確認可出貨（ACT-SHP-043）
+  // 揀貨人員確認可出貨：出貨單轉已確認，列上沒有撤回確認可出貨
   await switchRoleSafe(page, '揀貨人員');
   await gotoInAppSafe(page, SHIPMENTS);
   await shipmentRow(page, shipmentNo).getByRole('button', { name: '確認可出貨', exact: true }).click();
   await submitButton(page.locator('.ant-modal-confirm:visible').last(), '確認可出貨').click();
   await expect(page.getByText('已確認可出貨').first()).toBeVisible();
-  await expect(rowButton(page, shipmentNo, '撤回確認可出貨')).toHaveCount(1);
+  await expect(shipmentRow(page, shipmentNo)).toContainText('已確認');
+  await expect(rowButton(page, shipmentNo, '撤回確認可出貨')).toHaveCount(0);
 
-  // 可出貨（物流單都在可出貨）：接單業務與六個協助角色有作廢，沒有撤回確認可出貨；出貨人員沒有撤回
-  for (const role of ['業務', ...HELPER_ROLES]) {
+  // 已確認：接單業務與六個協助角色沒有作廢、沒有撤回確認可出貨；出貨人員同樣沒有
+  for (const role of ['業務', ...HELPER_ROLES, '出貨人員']) {
     await switchRoleSafe(page, role);
     await gotoInAppSafe(page, SHIPMENTS);
-    await expect(rowButton(page, shipmentNo, '作廢'), role).toHaveCount(1);
+    await expect(rowButton(page, shipmentNo, '作廢'), role).toHaveCount(0);
     await expect(rowButton(page, shipmentNo, '撤回確認可出貨'), role).toHaveCount(0);
   }
-  await switchRoleSafe(page, '出貨人員');
-  await gotoInAppSafe(page, SHIPMENTS);
-  await expect(rowButton(page, shipmentNo, '撤回確認可出貨')).toHaveCount(0);
   // 列上與物流單列都沒有下載全部物流單、重新同步、補附送達憑證（G1、G3、G16）
   await expect(rowButton(page, shipmentNo, '下載全部物流單')).toHaveCount(0);
   const panel = await openShipmentPanel(page, shipmentNo);

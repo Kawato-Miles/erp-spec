@@ -64,7 +64,6 @@
    - `npm run test:e2e:smoke`（健康檢查約 3 秒）
    - `npm run test:e2e`（主導航 12 個頂層頁 + 流程測試案例）
    - 全部通過才 commit 與 push；發現 DOM 或執行期錯誤當場修元件
-   - 細則見 `/Users/b-f-03-029/sens-erp-prototype/CLAUDE.md` § 6
 
 1. **功能自檢**
    - 對照 2.1 功能對應檢查清單

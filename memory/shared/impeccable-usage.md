@@ -52,7 +52,7 @@
 
 1. **CLI `detect` 對 product register 精度差**：首次跑 11/11 false positive（Tab 底線誤判為 rounded card 邊框）→ 對 ERP 跳過 detect，只跑 LLM Design Review
 2. **Persona 選擇**：dashboard/admin → 預設用 **Alex（Power User）+ Sam（A11y）**；ERP 可加自定義 persona（印務組長 / 新進業務 / 業務主管 / 業務主管）
-3. **跑 critique 前必備**：PRODUCT.md（位於 `sens-erp-prototype/PRODUCT.md`）+ DESIGN.md（位於 `sens-erp-prototype/DESIGN.md`）都已對齊
+3. **跑 critique 前必備**：PRODUCT.md + DESIGN.md 都已對齊
 4. **不適合每次小變更跑**：critique 一次 ~130k tokens，適合 change-level 起點，不適合 commit-level QA
 5. **跑完 critique 不直接修 code**：ERP 走 OpenSpec change 工作流，critique 結果作為 proposal 的 background；不直接 invoke `layout` / `distill` / `clarify` 改 code
 6. **跳過三視角審查時**：依 Miles 指示，可跳過 senior-pm + ceo-reviewer + erp-consultant，但 critique 已部分覆蓋此角色（提供量化 + 多 persona 視角）
@@ -61,7 +61,7 @@
 
 | impeccable 概念 | ERP 對應位置 / 狀態 |
 |---------------|-------------------|
-| Cognitive Load 8 項檢查 | `sens-erp-prototype/DESIGN.md` §2.2 / §2.3（已採納）|
+| Cognitive Load 8 項檢查 | DESIGN.md §2.2 / §2.3（已採納）|
 | Squint Test（眯眼測試）| DESIGN.md §2.2（已採納，視覺層次須 ≥2 維度共建）|
 | 跨 Tab 上下文錨點原則 | DESIGN.md §0.1（已採納，三類錨點：A 實體識別 / B 上下文關聯 / C 戰情關鍵數字）|
 | Nielsen 10 Heuristics Scoring | 評估時用，不固化進規範（量化工具）|
@@ -79,8 +79,8 @@
 - 安裝指令：`npx skills add pbakaus/impeccable -g -y`
 - Skill 入口：`impeccable` 出現在 Skill tool 清單
 - Setup 前置：
-  - `sens-erp-prototype/PRODUCT.md`（必須）— 含 register / users / tone / strategic principles / anti-references
-  - `sens-erp-prototype/DESIGN.md`（建議，已有）— 視覺、UX、業務規範
+  - `PRODUCT.md`（必須）— 含 register / users / tone / strategic principles / anti-references
+  - `DESIGN.md`（建議，已有）— 視覺、UX、業務規範
   - register 為 `product`（內部工具 / dashboard / admin tool）
 
 ## 7. 首次接入結果（2026-05-18 印件詳情頁 critique）
