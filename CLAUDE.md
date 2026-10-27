@@ -251,7 +251,6 @@ delta specs 合併回 main specs，歸檔 change。
 | 代理一律用工作樹 | 任何代理（主對話、子工作階段、sub-agent）改本 repo 的檔案一律在自己的工作樹（git worktree）與分支作業，不在主檢出改檔 |
 | 主檢出不切分支 | 主檢出（`/Users/b-f-03-029/Sens`）是 Miles 的 Obsidian 視窗，永遠停在 master；不在主檢出 `git checkout` 其他分支、不在主檢出提交。主檢出只做 `git pull --ff-only` |
 | 分支完成直接快轉合併 master、不開 PR | 完成的定義：分支的改動依當次拍板的規範做完，且分支沒有自己改規範、範本、範例卡（規範只由主對話依 Miles 拍板改）。合併步驟固定：先 `git fetch origin` 比對 origin/master；能快轉就 `git push origin <分支>:master`；不能快轉就先 rebase 到最新 master 再推，不用合併提交（merge commit）；推完在主檢出 `git pull --ff-only` 讓 Obsidian 看到。Prototype repo（erp）不適用，仍走 PR |
-| Obsidian 表格自動格式化 | 由 Miles 在 Obsidian 設定端關閉（屬個人環境設定，代理不代做）；代理看到表格只有空白對齊差異的修改時不提交該差異 |
 
 ---
 
