@@ -173,36 +173,57 @@ test('11.3 驗收數量不得超過待驗量（原編號 52）', async ({ page }
   await expect(pendingRow(page)).toContainText('0（已驗完）');
 });
 
-test('11.4 製作帳與品質帳並排，互不覆蓋（原編號 103）', async ({ page }) => {
-  // 起點：鏈四完成數 500、尚未驗收
+test('11.4 數量與進度依印件卡十一格呈現，製作帳與品質帳互不覆蓋（原編號 103）', async ({ page }) => {
+  // 起點：鏈四購買數量 500、完成數 500、尚未驗收
   await openAs(page, '印務主管', '/print-items');
   await openPrintItemDetail(page, CHAIN4.printItemName);
 
-  // 兩個數字並排且互不覆蓋；驗收前品質帳為 0、缺口等於待驗量
-  await expect(descValue(page, '完成數')).toHaveText('500');
-  await expect(descValue(page, '品質帳（完工良品數／缺口）')).toContainText('0');
-  await expect(descValue(page, '品質帳（完工良品數／缺口）')).toContainText('500');
+  // 十一格依 wiki 印件卡 § 生產與出貨進度的順序排列；目標數量、良品數／不良品數與品質帳合併格不出現
+  const progressLabels = await page
+    .locator('xpath=//th[normalize-space(.)="可出貨額度"]/ancestor::table[1]//th')
+    .allTextContents();
+  expect(progressLabels.map((t) => t.replace(/info$/, '').trim())).toEqual([
+    '購買數量',
+    '完成數',
+    '待驗量',
+    '完工良品數',
+    '不通過累計',
+    '報廢數',
+    '未處置品檢缺口',
+    '缺口',
+    '累計已出貨數量',
+    '累計送達數',
+    '可出貨額度',
+  ]);
+  await expect(descValue(page, '目標數量')).toHaveCount(0);
+  await expect(descValue(page, '良品數／不良品數')).toHaveCount(0);
+  await expect(descValue(page, '品質帳（完工良品數／缺口）')).toHaveCount(0);
 
-  // 區塊內另列目標數量、報廢數、不通過累計、未處置缺口、累計已出貨數量、累計送達數、可出貨額度
-  await expect(descValue(page, '目標數量')).toHaveText('500');
+  // 驗收前：完工良品數 0，待驗量與缺口都是 500
+  await expect(descValue(page, '購買數量')).toHaveText('500');
+  await expect(descValue(page, '完成數')).toHaveText('500');
+  await expect(descValue(page, '待驗量')).toHaveText('500');
+  await expect(descValue(page, '完工良品數')).toHaveText('0');
+  await expect(descValue(page, '缺口')).toHaveText('500');
   await expect(descValue(page, '報廢數')).toHaveText('0');
   await expect(descValue(page, '不通過累計')).toHaveText('0');
   await expect(descValue(page, '未處置品檢缺口')).toHaveText('0');
-  await expect(page.getByText('累計已出貨數量')).toBeVisible();
   await expect(descValue(page, '累計送達數')).toHaveText('0');
   await expect(descValue(page, '可出貨額度')).toHaveText('0');
   // 不出現舊欄名
   await expect(page.getByText('入庫數量')).toHaveCount(0);
 
-  // 驗收後：品質帳等於通過數、缺口等於不通過數（通過 480、不通過 20）
+  // 驗收後（通過 480、不通過 20）：完工良品數 480、缺口 20、待驗量 0；完成數不動
   await switchRoleSafe(page, '品檢人員');
   await inspectAtQc(page, { passed: 480, failed: 20 });
   await switchRoleSafe(page, '印務主管');
   await gotoInAppSafe(page, '/print-items');
   await openPrintItemDetail(page, CHAIN4.printItemName);
   await expect(descValue(page, '完成數')).toHaveText('500');
-  await expect(descValue(page, '品質帳（完工良品數／缺口）')).toContainText('480');
-  await expect(descValue(page, '品質帳（完工良品數／缺口）')).toContainText('20');
+  await expect(descValue(page, '待驗量')).toHaveText('0');
+  await expect(descValue(page, '完工良品數')).toHaveText('480');
+  await expect(descValue(page, '缺口')).toHaveText('20');
+  await expect(descValue(page, '不通過累計')).toHaveText('20');
 
   // 訂單詳情印件列的進度數字＝完成數，與印件詳情頁一致（訂單列表限業務端側欄可達）
   await switchRoleSafe(page, '業務');
@@ -229,9 +250,10 @@ test('11.5 品質帳只有一份，驗完三處同時變（原編號 104）', as
   await expect(row()).toContainText('480');
   await expect(row()).toContainText('品檢缺口 20');
 
-  // 印件詳情頁的品質帳、不通過累計、未處置缺口、可出貨額度一致
+  // 印件詳情頁的完工良品數、缺口、不通過累計、未處置缺口、可出貨額度一致
   await openPrintItemDetail(page, CHAIN4.printItemName);
-  await expect(descValue(page, '品質帳（完工良品數／缺口）')).toContainText('480');
+  await expect(descValue(page, '完工良品數')).toHaveText('480');
+  await expect(descValue(page, '缺口')).toHaveText('20');
   await expect(descValue(page, '不通過累計')).toHaveText('20');
   await expect(descValue(page, '未處置品檢缺口')).toHaveText('20');
   await expect(descValue(page, '可出貨額度')).toHaveText('480');
@@ -646,11 +668,12 @@ test('11.24 品檢人員修正一筆紀錄的通過與不通過分配，原紀�
   await expect(records).toContainText('複驗發現色差');
   await expect(records).toContainText('郭淑芬');
 
-  // 印件詳情的品質帳跟著變
+  // 印件詳情的完工良品數與缺口跟著變
   await switchRoleSafe(page, '印務主管');
   await gotoInAppSafe(page, '/print-items');
   await openPrintItemDetail(page, CHAIN4.printItemName);
-  await expect(descValue(page, '品質帳（完工良品數／缺口）')).toContainText('480');
+  await expect(descValue(page, '完工良品數')).toHaveText('480');
+  await expect(descValue(page, '缺口')).toHaveText('20');
   await expect(descValue(page, '不通過累計')).toHaveText('20');
   await expect(descValue(page, '未處置品檢缺口')).toHaveText('20');
 });

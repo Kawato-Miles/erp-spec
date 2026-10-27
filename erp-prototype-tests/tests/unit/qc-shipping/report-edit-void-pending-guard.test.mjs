@@ -33,7 +33,6 @@ const taskFields = {
   good_qty: 600,
   produced_qty: 600,
   qty_per_work_order: 1,
-  print_item_units_per_output: 1,
   // 末道不需轉交：貨還在站上，轉交與點收那兩道擋下條件不會先命中
   needs_transfer: false,
   depends_on: [],

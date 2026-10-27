@@ -14,7 +14,7 @@ import { MOCK_FLOOR_TASKS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(protot
 // 的數字驗算；畫面呈現另在 e2e 第十一章驗。
 //
 // 待驗量＝做出來的良品 − 已驗量（各筆修正後的通過與不通過加總），不看轉交、不看點收。
-// 完成數取產出（良品＋不良品），是製作進度那一欄，不參與待驗量。
+// 完成數取良品（不含不良品），與齊套良品數同一個數；待驗量是它再扣已驗量。
 
 // 起點資料以外的情境用合成資料：多部件、不需轉交、報廢三種樣本現行 mock 上沒有對應的印件。
 const workOrderOf = (printItemNo, tasks, extra = {}) => ({
@@ -36,7 +36,6 @@ const taskOf = (id, goodQty, defectQty = 0, extra = {}) => ({
   good_qty: goodQty,
   produced_qty: goodQty + defectQty,
   qty_per_work_order: 1,
-  print_item_units_per_output: 1,
   history: [],
   ...extra,
 });
@@ -84,9 +83,9 @@ describe('11.1 待驗清單依印件做出來的良品列出', () => {
   });
 
   it('鏈九 PI-2026-0924 分兩次驗畢 3,000，待驗量 0 的列留在清單上', () => {
-    // 完成數取末道工序投入 3,060（裁切摺紙投入 3,060、良品 3,000）
+    // 完成數取末道工序良品 3,000（裁切摺紙投入 3,060、良品 3,000），不含不良品
     expect(rowOf('PI-2026-0924')).toMatchObject({
-      kitting_qty: 3060,
+      kitting_qty: 3000,
       kitting_good_qty: 3000,
       inspected_pass: 3000,
       inspected_fail: 0,
@@ -248,8 +247,8 @@ describe('11.14 多部件印件的待驗量取各部件良品的最小值', () =
     });
     expect(rows[0].pending_qty).not.toBe(1590);
     expect(rows[0].pending_qty).not.toBe(600);
-    // 完成數（製作進度）仍取產出，內襯做了 600 件所以是 600
-    expect(rows[0].kitting_qty).toBe(600);
+    // 完成數同樣取良品（不含不良品），內襯良品 590 所以是 590
+    expect(rows[0].kitting_qty).toBe(590);
   });
 
   it('內襯再報良品 400、累計 990 後待驗量為 990', () => {
@@ -318,7 +317,7 @@ describe('11.16 修正誤記的通過量後待驗量回升', () => {
   });
 });
 
-describe('11.17 不良品不進待驗量，完成數照樣含它', () => {
+describe('11.17 不良品不進待驗量，也不進完成數', () => {
   const rows = calcPendingInspections({
     printItems: [printItemOf('PI-TEST-DEFECT', '不良品樣本')],
     orders: [],
@@ -331,8 +330,8 @@ describe('11.17 不良品不進待驗量，完成數照樣含它', () => {
     expect(rows[0].pending_qty).toBe(1000);
   });
 
-  it('完成數仍顯示 1,003（製作進度取產出，兩個數互不覆蓋）', () => {
-    expect(rows[0].kitting_qty).toBe(1003);
+  it('完成數為 1,000，不是含不良品的 1,003（完成數只取良品）', () => {
+    expect(rows[0].kitting_qty).toBe(1000);
   });
 });
 

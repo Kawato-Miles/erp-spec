@@ -35,7 +35,6 @@ const seed = (qcRecords) => {
             good_qty: 500,
             produced_qty: 500,
             qty_per_work_order: 1,
-            print_item_units_per_output: 1,
             // 末道不需轉交：貨還在站上，既有的轉交與點收兩道檢核因此都不會先命中
             needs_transfer: false,
             history: [],

@@ -19,6 +19,12 @@ test('14.3 印件列表的主列與旗下工單展開列（原編號 10）', asy
   await expect(header).toContainText('可出貨額度');
   await expect(page.locator('body')).not.toContainText('入庫累計');
 
+  // 購買數量欄取訂單模組該印件的購買數量（PI-2026-0904 為 4,000），印件層不存副本
+  const headerTexts = (await header.locator('th').allTextContents()).map((t) => t.trim());
+  const orderedQtyIndex = headerTexts.indexOf('購買數量');
+  expect(orderedQtyIndex).toBeGreaterThan(-1);
+  await expect(row.locator('td').nth(orderedQtyIndex)).toHaveText('4,000');
+
   // 展開見兩張工單，示範一件印件掛多張工單。展開列的生產進度由旗下工序即時推算
   await row.locator('.ant-table-row-expand-icon').click();
   const expandedRow = page.locator('tr.ant-table-expanded-row').first();
@@ -180,14 +186,19 @@ test('14.9 印件詳情頁的兩本帳與報價與利潤都要有數字（原編
 
   // 數量與進度區塊逐格都要有真數字，不是「尚無資料」。
   // AntD Descriptions 的欄名（th.ant-descriptions-item-label）與值（緊接的 td）為相鄰兄弟節點，
-  // 逐一取值格斷言，不對整頁做「尚無資料」全域計數（頁面另有欄位如「良品數／不良品數」
-  // 本來就固定顯示尚無資料，非本情境驗收範圍）
+  // 逐一取值格斷言，不對整頁做「尚無資料」全域計數。欄名以開頭比對：「缺口」不命中「未處置品檢缺口」，
+  // 「累計已出貨數量」欄名後面接說明圖示
   const valueOf = (label) =>
-    page.locator(`th.ant-descriptions-item-label:has-text("${label}") + td`).first();
+    page
+      .locator(`xpath=//th[starts-with(normalize-space(.), "${label}")]/following-sibling::td[1]`)
+      .first();
 
   for (const label of [
+    '購買數量',
     '完成數',
-    '品質帳',
+    '待驗量',
+    '完工良品數',
+    '缺口',
     '報廢數',
     '不通過累計',
     '未處置品檢缺口',
