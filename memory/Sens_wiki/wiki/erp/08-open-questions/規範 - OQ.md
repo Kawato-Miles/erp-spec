@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-07-29
+last-reviewed: 2026-10-27
 ---
 
 # OQ 卡撰寫規範（open-question 層）
@@ -153,6 +153,57 @@ last-reviewed: 2026-07-29
 | 5 | frontmatter 合規 | status 在值域內、無行內註解；audience 已判；external 有 expected-resolution-at（L1-2 的 OQ 特化） |
 | 6 | 段落紀律 | 未拍板無決議段；候選方案兩案以上且附代價；矛盾型並列兩方出處 |
 | 7 | 位置正確 | open 在平層；answered／cancelled 已移封存區 |
+
+---
+
+## 十、禁止清單（OQ 特有）
+
+> 全卡型的禁止項見 [[卡片撰寫共用規範]] § 四之三。本節只列 OQ 單元特有的項目。與 § 八 不收清單的分工：不收清單管內容歸哪張卡，本節管不准怎麼寫。
+
+| # | 不准寫 | 判斷訊號 | 改成什麼 |
+|---|--------|---------|---------|
+| Q1 | 未拍板預寫決議 | status 為 open 的卡有「決議」段 | 整段刪除，拍板時再寫 |
+| Q2 | 複述他卡 | 引用其他 OQ 時把對方的問題描述、候選方案或決議再寫一遍 | 只留連結加一句分界 |
+| Q3 | 一卡多議題 | 待解答段有互不相依的問句；問題描述同時講兩個範圍 | 拆卡並互引 |
+| Q4 | 代填時點 | 開卡時填 `expected-resolution-at` | 留空；節奏由使用者控 |
+| Q5 | 序號重用、檔名含問號 | 平層或封存已有同序號；檔名出現「？」 | 取最大值加一；簡述改名詞 |
+| Q6 | 別名連結 | `[[卡名|別名]]` | `[[完整卡名]]` |
+
+## 十一、機械自檢（OQ 特有）
+
+全卡型條目的指令見 [[卡片撰寫共用規範]] § 四之四；判定規則同該節。下列指令在 repo 根目錄執行。
+
+Q0 status 值域（錯誤）：
+
+```bash
+for f in memory/Sens_wiki/wiki/erp/08-open-questions/*.md; do grep -q '^type: open-question' "$f" && ! grep -qE '^status: (open|answered|cancelled)$' "$f" && echo "$f"; done
+```
+
+Q1 open 卡含決議段（錯誤）：
+
+```bash
+for f in memory/Sens_wiki/wiki/erp/08-open-questions/*.md; do grep -q '^status: open' "$f" && grep -q '^## 決議' "$f" && echo "$f"; done
+```
+
+Q4 開卡代填時點（警告；使用者指定時點者不算）：
+
+```bash
+for f in memory/Sens_wiki/wiki/erp/08-open-questions/*.md; do grep -q '^audience: internal' "$f" && grep -qE '^expected-resolution-at: *[0-9]' "$f" && echo "$f"; done
+```
+
+Q5 序號重複（錯誤；平層與封存一起算）：
+
+```bash
+ls memory/Sens_wiki/wiki/erp/08-open-questions/*.md memory/Sens_wiki/wiki/erp/08-open-questions/_archives/*/*.md | sed -E 's|.*/([A-Z]+-[0-9]+)-.*|\1|' | grep -E '^[A-Z]+-[0-9]+$' | sort | uniq -d
+```
+
+Q6 別名連結（錯誤）：
+
+```bash
+grep -rn '\[\[[^]]*|' memory/Sens_wiki/wiki/erp/08-open-questions --include='*.md' | grep -v '/_archives/'
+```
+
+Q2、Q3 由稽核者對照 § 九 維度 1、3 人工判讀。
 
 ---
 
