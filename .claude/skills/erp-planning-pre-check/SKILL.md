@@ -25,6 +25,7 @@ ERP 規劃前 know-how 稽核工具。**禁繞過稽核直接設計 / 禁新建�
 - 只處理 ERP_Vault know-how 稽核（規劃前準備層）
 - 在新規劃流是第 2 步：`/opsx:new` 建 change 之後、grill 之前（流程正本見 wiki [[審查知識路由]] § 三）；grill 開始前 change 資料夾沒有 `precheck.md` 就停下補跑
 - 不處理 Vault 整體健康稽核（屬 vault-audit）
+- 不處理既有正本的重構（走 wiki [[審查知識路由]] § 三 正本重構流；重構流第一階段是定規範與標竿卡，不是盤點缺口）
 
 **Anti-pattern**（**MUST NOT**）：
 - 禁止「新建抽象卡」（如「業務一日時間軸」「商業模式畫布」等 — Miles 第四輪明確否決）

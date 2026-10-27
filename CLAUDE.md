@@ -183,7 +183,7 @@ Miles，印刷業 PM，負責下列產品：**ERP 系統**（生產排程 / 採�
 - 設計產出缺必含段（含拍板引用與隱含假設段）或 change 內沒有 grill.md 時，plan-audit 收件即退件——grill 的強制力來自這道閘門
 - 稽核評分表全過後原樣呈 Miles，不由主對話改寫或美化
 - 規格撰寫統一透過 OpenSpec change 工作流
-- `erp-planning-pre-check` 與寫卡入口的消歧判準：問「這次是要規劃還沒定案的東西，還是把已定案的內容落卡」。前者跑 pre-check（規劃前盤點影響範圍與 know-how 缺口），後者直接走 `wiki-amend`；一段討論先規劃後落卡時兩個都跑，pre-check 在前
+- `erp-planning-pre-check`、正本重構流與寫卡入口的消歧判準：問「這次是規劃還沒定案的東西、重構已有的正本、還是把已定案的內容落卡」。規劃走新規劃流（先跑 pre-check 盤點影響範圍與 know-how 缺口）；重構走正本重構流（正本 wiki [[審查知識路由]] § 三，第一階段先定規範與標竿卡）；落卡直接走 `wiki-amend`；一段討論先規劃後落卡時兩個都跑，pre-check 在前
 
 ---
 
