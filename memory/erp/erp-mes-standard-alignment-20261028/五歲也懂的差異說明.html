@@ -1,156 +1,240 @@
-<title>蛋糕店看 ERP 差異</title>
+<title>印刷廠看 ERP 差異</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap">
 <style>
-/* 版面概念：一頁一張大圖卡往下滑，左「標準工廠」右「我們」。字很少，圖很大。 */
-:root{--bg:#fbf8f3;--paper:#ffffff;--fg:#2a2622;--muted:#7a716a;--line:#e6ded4;
-  --std:#2b6cb0;--std-bg:#e4eefa; --us:#c05621;--us-bg:#fdebe0;
-  --ok:#2f855a;--ok-bg:#e3f4ea; --bad:#b7352e;--bad-bg:#fbe5e3; --gray:#a0a0a0;
+/* 版面概念：一頁一張大圖卡往下滑，左「標準工廠」右「我們」，每卡底部一條商業影響帶。字少，圖大。 */
+:root{--bg:#f5f7f9;--paper:#ffffff;--fg:#1f2730;--muted:#6b7682;--line:#dde3ea;
+  --std:#1f5f8b;--std-bg:#e3eef6; --us:#b4541c;--us-bg:#fbeadf;
+  --ok:#2f855a;--bad:#b7352e;--bad-bg:#fbe7e5;--warn:#9a6700;--warn-bg:#fff3d6;
+  --impact:#3b3f6b;--impact-bg:#eceefb;
   --font:"Noto Sans TC",system-ui,sans-serif}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1a1714;--paper:#241f1b;--fg:#f1ebe4;--muted:#b4a99e;--line:#3a322b;
-  --std:#7fb3f0;--std-bg:#1d2d42;--us:#f0956a;--us-bg:#40281b;--ok:#7dd3a0;--ok-bg:#1c3326;--bad:#f09086;--bad-bg:#40221f;--gray:#6e6660;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#1a1714;--paper:#241f1b;--fg:#f1ebe4;--muted:#b4a99e;--line:#3a322b;
-  --std:#7fb3f0;--std-bg:#1d2d42;--us:#f0956a;--us-bg:#40281b;--ok:#7dd3a0;--ok-bg:#1c3326;--bad:#f09086;--bad-bg:#40221f;--gray:#6e6660;color-scheme:dark}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141a20;--paper:#1d252e;--fg:#e8edf2;--muted:#a4afbb;--line:#303a45;
+  --std:#7fb6e0;--std-bg:#1b2d3d;--us:#f09a63;--us-bg:#3d2719;--ok:#7dd3a0;--bad:#f09086;--bad-bg:#40221f;--warn:#f0c060;--warn-bg:#3a2f12;--impact:#b9bdf5;--impact-bg:#262a4a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141a20;--paper:#1d252e;--fg:#e8edf2;--muted:#a4afbb;--line:#303a45;
+  --std:#7fb6e0;--std-bg:#1b2d3d;--us:#f09a63;--us-bg:#3d2719;--ok:#7dd3a0;--bad:#f09086;--bad-bg:#40221f;--warn:#f0c060;--warn-bg:#3a2f12;--impact:#b9bdf5;--impact-bg:#262a4a;color-scheme:dark}
 body{background:var(--bg);color:var(--fg);font-family:var(--font);font-weight:500;line-height:1.5;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 80px}
-main{max-width:980px;margin:0 auto;display:grid;gap:56px}
-h1{font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;line-height:1.2;margin:0;text-wrap:balance}
-h2{font-size:clamp(1.4rem,4vw,2rem);font-weight:900;margin:0;text-wrap:balance}
+main{max-width:1020px;margin:0 auto;display:grid;gap:56px}
+h1{font-size:clamp(1.7rem,4.5vw,2.6rem);font-weight:900;line-height:1.2;margin:0;text-wrap:balance}
+h2{font-size:clamp(1.3rem,3.6vw,1.9rem);font-weight:900;margin:0;text-wrap:balance}
+h3{margin:0}
 p{margin:0}
-.lead{font-size:1.15rem;color:var(--muted);max-width:40ch}
-.card{display:grid;gap:18px}
+.lead{font-size:1.1rem;color:var(--muted);max-width:46ch}
+.card{display:grid;gap:16px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media (max-width:720px){.two{grid-template-columns:1fr}}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
 .side{border-radius:16px;padding:20px;display:grid;gap:14px;align-content:start;min-width:0}
 .side.std{background:var(--std-bg)} .side.us{background:var(--us-bg)}
-.side h3{margin:0;font-size:1rem;font-weight:900;letter-spacing:.08em}
+.side h3{font-size:.95rem;font-weight:900;letter-spacing:.1em}
 .std h3{color:var(--std)} .us h3{color:var(--us)}
-.pic{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
-.item{display:grid;justify-items:center;gap:6px;font-size:.95rem;font-weight:700;text-align:center;min-width:88px}
+.pic{display:flex;flex-wrap:wrap;gap:12px 14px;align-items:flex-start}
+.item{display:grid;justify-items:center;gap:6px;font-size:.95rem;font-weight:700;text-align:center;width:104px}
 .item svg{width:84px;height:84px;display:block}
-.item.ghost{opacity:.45} .item.ghost svg *{stroke-dasharray:5 5}
-.item small{font-weight:500;color:var(--muted);font-size:.8rem;line-height:1.3}
-.say{font-size:1.1rem;font-weight:700}
-.say.good{color:var(--ok)} .say.warn{color:var(--us)}
-.big{font-size:clamp(2.2rem,7vw,3.6rem);font-weight:900;line-height:1}
-.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.flow .arrow{font-size:1.6rem;color:var(--muted)}
-.risk{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-.risk .side{background:var(--paper);border:1px solid var(--line)}
-.risk .big{color:var(--bad)}
-.paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-.paths .side{background:var(--paper);border:1px solid var(--line)}
-.paths .n{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--std);color:#fff;font-weight:900;font-size:1.2rem}
-.foot{color:var(--muted);font-size:.9rem;max-width:60ch}
+.item.ghost{opacity:.5} .item.ghost svg *{stroke-dasharray:5 5}
+.item small{font-weight:500;color:var(--muted);font-size:.78rem;line-height:1.3}
+.arrow{font-size:1.6rem;color:var(--muted);align-self:center;line-height:1}
+.say{font-size:1.05rem;font-weight:700}
+.std .say{color:var(--std)} .us .say{color:var(--us)}
+.impact{background:var(--impact-bg);border-left:6px solid var(--impact);border-radius:12px;padding:14px 18px;display:grid;gap:8px}
+.impact h4{margin:0;font-size:.85rem;letter-spacing:.1em;color:var(--impact);font-weight:900}
+.impact table{border-collapse:collapse;width:100%;font-size:.92rem}
+.impact td{padding:4px 10px 4px 0;vertical-align:top}
+.impact td:first-child{color:var(--muted);white-space:nowrap;width:7em}
+.big{font-size:clamp(2rem,6vw,3rem);font-weight:900;line-height:1}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.tile{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:8px;align-content:start;min-width:0}
+.tile .big{color:var(--bad)}
+.tile .n{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--std);color:#fff;font-weight:900;font-size:1.15rem}
+.foot{color:var(--muted);font-size:.9rem;max-width:62ch}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+table.imp{border-collapse:collapse;width:100%;min-width:760px;font-size:.9rem}
+table.imp th,table.imp td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.imp th{background:var(--bg);font-weight:900;white-space:nowrap}
+table.imp tr:last-child td{border-bottom:none}
+.sev{display:inline-block;padding:1px 10px;border-radius:999px;font-size:.8rem;font-weight:700;white-space:nowrap}
+.sev.h{background:var(--bad-bg);color:var(--bad)} .sev.m{background:var(--warn-bg);color:var(--warn)} .sev.l{background:var(--std-bg);color:var(--std)}
+.pending{border:2px dashed var(--line);border-radius:14px;padding:16px 18px;color:var(--muted);display:grid;gap:6px}
 svg{overflow:visible} svg *{vector-effect:non-scaling-stroke}
 </style>
 
 <main>
 <header class="card">
-  <h1>把印刷廠想成蛋糕店，看標準工廠和我們差在哪</h1>
-  <p class="lead">一頁一張圖。左邊是教科書上的工廠怎麼記帳，右邊是我們現在怎麼記。字少，先看圖。</p>
+  <h1>標準工廠和我們的差別，用一本 500 本的 A5 精裝書來看</h1>
+  <p class="lead">左邊是製造業教科書的做法，右邊是 wiki 目前的設計。每張卡下面一條「商業影響」：誰會痛、哪個流程、哪個指標。</p>
 </header>
 
-<!-- 1 四張紙 -->
+<!-- 1 -->
 <section class="card">
-  <h2>1. 標準工廠記四張紙，我們記兩張半</h2>
+  <h2>1. 接到單，要記四張紙。我們記了兩張半</h2>
   <div class="two">
     <div class="side std"><h3>標準工廠</h3>
       <div class="pic">
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="8" width="56" height="68" rx="4" fill="var(--paper)"/><path d="M24 24h36M24 36h36M24 48h24"/></svg>客人點單<small>要 10 個黑森林</small></div>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6" fill="var(--paper)"/><circle cx="30" cy="40" r="9"/><path d="M48 32h16M48 44h16M48 56h10"/></svg>蛋糕名冊<small>店裡每種蛋糕一張身分證</small></div>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 12h46a8 8 0 0 1 8 8v52H22a8 8 0 0 1-8-8z" fill="var(--paper)"/><path d="M26 28h30M26 40h30M26 52h20"/></svg>食譜<small>1 個要 50 克巧克力</small></div>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="12" y="20" width="60" height="50" rx="4" fill="var(--paper)"/><path d="M12 34h60M28 20v-8M56 20v-8"/><path d="M24 50l8 8 16-16"/></svg>今天的工單<small>做 10 個，領 500 克</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="8" width="56" height="68" rx="4" fill="var(--paper)"/><path d="M24 24h36M24 36h36M24 48h24"/></svg>銷售訂單<small>客人要 500 本</small></div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6" fill="var(--paper)"/><rect x="18" y="26" width="18" height="24" rx="2"/><path d="M44 30h20M44 40h20M44 50h12"/></svg>品號<small>A5 精裝書 200 頁；書芯；封面；道林紙 80g</small></div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 12h46a8 8 0 0 1 8 8v52H22a8 8 0 0 1-8-8z" fill="var(--paper)"/><path d="M26 28h30M26 40h30M26 52h20"/></svg>BOM 與路線<small>1 本＝1 書芯＋1 封面；書芯用 N 張紙加 3% 損耗</small></div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="12" y="20" width="60" height="50" rx="4" fill="var(--paper)"/><path d="M12 34h60M28 20v-8M56 20v-8"/><path d="M24 50l8 8 16-16"/></svg>工單<small>500 本 × BOM ＝ 領幾令紙</small></div>
       </div>
-      <p class="say good">名冊是中心。點單指名冊，食譜掛名冊，工單也掛名冊。</p>
+      <p class="say">品號是中心。訂單指它、BOM 掛它、工單也掛它。</p>
     </div>
     <div class="side us"><h3>我們現在</h3>
       <div class="pic">
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="8" width="56" height="68" rx="4" fill="var(--paper)"/><path d="M24 22h36M24 32h36M24 42h36M24 52h36M24 62h24"/></svg>訂單＋印件<small>點單和「這個東西長怎樣」寫同一張</small></div>
-        <div class="item ghost"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6"/><path d="M30 30l24 24M54 30L30 54"/></svg>沒有名冊<small>成品、半成品都沒身分證</small></div>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 12h46a8 8 0 0 1 8 8v52H22a8 8 0 0 1-8-8z" fill="var(--paper)"/><path d="M26 28h30M26 40h30"/><path d="M26 52h20" stroke-dasharray="4 4"/></svg>配方<small>有步驟，份量只當參考</small></div>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="12" y="20" width="60" height="50" rx="4" fill="var(--paper)"/><path d="M12 34h60M28 20v-8M56 20v-8"/><path d="M24 50l8 8 16-16"/></svg>工單＋生產任務<small>有，而且很細</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="8" width="56" height="68" rx="4" fill="var(--paper)"/><path d="M24 20h36M24 30h36M24 40h36M24 50h36M24 60h24"/></svg>訂單＋印件<small>規格、製程說明、數量、進度十一欄全寫在印件</small></div>
+        <span class="arrow">→</span>
+        <div class="item ghost"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6"/><path d="M30 30l24 24M54 30L30 54"/></svg>無成品與半成品品號<small>只有材料、工序、裝訂、設備主檔</small></div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 12h46a8 8 0 0 1 8 8v52H22a8 8 0 0 1-8-8z" fill="var(--paper)"/><path d="M26 28h30M26 40h30"/><path d="M26 52h20" stroke-dasharray="4 4"/></svg>印件配方、部件配方<small>工序段：印刷→摺紙→配頁→鎖線；用量倍率只作參考</small></div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="12" y="20" width="60" height="50" rx="4" fill="var(--paper)"/><path d="M12 34h60M28 20v-8M56 20v-8"/><path d="M24 50l8 8 16-16"/></svg>工單＋生產任務<small>數量、放損由印務逐筆手填</small></div>
       </div>
-      <p class="say warn">少了名冊。每張訂單都要重新寫「這個東西長怎樣」。</p>
+      <p class="say">少了品號。配方有步驟沒份量。每張工單的數字都是人填的。</p>
     </div>
   </div>
+  <div class="impact"><h4>商業影響</h4><table>
+    <tr><td>誰痛</td><td>業務（回頭單重填規格）、印務（每張工單重算數量）、會計與 PM（算不出單一產品的毛利與良率）</td></tr>
+    <tr><td>哪個流程</td><td>成交轉訂單、工單製程規劃、EC 整合（Phase 3）</td></tr>
+    <tr><td>哪個指標</td><td>產品毛利、產品良率：算不出。Phase 1「BOM 覆蓋率」：只量到步驟展開，沒量到用量展開</td></tr>
+    <tr><td>何時會痛</td><td>回頭單比例上升時；EC 整合要把規格品對到 ERP 時</td></tr>
+  </table></div>
 </section>
 
-<!-- 2 做好之後 -->
+<!-- 2 -->
 <section class="card">
-  <h2>2. 蛋糕做好之後，放哪裡？</h2>
+  <h2>2. 書印好了，放哪裡？</h2>
   <div class="two">
     <div class="side std"><h3>標準工廠</h3>
-      <div class="flow">
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 44h48v22a6 6 0 0 1-6 6H24a6 6 0 0 1-6-6z" fill="var(--paper)"/><path d="M14 44c0-10 12-16 28-16s28 6 28 16"/><circle cx="42" cy="22" r="4"/></svg>做好</div>
+      <div class="pic">
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="28" width="64" height="40" rx="4" fill="var(--paper)"/><circle cx="42" cy="20" r="10"/><path d="M20 48h44M20 58h30"/></svg>完工回報<small>良品 500</small></div>
         <span class="arrow">→</span>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M10 30h64M10 54h64M16 30v-8M68 30v-8M16 54v-8M68 54v-8" /><rect x="26" y="34" width="14" height="12" rx="2" fill="var(--paper)"/><rect x="46" y="34" width="14" height="12" rx="2" fill="var(--paper)"/></svg>待檢架<small>還不能賣</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M10 30h64M10 54h64M16 30v-8M68 30v-8M16 54v-8M68 54v-8"/><rect x="26" y="34" width="14" height="12" rx="2" fill="var(--paper)"/><rect x="46" y="34" width="14" height="12" rx="2" fill="var(--paper)"/></svg>待驗庫存<small>一個庫存狀態，不能出貨</small></div>
         <span class="arrow">→</span>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><circle cx="36" cy="36" r="20" fill="var(--paper)"/><path d="M50 50l18 18"/><path d="M27 37l6 6 12-12"/></svg>檢查</div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><circle cx="36" cy="36" r="20" fill="var(--paper)"/><path d="M50 50l18 18"/><path d="M27 37l6 6 12-12"/></svg>品檢分流<small>合格入庫；重工開單；報廢過帳</small></div>
         <span class="arrow">→</span>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="12" y="10" width="60" height="64" rx="4" fill="var(--paper)"/><path d="M12 42h60M42 10v64"/><circle cx="36" cy="26" r="2"/><circle cx="48" cy="26" r="2"/></svg>成品櫃<small>櫃子裡有幾個，才能賣幾個</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="12" y="10" width="60" height="64" rx="4" fill="var(--paper)"/><path d="M12 42h60M42 10v64"/><circle cx="36" cy="26" r="2"/><circle cx="48" cy="26" r="2"/></svg>成品倉<small>入庫單；在庫多少才能承諾多少</small></div>
       </div>
-      <p class="say good">每走一步，蛋糕就換一個「狀態」。架子和櫃子是真的存在的東西。</p>
+      <p class="say">每走一步，書就換一個庫存狀態。架子和倉是系統裡真的存在的東西。</p>
     </div>
     <div class="side us"><h3>我們現在</h3>
-      <div class="flow">
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 44h48v22a6 6 0 0 1-6 6H24a6 6 0 0 1-6-6z" fill="var(--paper)"/><path d="M14 44c0-10 12-16 28-16s28 6 28 16"/><circle cx="42" cy="22" r="4"/></svg>報工<small>做好 500</small></div>
+      <div class="pic">
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="28" width="64" height="40" rx="4" fill="var(--paper)"/><circle cx="42" cy="20" r="10"/><path d="M20 48h44M20 58h30"/></svg>報工紀錄<small>生產數量、良品數、不良品數</small></div>
         <span class="arrow">→</span>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><circle cx="36" cy="36" r="20" fill="var(--paper)"/><path d="M50 50l18 18"/><path d="M27 37l6 6 12-12"/></svg>品檢<small>通過 495</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="14" width="56" height="56" rx="6" fill="var(--paper)"/><text x="42" y="52" text-anchor="middle" font-size="24" font-weight="900" fill="currentColor" stroke="none">500</text></svg>待驗量<small>印件層算出來的數</small></div>
         <span class="arrow">→</span>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="14" width="56" height="56" rx="6" fill="var(--paper)"/><text x="42" y="52" text-anchor="middle" font-size="26" font-weight="900" fill="currentColor" stroke="none">495</text></svg>可出貨額度<small>一個數字</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><circle cx="36" cy="36" r="20" fill="var(--paper)"/><path d="M50 50l18 18"/><path d="M27 37l6 6 12-12"/></svg>品檢紀錄<small>通過 495、不通過 5；缺口處置兩軸</small></div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="14" width="56" height="56" rx="6" fill="var(--paper)"/><text x="42" y="52" text-anchor="middle" font-size="24" font-weight="900" fill="currentColor" stroke="none">495</text></svg>可出貨額度<small>又一個數；貨留品檢區</small></div>
       </div>
-      <p class="say warn">沒有架子、沒有櫃子。「能賣幾個」是算出來的數字，不是櫃子裡真的有幾個。</p>
-      <p class="foot">貨只有一批、做完就出貨時，兩邊答案一樣。要分批入庫、退貨重驗、拿別張單的貨來補時，數字答不出來。</p>
+      <p class="say">沒有架子、沒有倉。能出幾本是算出來的數字，不是倉裡真的有幾本。</p>
     </div>
   </div>
+  <div class="impact"><h4>商業影響</h4><table>
+    <tr><td>誰痛</td><td>出貨人員與業務（分批交、客戶自取、要補貨時找不到貨在哪）、品檢（退回重驗沒有單據）、會計（報廢只有數量沒有金額）</td></tr>
+    <tr><td>哪個流程</td><td>品檢通過入庫、出貨與送達、售後補做；EC 規格品若要備貨，整段無載體</td></tr>
+    <tr><td>哪個指標</td><td>庫存紀錄準確率：算不出。折損金額：算不出。可承諾量只在印件層成立</td></tr>
+    <tr><td>何時會痛</td><td>單批完工即出貨時不痛。分批入庫、退貨重驗、跨訂單調撥、EC 備貨時開始痛</td></tr>
+  </table></div>
 </section>
 
-<!-- 3 線上點單 -->
+<!-- 3 -->
 <section class="card">
-  <h2>3. 客人在網站上自己勾選項</h2>
+  <h2>3. 客人在網站勾尺寸、紙張、裝訂</h2>
   <div class="two">
     <div class="side std"><h3>標準工廠</h3>
-      <div class="flow">
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="14" width="64" height="56" rx="6" fill="var(--paper)"/><path d="M20 30h10M36 30h28M20 44h10M36 44h28M20 58h10M36 58h20"/><path d="M22 30l3 3 5-6" stroke="var(--ok)"/><path d="M22 44l3 3 5-6" stroke="var(--ok)"/></svg>勾選項<small>尺寸、口味、數量</small></div>
+      <div class="pic">
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="14" width="64" height="56" rx="6" fill="var(--paper)"/><path d="M20 30h10M36 30h28M20 44h10M36 44h28M20 58h10M36 58h20"/><path d="M22 30l3 3 5-6" stroke="var(--ok)"/><path d="M22 44l3 3 5-6" stroke="var(--ok)"/></svg>勾選項</div>
         <span class="arrow">→</span>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6" fill="var(--paper)"/><circle cx="30" cy="40" r="9"/><path d="M48 32h16M48 44h16M48 56h10"/></svg>名冊上的母蛋糕<small>一種蛋糕、很多變化</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6" fill="var(--paper)"/><rect x="18" y="26" width="18" height="24" rx="2"/><path d="M44 30h20M44 40h20M44 50h12"/></svg>可配置品號<small>一個母品號、多種變化</small></div>
         <span class="arrow">→</span>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 12h46a8 8 0 0 1 8 8v52H22a8 8 0 0 1-8-8z" fill="var(--paper)"/><path d="M26 28h30M26 40h30M26 52h20"/></svg>食譜自動挑行<small>勾什麼，就選哪幾行</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 12h46a8 8 0 0 1 8 8v52H22a8 8 0 0 1-8-8z" fill="var(--paper)"/><path d="M26 28h30M26 40h30M26 52h20"/></svg>超級 BOM 自動挑行<small>勾什麼就選哪幾行、哪幾道工序</small></div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="12" y="20" width="60" height="50" rx="4" fill="var(--paper)"/><path d="M12 34h60M28 20v-8M56 20v-8"/><path d="M24 50l8 8 16-16"/></svg>工單自動長出</div>
       </div>
-      <p class="say good">勾完，工單和材料清單自己長出來。</p>
+      <p class="say">網站與工廠共用同一份產品定義。</p>
     </div>
     <div class="side us"><h3>我們現在</h3>
-      <div class="flow">
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="14" width="64" height="56" rx="6" fill="var(--paper)"/><path d="M20 30h10M36 30h28M20 44h10M36 44h28M20 58h10M36 58h20"/><path d="M22 30l3 3 5-6" stroke="var(--ok)"/><path d="M22 44l3 3 5-6" stroke="var(--ok)"/></svg>題目與選項<small>已連到我們的紙、工序、裝訂</small></div>
+      <div class="pic">
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="14" width="64" height="56" rx="6" fill="var(--paper)"/><path d="M20 30h10M36 30h28M20 44h10M36 44h28M20 58h10M36 58h20"/><path d="M22 30l3 3 5-6" stroke="var(--ok)"/><path d="M22 44l3 3 5-6" stroke="var(--ok)"/></svg>題目與選項<small>選項已綁 ERP 的紙、工序、裝訂、設備識別碼</small></div>
         <span class="arrow">→</span>
-        <div class="item ghost"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6"/><path d="M30 30l24 24M54 30L30 54"/></svg>沒有母蛋糕</div>
+        <div class="item ghost"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6"/><path d="M30 30l24 24M54 30L30 54"/></svg>無母品號<small>訂單明細帶規格 JSON</small></div>
         <span class="arrow">→</span>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><circle cx="42" cy="30" r="12" fill="var(--paper)"/><path d="M20 72c0-14 10-22 22-22s22 8 22 22"/><path d="M58 48l10-10M64 54l6-6"/></svg>網站那邊人工寫食譜<small>工廠這邊再手動排</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><circle cx="42" cy="30" r="12" fill="var(--paper)"/><path d="M20 72c0-14 10-22 22-22s22 8 22 22"/><path d="M58 48l10-10M64 54l6-6"/></svg>EC 商品人工建 BOM<small>與 ERP 配方各一份</small></div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="8" width="56" height="68" rx="4" fill="var(--paper)"/><path d="M24 24h36M24 36h36M24 48h24"/><path d="M50 60h12" stroke="var(--us)"/></svg>EC 工單＝PDF<small>工廠照紙本做</small></div>
       </div>
-      <p class="say warn">前半段做好了，後半段靠人。同一個蛋糕，網站和工廠各寫一份做法。</p>
+      <p class="say">前半段（勾什麼）已經做好。後半段（勾了怎麼做）靠人，而且兩邊各寫一份。</p>
     </div>
   </div>
+  <div class="impact"><h4>商業影響</h4><table>
+    <tr><td>誰痛</td><td>EC 商品管理（改一個選項要同步兩邊）、印務（線上單仍要人工對 PDF 排製程）、PM（Phase 1 指標無法由 ERP 算出）</td></tr>
+    <tr><td>哪個流程</td><td>EC 商品上架、線上單自動建工單、成本估算</td></tr>
+    <tr><td>哪個指標</td><td>EC 規格品 BOM 覆蓋率：分子要由 EC 側人工認定。線上線下同商品成本一致性：無法驗證</td></tr>
+    <tr><td>方向差</td><td>業界網店整合把產品與價格的正本放 MIS（即 ERP）端、網店只讀；現行把 EC 商品劃在 ERP 範圍外。這條要在 EC 整合設計前先裁</td></tr>
+  </table></div>
 </section>
 
-<!-- 4 風險 -->
+<!-- 4 -->
 <section class="card">
-  <h2>4. 這樣下去會痛的三件事</h2>
-  <div class="risk">
-    <div class="side"><div class="big">1</div><p class="say">同一個蛋糕每次重寫</p><p class="foot">沒有名冊，就沒辦法問「這款蛋糕平均賺多少、壞多少」。網站整合時最先撞到。</p></div>
-    <div class="side"><div class="big">2</div><p class="say">份量全靠人算</p><p class="foot">食譜的份量只是參考，工單上的數字每次手填。填錯沒有東西可以對。</p></div>
-    <div class="side"><div class="big">3</div><p class="say">蛋糕沒地方放</p><p class="foot">沒有待檢架和成品櫃，分批做、退回來重驗、拿別單的貨來補，系統都答不出貨在哪、有幾個。</p></div>
+  <h2>4. 驗出 5 本有色差，怎麼辦？</h2>
+  <div class="two">
+    <div class="side std"><h3>標準工廠</h3>
+      <div class="pic">
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="12" y="20" width="60" height="50" rx="4" fill="var(--paper)"/><path d="M12 34h60"/><path d="M30 52l8 8 16-16"/><path d="M60 14l10 10" stroke="var(--bad)"/></svg>重工單<small>另開單或原單加工序；成本可分開看</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 30h44l-4 42H24z" fill="var(--paper)"/><path d="M14 30h56M34 30v-8h16v8M34 42v22M50 42v22"/></svg>報廢單<small>數量移到報廢地點，成本入廢料帳</small></div>
+      </div>
+      <p class="say">重工多少、報廢多少錢，報表直接看。</p>
+    </div>
+    <div class="side us"><h3>我們現在</h3>
+      <div class="pic">
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="12" y="20" width="60" height="50" rx="4" fill="var(--paper)"/><path d="M12 34h60"/><path d="M30 52l8 8 16-16"/><path d="M22 44h14" stroke="var(--us)"/></svg>補做在原工單加任務<small>任務狀態轉「補做」；成本混在原單</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="14" width="56" height="56" rx="6" fill="var(--paper)"/><text x="42" y="52" text-anchor="middle" font-size="24" font-weight="900" fill="currentColor" stroke="none">5</text></svg>報廢數<small>只是處置紀錄的數字</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="8" width="56" height="68" rx="4" fill="var(--paper)"/><path d="M24 24h36M24 36h36"/><path d="M24 48h36" stroke="var(--us)"/><path d="M58 20l-16 16" stroke="var(--us)"/></svg>客戶照收＝改品檢紀錄<small>把不通過改成通過</small></div>
+      </div>
+      <p class="say">缺口會補回來，但重工成本、報廢金額、原始不良數都看不到。</p>
+    </div>
+  </div>
+  <div class="impact"><h4>商業影響</h4><table>
+    <tr><td>誰痛</td><td>會計與 PM（重工率、折損金額沒有數字）、品檢主管（照收後原始不良事實只留在修正紀錄）</td></tr>
+    <tr><td>哪個指標</td><td>重工率、重工成本、報廢成本：算不出。良率可算，但「照收」會把良率往上修</td></tr>
+    <tr><td>何時會痛</td><td>要算真實毛利、要對外包廠或機台比良率時</td></tr>
+  </table></div>
+</section>
+
+<!-- 5 總表 -->
+<section class="card">
+  <h2>5. 商業影響總表</h2>
+  <div class="tablewrap"><table class="imp">
+    <thead><tr><th>差距</th><th>受影響角色</th><th>受影響流程</th><th>算不出或失真的指標</th><th>發生時點</th><th>嚴重度</th></tr></thead>
+    <tbody>
+    <tr><td>無成品與半成品品號</td><td>業務、印務、會計、EC 商品管理</td><td>成交轉訂單、EC 整合、成本歸戶</td><td>產品毛利、產品良率、回頭單比例</td><td>Phase 3 開始；回頭單增加</td><td><span class="sev h">高</span></td></tr>
+    <tr><td>用量不驅動工單</td><td>印務、PM</td><td>工單製程規劃、Phase 1 驗收</td><td>BOM 覆蓋率失真、用量差異無對照</td><td>Phase 1 驗收；印務人力吃緊</td><td><span class="sev h">高</span></td></tr>
+    <tr><td>待驗與入庫是數字不是狀態</td><td>出貨、品檢、業務</td><td>品檢入庫、出貨、售後</td><td>庫存紀錄準確率、可承諾量只到印件層</td><td>分批、退貨重驗、EC 備貨</td><td><span class="sev m">中</span></td></tr>
+    <tr><td>EC 與 ERP 製法兩套</td><td>EC 商品管理、印務</td><td>商品上架、線上單建工單</td><td>線上線下成本一致性、覆蓋率分子</td><td>EC 改規格時；Phase 1 驗收</td><td><span class="sev h">高</span></td></tr>
+    <tr><td>重工在原單、報廢無金額</td><td>會計、PM、品檢主管</td><td>補做、缺口處置</td><td>重工率、重工成本、折損金額</td><td>算真實毛利時</td><td><span class="sev m">中</span></td></tr>
+    <tr><td>料帳空白（撥料、投料、消耗）</td><td>印務、採購、會計</td><td>備料、成本結算</td><td>實際料耗、材料折損率</td><td>要算真實毛利時</td><td><span class="sev m">中</span></td></tr>
+    <tr><td>BOM 與路線合卡</td><td>印務、系統設計</td><td>配方維護、EC 配置對接</td><td>無直接指標</td><td>對接 EC 配置器時</td><td><span class="sev l">低</span></td></tr>
+    <tr><td>不追蹤貨的實際站點</td><td>廠務、生管</td><td>轉交、找貨</td><td>找貨時間（未量）</td><td>產線與站點變多時</td><td><span class="sev l">低</span></td></tr>
+    </tbody></table></div>
+  <p class="foot">嚴重度判準：高＝擋住已排定的 Phase 目標或讓既有 KPI 失真；中＝特定情境才痛、現況有人工繞法；低＝成本可控、可延後。</p>
+</section>
+
+<!-- 6 三條路 -->
+<section class="card">
+  <h2>6. 接下來的三條路（由輕到重，可分階段）</h2>
+  <div class="grid3">
+    <div class="tile"><span class="n">一</span><p class="say">寫明邊界，不動結構</p><p class="foot">把「待驗為衍生數只適用單批完工即出貨」「不追蹤貨位」「補做不開新單」寫進規則卡的適用範圍。風險都還在，但變成已知。動三張卡，不需裁決。</p></div>
+    <div class="tile"><span class="n">二</span><p class="say">補品號層，其餘不動</p><p class="foot">成品與半成品品號，印件引用品號，配方對映到品號下的 BOM 與路線；EC 規格品先建。解掉「無品號」與一半的「兩套製法」。要先裁決品號範圍與 Phase 1 指標改寫。</p></div>
+    <div class="tile"><span class="n">三</span><p class="say">品號、用量驅動、成品批</p><p class="foot">路線二之外，用量倍率幫工單預填（可改），待驗改成成品批狀態，成品庫存最小集合提前到 Phase 2。解掉前四個高中風險。代價是推翻 10 月「系統不預填」拍板、成品庫存提前。</p></div>
   </div>
 </section>
 
-<!-- 5 三條路 -->
 <section class="card">
-  <h2>5. 接下來可以走的三條路（由輕到重）</h2>
-  <div class="paths">
-    <div class="side"><span class="n">一</span><p class="say">貼標籤，不動架構</p><p class="foot">把「我們刻意不做架子和櫃子」寫清楚：只適用做完就出貨。三件痛的事都還在，但大家知道邊界。</p></div>
-    <div class="side"><span class="n">二</span><p class="say">先做名冊</p><p class="foot">給成品和半成品身分證，印件和配方掛上去。解掉第 1 件痛，第 3 件痛留著。要先決定名冊範圍，Phase 1 的驗收指標要跟著改。</p></div>
-    <div class="side"><span class="n">三</span><p class="say">名冊＋份量＋成品櫃</p><p class="foot">名冊之外，食譜份量先幫工單填好（可以改），做好的蛋糕有待檢架和櫃子。三件都解。代價：推翻 10 月「系統不預填」的決定，成品庫存提前。</p></div>
+  <div class="pending">
+    <strong>待補兩段</strong>
+    <p>背景知識與實務利弊：品號策略、BOM 與路線分合、待驗庫存狀態、配置器維護成本、重工開單方式、指標依賴關係。研究代理查證中，查完存 raw 後補進本頁。</p>
+    <p>wiki 重構後的再比對：本頁與比對矩陣的基線是 wiki 提交 35267c2（2026-10-28）。用詞統一與印件複製規則重構完成後重跑一次比對，差異列會更新。</p>
   </div>
-  <p class="foot">這一頁只說現況和差距。要走哪條路、怎麼做，是下一輪規劃的事。對照表、逐列分類、來源都在同資料夾的「比對矩陣」與「標準與現行架構總覽」。</p>
+  <p class="foot">完整逐列表、配方對映表、議題清單 T1 到 T7 見同資料夾「比對矩陣」；兩張架構圖與 29 列分類見「標準與現行架構總覽」。</p>
 </section>
 </main>
