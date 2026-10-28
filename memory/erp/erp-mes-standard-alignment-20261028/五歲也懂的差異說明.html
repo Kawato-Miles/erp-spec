@@ -1,0 +1,156 @@
+<title>蛋糕店看 ERP 差異</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap">
+<style>
+/* 版面概念：一頁一張大圖卡往下滑，左「標準工廠」右「我們」。字很少，圖很大。 */
+:root{--bg:#fbf8f3;--paper:#ffffff;--fg:#2a2622;--muted:#7a716a;--line:#e6ded4;
+  --std:#2b6cb0;--std-bg:#e4eefa; --us:#c05621;--us-bg:#fdebe0;
+  --ok:#2f855a;--ok-bg:#e3f4ea; --bad:#b7352e;--bad-bg:#fbe5e3; --gray:#a0a0a0;
+  --font:"Noto Sans TC",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1a1714;--paper:#241f1b;--fg:#f1ebe4;--muted:#b4a99e;--line:#3a322b;
+  --std:#7fb3f0;--std-bg:#1d2d42;--us:#f0956a;--us-bg:#40281b;--ok:#7dd3a0;--ok-bg:#1c3326;--bad:#f09086;--bad-bg:#40221f;--gray:#6e6660;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1a1714;--paper:#241f1b;--fg:#f1ebe4;--muted:#b4a99e;--line:#3a322b;
+  --std:#7fb3f0;--std-bg:#1d2d42;--us:#f0956a;--us-bg:#40281b;--ok:#7dd3a0;--ok-bg:#1c3326;--bad:#f09086;--bad-bg:#40221f;--gray:#6e6660;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-weight:500;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 80px}
+main{max-width:980px;margin:0 auto;display:grid;gap:56px}
+h1{font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;line-height:1.2;margin:0;text-wrap:balance}
+h2{font-size:clamp(1.4rem,4vw,2rem);font-weight:900;margin:0;text-wrap:balance}
+p{margin:0}
+.lead{font-size:1.15rem;color:var(--muted);max-width:40ch}
+.card{display:grid;gap:18px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:720px){.two{grid-template-columns:1fr}}
+.side{border-radius:16px;padding:20px;display:grid;gap:14px;align-content:start;min-width:0}
+.side.std{background:var(--std-bg)} .side.us{background:var(--us-bg)}
+.side h3{margin:0;font-size:1rem;font-weight:900;letter-spacing:.08em}
+.std h3{color:var(--std)} .us h3{color:var(--us)}
+.pic{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.item{display:grid;justify-items:center;gap:6px;font-size:.95rem;font-weight:700;text-align:center;min-width:88px}
+.item svg{width:84px;height:84px;display:block}
+.item.ghost{opacity:.45} .item.ghost svg *{stroke-dasharray:5 5}
+.item small{font-weight:500;color:var(--muted);font-size:.8rem;line-height:1.3}
+.say{font-size:1.1rem;font-weight:700}
+.say.good{color:var(--ok)} .say.warn{color:var(--us)}
+.big{font-size:clamp(2.2rem,7vw,3.6rem);font-weight:900;line-height:1}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.flow .arrow{font-size:1.6rem;color:var(--muted)}
+.risk{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.risk .side{background:var(--paper);border:1px solid var(--line)}
+.risk .big{color:var(--bad)}
+.paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.paths .side{background:var(--paper);border:1px solid var(--line)}
+.paths .n{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--std);color:#fff;font-weight:900;font-size:1.2rem}
+.foot{color:var(--muted);font-size:.9rem;max-width:60ch}
+svg{overflow:visible} svg *{vector-effect:non-scaling-stroke}
+</style>
+
+<main>
+<header class="card">
+  <h1>把印刷廠想成蛋糕店，看標準工廠和我們差在哪</h1>
+  <p class="lead">一頁一張圖。左邊是教科書上的工廠怎麼記帳，右邊是我們現在怎麼記。字少，先看圖。</p>
+</header>
+
+<!-- 1 四張紙 -->
+<section class="card">
+  <h2>1. 標準工廠記四張紙，我們記兩張半</h2>
+  <div class="two">
+    <div class="side std"><h3>標準工廠</h3>
+      <div class="pic">
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="8" width="56" height="68" rx="4" fill="var(--paper)"/><path d="M24 24h36M24 36h36M24 48h24"/></svg>客人點單<small>要 10 個黑森林</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6" fill="var(--paper)"/><circle cx="30" cy="40" r="9"/><path d="M48 32h16M48 44h16M48 56h10"/></svg>蛋糕名冊<small>店裡每種蛋糕一張身分證</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 12h46a8 8 0 0 1 8 8v52H22a8 8 0 0 1-8-8z" fill="var(--paper)"/><path d="M26 28h30M26 40h30M26 52h20"/></svg>食譜<small>1 個要 50 克巧克力</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="12" y="20" width="60" height="50" rx="4" fill="var(--paper)"/><path d="M12 34h60M28 20v-8M56 20v-8"/><path d="M24 50l8 8 16-16"/></svg>今天的工單<small>做 10 個，領 500 克</small></div>
+      </div>
+      <p class="say good">名冊是中心。點單指名冊，食譜掛名冊，工單也掛名冊。</p>
+    </div>
+    <div class="side us"><h3>我們現在</h3>
+      <div class="pic">
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="8" width="56" height="68" rx="4" fill="var(--paper)"/><path d="M24 22h36M24 32h36M24 42h36M24 52h36M24 62h24"/></svg>訂單＋印件<small>點單和「這個東西長怎樣」寫同一張</small></div>
+        <div class="item ghost"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6"/><path d="M30 30l24 24M54 30L30 54"/></svg>沒有名冊<small>成品、半成品都沒身分證</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 12h46a8 8 0 0 1 8 8v52H22a8 8 0 0 1-8-8z" fill="var(--paper)"/><path d="M26 28h30M26 40h30"/><path d="M26 52h20" stroke-dasharray="4 4"/></svg>配方<small>有步驟，份量只當參考</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="12" y="20" width="60" height="50" rx="4" fill="var(--paper)"/><path d="M12 34h60M28 20v-8M56 20v-8"/><path d="M24 50l8 8 16-16"/></svg>工單＋生產任務<small>有，而且很細</small></div>
+      </div>
+      <p class="say warn">少了名冊。每張訂單都要重新寫「這個東西長怎樣」。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 做好之後 -->
+<section class="card">
+  <h2>2. 蛋糕做好之後，放哪裡？</h2>
+  <div class="two">
+    <div class="side std"><h3>標準工廠</h3>
+      <div class="flow">
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 44h48v22a6 6 0 0 1-6 6H24a6 6 0 0 1-6-6z" fill="var(--paper)"/><path d="M14 44c0-10 12-16 28-16s28 6 28 16"/><circle cx="42" cy="22" r="4"/></svg>做好</div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M10 30h64M10 54h64M16 30v-8M68 30v-8M16 54v-8M68 54v-8" /><rect x="26" y="34" width="14" height="12" rx="2" fill="var(--paper)"/><rect x="46" y="34" width="14" height="12" rx="2" fill="var(--paper)"/></svg>待檢架<small>還不能賣</small></div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><circle cx="36" cy="36" r="20" fill="var(--paper)"/><path d="M50 50l18 18"/><path d="M27 37l6 6 12-12"/></svg>檢查</div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="12" y="10" width="60" height="64" rx="4" fill="var(--paper)"/><path d="M12 42h60M42 10v64"/><circle cx="36" cy="26" r="2"/><circle cx="48" cy="26" r="2"/></svg>成品櫃<small>櫃子裡有幾個，才能賣幾個</small></div>
+      </div>
+      <p class="say good">每走一步，蛋糕就換一個「狀態」。架子和櫃子是真的存在的東西。</p>
+    </div>
+    <div class="side us"><h3>我們現在</h3>
+      <div class="flow">
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 44h48v22a6 6 0 0 1-6 6H24a6 6 0 0 1-6-6z" fill="var(--paper)"/><path d="M14 44c0-10 12-16 28-16s28 6 28 16"/><circle cx="42" cy="22" r="4"/></svg>報工<small>做好 500</small></div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><circle cx="36" cy="36" r="20" fill="var(--paper)"/><path d="M50 50l18 18"/><path d="M27 37l6 6 12-12"/></svg>品檢<small>通過 495</small></div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="14" width="56" height="56" rx="6" fill="var(--paper)"/><text x="42" y="52" text-anchor="middle" font-size="26" font-weight="900" fill="currentColor" stroke="none">495</text></svg>可出貨額度<small>一個數字</small></div>
+      </div>
+      <p class="say warn">沒有架子、沒有櫃子。「能賣幾個」是算出來的數字，不是櫃子裡真的有幾個。</p>
+      <p class="foot">貨只有一批、做完就出貨時，兩邊答案一樣。要分批入庫、退貨重驗、拿別張單的貨來補時，數字答不出來。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 線上點單 -->
+<section class="card">
+  <h2>3. 客人在網站上自己勾選項</h2>
+  <div class="two">
+    <div class="side std"><h3>標準工廠</h3>
+      <div class="flow">
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="14" width="64" height="56" rx="6" fill="var(--paper)"/><path d="M20 30h10M36 30h28M20 44h10M36 44h28M20 58h10M36 58h20"/><path d="M22 30l3 3 5-6" stroke="var(--ok)"/><path d="M22 44l3 3 5-6" stroke="var(--ok)"/></svg>勾選項<small>尺寸、口味、數量</small></div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6" fill="var(--paper)"/><circle cx="30" cy="40" r="9"/><path d="M48 32h16M48 44h16M48 56h10"/></svg>名冊上的母蛋糕<small>一種蛋糕、很多變化</small></div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 12h46a8 8 0 0 1 8 8v52H22a8 8 0 0 1-8-8z" fill="var(--paper)"/><path d="M26 28h30M26 40h30M26 52h20"/></svg>食譜自動挑行<small>勾什麼，就選哪幾行</small></div>
+      </div>
+      <p class="say good">勾完，工單和材料清單自己長出來。</p>
+    </div>
+    <div class="side us"><h3>我們現在</h3>
+      <div class="flow">
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="14" width="64" height="56" rx="6" fill="var(--paper)"/><path d="M20 30h10M36 30h28M20 44h10M36 44h28M20 58h10M36 58h20"/><path d="M22 30l3 3 5-6" stroke="var(--ok)"/><path d="M22 44l3 3 5-6" stroke="var(--ok)"/></svg>題目與選項<small>已連到我們的紙、工序、裝訂</small></div>
+        <span class="arrow">→</span>
+        <div class="item ghost"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6"/><path d="M30 30l24 24M54 30L30 54"/></svg>沒有母蛋糕</div>
+        <span class="arrow">→</span>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><circle cx="42" cy="30" r="12" fill="var(--paper)"/><path d="M20 72c0-14 10-22 22-22s22 8 22 22"/><path d="M58 48l10-10M64 54l6-6"/></svg>網站那邊人工寫食譜<small>工廠這邊再手動排</small></div>
+      </div>
+      <p class="say warn">前半段做好了，後半段靠人。同一個蛋糕，網站和工廠各寫一份做法。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 風險 -->
+<section class="card">
+  <h2>4. 這樣下去會痛的三件事</h2>
+  <div class="risk">
+    <div class="side"><div class="big">1</div><p class="say">同一個蛋糕每次重寫</p><p class="foot">沒有名冊，就沒辦法問「這款蛋糕平均賺多少、壞多少」。網站整合時最先撞到。</p></div>
+    <div class="side"><div class="big">2</div><p class="say">份量全靠人算</p><p class="foot">食譜的份量只是參考，工單上的數字每次手填。填錯沒有東西可以對。</p></div>
+    <div class="side"><div class="big">3</div><p class="say">蛋糕沒地方放</p><p class="foot">沒有待檢架和成品櫃，分批做、退回來重驗、拿別單的貨來補，系統都答不出貨在哪、有幾個。</p></div>
+  </div>
+</section>
+
+<!-- 5 三條路 -->
+<section class="card">
+  <h2>5. 接下來可以走的三條路（由輕到重）</h2>
+  <div class="paths">
+    <div class="side"><span class="n">一</span><p class="say">貼標籤，不動架構</p><p class="foot">把「我們刻意不做架子和櫃子」寫清楚：只適用做完就出貨。三件痛的事都還在，但大家知道邊界。</p></div>
+    <div class="side"><span class="n">二</span><p class="say">先做名冊</p><p class="foot">給成品和半成品身分證，印件和配方掛上去。解掉第 1 件痛，第 3 件痛留著。要先決定名冊範圍，Phase 1 的驗收指標要跟著改。</p></div>
+    <div class="side"><span class="n">三</span><p class="say">名冊＋份量＋成品櫃</p><p class="foot">名冊之外，食譜份量先幫工單填好（可以改），做好的蛋糕有待檢架和櫃子。三件都解。代價：推翻 10 月「系統不預填」的決定，成品庫存提前。</p></div>
+  </div>
+  <p class="foot">這一頁只說現況和差距。要走哪條路、怎麼做，是下一輪規劃的事。對照表、逐列分類、來源都在同資料夾的「比對矩陣」與「標準與現行架構總覽」。</p>
+</section>
+</main>
