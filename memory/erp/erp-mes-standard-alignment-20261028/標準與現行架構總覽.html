@@ -1,0 +1,261 @@
+<title>ERP／MES 標準與現行架構對照</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* 版面概念：左右兩條「層疊」直欄並排，中間以分類色帶標出對應；下方差異矩陣與風險、方向。印刷業的四色套準記號作為小裝飾。 */
+:root{
+  --bg:#f4f6f9; --paper:#ffffff; --fg:#1c2733; --muted:#5b6a7a; --line:#d6dde6;
+  --accent:#0b6e99;            /* 套準青 */
+  --ok:#2f7d4f; --ok-bg:#e6f3ea;          /* 對齊 */
+  --defer:#6b7a89; --defer-bg:#eef1f4;    /* 刻意延後 */
+  --exc:#1f6f8b; --exc-bg:#e3f0f5;        /* 產業例外 */
+  --align:#a85f00; --align-bg:#fbefd9;    /* 待靠齊 */
+  --decide:#6a3fa0; --decide-bg:#eee7f7;  /* 待裁決 */
+  --none:#9aa6b2;
+  --display:"Noto Serif TC",serif; --body:"Noto Sans TC",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141a21; --paper:#1c242d; --fg:#e6ebf0; --muted:#a3afbb; --line:#2f3a46; --accent:#5fb3d6;
+  --ok:#7fcf9a; --ok-bg:#1d3326; --defer:#9fabb7; --defer-bg:#242c35; --exc:#7cc0d8; --exc-bg:#1b3440;
+  --align:#f0b35a; --align-bg:#3a2d16; --decide:#c3a6ee; --decide-bg:#2e2540; --none:#6b7784; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#141a21; --paper:#1c242d; --fg:#e6ebf0; --muted:#a3afbb; --line:#2f3a46; --accent:#5fb3d6;
+  --ok:#7fcf9a; --ok-bg:#1d3326; --defer:#9fabb7; --defer-bg:#242c35; --exc:#7cc0d8; --exc-bg:#1b3440;
+  --align:#f0b35a; --align-bg:#3a2d16; --decide:#c3a6ee; --decide-bg:#2e2540; --none:#6b7784; color-scheme:dark }
+
+body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+main{max-width:1180px;margin:0 auto;display:grid;gap:40px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:1.9rem;line-height:1.25}
+h2{font-size:1.35rem;padding-bottom:8px;border-bottom:2px solid var(--line)}
+h3{font-size:1.05rem}
+p{margin:0;max-width:72ch}
+.eyebrow{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+header{display:grid;gap:12px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;color:var(--muted);font-size:.9rem}
+.legend{display:flex;flex-wrap:wrap;gap:8px}
+.tag{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.78rem;font-weight:500;border:1px solid transparent;white-space:nowrap}
+.t-ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+.t-defer{background:var(--defer-bg);color:var(--defer);border-color:var(--defer);border-style:dashed}
+.t-exc{background:var(--exc-bg);color:var(--exc);border-color:var(--exc)}
+.t-align{background:var(--align-bg);color:var(--align);border-color:var(--align)}
+.t-decide{background:var(--decide-bg);color:var(--decide);border-color:var(--decide)}
+.t-none{background:transparent;color:var(--none);border-color:var(--none);border-style:dotted}
+
+/* 架構圖 */
+.arch{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media (max-width:860px){.arch{grid-template-columns:1fr}}
+.col{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:18px;display:grid;gap:10px;align-content:start;min-width:0}
+.col h3{display:flex;align-items:baseline;gap:10px}
+.col h3 small{font-family:var(--body);font-weight:400;color:var(--muted);font-size:.85rem}
+.band{display:grid;gap:6px}
+.band-label{font-size:.72rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;font-weight:700;display:flex;align-items:center;gap:8px}
+.band-label::after{content:"";flex:1;height:1px;background:var(--line)}
+.box{border:1px solid var(--line);border-left:4px solid var(--none);border-radius:4px;padding:8px 12px;background:var(--bg);min-width:0}
+.box b{display:block;font-weight:700}
+.box span{display:block;color:var(--muted);font-size:.86rem;line-height:1.5}
+.box.ok{border-left-color:var(--ok)} .box.defer{border-left-color:var(--defer);border-style:dashed;opacity:.85}
+.box.exc{border-left-color:var(--exc)} .box.align{border-left-color:var(--align)} .box.decide{border-left-color:var(--decide)}
+.box.none{border-style:dotted;background:transparent;color:var(--none)} .box.none b{color:var(--none);font-weight:500}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px} @media (max-width:520px){.row2{grid-template-columns:1fr}}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px} @media (max-width:700px){.row3{grid-template-columns:1fr}}
+.arrow{color:var(--muted);text-align:center;font-size:.9rem;line-height:1}
+.std .box{border-left-color:var(--accent)}
+
+/* 表格 */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:900px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{background:var(--bg);font-weight:700;white-space:nowrap;position:sticky;top:0}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted)}
+tr:last-child td{border-bottom:none}
+td.cls{white-space:nowrap}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.sum .box b{font-size:1.4rem;font-variant-numeric:tabular-nums}
+.note{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px 18px;display:grid;gap:8px}
+.paths{display:grid;grid-template-columns:repeat(3,1fr);gap:14px} @media (max-width:860px){.paths{grid-template-columns:1fr}}
+.path{background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:6px;padding:16px;display:grid;gap:8px;align-content:start;min-width:0}
+.path dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:.88rem}
+.path dt{color:var(--muted);white-space:nowrap} .path dd{margin:0}
+ul{margin:0;padding-left:1.2em} li{margin:2px 0}
+.reg{display:inline-block;width:14px;height:14px;border:1.5px solid var(--accent);border-radius:50%;position:relative;vertical-align:-2px;margin-right:6px}
+.reg::before,.reg::after{content:"";position:absolute;background:var(--accent)} .reg::before{left:50%;top:-3px;bottom:-3px;width:1.5px;transform:translateX(-50%)} .reg::after{top:50%;left:-3px;right:-3px;height:1.5px;transform:translateY(-50%)}
+</style>
+
+<main>
+<header>
+  <div class="eyebrow"><span class="reg"></span>ERP／MES 標準結構比對 · 2026-10-28</div>
+  <h1>標準製造業 ERP／MES 與現行 wiki 設計的架構對照</h1>
+  <p>左邊是製造業通用的四層結構與廠內五步流程，右邊是 wiki 正本卡目前的設計。右邊每個方塊的顏色標出它相對標準的差異分類。這一頁只呈現現況與差距，不含修正方案與目標設計。</p>
+  <div class="meta"><span>基線：wiki 正本卡（不含 OpenSpec、Prototype）</span><span>範圍：訂單成立到品檢紀錄與成品庫存，含轉交，不含外發、需求單、出貨</span><span>配方：從標準出發比對，配方只附對映表</span></div>
+  <div class="legend">
+    <span class="tag t-ok">對齊：方向與標準一致</span>
+    <span class="tag t-defer">刻意延後：wiki 已寫明放到後續 Phase</span>
+    <span class="tag t-exc">產業例外：印刷按單生產特性造成</span>
+    <span class="tag t-align">待靠齊：與標準不同且沒有公司需求支撐</span>
+    <span class="tag t-decide">待裁決：兩種做法都成立，要 Miles 選</span>
+    <span class="tag t-none">無：整層不存在</span>
+  </div>
+</header>
+
+<section>
+  <h2>一、兩張架構圖</h2>
+  <p style="margin-top:10px;color:var(--muted)">同一水平高度的方塊互相對應。右欄的欄位名稱取自實體卡「欄位（業務可見）」段。</p>
+  <div class="arch" style="margin-top:16px">
+    <div class="col std">
+      <h3>標準結構 <small>製造業 ERP／MES 通用做法</small></h3>
+      <div class="band"><div class="band-label">第一層 銷售訂單</div>
+        <div class="box"><b>銷售訂單表頭</b><span>客戶、交期、金額、出貨地址</span></div>
+        <div class="box"><b>銷售訂單明細</b><span>一行＝一個品號 × 數量 × 單價，品號指向品號主檔</span></div></div>
+      <div class="arrow">↓ 明細行引用品號</div>
+      <div class="band"><div class="band-label">第二層 品號主檔</div>
+        <div class="row3">
+          <div class="box"><b>成品品號</b><span>料號、品名、規格、單位、庫存屬性、成本</span></div>
+          <div class="box"><b>半成品品號</b><span>書芯、封面等中間產出，可入庫、可被多個成品引用</span></div>
+          <div class="box"><b>材料品號</b><span>紙張、板材、油墨；採購屬性、庫存單位</span></div></div>
+        <div class="row2">
+          <div class="box"><b>工序主檔</b><span>做什麼、標準工時</span></div>
+          <div class="box"><b>工作中心</b><span>在哪台做、產能</span></div></div></div>
+      <div class="arrow">↓ 品號掛結構</div>
+      <div class="band"><div class="band-label">第三層 BOM 與製程路線</div>
+        <div class="row2">
+          <div class="box"><b>BOM</b><span>父件對子件、標準用量、損耗率、版本、有效日；虛擬件旗標</span></div>
+          <div class="box"><b>製程路線</b><span>工序順序、工作中心、標準工時；與 BOM 分開存，BOM 行指定投料工序</span></div></div></div>
+      <div class="arrow">↓ BOM × 需求量展開</div>
+      <div class="band"><div class="band-label">第四層 工單</div>
+        <div class="box"><b>工單表頭</b><span>生產品號、計畫數量、起迄日、狀態</span></div>
+        <div class="row2">
+          <div class="box"><b>工單用料明細</b><span>BOM 乘數量，列出每種料要領多少；現場可改替代料，不回寫 BOM</span></div>
+          <div class="box"><b>工序作業</b><span>逐道工序掛工作中心、計畫起迄、回報數量</span></div></div>
+        <div class="box"><b>無 BOM 工單</b><span>重工、打樣、客製改裝直接以品號開單</span></div></div>
+      <div class="arrow">↓ 執行</div>
+      <div class="band"><div class="band-label">廠內五步與庫存狀態</div>
+        <div class="box"><b>1 撥料到線邊倉</b><span>移轉單：大庫 → 線邊倉，總量不變</span></div>
+        <div class="box"><b>2 投料</b><span>發料單：原料扣帳，成本轉入在製品</span></div>
+        <div class="box"><b>3 完工回報</b><span>良品、不良品；成品掛「待驗」庫存狀態（檢驗庫存、品質單封鎖）</span></div>
+        <div class="box"><b>4 品檢分流</b><span>合格 → 成品倉；重工 → 重工單；報廢 → 報廢單與報廢地點</span></div>
+        <div class="box"><b>5 入庫上架</b><span>入庫單：成品成為可用庫存，銷售訂單依可用量出貨</span></div></div>
+    </div>
+
+    <div class="col">
+      <h3>現行設計 <small>wiki 正本卡 2026-10-28</small></h3>
+      <div class="band"><div class="band-label">訂單層</div>
+        <div class="box ok"><b>訂單</b><span>客戶、案名、接單業務、訂單類型（線下單／線上單／諮詢訂單）、金額組成、日期與時程</span></div>
+        <div class="box decide"><b>印件（訂單明細即印件）</b><span>同時是產品定義（規格備註、製程說明、品檢需求、印件配方）、數量與單價、生產進度十一欄（完成數、待驗量、完工良品數、不通過累計、報廢數、未處置品檢缺口、缺口、累計已出貨數量、累計送達數、可出貨額度、購買數量）、品檢缺口處置</span></div></div>
+      <div class="arrow">↓ 印件指定配方（可留空）</div>
+      <div class="band"><div class="band-label">主檔層</div>
+        <div class="row3">
+          <div class="box none"><b>成品品號：無</b><span>產品定義掛在印件；EC 商品在 EC 平台</span></div>
+          <div class="box none"><b>半成品品號：無</b><span>部件配方是製法，生產任務「印件部位」是文字</span></div>
+          <div class="box exc"><b>材料主檔</b><span>群組 → 材料 → 材料規格 → 供應商原料列、備料規格；進貨價、計價方式；單位只用來顯示</span></div></div>
+        <div class="row2">
+          <div class="box ok"><b>工序主檔、裝訂主檔</b><span>計價方法、工序廠商、預設放損率、製作天數；無標準工時</span></div>
+          <div class="box ok"><b>設備、產線與站點</b><span>計價參數、固定開機損、適用工序；產線底下有站點</span></div></div></div>
+      <div class="arrow">↓ 配方展開（線下由印務主管引用，線上系統自動）</div>
+      <div class="band"><div class="band-label">配方層（對應 BOM 與路線）</div>
+        <div class="row2">
+          <div class="box decide"><b>印件配方</b><span>配方名稱、適用產品類型、狀態；部件清單：部件配方、每組數量、是否獨立開工單（≈ 虛擬件）</span></div>
+          <div class="box align"><b>部件配方（版本）</b><span>工序段子表合存 BOM 行與路線：序號、工序、裝訂、產線、能力需求、材料、預設用量倍率（只作計價參考）、依賴前段、是否計入完成度。放損率在主檔，不在配方</span></div></div></div>
+      <div class="arrow">↓ 數量、日期、前置留空由印務填</div>
+      <div class="band"><div class="band-label">工單層</div>
+        <div class="box ok"><b>工單</b><span>所屬印件、目標數量、每份印件生產數量、工單預排完成日、工單實際完成日、來源配方與版本、異動紀錄</span></div>
+        <div class="row2">
+          <div class="box decide"><b>材料清單＝材料型生產任務</b><span>預計生產、放損由印務手填；系統不預填、不倒推；調整不回寫配方</span></div>
+          <div class="box ok"><b>生產任務（工序型、裝訂型）</b><span>計畫設備、產線、目的站點、每份工單需生產數量、任務預計完成日、生產數量、良品數、不良品數</span></div></div>
+        <div class="box exc"><b>加開工單、補做在原工單加開任務</b><span>補做不開新工單，狀態轉「補做」</span></div></div>
+      <div class="arrow">↓ 執行</div>
+      <div class="band"><div class="band-label">執行流程與數量帳</div>
+        <div class="box defer"><b>1 物料庫存：未啟用</b><span>備料靠材料型任務報工；在手、預留、可用、儲位、批號欄位已預留</span></div>
+        <div class="box defer"><b>2 物料消耗記錄：庫存模組啟用後</b><span>在製品數量以生產任務良品數、搬運量、點收量與轉交單承載</span></div>
+        <div class="box decide"><b>3 報工紀錄</b><span>生產數量、良品數、不良品數、不良原因、報工照片；待驗量是印件層算出來的數，不是成品狀態</span></div>
+        <div class="box exc"><b>4 品檢紀錄 → 品檢缺口處置</b><span>通過數量、不通過數量、不通過原因；處置兩軸：缺口是否補做 × 瑕疵品去向（報廢／客戶照收）。無報廢單、無報廢地點</span></div>
+        <div class="box defer"><b>5 成品庫存：Phase 2／3</b><span>現行完工良品數即可出貨額度；貨留品檢區就地揀貨裝箱</span></div>
+        <div class="box decide"><b>轉交單與點收</b><span>目的產線、目的站點、搬運數量、點收量；到料量取點收，不追蹤貨實際在哪一站</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>二、差異總覽</h2>
+  <div class="sum" style="margin-top:16px">
+    <div class="box ok"><b>8</b><span>對齊</span></div>
+    <div class="box defer"><b>4</b><span>刻意延後</span></div>
+    <div class="box exc"><b>5</b><span>產業例外</span></div>
+    <div class="box align"><b>6</b><span>待靠齊</span></div>
+    <div class="box decide"><b>6</b><span>待裁決</span></div>
+  </div>
+  <p style="margin-top:12px">29 列裡 21 列有差距。差距集中在三處：品號層整層不存在；BOM 層有製法沒有用量，且與路線合卡；完工後的待驗、合格、報廢、入庫是印件層的數字，不是成品的狀態。</p>
+</section>
+
+<section>
+  <h2>三、差異矩陣：差距、風險、可行方向</h2>
+  <p style="margin:10px 0 14px;color:var(--muted)">只列有差距的 21 列。「風險」寫維持現況會發生什麼事；「可行方向」只列選項，不是方案。對齊的 8 列見資料夾內的比對矩陣。</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>#</th><th>標準層</th><th>現行落點</th><th>差距</th><th>分類</th><th>風險（維持現況）</th><th>可行方向</th></tr></thead>
+    <tbody>
+    <tr><td class="num">1-2</td><td>銷售訂單明細</td><td>印件：訂單明細兼產品定義</td><td>明細行不指向品號，印件自己就是產品</td><td class="cls"><span class="tag t-decide">待裁決</span></td><td>同一印刷品再下單要重填規格；成本與良率無法以產品歸戶比較</td><td>甲 維持雙重身分，以印件配方當產品識別；乙 補成品品號，印件引用品號</td></tr>
+    <tr><td class="num">1-3</td><td>成品品號主檔</td><td>無。印件配方最接近，但它是製法範本</td><td>整層不存在</td><td class="cls"><span class="tag t-align">待靠齊</span></td><td>EC 規格品在 ERP 沒有身分，Phase 3 整合時訂單只能帶 JSON 規格；重複下單、成本、良率都無法歸戶</td><td>甲 先對 EC 規格品建品號（範圍可控）；乙 全部產品建品號，線下客製給臨時品號</td></tr>
+    <tr><td class="num">1-4</td><td>半成品品號主檔</td><td>無。部件配方是製法，印件部位是文字欄</td><td>整層不存在</td><td class="cls"><span class="tag t-align">待靠齊</span></td><td>共用部件（鑰匙圈、書芯）多做的量無處記，不能跨單調撥或入庫</td><td>甲 只對重複使用的部件建半成品品號；乙 不建，維持配方層共用</td></tr>
+    <tr><td class="num">1-5</td><td>材料品號主檔</td><td>材料主檔四層，含備料規格</td><td>比標準細；單位只顯示，無庫存單位驅動</td><td class="cls"><span class="tag t-exc">產業例外</span></td><td>庫存啟用時缺庫存單位與計價單位的換算欄</td><td>庫存啟用前補庫存單位與換算（PrintVis 雙單位做法）</td></tr>
+    <tr><td class="num">1-7</td><td>BOM 本體</td><td>每組數量、預設用量倍率；版本在部件配方；放損在主檔</td><td>用量只作計價參考，不驅動展開；無有效日期</td><td class="cls"><span class="tag t-decide">待裁決</span></td><td>每張工單數量全靠人填、錯填無對照；Phase 1 KPI「BOM 展開」只展開任務清單不展開數量</td><td>甲 維持不預填，系統並列顯示配方建議量供對照；乙 預填可改。兩者都與 2026-10 數量帳拍板相關，要 Miles 裁決</td></tr>
+    <tr><td class="num">1-8</td><td>製程路線</td><td>部件配方工序段</td><td>BOM 行與路線合在同一張子表</td><td class="cls"><span class="tag t-align">待靠齊</span></td><td>材料不能脫離工序被引用，半成品無處掛；對接 EC 配置或標準系統時要轉換</td><td>甲 維持合卡，在卡上標明對應標準兩層；乙 拆成 BOM 行與路線兩子表</td></tr>
+    <tr><td class="num">1-9</td><td>虛擬件</td><td>是否獨立開工單＝否 → 併單</td><td>沒有庫存層時虛擬件只剩「要不要獨立開單」</td><td class="cls"><span class="tag t-exc">產業例外</span></td><td>無</td><td>維持</td></tr>
+    <tr><td class="num">1-11</td><td>工單用料明細</td><td>材料型生產任務，數量印務手填</td><td>「不回寫 BOM」對齊；「BOM 乘數量展開」不對齊，且是拍板規則</td><td class="cls"><span class="tag t-decide">待裁決</span></td><td>同 1-7</td><td>同 1-7</td></tr>
+    <tr><td class="num">1-13</td><td>無 BOM 工單</td><td>加開工單對齊；補做在原工單加開任務</td><td>補做不開新工單</td><td class="cls"><span class="tag t-exc">產業例外</span></td><td>重工成本混在原任務實際成本，看不到重工成本與重工率</td><td>維持；在實際成本側以「補做」狀態的任務彙總重工成本</td></tr>
+    <tr><td class="num">2-1</td><td>撥料到線邊倉</td><td>物料庫存未啟用；備料靠材料型任務</td><td>整步沒有庫存地點概念</td><td class="cls"><span class="tag t-defer">刻意延後</span></td><td>料夠不夠靠人判斷；備料任務不知料從哪來、還剩多少</td><td>維持延後；把啟用條件寫進 ERP與MES建置專案</td></tr>
+    <tr><td class="num">2-2</td><td>投料與在製品</td><td>物料消耗記錄待啟用；在製品以良品數、搬運量、點收量承載</td><td>料帳缺；在製品追法接近 PrintVis 輕量標籤</td><td class="cls"><span class="tag t-defer">刻意延後</span></td><td>實際料耗與折損率算不出；成本只有工時與主檔參考價</td><td>維持延後；料耗先以材料型任務報工數近似（現行已如此）</td></tr>
+    <tr><td class="num">2-3</td><td>完工回報與待驗</td><td>報工紀錄；待驗量是印件層衍生欄</td><td>標準把待驗做成庫存狀態或位置（SAP 檢驗庫存、Dynamics 365 封鎖、Odoo 生產位置）；現行是數字</td><td class="cls"><span class="tag t-decide">待裁決</span></td><td>分批入庫、退貨重驗、跨訂單調撥沒有載體；多人同時寫入靠守恆規則擋</td><td>甲 維持衍生數，寫明適用邊界是單批完工即出貨；乙 成品庫存啟用時把待驗改成庫存狀態</td></tr>
+    <tr><td class="num">2-5</td><td>不合格分流：重工</td><td>品檢缺口處置兩軸；補做在原工單加開</td><td>接近 SAP「原單加工序」；「照收＝修正品檢紀錄」為現行特有</td><td class="cls"><span class="tag t-exc">產業例外</span></td><td>同 1-13；照收改紀錄後，原始不通過事實只留在修正紀錄</td><td>維持；確認修正紀錄足以回答「原本驗出多少不良」</td></tr>
+    <tr><td class="num">2-6</td><td>不合格分流：報廢</td><td>瑕疵品去向＝報廢，記在處置紀錄</td><td>無報廢單、無報廢地點、無報廢成本欄</td><td class="cls"><span class="tag t-defer">刻意延後</span></td><td>折損 KPI 看得到數量看不到金額</td><td>在實際成本側加報廢成本彙總，不需庫存模組</td></tr>
+    <tr><td class="num">2-7</td><td>成品入庫</td><td>成品庫存 Phase 2／3；完工良品數即可出貨額度；貨留品檢區</td><td>wiki 已寫明延後；按單生產多數完工即出貨</td><td class="cls"><span class="tag t-defer">刻意延後</span></td><td>自取件、分批交貨、EC 規格品備貨無法管在庫；貨的位置靠標示卡與 Slack</td><td>甲 維持延後，EC 整合時再評估；乙 Phase 2 先啟用最小成品批（入庫數量、儲位、可出貨數）</td></tr>
+    <tr><td class="num">2-8</td><td>站間搬運</td><td>轉交單：目的站點、搬運數量、點收量</td><td>系統不追蹤貨實際在哪一站，只追數量放行</td><td class="cls"><span class="tag t-decide">待裁決</span></td><td>貨放錯站靠口頭；產線與站點變多時找貨成本上升</td><td>甲 維持（成本最低）；乙 點收時記實際站點</td></tr>
+    <tr><td class="num">3-1</td><td>商品配置器</td><td>EC 題目與選項綁 ERP 主檔識別碼</td><td>前半段有，後半段（選項到 BOM 行與工序）靠 EC 商品人工建</td><td class="cls"><span class="tag t-align">待靠齊</span></td><td>EC 與 ERP 各維護一份製法；Phase 1 KPI 分子無法由 ERP 算出</td><td>甲 選項直接綁配方段參數；乙 EC 商品引用印件配方（配方展開規則已寫此意圖）</td></tr>
+    <tr><td class="num">3-2</td><td>建模模式</td><td>EC 線上單＝模式二變體：規格 JSON、無母料號、無可配置 BOM</td><td>三家文件沒有明列選擇判準</td><td class="cls"><span class="tag t-decide">待裁決</span></td><td>無母料號時 EC 訂單進 ERP 只有 JSON，ORD-043 待開</td><td>EC 整合設計時裁決：模式二加母料號（配方名當母料號），或模式一</td></tr>
+    <tr><td class="num">3-3</td><td>線上線下共用製法</td><td>意圖對齊（配方展開規則），落地未完成</td><td>EC 人工建 BOM、線下印務手動規劃</td><td class="cls"><span class="tag t-align">待靠齊</span></td><td>同一商品 EC 與線下做法可能不同；成本估算兩套；業界做法是產品與價格正本在 MIS 端，現行 EC 商品不在 ERP 範圍，方向相反</td><td>印件配方成為唯一製法來源；先定落地順序與資料正本方向</td></tr>
+    <tr><td class="num">3-4</td><td>線下客製單的品號</td><td>印件即產品定義；配方由工單沉澱</td><td>由下而上建 BOM，業界少見但合理；沉澱結果無品號可掛</td><td class="cls"><span class="tag t-exc">產業例外</span></td><td>沉澱出的配方無法與 EC 規格品共用身分</td><td>甲 一次性客製不建品號，沉澱時才建；乙 全部建臨時品號</td></tr>
+    <tr><td class="num">3-5</td><td>半成品共用</td><td>部件配方可被多份印件配方引用</td><td>製法共用對齊，缺半成品品號</td><td class="cls"><span class="tag t-align">待靠齊</span></td><td>同 1-4</td><td>同 1-4</td></tr>
+    </tbody></table></div>
+</section>
+
+<section>
+  <h2>四、五個主要風險</h2>
+  <div class="tablewrap" style="margin-top:16px"><table style="min-width:760px">
+    <thead><tr><th>#</th><th>風險</th><th>來自哪些差距</th><th>什麼時候會痛</th></tr></thead>
+    <tbody>
+    <tr><td class="num">R1</td><td>沒有品號層，產品沒有身分。成本、良率、重複下單、EC 整合全部無法以產品歸戶</td><td>1-2、1-3、1-4、3-1 到 3-5</td><td>Phase 3 EC 整合開始時；回頭單變多時</td></tr>
+    <tr><td class="num">R2</td><td>用量不驅動，數量全人工。Phase 1 KPI「BOM 覆蓋率」量的是任務清單展開，不是用量展開</td><td>1-7、1-11</td><td>Phase 1 驗收時；印務人力不足時</td></tr>
+    <tr><td class="num">R3</td><td>待驗與入庫是數字不是狀態。多批、退貨重驗、跨訂單調撥、EC 備貨沒有載體</td><td>2-3、2-7、2-8</td><td>EC 規格品要備貨時；客戶自取件與分批交貨增加時</td></tr>
+    <tr><td class="num">R4</td><td>EC 與 ERP 製法兩套，資料正本方向與業界相反（業界正本在 MIS 端）</td><td>3-1、3-3</td><td>EC 商品改規格而 ERP 配方沒跟上時；成本對不上時</td></tr>
+    <tr><td class="num">R5</td><td>料帳空白。實際料耗、折損金額、報廢成本無法量化</td><td>2-1、2-2、2-6</td><td>要算真實毛利或折損 KPI 時</td></tr>
+    </tbody></table></div>
+</section>
+
+<section>
+  <h2>五、後續可行的方向</h2>
+  <p style="margin:10px 0 14px;color:var(--muted)">三條路線由輕到重，互不排斥、可分階段。每條只寫動到哪裡、解掉哪些風險、要先裁決什麼；怎麼設計留給下一輪規劃流。</p>
+  <div class="paths">
+    <div class="path"><div class="eyebrow">路線一</div><h3>寫明邊界，不動結構</h3>
+      <p>把「刻意延後」與「產業例外」的適用邊界寫進對應規則卡：待驗為衍生數只適用單批完工即出貨、不追蹤貨位、補做不開新單。</p>
+      <dl><dt>解掉</dt><dd>無。把風險變成已知、有邊界</dd><dt>留著</dt><dd>R1 到 R5</dd><dt>動到</dt><dd>齊套邏輯、印件生產流程、品檢通過入庫三張卡的範圍外段</dd><dt>先裁決</dt><dd>無</dd></dl></div>
+    <div class="path"><div class="eyebrow">路線二</div><h3>補品號層，其餘不動</h3>
+      <p>建成品與半成品品號，印件引用品號；印件配方與部件配方對映到品號底下的 BOM 與路線；EC 規格品先建。</p>
+      <dl><dt>解掉</dt><dd>R1；R4 一半（有共同身分）</dd><dt>留著</dt><dd>R2、R3、R5</dd><dt>動到</dt><dd>印件、印件配方、部件配方、工單、兩張資料結構總覽、EC 商品管理</dd><dt>先裁決</dt><dd>T1 品號層範圍；T7 Phase 1 KPI 分子改寫</dd></dl></div>
+    <div class="path"><div class="eyebrow">路線三</div><h3>品號、用量驅動、成品批</h3>
+      <p>路線二之外，用量倍率驅動工單用料預填（可改），待驗改成成品批的狀態，成品庫存最小集合提前到 Phase 2。</p>
+      <dl><dt>解掉</dt><dd>R1 到 R4</dd><dt>留著</dt><dd>R5（料帳仍待庫存模組）</dd><dt>動到</dt><dd>路線二全部，加數量換算規則、配方展開規則、報工紀錄、品檢紀錄、成品庫存</dd><dt>先裁決</dt><dd>T2 推翻或維持 2026-10「系統不預填」拍板；T4 成品庫存啟用時點</dd></dl></div>
+  </div>
+</section>
+
+<section>
+  <div class="note">
+    <h3>查證與限制</h3>
+    <ul>
+      <li>標準做法取自 raw 六份 2026-06-14 系統調研（Dynamics 365、Odoo、ISA-95、PrintVis、印刷 MIS、Salesforce Manufacturing Cloud）與 2026-10-28 補查（46 條外部來源，抽查 8 條、修正 3 處措辭）。</li>
+      <li>補查查無的項目：Dynamics 365 與 Odoo 的重工單官方做法、兩種建模模式的選擇判準、SAP Commerce 與 S/4HANA 官方整合文件、Salesforce 可配置產品的主資料歸屬。SAP 來源多為 4.6C 與 4.70 舊版。</li>
+      <li>現行落點只取 wiki 正本卡；Prototype 與 OpenSpec 的實作狀態未比對。</li>
+      <li>完整逐列表、配方對映表、議題清單 T1 到 T7 見同資料夾 <code>比對矩陣.md</code>，拍板紀錄見 <code>grill.md</code>。</li>
+    </ul>
+  </div>
+</section>
+</main>
