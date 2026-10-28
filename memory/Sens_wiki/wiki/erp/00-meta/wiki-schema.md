@@ -1,7 +1,7 @@
 ---
 type: meta
 status: active
-last-reviewed: 2026-10-27
+last-reviewed: 2026-10-29
 ---
 
 # Wiki Schema（Formal）
@@ -52,12 +52,12 @@ last-reviewed: 2026-10-27
 module:
   - 需求單 | 訂單管理 | 諮詢單 | 售後服務
   - 工單 | 生產任務 | 印前審稿 | 品檢
-  - 材料主檔 | 製程主檔 | 裝訂主檔
+  - 品項主檔 | 工序主檔 | 裝訂主檔
   - 線上編輯器                    # 線上編輯器產品
   - 跨模組                  # 跨模組（狀態機 / 商業流程 / 業務情境 / 使用者角色）
 ```
 
-**新舊值對照**（轉換期查表用）：需求單 = quote-request、訂單管理 = order-management、諮詢單 = consultation-request、售後服務 = after-sales-ticket、工單 = work-order、生產任務 = production-task、印前審稿 = prepress-review、品檢 = qc、材料主檔 = material-master、製程主檔 = process-master、裝訂主檔 = binding-master、線上編輯器 = graphic-editor、跨模組 = cross-module。
+**新舊值對照**（轉換期查表用）：需求單 = quote-request、訂單管理 = order-management、諮詢單 = consultation-request、售後服務 = after-sales-ticket、工單 = work-order、生產任務 = production-task、印前審稿 = prepress-review、品檢 = qc、品項主檔 = material-master（舊值「材料主檔」）、工序主檔 = process-master（舊值「製程主檔」）、裝訂主檔 = binding-master、線上編輯器 = graphic-editor、跨模組 = cross-module。
 
 ## 二B、領域 tag（`tags:` 欄位，必標範圍內必填）
 
