@@ -7,7 +7,7 @@
 - 主要：部件的工序段序列可維護（BOM 三類的項目、能力需求、用量倍率、相依）
 - 次要：改版不回溯已展開的工單；同一部件僅一份生效配方
 
-- 商業邏輯正本：[部件配方](../../../memory/Sens_wiki/wiki/erp/05-entities/部件配方.md)（欄位）、[BOM結構](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md)（BOM 三類與計價）
+- 商業邏輯正本：[部件配方](../../../memory/Sens_wiki/wiki/erp/05-entities/部件配方.md)（欄位）、[成本計算規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/成本計算規則.md)（BOM 三類與計價）
 - 相依模組：材料主檔／工序主檔／裝訂主檔、設備、印件配方
 
 ---

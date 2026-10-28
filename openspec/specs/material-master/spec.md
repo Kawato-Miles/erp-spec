@@ -17,7 +17,7 @@
 
 ---
 
-**範圍外（本輪掛點，不展開）**：採購單位與銷售單位不一致時的換算（列表可見採購「噸」、銷售「噸／張／dm²」）屬採購與庫存模組，物料庫存量帳為本輪掛點（見 `memory/erp/plans/_archives/2026/production-stage/production-stage-high-level-design.md` § 0.2）。材料規格的「自定義」命名約束與 `pricing_selection` 覆寫歷程屬實作參數。三種計價分支的計算公式正本見 wiki [BOM結構](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md)（按面積已收斂為「單獨面積」與「總面積」兩支，皆為單件或總面積 × 查表值 × 數量）。
+**範圍外（本輪掛點，不展開）**：採購單位與銷售單位不一致時的換算（列表可見採購「噸」、銷售「噸／張／dm²」）屬採購與庫存模組，物料庫存量帳為本輪掛點（見 `memory/erp/plans/_archives/2026/production-stage/production-stage-high-level-design.md` § 0.2）。材料規格的「自定義」命名約束與 `pricing_selection` 覆寫歷程屬實作參數。三種計價分支的計算公式正本見 wiki [成本計算規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/成本計算規則.md)（按面積已收斂為「單獨面積」與「總面積」兩支，皆為單件或總面積 × 查表值 × 數量）。
 
 ## Requirements
 
@@ -233,7 +233,7 @@ pricing_selection SHALL 由部件配方工序段展開帶出（按重量材料�
 > 欄位正本（業務可見欄位表）在 wiki 實體卡；本段僅保留實作層計價結構與引用結構。
 >
 > - 材料群組 / 材料 / 材料規格欄位正本：[wiki 材料主檔實體卡](../../../memory/Sens_wiki/wiki/erp/05-entities/材料主檔.md) § 欄位（業務可見）
-> - 計價子分支組成與公式正本：[wiki BOM 結構卡](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md)
+> - 計價子分支組成與公式正本：[wiki 成本計算規則卡](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/成本計算規則.md)
 
 以下為實作層計價設定與生產任務引用結構（技術層欄位，非業務欄位正本；wiki 材料主檔卡明文將計價子表細項列為實作規格）：
 

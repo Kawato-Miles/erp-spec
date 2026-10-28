@@ -5,7 +5,7 @@
 
 **範圍**：主檔維護與停用連動。設備佇列、負荷與停機的可視化歸 [production-overview](../production-overview/spec.md)（M3）；選機由印務於製程規劃時決定，見 [work-order](../work-order/spec.md) § 製程規劃。
 
-**正本邊界**：欄位表見 wiki [設備](../../../memory/Sens_wiki/wiki/erp/05-entities/設備.md)、產線標籤見 wiki [產線](../../../memory/Sens_wiki/wiki/erp/05-entities/產線.md)、計價參數的計算框架見 wiki [BOM結構](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md) § 計價引擎計算框架。
+**正本邊界**：欄位表見 wiki [設備](../../../memory/Sens_wiki/wiki/erp/05-entities/設備.md)、產線標籤見 wiki [產線](../../../memory/Sens_wiki/wiki/erp/05-entities/產線.md)、計價參數的計算框架見 wiki [成本計算規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/成本計算規則.md) § 計價引擎計算框架。
 ## Requirements
 ### Requirement: 設備主檔管理
 
@@ -13,7 +13,7 @@
 
 系統 SHALL NOT 於設備主檔維護時費率、每印費率、折舊、固定班內工時、準備時間與換料校機時間——這些參數沒有下游在用：工時已自報工移除、稼動率已不實作、折舊與開機費不進實際成本。**實際設備費 SHALL 只取階梯價**，SHALL NOT 含開機費、SHALL NOT 攤回各生產任務（見 [work-order spec § 工單成本對照](../work-order/spec.md)）；開機費 SHALL 仍為平版預估設備費的組成。**固定開機損 SHALL 為估算參考**，SHALL NOT 代入任何生產任務的放損欄（見 [work-order spec § 生產任務目標數量預設與放損率](../work-order/spec.md)）。
 
-**特殊色倍率的三顆參數（特別色倍率、金屬倍率、獨立印倍率）SHALL 僅適用平版計價型別**，主檔 SHALL 於三欄標明僅平版適用。數位計價型別的特殊色 SHALL 由階梯表的「特殊色」面價承載——Pantone、金屬色（合印）與獨立印三類 SHALL 共用該欄價、SHALL NOT 乘任何倍率、SHALL NOT 分大小尺寸欄。大圖計價型別 SHALL 無色數概念與特殊色加價。計算框架與各型算式的正本見 wiki [BOM結構](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/BOM結構.md) § 計價引擎計算框架。
+**特殊色倍率的三顆參數（特別色倍率、金屬倍率、獨立印倍率）SHALL 僅適用平版計價型別**，主檔 SHALL 於三欄標明僅平版適用。數位計價型別的特殊色 SHALL 由階梯表的「特殊色」面價承載——Pantone、金屬色（合印）與獨立印三類 SHALL 共用該欄價、SHALL NOT 乘任何倍率、SHALL NOT 分大小尺寸欄。大圖計價型別 SHALL 無色數概念與特殊色加價。計算框架與各型算式的正本見 wiki [成本計算規則](../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/成本計算規則.md) § 計價引擎計算框架。
 
 所屬產線 SHALL 為產線標籤（印件、BOM 部件配方工序段與設備三個掛點共用同一套標籤，正本見 wiki [產線](../../../memory/Sens_wiki/wiki/erp/05-entities/產線.md)），SHALL NOT 為獨立於標籤之外的固定枚舉。設備主檔的維護責任為印務。欄位定義的正本見 wiki [設備](../../../memory/Sens_wiki/wiki/erp/05-entities/設備.md)。
 
