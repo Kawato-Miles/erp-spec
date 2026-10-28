@@ -1,0 +1,221 @@
+<title>我們的架構怎麼完成一張單</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap">
+<style>
+/* 版面概念：與「標準架構怎麼完成一張單」同一套版型與同一個情境，欄換成 wiki 現行模組，好並排對照。 */
+:root{--bg:#f7f5f2;--paper:#ffffff;--fg:#26211d;--muted:#6f6760;--line:#e2dbd3;
+  --m1:#1f5f8b;--m1b:#e3eef6; --m2:#5a4fa2;--m2b:#ebe8f7; --m3:#2b7a5b;--m3b:#e2f2ea; --m4:#b4541c;--m4b:#fbeadf; --m5:#8a6d00;--m5b:#fbf1d0; --m6:#2f6b8f;--m6b:#dfeef6; --m7:#6b2f6b;--m7b:#f3e3f3; --off:#9a948e;
+  --font:"Noto Sans TC",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1a1714;--paper:#241f1b;--fg:#f0eae3;--muted:#b0a69c;--line:#3a332c;
+  --m1:#8dc0e8;--m1b:#1b2d3d;--m2:#b9b0ee;--m2b:#28244a;--m3:#8fd4b4;--m3b:#1b3429;--m4:#f0a070;--m4b:#3d2719;--m5:#f0d070;--m5b:#3a3012;--m6:#8fc3e0;--m6b:#1b3240;--m7:#d79fd7;--m7b:#3a1f3a;--off:#6e6660;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1a1714;--paper:#241f1b;--fg:#f0eae3;--muted:#b0a69c;--line:#3a332c;
+  --m1:#8dc0e8;--m1b:#1b2d3d;--m2:#b9b0ee;--m2b:#28244a;--m3:#8fd4b4;--m3b:#1b3429;--m4:#f0a070;--m4b:#3d2719;--m5:#f0d070;--m5b:#3a3012;--m6:#8fc3e0;--m6b:#1b3240;--m7:#d79fd7;--m7b:#3a1f3a;--off:#6e6660;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-weight:500;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 80px}
+main{max-width:1180px;margin:0 auto;display:grid;gap:48px}
+h1{font-size:clamp(1.6rem,4.2vw,2.4rem);font-weight:900;line-height:1.2;margin:0;text-wrap:balance}
+h2{font-size:clamp(1.25rem,3.4vw,1.8rem);font-weight:900;margin:0}
+p{margin:0}
+.lead{color:var(--muted);max-width:60ch}
+.scene{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.chip{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:700;font-size:.95rem}
+.chip b{color:var(--m4)}
+.lanes{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:14px}
+.grid{display:grid;grid-template-columns:72px repeat(7,minmax(130px,1fr));gap:8px;min-width:1100px;align-items:stretch}
+.hd{font-size:.8rem;font-weight:900;letter-spacing:.06em;padding:8px 10px;border-radius:8px;text-align:center}
+.hd.m1{background:var(--m1b);color:var(--m1)} .hd.m2{background:var(--m2b);color:var(--m2)} .hd.m3{background:var(--m3b);color:var(--m3)} .hd.m4{background:var(--m4b);color:var(--m4)} .hd.m5{background:var(--m5b);color:var(--m5)} .hd.m6{background:var(--m6b);color:var(--m6)} .hd.m7{background:var(--m7b);color:var(--m7)}
+.hd.off{background:transparent;color:var(--off);border:1px dashed var(--off)}
+.step{display:grid;place-items:center;font-weight:900;color:var(--muted);font-size:1.1rem;border-right:1px dashed var(--line)}
+.cell{min-height:64px;border-radius:10px;border:1px solid var(--line);padding:8px 10px;font-size:.84rem;line-height:1.35;display:grid;align-content:start;gap:3px;background:var(--bg)}
+.cell b{font-weight:900;font-size:.9rem}
+.cell small{color:var(--muted)}
+.cell.m1{border-left:4px solid var(--m1)} .cell.m2{border-left:4px solid var(--m2)} .cell.m3{border-left:4px solid var(--m3)} .cell.m4{border-left:4px solid var(--m4)} .cell.m5{border-left:4px solid var(--m5)} .cell.m6{border-left:4px solid var(--m6)} .cell.m7{border-left:4px solid var(--m7)}
+.cell.doc::before{content:"單據";font-size:.68rem;letter-spacing:.1em;color:var(--muted)}
+.cell.data::before{content:"主資料";font-size:.68rem;letter-spacing:.1em;color:var(--muted)}
+.cell.calc::before{content:"計算";font-size:.68rem;letter-spacing:.1em;color:var(--muted)}
+.cell.num2::before{content:"印件層數字";font-size:.68rem;letter-spacing:.1em;color:var(--muted)}
+.cell.off{border:1px dashed var(--off);background:transparent;color:var(--off)} .cell.off b{color:var(--off)}
+.empty{border:none;background:transparent}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media (max-width:820px){.two{grid-template-columns:1fr}}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:12px;min-width:0}
+.panel h3{margin:0;font-size:1rem;font-weight:900}
+.tree{display:grid;gap:6px;font-size:.92rem}
+.tree .n{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tree .n span{display:inline-block;padding:4px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-weight:700}
+.tree .n.l1{padding-left:28px} .tree .n.l2{padding-left:56px}
+.tree .n em{font-style:normal;color:var(--muted);font-size:.84rem}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:.74rem;font-weight:700}
+.tag.a{background:var(--m2b);color:var(--m2)} .tag.b{background:var(--m3b);color:var(--m3)} .tag.c{background:var(--m5b);color:var(--m5)} .tag.d{background:var(--m4b);color:var(--m4)}
+.pipe{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:8px;align-items:center}
+@media (max-width:820px){.pipe{grid-template-columns:1fr}.pipe .ar{transform:rotate(90deg)}}
+.node{border-radius:12px;padding:14px;display:grid;gap:6px;border:1px solid var(--line);background:var(--bg);min-width:0}
+.node b{font-size:1.02rem;font-weight:900} .node small{color:var(--muted);line-height:1.35}
+.node.a{border-top:5px solid var(--m2)} .node.b{border-top:5px solid var(--m3)} .node.c{border-top:5px solid var(--m7)} .node.d{border-top:5px solid var(--m1)}
+.ar{font-size:1.6rem;color:var(--muted);text-align:center} .ar small{display:block;font-size:.72rem;line-height:1.2}
+.formula{display:grid;gap:10px}
+.f{display:grid;grid-template-columns:170px 1fr;gap:12px;align-items:start;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:.92rem}
+@media (max-width:600px){.f{grid-template-columns:1fr}}
+.f b{font-weight:900}
+.num{font-variant-numeric:tabular-nums}
+.foot{color:var(--muted);font-size:.86rem;max-width:70ch}
+.legend{display:flex;flex-wrap:wrap;gap:8px;font-size:.8rem;color:var(--muted)}
+.legend span{border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+.diff{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.diff .node{border-top-color:var(--m4)}
+</style>
+
+<main>
+<header style="display:grid;gap:12px">
+  <h1>我們的架構怎麼完成一張單</h1>
+  <p class="lead">wiki 現行設計（2026-10-29）。同一張單、同一個情境，欄換成我們的模組。數字只是示意，取法照成本計算規則卡。</p>
+  <div class="scene">
+    <span class="chip">情境：<b>500 本 A5 精裝書</b></span><span class="chip">書芯 200 頁 ＋ 硬殼封面</span><span class="chip">線下接單，交期 10 天</span><span class="chip">驗出 5 本色差</span>
+  </div>
+</header>
+
+<!-- 一 主資料 -->
+<section style="display:grid;gap:14px">
+  <h2>1. 開工前先有的主資料：主檔＋配方</h2>
+  <div class="two">
+    <div class="panel"><h3>品項主檔與製程類主檔：每個項目帶自己的計價方法</h3>
+      <div class="tree">
+        <div class="n"><span>道林紙 80g</span><span class="tag c">品項主檔</span><em>材料 → 規格 → 供應商原料「菊全」帶單張價 → 備料「四開」開料數 4</em></div>
+        <div class="n"><span>灰紙板 2mm、銅版紙 157g</span><span class="tag c">品項主檔</span><em>封面用料</em></div>
+        <div class="n"><span>印刷 P6、摺紙 P5、配頁 P4、鎖線 P4、裱板 P4</span><span class="tag b">工序主檔</span><em>各自的計價方法與價格表、工序廠商、預設放損率</em></div>
+        <div class="n"><span>精裝 B1 台數計價</span><span class="tag b">裝訂主檔</span><em>每本最低金額、總價最低金額</em></div>
+        <div class="n"><span>平版機 A（E1）</span><span class="tag d">設備</span><em>開機費 1,500、千車階梯單黑價與彩色價、色倍率、適用工序</em></div>
+      </div>
+      <p class="foot">沒有成品與半成品的品號。品項主檔現階段只收原物料（2026-10-29 定位句）。</p>
+    </div>
+    <div class="panel"><h3>配方：製法範本，用量只作參考</h3>
+      <div class="tree">
+        <div class="n"><span>印件配方「A5 精裝書」</span><span class="tag a">印件配方</span></div>
+        <div class="n l1"><span>部件：書芯 × 1</span><em>是否獨立開工單＝是</em></div>
+        <div class="n l1"><span>部件：封面 × 1</span><em>是否獨立開工單＝是</em></div>
+        <div class="n l1"><span>印件層工序段：上殼 → 包裝</span><em>併進最前一張工單</em></div>
+        <div class="n"><span>部件配方「書芯」v2</span><span class="tag a">部件配方</span><em>工序段：1 印刷（材料＝道林紙四開備料、產線＝印刷線）→ 2 摺紙 → 3 配頁 → 4 鎖線（計入完成度）</em></div>
+      </div>
+      <p class="foot">工序段同時放用料與工序，等於 BOM 行與路線合在一張子表。預設用量倍率只供計價參考，不預填任何數量。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 二 泳道 -->
+<section style="display:grid;gap:14px">
+  <h2>2. 一張單走過我們的模組</h2>
+  <div class="legend"><span>單據＝留下紀錄的交易</span><span>主資料＝事先建好、被引用</span><span>計算＝系統依算式算出</span><span>印件層數字＝衍生欄，不是庫存狀態</span><span>虛線欄＝模組未啟用</span></div>
+  <div class="lanes"><div class="grid">
+    <div class="empty"></div>
+    <div class="hd m1">訂單與印件</div><div class="hd m2">主檔與配方</div><div class="hd m3">工單與生產任務</div><div class="hd m4">現場（派工、報工、轉交）</div><div class="hd m6">品檢與印件數量帳</div><div class="hd off">倉儲（未啟用）</div><div class="hd m7">成本</div>
+
+    <div class="step">1</div>
+    <div class="cell m1 doc"><b>訂單 ＋ 印件</b>PI-0820：購買數量 500 本、單價、規格備註、印件配方「A5 精裝書」<small>印件＝訂單明細＝產品定義</small></div>
+    <div class="cell m2 data"><b>印件配方</b><small>印件指向它，可留空</small></div>
+    <div class="cell m3 doc"><b>空工單草稿</b>審稿合格、確認製作細節後系統自動建</div>
+    <div class="empty"></div><div class="empty"></div>
+    <div class="cell off"><b>可承諾量檢查：無</b><small>沒有成品庫存可查</small></div>
+    <div class="empty"></div>
+
+    <div class="step">2</div>
+    <div class="empty"></div>
+    <div class="cell m2 data"><b>部件配方工序段</b><small>展開時逐段成任務</small></div>
+    <div class="cell m3 doc"><b>引用配方展開</b>印務主管執行：WO-書芯、WO-封面（目標數量 500、每份印件生產數量 1）<small>覆蓋空草稿</small></div>
+    <div class="empty"></div><div class="empty"></div><div class="empty"></div><div class="empty"></div>
+
+    <div class="step">3</div>
+    <div class="empty"></div>
+    <div class="cell m2 data"><b>主檔計價參數</b><small>任務建立時帶入</small></div>
+    <div class="cell m3 doc"><b>生產任務（印務手填數量）</b>材料型「道林紙四開備料」6,500 ＋放損 200 ＝ <span class="num">6,700</span> 張<br>印刷 6,700、摺紙 6,700、配頁 500、鎖線 500、精裝 500<small>計畫設備平版 A；目的站點；需轉交</small></div>
+    <div class="empty"></div><div class="empty"></div>
+    <div class="cell off"><b>撥料、發料：無</b><small>備料靠材料型任務報工</small></div>
+    <div class="cell m7 calc"><b>計價快照</b>每筆任務凍結：任務小計（不含顏色）＋顏色費用<small>工單預估成本＝Σ</small></div>
+
+    <div class="step">4</div>
+    <div class="empty"></div><div class="empty"></div>
+    <div class="cell m3 doc"><b>送審 → 核可 → 交付產線</b><small>工單狀態推進</small></div>
+    <div class="cell m4 doc"><b>工作包</b>生管合批派給師傅、接收</div>
+    <div class="empty"></div><div class="empty"></div><div class="empty"></div>
+
+    <div class="step">5</div>
+    <div class="empty"></div><div class="empty"></div><div class="empty"></div>
+    <div class="cell m4 doc"><b>報工紀錄</b>備料 6,700；印刷 生產 6,700、良品 6,620、不良 80、照片<br><b>轉交單</b>印刷站 → 摺紙站 搬運 6,620 → <b>點收</b> 6,620<small>下游到料量＝點收量</small></div>
+    <div class="cell m6 num2"><b>完成數</b>隨計入完成度的鎖線任務良品放大<small>倍率換算、無條件捨去</small></div>
+    <div class="cell off"><b>在製品帳：無</b><small>在製數量看任務良品數、搬運量、點收量</small></div>
+    <div class="cell m7 calc"><b>實際成本累積</b>同一算式，數量改取報工累計生產數量<small>開機費不進實際</small></div>
+
+    <div class="step">6</div>
+    <div class="empty"></div><div class="empty"></div>
+    <div class="cell m3 calc"><b>工單已完成</b>旗下任務全部完成，系統自動</div>
+    <div class="cell m4 doc"><b>末道轉交</b>鎖線站 → 品檢站 500 本 → 點收</div>
+    <div class="cell m6 num2"><b>待驗量 500</b>印件出現在品檢待驗清單<small>算出來的數，不是庫存狀態</small></div>
+    <div class="cell off"><b>待驗庫存：無</b></div>
+    <div class="empty"></div>
+
+    <div class="step">7</div>
+    <div class="empty"></div><div class="empty"></div>
+    <div class="cell m3 doc"><b>工單異動：補做</b>原工單加開「補做」任務 5 本，不開新工單</div>
+    <div class="cell m4 doc"><b>補做報工</b>5 本良品 → 轉交品檢站</div>
+    <div class="cell m6 doc"><b>品檢紀錄</b>通過 495、不通過 5（色差）<br><b>缺口處置</b>補做＝是、瑕疵品去向＝報廢<br><span class="num">完工良品數 495 → 500</span>、報廢數 5</div>
+    <div class="cell off"><b>成品入庫、報廢過帳：無</b><small>貨留品檢區就地揀貨</small></div>
+    <div class="cell m7 calc"><b>補做成本</b>進原工單實際成本，不另列</div>
+
+    <div class="step">8</div>
+    <div class="cell m1 doc"><b>出貨單</b>可出貨額度 500 → 業務建單</div>
+    <div class="empty"></div><div class="empty"></div><div class="empty"></div>
+    <div class="cell m6 num2"><b>可出貨額度</b>＝完工良品數 − 已佔用<small>印件層的可承諾量</small></div>
+    <div class="cell off"><b>入庫單：無</b><small>Phase 2／3</small></div>
+    <div class="cell m7 calc"><b>預估對實際並排</b>印件實際成本、實際利潤率<small>無差異科目</small></div>
+  </div></div>
+  <p class="foot">橫向讀：同一列同一個時間點。虛線欄是標準有、我們沒有的模組；它們在標準裡做的事，在我們這裡分散成任務數量、轉交點收與印件層數字。</p>
+</section>
+
+<!-- 三 成本 -->
+<section style="display:grid;gap:14px">
+  <h2>3. 成本怎麼算：算式掛在主檔的計價方法，任務數量是輸入</h2>
+  <div class="panel">
+    <div class="pipe">
+      <div class="node a"><b>主檔項目</b><small>品項主檔、工序主檔、裝訂主檔、設備<br>各帶計價方法與價格表（版本發布）</small></div>
+      <div class="ar">＋<small>任務目標數量</small></div>
+      <div class="node b"><b>計價引擎</b><small>材料五分支、工序八法、裝訂三法、設備三型<br>全公司只有一套</small></div>
+      <div class="ar">→<small>任務建立時凍結</small></div>
+      <div class="node c"><b>計價快照</b><small>任務小計（不含顏色）<br>顏色費用：單黑、CMYK、Pantone、金屬色、獨立印</small></div>
+      <div class="ar">Σ<small>往上加總</small></div>
+      <div class="node d"><b>工單預估成本 → 印件預計成本</b><small>印件小計 − 預計成本 ＝ 預估利潤</small></div>
+    </div>
+    <p class="foot">實際側走同一條管線，只有「任務目標數量」換成「報工累計生產數量」。平版開機費不進實際成本。</p>
+  </div>
+  <div class="two">
+    <div class="panel"><h3>這張單的預估成本（示意）</h3>
+      <div class="formula">
+        <div class="f"><b>材料費 M2 令價計</b><div>整紙張數 ＝ ceil(目標 6,700 ÷ 開料數 4) ＝ <span class="num">1,675</span> 張菊全<br>× 單張價 3.0 ＝ <span class="num">5,025</span></div></div>
+        <div class="f"><b>印刷 設備費 E1</b><div>單位數 ＝ ceil(6,700 ÷ 1,000) ＝ 7 千車，只用來查階梯<br>開機費 1,500 → 任務小計；彩色價 1,100 × 4 色 ＝ <span class="num">4,400</span> → 顏色費用 CMYK</div></div>
+        <div class="f"><b>印刷 工序費 P6</b><div>查表(上機印數 6,700) 0.3 × 6,700 ＝ <span class="num">2,010</span></div></div>
+        <div class="f"><b>摺紙 P5、配頁 P4、鎖線 P4</b><div>0.05 × 6,700 ＝ 335；2 × 500 ＝ 1,000；3 × 500 ＝ 1,500</div></div>
+        <div class="f"><b>精裝 裝訂費 B1</b><div>台數 13 × 本數 500 查表 每本 12，max(12, 最低 10) × 500 ＝ <span class="num">6,000</span>（≥ 總價最低）</div></div>
+        <div class="f"><b>工單預估</b><div>Σ 任務小計 ＋ 顏色費用；印件再加封面工單；÷ 500 得每本</div></div>
+      </div>
+    </div>
+    <div class="panel"><h3>實際成本與對照</h3>
+      <div class="formula">
+        <div class="f"><b>實際材料</b><div>報工累計 6,700 張 → 整紙 1,675 × 3.0 ＝ 5,025<small>（同預估，因數量照目標報）</small></div></div>
+        <div class="f"><b>實際印刷</b><div>千車階梯以報工數查；開機費不計；顏色實際 4,400</div></div>
+        <div class="f"><b>補做 5 本</b><div>補做任務的報工進原工單實際成本，看不出「這 5 本花了多少」</div></div>
+        <div class="f"><b>報廢 5 本</b><div>報廢數有、報廢成本無獨立欄</div></div>
+        <div class="f"><b>對照</b><div>工單詳情：各任務一列、各顏色一列，預估與實際並排<br>印件：實際利潤 ＝ 小計 − 實際成本，帶分段標示</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="display:grid;gap:14px">
+  <h2>4. 跟標準差在哪</h2>
+  <div class="diff">
+    <div class="node"><b>算式掛的地方</b><small>標準：BOM 行（用量 × 標準單價）＋路線（工時 × 費率），每張工單抄一份乘數量。我們：主檔項目的計價方法，任務數量當輸入；配方不存用量</small></div>
+    <div class="node"><b>數量誰決定</b><small>標準：BOM × 訂單量算出用料明細，人再改。我們：印務逐筆手填預計生產與放損，系統不預填</small></div>
+    <div class="node"><b>成本流到哪</b><small>標準：原料帳 → 在製品帳 → 成品帳，三本帳有餘額。我們：沒有帳，成本掛在任務與工單上往印件加總</small></div>
+    <div class="node"><b>預估對實際</b><small>標準：差異科目（數量、價格、替代），結單時過帳。我們：預估與實際並排，沒有差異分類</small></div>
+    <div class="node"><b>貨在哪、算哪一種</b><small>標準：庫存狀態（待驗、可用、凍結）與儲位。我們：任務良品數、搬運量、點收量，加印件層的待驗量與可出貨額度</small></div>
+  </div>
+  <p class="foot">現行落點取自 wiki 卡：成本計算規則、計價快照、生產任務、工單、印件、配方展開規則、數量換算規則、齊套邏輯、轉交單、品檢紀錄。對照頁：「標準架構怎麼完成一張單」。</p>
+</section>
+</main>
