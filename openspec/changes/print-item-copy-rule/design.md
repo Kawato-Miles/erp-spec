@@ -186,7 +186,7 @@ OpenSpec（以 rush-order-definition 歸檔後的主 specs 為基準，標 MODIF
 | order-management 加開印件 | 購買數量與印件預計交期改為帶入原值；Scenario 改寫 |
 | order-management US-PI-001 打樣 NG 複製措辭 | 改引用 |
 | order-management 印件是否急件（rush 規格差異檔第 69 行） | 「複製新印件、複製訂單與複製加開 SHALL NOT 帶入購買的急件選項」改為：同一張訂單內複製帶入原值；複製訂單因新訂單是線下單而為空（Q1） |
-| order-management 加開印件（rush 規格差異檔第 825 行） | 「購買的急件選項 SHALL NOT 繼承」刪除；帶入清單補印件名稱、出貨方式、客戶指定收件日、製程說明、品檢需求、購買的急件選項 |
+| order-management 加開印件（rush 規格差異檔第 825 行） | 「購買的急件選項 SHALL NOT 繼承」刪除；帶入清單補印件名稱、出貨方式、客戶指定收件日、製程說明、品檢需求、購買的急件選項；可改範圍句「MAY 於加開當下改寫印件名稱與規格備註」改為建立當下可改內容類欄位，含印件屬性（Q3）；Rationale 段「不繼承數量、交期」的理由改寫為依欄位性質帶入（G1、G3） |
 
 ## 四、待裁決
 
