@@ -83,9 +83,9 @@ svg{overflow:visible} svg *{vector-effect:non-scaling-stroke}
       <div class="pic">
         <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="14" y="8" width="56" height="68" rx="4" fill="var(--paper)"/><path d="M24 20h36M24 30h36M24 40h36M24 50h36M24 60h24"/></svg>訂單＋印件<small>規格、製程說明、數量、進度十一欄全寫在印件</small></div>
         <span class="arrow">→</span>
-        <div class="item ghost"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6"/><path d="M30 30l24 24M54 30L30 54"/></svg>無成品與半成品品號<small>只有材料、工序、裝訂、設備主檔</small></div>
+        <div class="item ghost"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="10" y="16" width="64" height="52" rx="6"/><path d="M30 30l24 24M54 30L30 54"/></svg>品項主檔只收原物料<small>定位句已列成品、半成品，現階段尚未納入</small></div>
         <span class="arrow">→</span>
-        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 12h46a8 8 0 0 1 8 8v52H22a8 8 0 0 1-8-8z" fill="var(--paper)"/><path d="M26 28h30M26 40h30"/><path d="M26 52h20" stroke-dasharray="4 4"/></svg>印件配方、部件配方<small>工序段：印刷→摺紙→配頁→鎖線；用量倍率只作參考</small></div>
+        <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 12h46a8 8 0 0 1 8 8v52H22a8 8 0 0 1-8-8z" fill="var(--paper)"/><path d="M26 28h30M26 40h30"/><path d="M26 52h20" stroke-dasharray="4 4"/></svg>印件配方、部件配方<small>工序段：印刷→摺紙→配頁→鎖線；用量倍率只作參考；BOM 與路線合卡，已拍板待品項層定案後拆開</small></div>
         <span class="arrow">→</span>
         <div class="item"><svg viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="3"><rect x="12" y="20" width="60" height="50" rx="4" fill="var(--paper)"/><path d="M12 34h60M28 20v-8M56 20v-8"/><path d="M24 50l8 8 16-16"/></svg>工單＋生產任務<small>數量、放損由印務逐筆手填</small></div>
       </div>
@@ -93,7 +93,7 @@ svg{overflow:visible} svg *{vector-effect:non-scaling-stroke}
     </div>
   </div>
   <div class="impact"><h4>商業影響</h4><table>
-    <tr><td>誰痛</td><td>業務（回頭單重填規格）、印務（每張工單重算數量）、會計與 PM（算不出單一產品的毛利與良率）</td></tr>
+    <tr><td>誰痛</td><td>業務（回頭單可用複製訂單帶入規格，但抄值不是引用，產品定義改了舊單不知道）、印務（每張工單重算數量）、會計與 PM（算不出單一產品的毛利與良率）</td></tr>
     <tr><td>哪個流程</td><td>成交轉訂單、工單製程規劃、EC 整合（Phase 3）</td></tr>
     <tr><td>哪個指標</td><td>產品毛利、產品良率：算不出。Phase 1「BOM 覆蓋率」：只量到步驟展開，沒量到用量展開</td></tr>
     <tr><td>何時會痛</td><td>回頭單比例上升時；EC 整合要把規格品對到 ERP 時</td></tr>
@@ -207,13 +207,13 @@ svg{overflow:visible} svg *{vector-effect:non-scaling-stroke}
   <div class="tablewrap"><table class="imp">
     <thead><tr><th>差距</th><th>受影響角色</th><th>受影響流程</th><th>算不出或失真的指標</th><th>發生時點</th><th>嚴重度</th></tr></thead>
     <tbody>
-    <tr><td>無成品與半成品品號</td><td>業務、印務、會計、EC 商品管理</td><td>成交轉訂單、EC 整合、成本歸戶</td><td>產品毛利、產品良率、回頭單比例</td><td>Phase 3 開始；回頭單增加</td><td><span class="sev h">高</span></td></tr>
+    <tr><td>品項主檔只收原物料，成品與半成品尚未納入（已宣告延後、未排 Phase）</td><td>業務、印務、會計、EC 商品管理</td><td>成交轉訂單、EC 整合、成本歸戶</td><td>產品毛利、產品良率、回頭單比例</td><td>Phase 3 開始；回頭單增加</td><td><span class="sev h">高</span></td></tr>
     <tr><td>用量不驅動工單</td><td>印務、PM</td><td>工單製程規劃、Phase 1 驗收</td><td>BOM 覆蓋率失真、用量差異無對照</td><td>Phase 1 驗收；印務人力吃緊</td><td><span class="sev h">高</span></td></tr>
     <tr><td>待驗與入庫是數字不是狀態</td><td>出貨、品檢、業務</td><td>品檢入庫、出貨、售後</td><td>庫存紀錄準確率、可承諾量只到印件層</td><td>分批、退貨重驗、EC 備貨</td><td><span class="sev m">中</span></td></tr>
     <tr><td>EC 與 ERP 製法兩套</td><td>EC 商品管理、印務</td><td>商品上架、線上單建工單</td><td>線上線下成本一致性、覆蓋率分子</td><td>EC 改規格時；Phase 1 驗收</td><td><span class="sev h">高</span></td></tr>
     <tr><td>重工在原單、報廢無金額</td><td>會計、PM、品檢主管</td><td>補做、缺口處置</td><td>重工率、重工成本、折損金額</td><td>算真實毛利時</td><td><span class="sev m">中</span></td></tr>
     <tr><td>料帳空白（撥料、投料、消耗）</td><td>印務、採購、會計</td><td>備料、成本結算</td><td>實際料耗、材料折損率</td><td>要算真實毛利時</td><td><span class="sev m">中</span></td></tr>
-    <tr><td>BOM 與路線合卡</td><td>印務、系統設計</td><td>配方維護、EC 配置對接</td><td>無直接指標</td><td>對接 EC 配置器時</td><td><span class="sev l">低</span></td></tr>
+    <tr><td>BOM 與路線合卡（已拍板待品項層定案後拆開）</td><td>印務、系統設計</td><td>配方維護、EC 配置對接</td><td>無直接指標</td><td>對接 EC 配置器時</td><td><span class="sev l">低</span></td></tr>
     <tr><td>不追蹤貨的實際站點</td><td>廠務、生管</td><td>轉交、找貨</td><td>找貨時間（未量）</td><td>產線與站點變多時</td><td><span class="sev l">低</span></td></tr>
     </tbody></table></div>
   <p class="foot">嚴重度判準：高＝擋住已排定的 Phase 目標或讓既有 KPI 失真；中＝特定情境才痛、現況有人工繞法；低＝成本可控、可延後。</p>
@@ -248,8 +248,8 @@ svg{overflow:visible} svg *{vector-effect:non-scaling-stroke}
 
 <section class="card">
   <div class="pending">
-    <strong>待補一段</strong>
-    <p>wiki 重構後的再比對：本頁與比對矩陣的基線是 wiki 提交 35267c2（2026-10-28）。用詞統一與印件複製規則重構完成後重跑一次比對，差異列會更新。</p>
+    <strong>2026-10-29 再比對結果</strong>
+    <p>wiki 從 35267c2 到 6f40bdd 動了 47 檔。影響本頁的三件：材料主檔改名品項主檔並寫明「標準範圍含成品、半成品、原物料，現階段只收原物料」；配方兩卡合存 BOM 與路線已拍板待品項層定案後拆開；新建印件複製規則，回頭單可複製帶入規格。品號層與合卡兩項差距從「待靠齊」改判「刻意延後」，風險本身沒有變小，只是變成已承認、未排期。</p>
   </div>
   <p class="foot">完整逐列表、配方對映表、議題清單 T1 到 T7 見同資料夾「比對矩陣」；兩張架構圖與 29 列分類見「標準與現行架構總覽」。</p>
 </section>
