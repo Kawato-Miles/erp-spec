@@ -165,44 +165,45 @@ describe('1.10／4.5 成交轉訂單：印件預計交期逐件帶入、推得�
   });
 });
 
-describe('4.8／打樣 NG：加開不預填但離開草稿後必填、打樣 NG 複製帶入原印件預計交期', () => {
-  it('製作中訂單加開印件未填印件預計交期：擋下存檔，不新增印件', () => {
-    const before = orders().getOrder(ORDER_ID).print_items.length;
-    const res = orders().addPrintItem(ORDER_ID, {
-      name: '品牌形象海報 A2（加開）',
-      type: '大貨印件',
-      copy_from_id: ITEM_ID,
-      ordered_qty: 100,
-    });
-    expect(res).toMatchObject({ ok: false, reason: '訂單已離開草稿，請填寫印件預計交期' });
-    expect(orders().getOrder(ORDER_ID).print_items).toHaveLength(before);
-  });
-
-  it('製作中訂單加開印件填 2026-11-20（五）後存檔：建立新印件，內部完成日 2026-11-19（四），不帶購買的急件選項', () => {
-    const res = orders().addPrintItem(ORDER_ID, {
-      name: '品牌形象海報 A2（加開）',
-      type: '大貨印件',
-      copy_from_id: ITEM_ID,
-      ordered_qty: 100,
-      expected_delivery_date: '2026-11-20',
-    });
+// 4.8／4.10（OpenSpec change print-item-copy-rule，order-management § 加開印件、§ 印件是否急件；
+// prepress-review § 打樣後棄用原印件建新印件）：複製加開與打樣 NG-稿件問題重建都依印件複製規則
+// 帶入原印件的印件預計交期、是否急件與購買的急件選項（同一張訂單內複製）；加開清空日期才受階段必填擋下。
+describe('4.8／打樣 NG：複製加開與打樣重建帶入原印件預計交期，加開清空才擋下', () => {
+  it('製作中訂單加開印件未改日期：帶入原印件的 2026-09-15、推得內部完成日 2026-09-14，照常建立', () => {
+    const res = orders().addPrintItem(ORDER_ID, { copy_from_id: ITEM_ID });
     expect(res.ok).toBe(true);
     const added = orders().getOrder(ORDER_ID).print_items.at(-1);
     expect(added).toMatchObject({
-      expected_delivery_date: '2026-11-20',
-      delivery_date: '2026-11-19',
+      name: '品牌形象海報 A2',
+      expected_delivery_date: '2026-09-15',
+      delivery_date: '2026-09-14',
       is_urgent: false,
       purchased_urgent_name: null,
       purchased_urgent_days: null,
     });
   });
 
-  it('草稿訂單（ORD-2026-0911）加開不填日期可存檔，兩欄為空', () => {
+  it('製作中訂單加開清空印件預計交期：擋下存檔，不新增印件', () => {
+    const before = orders().getOrder(ORDER_ID).print_items.length;
+    const res = orders().addPrintItem(ORDER_ID, { copy_from_id: ITEM_ID, expected_delivery_date: null });
+    expect(res).toMatchObject({ ok: false, reason: '訂單已離開草稿，請填寫印件預計交期' });
+    expect(orders().getOrder(ORDER_ID).print_items).toHaveLength(before);
+  });
+
+  it('製作中訂單加開改填 2026-11-20（五）後存檔：建立新印件，內部完成日 2026-11-19（四）', () => {
+    const res = orders().addPrintItem(ORDER_ID, {
+      copy_from_id: ITEM_ID,
+      expected_delivery_date: '2026-11-20',
+    });
+    expect(res.ok).toBe(true);
+    const added = orders().getOrder(ORDER_ID).print_items.at(-1);
+    expect(added).toMatchObject({ expected_delivery_date: '2026-11-20', delivery_date: '2026-11-19' });
+  });
+
+  it('草稿訂單（ORD-2026-0911）加開清空日期可存檔，兩欄為空', () => {
     const res = orders().addPrintItem('ORD-2026-0911', {
-      name: '加開（草稿）',
-      type: '大貨印件',
       copy_from_id: 'pi-2026-0911',
-      ordered_qty: 100,
+      expected_delivery_date: null,
     });
     expect(res.ok).toBe(true);
     const added = orders().getOrder('ORD-2026-0911').print_items.at(-1);
@@ -210,7 +211,7 @@ describe('4.8／打樣 NG：加開不預填但離開草稿後必填、打樣 NG 
     expect(added.delivery_date).toBeNull();
   });
 
-  it('打樣 NG-稿件問題複製新印件：帶入原印件的印件預計交期、推得的內部完成日與是否急件，不帶購買的急件選項', () => {
+  it('打樣 NG-稿件問題複製新印件：帶入原印件的印件預計交期、推得的內部完成日與是否急件', () => {
     // prepress-review spec Scenario「新印件帶入原印件的印件預計交期與是否急件」
     orders().updatePrintItem(ORDER_ID, ITEM_ID, { is_urgent: true });
     const res = orders().copyPrintItemForSampleArtworkNg(ORDER_ID, ITEM_ID);
@@ -220,8 +221,22 @@ describe('4.8／打樣 NG：加開不預填但離開草稿後必填、打樣 NG 
       expected_delivery_date: '2026-09-15',
       delivery_date: '2026-09-14',
       is_urgent: true,
-      purchased_urgent_name: null,
-      purchased_urgent_days: null,
     });
+    // 原印件是線下單印件，購買的急件選項原值為空，帶入後同為空
+    expect(copied.purchased_urgent_name ?? null).toBeNull();
+    expect(copied.purchased_urgent_days ?? null).toBeNull();
+  });
+
+  it('同一張訂單內複製帶入購買的急件選項：線上單 PI-2026-0861（三天急件／−3）的打樣重建與加開都帶入', () => {
+    // order-management spec § 印件是否急件「同一張訂單內的複製 SHALL 帶入原值」
+    const ng = orders().copyPrintItemForSampleArtworkNg('ORD-2026-0816', 'pi-2026-0861');
+    expect(ng.ok).toBe(true);
+    const rebuilt = orders().getOrder('ORD-2026-0816').print_items.find((p) => p.print_item_no === ng.printItemNo);
+    expect(rebuilt).toMatchObject({ is_urgent: true, purchased_urgent_name: '三天急件', purchased_urgent_days: -3 });
+
+    const add = orders().addPrintItem('ORD-2026-0816', { copy_from_id: 'pi-2026-0861' });
+    expect(add.ok).toBe(true);
+    const added = orders().getOrder('ORD-2026-0816').print_items.at(-1);
+    expect(added).toMatchObject({ is_urgent: true, purchased_urgent_name: '三天急件', purchased_urgent_days: -3 });
   });
 });

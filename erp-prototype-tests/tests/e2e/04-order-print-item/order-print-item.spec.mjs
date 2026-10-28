@@ -5,7 +5,8 @@ import { openAs, gotoInApp, switchRole, cjkName, clickIntoDetail } from '../_hel
 // 起點資料：七條主鏈訂單，鏈二 ORD-2026-0710（製作中）／PI-2026-0710（是否急件否）、
 // 鏈六 ORD-2026-0903（製作等待中，訂單管理人黃聖雯）、鏈四 ORD-2026-0820（PI-2026-0820 是否急件為是）、
 // 鏈八 ORD-2026-0911（草稿）與 ORD-2026-0913（審核通過，已離開草稿）、線上單 ORD-2026-0816（等待付款）。
-// 急件期望值取自 OpenSpec change rush-order-definition 的 order-management delta spec THEN。
+// 急件期望值取自 OpenSpec change rush-order-definition 的 order-management delta spec THEN；
+// 複製加開的帶入值取自 OpenSpec change print-item-copy-rule 的 order-management delta spec THEN。
 
 // 是否急件為勾起時，印件預計交期欄旁常駐的交期確認提示
 const URGENT_REMINDER = '此印件為急件，請確認印件預計交期';
@@ -50,18 +51,22 @@ test('4.3 購買數量到訂單完成或已取消才鎖定，製作段仍可改�
   await expect(page.getByText(/已進入製作段.*鎖定/)).toHaveCount(0);
   await drawer.getByRole('button', { name: '取消', exact: true }).click();
 
-  // 加開是另一條路徑而非唯一路徑：按下後訂單多一件新印件，帶入原規格；購買數量必填、預計出貨日選填留空
+  // 加開是另一條路徑而非唯一路徑：按下後訂單多一件新印件；購買數量與印件預計交期帶入原印件的值當預設
   await page.getByRole('button', { name: '複製原印件規格加開' }).click();
   const copyModal = page.locator('.ant-modal-content');
   await expect(copyModal.getByText('複製原印件規格加開')).toBeVisible();
+  await expect(copyModal.locator('#ordered_qty')).toHaveValue('3000');
+  await expect(copyModal.locator('#expected_delivery_date')).toHaveValue('2026-09-15');
+  // 這一批改買 500：改寫帶入值後存檔
   await copyModal.getByLabel('購買數量').fill('500');
-  // 訂單已離開草稿：加開存檔必填印件預計交期（見 4.25），這裡填一天讓加開成立
-  await pickDate(copyModal.locator('#expected_delivery_date'), '2026-11-20');
   await copyModal.getByRole('button', { name: '加開印件' }).click();
   await expect(
-    page.getByText(/已加開印件「品牌形象海報 A2（加開）」（複製 PI-2026-0710 的規格）；請補上數量後上稿走審稿，原印件數量不變/),
+    page.getByText(/已加開印件「品牌形象海報 A2」（複製 PI-2026-0710 的規格）；上稿走審稿，原印件數量不變/),
   ).toBeVisible();
-  await expect(page.locator('tr', { hasText: '品牌形象海報 A2（加開）' })).toBeVisible();
+  // 新印件與原印件同名（不加字樣）：清單上多一列同名、編號不同的印件
+  await expect(
+    page.locator('tr', { hasText: '品牌形象海報 A2' }).filter({ hasNotText: 'PI-2026-0710' }).first(),
+  ).toBeVisible();
   // 原印件 PI-2026-0710 的購買數量原樣不變
   await expect(row.getByText('3,000')).toBeVisible();
 
@@ -283,25 +288,36 @@ test('4.7 新增印件收齊六項必填、是否急件預設否、草稿期間�
   await expect(newRow.getByText('急件', { exact: true })).toHaveCount(0);
 });
 
-test('4.8 複製加開帶入是否急件並顯示提示，購買數量與印件預計交期不預填、離開草稿後存檔必填', async ({ page }) => {
-  // 起點資料：鏈四 ORD-2026-0820（製作完成，非終態）／PI-2026-0820（是否急件為是、印件預計交期 2026-09-07、
-  // 難易度 4、包裝備註「每 20 本一箱」）
+// 4.8 複製加開（OpenSpec change print-item-copy-rule，order-management § 加開印件（複製原印件規格））：
+// 內容類欄位帶入原印件的值當預設（印件名稱不加字樣、購買數量、印件預計交期），建立當下可改含印件屬性；
+// 訂單離開草稿後清空印件預計交期存檔被擋下。
+test('4.8 複製加開帶入原印件內容（印件名稱、購買數量、印件預計交期、是否急件），建立當下可改含印件屬性，清空交期擋下存檔', async ({ page }) => {
+  // 起點資料：鏈四 ORD-2026-0820（製作完成，非終態）／PI-2026-0820（大貨印件、500 本 (冊)、是否急件為是、
+  // 印件預計交期 2026-09-07、難易度 4、包裝備註「每 20 本一箱」）
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0820&tab=printItems');
   await page.getByRole('button', { name: '複製原印件規格加開' }).click();
   const modal = page.locator('.ant-modal-content');
   await expect(modal.getByText('複製原印件規格加開')).toBeVisible();
 
-  // 規格側欄位自來源印件預填：名稱帶「（加開）」、難易度、是否急件；是否急件為勾起即常駐提示
-  await expect(page.locator('#name')).toHaveValue('《山城記事》精裝書（128 頁）（加開）');
+  // 內容類欄位自來源印件預填：名稱不加字樣、印件屬性、購買數量、印件預計交期、難易度、是否急件；
+  // 是否急件為勾起即常駐提示，印件內部完成日依帶入值即時算出
+  await expect(page.locator('#name')).toHaveValue('《山城記事》精裝書（128 頁）');
+  await expect(modal.getByRole('radio', { name: '大貨印件' })).toBeChecked();
+  await expect(page.locator('#ordered_qty')).toHaveValue('500');
+  await expect(modal.locator('#expected_delivery_date')).toHaveValue('2026-09-07');
   await expect(page.locator('#difficulty_level')).toHaveValue('4');
   await expect(modal.locator('#is_urgent')).toBeChecked();
   await expect(modal.getByText(URGENT_REMINDER)).toBeVisible();
-  // 購買數量與印件預計交期留空，不帶入來源印件的 2026-09-07
-  await expect(page.locator('#ordered_qty')).toHaveValue('');
-  await expect(modal.locator('#expected_delivery_date')).toHaveValue('');
 
-  // 訂單已離開草稿：印件預計交期仍空時存檔被擋下，該欄提示必填
+  // 建立當下改寫：印件屬性改為打樣印件、購買數量改為 300
+  await modal.getByText('打樣印件', { exact: true }).click();
   await page.getByLabel('購買數量').fill('300');
+
+  // 訂單已離開草稿：清空印件預計交期後存檔被擋下，該欄提示必填
+  const picker = modal.locator('.ant-picker').filter({ has: page.locator('#expected_delivery_date') });
+  await picker.hover();
+  await picker.locator('.ant-picker-clear').click();
+  await expect(modal.locator('#expected_delivery_date')).toHaveValue('');
   await modal.getByRole('button', { name: '加開印件' }).click();
   await expect(modal.getByText('訂單已離開草稿，請填寫印件預計交期')).toBeVisible();
   await expect(modal).toBeVisible();
@@ -310,15 +326,19 @@ test('4.8 複製加開帶入是否急件並顯示提示，購買數量與印件�
   await pickDate(modal.locator('#expected_delivery_date'), '2026-10-26');
   await modal.getByRole('button', { name: '加開印件' }).click();
   await expect(
-    page.getByText(/已加開印件「《山城記事》精裝書（128 頁）（加開）」（複製 PI-2026-0820 的規格）/),
+    page.getByText(/已加開印件「《山城記事》精裝書（128 頁）」（複製 PI-2026-0820 的規格）/),
   ).toBeVisible();
 
-  const newRow = page.locator('tr', { hasText: '《山城記事》精裝書（128 頁）（加開）' }).first();
-  await expect(newRow).toContainText('2026-10-26');
+  const newRow = page.locator('tr', { hasText: '2026-10-26' }).first();
+  await expect(newRow).toContainText('《山城記事》精裝書（128 頁）');
+  await expect(newRow).toContainText('打樣印件');
   await expect(newRow).toContainText('2026-10-23');
   await expect(newRow.getByText('急件', { exact: true })).toBeVisible();
+  // 來源印件維持大貨印件、印件預計交期 2026-09-07
+  const sourceRow = page.locator('tr', { hasText: 'PI-2026-0820' }).first();
+  await expect(sourceRow).toContainText('2026-09-07');
 
-  // 包裝備註（規格側欄位）自來源印件帶入，於印件詳情頁確認
+  // 包裝備註（內容類欄位）自來源印件帶入，於印件詳情頁確認
   await newRow.getByRole('button', { name: '檢視印件' }).click();
   const packagingValue = page
     .locator('th.ant-descriptions-item-label')
@@ -361,7 +381,7 @@ test('4.9 印件已棄用後是否急件與印件預計交期唯讀；訂單完�
   await expect(dueDateValue).toHaveText('2026-06-22');
 });
 
-test('4.10 三條複製路徑帶入是否急件原值並顯示提示，不帶購買的急件選項；新增與加開的日期留空各走各的', async ({ page }) => {
+test('4.10 三條複製路徑帶入是否急件原值並顯示提示；複製訂單的購買的急件選項為空；空白新增的日期留空', async ({ page }) => {
   test.setTimeout(120_000);
   // 訂單複製：鏈四 ORD-2026-0820（PI-2026-0820 是否急件為是、印件預計交期 2026-09-07）。
   // 期望值取自 order-management spec § 訂單複製功能「複製帶入各印件的印件預計交期與是否急件原值」。
@@ -583,7 +603,7 @@ test('4.24 訂單詳情帶訂單急件標注；取消勾選或急件印件棄用
 });
 
 // 4.25 印件預計交期依階段必填（OpenSpec change rush-order-definition，order-management spec
-// § 印件預計交期依階段必填檢核、§ 加開印件「訂單離開草稿後複製加開不預填但存檔必填」）。
+// § 印件預計交期依階段必填檢核；複製加開帶入原印件的印件預計交期、清空才擋下見 change print-item-copy-rule）。
 // 起點資料：鏈八 ORD-2026-0913（審核通過，已離開草稿；PI-2026-0913 印件預計交期 2026-10-21），
 // 步驟照 MOCK-DATA-CHAIN「訂單離開草稿後新增印件」資料鏈。
 test('4.25 訂單離開草稿後新增印件未填印件預計交期擋下存檔，既有印件可改不可清空', async ({ page }) => {
@@ -617,13 +637,16 @@ test('4.25 訂單離開草稿後新增印件未填印件預計交期擋下存檔
   await expect(newRow).toContainText('2026-11-20');
   await expect(newRow).toContainText('2026-11-19');
 
-  // 二、對 PI-2026-0913 複製加開：是否急件帶入原值（否）、印件預計交期不預填；未填日期存檔被擋
+  // 二、對 PI-2026-0913 複製加開：是否急件帶入原值（否）、印件預計交期帶入 2026-10-21；清空後存檔被擋
   await page.getByRole('button', { name: '複製原印件規格加開' }).click();
   const copyModal = page.locator('.ant-modal-content:visible').last();
   await expect(copyModal.getByText('複製原印件規格加開')).toBeVisible();
+  // 來源預設為清單第一件 PI-2026-0913（剛新增的那件排在後面）
   await expect(copyModal.locator('#is_urgent')).not.toBeChecked();
-  await expect(copyModal.locator('#expected_delivery_date')).toHaveValue('');
-  await copyModal.getByLabel('購買數量').fill('100');
+  await expect(copyModal.locator('#expected_delivery_date')).toHaveValue('2026-10-21');
+  const copyPicker = copyModal.locator('.ant-picker').filter({ has: page.locator('#expected_delivery_date') });
+  await copyPicker.hover();
+  await copyPicker.locator('.ant-picker-clear').click();
   await copyModal.getByRole('button', { name: '加開印件' }).click();
   await expect(copyModal.getByText('訂單已離開草稿，請填寫印件預計交期')).toBeVisible();
   await copyModal.getByRole('button', { name: /取\s*消/ }).click();

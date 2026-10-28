@@ -4,6 +4,8 @@
 //   order-management § 印件預計交期依階段必填檢核、§ 新增印件欄位與必填檢核、§ 成交轉訂單
 //   quote-request § 印件項目管理、§ 成交轉訂單
 // 規則正本：wiki 訂單異動規則 § 印件預計交期依階段必填、印件「是否急件」欄。
+// 4.8 複製加開：OpenSpec change print-item-copy-rule 的 order-management § 加開印件（複製原印件規格）；
+// 規則正本 wiki 印件複製規則（內容類帶入原值當預設、建立當下可改含印件屬性）。
 // 起點資料：鏈八 ORD-2026-0913（審核通過，已離開草稿；PI-2026-0913 印件預計交期 2026-10-21）、
 // ORD-2026-0911（草稿）、鏈二 ORD-2026-0710（製作中）、線上單 ORD-2026-0816（等待付款）、
 // 鏈四需求單 Q-20260820-01（印件項目是否急件為是、印件預計交期 2026-09-07）。
@@ -113,6 +115,103 @@ describe('4.25 訂單離開草稿後新增印件未填印件預計交期不能�
       is_urgent: true,
       expected_delivery_date: '2026-10-13',
       delivery_date: '2026-10-12',
+    });
+  });
+});
+
+describe('4.25 訂單離開草稿後複製加開：帶入原印件預計交期，清空才擋下', () => {
+  it('ORD-2026-0913 對 PI-2026-0913 加開未改日期：帶入 2026-10-21、照常建立', () => {
+    const res = orders().addPrintItem('ORD-2026-0913', { copy_from_id: 'pi-2026-0913' });
+    expect(res.ok).toBe(true);
+    expect(orderOf('ORD-2026-0913').print_items.at(-1)).toMatchObject({
+      expected_delivery_date: '2026-10-21',
+      delivery_date: '2026-10-20',
+      is_urgent: false,
+    });
+  });
+
+  it('清空帶入的印件預計交期後存檔：擋下並提示，印件清單不變', () => {
+    const before = orderOf('ORD-2026-0913').print_items.length;
+    const res = orders().addPrintItem('ORD-2026-0913', {
+      copy_from_id: 'pi-2026-0913',
+      expected_delivery_date: null,
+    });
+    expect(res).toEqual({ ok: false, reason: '訂單已離開草稿，請填寫印件預計交期' });
+    expect(orderOf('ORD-2026-0913').print_items).toHaveLength(before);
+  });
+});
+
+// 4.8 起點資料：鏈二 ORD-2026-0710（製作中，出貨方式第三方物流）旗下 PI-2026-0710（品牌形象海報 A2、大貨印件、
+// 3,000 張 × 21.5、印件預計交期 2026-09-15、製程說明與品檢需求已填、稿件已審稿確認可製作）。
+describe('4.8 複製加開帶入內容類欄位原值，建立當下可改含印件屬性', () => {
+  const SRC = 'pi-2026-0710';
+  const srcItem = () => orderOf('ORD-2026-0710').print_items.find((p) => p.id === SRC);
+
+  it('未改任何欄位即存檔：帶入印件名稱（不加字樣）、購買數量、印件預計交期、出貨方式、製程說明與品檢需求；售價依帶入值算出', () => {
+    // 出貨方式取原印件的值：先把原印件改成自取（訂單仍為第三方物流）
+    orders().updatePrintItem('ORD-2026-0710', SRC, { shipping_method: '自取', customer_requested_delivery_date: '2026-09-16' });
+    const source = srcItem();
+    const res = orders().addPrintItem('ORD-2026-0710', { copy_from_id: SRC });
+    expect(res.ok).toBe(true);
+    const added = orderOf('ORD-2026-0710').print_items.at(-1);
+    expect(added.id).not.toBe(SRC);
+    expect(added).toMatchObject({
+      name: '品牌形象海報 A2',
+      type: '大貨印件',
+      ordered_qty: 3000,
+      unit: '張',
+      unit_price_untaxed: 21.5,
+      sale_amount_untaxed: 64500,
+      expected_delivery_date: '2026-09-15',
+      delivery_date: '2026-09-14',
+      is_urgent: false,
+      shipping_method: '自取',
+      customer_requested_delivery_date: '2026-09-16',
+      process_note: source.process_note,
+      qc_requirement: source.qc_requirement,
+      spec_notes: source.spec_notes,
+      packaging_notes: source.packaging_notes,
+      difficulty_level: source.difficulty_level,
+      skip_review: false,
+    });
+    expect(added.process_note).not.toBe('');
+    // 歷程與產出類回到初始值
+    expect(added).toMatchObject({
+      review_status: '待分派',
+      print_item_status: '等待中',
+      files: [],
+      review_rounds: [],
+      assigned_reviewer_id: null,
+      derived_from_print_item_id: null,
+      artwork_upload_open: true,
+    });
+    // 來源印件不被改動；活動紀錄記本次加開與來源印件
+    expect(srcItem().ordered_qty).toBe(3000);
+    const last = orderOf('ORD-2026-0710').activities.at(-1).action;
+    expect(last).toContain('加開印件');
+    expect(last).toContain('PI-2026-0710');
+  });
+
+  it('建立當下改印件屬性為打樣印件、購買數量改為 300：售價重算為 6450，來源印件維持大貨 3,000', () => {
+    const res = orders().addPrintItem('ORD-2026-0710', {
+      copy_from_id: SRC,
+      type: '打樣印件',
+      ordered_qty: 300,
+    });
+    expect(res.ok).toBe(true);
+    const added = orderOf('ORD-2026-0710').print_items.at(-1);
+    expect(added).toMatchObject({ type: '打樣印件', ordered_qty: 300, sale_amount_untaxed: 6450 });
+    expect(srcItem()).toMatchObject({ type: '大貨印件', ordered_qty: 3000 });
+  });
+
+  it('清空印件預計交期後存檔被擋下；填入 2026-10-26（一）後建立，印件內部完成日 2026-10-23（五）', () => {
+    const blocked = orders().addPrintItem('ORD-2026-0710', { copy_from_id: SRC, expected_delivery_date: '' });
+    expect(blocked).toMatchObject({ ok: false, reason: '訂單已離開草稿，請填寫印件預計交期' });
+    const ok = orders().addPrintItem('ORD-2026-0710', { copy_from_id: SRC, expected_delivery_date: '2026-10-26' });
+    expect(ok.ok).toBe(true);
+    expect(orderOf('ORD-2026-0710').print_items.at(-1)).toMatchObject({
+      expected_delivery_date: '2026-10-26',
+      delivery_date: '2026-10-23',
     });
   });
 });
