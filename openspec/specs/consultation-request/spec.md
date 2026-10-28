@@ -364,7 +364,7 @@ ConsultationRequest 狀態 MUST 維持「已轉需求單」終態不變（諮詢
 
 當客人或諮詢人員於「待諮詢」狀態取消預約時，系統 SHALL 觸發「建諮詢訂單 + 半額退費 + 沿用一般訂單取消善後」流程，諮詢訂單終態為「**已取消**」。退費金額固定為諮詢費 50%（諮詢費 2000 → 退 1000），**不分客戶 / 諮詢人員主動、不分取消時機**，比例 hardcode in code 不開放系統設定（半額為系統內生預設值，業務於善後時 MAY 依實際調整退款金額，沿用一般退款 OA「已核可後修改不需重審」規則）。
 
-**款項紀錄金額口徑**：退款款項紀錄的金額 MUST 記正值，退款方向由款項類型 = 退款表示（款項紀錄一律正值的鐵則見 wiki [發票法規硬約束-ezPay-MIG](../../../memory/Sens_wiki/wiki/erp/04-business-logic/外部約束/發票法規硬約束-ezPay-MIG.md) § 4.6）。訂單異動金額另循自身慣例（補收正值、退款負值），不受此條影響。
+**款項紀錄金額口徑**：退款款項紀錄的金額 MUST 記正值，退款方向由款項類型 = 退款表示（款項紀錄一律正值的鐵則見 [[發票法規硬約束-ezPay-MIG]] § 4.6）。訂單異動金額另循自身慣例（補收正值、退款負值），不受此條影響。
 
 **自動建單流程（事務性，全成功或全回滾）**：
 
@@ -372,12 +372,12 @@ ConsultationRequest 狀態 MUST 維持「已轉需求單」終態不變（諮詢
 2. 諮詢訂單上建立 OrderExtraCharge(charge_type=consultation_fee, amount=諮詢費 2000)
 3. Payment 從 ConsultationRequest 轉移至諮詢訂單（修改 linked_entity_type 與 linked_entity_id；款項類型維持收款、金額維持 2000、status 維持 已完成）
 4. **系統 SHALL 自動建立 OrderAdjustment**（金額 = -1000、adjustment_type = `諮詢取消退費`、status = **已核可**、approved_by = system、approved_amount = -1000、executed_at = NULL、requires_supervisor_approval = false、linked_after_sales_ticket_id = NULL、reason = 「諮詢取消退費（50%）」）— **系統內生直接建為「已核可」**（「負向異動須審核」不破例，因金額固定由系統代行審核；executed_at 待諮詢人員執行「確認生效」時寫入並推進「確認可執行」、應收於此刻認列；已核可階段可調整金額不需重審、亦可取消（決定不退））
-5. **系統 MUST NOT 自動建立退款款項紀錄**——該筆由諮詢人員於執行「確認生效」之後自行建立（款項類型 = 退款、金額 = 1000（正值）、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述 OA.id、linked_entity_type = Order、linked_entity_id = 諮詢訂單 ID）。理由：認列之前應收仍為 2000、收款淨額 2000，可退額度為零，系統代建會被防超退上限擋下（見 wiki [對帳一致性](../../../../memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/帳務/對帳一致性.md)）
+5. **系統 MUST NOT 自動建立退款款項紀錄**——該筆由諮詢人員於執行「確認生效」之後自行建立（款項類型 = 退款、金額 = 1000（正值）、paymentStatus = 處理中、linkedOrderAdjustmentId = 上述 OA.id、linked_entity_type = Order、linked_entity_id = 諮詢訂單 ID）。理由：認列之前應收仍為 2000、收款淨額 2000，可退額度為零，系統代建會被防超退上限擋下（見 [[對帳一致性]]）
 6. **系統 MUST NOT 自動開立任何 Invoice 或 SalesAllowance、MUST NOT 自動建立待開發票（BillingInstallment / PlannedInvoice）**（廢除諮詢專屬自動建待開發票；諮詢訂單留存 1000 收入由業務循一般訂單取消發票開立路徑於需要時手動開立，未開票風險由對帳「應收 > 發票淨額」差額警示兜底）
 7. **諮詢訂單 status 直接推進至「已取消」終態、paymentStatus = 已付款**（本步 MUST 晚於第 4 步建立訂單異動——訂單進終態後建立訂單異動須掛售後服務單，先建才不必為制度性退費開客訴容器）（取代既有「訂單完成」；諮詢取消是「沒成交的生意」，語意應為已取消而非完成；不需製作中間態；退款款項紀錄為已取消後的善後金流動作維持「處理中」）
 8. ConsultationRequest 狀態 MUST 推進至「已取消」終態、`cancel_reason_category` 寫入 dialog 選定值、`linked_consultation_order_id` 寫入新諮詢訂單 ID
 
-**已取消訂單善後金流不鎖**：諮詢訂單「已取消」終態僅鎖訂單內容編輯（印件 / 規格 / 備註），善後金流動作（退款款項紀錄切已完成、發票開立、銷貨折讓）SHALL 照常，沿用一般訂單取消既有善後流程。諮詢取消 MUST NOT 走 AfterSalesTicket（售後容器強制 Order.status=已完成）。
+**已取消訂單善後金流不鎖**：諮詢訂單「已取消」終態僅鎖訂單內容編輯（備註等訂單層欄位）；諮詢訂單沒有印件，也就沒有印件與規格可鎖（見 [[訂單狀態]] § 諮詢短路徑）。善後金流動作（退款款項紀錄切已完成、發票開立、銷貨折讓）SHALL 照常，沿用一般訂單取消既有善後流程。諮詢取消 MUST NOT 走 AfterSalesTicket（售後容器強制 Order.status=已完成）。
 
 **退款金流處理**：退款依原付款方式刷退，由第三方金流處理。ERP 只記錄取消事實與處理中退款款項紀錄，實際銀行撥款由第三方金流負責，撥款時程不承諾 SLA。
 
@@ -401,6 +401,8 @@ ConsultationRequest 狀態 MUST 維持「已轉需求單」終態不變（諮詢
 
 #### Scenario: 諮詢取消觸發建單與資料模型
 
+**情境**: 諮詢受理與出口分流 副流程第 5 步分支（出口 C：客戶在諮詢開始前反悔取消）
+
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢、`consultant_id` 非空（已認領）、Payment(P0: 款項類型 = 收款、金額 = 2000、linked=CR、status=已完成) 綁 ConsultationRequest
 - **WHEN** 諮詢人員或業務主管於取消 dialog 選定 cancel_reason_category 並點擊「確認取消諮詢」
 - **THEN** 系統 SHALL 建立諮詢訂單（type = 諮詢、總額 = 2000）
@@ -415,6 +417,8 @@ ConsultationRequest 狀態 MUST 維持「已轉需求單」終態不變（諮詢
 
 #### Scenario: 諮詢人員確認生效推進 OA 確認可執行（認列點）
 
+**情境**: 訂單異動流程 副流程第 1 步分支（退款進入點四：諮詢取消退費——客戶於「待諮詢」階段取消）
+
 - **GIVEN** 諮詢取消後諮詢訂單已是「已取消」、OA-c1 status = 已核可（系統代審建立）、應收 = 2000（OA 未認列）
 - **WHEN** 諮詢人員與客戶確認退款金額後執行「確認生效」
 - **THEN** 系統 SHALL 推進 OA-c1.status → 「確認可執行」（終態、不可逆）、executed_at = now
@@ -423,6 +427,8 @@ ConsultationRequest 狀態 MUST 維持「已轉需求單」終態不變（諮詢
 
 #### Scenario: 退款款項紀錄切已完成不改變 OA 狀態（金流完結由對帳盯住）
 
+**情境**: 訂單異動流程 副流程第 1 步分支（退款進入點四：諮詢取消退費——客戶於「待諮詢」階段取消）
+
 - **GIVEN** OA-c1 status = 確認可執行、退款款項紀錄(P1: 款項類型 = 退款、金額 = 1000、paymentStatus = 處理中) 存在
 - **WHEN** 諮詢人員處理銀行退款後將退款款項紀錄 P1 切「已完成」並上傳退款證明附件
 - **THEN** 系統 SHALL 將 P1.paymentStatus 改為「已完成」
@@ -430,6 +436,8 @@ ConsultationRequest 狀態 MUST 維持「已轉需求單」終態不變（諮詢
 - **AND** 對帳：應收 1000 = 收款淨額（2000 − 1000）= 1000、應退差額歸零
 
 #### Scenario: 諮詢取消不自動開 Invoice / SalesAllowance / 待開發票
+
+**情境**: 諮詢受理與出口分流 副流程第 5 步分支（出口 C：客戶在諮詢開始前反悔取消）
 
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢、`consultation_invoice_option` ∈ {`issue_now`, `defer_to_main_order`}（任一值）
 - **WHEN** 諮詢人員點擊「確認取消諮詢」
@@ -440,12 +448,16 @@ ConsultationRequest 狀態 MUST 維持「已轉需求單」終態不變（諮詢
 
 #### Scenario: 已離開待諮詢狀態後不可取消退費
 
+**情境**: 諮詢受理與出口分流 副流程第 5 步分支（出口 C：客戶在諮詢開始前反悔取消）
+
 - **GIVEN** ConsultationRequest 狀態 ∈ {已轉需求單, 完成諮詢, 已取消}
 - **WHEN** 諮詢人員 / 業務主管嘗試點擊「取消諮詢」
 - **THEN** 系統 MUST 拒絕該動作
 - **AND** UI SHALL 顯示「諮詢結束分支確認可執行，無法退費」提示
 
 #### Scenario: 取消 dialog 內容防呆
+
+**情境**: 諮詢受理與出口分流 副流程第 5 步分支（出口 C：客戶在諮詢開始前反悔取消）
 
 - **GIVEN** ConsultationRequest 狀態 = 待諮詢、`consultant_id` 非空
 - **WHEN** 諮詢人員或業務主管點擊「取消諮詢」按鈕
@@ -455,6 +467,16 @@ ConsultationRequest 狀態 MUST 維持「已轉需求單」終態不變（諮詢
 - **AND** dialog MUST NOT 顯示 `consultation_invoice_option` 意向（既已不驅動發票自動化、避免使用者誤解）
 - **AND** dialog MUST NOT 顯示客戶聯絡資訊或預約時間（資訊精簡）
 - **AND** dialog 提供「取消」與「確認取消諮詢」兩個按鈕；「確認取消諮詢」按鈕在未選 cancel_reason_category 時 MUST 為 disabled
+
+#### Scenario: 諮詢取消建立的諮詢訂單沒有印件
+
+**情境**: 諮詢受理與出口分流 副流程第 5 步分支（出口 C：客戶在諮詢開始前反悔取消）
+
+- **GIVEN** ConsultationRequest 狀態 = 待諮詢、已認領，客戶已付諮詢費 2000
+- **WHEN** 諮詢人員確認取消諮詢，系統建立諮詢訂單並推進至「已取消」
+- **THEN** 諮詢訂單 SHALL 沒有任何印件
+- **AND** 系統 SHALL NOT 對該諮詢訂單檢查印件預計交期
+- **AND** 退款款項紀錄切已完成、開立發票等善後金流動作 SHALL 照常可執行
 
 ### Requirement: 諮詢費發票時間點處理
 

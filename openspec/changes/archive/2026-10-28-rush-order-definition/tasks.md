@@ -86,4 +86,4 @@ mock 動到的位置：`MOCK-DATA-CHAIN.md`；orders、print-items、quote-proto
 
 - [x] 5.1 實作交回後，主對話對照 prototype-from-prompt 與 delta specs 稽核
 - [x] 5.2 畫面測試只由主對話跑一次，背景執行；測試期間不改 erp 檔
-- [ ] 5.3 erp 提交訊息附測試結果；`prototype/rush-order-r2` 快轉合併回 `prototype/production-stage`，刪除該分支與隔離工作副本
+- [x] 5.3 erp 提交訊息附測試結果；`prototype/rush-order-r2` 快轉合併回 `prototype/production-stage`，刪除該分支與隔離工作副本
