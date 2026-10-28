@@ -13,7 +13,7 @@ resolved-at: 2026-07-23
 resolved-by: Miles 指向 sensation-api（EC 後台）＋ claude 逐式對證 product/pricing 引擎程式
 related-vault:
   - "[[成本計算規則]]"
-  - "[[材料主檔]]"
+  - "[[品項主檔]]"
   - "[[設備]]"
 related-oq: []
 expected-resolution-at: 2026-Q4
