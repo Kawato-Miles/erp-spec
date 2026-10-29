@@ -302,14 +302,21 @@ a{color:var(--accent)}
       <tr><td>D6</td><td>子代理拿不到 CLAUDE.md vs skill 輕量</td><td>A 每處一行指名句法兩檔；先實測子代理讀不讀得到</td></tr>
       <tr><td>D7</td><td>Fable 主對話、Opus 稽核、Sonnet 機械 vs 三層分工</td><td>C 依工作階段類型選主對話模型；屬習慣不是閘門</td></tr>
       <tr><td>D8</td><td>評審不是被測模型 vs 可能同模型</td><td>先在評測集量同模型與異模型的差</td></tr>
-      <tr><td>D9</td><td>不給範例 vs 規範、骨架、範例三件組</td><td>A 維持，文件寫作要一致不要探索</td></tr>
+      <tr><td>D9</td><td>不給範例 vs 規範、骨架、範例三件組</td><td>已拍板：產出固定格式、三件組保留；產出前的推理可改判斷式</td></tr>
       <tr><td>D10</td><td>主動收尾 MUST 清單 vs 收尾摘要格式</td><td>A 改三段摘要，inline OQ 掃描保留硬性</td></tr>
       <tr><td>D11</td><td>11 層卡的寫入入口</td><td>A wiki-amend 擴到 11 層，只套 log 與單一本體檢查</td></tr>
       <tr><td>D12</td><td>取捨段的位置與時點</td><td>A 稽核後補，與 D14 一起看</td></tr>
       <tr><td>D13</td><td>兩級分級加個案豁免 vs 從變更判</td><td>A 加輕量級，條件先嚴，判定先亮給 Miles</td></tr>
       <tr><td>D14</td><td>取捨怎麼到利害關係人手上</td><td>A Linear Feature 票加「與業界做法的取捨」段，只在有偏離時出現</td></tr>
+      <tr><td>D15</td><td>OpenSpec 原生框架 vs 自訂 schema 與 40 條 rules</td><td>A 升級 CLI 1.4.1 到 1.15.0 重新產生 11 個 skill；保留 config.yaml 與自訂 schema，升級後核對相容</td></tr>
     </tbody>
   </table>
+  </div>
+
+  <div class="grid">
+    <div class="tile"><b>OpenSpec 現況</b><span class="num">1.4.1</span><span class="small">本機 CLI；npm 最新 1.15.0。11 個 openspec skill 由 1.4.1 產生，產生後各改過 1 到 2 次</span></div>
+    <div class="tile"><b>自訂程度</b><span class="num">227</span><span class="small">行自訂 schema，內建 153 行；config.yaml rules 約 40 條。兩者都是官方擴充點</span></div>
+    <div class="tile"><b>specs 規模</b><span class="num">21,798</span><span class="small">行、24 個模組。驗證 30 通過 1 未通過。完整重構另立計畫，在本計畫之後</span></div>
   </div>
 
   <div class="impact"><h3>對專案的影響</h3><ul>
