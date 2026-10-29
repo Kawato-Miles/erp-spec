@@ -1,0 +1,323 @@
+<title>Claude 5 世代重構說明</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* 版面：單欄長卷，每段一張大圖加三句影響；印刷稿件的藍圖色系 */
+:root{
+  --bg:#f6f5f0; --fg:#1d2430; --muted:#5b6472; --line:#c9cdd3;
+  --accent:#0c6f86; --accent-soft:#d6ecf1; --warn:#b4571a; --warn-soft:#f7e3d3;
+  --card:#ffffff;
+  --display:"Noto Serif TC","PingFang TC","Microsoft JhengHei",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141a22; --fg:#e8e9e6; --muted:#a3abb6; --line:#3a4350;
+  --accent:#4fb6cc; --accent-soft:#163a44; --warn:#e2904f; --warn-soft:#3d2a1a;
+  --card:#1c242e; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#141a22; --fg:#e8e9e6; --muted:#a3abb6; --line:#3a4350;
+  --accent:#4fb6cc; --accent-soft:#163a44; --warn:#e2904f; --warn-soft:#3d2a1a;
+  --card:#1c242e; color-scheme:dark }
+body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+main{max-width:980px;margin:0 auto}
+header{padding-block:48px 24px;border-bottom:1px solid var(--line)}
+h1{font-family:var(--display);font-size:clamp(28px,4vw,40px);line-height:1.2;margin:0 0 10px;text-wrap:balance}
+.lede{color:var(--muted);max-width:40em;margin:0}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+section{padding-block:40px;border-bottom:1px solid var(--line)}
+h2{font-family:var(--display);font-size:clamp(22px,3vw,30px);margin:6px 0 18px;text-wrap:balance}
+figure{margin:0 0 20px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;min-width:640px;color:var(--fg)}
+figcaption{font-size:13px;color:var(--muted);margin-top:10px}
+.impact{border-left:4px solid var(--warn);background:var(--warn-soft);padding:12px 16px;border-radius:0 6px 6px 0}
+.impact h3{margin:0 0 6px;font-size:14px;letter-spacing:.08em;color:var(--warn)}
+.impact ul{margin:0;padding-left:1.2em}
+.impact li{margin:2px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:0 0 20px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:14px;min-width:0}
+.tile b{display:block;font-size:13px;color:var(--accent);margin-bottom:4px}
+.num{font-family:var(--display);font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.small{font-size:13px;color:var(--muted)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:700;color:var(--muted);font-size:12px;letter-spacing:.06em}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 12px;margin:0 0 20px}
+code{font-size:.92em;background:var(--accent-soft);padding:0 4px;border-radius:3px}
+footer{padding-block:24px;color:var(--muted);font-size:13px}
+@media (prefers-reduced-motion:no-preference){ a{transition:color .15s} }
+a{color:var(--accent)}
+</style>
+
+<main>
+<header>
+  <div class="eyebrow">Sens ERP／MES 規劃工作流</div>
+  <h1>Claude 5 世代重構說明</h1>
+  <p class="lede">三件事：claude.dev 建議什麼、過去 132 個 change 實際怎麼規劃、skill 與 CLAUDE.md 的重構計畫。每段附對專案的影響。日期 2026-10-29。</p>
+</header>
+
+<!-- ============ 第一段 ============ -->
+<section id="claudedev">
+  <div class="eyebrow">第一段</div>
+  <h2>claude.dev 建議的重點</h2>
+  <p class="small">來源只限 claude.dev 網域 16 篇，抽查 7 篇逐句相符。raw 卡：<code>2026-10-29-claude-research-claude.dev對Claude5世代的使用建議</code></p>
+
+  <figure>
+    <svg viewBox="0 0 960 300" role="img" aria-label="六組「以前怎麼做、現在怎麼做」的對照：規則變判斷、範例變介面、全放前面變漸進揭露、重複變工具說明、手寫記憶變自動記憶、簡單規格變豐富參考">
+      <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+      <text x="20" y="28" font-size="13" fill="currentColor" opacity=".7">以前（規則時代）</text>
+      <text x="560" y="28" font-size="13" fill="currentColor" opacity=".7">現在（Claude 5 世代，文章 1）</text>
+      <g font-size="14" fill="currentColor">
+        <g><rect x="20" y="44" width="380" height="34" rx="4" fill="none" stroke="currentColor" opacity=".5"/><text x="34" y="67">給 Claude 一堆規則</text>
+           <line x1="410" y1="61" x2="548" y2="61" stroke="currentColor" marker-end="url(#a1)"/>
+           <rect x="560" y="44" width="380" height="34" rx="4" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="574" y="67">讓 Claude 用判斷，只在重要處設限</text></g>
+        <g><rect x="20" y="88" width="380" height="34" rx="4" fill="none" stroke="currentColor" opacity=".5"/><text x="34" y="111">給範例</text>
+           <line x1="410" y1="105" x2="548" y2="105" stroke="currentColor" marker-end="url(#a1)"/>
+           <rect x="560" y="88" width="380" height="34" rx="4" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="574" y="111">設計介面與工具說明，範例會限制探索</text></g>
+        <g><rect x="20" y="132" width="380" height="34" rx="4" fill="none" stroke="currentColor" opacity=".5"/><text x="34" y="155">全部放在系統提示前面</text>
+           <line x1="410" y1="149" x2="548" y2="149" stroke="currentColor" marker-end="url(#a1)"/>
+           <rect x="560" y="132" width="380" height="34" rx="4" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="574" y="155">漸進式揭露：一棵檔案樹，需要時才載入</text></g>
+        <g><rect x="20" y="176" width="380" height="34" rx="4" fill="none" stroke="currentColor" opacity=".5"/><text x="34" y="199">同一件事在多處重複叮嚀</text>
+           <line x1="410" y1="193" x2="548" y2="193" stroke="currentColor" marker-end="url(#a1)"/>
+           <rect x="560" y="176" width="380" height="34" rx="4" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="574" y="199">寫一次，寫在工具或 skill 的說明裡</text></g>
+        <g><rect x="20" y="220" width="380" height="34" rx="4" fill="none" stroke="currentColor" opacity=".5"/><text x="34" y="243">用 # 把記憶手寫進 CLAUDE.md</text>
+           <line x1="410" y1="237" x2="548" y2="237" stroke="currentColor" marker-end="url(#a1)"/>
+           <rect x="560" y="220" width="380" height="34" rx="4" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="574" y="243">自動記憶；CLAUDE.md 只寫 repo 用途與陷阱</text></g>
+        <g><rect x="20" y="264" width="380" height="34" rx="4" fill="none" stroke="currentColor" opacity=".5"/><text x="34" y="287">簡單文字規格</text>
+           <line x1="410" y1="281" x2="548" y2="281" stroke="currentColor" marker-end="url(#a1)"/>
+           <rect x="560" y="264" width="380" height="34" rx="4" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="574" y="287">豐富參考：HTML 成品、測試、評分準則</text></g>
+      </g>
+    </svg>
+    <figcaption>Anthropic 把 Claude Code 的系統提示刪掉八成以上，編碼評測沒有退步。六組對照取自文章 1。</figcaption>
+  </figure>
+
+  <figure>
+    <svg viewBox="0 0 960 250" role="img" aria-label="稽核流程建議：設計者產出，交給不同模型的稽核者依可檢查的評分準則判定，懷疑者過濾誤報，輪數有上限，重複發現回寫到 skill 或準則">
+      <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+      <g font-size="14" fill="currentColor">
+        <rect x="20" y="70" width="150" height="60" rx="6" fill="none" stroke="currentColor"/><text x="95" y="96" text-anchor="middle">設計者</text><text x="95" y="116" text-anchor="middle" font-size="12" opacity=".7">主對話</text>
+        <line x1="170" y1="100" x2="238" y2="100" stroke="currentColor" marker-end="url(#a2)"/><text x="204" y="92" text-anchor="middle" font-size="11">設計</text>
+        <rect x="250" y="70" width="190" height="60" rx="6" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="345" y="96" text-anchor="middle">稽核者</text><text x="345" y="116" text-anchor="middle" font-size="12" opacity=".8">不是被測的那個模型</text>
+        <rect x="250" y="160" width="190" height="50" rx="6" fill="none" stroke="currentColor" stroke-dasharray="4 3"/><text x="345" y="190" text-anchor="middle" font-size="13">評分準則＝可檢查的陳述</text>
+        <line x1="345" y1="160" x2="345" y2="132" stroke="currentColor" marker-end="url(#a2)"/>
+        <line x1="440" y1="100" x2="508" y2="100" stroke="currentColor" marker-end="url(#a2)"/><text x="474" y="92" text-anchor="middle" font-size="11">發現</text>
+        <rect x="520" y="70" width="160" height="60" rx="6" fill="none" stroke="currentColor"/><text x="600" y="96" text-anchor="middle">懷疑者</text><text x="600" y="116" text-anchor="middle" font-size="12" opacity=".7">濾掉誤報</text>
+        <line x1="680" y1="100" x2="748" y2="100" stroke="currentColor" marker-end="url(#a2)"/><text x="714" y="92" text-anchor="middle" font-size="11">只留會擋下的</text>
+        <rect x="760" y="70" width="180" height="60" rx="6" fill="none" stroke="currentColor"/><text x="850" y="96" text-anchor="middle">人裁決</text><text x="850" y="116" text-anchor="middle" font-size="12" opacity=".7">附檔案與行號證據</text>
+        <path d="M345,70 C345,30 95,30 95,70" fill="none" stroke="var(--warn)" marker-end="url(#a2)"/><text x="220" y="36" text-anchor="middle" font-size="12" fill="var(--warn)">修正循環有輪數上限（文章 15）</text>
+        <path d="M850,130 C850,235 150,235 95,132" fill="none" stroke="currentColor" opacity=".6" marker-end="url(#a2)"/><text x="600" y="232" text-anchor="middle" font-size="12" opacity=".8">重複出現的發現移到源頭：skill 陷阱段或準則（文章 15）</text>
+      </g>
+    </svg>
+    <figcaption>評分準則寫成可檢查的陳述、評審換模型、先讀已評分紀錄再信任評分者，取自文章 11；輪數上限與回寫源頭取自文章 15。</figcaption>
+  </figure>
+
+  <div class="grid">
+    <div class="tile"><b>CLAUDE.md</b>少於 200 行。寫 repo 用途與陷阱，驗證指示拆成 skill 引用。<span class="small">文章 1、9</span></div>
+    <div class="tile"><b>skill 說明檔</b>description 寫觸發時機不寫摘要。只寫目標與限制。陷阱段隨真實失敗累積。<span class="small">文章 2</span></div>
+    <div class="tile"><b>sub-agent 派工</b>回報先查證據。小模型只做查找。團隊小、任務自成一體。<span class="small">文章 7、9</span></div>
+    <div class="tile"><b>模型分工</b>小模型查找、Opus 5.5 主力、Fable 5.1 最難的工作。effort 從 medium 起，量到增益才升。<span class="small">文章 8、9</span></div>
+  </div>
+
+  <div class="impact"><h3>對專案的影響</h3><ul>
+    <li>專案 CLAUDE.md 現在 375 行，大半是流程規則與路由表，和建議方向相反。</li>
+    <li>九個 skill 多為逐步指令與禁令清單；plan-audit 的稽核循環沒有輪數上限。</li>
+    <li>評分準則多數條目已有證據要求，但判定值與可檢查程度還差一段。</li>
+  </ul></div>
+</section>
+
+<!-- ============ 第二段 ============ -->
+<section id="past">
+  <div class="eyebrow">第二段</div>
+  <h2>過去規劃實際怎麼做</h2>
+  <p class="small">證據：<code>memory/erp/skill-rewrite-20261029/過去規劃盤點.md</code>，132 個 change，15 個事實點抽查相符。</p>
+
+  <figure>
+    <svg viewBox="0 0 960 300" role="img" aria-label="五版規劃流程時間軸，每版顯示 change 數與走完當時流程、部分有紀錄、拍板豁免、未找到紀錄的分布；越新的版本遵守率越高">
+      <g font-size="13" fill="currentColor">
+        <line x1="40" y1="40" x2="940" y2="40" stroke="currentColor" opacity=".4"/>
+        <g><circle cx="60" cy="40" r="5" fill="currentColor"/><text x="60" y="24" text-anchor="middle" font-size="12">03-24</text><text x="60" y="64" text-anchor="middle" font-weight="700">V1 三視角審查</text></g>
+        <g><circle cx="300" cy="40" r="5" fill="currentColor"/><text x="300" y="24" text-anchor="middle" font-size="12">05-28</text><text x="300" y="64" text-anchor="middle" font-weight="700">V2 序列協作＋pre-check</text></g>
+        <g><circle cx="540" cy="40" r="5" fill="currentColor"/><text x="540" y="24" text-anchor="middle" font-size="12">08-05</text><text x="540" y="64" text-anchor="middle" font-weight="700">V3 評分準則流</text></g>
+        <g><circle cx="740" cy="40" r="5" fill="currentColor"/><text x="740" y="24" text-anchor="middle" font-size="12">10-04</text><text x="740" y="64" text-anchor="middle" font-weight="700">V4 工作稿進 plans</text></g>
+        <g><circle cx="900" cy="40" r="5" fill="var(--accent)"/><text x="900" y="24" text-anchor="middle" font-size="12">10-23</text><text x="900" y="64" text-anchor="middle" font-weight="700">V5 change 載體</text></g>
+        <!-- bars: total width 160 scaled to change count; segments 走完/部分/豁免/未找到 -->
+        <!-- V1 64: 29/0/2/33 -->
+        <g transform="translate(0,90)">
+          <text x="60" y="14" text-anchor="middle" font-size="12">64 個</text>
+          <rect x="0" y="22" width="54" height="18" fill="var(--accent)"/><rect x="54" y="22" width="4" height="18" fill="var(--warn)"/><rect x="58" y="22" width="62" height="18" fill="currentColor" opacity=".25"/>
+          <text x="0" y="56" font-size="12">走完 29　豁免 2　未找到 33</text>
+        </g>
+        <!-- V2 21: 3/9/2/7 -->
+        <g transform="translate(240,90)">
+          <text x="60" y="14" text-anchor="middle" font-size="12">21 個</text>
+          <rect x="0" y="22" width="17" height="18" fill="var(--accent)"/><rect x="17" y="22" width="51" height="18" fill="var(--accent)" opacity=".45"/><rect x="68" y="22" width="12" height="18" fill="var(--warn)"/><rect x="80" y="22" width="40" height="18" fill="currentColor" opacity=".25"/>
+          <text x="0" y="56" font-size="12">走完 3　部分 9　豁免 2　未找到 7</text>
+        </g>
+        <!-- V3 37: 13/8/2/14 -->
+        <g transform="translate(480,90)">
+          <text x="60" y="14" text-anchor="middle" font-size="12">37 個</text>
+          <rect x="0" y="22" width="42" height="18" fill="var(--accent)"/><rect x="42" y="22" width="26" height="18" fill="var(--accent)" opacity=".45"/><rect x="68" y="22" width="7" height="18" fill="var(--warn)"/><rect x="75" y="22" width="45" height="18" fill="currentColor" opacity=".25"/>
+          <text x="0" y="56" font-size="12">走完 13　部分 8　豁免 2　未找到 14</text>
+        </g>
+        <!-- V4 6: 4/0/2/0 -->
+        <g transform="translate(700,90)">
+          <text x="40" y="14" text-anchor="middle" font-size="12">6 個</text>
+          <rect x="0" y="22" width="53" height="18" fill="var(--accent)"/><rect x="53" y="22" width="27" height="18" fill="var(--warn)"/>
+          <text x="0" y="56" font-size="12">走完 4　豁免 2</text>
+        </g>
+        <!-- V5 4: 3/0/1/0 -->
+        <g transform="translate(860,90)">
+          <text x="40" y="14" text-anchor="middle" font-size="12">4 個</text>
+          <rect x="0" y="22" width="60" height="18" fill="var(--accent)"/><rect x="60" y="22" width="20" height="18" fill="var(--warn)"/>
+          <text x="0" y="56" font-size="12">走完 3　豁免 1</text>
+        </g>
+        <g transform="translate(0,190)" font-size="12">
+          <rect x="0" y="0" width="14" height="14" fill="var(--accent)"/><text x="20" y="12">走完當時流程</text>
+          <rect x="130" y="0" width="14" height="14" fill="var(--accent)" opacity=".45"/><text x="150" y="12">部分有紀錄</text>
+          <rect x="240" y="0" width="14" height="14" fill="var(--warn)"/><text x="260" y="12">Miles 拍板豁免</text>
+          <rect x="370" y="0" width="14" height="14" fill="currentColor" opacity=".25"/><text x="390" y="12">未找到任何紀錄</text>
+        </g>
+        <text x="0" y="236" font-size="13">V3 走完的 13 個裡，評分表有存檔的只有 3 個；當時沒有存檔規定，其餘稽核無法查證。</text>
+        <text x="0" y="260" font-size="13">V3 未找到紀錄的 14 個，proposal 都自述「wiki 已先定案，只追平 spec」。</text>
+        <text x="0" y="284" font-size="13" fill="var(--accent)">流程越新，遵守率越高；強制力來自「缺檔退件」，不是文字規則。</text>
+      </g>
+    </svg>
+    <figcaption>流程遵守要分期看，共五版；每版依它當時的要求判定。盤點檔 § 一、§ 3-1。</figcaption>
+  </figure>
+
+  <figure>
+    <svg viewBox="0 0 960 250" role="img" aria-label="設計的輸入來源：wiki 正本卡是主要來源，六份系統調研 raw 卡被設計與規格引用零次，業界對照只在 V1 由顧問代理帶入、V3 後臨時找線上文件">
+      <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+      <g font-size="14" fill="currentColor">
+        <rect x="20" y="30" width="220" height="60" rx="6" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="130" y="56" text-anchor="middle">wiki 正本卡</text><text x="130" y="76" text-anchor="middle" font-size="12">03～07 業務層</text>
+        <rect x="20" y="110" width="220" height="60" rx="6" fill="none" stroke="currentColor" stroke-dasharray="4 3"/><text x="130" y="136" text-anchor="middle">raw 六份系統調研</text><text x="130" y="156" text-anchor="middle" font-size="12">Dynamics、Odoo、ISA-95、PrintVis…</text>
+        <rect x="20" y="190" width="220" height="50" rx="6" fill="none" stroke="currentColor"/><text x="130" y="221" text-anchor="middle">臨時找的 Odoo、SAP 網頁</text>
+        <rect x="400" y="80" width="200" height="90" rx="6" fill="none" stroke="currentColor"/><text x="500" y="118" text-anchor="middle">設計</text><text x="500" y="140" text-anchor="middle" font-size="12">proposal、design</text>
+        <line x1="240" y1="60" x2="388" y2="112" stroke="var(--accent)" stroke-width="3" marker-end="url(#a3)"/><text x="300" y="70" font-size="12" fill="var(--accent)">49% 只引這裡</text>
+        <line x1="240" y1="140" x2="388" y2="130" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/><text x="300" y="150" font-size="12" fill="var(--warn)">引用 0 次</text>
+        <line x1="240" y1="215" x2="388" y2="150" stroke="currentColor" marker-end="url(#a3)"/><text x="290" y="200" font-size="12">19% 具名外部，多在 V1</text>
+        <rect x="700" y="30" width="240" height="60" rx="6" fill="none" stroke="currentColor"/><text x="820" y="56" text-anchor="middle">評分準則 15 項</text><text x="820" y="76" text-anchor="middle" font-size="12">量「內部自洽、對齊公司現況」</text>
+        <rect x="700" y="110" width="240" height="60" rx="6" fill="var(--warn-soft)" stroke="var(--warn)"/><text x="820" y="136" text-anchor="middle">業界對照只有 5-4</text><text x="820" y="156" text-anchor="middle" font-size="12">限結構性變更；局部變動不適用</text>
+        <rect x="700" y="190" width="240" height="50" rx="6" fill="none" stroke="currentColor" stroke-dasharray="4 3"/><text x="820" y="221" text-anchor="middle" font-size="13">§ 六寫的「參考模型卡」不存在</text>
+        <line x1="600" y1="125" x2="688" y2="125" stroke="currentColor" marker-end="url(#a3)"/><text x="644" y="117" text-anchor="middle" font-size="11">稽核</text>
+      </g>
+    </svg>
+    <figcaption>07-28 生產階段高階設計明寫「不帶入先前調研導向的設計」。調研被引用零次是當時的決定，不是遺忘。盤點檔 § 3-2、§ 3-3、§ 4-2。</figcaption>
+  </figure>
+
+  <div class="impact"><h3>對專案的影響</h3><ul>
+    <li>Miles 拍板：wiki 當設計邊界是對的；調研按需做，結果存回 raw。</li>
+    <li>缺口在稽核端：檢核項要隨領域知識迭代，偏離最佳實踐的取捨要攤給利害關係人。</li>
+    <li>六份系統調研與 2026-10-28 的比對矩陣，是稽核素材的現成起點。</li>
+  </ul></div>
+</section>
+
+<!-- ============ 第三段 ============ -->
+<section id="plan">
+  <div class="eyebrow">第三段</div>
+  <h2>重構計畫</h2>
+  <p class="small">計畫：<code>memory/erp/skill-rewrite-20261029/重構計畫-初稿.md</code>，Opus 初稿 20 節，Fable 審稿補 12 條反例與 D14。重寫＝完整重寫，不修補；拍板後才動手。</p>
+
+  <figure>
+    <svg viewBox="0 0 960 330" role="img" aria-label="重構後的規劃流：建 change、pre-check 加調研建議、grill、設計、稽核含業界比對與取捨、拍板、落卡、specs；調研結果存 raw 後精練成檢核素材，稽核的重複發現與有效情境回寫源頭">
+      <defs><marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+      <g font-size="13" fill="currentColor">
+        <!-- main flow row y=120 -->
+        <g>
+          <rect x="10" y="100" width="90" height="44" rx="5" fill="none" stroke="currentColor"/><text x="55" y="127" text-anchor="middle">/opsx:new</text>
+          <line x1="100" y1="122" x2="118" y2="122" stroke="currentColor" marker-end="url(#a4)"/>
+          <rect x="120" y="100" width="110" height="44" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="175" y="121" text-anchor="middle">pre-check</text><text x="175" y="137" text-anchor="middle" font-size="11">＋調研建議</text>
+          <line x1="230" y1="122" x2="248" y2="122" stroke="currentColor" marker-end="url(#a4)"/>
+          <rect x="250" y="100" width="80" height="44" rx="5" fill="none" stroke="currentColor"/><text x="290" y="127" text-anchor="middle">grill</text>
+          <line x1="330" y1="122" x2="348" y2="122" stroke="currentColor" marker-end="url(#a4)"/>
+          <rect x="350" y="100" width="100" height="44" rx="5" fill="none" stroke="currentColor"/><text x="400" y="121" text-anchor="middle">設計</text><text x="400" y="137" text-anchor="middle" font-size="11">只讀 wiki</text>
+          <line x1="450" y1="122" x2="468" y2="122" stroke="currentColor" marker-end="url(#a4)"/>
+          <rect x="470" y="100" width="150" height="44" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="545" y="121" text-anchor="middle">plan-audit</text><text x="545" y="137" text-anchor="middle" font-size="11">業界比對＋輪數上限</text>
+          <line x1="620" y1="122" x2="638" y2="122" stroke="currentColor" marker-end="url(#a4)"/>
+          <rect x="640" y="100" width="100" height="44" rx="5" fill="var(--warn-soft)" stroke="var(--warn)"/><text x="690" y="121" text-anchor="middle">拍板</text><text x="690" y="137" text-anchor="middle" font-size="11">含取捨裁決</text>
+          <line x1="740" y1="122" x2="758" y2="122" stroke="currentColor" marker-end="url(#a4)"/>
+          <rect x="760" y="100" width="90" height="44" rx="5" fill="none" stroke="currentColor"/><text x="805" y="127" text-anchor="middle">wiki-amend</text>
+          <line x1="850" y1="122" x2="868" y2="122" stroke="currentColor" marker-end="url(#a4)"/>
+          <rect x="870" y="100" width="80" height="44" rx="5" fill="none" stroke="currentColor"/><text x="910" y="127" text-anchor="middle">specs</text>
+        </g>
+        <!-- research branch above -->
+        <path d="M175,100 L175,48 L300,48" fill="none" stroke="var(--accent)" marker-end="url(#a4)"/>
+        <rect x="302" y="26" width="120" height="44" rx="5" fill="none" stroke="var(--accent)" stroke-dasharray="4 3"/><text x="362" y="46" text-anchor="middle">調研（可選）</text><text x="362" y="62" text-anchor="middle" font-size="11">Miles 同意才跑</text>
+        <line x1="422" y1="48" x2="470" y2="48" stroke="var(--accent)" marker-end="url(#a4)"/>
+        <rect x="472" y="26" width="90" height="44" rx="5" fill="none" stroke="var(--accent)"/><text x="517" y="52" text-anchor="middle">raw 卡</text>
+        <line x1="562" y1="48" x2="610" y2="48" stroke="var(--accent)" marker-end="url(#a4)"/>
+        <rect x="612" y="26" width="200" height="44" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="712" y="46" text-anchor="middle">檢核素材</text><text x="712" y="62" text-anchor="middle" font-size="11">參考模型卡或準則素材欄（D3）</text>
+        <path d="M712,70 L712,86 L560,86 L560,100" fill="none" stroke="var(--accent)" marker-end="url(#a4)"/><text x="640" y="82" text-anchor="middle" font-size="11" fill="var(--accent)">稽核者讀</text>
+        <!-- feedback loops below -->
+        <path d="M520,144 L520,200 L120,200" fill="none" stroke="currentColor" opacity=".7" marker-end="url(#a4)"/>
+        <rect x="10" y="180" width="108" height="40" rx="5" fill="none" stroke="currentColor"/><text x="64" y="198" text-anchor="middle" font-size="12">plan-design</text><text x="64" y="212" text-anchor="middle" font-size="11">陷阱段</text>
+        <text x="330" y="194" text-anchor="middle" font-size="11">重複發現回寫源頭</text>
+        <path d="M570,144 L570,250 L330,250" fill="none" stroke="currentColor" opacity=".7" marker-end="url(#a4)"/>
+        <rect x="210" y="230" width="118" height="40" rx="5" fill="none" stroke="currentColor"/><text x="269" y="248" text-anchor="middle" font-size="12">07-scenarios</text><text x="269" y="262" text-anchor="middle" font-size="11">有效對抗情境</text>
+        <text x="450" y="244" text-anchor="middle" font-size="11">推演打出的漏洞</text>
+        <path d="M690,144 L690,300 L830,300" fill="none" stroke="var(--warn)" marker-end="url(#a4)"/>
+        <rect x="832" y="280" width="118" height="40" rx="5" fill="var(--warn-soft)" stroke="var(--warn)"/><text x="891" y="298" text-anchor="middle" font-size="12">取捨段</text><text x="891" y="312" text-anchor="middle" font-size="11">利害關係人（D14）</text>
+        <text x="760" y="294" text-anchor="middle" font-size="11" fill="var(--warn)">公司要求 vs 業界做法</text>
+        <path d="M600,144 L600,280 L120,280" fill="none" stroke="currentColor" opacity=".5" stroke-dasharray="3 3" marker-end="url(#a4)"/>
+        <rect x="10" y="262" width="108" height="40" rx="5" fill="none" stroke="currentColor" stroke-dasharray="3 3"/><text x="64" y="280" text-anchor="middle" font-size="12">評測集</text><text x="64" y="294" text-anchor="middle" font-size="11">誤判、返工</text>
+      </g>
+    </svg>
+    <figcaption>藍色是新增的兩條路：調研按需做並變成檢核素材（M1）；稽核做業界比對，取捨攤給利害關係人（M2）。黑線是回寫源頭的循環。</figcaption>
+  </figure>
+
+  <figure>
+    <svg viewBox="0 0 960 150" role="img" aria-label="執行八批：裁決、評測基線、審查知識層、驗證核心、規劃入口、維運類、入口文件、總驗證；評測基線先於任何重寫，CLAUDE.md 最後">
+      <defs><marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+      <g font-size="12" fill="currentColor">
+        <g transform="translate(10,30)"><rect width="100" height="56" rx="5" fill="var(--warn-soft)" stroke="var(--warn)"/><text x="50" y="22" text-anchor="middle" font-weight="700">0 裁決</text><text x="50" y="42" text-anchor="middle">D1～D14</text></g>
+        <line x1="110" y1="58" x2="126" y2="58" stroke="currentColor" marker-end="url(#a5)"/>
+        <g transform="translate(128,30)"><rect width="100" height="56" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="50" y="22" text-anchor="middle" font-weight="700">1 評測基線</text><text x="50" y="42" text-anchor="middle">先量噪音</text></g>
+        <line x1="228" y1="58" x2="244" y2="58" stroke="currentColor" marker-end="url(#a5)"/>
+        <g transform="translate(246,30)"><rect width="100" height="56" rx="5" fill="none" stroke="currentColor"/><text x="50" y="22" text-anchor="middle" font-weight="700">2 審查知識層</text><text x="50" y="42" text-anchor="middle">評分準則、路由</text></g>
+        <line x1="346" y1="58" x2="362" y2="58" stroke="currentColor" marker-end="url(#a5)"/>
+        <g transform="translate(364,30)"><rect width="100" height="56" rx="5" fill="none" stroke="currentColor"/><text x="50" y="22" text-anchor="middle" font-weight="700">3 驗證核心</text><text x="50" y="42" text-anchor="middle">plan-audit、design</text></g>
+        <line x1="464" y1="58" x2="480" y2="58" stroke="currentColor" marker-end="url(#a5)"/>
+        <g transform="translate(482,30)"><rect width="100" height="56" rx="5" fill="none" stroke="currentColor"/><text x="50" y="22" text-anchor="middle" font-weight="700">4 規劃入口</text><text x="50" y="42" text-anchor="middle">pre-check、ingest</text></g>
+        <line x1="582" y1="58" x2="598" y2="58" stroke="currentColor" marker-end="url(#a5)"/>
+        <g transform="translate(600,30)"><rect width="100" height="56" rx="5" fill="none" stroke="currentColor"/><text x="50" y="22" text-anchor="middle" font-weight="700">5 維運類</text><text x="50" y="42" text-anchor="middle">amend、oq、audit</text></g>
+        <line x1="700" y1="58" x2="716" y2="58" stroke="currentColor" marker-end="url(#a5)"/>
+        <g transform="translate(718,30)"><rect width="100" height="56" rx="5" fill="none" stroke="currentColor"/><text x="50" y="22" text-anchor="middle" font-weight="700">6 入口文件</text><text x="50" y="42" text-anchor="middle">CLAUDE.md 最後</text></g>
+        <line x1="818" y1="58" x2="834" y2="58" stroke="currentColor" marker-end="url(#a5)"/>
+        <g transform="translate(836,30)"><rect width="100" height="56" rx="5" fill="none" stroke="currentColor"/><text x="50" y="22" text-anchor="middle" font-weight="700">7 總驗證</text><text x="50" y="42" text-anchor="middle">真實主題試用</text></g>
+        <text x="480" y="120" text-anchor="middle" font-size="13">約 10 個工作階段加一個真實規劃主題。每批一個分支，合併 master 後才開下一批。</text>
+      </g>
+    </svg>
+    <figcaption>先有評測基線才重寫，改了要能證明沒退步（文章 11、15）。計畫 § 三。</figcaption>
+  </figure>
+
+  <div class="wrap">
+  <table>
+    <thead><tr><th>待裁決</th><th>衝突</th><th>建議</th></tr></thead>
+    <tbody>
+      <tr><td>D1</td><td>STE100 受控句法 vs 用判斷取代規則</td><td>A 維持。STE100 是輸出合約，不是行為規則</td></tr>
+      <tr><td>D2</td><td>復審到全過 vs 輪數上限</td><td>B 設上限，判定值拆出「待裁決」直接交 Miles</td></tr>
+      <tr><td>D3</td><td>禁新建抽象卡 vs 檢核素材要有家</td><td>補選項後再定：11 層參考模型卡／稽核者讀 reviewed raw／寫進準則素材欄</td></tr>
+      <tr><td>D4</td><td>CLAUDE.md 375 行 vs 少於 200 行</td><td>A 縮到 180 行，移出表逐條給 Miles 看</td></tr>
+      <tr><td>D5</td><td>必含段與逐步指令 vs 只寫目標與限制</td><td>A 留必含段，刪逐步程序</td></tr>
+      <tr><td>D6</td><td>子代理拿不到 CLAUDE.md vs skill 輕量</td><td>A 每處一行指名句法兩檔；先實測子代理讀不讀得到</td></tr>
+      <tr><td>D7</td><td>Fable 主對話、Opus 稽核、Sonnet 機械 vs 三層分工</td><td>C 依工作階段類型選主對話模型；屬習慣不是閘門</td></tr>
+      <tr><td>D8</td><td>評審不是被測模型 vs 可能同模型</td><td>先在評測集量同模型與異模型的差</td></tr>
+      <tr><td>D9</td><td>不給範例 vs 規範、骨架、範例三件組</td><td>A 維持，文件寫作要一致不要探索</td></tr>
+      <tr><td>D10</td><td>主動收尾 MUST 清單 vs 收尾摘要格式</td><td>A 改三段摘要，inline OQ 掃描保留硬性</td></tr>
+      <tr><td>D11</td><td>11 層卡的寫入入口</td><td>A wiki-amend 擴到 11 層，只套 log 與單一本體檢查</td></tr>
+      <tr><td>D12</td><td>取捨段的位置與時點</td><td>A 稽核後補，與 D14 一起看</td></tr>
+      <tr><td>D13</td><td>兩級分級加個案豁免 vs 從變更判</td><td>A 加輕量級，條件先嚴，判定先亮給 Miles</td></tr>
+      <tr><td>D14</td><td>取捨怎麼到利害關係人手上</td><td>A Linear Feature 票加「與業界做法的取捨」段，只在有偏離時出現</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="impact"><h3>對專案的影響</h3><ul>
+    <li>拍板前不動任何 skill。拍板後每個檔案完整重寫，不用局部修補。</li>
+    <li>Miles 的日常會變三處：pre-check 後多一題「要不要調研」；稽核到上限就交你裁決；偏離業界做法時票上多一段取捨。</li>
+    <li>先建評測集再重寫，每批都能回答「有沒有退步」。</li>
+  </ul></div>
+</section>
+
+<footer>三份產出都在工作樹分支 <code>claude/skill-rewrite-c5-1145e6</code>：raw 卡、過去規劃盤點、重構計畫初稿。本頁為說明用，正本以三份檔案為準。</footer>
+</main>
