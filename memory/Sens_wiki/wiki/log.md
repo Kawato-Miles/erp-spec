@@ -15,6 +15,10 @@ last-reviewed: 2026-06-02
 - 變更：新增 raw 卡 [[2026-10-29-claude-research-PrintVis承接印刷業務範圍的覆蓋與導入方法]]（status=raw；七範圍覆蓋總表標明 PrintVis 自有功能與 Business Central 標準功能、生產段逐物件細表、導入夥伴與 Microsoft 的導入方法、主檔建置順序、生產段最佳實踐；諮詢服務、補做專用流程、獨立售後服務單判為 PrintVis 無此場景；對委託方的對照段標明推論；查無資料 25 項）。主對話抽查 13 條來源全部相符，並更正子代理對「PrintVis Storage」與在製品位置的說法。供 Sens memory/erp/erp-mes-standard-alignment-20261028/PrintVis對照.md 引用。
 - 衝突：無。
 
+## [2026-10-29 19:00] 納入(ingest-A) | SAP 承接印刷業務範圍的覆蓋與導入方法研究寫入 raw（Sonnet 代理四組，107 條來源）
+- 變更：新增 raw 卡 [[2026-10-29-claude-research-SAP承接印刷業務範圍的覆蓋與導入方法]]（status=raw；七範圍覆蓋總表與生產段 18 列細表、SAP Activate 與 Fit-to-Standard 的顧問步驟、按單生產策略 20／25／50／54、成本與品檢入庫標準流程、行業套件查無印刷業專屬官方方案；審稿打樣與補做判為 SAP 無此場景，場內轉交點收查無；對委託方的對照段標明推論；查無項目 24 項；舊版文件逐條標版本）。主對話抽查 16 條來源全部相符，更正代理一處過度陳述。供 Sens memory/erp/erp-mes-standard-alignment-20261028/SAP對照.md 引用。
+- 衝突：無。
+
 ## [2026-10-29 18:30] 納入(ingest-A) | claude.dev 對 Claude 5 世代的使用建議寫入 raw（Sonnet 代理抓 16 篇，主對話抽查 7 篇）
 - 變更：新增 raw 卡 [[2026-10-29-claude-research-claude.dev對Claude5世代的使用建議]]（status=raw；來源只限 claude.dev 網域 16 篇；八主題建議表：情境工程、CLAUDE.md、skill 與 agent 說明檔、sub-agent 分工、記憶與知識庫、評分與稽核、工具與權限、Claude 5 世代行為差異；每條附原文關鍵句與出處編號；claude.dev 未見清單 9 項；查證紀錄：抽查 7 篇全部相符、更正子代理兩處）。供 skill 與 CLAUDE.md 重構計畫引用，候選升級路徑 11 審查與協作知識。
 - 衝突：無
