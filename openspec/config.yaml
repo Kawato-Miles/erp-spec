@@ -56,10 +56,6 @@ context: |
   - Linear 交付：由 Miles 觸發 linear-delivery skill；取材 wiki 與 Prototype，不讀 OpenSpec
 
 rules:
-  explore:
-    - "explore 開新需求時 MUST 跑輕量商業邏輯衝突檢查：讀對應領域 Vault 04-business-logic/ 卡 + 查相關 08-open-questions/ OQ，給「此方向與既有商業規則有無衝突」早期警示（附檔:行 + OQ 編號）"
-    - "explore 衝突檢查產「衝突筆記」交後續 grill 需求對齊與 plan-design 承接（不重掃已發現衝突）；發現衝突時攤三選項（A 繞過用既有機制 / B 推翻改既有規則 / C 待釐清開 OQ），決策權在 Miles，MUST NOT 替 Miles 決定方向"
-    - "訪談紀律：對 Miles 的釐清提問，決策類問題一次只問一題、每題附建議答案（讓 Miles 可一字拍板），該題有結論才問下一題；可自環境查得的事實（wiki / spec / Notion / git）MUST 自查、MUST NOT 拿來問 Miles——只有決策才問人"
   proposal:
     - 使用繁體中文撰寫
     - Capabilities 名稱使用英文 kebab-case
@@ -100,22 +96,22 @@ rules:
     - 使用 checkbox 格式：- [ ] X.Y 任務描述
     - "測試先行（紅在綠前）：每條 delta Scenario MUST 對應至少一個情境覆蓋測試任務（scenarioCoverage / Playwright），且測試任務 MUST 排在對應實作任務之前——先落地失敗測試，再實作至通過；期望值取自 Scenario 的 THEN 描述，MUST NOT 由實作重算"
     - "tasks.md MUST 含「測試影響清單」段：依 Sens erp-prototype-tests/docs/scenario-catalog.md 節號列出改哪些既有測試、新增哪些情境、mock 動哪裡（先改 MOCK-DATA-CHAIN、再 mock-data.js、再測試）；缺段不進 apply"
+
+operations:
   apply:
-    - "測試專案在 Sens erp-prototype-tests/（erp repo 不放測試檔）。每個 task 完成前：`npm run impact` 對映 erp 改動到章與測試 → `npm run test:smoke`（主流程）→ 受影響章 `npm run test:module -- tests/e2e/<章>`"
-    - 任何測試案例失敗須當場修正後才能勾選 task 完成
-    - 若 task 引入情境目錄未涵蓋的新流程，須於同一 task 內補情境目錄節與對應測試
-    - 改 mock 順序固定：先改 (prototype)/MOCK-DATA-CHAIN.md、再改各模組 mock-data.js、最後更新引用該鏈編號的測試
-  verify:
-    - "執行 Sens erp-prototype-tests 的 `npm test`（Vitest 加全部 Playwright）確認全部通過；fixme 條目須在 docs/findings-*.md 有對應紀錄"
-    - 逐一比對 tasks.md 內每個已勾選 task 對應的 prototype 變更，確認均涵蓋於情境目錄節與對應測試
-    - 若 change 引入新業務流程，須先補情境目錄與測試（並驗證通過）才能進入歸檔（archive）
+    guidance:
+      - "測試專案在 Sens erp-prototype-tests/（erp repo 不放測試檔）。每個 task 完成前：`npm run impact` 對映 erp 改動到章與測試 → `npm run test:smoke`（主流程）→ 受影響章 `npm run test:module -- tests/e2e/<章>`"
+      - 任何測試案例失敗須當場修正後才能勾選 task 完成
+      - 若 task 引入情境目錄未涵蓋的新流程，須於同一 task 內補情境目錄節與對應測試
+      - 改 mock 順序固定：先改 (prototype)/MOCK-DATA-CHAIN.md、再改各模組 mock-data.js、最後更新引用該鏈編號的測試
   archive:
-    - "歸檔前 MUST 掃描 design.md / proposal.md / specs/ 內未解 `## Open Questions` section"
-    - "對每筆未解 OQ 觸發 oq-manage mode B 建 Vault OQ 卡（memory/Sens_wiki/wiki/erp/08-open-questions/<MODULE>-<NNN>-<簡述>.md），含去重流程"
-    - "design.md / proposal.md 原處 OQ 條目改為「→ 對應 Vault OQ：[[<MODULE>-<NNN>-<簡述>]]」雙向引用，不刪除原 section"
-    - "已解 OQ 在 design.md 內保留「決議與理由」標注；若決議影響跨 change 商業邏輯，同步遷 Vault OQ 卡並標 status: answered"
-    - "上述步驟全部完成後才能 archive；oq-manage skill mode D 可協助批次處理"
-    - "archive 前 MUST 驗證本次 delta 的每個 Requirement 描述段無業務規則句重述、每條 Scenario 有「情境」標註且指到存在的情境卡與步驟；任一不符先修正再 archive"
-    - "archive 後 MUST 驗證 ADDED 殘留：對每個 delta ## ADDED Requirement，確認是否語意取代某既有 main spec Requirement / Scenario；若是，手動清理被取代的舊描述（避免新舊並存矛盾）"
-    - "archive 後 MUST 驗證 wiki 已同步：寫 specs 前已先更新 wiki（CLAUDE.md 主動收尾第 9 點「寫 specs 前先更新 wiki」條），archive 時確認 wiki 實體卡（05-entities/ 欄位表）/ 狀態機卡（06-state-machines/ 狀態列舉）/ 商業邏輯卡（04-business-logic/）沒有遺漏項；若有遺漏當場補齊"
-    - "archive 前 MUST 掃描業務欄位表殘留（單一正本鐵則 gate）：執行 grep -rn \"^| 欄位 | 英文名稱\" openspec/specs/ 與本次 change 的 delta specs；命中者若屬業務實體欄位表即違規，MUST 先遷移至 wiki 實體卡（05-entities/）並改為引用後才能 archive；純技術層支援實體表（junction / log，內容限 UUID / FK / 時間戳等）可保留，但其前導文字 MUST 標明「技術層支援實體欄位，非業務欄位正本」"
+    guidance:
+      - "歸檔前 MUST 掃描 design.md / proposal.md / specs/ 內未解 `## Open Questions` section"
+      - "對每筆未解 OQ 觸發 oq-manage mode B 建 Vault OQ 卡（memory/Sens_wiki/wiki/erp/08-open-questions/<MODULE>-<NNN>-<簡述>.md），含去重流程"
+      - "design.md / proposal.md 原處 OQ 條目改為「→ 對應 Vault OQ：[[<MODULE>-<NNN>-<簡述>]]」雙向引用，不刪除原 section"
+      - "已解 OQ 在 design.md 內保留「決議與理由」標注；若決議影響跨 change 商業邏輯，同步遷 Vault OQ 卡並標 status: answered"
+      - "上述步驟全部完成後才能 archive；oq-manage skill mode D 可協助批次處理"
+      - "archive 前 MUST 驗證本次 delta 的每個 Requirement 描述段無業務規則句重述、每條 Scenario 有「情境」標註且指到存在的情境卡與步驟；任一不符先修正再 archive"
+      - "archive 後 MUST 驗證 ADDED 殘留：對每個 delta ## ADDED Requirement，確認是否語意取代某既有 main spec Requirement / Scenario；若是，手動清理被取代的舊描述（避免新舊並存矛盾）"
+      - "archive 後 MUST 驗證 wiki 已同步：寫 specs 前已先更新 wiki（CLAUDE.md 主動收尾第 9 點「寫 specs 前先更新 wiki」條），archive 時確認 wiki 實體卡（05-entities/ 欄位表）/ 狀態機卡（06-state-machines/ 狀態列舉）/ 商業邏輯卡（04-business-logic/）沒有遺漏項；若有遺漏當場補齊"
+      - "archive 前 MUST 掃描業務欄位表殘留（單一正本鐵則 gate）：執行 grep -rn \"^| 欄位 | 英文名稱\" openspec/specs/ 與本次 change 的 delta specs；命中者若屬業務實體欄位表即違規，MUST 先遷移至 wiki 實體卡（05-entities/）並改為引用後才能 archive；純技術層支援實體表（junction / log，內容限 UUID / FK / 時間戳等）可保留，但其前導文字 MUST 標明「技術層支援實體欄位，非業務欄位正本」"
