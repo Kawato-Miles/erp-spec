@@ -1,0 +1,173 @@
+id	類別	應觸發	來源	句子
+C001	規劃	規劃入口	#1 add-consultation-activity-log	諮詢單要有活動紀錄，誰在什麼時候做了什麼要看得到
+C002	規劃	規劃入口	#2 add-payment-worklists	中台款項管理要加待處理清單，讓會計知道今天要對哪些款
+C003	規劃	規劃入口	#3 fix-order-print-item-actions	訂單的印件列操作按鈕有問題，要重新整理哪些狀態能做什麼
+C004	規劃	規劃入口	#4 officer-files-to-print-item	印務的印件檔案和檔案備註要搬到印件層，多張工單共用一份
+C005	規劃	規劃入口	#5 print-item-copy-rule	加開印件複製原印件時，哪些欄位要帶、哪些要清空，我想重新規劃
+C006	規劃	規劃入口	#6 quote-estimate-by-sales	需求單的成本評估改由業務自己回填，印務主管只在被指派時評估
+C007	規劃	規劃入口	#7 work-order-visibility-and-sharing	工單列表只看得到自己的，但詳情要能分享給別人看，這個要設計一下
+C008	規劃	規劃入口	#8 operator-task-portal	師傅需要一個看自己任務的入口頁
+C009	規劃	規劃入口	#9 wo-dispatch-ux	工單派工的操作流程太卡，想改善派工體驗
+C010	規劃	規劃入口	#10 wo-modification	工單建立後要能異動，異動流程要怎麼處理
+C011	規劃	規劃入口	#11 custom-order-creation	客製訂單要怎麼建立，我想規劃一下
+C012	規劃	規劃入口	#12 imposition-calculator	想做一個拼版計算器，算一張紙能排幾模
+C013	規劃	規劃入口	#13 work-package	生產任務要能打包成工作包
+C014	規劃	規劃入口	#14 production-flow-optimization	生產流程有幾段很慢，想整體優化
+C015	規劃	規劃入口	#15 production-line-dispatch	派工要能指定到產線
+C016	規劃	規劃入口	#16 remove-custom-order-type	訂單類型裡的「客製」要拿掉
+C017	規劃	規劃入口	#17 add-prepress-review	要加審稿流程，稿件進來先審再進生產
+C018	規劃	規劃入口	#18 end-to-end-data-flow	從需求單到出貨的資料怎麼串，要整理成一條完整的資料流
+C019	規劃	規劃入口	#19 equipment-color-cost	設備要能設定每個顏色的費用
+C020	規劃	規劃入口	#20 production-task-bom-references	生產任務要能引用 BOM 的項目
+C021	介面	不觸發規劃	#21 production-task-bom-tab-display	生產任務詳情頁要多一個 BOM 頁籤
+C022	規劃	規劃入口	#22 production-task-color-cost-split	生產任務的顏色費用要拆開算
+C023	規格同步	規格入口	#23 qc-spec-consolidation	QC 的規格散在好幾份 spec，要整併成一份
+C024	規劃	規劃入口	#24 add-order-review-rejected-status	訂單審核要加一個「退回」狀態
+C025	介面	不觸發規劃	#25 add-production-task-side-panel	生產任務改成點了從側邊滑出側板
+C026	模糊	不計分	#26 data-consistency-audit	各模組 spec 之間欄位跟狀態對不起來，要做一次一致性檢查
+C027	介面	不觸發規劃	#27 fix-erp-summary-grid-info-icon-overflow	摘要格的提示圖示超出框了，修一下
+C028	規劃	規劃入口	#28 add-prepress-operational-views	審稿人員需要自己的工作清單頁
+C029	介面	不觸發規劃	#29 add-table-form-atoms	表格跟表單要抽出共用的基礎元件
+C030	介面	不觸發規劃	#30 extract-erp-detail-tabs	詳情頁的頁籤元件抽成共用
+C031	介面	不觸發規劃	#31 refactor-add-production-tasks-page	新增生產任務那一頁的程式結構要重構
+C032	規劃	規劃入口	#32 refactor-review-round-model	審稿輪次的模型要重新設計
+C033	規劃	規劃入口	#33 refine-prepress-review-scope	審稿的範圍要重新界定，哪些印件要審、哪些免審
+C034	介面	不觸發規劃	#34 tokenize-category-colors	分類顏色改用設計系統的色票
+C035	規劃	規劃入口	#35 add-production-task-transfer	生產任務完成後要能轉交給下一站
+C036	規劃	規劃入口	#36 add-sales-manager-quote-approval	需求單報價要加業務主管核准
+C037	介面	不觸發規劃	#37 refactor-detail-pages-to-subheader-tab-layout	詳情頁版型統一改成副標題加頁籤
+C038	規劃	規劃入口	#38 add-consultation-request-and-revise-approval-gate	要新增諮詢單，順便調整核准的把關條件
+C039	規劃	規劃入口	#39 refactor-order-payment-and-invoice-with-billing-company	訂單的款項跟發票要依帳務公司重構
+C040	規劃	規劃入口	#40 relocate-sales-manager-approval-from-quote-to-order	業務主管核准要從需求單移到訂單
+C041	規劃	規劃入口	#41 refactor-order-adjustment-and-cleanup	訂單異動的流程要重構
+C042	規劃	規劃入口	#42 add-print-item-overview-to-sales-platform	業務平台要看得到印件總覽
+C043	規劃	規劃入口	#43 extend-order-fields-from-vendor-feedback	廠商回饋訂單少了幾個欄位，要補
+C044	規劃	規劃入口	#44 refine-order-edit-gate-and-consultation	訂單什麼時候可以編輯的條件要修
+C045	規劃	規劃入口	#45 simplify-quote-billing-company-mapping	需求單對應帳務公司的方式太複雜，想簡化
+C046	規劃	規劃入口	#46 add-after-sales-ticket	要加售後服務單
+C047	規劃	規劃入口	#47 print-item-detail-progress	印件詳情要顯示生產進度
+C048	規劃	規劃入口	#48 add-my-after-sales-action-page-and-remove-owner-transfer	售後要有「我的待處理」頁，負責人轉移的功能拿掉
+C049	介面	不觸發規劃	#49 align-payment-list-pages-to-quote-list-pattern	款項列表頁改成跟需求單列表一樣的版型
+C050	介面	不觸發規劃	#50 refactor-my-after-sales-to-standard-list-pattern	我的售後頁改成標準列表版型
+C051	規劃	規劃入口	#51 schedule-backtrack-prototype	排程要能從交期往回推
+C052	規劃	規劃入口	#52 scheduling-center	想做一個排程中心
+C053	規劃	規劃入口	#53 task-dispatch-prototype	任務派工想先做個雛形看看
+C054	規劃	規劃入口	#54 add-order-note-section-with-template-tool	訂單要加備註區，備註能套範本
+C055	規劃	規劃入口	#55 reclassify-qc-and-add-inspection	品檢要重新分類，另外加檢驗
+C056	規劃	規劃入口	#56 refine-after-sales-refund-and-add-supplementary-print	售後退款要調整，還要加補印
+C057	規劃	規劃入口	#57 refine-supplementary-print-skip-review	補印要不要重新審稿？想讓它可以免審
+C058	介面	不觸發規劃	#58 refine-order-detail-tabs	訂單詳情的頁籤順序要重排
+C059	規劃	規劃入口	#59 add-payment-status-and-decouple-oa-execution	款項要有狀態，跟 OA 執行脫鉤
+C060	規劃	規劃入口	#60 resolve-consultation-request-gaps-cr-1-cr-2	諮詢單還有兩個缺口沒處理，要補
+C061	規劃	規劃入口	#61 resolve-prepress-review-gaps-ar-10-ar-12	審稿那邊還有幾個缺口，要補齊
+C062	規劃	規劃入口	#62 add-review-rounds-to-print-item-side-panel	印件側板要看得到審稿輪次
+C063	介面	不觸發規劃	#63 add-side-panel-shared-components	側板要抽共用元件
+C064	規劃	規劃入口	#64 add-sales-manager-after-sales-page	業務主管要有一個看售後的頁面
+C065	規劃	規劃入口	#65 align-invoice-line-items-to-ezpay-spec	發票明細要對齊 ezPay 的規格
+C066	規劃	規劃入口	#66 complete-payment-status-ui-and-followups	款項狀態的介面跟後續事項要做完
+C067	規劃	規劃入口	#67 refine-consultation-cancellation-and-invoice-flow	諮詢取消後的發票要怎麼處理
+C068	規劃	規劃入口	#68 remove-aging-payment-supervisor-dashboard	帳齡的主管看板先拿掉
+C069	規劃	規劃入口	#69 relax-order-detail-edit-conditions	訂單詳情的編輯條件太嚴，要放寬
+C070	規劃	規劃入口	#70 unify-billing-installment-and-reconciliation-csv	分期跟對帳 CSV 要統一
+C071	介面	不觸發規劃	#71 add-print-item-subrows-to-order-list	訂單列表要能展開看印件子列
+C072	介面	不觸發規劃	#72 refine-invoice-tab	發票頁籤的欄位排版要調整
+C073	規劃	規劃入口	#73 remove-legacy-payment-plan-planned-invoice-junction	付款計畫跟預計發票中間那張舊的對照表要拿掉
+C074	規格同步	規格入口	#74 remove-superseded-paymentplan-requirements	付款計畫被取代的舊 spec 要清掉
+C075	規劃	規劃入口	#75 add-sales-manager-reassign-owner	業務主管要能改派需求單的接單業務
+C076	規劃	規劃入口	#76 converge-consultation-cancel-to-order-cancel-flow	諮詢取消要併進一般訂單的取消流程
+C077	規劃	規劃入口	#77 align-business-consultation-coverage-gaps	業務諮詢流程還有覆蓋不到的地方，要對齊
+C078	介面	不觸發規劃	#78 enhance-order-list-filter	訂單列表的篩選條件要加強
+C079	規劃	規劃入口	#79 refactor-order-receivable-refund-model	訂單應收跟退款的模型要重構
+C080	規劃	規劃入口	#80 add-prepress-order-review-view	審稿要有一個以訂單為單位的檢視
+C081	介面	不觸發規劃	#81 adjust-prepress-order-review-columns	審稿訂單檢視的欄位順序要調整
+C082	規劃	規劃入口	#82 review-return-and-confirm-production	審稿退回之後，怎麼確認進生產
+C083	規格同步	規格入口	#83 align-billing-and-order-entities-with-brd	帳務跟訂單的 spec 實體要跟 wiki 對齊
+C084	規劃	規劃入口	#84 add-pending-refund-payout-list	要加一個待退款撥付清單
+C085	規劃	規劃入口	#85 refactor-order-billing-data-model-and-refund-sign	訂單帳務的資料模型跟退款正負號要重構
+C086	規劃	規劃入口	#86 offline-review-assignment	線下審稿的分派要怎麼做
+C087	規劃	規劃入口	#87 remove-after-sales-responsibility-and-soften-closure	售後的責任歸屬拿掉，結案改成軟提示
+C088	規劃	規劃入口	#88 recipe-management	配方管理要規劃
+C089	規格同步	規格入口	#89 cleanup-production-stage-specs	生產階段的 spec 太亂，要清整
+C090	規劃	規劃入口	#90 rewrite-qc-add-shipment-and-dispatch-order	品檢要重寫，順便加出貨單跟派車單
+C091	規劃	規劃入口	#91 correct-production-stage-seg1	生產階段第一段：派工跟生產任務要校正
+C092	規劃	規劃入口	#92 correct-production-stage-seg2	報工跟場內轉交的規則要校正
+C093	規劃	規劃入口	#93 correct-production-stage-seg3	品檢、出貨跟訂單完成那一段要校正
+C094	規劃	規劃入口	#94 correct-production-stage-seg4a	售後跟補做這類副流程，生產那一側要重新整理
+C095	規劃	規劃入口	#95 correct-production-stage-seg4b	審稿段要重寫，上傳就建輪次
+C096	規劃	規劃入口	#96 align-work-order-cost-snapshot-to-pricing-engine	工單的成本快照要跟計價引擎對齊
+C097	規劃	規劃入口	#97 work-order-quantity-and-color-costing	工單的目標數量跟色數計價要改
+C098	規劃	規劃入口	#98 fix-adjustment-recognition-and-refund-sign	訂單異動的認列跟退款正負號有錯，要修
+C099	規格同步	規格入口	#99 sync-amount-rules-to-specs	金額規則改了，要同步到 spec
+C100	規格同步	規格入口	#100 sync-costing-input-and-kitting-unit	計價輸入跟齊套單位要同步到 spec
+C101	規劃	規劃入口	#101 work-order-task-editing-refinement	工單的生產任務編輯在實務上不好用，要修
+C102	規格同步	規格入口	#102 sync-per-task-costing-quantity	每個任務的計價數量要同步進 spec
+C103	規格同步	規格入口	#103 sync-remake-full-chain-and-completion-flag	重做的整條鏈跟完成旗標要同步到 spec
+C104	規劃	規劃入口	#104 narrow-order-adjustment-guard-to-creation	訂單異動的限制只要擋在建立的時候就好
+C105	規劃	規劃入口	#105 restrict-after-sales-to-terminal-orders	售後只能對已結束的訂單開
+C106	規格同步	規格入口	#106 sync-billing-decimal-rules-to-specs	帳務的小數規則要同步到 spec
+C107	規劃	規劃入口	#107 standardize-material-task	材料任務要標準化
+C108	規劃	規劃入口	#108 unify-work-report-flow	報工流程要統一
+C109	規格同步	規格入口	#109 unify-work-report-wording	報工的用詞在 spec 裡不一致，要統一
+C110	規劃	規劃入口	#110 standardize-production-task-r6	生產任務標準化還有一輪要做
+C111	規劃	規劃入口	#111 work-order-material-pricing-input	工單的材料計價要改成手填
+C112	規劃	規劃入口	#112 delivery-date-chain-alignment	交期那條鏈的日期要對齊
+C113	規劃	規劃入口	#113 move-process-note-qc-requirement-to-print-item	製程說明跟品檢需求要搬到印件層
+C114	規劃	規劃入口	#114 work-order-prep-spec-selection	工單的材料要改成選備料規格
+C115	規劃	規劃入口	#115 work-order-cost-color-lines	工單成本的顏色費用要獨立成幾列
+C116	規劃	規劃入口	#116 shipment-draft-and-qc-queue	出貨單要有草稿態，品檢要有待驗清單
+C117	規劃	規劃入口	#117 delivery-date-naming-convergence	交期相關的日期名稱太多，要統一命名
+C118	規劃	規劃入口	#118 delivery-date-redefinition	交期的日期定義要重新定
+C119	規劃	規劃入口	#119 work-order-detail-company-alignment	工單詳情頁要對齊公司的參考文件
+C120	規劃	規劃入口	#120 customer-requested-date-to-print-item	客戶指定的日期要放到印件上
+C121	規劃	規劃入口	#121 work-order-summary-drop-actual-profit-rate	工單摘要的實際利潤率拿掉
+C122	規劃	規劃入口	#122 quote-request-reopen-and-delete	需求單要能重新開啟跟刪除
+C123	規劃	規劃入口	#123 floor-transfer-no-return	場內轉交不做退回
+C124	規劃	規劃入口	#124 order-review-gate-invoice-draft-transfer-receipt	訂單審核的把關、發票草稿、轉交點收要一起調
+C125	規劃	規劃入口	#125 document-access-scope-alignment	文件誰能看的範圍要對齊
+C126	規劃	規劃入口	#126 production-dispatch-report-transfer-convergence	生產的分派、報工、轉交要整理成一致的做法
+C127	規劃	規劃入口	#127 unify-production-shipping-correction	生產跟出貨的修正機制要統一
+C128	規劃	規劃入口	#128 shipment-batch-dispatch-box-size	出貨單要能批次拋單，裝箱要填長寬高
+C129	規劃	規劃入口	#129 shipment-logistics-split	出貨單的裝箱資料要跟物流單拆開
+C130	規劃	規劃入口	#130 box-spec-dimensions-from-master	箱子的尺寸要從主檔帶
+C131	規劃	規劃入口	#131 shipment-print-download-center	出貨單要能批次列印，還要一個下載中心
+C132	規劃	規劃入口	#132 rush-order-definition	急件的定義要重新規劃
+K01	指名	oq-manage	oq-manage mode B	這個先開一張 OQ，之後再問業務
+K02	指名	oq-manage	oq-manage mode E	整理一下 OQ，看哪些放太久了
+K03	指名	oq-manage	oq-manage mode C	出貨方式那張 OQ 已經拍板了，幫我封存
+K04	指名	wiki-amend	wiki-amend 觸發詞	把剛剛定案的出貨單規則寫進 wiki
+K05	指名	wiki-amend	wiki-amend 觸發詞	幫我補一張出貨退回的業務情境卡
+K06	指名	wiki-amend	wiki-amend 觸發詞	工單實體卡的欄位要更新，加一個目的站點
+K07	指名	vault-ingest	vault-ingest mode A	這份訪談紀錄存進 raw
+K08	指名	vault-ingest	vault-ingest mode C	掃一下 raw，看哪些還沒處理
+K09	指名	vault-ingest	vault-ingest mode B	精練 2026-10-29-claude-research-claude.dev對Claude5世代的使用建議 這張
+K10	指名	vault-audit	vault-audit 觸發詞	跑 vault audit
+K11	指名	vault-audit	vault-audit 觸發詞	wiki 最近改很多，做一次健康檢查
+K12	指名	linear-delivery	linear-delivery 觸發詞	把工單模組交付到 Linear
+K13	指名	linear-delivery	linear-delivery 觸發詞	稽核一下 Linear 上出貨的交付文件
+K14	指名	plan-audit	plan-audit 觸發詞	稽核這份設計
+K15	指名	plan-audit	plan-audit 觸發詞	design 改完了，幫我復審
+K16	指名	plan-design	plan-design 觸發詞	grill 完了，開始設計
+K17	指名	plan-design	plan-design 觸發詞	照新流程做設計
+K18	指名	misjudgement-record	misjudgement-record 觸發詞	這個稽核審錯了，這不是缺漏
+K19	指名	misjudgement-record	misjudgement-record 觸發詞	這是誤判，記下來
+K20	指名	grilling	CLAUDE.md 路由	grill 我一下急件這個規劃
+N01	反例	不觸發	純查詢	出貨單狀態機在哪
+N02	反例	不觸發	純查詢	「工單」的定義是什麼
+N03	反例	不觸發	純查詢	印件跟生產任務是什麼關係
+N04	反例	不觸發	純查詢	OQ 卡放在哪個資料夾
+N05	反例	不觸發	純查詢	訂單有哪些狀態
+N06	反例	不觸發	純查詢	現在 openspec 有幾個模組
+N07	反例	不觸發	純查詢	報工是誰做的
+N08	反例	不觸發	純查詢	急件的工作天怎麼算
+N09	反例	不觸發	純查詢	審稿輪次是什麼
+N10	反例	不觸發	純查詢	品檢紀錄寫在哪張卡
+N11	反例	不觸發	純查詢	工單跟訂單是一對多嗎
+N12	反例	不觸發	純查詢	付款計畫在哪裡定義
+N13	反例	不觸發	純查詢	出貨方式有哪幾種
+N14	反例	不觸發	純查詢	現在 wiki 有幾張業務情境卡
+N15	反例	不觸發	純查詢	印務主管負責什麼
+N16	反例	不觸發	純查詢	拼版是什麼意思
+N17	反例	不觸發	純查詢	這個 repo 的提交訊息格式是什麼
+N18	反例	不觸發	純查詢	規劃品質評分準則放在哪
+N19	反例	不觸發	純查詢	最近一次合併 master 是哪個提交
+N20	反例	不觸發	純查詢	發票折讓是怎麼定義的
