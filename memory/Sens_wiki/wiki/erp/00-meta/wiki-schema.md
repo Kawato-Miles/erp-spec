@@ -31,6 +31,7 @@ last-reviewed: 2026-10-29
 | `open-question` | OQ 卡 | `08-open-questions/` |
 | `review-knowledge` | 規劃品質量尺與稽核方法論 | `11-review-knowledge/` |
 | `misjudgement-record` | 稽核誤判案例庫 | `11-review-knowledge/` |
+| `reference-model` | 參考模型（單一領域的業界做法、守恆量、公司偏離與取捨；稽核者讀，設計者不讀） | `11-review-knowledge/參考模型/` |
 | `raw` | Raw 素材（已驗證的觀察 / 反饋 / 研究筆記，未精練）| `raw/` |
 
 **分層與 type 的對應**（對齊 [[erp_index]] § 一架構概述）：
@@ -356,6 +357,22 @@ notion-url: <external 推送 Notion 後回填>
 ---
 ```
 
+### type=reference-model
+
+```yaml
+---
+type: reference-model
+status: active
+last-reviewed: 2026-10-29
+source:
+  - "[[<raw 調研卡全名>]]"   # 本卡業界做法引用到的每張 raw 卡各列一行
+---
+```
+
+- 依據：skill 與 CLAUDE.md 重構計畫 D3 拍板（Miles 2026-10-29）：參考模型卡建在 11 層，每領域一張；「禁新建抽象卡」只適用 03～07。
+- 不設 `tags`：11 層不在領域 tag 必標範圍，參考模型不進設計檢索（[[business-domain-taxonomy]]）。
+- `source` 只指 raw 調研卡；收什麼、不收什麼見 [[審查知識路由]] § 四，骨架見 `wiki/範本/範本 - 參考模型`。
+
 ### type=raw
 
 ```yaml
@@ -401,6 +418,7 @@ ingested-to:                                           # status=ingested 時填
 | `wiki/範本/`（vault 層，跨主題） | 骨架檔（內容為填空 frontmatter 樣板，豁免本 schema 檢查；見 [[卡片撰寫共用規範]] § 一）|
 | `07-scenarios/` | `scenario`（業務情境）/ `meta`（`規範 - 業務情境.md` 等）/ `example`（`範例 - 業務情境.md`）|
 | `08-open-questions/` | `open-question` / `meta`（`OQ運作總覽.md`／`規範 - OQ.md`）/ `example`（`範例 - OQ.md`）|
+| `11-review-knowledge/參考模型/` | `reference-model` |
 | `raw/` | `raw` / `meta`（`README.md`）|
 | `raw/_attachments/` | 任意檔（PDF / 圖 / docx / 訪談錄音轉文字等）；不需 frontmatter |
 
