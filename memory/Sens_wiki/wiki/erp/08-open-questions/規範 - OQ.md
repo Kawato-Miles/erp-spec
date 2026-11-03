@@ -7,7 +7,7 @@ last-reviewed: 2026-10-27
 # OQ 卡撰寫規範（open-question 層）
 
 > 分層結構：動筆從 [[範本 - OQ]]（骨架）複製起手；合規樣貌對照 [[範例 - OQ]]（示範）；共用治理（撰寫流程／停下鐵則／撰寫紀律／修改既有卡原則）見 [[卡片撰寫共用規範]]——**本卡只寫 OQ 單元的特定標準**。
-> 分工：本卡管「一張 OQ 卡長什麼樣」；`oq-manage` skill（`.claude/skills/oq-manage/SKILL.md`）管「OQ 怎麼流動」（五 mode 操作、去重、封存移檔、audience 判定、Notion 推送）；frontmatter 欄位定義與值域正本在 [[wiki-schema]] § 四。同一條規則只在一處宣告。
+> 分工：本卡管「一張 OQ 卡長什麼樣」；`oq-manage` skill（`.claude/skills/oq-manage/SKILL.md`）管「OQ 怎麼流動」（開卡、去重、封存移檔、待裁決清單、批次整理；audience 現階段一律 internal、Notion 推送暫停）；frontmatter 欄位定義與值域正本在 [[wiki-schema]] § 四。同一條規則只在一處宣告。
 > 本卡 type 為 meta，不屬平層 open 佇列（豁免「平層只放 status=open」語意鐵則，比照範例卡，見 [[卡片撰寫共用規範]] § 一 治理鐵則 4）。
 
 ---
@@ -43,7 +43,7 @@ last-reviewed: 2026-10-27
 | 1 | 問題能寫成**單一可回答問句** | 寫不成＝議題未收斂，回頭拆（§ 六停下） |
 | 2 | 影響範圍列得出來（涉及哪些卡／流程／spec） | 列不出來＝問題還在素材階段，先走 raw |
 | 3 | 去重已做（平層＋封存都搜過，流程見 skill mode B） | 命中 open 卡→評估擴充；命中封存卡→引舊決議問使用者 |
-| 4 | audience 已判（判斷問句與值域見 [[wiki-schema]] § 四；操作時機見 skill） | 不判就預設 internal 屬失守 |
+| 4 | audience 已填（現階段一律 internal，恢復對外流程由 Miles 另行指示；值域見 [[wiki-schema]] § 四） | 空值屬失守 |
 | 5 | 前綴有歸屬（enum 正本見 [[wiki-schema]] § 七） | 無可歸屬→先增列 enum 再開卡 |
 
 ---
@@ -213,4 +213,4 @@ Q2、Q3 由稽核者對照 § 九 維度 1、3 人工判讀。
 - [[範例 - OQ]] — 示範（通過樣本）
 - [[卡片撰寫共用規範]] — 跨單元共用治理
 - [[wiki-schema]] § 四／§ 七 — frontmatter 值域與前綴 enum 正本
-- `oq-manage` skill（`.claude/skills/oq-manage/SKILL.md`）— 流程正本（五 mode／去重／封存／audience 判定時機／Notion 推送）
+- `oq-manage` skill（`.claude/skills/oq-manage/SKILL.md`）— 流程正本（開卡／去重／封存／待裁決清單／批次整理）

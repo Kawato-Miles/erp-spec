@@ -11,6 +11,16 @@ last-reviewed: 2026-06-02
 下記三行：「變更」（MUST 逐卡 `[[卡名]]` + 一句話，禁粗寫）、「動機」（實質異動正本卡必填，業務理由當下自足，得連 [[OQ卡]]；健檢 / 納入類免）、「衝突」。
 完整規約見 vault 根 `CLAUDE.md` § 四。卡的歷史 = 搜 `[[卡名]]` 命中本檔條目 + git 歷史；決策脈絡見 OQ 卡。
 
+## [2026-11-04 19:10] 納入(amend) | wiki-schema § 六 lint 維度定義正本改指 vault-audit references/稽核維度.md
+- 變更：[[wiki-schema]] § 六與附表的維度定義路徑由 `vault-audit/SKILL.md` 改為 `vault-audit/references/稽核維度.md`
+- 動機：重構計畫批次 5 把 vault-audit 的維度定義拆到 references，SKILL.md 只留目錄頁
+- 衝突：無
+
+## [2026-11-04 18:20] 納入(amend) | 批次 5 同步：11 層寫入入口改走 wiki-amend、OQ 規範的 audience 改一律 internal
+- 變更：[[審查知識路由]] § 四「11 層卡由主對話直接改」改為「經 wiki-amend 寫入，只套 log 與單一本體檢查」；[[規範 - OQ]] 分工句與相關卡段刪除 audience 判定與 Notion 推送，前提確認第 4 列改「現階段一律 internal、空值屬失守」；`memory/Sens_wiki/CLAUDE.md` § 五寫卡列範圍加 11 層卡
+- 動機：重構計畫 D11 採 A（wiki-amend 擴到 11 層）；audience 一律 internal 是專案 CLAUDE.md 2026-08-04 既有拍板，規範卡補齊同步；批次 5 的 wiki-amend 與 oq-manage 重寫依此
+- 衝突：無
+
 ## [2026-11-04 16:40] 納入(amend) | 範本 - Raw 素材加查證紀錄段（claude-research 必填），精練去處註解改指 vault-ingest 第 8 步
 - 變更：[[範本 - Raw 素材]] 原始素材段後新增「查證紀錄」段，格式指向 vault-ingest references/查證紀錄格式.md；精練去處註解的步驟編號改為第 8 步
 - 動機：重構計畫 M1（調研結果存回 raw）與批次 4 vault-ingest 重寫，claude-research 卡 MUST 附主對話抽查紀錄；範本是骨架正本，隨 skill 同步
