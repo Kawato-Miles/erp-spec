@@ -83,7 +83,7 @@ rules:
     - "涉及欄位新增 / 修改時，MUST 先更新 wiki 實體卡的欄位表，再於 spec 撰寫對應 Requirement。涉及狀態新增 / 修改時，MUST 先更新 wiki 狀態機卡的狀態列舉，再於 spec 撰寫自動推進的 Requirement。"
   design:
     - 使用繁體中文撰寫
-    - "結構照 plan-design skill（本體＋必含段），不寫實作程式碼；grill 後與 proposal 一起撰寫並送 plan-audit；檔尾「規格與驗收對應」段於寫 specs 時追加"
+    - "結構照 erp-plan skill 的 references/設計收件.md（本體＋必含段），不寫實作程式碼；grill 後與 proposal 一起撰寫並送 plan-audit；檔尾「規格與驗收對應」段於寫 specs 時追加"
     - 參照 wiki 狀態機卡（狀態列舉、轉換條件與觸發事件）+ 各模組 spec（自動推進的系統承諾）確認狀態設計
     - 參照 wiki 04-business-logic/ 確認計算邏輯與業務規則
     - 參照 wiki 03-roles/ 確認角色權責

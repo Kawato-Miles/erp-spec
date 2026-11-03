@@ -43,15 +43,15 @@ artifacts:
       與 proposal 一起撰寫，兩者一起送 plan-audit 稽核。
 
 
-      結構與填寫標準的正本是 plan-design skill（.claude/skills/plan-design/SKILL.md
-      § 產出結構）與 wiki 規劃品質評分準則（memory/Sens_wiki/wiki/erp/
+      結構與填寫標準的正本是 erp-plan skill 的 references/設計收件.md
+      （.claude/skills/erp-plan/references/設計收件.md）與 wiki 規劃品質評分準則（memory/Sens_wiki/wiki/erp/
       11-review-knowledge/規劃品質評分準則.md § 二）。撰寫前 MUST 先讀兩者，
       本 instruction 不複寫內容。
 
 
       段落：
 
-      - **本體**：商業層設計，範圍見 plan-design § 產出結構。
+      - **本體**：商業層設計，範圍見 erp-plan skill 的 references/設計收件.md。
 
       - **必含段**：① 邊界完整性表、② 管理指標段、③ 情境分類表、
         ④ 拍板引用與隱含假設段、⑤ 守恆段。缺任一段 plan-audit 直接退件。

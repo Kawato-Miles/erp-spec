@@ -1,17 +1,31 @@
 ---
 name: vault-ingest
 description: >
-  ERP_Vault raw 素材承接與精練 skill（素材進入知識庫的唯一閘門）。
-  觸發：mode A——Miles 說「存進 raw」「我要記」「先收集」「這份檔案存 raw」、Claude 完成研究任務後、Claude 識別「值得記」素材（MUST 先問 Miles）；mode B——「精練 [檔名]」「ingest 這張」「拆解 raw」；mode C——「看 raw」「掃 raw」「raw 待處理」或累積 ≥ 10 張 status=raw 時建議。
-  不適用：已精練的知識更新（直接改既有 vault 卡）、明確未解問題（走 oq-manage）、UI 規範（留 DESIGN.md）。
-  Anti-Model-Collapse 防線與各 mode 流程見本文。
+  用：Miles 說「存進 raw」「我要記」「先收集」「這份檔案存 raw」「這份訪談紀錄存進 raw」「把這個 PDF、訪談、截圖收進來」；Claude 完成研究任務後；Claude 識別到值得記的素材（先問 Miles）；erp-plan 的調研建議經 Miles 同意，要派調研；Miles 說「精練 [檔名]」「ingest 這張」「拆解 raw」；Miles 說「看 raw」「掃 raw」「raw 待處理」，或 raw 待處理累積達門檻。
+  不用：已精練的知識更新（直接改既有卡，正本卡走 wiki-amend）；明確未解問題（用 oq-manage）；介面規範（留 Prototype 的 DESIGN.md）；稽核誤判（用 erp-audit）。
 ---
 
 # vault-ingest
 
-對應 Karpathy LLM Wiki 的 ingest 操作：**素材先進 raw 暫存、經 Miles 確認才精練進 wiki**。raw 是「已驗證素材的歸檔」，不是 LLM 自編內容的暫存——「思考在對話裡發生，歸檔是思考完的結果；進知識庫的每張卡都是驗證過的」（Yu Wenhao）。
+## 目標
 
-## 〇、Anti-Model-Collapse 防線（本 skill 的靈魂，逐條強制）
+外部與對話素材先進 `memory/Sens_wiki/raw/`，經 Miles 確認後才精練進 wiki。
+調研素材附真實來源與查證紀錄。業界做法精練後只進審查知識層的參考模型卡，不進業務正本卡。
+
+## 產出
+
+| 產出 | 落點 | 誰寫 |
+|------|------|------|
+| raw 卡（mode A） | `memory/Sens_wiki/raw/<YYYY-MM-DD>-<source>-<主題繁中名詞>.md` | 主對話 |
+| 查證紀錄段（claude-research 必有） | raw 卡內，原始素材段之後 | 主對話 |
+| 調研任務書 | 派工訊息，不存檔 | 主對話 |
+| 調研草稿 | scratchpad | `erp-researcher`（`.claude/agents/erp-researcher.md`） |
+| 精練提案 cards diff（mode B） | 對話 | 主對話 |
+| raw 卡狀態與精練去處段 | raw 卡 frontmatter 與卡末 | 主對話 |
+| 掃描報告（mode C） | 對話；不動檔 | 主對話 |
+| log 一筆 | `memory/Sens_wiki/wiki/log.md`，標籤 ingest-A、ingest-B 或 ingest-C | 主對話 |
+
+## 限制
 
 | 防線 | 規則 | 為何 |
 |------|------|------|
@@ -21,70 +35,43 @@ description: >
 | 3. 精練須逐項批准 | mode B 的 cards diff 僅是提案，每張卡 Miles 看過說 OK 才動；禁「批准＋自動套用」一鍵流程 | 防跨卡連鎖更新時過度發揮、磨平細節 |
 | 4. 合成不讀未驗證素材 | 讀 raw 做跨卡合成時只取 status=ingested／reviewed，禁讀 status=raw | 防未驗證素材自我放大（self-amplification） |
 
-**拒絕場景（防線 1＋2 的試金石）**：被要求「總結既有 vault 內容存進 raw」MUST 拒絕——讀 vault → 自己編 → 存 raw 是自迭代。替代：對話中直接給總結（不寫 raw）、或做有外部來源的研究再存、或把合成寫進對應正本卡（讀 vault 合成的產出是正本卡，不是 raw）。
+- 被要求「總結既有 vault 內容存進 raw」時拒絕：讀 vault、自己編、再存 raw 是自我迭代。改在對話給總結，或把合成寫進對應正本卡。
+- claude-research 卡 MUST 附真實來源網址，且有主對話抽查的查證紀錄段；沒有查證紀錄段不寫入。
+- 業務正本卡（03～07）不收業界做法。業界做法只進參考模型卡（`11-review-knowledge/參考模型/`）。
+- 精練寫入 03～07 正本卡轉 `wiki-amend`；寫入參考模型卡走 [[審查知識路由]] § 四。本 skill 只改 raw 卡。
+- 明確未解問題改走 `oq-manage` mode B，不寫 raw。
+- raw 卡內不用 `[!question]` callout；與 oq-manage 共用此禁令。
+- 調研子代理任務書 MUST 指名先讀句法兩檔：`/Users/b-f-03-029/.claude/output-styles/ste100-pm.md`、`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`。
+- 本 skill 的門檻值只寫在 `references/掃描報告格式.md`。
 
-## 一、各 mode（輸入 → 步驟 → 輸出）
+## 順序
 
-| Mode | 輸入 | 輸出 |
-|------|------|------|
-| **A 寫入 raw** | 一段素材＋source／captured-by | raw 卡一張＋log 條目（ingest-A）＋下次精練建議 |
-| **B 精練 raw → wiki** | 指定的 raw 卡 | cards diff 提案 →（Miles 批准後）正本卡寫入轉介 `wiki-amend`＋raw 卡 status=ingested＋log 條目（ingest-B） |
-| **C 批次掃描** | raw/ 全目錄 | 三狀態報告（待處理／處理中／已 ingest）＋同主題累積警示＋過期警告＋log 條目（ingest-C）；**不動檔** |
+| 步 | mode | 動作 |
+|----|------|------|
+| 1 | A | 確認來源：source 與 captured-by 對應（miles 對 miles-dialogue、prototype-dogfood、miles-upload；claude-on-task 對 claude-research、mes-study；claude-self 對 claude-self-capture） |
+| 2 | A | 分流：明確未解問題轉 oq-manage；同主題已有 raw 卡，建議合併 |
+| 3 | A | 調研時先派 `erp-researcher`，收回草稿後抽查 |
+| 4 | A | 從骨架寫卡；claude-research 卡加查證紀錄段 |
+| 5 | A | log 一筆（ingest-A）；不立即精練 |
+| 6 | B | 讀 raw 卡與候選相關卡全文，判去處 |
+| 7 | B | 提 cards diff，Miles 逐項批准 |
+| 8 | B | 轉 `wiki-amend` 或 11 層寫入入口；回填 raw 卡；log 一筆（ingest-B） |
+| 9 | C | 產掃描報告，不動檔；log 一筆（ingest-C） |
 
-### Mode A：寫入 raw
+## 情況對應檔案
 
-1. **確認來源**：source 擇一（miles-dialogue／claude-research／claude-self-capture／prototype-dogfood／mes-study／miles-upload）＋captured-by 對應（miles／claude-on-task／claude-self）；claude-self-capture 先過防線 1。
-2. **分析分流**：識別 module 與候選相關卡（grep）；**「明確未解問題」（「該怎麼處理 X」「Y 是否要 Z」句式）MUST 改走 oq-manage mode B、不寫 raw**；與既有 raw 同主題則建議合併。
-3. **寫卡**：依骨架 `memory/Sens_wiki/wiki/範本/範本 - Raw 素材.md`（複製起手）；檔名 `<YYYY-MM-DD>-<source-slug>-<主題繁中名詞>.md`；「原始素材」的粒度依 source：對話／觀察類（miles-dialogue／prototype-dogfood／claude-self-capture）一字不漏；claude-research／mes-study 文獻類可摘錄重點但 MUST 附 raw-source-link 並在卡內標明「摘錄重點，非全文轉錄」；miles-upload 走防線 2b 摘要式、「第一輪初步分析」寫觀察與候選升級路徑、「待精練」留空。
-4. **log 一筆**（納入(ingest-A)，動機免）。
-5. **回報精練建議**：不立即 ingest；提示「同主題累積達 mode C 門檻時跑 mode C／B」。
+| 情況 | 讀哪個檔 |
+|------|---------|
+| 寫 raw 卡 | wiki 骨架 `memory/Sens_wiki/wiki/範本/範本 - Raw 素材.md`（複製起手，不複寫） |
+| 調研派工 | `references/調研派工單.md` |
+| 查證調研草稿 | `references/查證紀錄格式.md` |
+| 分流或判精練去處 | `references/去處表.md` |
+| 批次掃描 | `references/掃描報告格式.md` |
 
-### Mode B：精練
+## 陷阱
 
-1. 讀目標 raw 卡＋其候選相關卡**全文**（不是摘要）。
-2. 對照 `00-meta/scope-boundary.md` 判升級路徑：04 規則／05 實體／06 狀態機／07 情境／11 審查與協作知識（審查方法、agent 協作協議類素材）／OQ（轉 oq-manage）／不進 vault（status=cancelled 附理由）。同主題累積達 mode C 門檻時一併判「這批合起來是否該寫進某張正本卡」，先把素材卡升 status=reviewed。
-3. **提議 cards diff**（每張卡列 diff 預覽＋不適用部分附去處），等 Miles 逐項批准（防線 3）。Miles 說「再看看」→ status=reviewed；說「重新分析」→ 維持 raw 重跑。
-4. OQ 候選 → 觸發 oq-manage mode B（去重）。
-6. **Miles 說 OK 後**執行寫入：正本卡（03／04／05／06／07）的寫入動作 **MUST 轉介 `wiki-amend`**，依它的 § 〇 載入清單走完撰寫流程，本 skill 不自行決定卡怎麼寫；本 skill 只負責 raw 卡 status=ingested＋ingested-at＋ingested-to、卡末「精練去處」填 wiki link、log 一筆（ingest-B，逐卡 `[[卡名]]`）。
-
-### Mode C：批次掃描（純報告）
-
-列全部 status=raw 卡（依 source 分組、created-at 排序）→ 標記：同主題累積 ≥ 3 張（建議 mode B）、status=raw > 30 天（建議處理或 cancelled）、status=reviewed > 5 天（提醒確認）→ 產報告＋log 一筆（ingest-C）。
-
-## 二、進 raw／進 OQ／直接進卡（判斷表）
-
-| 判斷 | 去處 |
+| 陷阱 | 出處 |
 |------|------|
-| 能直接回答 What／Why 的已確認知識 | 直接寫既有 wiki 卡（不經 raw） |
-| 明確未解問題（問句、「是否要」） | OQ（oq-manage mode B） |
-| 還沒消化的已驗證觀察／反饋／研究筆記／外部檔案 | raw（本 skill mode A） |
-| LLM 自編、無外部來源 | 拒絕（防線 2） |
-| UI 規範細節 | Prototype DESIGN.md，不進 vault |
-
-## 三、raw 卡 frontmatter
-
-**骨架正本見 `memory/Sens_wiki/wiki/範本/範本 - Raw 素材.md`**（frontmatter 樣板＋正文各段與填寫提示）。寫 raw 卡 MUST 從骨架複製起手；骨架異動時與本 skill 同 commit 更新（治理見 `00-meta/卡片撰寫共用規範` § 一）。status 值域：raw / reviewed / ingested / cancelled；`ingested-at`／`ingested-to` 於 status=ingested 時填（mode B 步 6）。
-
-**captured-by 與 source 對應**：miles → miles-dialogue／prototype-dogfood／miles-upload；claude-on-task → claude-research／mes-study；claude-self → claude-self-capture（須確認）。
-
-## 四、紅旗清單（出現任一＝停下）
-
-| 紅旗 | 違反 |
-|------|------|
-| Claude 沒問就自主寫 raw | 防線 1 |
-| claude-research 卡無真實 raw-source-link | 防線 2 |
-| mode B 沒給 cards diff 就動既有卡 | 防線 3 |
-| 把明確問題存 raw（該走 OQ） | mode A 步 2 分流 |
-| 總結既有 vault 存 raw | 防線 1＋2（自迭代） |
-| 同主題重複開 raw 卡沒建議合併 | mode A 步 2 去重 |
-| raw 卡內用 `[!question]` callout | 與 oq-manage 共用禁令 |
-
-## 五、與其他 skill 的協作
-
-| 銜接 | 怎麼做 |
-|------|--------|
-| wiki-amend | mode B 步 6 的正本卡寫入一律轉介；本 skill 不自行動 03／04／05／06／07 任何一張卡 |
-| oq-manage | mode A 步 2／mode B 步 4 的明確問題轉出；oq-manage 自記 log（oq 標） |
-| vault-audit | raw 健康（超期／防線違反／累積警示）由 audit 維度 9 巡檢，發現堆積建議跑 mode C |
-| misjudgement-record | 完全不交叉：誤審不存 raw |
-| OpenSpec change archive | archive 是 PRD 層事件不動 wiki；archive 時提醒跑 mode C 清積壓 |
+| 摘要工具回傳的不是原文：子代理寫「約降 5 倍」，原文是每張 4.6 美分降到 1.9 美分 | 2026-10-29 [[2026-10-29-claude-research-claude.dev對Claude5世代的使用建議]] 查證紀錄段 |
+| ingested-to 指向的卡被刪，raw 卡沒回填：2026-06-14 調研卡有 4 張去處已不存在 | 2026-10-29 重構計畫 § 2.9 |
+| 同主題素材分散多張 raw 卡，精練時要跨卡合成：派單與物流現況分在 2026-06-15 兩張、2026-07-30、2026-09-22 四張 | raw 目錄檔名；寫卡前先查同主題 raw 卡並建議合併 |

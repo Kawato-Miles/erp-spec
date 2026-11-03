@@ -24,6 +24,10 @@ ingested-to:               # status=ingested 時填，列寫入的既有卡
 
 <一字不漏的 raw 內容：對話片段／WebFetch 摘要＋URL／Prototype 試用紀錄／Miles 觀察原話。這一層不加自己的解釋>
 
+## 查證紀錄（source=claude-research 必填；其他來源刪本段）
+
+<主對話抽查幾條、比對方式、結果、更正；格式見 `.claude/skills/vault-ingest/references/查證紀錄格式.md`>
+
 ## 第一輪初步分析（Claude 寫）
 
 - 觀察：<1-3 條與既有 vault 的關聯>
@@ -40,7 +44,7 @@ ingested-to:               # status=ingested 時填，列寫入的既有卡
 
 <!-- Mode A 寫入時保留下方註解樣板不填。Mode B 完成後以實際 wiki link 清單取代整段註解 -->
 
-<!-- Mode B step 6 寫入後在此列出 wiki link：
+<!-- Mode B 第 8 步寫入後在此列出 wiki link：
 - [[../04-business-logic/X]] — 新增 § A
 - [[../08-open-questions/Y-001-Z]] — 升級為 OQ
 - 取消（理由：...）

@@ -11,6 +11,16 @@ last-reviewed: 2026-06-02
 下記三行：「變更」（MUST 逐卡 `[[卡名]]` + 一句話，禁粗寫）、「動機」（實質異動正本卡必填，業務理由當下自足，得連 [[OQ卡]]；健檢 / 納入類免）、「衝突」。
 完整規約見 vault 根 `CLAUDE.md` § 四。卡的歷史 = 搜 `[[卡名]]` 命中本檔條目 + git 歷史；決策脈絡見 OQ 卡。
 
+## [2026-11-04 16:40] 納入(amend) | 範本 - Raw 素材加查證紀錄段（claude-research 必填），精練去處註解改指 vault-ingest 第 8 步
+- 變更：[[範本 - Raw 素材]] 原始素材段後新增「查證紀錄」段，格式指向 vault-ingest references/查證紀錄格式.md；精練去處註解的步驟編號改為第 8 步
+- 動機：重構計畫 M1（調研結果存回 raw）與批次 4 vault-ingest 重寫，claude-research 卡 MUST 附主對話抽查紀錄；範本是骨架正本，隨 skill 同步
+- 衝突：無
+
+## [2026-11-04 01:27] 納入(amend) | 審查知識層兩卡 skill 名引用改 erp-plan（批次 4）
+- 變更：[[規劃品質評分準則]] 一句話定位、§ 七業界做法列與重複發現列、§ 九回源門檻列的 skill 名改 `erp-plan`（4 處）；[[審查知識路由]] § 二目錄帳務規劃連帶矩陣列與 audit-failure-patterns 列、§ 三規劃流第 2 步與第 5 步的 skill 名改 `erp-plan`（4 處）；[[稽核誤判記錄]] 無舊名引用，未動
+- 動機：重構計畫 D16 採乙，erp-planning-pre-check 與 plan-design 併入 erp-plan
+- 衝突：無
+
 ## [2026-11-02 15:15] 納入(amend) | 審查知識層三卡 skill 名引用改 erp-audit（批次 3）
 - 變更：[[規劃品質評分準則]] 一句話定位與 § 七誤判列的 skill 名改 `erp-audit`（2 處）；[[審查知識路由]] § 二目錄誤判記錄列、§ 三規劃流第 6 步、§ 四寫入入口的 skill 名改 `erp-audit`（3 處）；[[稽核誤判記錄]] 一句話定位、§ 二標題、§ 三適用的稽核欄的 skill 名改 `erp-audit`（6 處），§ 二既有案例內文屬只追加層不動
 - 動機：重構計畫 D16 採乙，plan-audit 與 misjudgement-record 併入 erp-audit

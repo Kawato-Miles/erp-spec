@@ -2,7 +2,7 @@
 name: erp-audit
 description: >
   用：ERP／MES 規劃的 design 完成、送審時；修正後復審時；Miles 說「稽核這份設計」「審錯了」「這不是缺漏」「分級判錯了」「這是誤判」「記下來」時。
-  不用：撰寫設計（用 plan-design）、知識庫健檢（用 vault-audit）、交付文件稽核（用 linear-delivery）、規劃前盤點（用 erp-planning-pre-check）。
+  不用：撰寫設計（用 erp-plan）、知識庫健檢（用 vault-audit）、交付文件稽核（用 linear-delivery）、規劃前盤點（用 erp-plan）。
 ---
 
 # erp-audit
