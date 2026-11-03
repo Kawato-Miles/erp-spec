@@ -13,3 +13,7 @@
 ## 2026-11-04 驗證
 
 - 注入版 1 召回 6／6（兩次）；注入版 2 召回 5／8、4／8，兩次都漏 J1、J3、J6；判定噪音 6 項含歸屬差異；D8 Fable 不高於 Opus，plan-auditor 維持 opus。詳見 `memory/erp/skill-rewrite-20261029/評測集/基線結果.md` § 八。
+
+## 2026-11-04 批次 6
+
+- 刪除轉介檔 `.claude/skills/plan-audit/` 與 `.claude/skills/misjudgement-record/`；`openspec/config.yaml`、`openspec/schemas/` 與 11 層卡的舊名引用改指本 skill。

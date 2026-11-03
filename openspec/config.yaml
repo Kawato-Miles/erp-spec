@@ -50,9 +50,9 @@ context: |
   變更管理工作流：
   - ERP 流程不用 /opsx:propose，改用 /opsx:new 加 /opsx:continue 分段產出；規劃第 1 步即以 /opsx:new 建 change，change 資料夾是設計載體（precheck.md、grill.md、proposal.md、design.md、audit-rN.md 都放在裡面）；流程正本 wiki 11-review-knowledge/審查知識路由.md § 三
   - 建立 change 前：查詢 Vault 08-open-questions/ 列出相關未解 OQ（oq-manage skill）
-  - proposal 與 design：grill 後以 /opsx:continue 撰寫（design 照 plan-design 結構），送 plan-audit（rubric 稽核）；量尺正本 wiki 11-review-knowledge/規劃品質評分準則.md
-  - plan-audit 依變動性質分級（局部變動＝單稽核者 rubric；結構性變更＝加雙盲對抗推演；分級表見 CLAUDE.md § ERP 討論主動路由）
-  - specs 與 tasks：plan-audit 全過、Miles 拍板（含未決 OQ 裁決）、wiki 落卡後，才以 /opsx:continue 撰寫
+  - proposal 與 design：grill 後以 /opsx:continue 撰寫（design 照 erp-plan skill 的 references/設計收件.md），送 erp-audit（評分準則稽核）；量尺正本 wiki 11-review-knowledge/規劃品質評分準則.md
+  - erp-audit 依變動性質分級（局部變動＝單稽核者 rubric；結構性變更＝加雙盲對抗推演；分級表見 wiki 11-review-knowledge/審查知識路由.md § 三）
+  - specs 與 tasks：erp-audit 全過、Miles 拍板（含未決 OQ 裁決）、wiki 落卡後，才以 /opsx:continue 撰寫
   - Linear 交付：由 Miles 觸發 linear-delivery skill；取材 wiki 與 Prototype，不讀 OpenSpec
 
 rules:
@@ -62,7 +62,7 @@ rules:
     - 引用 Notion 頁面時使用 [可讀名稱](URL) 格式
     - "商業背景必須引用 ERP_Vault 對應節點：建立 proposal 時必須在 ## Why 或 ## Background 段以相對路徑 link 引用 memory/Sens_wiki/wiki/erp/ 下對應的既有卡（如 04-business-logic/、05-entities/、03-roles/），也可引用同資料夾 grill.md 的拍板紀錄（proposal 寫於 wiki 落卡前）"
     - "建立前先查詢 memory/Sens_wiki/wiki/erp/08-open-questions/（oq-manage skill），列出相關未解 OQ"
-    - "proposal 撰寫時機：grill 完成後（change 內有 precheck.md 與 grill.md）與 design 一起撰寫，兩者一起送 plan-audit 稽核；proposal 承接 grill.md 的拍板紀錄，不重跑釐清"
+    - "proposal 撰寫時機：grill 完成後（change 內有 precheck.md 與 grill.md）與 design 一起撰寫，兩者一起送 erp-audit 稽核；proposal 承接 grill.md 的拍板紀錄，不重跑釐清"
     - "問寫分離：釐清（Phase 1）完成、進入 artifact 產出後 MUST NOT 回頭追問 Miles；產出中冒出的不確定項一律觸發 oq-manage mode B 開 OQ 卡，產出不中斷，於設計拍板時由 Miles 逐題裁決或延後；延後的 OQ 只留在 Vault OQ 卡，不寫進 proposal、design、specs；change 內只在 grill.md 拍板紀錄記「延後：OQ 編號」"
   specs:
     - "寫 specs 前置（MUST）：change 的 grill.md 沒有 Miles 拍板紀錄、或檔尾沒有「wiki 落卡紀錄」段（落卡卡名清單＋提交碼）時，MUST NOT 寫 specs；本次涉及且影響行為的未決 OQ 須已經 Miles 裁決或延後，延後的 OQ 只留在 Vault OQ 卡，不寫進 proposal、design、specs；change 內只在 grill.md 拍板紀錄記「延後：OQ 編號」"
@@ -83,7 +83,7 @@ rules:
     - "涉及欄位新增 / 修改時，MUST 先更新 wiki 實體卡的欄位表，再於 spec 撰寫對應 Requirement。涉及狀態新增 / 修改時，MUST 先更新 wiki 狀態機卡的狀態列舉，再於 spec 撰寫自動推進的 Requirement。"
   design:
     - 使用繁體中文撰寫
-    - "結構照 erp-plan skill 的 references/設計收件.md（本體＋必含段），不寫實作程式碼；grill 後與 proposal 一起撰寫並送 plan-audit；檔尾「規格與驗收對應」段於寫 specs 時追加"
+    - "結構照 erp-plan skill 的 references/設計收件.md（本體＋必含段），不寫實作程式碼；grill 後與 proposal 一起撰寫並送 erp-audit；檔尾「規格與驗收對應」段於寫 specs 時追加"
     - 參照 wiki 狀態機卡（狀態列舉、轉換條件與觸發事件）+ 各模組 spec（自動推進的系統承諾）確認狀態設計
     - 參照 wiki 04-business-logic/ 確認計算邏輯與業務規則
     - 參照 wiki 03-roles/ 確認角色權責

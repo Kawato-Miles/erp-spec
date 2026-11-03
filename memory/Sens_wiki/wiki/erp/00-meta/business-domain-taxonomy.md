@@ -28,7 +28,7 @@ last-reviewed: 2026-07-28
 3. **清單呈現**：把命中卡名與張數攤在對話中（MUST，讓 Miles 可檢視漏／多）。
 4. **載入**：確認清單後才實際讀卡。判準是**相關性**（相關的都載、不相關的不載），不設張數預算。
 
-適用場景：規劃前稽核（erp-planning-pre-check）、日常查詢、OQ 查詢（oq-manage mode A）、OpenSpec change 背景對齊。
+適用場景：規劃前盤點（erp-plan）、日常查詢、OQ 查詢（oq-manage mode A）、OpenSpec change 背景對齊。
 
 ## 領域定義
 
@@ -104,7 +104,7 @@ last-reviewed: 2026-07-28
 **增設／合併後同步 checklist**（漏一處即 vault-audit Error）：
 
 - [ ] 本卡 § 領域定義（enum 正本）
-- [ ] `erp-planning-pre-check` skill 的領域引用（skill 只引用本卡，不自帶複本——確認未殘留舊表）
+- [ ] `erp-plan` skill 的領域引用（skill 只引用本卡，不自帶複本——確認未殘留舊表）
 - [ ] 受影響既有卡重標 tag（附影響分析）
 
 ## 演化紀錄

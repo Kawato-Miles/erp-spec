@@ -8,9 +8,9 @@ last-reviewed: 2026-05-28
 
 # 稽核反模式追蹤卡（Audit Failure Patterns）
 
-> 累積 `erp-planning-pre-check` skill 稽核過程中識別到的反模式案例。
+> 累積規劃前盤點（`erp-plan` skill）過程中識別到的反模式案例。
 > 受 YouTube /goal 影片啟發（執行者與稽核者分離 + 閉環化 + 反模式清單）。
-> 與 `misjudgement-record` 互補：misjudgement 記三視角審查 agent 誤審；本卡記稽核盲點。
+> 與 [[稽核誤判記錄]] 互補：該卡記稽核者誤判；本卡記稽核盲點。
 
 ## 一、反模式定義
 
@@ -32,7 +32,7 @@ last-reviewed: 2026-05-28
 - 修補後 frontmatter 已改但內容章節未補
 - User Story `related-test-cases` 標了 URL 但 Test Case 實際不存在
 **對策**：**Step 5 閉環驗證強制**（受 YouTube /goal 影片啟發）；修補後回頭看矩陣格子真轉「已涵蓋」否則回 Step 4
-**對應紀律**：（見 erp-planning-pre-check skill 附件） § 三 Step 5
+**對應紀律**：無現行對應步驟（`erp-plan` 不設修補後回驗步驟）
 
 ### 3. Dead loops（死循環）
 
@@ -55,7 +55,7 @@ last-reviewed: 2026-05-28
 - 業務邏輯卡缺「計算公式」「邊界規則」
 - 稽核報告寫「Billing & Cash 大致涵蓋完整」（無 N/M/K 數字）
 **對策**：**量化矩陣強制 N/M/K 三數字**（受 YouTube /goal 影片啟發）；非量化結論禁止
-**對應紀律**：（見 erp-planning-pre-check skill 附件） § 五 稽核產出格式 / § 五 量化矩陣
+**對應紀律**：`erp-plan` skill 的 references/盤點方法.md § 一 卡類型矩陣（每格寫三個整數）
 
 ### 5. Token exhaustion（成本過高）
 
@@ -68,7 +68,7 @@ last-reviewed: 2026-05-28
 - 單次稽核 ≤ 2-3 個領域（超過拆多次）
 - 跨領域議題 sub-agent 並行
 - 共用層精準載入（不全載 `03-roles` 16 角色，依領域 filter）
-**對應紀律**：（見 erp-planning-pre-check skill 附件） § 八 稽核回合 / 時間預算
+**對應紀律**：無現行對應規則（`erp-plan` 不設回合預算與單次領域數上限）
 
 ## 二、案例累積
 
@@ -153,20 +153,20 @@ last-reviewed: 2026-05-28
 
 ### Skill 層
 
-- `erp-planning-pre-check` skill Anti-pattern 區明示 5 個反模式（v1.0 起內建）
+- `erp-plan` skill 陷阱段收錄有案例的條目（Over-report、角色卡參與階段）
 - `vault-audit` 稽核維度可考慮加入「反模式累積率」維度（演化議題）
 
 ### 紀律層
 
 - 識別到反模式 MUST 追加本卡（不只口頭說「下次注意」）
-- 與 `misjudgement-record` 配合：稽核反模式 vs 審查誤判 分別記錄
+- 與 [[稽核誤判記錄]] 配合：稽核反模式與審查誤判分別記錄
 - 本卡記稽核反模式；正模式的比對基準見 [[規劃品質評分準則]] 5-4 業界範式對照（原設計模式卡已於 2026-08-05 隨舊審查體系刪除）
 
 ## 四、相關卡
 
-- （見 erp-planning-pre-check skill 附件） — 稽核框架正本
+- `erp-plan` skill 的 references/盤點方法.md — 盤點方法正本
 - [[business-domain-taxonomy]] — 6 領域分類
-- `misjudgement-record` — 三視角審查 agent 誤審記錄
+- [[稽核誤判記錄]] — 稽核者誤判記錄（`erp-audit` 追加）
 
 ## 五、來源
 

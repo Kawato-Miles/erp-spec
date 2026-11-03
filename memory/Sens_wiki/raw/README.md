@@ -102,7 +102,7 @@ Karpathy LLM Wiki 模式中的「raw 層」對應位置。承接尚未精練但�
 |-------|-------|
 | [oq-manage](../../../.claude/skills/oq-manage/SKILL.md) | Mode A 識別「明確未解問題」時改走 oq-manage mode B；Mode B step 4 觸發 oq-manage mode B 開 OQ 卡 |
 | [vault-audit](../../../.claude/skills/vault-audit/SKILL.md) | 第二階段擴維度 11「raw 健康度」自動掃 status=raw > 90 / 180 天 |
-| [misjudgement-record](../../../.claude/skills/misjudgement-record/SKILL.md) | 完全不交叉；誤審不存 raw |
+| [erp-audit](../../../.claude/skills/erp-audit/SKILL.md) | 完全不交叉；誤判記錄不存 raw |
 
 ## 八、相關卡
 

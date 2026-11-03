@@ -29,3 +29,7 @@ plan-design 舊版沒有版本紀錄；其改動見 git 歷史。
 ## 2026-11-04 驗證
 
 - 觸發評測規劃類 105 句：舊版 26、32 句，新版 83、83 句；噪音 18 → 8；反例零誤觸發。pre-check 回放三案涵蓋 96%、74%、100%。詳見 `memory/erp/skill-rewrite-20261029/評測集/基線結果.md` § 九。
+
+## 2026-11-04 批次 6
+
+- 刪除轉介檔 `.claude/skills/erp-planning-pre-check/`（含 references/audit-framework.md；CHANGELOG 已於初版併入上方舊版歷史）與 `.claude/skills/plan-design/`；`openspec/config.yaml`、`openspec/schemas/` 與 11 層卡的舊名引用改指本 skill。

@@ -11,6 +11,16 @@ last-reviewed: 2026-06-02
 下記三行：「變更」（MUST 逐卡 `[[卡名]]` + 一句話，禁粗寫）、「動機」（實質異動正本卡必填，業務理由當下自足，得連 [[OQ卡]]；健檢 / 納入類免）、「衝突」。
 完整規約見 vault 根 `CLAUDE.md` § 四。卡的歷史 = 搜 `[[卡名]]` 命中本檔條目 + git 歷史；決策脈絡見 OQ 卡。
 
+## [2026-11-04 19:50] 納入(amend) | 批次 6：資料結構總覽相關卡、taxonomy、路由卡的 skill 舊名與模型值改引現行 skill 與單一出處
+- 變更：[[ERP 資料結構總覽]]、[[訂單領域資料結構總覽]]、[[生產領域資料結構總覽]]、[[履約與售後資料結構總覽]]、[[規範 - 資料結構總覽]]、[[範例 - 資料結構總覽]]、[[範本 - 資料結構總覽]]、[[business-domain-taxonomy]] 的 `plan-design`、`plan-audit`、`erp-planning-pre-check` 改為 `erp-plan`、`erp-audit`；[[審查知識路由]] 正本重構流第 5 階段的模型值改為「依專案 CLAUDE.md § 模型分工」
+- 動機：重構計畫批次 6 移除四個轉介 skill（D16 乙）；D7 模型分工只寫一處
+- 衝突：無
+
+## [2026-11-04 19:40] 納入(amend) | 審查知識層兩卡的已刪 skill 舊名引用改指現行 skill（批次 6）
+- 變更：[[audit-failure-patterns]] 卡頂引言兩句、§ 一對應紀律三處（一處改指 `erp-plan` 盤點方法 § 一，兩處改寫為無現行對應步驟）、§ 三 Skill 層與紀律層各一處、§ 四相關卡兩處，舊名改 `erp-plan` 或 [[稽核誤判記錄]]（共 9 處；§ 二案例內文屬歷史，不動）；[[帳務規劃連帶矩陣]] 一句話定位的讀者句改為 `erp-plan` 盤點與 `wiki-amend` 判落點（1 處）；[[稽核誤判記錄]] 只剩 § 二案例內文的舊名，屬只追加層，未動
+- 動機：重構計畫批次 6 刪除 plan-audit、misjudgement-record、plan-design、erp-planning-pre-check 四個轉介 skill，留在卡上的舊名會指向不存在的 skill
+- 衝突：無
+
 ## [2026-11-04 19:10] 納入(amend) | wiki-schema § 六 lint 維度定義正本改指 vault-audit references/稽核維度.md
 - 變更：[[wiki-schema]] § 六與附表的維度定義路徑由 `vault-audit/SKILL.md` 改為 `vault-audit/references/稽核維度.md`
 - 動機：重構計畫批次 5 把 vault-audit 的維度定義拆到 references，SKILL.md 只留目錄頁
