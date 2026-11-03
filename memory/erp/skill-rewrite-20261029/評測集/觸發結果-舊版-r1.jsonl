@@ -1,0 +1,172 @@
+{"id": "C001", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 7.2}
+{"id": "C002", "run": "r1", "first_skill": null, "tools": ["Read"], "end": "result", "model": "claude-opus-5-5", "sec": 22.6}
+{"id": "C003", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 10.7}
+{"id": "C004", "run": "r1", "first_skill": null, "tools": ["Read", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 23.0}
+{"id": "C005", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 7.1}
+{"id": "C006", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 7.2}
+{"id": "C007", "run": "r1", "first_skill": null, "tools": ["Read", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 23.8}
+{"id": "C008", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 8.9}
+{"id": "C009", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 19.0}
+{"id": "C010", "run": "r1", "first_skill": null, "tools": ["Grep", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 24.7}
+{"id": "C011", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 4.1}
+{"id": "C012", "run": "r1", "first_skill": null, "tools": ["Artifact", "Write", "Artifact"], "end": "result", "model": "claude-opus-5-5", "sec": 66.7}
+{"id": "C013", "run": "r1", "first_skill": null, "tools": ["Grep", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 20.1}
+{"id": "C014", "run": "r1", "first_skill": null, "tools": ["Glob", "Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 20.3}
+{"id": "C015", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 8.5}
+{"id": "C016", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 26.1}
+{"id": "C017", "run": "r1", "first_skill": null, "tools": ["Glob", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 18.6}
+{"id": "C018", "run": "r1", "first_skill": null, "tools": ["Glob", "Grep", "Glob", "Read", "Grep", "Read", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 38.3}
+{"id": "C019", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 21.5}
+{"id": "C020", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 22.5}
+{"id": "C021", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 8.5}
+{"id": "C022", "run": "r1", "first_skill": null, "tools": ["Read"], "end": "result", "model": "claude-opus-5-5", "sec": 18.5}
+{"id": "C023", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 23.9}
+{"id": "C024", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 31.4}
+{"id": "C025", "run": "r1", "first_skill": null, "tools": ["Glob", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 22.1}
+{"id": "C026", "run": "r1", "first_skill": null, "tools": ["Glob", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 26.6}
+{"id": "C027", "run": "r1", "first_skill": null, "tools": ["Grep", "Read", "Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 19.1}
+{"id": "C028", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 7.5}
+{"id": "C029", "run": "r1", "first_skill": null, "tools": [], "end": "result", "model": "claude-opus-5-5", "sec": 19.3}
+{"id": "C030", "run": "r1", "first_skill": null, "tools": ["Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 20.3}
+{"id": "C031", "run": "r1", "first_skill": null, "tools": ["Glob", "Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 21.0}
+{"id": "C032", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 23.0}
+{"id": "C033", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 5.8}
+{"id": "C034", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 13.8}
+{"id": "C035", "run": "r1", "first_skill": null, "tools": ["Grep", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 20.0}
+{"id": "C036", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 5.4}
+{"id": "C037", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 18.1}
+{"id": "C038", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 19.4}
+{"id": "C039", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 9.5}
+{"id": "C040", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 25.2}
+{"id": "C041", "run": "r1", "first_skill": null, "tools": ["Grep", "Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 18.8}
+{"id": "C042", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 23.6}
+{"id": "C043", "run": "r1", "first_skill": null, "tools": [], "end": "result", "model": "claude-opus-5-5", "sec": 14.9}
+{"id": "C044", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 19.1}
+{"id": "C045", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 6.2}
+{"id": "C046", "run": "r1", "first_skill": null, "tools": ["Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 14.1}
+{"id": "C047", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 24.3}
+{"id": "C048", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 6.6}
+{"id": "C049", "run": "r1", "first_skill": null, "tools": ["Glob", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 18.5}
+{"id": "C050", "run": "r1", "first_skill": null, "tools": ["Read", "Glob", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 28.8}
+{"id": "C051", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 32.8}
+{"id": "C052", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 7.0}
+{"id": "C053", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 17.0}
+{"id": "C054", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 5.6}
+{"id": "C055", "run": "r1", "first_skill": null, "tools": ["Grep", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 24.9}
+{"id": "C056", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 17.6}
+{"id": "C057", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 21.8}
+{"id": "C058", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 16.7}
+{"id": "C059", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 5.4}
+{"id": "C060", "run": "r1", "first_skill": null, "tools": ["Read", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 14.1}
+{"id": "C061", "run": "r1", "first_skill": null, "tools": ["Grep", "Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 15.6}
+{"id": "C062", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 20.4}
+{"id": "C063", "run": "r1", "first_skill": null, "tools": [], "end": "result", "model": "claude-opus-5-5", "sec": 14.6}
+{"id": "C064", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 8.7}
+{"id": "C065", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 8.3}
+{"id": "C066", "run": "r1", "first_skill": null, "tools": ["Grep", "Glob", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 33.8}
+{"id": "C067", "run": "r1", "first_skill": null, "tools": ["Grep", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 23.0}
+{"id": "C068", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Grep", "Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 21.9}
+{"id": "C069", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 18.6}
+{"id": "C070", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 6.2}
+{"id": "C071", "run": "r1", "first_skill": null, "tools": ["Grep", "Read", "Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 27.5}
+{"id": "C072", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 14.1}
+{"id": "C073", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Grep", "Grep", "Read", "Grep", "Read", "Read"], "end": "max_tools", "model": "claude-opus-5-5", "sec": 26.2}
+{"id": "C074", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 23.6}
+{"id": "C075", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 5.9}
+{"id": "C076", "run": "r1", "first_skill": null, "tools": ["Read", "Grep", "Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 30.2}
+{"id": "C077", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 6.7}
+{"id": "C078", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 22.3}
+{"id": "C079", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 22.6}
+{"id": "C080", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 6.2}
+{"id": "C081", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 15.8}
+{"id": "C082", "run": "r1", "first_skill": null, "tools": ["Grep", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 20.1}
+{"id": "C083", "run": "r1", "first_skill": null, "tools": ["Glob", "Grep", "Read", "Glob", "Read", "Grep", "Grep", "Grep"], "end": "max_tools", "model": "claude-opus-5-5", "sec": 22.7}
+{"id": "C084", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 8.7}
+{"id": "C085", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 22.3}
+{"id": "C086", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Glob", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 23.9}
+{"id": "C087", "run": "r1", "first_skill": null, "tools": ["Read", "Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 23.2}
+{"id": "C088", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 7.7}
+{"id": "C089", "run": "r1", "first_skill": null, "tools": ["Glob", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 19.2}
+{"id": "C090", "run": "r1", "first_skill": null, "tools": ["Grep", "Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 20.3}
+{"id": "C091", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Read", "Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 31.3}
+{"id": "C092", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 18.6}
+{"id": "C093", "run": "r1", "first_skill": null, "tools": ["Read"], "end": "result", "model": "claude-opus-5-5", "sec": 18.3}
+{"id": "C094", "run": "r1", "first_skill": null, "tools": ["Read"], "end": "result", "model": "claude-opus-5-5", "sec": 19.3}
+{"id": "C095", "run": "r1", "first_skill": null, "tools": ["Read", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 18.8}
+{"id": "C096", "run": "r1", "first_skill": null, "tools": ["Read", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 22.3}
+{"id": "C097", "run": "r1", "first_skill": null, "tools": ["Read", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 21.9}
+{"id": "C098", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 23.2}
+{"id": "C099", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 18.1}
+{"id": "C100", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 21.8}
+{"id": "C101", "run": "r1", "first_skill": null, "tools": ["Read", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 21.1}
+{"id": "C102", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 20.5}
+{"id": "C103", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Read", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 22.6}
+{"id": "C104", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 27.8}
+{"id": "C105", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 20.4}
+{"id": "C106", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 26.7}
+{"id": "C107", "run": "r1", "first_skill": null, "tools": ["Grep", "Read", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 24.5}
+{"id": "C108", "run": "r1", "first_skill": null, "tools": ["Read", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 25.1}
+{"id": "C109", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Grep", "Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 32.1}
+{"id": "C110", "run": "r1", "first_skill": null, "tools": ["Read", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 17.6}
+{"id": "C111", "run": "r1", "first_skill": null, "tools": ["Read", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 20.5}
+{"id": "C112", "run": "r1", "first_skill": null, "tools": ["Read", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 19.6}
+{"id": "C113", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 16.2}
+{"id": "C114", "run": "r1", "first_skill": null, "tools": ["Read", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 18.7}
+{"id": "C115", "run": "r1", "first_skill": null, "tools": ["Read", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 16.1}
+{"id": "C116", "run": "r1", "first_skill": null, "tools": ["Read", "Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 20.9}
+{"id": "C117", "run": "r1", "first_skill": null, "tools": ["Read", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 21.5}
+{"id": "C118", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Read", "Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 7.5}
+{"id": "C119", "run": "r1", "first_skill": null, "tools": ["Read"], "end": "result", "model": "claude-opus-5-5", "sec": 14.9}
+{"id": "C120", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 20.3}
+{"id": "C121", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 21.5}
+{"id": "C122", "run": "r1", "first_skill": "erp-planning-pre-check", "tools": ["Skill:erp-planning-pre-check"], "end": "skill", "model": "claude-opus-5-5", "sec": 6.7}
+{"id": "C123", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 19.5}
+{"id": "C124", "run": "r1", "first_skill": null, "tools": [], "end": "result", "model": "claude-opus-5-5", "sec": 20.9}
+{"id": "C125", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 17.6}
+{"id": "C126", "run": "r1", "first_skill": null, "tools": ["Read"], "end": "result", "model": "claude-opus-5-5", "sec": 21.8}
+{"id": "C127", "run": "r1", "first_skill": null, "tools": ["Read"], "end": "result", "model": "claude-opus-5-5", "sec": 18.2}
+{"id": "C128", "run": "r1", "first_skill": null, "tools": ["Read"], "end": "result", "model": "claude-opus-5-5", "sec": 18.7}
+{"id": "C129", "run": "r1", "first_skill": null, "tools": ["Read"], "end": "result", "model": "claude-opus-5-5", "sec": 17.1}
+{"id": "C130", "run": "r1", "first_skill": null, "tools": ["Grep", "Read", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 28.0}
+{"id": "C131", "run": "r1", "first_skill": null, "tools": ["Read"], "end": "result", "model": "claude-opus-5-5", "sec": 20.3}
+{"id": "C132", "run": "r1", "first_skill": null, "tools": ["Read"], "end": "result", "model": "claude-opus-5-5", "sec": 19.4}
+{"id": "K01", "run": "r1", "first_skill": null, "tools": [], "end": "result", "model": "claude-opus-5-5", "sec": 9.0}
+{"id": "K02", "run": "r1", "first_skill": "oq-manage", "tools": ["Skill:oq-manage"], "end": "skill", "model": "claude-opus-5-5", "sec": 3.7}
+{"id": "K03", "run": "r1", "first_skill": "oq-manage", "tools": ["Skill:oq-manage"], "end": "skill", "model": "claude-opus-5-5", "sec": 3.8}
+{"id": "K04", "run": "r1", "first_skill": null, "tools": ["Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 13.4}
+{"id": "K05", "run": "r1", "first_skill": "wiki-amend", "tools": ["Skill:wiki-amend"], "end": "skill", "model": "claude-opus-5-5", "sec": 5.1}
+{"id": "K06", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 21.9}
+{"id": "K07", "run": "r1", "first_skill": null, "tools": [], "end": "result", "model": "claude-opus-5-5", "sec": 15.8}
+{"id": "K08", "run": "r1", "first_skill": "vault-ingest", "tools": ["Skill:vault-ingest"], "end": "skill", "model": "claude-opus-5-5", "sec": 4.3}
+{"id": "K09", "run": "r1", "first_skill": "vault-ingest", "tools": ["Skill:vault-ingest"], "end": "skill", "model": "claude-opus-5-5", "sec": 3.7}
+{"id": "K10", "run": "r1", "first_skill": "vault-audit", "tools": ["Skill:vault-audit"], "end": "skill", "model": "claude-opus-5-5", "sec": 4.6}
+{"id": "K11", "run": "r1", "first_skill": "vault-audit", "tools": ["Skill:vault-audit"], "end": "skill", "model": "claude-opus-5-5", "sec": 9.8}
+{"id": "K12", "run": "r1", "first_skill": "linear-delivery", "tools": ["Skill:linear-delivery"], "end": "skill", "model": "claude-opus-5-5", "sec": 10.3}
+{"id": "K13", "run": "r1", "first_skill": "linear-delivery", "tools": ["Skill:linear-delivery"], "end": "skill", "model": "claude-opus-5-5", "sec": 9.8}
+{"id": "K14", "run": "r1", "first_skill": "plan-audit", "tools": ["Skill:plan-audit"], "end": "skill", "model": "claude-opus-5-5", "sec": 3.7}
+{"id": "K15", "run": "r1", "first_skill": "plan-audit", "tools": ["Skill:plan-audit"], "end": "skill", "model": "claude-opus-5-5", "sec": 4.5}
+{"id": "K16", "run": "r1", "first_skill": null, "tools": ["Glob", "Glob", "Glob", "Grep", "Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 20.1}
+{"id": "K17", "run": "r1", "first_skill": "plan-design", "tools": ["Skill:plan-design"], "end": "skill", "model": "claude-opus-5-5", "sec": 3.9}
+{"id": "K18", "run": "r1", "first_skill": "misjudgement-record", "tools": ["Skill:misjudgement-record"], "end": "skill", "model": "claude-opus-5-5", "sec": 4.4}
+{"id": "K19", "run": "r1", "first_skill": "misjudgement-record", "tools": ["Skill:misjudgement-record"], "end": "skill", "model": "claude-opus-5-5", "sec": 5.9}
+{"id": "K20", "run": "r1", "first_skill": null, "tools": ["Read", "Glob", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 20.6}
+{"id": "N01", "run": "r1", "first_skill": null, "tools": ["Glob", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 9.8}
+{"id": "N02", "run": "r1", "first_skill": null, "tools": ["Glob", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 13.6}
+{"id": "N03", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 20.0}
+{"id": "N04", "run": "r1", "first_skill": null, "tools": [], "end": "result", "model": "claude-opus-5-5", "sec": 7.8}
+{"id": "N05", "run": "r1", "first_skill": null, "tools": ["Glob", "Grep", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 19.2}
+{"id": "N06", "run": "r1", "first_skill": null, "tools": ["Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 8.5}
+{"id": "N07", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 12.8}
+{"id": "N08", "run": "r1", "first_skill": null, "tools": ["Grep", "Read", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 16.8}
+{"id": "N09", "run": "r1", "first_skill": null, "tools": ["Grep", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 18.2}
+{"id": "N10", "run": "r1", "first_skill": null, "tools": ["Glob", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 14.7}
+{"id": "N11", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 12.8}
+{"id": "N12", "run": "r1", "first_skill": null, "tools": ["Grep", "Glob", "Grep", "Grep", "Grep", "Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 20.5}
+{"id": "N13", "run": "r1", "first_skill": null, "tools": ["Grep", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 15.2}
+{"id": "N14", "run": "r1", "first_skill": null, "tools": ["Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 8.5}
+{"id": "N15", "run": "r1", "first_skill": null, "tools": ["Glob", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 45.3}
+{"id": "N16", "run": "r1", "first_skill": null, "tools": ["Grep"], "end": "result", "model": "claude-opus-5-5", "sec": 14.1}
+{"id": "N17", "run": "r1", "first_skill": null, "tools": [], "end": "result", "model": "claude-opus-5-5", "sec": 41.1}
+{"id": "N18", "run": "r1", "first_skill": null, "tools": ["Glob"], "end": "result", "model": "claude-opus-5-5", "sec": 35.4}
+{"id": "N19", "run": "r1", "first_skill": null, "tools": ["Read", "Grep", "Glob", "Read", "Read", "Grep", "Read", "Read"], "end": "max_tools", "model": "claude-opus-5-5", "sec": 14.9}
+{"id": "N20", "run": "r1", "first_skill": null, "tools": ["Grep", "Grep", "Read"], "end": "result", "model": "claude-opus-5-5", "sec": 47.6}
