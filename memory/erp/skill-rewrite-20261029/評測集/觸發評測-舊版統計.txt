@@ -1,0 +1,23 @@
+筆數 r1 172 r2 172 （2026-11-02～04，舊版 skill 提交 7e9a31d，模型 claude-opus-5-5）
+類別       句數   r1正確   r2正確    兩輪不同   缺
+規劃      105     26     32      18   0
+介面       16     15     16       1   0
+規格同步     10      0      0       0   0
+指名       20     14     15       1   0
+反例       20     20     20       0   0
+合計 [171, 75, 83, 20, 0]
+規劃類兩輪一致性 {'都觸發': 20, '都沒': 67, '只一輪': 18}
+誤觸發：
+  C021 介面 r1 erp-planning-pre-check | 生產任務詳情頁要多一個 BOM 頁籤
+指名類未觸發：
+  K01 oq-manage r1 None
+  K01 oq-manage r2 None
+  K04 wiki-amend r1 None
+  K04 wiki-amend r2 None
+  K06 wiki-amend r1 None
+  K06 wiki-amend r2 None
+  K07 vault-ingest r1 None
+  K07 vault-ingest r2 None
+  K16 plan-design r1 None
+  K20 grilling r1 None
+  K20 grilling r2 None
