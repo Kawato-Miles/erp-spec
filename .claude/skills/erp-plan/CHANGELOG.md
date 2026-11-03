@@ -25,3 +25,7 @@ plan-design 舊版沒有版本紀錄；其改動見 git 歷史。
 - 平行盤點搬進 `references/平行盤點.workflow.js`：提示改為讀 SKILL.md 與盤點方法.md；schema 加調研建議、缺口分類、連帶矩陣來源；模型與 effort 改由參數傳入，預設值寫在 SKILL.md。
 - [[audit-failure-patterns]] 有案例的條目（Over-report、角色卡參與階段）移入 SKILL.md 陷阱段；該卡本身未動，去留另案處理。
 - 舊兩個 skill 留轉介檔，批次 6 移除。
+
+## 2026-11-04 驗證
+
+- 觸發評測規劃類 105 句：舊版 26、32 句，新版 83、83 句；噪音 18 → 8；反例零誤觸發。pre-check 回放三案涵蓋 96%、74%、100%。詳見 `memory/erp/skill-rewrite-20261029/評測集/基線結果.md` § 九。

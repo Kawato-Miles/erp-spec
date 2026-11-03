@@ -1,0 +1,23 @@
+觸發評測新舊對照（2026-11-04；舊版 skill 提交 7e9a31d，新版 skill 提交 397b1d9；模型 claude-opus-5-5；每版兩輪各 172 句；指名類舊名與新名互認）
+
+== 舊版 ==
+類別       句數   r1正確   r2正確    兩輪不同
+規劃      105     26     32      18
+介面       16     15     16       1
+規格同步     10      0      0       0
+指名       20     14     15       1
+反例       20     20     20       0
+合計 [171, 75, 83, 20]
+誤觸發： [('C021', '介面', 'r1', 'erp-planning-pre-check')]
+指名類未對： [('K01', 'oq-manage', 'r1', None), ('K01', 'oq-manage', 'r2', None), ('K04', 'wiki-amend', 'r1', None), ('K04', 'wiki-amend', 'r2', None), ('K06', 'wiki-amend', 'r1', None), ('K06', 'wiki-amend', 'r2', None), ('K07', 'vault-ingest', 'r1', None), ('K07', 'vault-ingest', 'r2', None), ('K16', 'plan-design', 'r1', None), ('K20', 'grilling', 'r1', None), ('K20', 'grilling', 'r2', None)]
+
+== 新版 ==
+類別       句數   r1正確   r2正確    兩輪不同
+規劃      105     83     83       8
+介面       16     15     16       1
+規格同步     10      0      0       1
+指名       20     16     17       1
+反例       20     20     20       0
+合計 [171, 134, 136, 11]
+誤觸發： [('C078', '介面', 'r1', 'erp-plan')]
+指名類未對： [('K01', 'oq-manage', 'r1', None), ('K01', 'oq-manage', 'r2', None), ('K04', 'wiki-amend', 'r1', None), ('K04', 'wiki-amend', 'r2', None), ('K05', 'wiki-amend', 'r1', None), ('K06', 'wiki-amend', 'r1', None), ('K06', 'wiki-amend', 'r2', None)]
