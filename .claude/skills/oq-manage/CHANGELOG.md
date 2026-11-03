@@ -18,3 +18,7 @@
   - description 內各 mode 說明：description 只寫觸發時機。
 - open 久置天數門檻只留在 `references/整理報告格式.md`；vault-audit 維度 8 重寫時引用該檔。
 - description 補「先開一張 OQ」「之後再問業務」「看哪些 OQ 放太久」，依 2026-11-04 觸發評測 K01 兩版都沒觸發。
+
+## 2026-11-04 驗證
+
+- 指名類觸發 K01～K03 兩輪全部觸發；久置起算點改回只從 raised-at 起算；見基線結果 § 十。

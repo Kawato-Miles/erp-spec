@@ -1,0 +1,41 @@
+id	類別	應觸發	來源	句子
+K01	指名	oq-manage	oq-manage mode B	這個先開一張 OQ，之後再問業務
+K02	指名	oq-manage	oq-manage mode E	整理一下 OQ，看哪些放太久了
+K03	指名	oq-manage	oq-manage mode C	出貨方式那張 OQ 已經拍板了，幫我封存
+K04	指名	wiki-amend	wiki-amend 觸發詞	把剛剛定案的出貨單規則寫進 wiki
+K05	指名	wiki-amend	wiki-amend 觸發詞	幫我補一張出貨退回的業務情境卡
+K06	指名	wiki-amend	wiki-amend 觸發詞	工單實體卡的欄位要更新，加一個目的站點
+K07	指名	vault-ingest	vault-ingest mode A	這份訪談紀錄存進 raw
+K08	指名	vault-ingest	vault-ingest mode C	掃一下 raw，看哪些還沒處理
+K09	指名	vault-ingest	vault-ingest mode B	精練 2026-10-29-claude-research-claude.dev對Claude5世代的使用建議 這張
+K10	指名	vault-audit	vault-audit 觸發詞	跑 vault audit
+K11	指名	vault-audit	vault-audit 觸發詞	wiki 最近改很多，做一次健康檢查
+K12	指名	linear-delivery	linear-delivery 觸發詞	把工單模組交付到 Linear
+K13	指名	linear-delivery	linear-delivery 觸發詞	稽核一下 Linear 上出貨的交付文件
+K14	指名	plan-audit	plan-audit 觸發詞	稽核這份設計
+K15	指名	plan-audit	plan-audit 觸發詞	design 改完了，幫我復審
+K16	指名	plan-design	plan-design 觸發詞	grill 完了，開始設計
+K17	指名	plan-design	plan-design 觸發詞	照新流程做設計
+K18	指名	misjudgement-record	misjudgement-record 觸發詞	這個稽核審錯了，這不是缺漏
+K19	指名	misjudgement-record	misjudgement-record 觸發詞	這是誤判，記下來
+K20	指名	grilling	CLAUDE.md 路由	grill 我一下急件這個規劃
+N01	反例	不觸發	純查詢	出貨單狀態機在哪
+N02	反例	不觸發	純查詢	「工單」的定義是什麼
+N03	反例	不觸發	純查詢	印件跟生產任務是什麼關係
+N04	反例	不觸發	純查詢	OQ 卡放在哪個資料夾
+N05	反例	不觸發	純查詢	訂單有哪些狀態
+N06	反例	不觸發	純查詢	現在 openspec 有幾個模組
+N07	反例	不觸發	純查詢	報工是誰做的
+N08	反例	不觸發	純查詢	急件的工作天怎麼算
+N09	反例	不觸發	純查詢	審稿輪次是什麼
+N10	反例	不觸發	純查詢	品檢紀錄寫在哪張卡
+N11	反例	不觸發	純查詢	工單跟訂單是一對多嗎
+N12	反例	不觸發	純查詢	付款計畫在哪裡定義
+N13	反例	不觸發	純查詢	出貨方式有哪幾種
+N14	反例	不觸發	純查詢	現在 wiki 有幾張業務情境卡
+N15	反例	不觸發	純查詢	印務主管負責什麼
+N16	反例	不觸發	純查詢	拼版是什麼意思
+N17	反例	不觸發	純查詢	這個 repo 的提交訊息格式是什麼
+N18	反例	不觸發	純查詢	規劃品質評分準則放在哪
+N19	反例	不觸發	純查詢	最近一次合併 master 是哪個提交
+N20	反例	不觸發	純查詢	發票折讓是怎麼定義的
