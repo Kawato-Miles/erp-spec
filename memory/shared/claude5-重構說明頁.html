@@ -216,7 +216,7 @@ a{color:var(--accent)}
 <section id="plan">
   <div class="eyebrow">第三段</div>
   <h2>重構計畫</h2>
-  <p class="small">計畫：<code>memory/erp/skill-rewrite-20261029/重構計畫-初稿.md</code>。D1 到 D16 已於 2026-10-29 全數拍板（§ 十）。重寫＝完整重寫，不修補；下一步是執行批次 0.5 到 7。</p>
+  <p class="small">計畫：<code>memory/erp/skill-rewrite-20261029/重構計畫-初稿.md</code>。D1 到 D16 於 2026-10-29 全數拍板（§ 十）；批次 0.5 到 7 於 2026-11-04 執行完畢並合併 master。驗證數字在 <code>評測集/基線結果.md</code> § 八到 § 十一。</p>
 
   <figure>
     <svg viewBox="0 0 960 330" role="img" aria-label="重構後的規劃流：建 change、pre-check 加調研建議、grill、設計、稽核含業界比對與取捨、拍板、落卡、specs；調研結果存 raw 後精練成檢核素材，稽核的重複發現與有效情境回寫源頭">
@@ -315,15 +315,28 @@ a{color:var(--accent)}
   </div>
 
   <div class="grid">
-    <div class="tile"><b>OpenSpec 現況</b><span class="num">1.15.0</span><span class="small">批次 0.5 已升級並重新產生 22 個 skill 與指令（原 1.4.1）。自訂 schema 仍可載入，但落後內建版，待裁決</span></div>
-    <div class="tile"><b>評測基線</b><span class="num">3／20</span><span class="small">舊版稽核同一設計跑兩次，判定不同 3 項，當噪音基線。注入 6 處缺陷兩次都全抓到，量尺要加難</span></div>
-    <div class="tile"><b>specs 規模</b><span class="num">21,798</span><span class="small">行、24 個模組。1.15.0 驗證變嚴：27 通過 4 未通過、警告 192 筆。完整重構另立計畫，在本計畫之後</span></div>
+    <div class="tile"><b>規劃句觸發率</b><span class="num">25% → 79%</span><span class="small">105 句規劃類句子，舊版兩輪觸發 26、32 句，最終版 81、83 句；兩輪不一致由 18 句降到 10 句；反例 20 句三版都零誤觸發</span></div>
+    <div class="tile"><b>稽核召回</b><span class="num">6／6、5／8</span><span class="small">新版 erp-audit 在注入版 1 兩次全抓到；在 8 處隱蔽缺陷的注入版 2 抓到 5 與 4 處，兩次都漏 J1、J3、J6，這是往後的量尺</span></div>
+    <div class="tile"><b>CLAUDE.md</b><span class="num">375 → 139</span><span class="small">行。專案是什麼、正本分層、工作入口、模型分工、停下與繼續、收尾回報、陷阱 33 條、版本控管、Prototype 與測試、生產主檔用詞</span></div>
+    <div class="tile"><b>skill</b><span class="num">9 → 7</span><span class="small">erp-plan、erp-audit、wiki-amend、oq-manage、vault-ingest、vault-audit、linear-delivery；每個 SKILL.md 90 行內，細節拆 references；兩個 agent 定義檔 plan-auditor、erp-researcher</span></div>
+  </div>
+
+  <div class="wrap">
+  <table>
+    <thead><tr><th>還沒做</th><th>內容</th><th>誰</th></tr></thead>
+    <tbody>
+      <tr><td>真實主題試用</td><td>用下一個規劃主題走完新流程，記輪數與用量</td><td>Miles 與主對話</td></tr>
+      <tr><td>raw 卡狀態</td><td>生產執行參考模型卡引用的 6 張 raw 卡升 reviewed</td><td>Miles 逐張確認</td></tr>
+      <tr><td>Linear 範例</td><td>依新規範更新範例票（回歸判不合格屬範例過時）</td><td>另案</td></tr>
+      <tr><td>specs 重構</td><td>24 模組 21,798 行完整重構</td><td>另立計畫</td></tr>
+    </tbody>
+  </table>
   </div>
 
   <div class="impact"><h3>對專案的影響</h3><ul>
-    <li>拍板前不動任何 skill。拍板後每個檔案完整重寫，不用局部修補。</li>
-    <li>Miles 的日常會變三處：pre-check 後多一題「要不要調研」；稽核到上限就交你裁決；偏離業界做法時票上多一段取捨。</li>
-    <li>先建評測集再重寫，每批都能回答「有沒有退步」。</li>
+    <li>七個 skill、兩個 agent 定義檔、專案 CLAUDE.md、wiki CLAUDE.md、派工任務書範本都已完整重寫並上線。</li>
+    <li>Miles 的日常變三處：erp-plan 盤點後多一題「要不要調研」；稽核三輪到上限就交你裁決，待裁決項直接列給你；偏離業界做法時 Linear 票上多一段取捨。</li>
+    <li>每批都有評測數字：觸發率、稽核召回、盤點涵蓋。下次改 skill 或準則卡，先跑同一套評測集再合併。</li>
   </ul></div>
 </section>
 
