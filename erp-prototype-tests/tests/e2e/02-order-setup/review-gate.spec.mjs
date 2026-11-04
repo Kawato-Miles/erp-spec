@@ -31,9 +31,8 @@ import {
 // 起點資料一律為鏈外 ORD-2026-0814（草稿；訂單須知與付款備註有值，交貨備註與收款條件備註為空，
 // 尚無收款項目；三件印件名片 651、DM 9,900、貼紙 1,750，運費 200，應收總額 13,126；
 // 三件印件的印件預計交期皆留空，是送審缺日期的具名樣本）。
-// 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的 order-management
-// 規格差異檔 Scenario THEN；「有效印件都有印件預計交期」取自 change rush-order-definition 的
-// order-management 差異檔 § 業務送出訂單審核。依據 wiki [[訂單成立確認]]、[[收款項目規劃]]、[[訂單印件規格維護]]。
+// 期望值依據 wiki 業務情境卡「訂單成立確認」與 wiki 卡「訂單狀態」「訂單異動規則」（情境目錄 § 2.14）；
+// 「有效印件都有印件預計交期」見「訂單異動規則」§ 印件預計交期依階段必填。依據 wiki [[訂單成立確認]]、[[收款項目規劃]]、[[訂單印件規格維護]]。
 // 缺項文字與刪除鈕的畫面約定見 ./_local.mjs 的 reviewMissing、deletePrintItemRow、deleteFeeRow。
 const ORDER_NO = 'ORD-2026-0814';
 const DETAIL = `/orders/detail?id=${ORDER_NO}`;

@@ -1,7 +1,6 @@
 // 情境目錄 2.14～2.17、4.18～4.20：線下單送審條件、核准當下重檢、成立前刪除印件。
-// 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的 order-management
-// 規格差異檔 Scenario THEN；送審條件另加「有效印件都有印件預計交期」取自 change rush-order-definition
-// 的 order-management 差異檔 § 業務送出訂單審核；規則正本 wiki [[訂單狀態]]「草稿 → 待業務主管審核」列、
+// 期望值依據 wiki 業務情境卡「訂單成立確認」「訂單狀態」「訂單異動規則」§ 印件預計交期依階段必填（情境目錄 § 2.14）；
+// 送審條件另加「有效印件都有印件預計交期」；規則正本 wiki [[訂單狀態]]「草稿 → 待業務主管審核」列、
 // [[明細時點分界]] § 階段一的印件存廢子分界。畫面操作的驗收見 tests/e2e/02-order-setup/ 與
 // tests/e2e/04-order-print-item/。
 //

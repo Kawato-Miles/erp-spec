@@ -11,8 +11,8 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 // 情境目錄 10.56「逐層修正主流程：五色印刷良品 500 改 480 的四層接力」、
 // 10.57「逐層修正副流程：上游已完成或還在做、貨在途、整筆遺失、工單已完成」。
 // 依據：wiki 生產數量錯誤的逐層修正 主流程第 0～4 步與副流程；
-// 期望值取自 openspec change production-dispatch-report-transfer-convergence production-execution delta
-// § 生產數量錯誤的逐層修正、§ 報工修正、作廢與留痕、§ 點收紀錄的修正與作廢、§ 轉交單改單與修正 的 THEN。
+// 期望值依據 wiki 業務情境卡「生產數量錯誤的逐層修正」、「報工規則」、「工序相依性規則」、「轉交單狀態」
+//（情境目錄 § 10.56、10.57）。
 //
 // 起點以鏈三 WO-2026-0815 推到 wiki 例子的處境（MOCK-DATA-CHAIN § 逐層修正與點收紀錄作廢的情境樣本：
 // 鏈三的 mock 起點不動，本檔在前置把報工與 TT-20260901-001 寫進記憶體）：

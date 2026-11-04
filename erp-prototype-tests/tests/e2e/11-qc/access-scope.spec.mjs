@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { openAs } from '../_helpers.mjs';
 import { expandedRecords, pendingRow, switchRoleSafe } from './_setup.mjs';
 
-// 單據權責修正第五批（OpenSpec change document-access-scope-alignment）：品檢待驗清單與品檢紀錄的可見範圍依活動清單。
+// 單據權責修正第五批（期望值依據 wiki 卡「生產單據檢視活動清單」「品檢活動清單」，情境目錄 § 11.31）：品檢待驗清單與品檢紀錄的可見範圍依活動清單。
 // 待驗清單：品檢人員、印務主管、Supervisor 全公司；印務看自己負責工單；被分享工單的人看該單。
 // 品檢紀錄：另含揀貨與出貨人員全公司、業務與諮詢看自己負責或被分享訂單（只列已有品檢紀錄的印件，不給待驗量與驗收）。
 // 起點資料：鏈一 PI-2026-0601（已驗完、有品檢紀錄，ORD-2026-0601 接單業務洪嘉駿、陳映蓉編輯層級分享，WO-2026-0601 負責印務周建宏）；

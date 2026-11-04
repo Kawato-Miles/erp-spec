@@ -5,8 +5,8 @@ import * as transferRules from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototyp
 import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/store.js';
 
 // 情境目錄 10.34～10.37：報工修正、修正與作廢共用擋下條件、已完成任務的修正與作廢、報廢任務的報工修正。
-// 期望值取自 openspec change production-dispatch-report-transfer-convergence
-// production-execution delta § 報工修正、作廢與留痕、§ 已完成任務不可新增報工、§ 生產任務狀態轉換 的 THEN。
+// 期望值依據 wiki 業務情境卡「報工與修正」「場內轉交與修正」與 wiki 卡「報工規則」「生產任務狀態」
+//（情境目錄 § 10.34～10.37）。
 // 2026-10-06 改版：拿掉人工程序與人工註記提示（擋下只指出卡在哪一筆，之後走逐層修正，見 10.56）；
 // 已完成任務可作廢報工、不能新增報工；修正原因自由填寫，不驗固定字樣。
 //

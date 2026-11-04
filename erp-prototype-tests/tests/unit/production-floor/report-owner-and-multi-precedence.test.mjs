@@ -18,8 +18,8 @@ import {
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/production-floor/_lib/report-rules.js';
 
 // 情境目錄 10.44、10.45 的判定驗算。
-// 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的 production-execution delta
-// Scenario THEN（師傅不能修正或作廢別人提交的報工；前置未到料擋報工；多前置取最小值），
+// 期望值依據 wiki 業務情境卡「報工與修正」「報工紀錄」「師傅」「場內轉交與修正」「工序相依性規則」（情境目錄 § 10.44、10.45）
+// （師傅不能修正或作廢別人提交的報工；前置未到料擋報工；多前置取最小值），
 // 以及 wiki 業務情境卡「師傅報工與修改」。
 
 describe('10.44 師傅不能修正或作廢別人提交的報工', () => {

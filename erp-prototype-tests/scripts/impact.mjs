@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // 迭代影響對映：把 erp repo 這次改動的 (prototype) 模組對映到情境目錄章節、測試目錄與引用該模組路由的測試檔，
-// 印出「該跑哪幾章、該看哪些測試」。與 OpenSpec 無關，介面迭代一樣適用。
+// 印出「該跑哪幾章、該看哪些測試」。每次 prototype 迭代都適用。
 // 用法：node scripts/impact.mjs            → 取 erp 工作區未提交變更加最近一筆提交
 //       node scripts/impact.mjs HEAD~3     → 取 erp 該範圍的變更
 //       node scripts/impact.mjs --paths a b → 直接給路徑

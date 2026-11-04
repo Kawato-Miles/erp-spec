@@ -13,8 +13,8 @@ import { useProductionFloorStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/
 import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/store.js';
 
 // 情境目錄 9.19、9.20、9.22、10.46～10.50、10.60：報工前提、五個入口、已完成不能新增、照片必填與數值比較、整筆作廢重報。
-// 期望值取自 openspec change production-dispatch-report-transfer-convergence production-execution delta
-// § 報工前提、§ 已完成任務不可新增報工、§ 報工、§ 報工權限守門、§ 報工修正、作廢與留痕 的 THEN；
+// 期望值依據 wiki 業務情境卡「生產任務接收與派工」、「報工與修正」、「生產管理單元可見範圍」、「報工規則」、「報工紀錄」、
+// 「生產任務狀態」、「數量換算規則」（情境目錄 § 9.19、9.20、9.22、10.46～10.50、10.60）；
 // 規則正本 wiki 報工規則、報工紀錄；情境卡 生產任務接收與派工、師傅報工與修改。
 //
 // 資料層契約（新契約等 tasks 4.1～4.4 實作）：

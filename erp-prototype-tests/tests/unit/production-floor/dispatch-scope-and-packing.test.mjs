@@ -23,8 +23,8 @@ import {
 import { floorDeliverableTasks } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/deliver-actions.js';
 
 // 情境目錄 9.15 至 9.18：派工範圍與打包的資料層驗算。
-// 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的 production-execution delta
-// Scenario THEN，以及 wiki 業務情境卡「生產任務接收與派工」「生產管理單元可見範圍」。
+// 期望值依據 wiki 業務情境卡「生產管理單元可見範圍」「生產任務接收與派工」與 wiki 卡「印件生產流程」「師傅」
+// 「工作包」「生產任務」「工單狀態」「生產任務狀態」「生管」「派單」（情境目錄 § 9.15～9.18）。
 
 const initial = {
   tasks: useProductionFloorStore.getState().tasks,

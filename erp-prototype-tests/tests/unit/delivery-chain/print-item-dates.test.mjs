@@ -7,8 +7,8 @@ import {
 import { applyPrintItemDueDate } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/due-date-sync.js';
 
 // 印件預計交期往前減 1 個工作天得印件內部完成日；是否急件不參與（情境目錄 4.5、4.6）
-// 期望值取自 order-management spec § 印件內部完成日推導、§ 印件預計交期變更的重算與同步
-//（OpenSpec change rush-order-definition，Miles 2026-10-27 急件新定義）。
+// 期望值依據 wiki 業務情境卡「訂單印件規格維護」「急件規則」§ 急件要確認印件預計交期、「工作天規則」
+// 「訂單異動規則」§ 印件日期人工修改配套、§ 印件預計交期依階段必填（情境目錄 § 4.5、4.6；Miles 2026-10-27 急件新定義）。
 
 const item = (expected, isUrgent = false, overrides = {}) => ({
   print_item_no: 'PI-2026-0388',

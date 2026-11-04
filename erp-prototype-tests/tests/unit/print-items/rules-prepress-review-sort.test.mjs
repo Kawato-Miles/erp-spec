@@ -12,7 +12,7 @@ import { nextWorkingDay } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototyp
 // prepress-review spec § 待審清單排序與停滯規則：待審清單（含待審訂單模組）依印件
 //「印件內部完成日」近者優先排序，空值排在有值之後，同組依印件編號排序；不用建立時間先進先出。
 // 印件內部完成日一律由業務填的「印件預計交期」往前減 1 個工作天推導，是否急件不參與
-//（order-management spec § 印件內部完成日推導，OpenSpec change rush-order-definition）。
+//（期望值依據 wiki 業務情境卡「印件審稿」與 wiki 卡「急件規則」，情境目錄 § 5.13）。
 // 急件只做標示、不影響排序：急件不會因是否急件為是而排前，除非業務把預計交期壓早。
 // 畫面上母列以「訂單」為單位呈現（ReviewOrderList.js defaultExpandAllRows，
 // 排序只作用在 orders.sort(compareOrdersByReviewSortKey)），故用訂單級的排序鍵函式驗算；

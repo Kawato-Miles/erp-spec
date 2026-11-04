@@ -11,9 +11,8 @@ import { useWorkOrdersStore } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prot
 
 // 情境目錄 10.51～10.55、10.58：點收單一動作、點收紀錄作廢與退回已送達、點收前作廢、
 // 批次建單任一超額全擋、搬運數量修正、以站點為目的地的轉交單。
-// 期望值取自 openspec change production-dispatch-report-transfer-convergence production-execution delta
-// § 場內轉交、§ 點收紀錄的修正與作廢、§ 生管批次建轉交單、§ 轉交單改單與修正 的 THEN；
-// 情境卡 場內轉交與修正、生產數量錯誤的逐層修正。
+// 期望值依據 wiki 業務情境卡「場內轉交與修正」「生產數量錯誤的逐層修正」與 wiki 卡「轉交單狀態」「產線」「轉交單」
+//（情境目錄 § 10.51～10.55、10.58）。
 //
 // 資料層契約（新契約等 tasks 5.1～5.6 實作）：
 //   轉交單單頭 destination_line（目的產線）、明細 destination_station_key（目的站點）

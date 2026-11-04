@@ -5,8 +5,8 @@ import { gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 // 跨產線工作包只對自己產線範圍的任務開放報工、修正與作廢。
 // 依據：wiki 生產任務接收與派工 副流程第 3 步之前分支、第 3 步分支（任務屬加工廠）；
 // 生產管理單元可見範圍 主流程第 4 步分支（工作包旗下任務跨產線）。
-// 期望值取自 openspec change production-dispatch-report-transfer-convergence production-execution delta
-// § 報工前提、§ 待派任務接收、§ 生產管理單元的權限與可見範圍 的 THEN。
+// 期望值依據 wiki 業務情境卡「生產任務接收與派工」「報工規則」「報工與修正」「生產管理單元可見範圍」
+// 「生產數量錯誤的逐層修正」「生產任務狀態」（情境目錄 § 9.19～9.22）。
 // 純函式另見 tests/unit/production-floor/report-precondition-and-entries.test.mjs、floor-units-scope.test.mjs。
 
 const PHOTO = { name: '現場照.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('現場照') };

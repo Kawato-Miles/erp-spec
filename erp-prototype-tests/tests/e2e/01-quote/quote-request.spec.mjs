@@ -1062,7 +1062,9 @@ test('1.25 被分享（編輯）者複製他人負責的需求單，新單的接
   expect(newUrl).toMatch(/quote-prototype\/detail/);
 });
 
-// ─── 單據權責修正第三批（OpenSpec change document-access-scope-alignment）：需求單依活動清單判斷 ───
+// ─── 單據權責修正第三批：需求單依活動清單判斷 ───
+// 期望值依據 wiki 業務情境卡「售前單據檢視活動清單」、「需求單」、「了解需求活動清單」、「報價評估活動清單」、
+// 「單據分享與職務代理」、「分享與職務代理活動清單」、「受控清單」、「改派負責人活動清單」（情境目錄 § 1.26～1.30）
 
 // 在列表以搜尋框找單號並打開詳情
 async function openQuoteByTitle(page, title) {
