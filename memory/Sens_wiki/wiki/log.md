@@ -11,6 +11,11 @@ last-reviewed: 2026-06-02
 下記三行：「變更」（MUST 逐卡 `[[卡名]]` + 一句話，禁粗寫）、「動機」（實質異動正本卡必填，業務理由當下自足，得連 [[OQ卡]]；健檢 / 納入類免）、「衝突」。
 完整規約見 vault 根 `CLAUDE.md` § 四。卡的歷史 = 搜 `[[卡名]]` 命中本檔條目 + git 歷史；決策脈絡見 OQ 卡。
 
+## [2026-11-04 15:30] 納入(ingest-B) | 參考模型卡引用的六張 raw 調研卡升 reviewed（Miles 逐批確認）
+- 變更：[[2026-06-14-claude-research-Dynamics365製造與庫存模組]]、[[2026-06-14-claude-research-ISA95-MESA製造執行標準框架]]、[[2026-06-14-claude-research-PrintVis印刷ERP]]、[[2026-06-14-claude-research-印刷專用MIS-Tharstern-EFI-Avanti]]、[[2026-10-28-claude-research-印刷業ERP-MES-EC整合架構與完工入庫流程]]、[[2026-10-29-claude-research-製造結構背景知識與實務利弊]] 六張 status 由 raw 改 reviewed；[[2026-06-14-claude-research-Odoo製造與庫存模組]] 原已 reviewed 不動。七張皆為 [[生產執行]] 參考模型卡的 source，依 vault-ingest 防線 4 與 vault-audit 維度 17，參考模型卡只能引用 reviewed 或 ingested 的素材。
+- 動機：Miles 2026-11-04 確認七張調研結論可作稽核依據（五張 06-14 卡有對抗式驗證段；兩張 10-28、10-29 卡由主對話抽查 8 條與 7 條來源相符）。不精練進正本卡，業界做法只住參考模型卡。
+- 衝突：無。
+
 ## [2026-11-04 19:50] 納入(amend) | 批次 6：資料結構總覽相關卡、taxonomy、路由卡的 skill 舊名與模型值改引現行 skill 與單一出處
 - 變更：[[ERP 資料結構總覽]]、[[訂單領域資料結構總覽]]、[[生產領域資料結構總覽]]、[[履約與售後資料結構總覽]]、[[規範 - 資料結構總覽]]、[[範例 - 資料結構總覽]]、[[範本 - 資料結構總覽]]、[[business-domain-taxonomy]] 的 `plan-design`、`plan-audit`、`erp-planning-pre-check` 改為 `erp-plan`、`erp-audit`；[[審查知識路由]] 正本重構流第 5 階段的模型值改為「依專案 CLAUDE.md § 模型分工」
 - 動機：重構計畫批次 6 移除四個轉介 skill（D16 乙）；D7 模型分工只寫一處

@@ -1,6 +1,6 @@
 ---
 type: raw
-status: raw
+status: reviewed
 created-at: 2026-10-28
 source: claude-research
 captured-by: claude-on-task
