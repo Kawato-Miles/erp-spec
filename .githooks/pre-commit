@@ -1,0 +1,8 @@
+#!/bin/sh
+# wiki 提交前檢查：只在暫存區有 wiki 卡時執行；錯誤即拒絕提交。
+# 緊急情況可用 git commit --no-verify 跳過（不建議）。
+root="$(git rev-parse --show-toplevel)"
+script="$root/.claude/skills/vault-audit/scripts/wiki_lint.py"
+[ -f "$script" ] || exit 0
+git diff --cached --name-only | grep -q '^memory/Sens_wiki/wiki/.*\.md$' || exit 0
+python3 "$script" --staged

@@ -94,5 +94,19 @@
       "/Users/b-f-03-029/Sens/openspec/changes/work-package",
       "/Users/b-f-03-029/Sens/openspec/changes/imposition-calculator"
     ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/skills/vault-audit/scripts/wiki_lint.py\" --hook",
+            "statusMessage": "wiki 寫入檢查"
+          }
+        ]
+      }
+    ]
   }
 }
