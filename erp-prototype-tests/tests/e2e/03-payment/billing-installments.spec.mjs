@@ -194,7 +194,7 @@ test('3.13 線下單草稿態即可規劃收款項目，待審期間可改且變
   await waitModalsClosed(page);
 
   // 三件印件逐件補填印件預計交期：線下單送主管審核時有效印件都要有日期
-  //（OpenSpec change rush-order-definition，order-management spec § 業務送出訂單審核）
+  //（期望值依據 wiki 卡「收款項目規劃」（情境目錄 § 3.13））
   await openTab(page, '訂單項目');
   for (const printItemNo of ['PI-2026-0841', 'PI-2026-0842', 'PI-2026-0843']) {
     const itemRow = page.locator('tbody tr.ant-table-row').filter({ hasText: printItemNo }).first();

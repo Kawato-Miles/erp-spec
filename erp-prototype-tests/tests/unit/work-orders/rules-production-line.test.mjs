@@ -2,7 +2,7 @@
 // 畫面操作的驗收在 tests/e2e/07-process-planning/production-line.spec.mjs 與
 // tests/e2e/08-process-review-deliver/delivery-status.spec.mjs（8.17、8.19）。
 //
-// 期望值依據 wiki 業務情境卡「工單製程規劃」、「工單異動與生產任務調整」、「QC不通過補生產」、「工單製程審核」、
+// 期望值依據 wiki 卡「工單製程規劃」、「工單異動與生產任務調整」、「QC不通過補生產」、「工單製程審核」、
 // 「生產任務」、「印務主管」（情境目錄 § 7.38、7.39、8.17、8.19）。
 //
 // 本檔先於實作寫成（tasks 2.8、2.13），下列規則函式尚未存在，跑起來應為紅：

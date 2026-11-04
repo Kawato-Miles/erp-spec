@@ -5,7 +5,7 @@ import { openPackageReports } from './_ch10.mjs';
 // 情境目錄 10.44：師傅不能修正或作廢別人提交的報工（純函式另見
 // tests/unit/production-floor/report-owner-and-multi-precedence.test.mjs）。
 // 起點資料：鏈二 WP-2026-0710-01（指派師傅劉阿海）的海報四色印刷（製作中，已有劉阿海提交的報工）。
-// 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的 production-execution delta Scenario THEN。
+// 期望值依據 wiki 卡「報工與修正」「報工紀錄」「師傅」（情境目錄 § 10.44）。
 
 test('10.44 師傅不能修正或作廢別人提交的報工', async ({ page }) => {
   test.setTimeout(150_000);

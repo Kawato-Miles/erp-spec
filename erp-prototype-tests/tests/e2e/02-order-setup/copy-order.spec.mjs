@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 import { button, dialog, openByNo, openTab, orderHeader, rowOf } from './_local.mjs';
 
-// 2.28（單據權責修正第七批；期望值依據 wiki 業務情境卡「訂單複製建單」「訂單審核活動清單」「訂單」「印件複製規則」
+// 2.28（單據權責修正第七批；期望值依據 wiki 卡「訂單複製建單」「訂單審核活動清單」「訂單」「印件複製規則」
 // （情境目錄 § 2.28））：複製訂單的操作者依活動清單，
 // 新訂單的接單業務記執行複製的人。起點資料：鏈一 ORD-2026-0601（訂單完成，接單業務洪嘉駿，陳映蓉為編輯層級分享成員）、
 // 鏈四 ORD-2026-0820（陳映蓉為檢視層級分享成員）。情境依據：訂單複製建單；訂單審核活動清單（ACT-APV-017 至 019）。

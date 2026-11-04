@@ -3,7 +3,7 @@ import { taskActualStartAt } from '/Users/b-f-03-029/erp/apps/erp/src/app/(proto
 import { proofRequirementEditGuard } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/work-orders/_lib/permissions.js';
 
 // 10.19 任務實際開工取首筆報工時間
-// 期望值取自 openspec work-order § 工單排程日期的四個 Scenario：
+// 期望值依據 wiki 卡「工單」「報工規則」「生產任務狀態」（情境目錄 § 10.19）：
 // 生管分派日不寫入、尚未報工時為空、第二筆報工不改寫、只報一次工時開工等於完成。
 
 const TASK = { id: 'pt-0710-1', name: '海報四色印刷' };
@@ -45,7 +45,7 @@ describe('10.19 任務實際開工取首筆有效報工的時間', () => {
 });
 
 // 7.26 確樣需求的可改角色與可改期間
-// 期望值取自 openspec work-order § 工單確樣需求：
+// 期望值依據 wiki 卡「工單」「印務」（情境目錄 § 7.26，第二個 7.26）：
 // 負責印務與其編輯（代理）成員於工單非終態可改，其餘角色與終態工單唯讀。
 
 const workOrder = (status, owner, sharedMembers = []) => ({

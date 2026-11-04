@@ -2,7 +2,8 @@ import { test, expect } from '@playwright/test';
 import { openAs, switchRole } from '../_helpers.mjs';
 import { gotoInAppPatiently as gotoInApp } from './_retry.mjs';
 
-// 單據權責修正（OpenSpec change document-access-scope-alignment 第一批）：工單分享候選、介面用詞。
+// 單據權責修正第一批：工單分享候選、介面用詞。期望值依據 wiki 卡「分享與職務代理活動清單」「受控清單」
+// 「生產單據檢視活動清單」「派工活動清單」（情境目錄 § 14.41、14.42）。
 // 情境依據：分享與職務代理活動清單、受控清單 § 範圍用詞、角色卡 Supervisor。
 
 test.setTimeout(90_000);

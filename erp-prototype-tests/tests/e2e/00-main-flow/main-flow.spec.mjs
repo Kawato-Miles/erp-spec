@@ -262,8 +262,7 @@ test('主流程：一件印件從需求單到訂單完成', { tag: '@smoke' }, a
     quoteNo = (await listRow.innerText()).match(/Q-\d{8}-\d{2}/)[0];
 
     // 進詳情建兩件印件，各填難易度、單價與印件預計交期。
-    // 印件預計交期在需求單選填，但線下單送主管審核時有效印件都要有值（OpenSpec change
-    // rush-order-definition，order-management spec § 業務送出訂單審核），故在報價時就填上，轉訂單直接帶入
+    // 印件預計交期在需求單選填，但線下單送主管審核時有效印件都要有值，故在報價時就填上，轉訂單直接帶入
     await page.getByRole('link', { name: quoteNo }).click();
     await expect(page).toHaveURL(/quote-prototype\/detail/, { timeout: 40_000 });
     for (const name of [ITEM_A, ITEM_B]) {

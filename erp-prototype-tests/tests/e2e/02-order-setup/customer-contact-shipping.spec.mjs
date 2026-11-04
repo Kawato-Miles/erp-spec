@@ -10,7 +10,7 @@ test('2.5 訂單客戶與窗口聯絡人維護（商業需求覆蓋矩陣 B）',
 
   // 起點：客戶台北數位行銷有限公司，現任窗口聯絡人。
   // 客戶欄指向廠客主檔那一筆：客戶名稱取廠客簡稱、客戶編號取廠客的客戶編號，兩項皆為唯讀衍生
-  //（期望值取自 openspec order-management § 訂單客戶欄引用廠客主檔）
+  //（期望值依據 wiki 卡「訂單客戶與聯絡資料維護」（情境目錄 § 2.5））
   await expect(page.locator('body')).toContainText('台北數位行銷有限公司');
   const customerValue = (label) =>
     page.locator(`th.ant-descriptions-item-label:has-text("${label}") + td`).first();
@@ -35,7 +35,8 @@ test('2.5 訂單客戶與窗口聯絡人維護（商業需求覆蓋矩陣 B）',
   await expect(button(page, '切換窗口聯絡人')).toBeVisible();
 });
 
-// 2.5 兩個預計出貨日：急件新定義（OpenSpec change rush-order-definition，Miles 2026-10-27）後，
+// 2.5 兩個預計出貨日（期望值依據 wiki 卡「訂單客戶與聯絡資料維護」（情境目錄 § 2.5））：
+// 急件新定義（Miles 2026-10-27）後，
 // 審稿前與審稿後預計出貨日只屬線上單（由系統推算，推算規則待 ORD-061 拍板、Prototype 尚未實作），
 // 線下單不顯示這兩欄，也沒有編輯入口。
 test('2.5 線下單的出貨資訊卡不顯示審稿前與審稿後預計出貨日', async ({ page }) => {

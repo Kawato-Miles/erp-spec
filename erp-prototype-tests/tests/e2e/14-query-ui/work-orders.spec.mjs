@@ -55,7 +55,7 @@ test('14.1 工單列表查詢與篩選（原編號 1）', async ({ page }) => {
 
 test('14.2 工單詳情的頁籤：成本區只留成本對照（原編號 2）', async ({ page }) => {
   // 起點資料：鏈二 WO-2026-0710
-  // 期望值取自 openspec work-order § 工單成本對照：成本區只有「成本對照」一個頁籤，
+  // 期望值依據 wiki 卡「工單」（情境目錄 § 14.2）：成本區只有「成本對照」一個頁籤，
   // 各生產任務的預估值仍於對照的預估欄逐列可讀
   await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0710');
   await expect(page.locator('body')).toContainText('WO-2026-0710');
@@ -91,7 +91,7 @@ test('14.2 工單詳情的頁籤：成本區只留成本對照（原編號 2）'
 
 test('14.19 工單摘要卡只留預估利潤率一格', async ({ page }) => {
   // 起點資料：鏈二 WO-2026-0710（所屬印件 PI-2026-0710，旗下只有這一張工單）
-  // 期望值取自 openspec 規格差異檔 work-order-summary-drop-actual-profit-rate（刪實際利潤率）
+  // 期望值依據 wiki 卡「工單」「生產績效指標」（情境目錄 § 14.19），刪實際利潤率
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0710');
   await expect(page.locator('body')).toContainText('預估利潤率');
   await expect(page.locator('body')).not.toContainText('實際利潤率');
@@ -145,7 +145,7 @@ test('14.19 工單摘要卡只留預估利潤率一格', async ({ page }) => {
 test('14.20 工單詳情顯示接單業務、訂單類型、客戶編號與工單聯絡', async ({ page }) => {
   // 起點資料：鏈四 WO-2026-0820（所屬訂單 ORD-2026-0820，客戶晨光文創、客戶編號 MBC000006，
   // 接單業務洪嘉駿、訂單類型線下單；負責印務周建宏的聯絡電話已填）
-  // 期望值取自 openspec work-order § 工單詳情的印件與聯絡資訊顯示
+  // 期望值依據 wiki 卡「工單」「訂單」「廠客」「人員」（情境目錄 § 14.20）
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0820');
   await expect(page.locator('body')).toContainText('WO-2026-0820');
 
@@ -169,7 +169,7 @@ test('14.20 工單詳情顯示接單業務、訂單類型、客戶編號與工�
 
 test('14.21 負責印務未填聯絡電話時工單聯絡印破折號', async ({ page }) => {
   // 起點資料：WO-2026-0910（負責印務蔡明修未填聯絡電話）
-  // 期望值取自 openspec work-order § 負責印務未填電話時顯示「－」
+  // 期望值依據 wiki 卡「工單」「人員」（情境目錄 § 14.21）
   await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0910');
   await expandPanel(page, '工單資訊');
   await expect(

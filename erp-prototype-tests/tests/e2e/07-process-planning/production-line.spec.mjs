@@ -12,8 +12,7 @@ import {
 } from './_ch07.mjs';
 
 // 情境目錄 7.38、7.39：生產任務的產線欄（自部件配方工序段帶入、必填、不隨計畫設備變動）。
-// 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的
-// work-order 規格差異檔 § 生產任務結構與帶入規則。
+// 期望值依據 wiki 卡「工單製程規劃」「工單異動與生產任務調整」「QC不通過補生產」（情境目錄 § 7.38、7.39）。
 // 起點資料：鏈五 WO-2026-0901（草稿，配方 PS-2026-0901）；鏈外 WO-2026-0906（局部上光為外包廠任務）。
 // 異動加開與品檢缺口補做的帶入以純函式驗（tests/unit/work-orders/rules-production-line.test.mjs）。
 

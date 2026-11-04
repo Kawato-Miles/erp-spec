@@ -10,7 +10,7 @@ import {
 } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/_lib/urgent-due-date.js';
 import { MOCK_ORDERS } from '/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/orders/mock-data.js';
 
-// 急件標注判準（期望值依據 wiki 業務情境卡「訂單印件規格維護」「查找含急件印件的訂單」「訂單」「印件」
+// 急件標注判準（期望值依據 wiki 卡「訂單印件規格維護」「查找含急件印件的訂單」「訂單」「印件」
 // 「急件規則」§ 急件定義、「急件主檔」（情境目錄 § 4.24、4.26、13.2、14.47））：
 // 印件被標注＝是否急件為是、且印製維度不是「已棄用」。訂單不存急件欄，訂單標注取旗下任一有效印件；
 // 線上單印件的購買的急件選項不參與判定。工單、生產任務、轉交單明細、出貨明細都依印件編號回讀這一支。

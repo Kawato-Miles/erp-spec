@@ -4,8 +4,7 @@ import { openAs, gotoInApp, switchRole, cjkName } from '../_helpers.mjs';
 // 情境目錄 4.18～4.20：訂單成立前刪除印件。
 // 起點資料：鏈外 ORD-2026-0814（草稿；名片 651、DM 9,900、貼紙 1,750，運費 200，
 // 未稅總額 12,501、稅額 625、應收總額 13,126）；對照組鏈二 ORD-2026-0710（製作中，已成立）。
-// 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的 order-management
-// 規格差異檔 § 訂單成立前刪除印件。依據 wiki [[訂單印件規格維護]]、[[明細時點分界]]。
+// 期望值依據 wiki 卡「訂單印件規格維護」「訂單審核活動清單」（情境目錄 § 4.18～4.20）。依據 wiki [[訂單印件規格維護]]、[[明細時點分界]]。
 // 畫面約定（tasks 4.2 實作依此）：印件列操作欄有一顆「刪除印件」圖示鈕，按下出確認對話框。
 // 線上單等待付款與諮詢的可刪判定以純函式驗（tests/unit/orders/review-gate-and-print-item-delete.test.mjs）。
 

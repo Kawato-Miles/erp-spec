@@ -9,7 +9,7 @@ test.describe.configure({ timeout: 120_000 });
 
 test('7.26 印務於製程規劃填工單確樣需求（十值多選、非終態可改、終態唯讀）', async ({ page }) => {
   // 起點資料：鏈五 WO-2026-0901（草稿、負責印務周建宏，確樣需求預置「改版」「數位樣」）
-  // 期望值取自 openspec work-order § 工單確樣需求與 § 製程規劃
+  // 期望值依據 wiki 卡「工單」「印務」（情境目錄 § 7.26，第二個 7.26）
   await openAs(page, '印務', '/work-orders');
   await openWorkOrder(page, 'WO-2026-0901');
 
@@ -76,7 +76,7 @@ test('7.26 印務於製程規劃填工單確樣需求（十值多選、非終態
 test('7.49 印件備註側板：印務改得動規格備註、包裝備註與稿件備註', async ({ page }) => {
   // 起點資料：鏈七 PI-2026-0904（旗下 WO-2026-0904 與 WO-2026-0905 兩張工單，
   // 所屬訂單 ORD-2026-0904 非終態，負責印務周建宏）
-  // 期望值取自 openspec change document-access-scope-alignment 的 order-management〈印務可改稿件備註〉：
+  // 期望值依據 wiki 卡「印件」「訂單資訊分區編輯」「印務」「訂單審核活動清單」（情境目錄 § 7.49）：
   // 稿件備註是一般欄位，對印件有編輯權者（含印務，活動 ACT-APV-025）皆可改
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0904');
   await expandPanel(page, '印件基本資訊');

@@ -1,9 +1,7 @@
 // 情境目錄 13.1：派單推進與回廠點收登記不改生產任務狀態，印務報工達標才完成。
 //
-// 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的
-// production-execution 規格差異檔 § 生產任務狀態轉換（派單推進不改動生產任務狀態、
-// 點收登記不令任務完成、印務報工後完成）與 work-order 規格差異檔 § 生產任務結構與帶入規則
-//（外發任務產出數量取報工累計）各 Scenario 的 THEN。
+// 期望值依據 wiki 卡「外發委外與回廠點收」（情境目錄 § 13.1）：派單推進不改動生產任務狀態、
+// 點收登記不令任務完成、印務報工後完成；外發任務產出數量取報工累計。
 //
 // 合成資料的理由：現行派單資料為空陣列（dispatch-orders/_lib/mock-data.js），沒有外發樣本。
 // 報工走現場模組唯一寫入路徑 submitWorkReport；外發任務不在現場任務池，累計寫回工單模組那一筆。

@@ -1,8 +1,8 @@
 // 情境目錄 8.3、8.15、8.16、9.2：生產任務的交付時間與交付狀態推導，以及工單「工單已交付」的判定。
 // 畫面操作的驗收在 tests/e2e/08-process-review-deliver/ 與 tests/e2e/09-planner-dispatch/。
 //
-// 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的
-// work-order 規格差異檔 § 生產任務交付時間與交付狀態（Scenario 的 THEN）；
+// 期望值依據 wiki 卡「工單製程審核」「場內轉交與修正」「外發委外與回廠點收」「工單異動與生產任務調整」
+// 「生產任務接收與派工」「生管」（情境目錄 § 8.3、8.15、8.16、9.2）；
 // 推導條件正本為 wiki 生產任務交付狀態（依序判定：「－」→ 已接收 → 已交付 → 未交付）。
 //
 // 本檔先於實作寫成（tasks 2.8、2.13），下列函式尚未存在，跑起來應為紅：

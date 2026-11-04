@@ -151,7 +151,7 @@ test('8.4 印務主管在待審核工單列表逐列核可或退回（原編號 
 
 test('7.30 工單送出審核時被排程硬擋，Dialog 列出兩個日期與相差工作天數', async ({ page }) => {
   // 起點資料：鏈外 WO-2026-0906（製程確認中；印件內部完成日 2026-09-18、局部上光任務預計完成日 2026-09-24）
-  // 製程確認中沒有送審入口，先由負責印務收回成草稿再送審；期望值取自 openspec work-order § 工單排程硬擋
+  // 製程確認中沒有送審入口，先由負責印務收回成草稿再送審
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0906');
   await page.getByRole('button', { name: cjkName('收回') }).first().click();
   await page.getByPlaceholder('請填寫收回原因（必填）').fill('外包廠檔期要重排');
@@ -170,7 +170,7 @@ test('7.30 工單送出審核時被排程硬擋，Dialog 列出兩個日期與�
 });
 
 test('7.31 核可時再判一次硬擋，擋下不產生派單、工單留在待審核列表', async ({ page }) => {
-  // 起點資料：同 7.30 的 WO-2026-0906；期望值取自 openspec work-order § 工單排程硬擋、§ 印務主管待審核工單列表
+  // 起點資料：同 7.30 的 WO-2026-0906
   // 工單詳情頁的核可
   await openAs(page, '印務主管', '/work-orders/detail?id=wo-2026-0906');
   await page.getByRole('button', { name: '核可製程' }).click();

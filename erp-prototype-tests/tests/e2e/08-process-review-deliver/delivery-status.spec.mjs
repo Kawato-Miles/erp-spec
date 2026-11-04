@@ -13,7 +13,8 @@ import {
 test.describe.configure({ timeout: 180_000 });
 
 // 第八章 製程審核與交付產線：產線欄、三個狀態欄、一次交付全部任務、核可後改產線（8.14～8.17）。
-// 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的 work-order 規格差異檔。
+// 期望值依據 wiki 卡「工單製程審核」「場內轉交與修正」「外發委外與回廠點收」「工單異動與生產任務調整」
+// （情境目錄 § 8.14～8.17）。
 // 欄位一律以表頭文字定位（expectCell）：「－」「已完成」這類值在同一列的其他欄也會出現。
 const DASH = '－';
 

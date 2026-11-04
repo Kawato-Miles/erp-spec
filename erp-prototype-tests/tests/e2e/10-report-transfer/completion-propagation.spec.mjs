@@ -51,7 +51,7 @@ test('10.12 首次報工把上游三層一起推進，已收尾的不被拉回�
   await expect(page.getByText('製作中').first()).toBeVisible();
 
   // 同一筆報工的時間寫入該任務的「任務實際開工」（展開生產任務列讀）：
-  // 期望值取自 openspec work-order § 任務實際開工取首筆報工時間——分派日不寫入，
+  // 期望值依據 wiki 卡「報工規則」「工單狀態」（情境目錄 § 10.12）：分派日不寫入，
   // 尚未報工的其餘三筆仍為空
   await expect(page.getByRole('heading', { level: 4, name: 'WO-2026-0815' })).toBeVisible();
   // 備料是製程的第一道，列在生產任務清單首位——展開它就是剛才報過工的那一筆
@@ -67,7 +67,7 @@ test('10.12 首次報工把上游三層一起推進，已收尾的不被拉回�
 
 test('10.19 尚未報工的生產任務，任務實際開工為空（分派日不寫入）', async ({ page }) => {
   // 起點資料：鏈三 WO-2026-0815 四筆任務已派工、尚無任何報工
-  // 期望值取自 openspec work-order § 分派後尚未報工時任務實際開工為空
+  // 期望值依據 wiki 卡「工單」「報工規則」「生產任務狀態」（情境目錄 § 10.19）
   await dispatchAllTasks(page);
 
   await switchRole(page, '印務');

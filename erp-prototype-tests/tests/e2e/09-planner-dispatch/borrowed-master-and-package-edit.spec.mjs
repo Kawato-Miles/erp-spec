@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 import { gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 
 // 情境目錄 9.15、9.16（純函式另見 tests/unit/production-floor/dispatch-scope-and-packing.test.mjs）。
-// 期望值取自 openspec change order-review-gate-invoice-draft-transfer-receipt 的 production-execution delta
-// Scenario THEN 與 wiki 業務情境卡「生產管理單元可見範圍」「生產任務接收與派工」。
+// 期望值依據 wiki 卡「生產管理單元可見範圍」「印件生產流程」「師傅」「生產任務接收與派工」「工作包」「生產任務」
+// （情境目錄 § 9.15、9.16）。
 
 test('9.15 師傅被借調到別線時照樣看得到並報得了工，點收範圍不變', async ({ page }) => {
   test.setTimeout(150_000);
