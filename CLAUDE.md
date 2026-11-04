@@ -5,7 +5,7 @@
 Miles 是印刷業 PM，負責 **ERP 系統**（生產排程、採購、倉儲、客戶訂單）與 **線上編輯器**（B2B SaaS 印刷稿件生成平台）。
 本 repo 是這兩個產品的規劃知識庫：商業需求正本在 `memory/Sens_wiki/wiki/`（BRD），系統行為規格在 `openspec/`（PRD）。
 非目標：本 repo 不寫實作程式碼、不放介面原型。原型在 erp repo，見 § Prototype 與測試。
-全域偏好（回覆風格、語言、文件迭代分層）正本在 `~/.claude/CLAUDE.md`，本檔不重述；子代理拿不到那份檔，派工時指名讀句法兩檔（見 § 工作入口）。
+回覆風格正本是 `~/.claude/output-styles/ste100-pm.md`：主對話經輸出風格載入，子代理經使用者層 SubagentStart hook 收到全文。全域偏好（語言、文件迭代分層）正本在 `~/.claude/CLAUDE.md`，本檔不重述；子代理會載入該檔（內建 Explore、Plan 例外）。派工時仍指名讀句法兩檔（見 § 工作入口）。
 
 ## 正本分層（唯一正本，勿在他處重述）
 
