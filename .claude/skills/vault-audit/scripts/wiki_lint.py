@@ -252,7 +252,7 @@ def check_card(card, ctx, rep):
         for no, ln in body:
             s = re.sub(r"^\s*[-*|]\s*", "", ln)
             for t in g.terms:
-                if re.match(re.escape(t) + r"\s*(是|指|即|為)(?!否)", s):
+                if re.match(re.escape(t) + r"\s*(是|指|即|為)(?!否|什麼)", s):
                     rep.add("S8", card, no, f"疑似「{t}」的定義句；定義只寫在詞彙表")
     # S11：基數只在全系統總覽卡
     if card.name != OVERVIEW and not card.spec and WIKI in card.p.parents:
