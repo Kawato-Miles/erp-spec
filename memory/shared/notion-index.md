@@ -6,7 +6,7 @@ type: reference
 
 # Notion 資源索引
 
-> **引用規則**：BRD / Spec 內所有跨頁面引用，一律使用 `[可讀名稱](URL)` 格式。規則全文見 CLAUDE.md § 跨頁面引用規則。
+> **引用規則**：BRD / Spec 內所有跨頁面引用，一律使用 `[可讀名稱](URL)` 格式。規則全文見專案 AGENTS.md § 正本分層。
 >
 > **維護原則**：Notion URL 異動時以本檔案為正本，同步更新所有引用此 URL 的 skill / agent 檔案。
 

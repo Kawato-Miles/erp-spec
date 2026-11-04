@@ -1,6 +1,6 @@
 # Plan: <短描述任務>
 
-> **本模板使用說明**：依 Project [CLAUDE.md](../../CLAUDE.md) § Plan mode 撰寫規範產出 plan 檔。
+> **本模板使用說明**：依 Project [AGENTS.md](../../AGENTS.md) § Plan mode 撰寫規範產出 plan 檔。
 > 業務段 A 是 PM 拍板用，禁用工程術語當主詞；技術段 B 是 Agent 執行用，精簡列出檔案與驗證即可。
 > 拍板前須通過自審 6 項（見文末清單）。
 
@@ -134,7 +134,7 @@
 
 ## Plan 自審（拍板前 6 項）
 
-依 [CLAUDE.md § Plan mode 撰寫規範](../../CLAUDE.md) 必遵守規則 6 自審：
+依 [AGENTS.md § Plan mode 撰寫規範](../../AGENTS.md) 必遵守規則 6 自審：
 
 - [ ] A1-A5 齊備（A2 / A4 / B2 / B3 為條件必填，不適用時須在 A 段明示）
 - [ ] 業務段 A 完全無檔名 / 物件名 / interface 名當主詞（行內 code block 引用例外，如「禁用 `.ts`」等規則說明）

@@ -73,7 +73,7 @@
 **核心原則**：邊迭代邊檢查，邊做邊驗證，而非「做完再檢查」。
 
 > **注意**：本 section 定義工作流框架（通用）。**具體的檔案清單與驗證標準見各專案記憶**：
-> - **ERP**：OpenSpec change 工作流（見 Sens `CLAUDE.md` § 如何開始 Spec 迭代）
+> - **ERP**：matt 規劃流程（見 Sens `AGENTS.md` § 工作入口）
 > - **線上編輯器**：`memory/graphic-editor/spec-iteration-workflow.md`（待建立）
 
 ### 5.1 迭代前：定義驗證標準

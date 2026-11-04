@@ -3,7 +3,7 @@
 ## 專案是什麼
 
 Miles 是印刷業 PM，負責 **ERP 系統**（生產排程、採購、倉儲、客戶訂單）與 **線上編輯器**（B2B SaaS 印刷稿件生成平台）。
-本 repo 是這兩個產品的規劃知識庫：商業需求正本在 `memory/Sens_wiki/wiki/`（BRD），系統行為規格在 `openspec/`（PRD）。
+本 repo 是這兩個產品的規劃知識庫：商業需求正本在 `memory/Sens_wiki/wiki/`（BRD），規劃單（PRD）是一次性的 `.scratch/<主題>/spec.md`，做完不合併。長期正本只有 wiki 與情境目錄加測試。
 非目標：本 repo 不寫實作程式碼、不放介面原型。原型在 erp repo，見 § Prototype 與測試。
 回覆風格正本是 `~/.claude/output-styles/ste100-pm.md`：主對話經輸出風格載入，子代理經使用者層 SubagentStart hook 收到全文。全域偏好（語言、文件迭代分層）正本在 `~/.claude/CLAUDE.md`，本檔不重述；子代理會載入該檔（內建 Explore、Plan 例外）。
 
@@ -11,24 +11,28 @@ Miles 是印刷業 PM，負責 **ERP 系統**（生產排程、採購、倉儲�
 
 | 層 | 放什麼 | 不放什麼 |
 |----|--------|---------|
-| wiki（`memory/Sens_wiki/wiki/`，BRD） | 商業目標、痛點、營運原則、業務規則與恆定約束、角色分權、領域知識、KPI、OQ、業務可見欄位表（`05-entities/`）、狀態列舉與轉換條件（`06-state-machines/`）、情境骨架（`07-scenarios/`）、審查知識與參考模型（`11-review-knowledge/`） | 與實作文件的對應；`source` 禁指 openspec |
-| OpenSpec（`openspec/`，PRD） | Requirement 只寫系統承諾；Scenario 是驗收條目，標所屬情境卡步驟；change 工作流 | 欄位表、狀態列舉、業務規則句（改一句引用 wiki 卡） |
+| wiki（`memory/Sens_wiki/wiki/`，BRD） | 商業目標、痛點、營運原則、業務規則與恆定約束、角色分權、領域知識、KPI、OQ、業務可見欄位表（`05-entities/`）、狀態列舉與轉換條件（`06-state-machines/`）、情境骨架（`07-scenarios/`）、審查知識與參考模型（`11-review-knowledge/`） | 與實作文件的對應；`source` 不指 Prototype 與程式碼，可引 `.scratch/<主題>/spec.md` |
+| 規劃單（`.scratch/<主題>/spec.md`，PRD） | 本次要做什麼的一次性規劃，範本照 matt `to-spec`；做完不合併、不當長期正本 | 欄位表、狀態列舉、業務規則句（改一句引用 wiki 卡） |
+| 情境目錄與測試（`erp-prototype-tests/`） | 驗收條目：每節情境對一條測試，「依據」行指向 wiki 情境卡 | 業務規則句 |
 | Prototype（`/Users/b-f-03-029/erp`） | 頁面結構、操作動線、元件呈現 | mock 資料的值、API 形狀、權限的後端強制 |
-| Linear | 對開發的唯一交付正本，內容自包含 | 不取材 OpenSpec；取材 wiki 與 Prototype |
+| Linear | 對開發的唯一交付正本，內容自包含 | 不取材 `.scratch/` 規劃單與票；取材 wiki、Prototype 與情境目錄 |
 
-- 同一內容只有一個家：欄位、狀態、轉換條件、業務規則、情境骨架、角色 R&R 都歸 wiki；spec 不複寫，wiki 不複寫驗收條目。
-- 欄位與狀態的新增修改是商業決策，先改 wiki 卡，再視需要補 spec。
-- 引用方向：change 的 Why 段引 wiki 卡。wiki 不承載實作對應。收／不收邊界見 `memory/Sens_wiki/wiki/erp/00-meta/scope-boundary.md`。
+- 同一內容只有一個家：欄位、狀態、轉換條件、業務規則、情境骨架、角色 R&R 都歸 wiki；規劃單不複寫，wiki 不複寫驗收條目。
+- 用語定義唯一正本是 matt 格式詞彙表，入口 `GLOSSARY-MAP.md`。
+- 欄位與狀態的新增修改是商業決策，先改 wiki 卡，再寫規劃單。
+- 引用方向：規劃單的 Problem Statement 與 Implementation Decisions 引 wiki 卡。wiki 不承載實作對應。收／不收邊界見 `memory/Sens_wiki/wiki/erp/00-meta/scope-boundary.md`。
 - 跨頁面引用一律 `[可讀名稱](URL)`；Notion URL 正本 `memory/shared/notion-index.md`。
 
 ## 工作入口
 
 | 情境 | 去哪裡 |
 |------|--------|
-| 要動 ERP 的流程、規則、欄位、狀態、權限、單據行為（句中沒寫「規劃」也算） | `/opsx:new` 建 change，再跑 `erp-plan`。規劃流正本 wiki [審查知識路由](memory/Sens_wiki/wiki/erp/11-review-knowledge/審查知識路由.md) § 三，分級與豁免同卡 |
-| 需求對齊 | Miles 下 `/grill`；grill.md 記逐題拍板 |
-| 設計撰寫 | `/opsx:continue` 產 proposal 與 design；收件模板 `erp-plan` references/設計收件 |
-| 稽核設計、Miles 說審錯了 | `erp-audit` |
+| 要動 ERP 的流程、規則、欄位、狀態、權限、單據行為（句中沒寫「規劃」也算） | 建立 `.scratch/<主題>/`，跑 `erp-plan` 盤點，再 `grill-with-docs`。規劃流正本 wiki [審查知識路由](memory/Sens_wiki/wiki/erp/11-review-knowledge/審查知識路由.md) § 三，分級與豁免同卡 |
+| 需求對齊 | `grill-with-docs`；不留逐題紀錄，拍板內容走 `wiki-amend` 落卡，重大決策寫 ADR（`docs/adr/`） |
+| 設計撰寫 | `to-spec` 產 `.scratch/<主題>/spec.md`，範本照 matt 原版；收件模板 `erp-plan` references/設計收件 |
+| 稽核規劃單、Miles 說審錯了 | `erp-audit` |
+| 拆票 | `to-tickets`，垂直切片票，標依賴 |
+| 實作 | `implement`（內含 `tdd`，先紅後綠）；完成後 `code-review`，再 `linear-delivery` |
 | 識別到不確定項、待裁決項 | `oq-manage`，立即開卡，禁 inline 標注 |
 | 把定案內容寫進 wiki 卡、11 層卡 | `wiki-amend`（唯一寫入入口） |
 | 存 raw、調研、精練 raw | `vault-ingest` |
@@ -41,7 +45,8 @@ Miles 是印刷業 PM，負責 **ERP 系統**（生產排程、採購、倉儲�
 | 派子代理或子工作階段 | 任務書照 `memory/shared/派工任務書範本.md`；正文指名讀 `memory/shared/non-business-terms.md` |
 | 寫或改程式碼 | 載入 `andrej-karpathy-skills:karpathy-guidelines`；實作前先 `grilling` 對齊 |
 
-ERP 流程不用 `/opsx:propose`。寫 specs 的前置條件在 `openspec/config.yaml`，不在本檔。
+流程順序：`erp-plan` 盤點 → `grill-with-docs`（中途 `oq-manage`）→ `wiki-amend` → `to-spec` → `erp-audit` → `to-tickets` → `implement` → `code-review` → `linear-delivery`。matt 的 skill 一字不改，Sens skill 只插在步驟之間。
+讀碼範圍：規劃與實作只讀 Prototype；Miles 要參考現況時才讀真實前後端；派單、貨運、運費類照舊先查 sensation-api。
 
 ## 模型分工
 
@@ -49,7 +54,7 @@ ERP 流程不用 `/opsx:propose`。寫 specs 的前置條件在 `openspec/config
 |------|------|
 | 主對話：規劃、grill、設計方向、裁決 | Fable，工作階段起手時選 |
 | 主對話：落卡、交付、機械整理 | Opus 5.5 |
-| 子代理：實作、wiki 與 openspec 修正、稽核 | Opus high |
+| 子代理：實作、wiki 修正、稽核 | Opus high |
 | 子代理：查找、摘錄、規格明確的重複任務（調研、盲測受測） | Sonnet |
 
 稽核者不給設計意見，只判定附證據。子代理回報先查證據再採用，數字對照原始檔。
@@ -66,10 +71,10 @@ ERP 流程不用 `/opsx:propose`。寫 specs 的前置條件在 `openspec/config
 
 | 項目 | 做法 |
 |------|------|
-| 新不確定項 | 已開 OQ 卡。提交前掃本次改動的 Vault 與 spec 檔，有 `[!question]` 或「待確認」類措辭就先遷出（`oq-manage`） |
+| 新不確定項 | 已開 OQ 卡。提交前掃本次改動的 Vault 與規劃單，有 `[!question]` 或「待確認」類措辭就先遷出（`oq-manage`） |
 | 值得存 raw 的素材 | 先問 Miles，再走 `vault-ingest` |
 | wiki 卡異動或 raw 累積達門檻 | 建議跑 `vault-audit`；門檻值在該 skill 的 references |
-| 設計拍板 | 先 `wiki-amend` 落卡，再寫 specs |
+| 設計拍板 | 先 `wiki-amend` 落卡，再寫規劃單 |
 
 ## 陷阱
 
@@ -83,7 +88,7 @@ ERP 流程不用 `/opsx:propose`。寫 specs 的前置條件在 `openspec/config
 | 有狀態機卻用抽象描述判條件；要用狀態名 | 2026-10-22 |
 | 分級與影響範圍數模組；要看實體間關聯 | 2026-10-29 |
 | 為單一情境設特別規則；先設計通用工具再用情境驗證 | 2026-10-06 |
-| 規劃時主動加介面呈現；只確保流程與資料正確 | 2026-10-20 |
+| 規劃單漏列互動、錯誤提示、例外處理；代理要在 grill 中主動列成題目，Miles 拍板後才寫進規劃單。版型與元件呈現仍不主動加 | 2026-10-20；2026-11-04 Q4 修訂 |
 | OQ 裁決加閾值分級、疊提醒、新欄位；預設先不做，人工可行先人工 | 記憶卡 feedback_no_over_design_on_oq |
 | 設狀態把關前沒找既存額度、數量、事實條件 | 記憶卡 feedback_meaningful_guards |
 | 異常用事後沖帳補救；要停止並排除 | 記憶卡 feedback_jidoka_stop_first_design |
@@ -110,7 +115,7 @@ ERP 流程不用 `/opsx:propose`。寫 specs 的前置條件在 `openspec/config
 
 ## 版本控管
 
-Commit 格式：`{prefix}: {繁體中文描述}`，prefix 用 feat、fix、refactor、docs。結尾署名 `Co-Authored-By: {現行模型名} <noreply@anthropic.com>`，依系統提示的實際模型填。改 `memory/` 連同 CLAUDE.md 一起提交，提交後 hook 自動推送。
+Commit 格式：`{prefix}: {繁體中文描述}`，prefix 用 feat、fix、refactor、docs。結尾署名 `Co-Authored-By: {現行模型名} <noreply@anthropic.com>`，依系統提示的實際模型填。改 `memory/` 連同 AGENTS.md 一起提交，提交後 hook 自動推送。
 
 | 規則 | 內容 |
 |------|------|
@@ -124,7 +129,7 @@ Commit 格式：`{prefix}: {繁體中文描述}`，prefix 用 feat、fix、refac
 - 平台限制：辦公角色只支援桌機瀏覽器；現場回報介面（師傅報工、品檢記錄、貨運單點收秤重、揀貨裝箱回報、出貨與送達確認）開放手機寬度；廠務轉交回報走 Slack 表單通道。
 - mock 與測試同步：`(prototype)/MOCK-DATA-CHAIN.md` 是 mock 唯一正本；改 mock 先改它、再改各模組 `mock-data.js`、最後跑 Sens `erp-prototype-tests/` 並更新測試。
 - 測試：改動後先 `npm run impact` 對映影響，跑 `npm run test:smoke`，改哪章跑哪章；全套 `npm test` 只在 Miles 指示時跑；提交訊息附測試結果。畫面測試同時只允許一個代理跑、背景執行。
-- change 封存前：引入新業務流程要先補情境目錄與測試；fixme 條目要在 `docs/findings-*.md` 有紀錄。
+- 規劃單對應的實作合併前：引入新業務流程要先補情境目錄與測試；fixme 條目要在 `docs/findings-*.md` 有紀錄。
 - erp repo 不放測試檔、不動 erp skill 與 `(prototype)/README.md`。檢核表見 `erp-prototype-tests/README.md`。
 
 ## 生產主檔用詞（2026-10-29 拍板，對齊標準 ERP／MES）
