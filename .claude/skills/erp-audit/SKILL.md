@@ -1,7 +1,7 @@
 ---
 name: erp-audit
 description: >
-  用：ERP／MES 規劃的 design 完成、送審時；修正後復審時；Miles 說「稽核這份設計」「審錯了」「這不是缺漏」「分級判錯了」「這是誤判」「記下來」時。
+  用：ERP／MES 規劃的規劃單（spec.md，`to-spec` 產出之後）完成、送審時；修正後復審時；Miles 說「稽核這份設計」「審錯了」「這不是缺漏」「分級判錯了」「這是誤判」「記下來」時。
   不用：撰寫設計（用 erp-plan）、知識庫健檢（用 vault-audit）、交付文件稽核（用 linear-delivery）、規劃前盤點（用 erp-plan）。
 ---
 
@@ -9,7 +9,7 @@ description: >
 
 ## 目標
 
-判定 change 的 design 是否符合 [[規劃品質評分準則]]（`../../../memory/Sens_wiki/wiki/erp/11-review-knowledge/規劃品質評分準則.md`）每條檢核陳述，並列出偏離業界做法處。
+判定規劃單（`.scratch/<主題>/spec.md`）是否符合 [[規劃品質評分準則]]（`../../../memory/Sens_wiki/wiki/erp/11-review-knowledge/規劃品質評分準則.md`）每條檢核陳述，並列出偏離業界做法處。
 在輪數上限內，把可拍板的結論交給 Miles。
 Miles 指出誤判時，案例進 [[稽核誤判記錄]]（`../../../memory/Sens_wiki/wiki/erp/11-review-knowledge/稽核誤判記錄.md`）與評測反例集。
 
@@ -17,14 +17,14 @@ Miles 指出誤判時，案例進 [[稽核誤判記錄]]（`../../../memory/Sens
 
 | 產出 | 落點 | 誰寫 |
 |------|------|------|
-| 評分表 | `openspec/changes/<名稱>/audit-rN.md`（N 為輪次） | 稽核者回傳，主對話原樣存檔 |
+| 評分表 | `.scratch/<主題>/audit-rN.md`（N 為輪次） | 稽核者回傳，主對話原樣存檔 |
 | 待裁決清單 | audit-rN.md 的待裁決段；當輪一次列給 Miles | 主對話 |
 | 誤判案例 | [[稽核誤判記錄]] § 二、§ 三 | 主對話，Miles 確認後追加 |
 | 評測反例 | `memory/erp/skill-rewrite-20261029/評測集/稽核回放集.md` 反例集 | 主對話 |
 
 ## 限制
 
-- 收件缺任一必含段或缺 grill.md，直接退件，不派稽核者。必含段見準則卡 § 二。
+- 收件缺 spec.md，或缺 matt `to-spec` 範本任一節，直接退件，不派稽核者。必含內容（準則卡 § 二）是否齊備，由稽核者在 spec.md 全文逐條找證據、判定；收件階段不比對標題。
 - 分級判定加一句理由，先亮給 Miles 再開跑。判不準直接問 Miles，不自行猜。分級條件見 [[審查知識路由]] § 三。
 - 稽核者只回傳評分表，不寫檔。主對話存成 audit-rN.md，不改寫判定。
 - 判定值、證據要求、待裁決的處置見準則卡 § 三。待裁決項不退回設計者。
@@ -52,7 +52,7 @@ Miles 指出誤判時，案例進 [[稽核誤判記錄]]（`../../../memory/Sens
 
 | 情況 | 讀哪個檔 |
 |------|---------|
-| 收件 | `scripts/收件檢查.py <change 資料夾>`；結束碼 1 即退件 |
+| 收件 | `scripts/收件檢查.py <.scratch/主題 資料夾>`；結束碼 1 即退件 |
 | 派稽核者或懷疑者 | `references/稽核者派工單.md` |
 | 結構性變更 | `references/推演者派工單.md` |
 | Miles 指出誤判 | `references/誤判要素.md` |

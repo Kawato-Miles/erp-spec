@@ -18,7 +18,7 @@ description: >
 |------|------|------|
 | OQ 卡 | `memory/Sens_wiki/wiki/erp/08-open-questions/<前綴>-<NNN>-<簡述>.md` | 主對話 |
 | 封存卡 | `08-open-questions/_archives/<拍板年份>/`，檔名不改 | 主對話 |
-| 待裁決清單 | 對話；裁決結果追加 change 的 grill.md | 主對話 |
+| 待裁決清單 | 對話；裁決結果在 grill 中由 Miles 確認，要改正本卡的轉 `wiki-amend` | 主對話 |
 | 查詢清單、整理報告 | 對話 | 主對話 |
 | log 條目 | `memory/Sens_wiki/wiki/log.md`，動作＝同步、標籤＝oq；只在動到 wiki 時記；格式見 `memory/Sens_wiki/CLAUDE.md` § 四 | 主對話 |
 
@@ -27,6 +27,7 @@ description: >
 - 不確定項一律開獨立卡，原處改連結。禁 inline 標注，禁 `[!question]` callout，禁只在回覆裡說「列為 OQ」。
 - 開卡前先去重，範圍含 `_archives/`。已拍板的題不重開，引舊決議問 Miles。
 - Miles 說「記下來」「列 OQ」就直接開卡。主對話自己識別到的，先提案，Miles 確認後開。
+- `grill-with-docs` 進行中識別到不確定項，當下就開卡，不等 grill 結束；規劃單只寫已拍板的內容。
 - 卡的長相只看 [[規範 - OQ]]（`../../../memory/Sens_wiki/wiki/erp/08-open-questions/規範 - OQ.md`），起手複製 [[範本 - OQ]]。本 skill 不複寫。
 - `audience` 一律填 internal。Notion Follow-up DB 推送暫停，恢復由 Miles 另行指示。
 - 決議落地到 03～07 正本卡，寫入轉 `wiki-amend`。本 skill 只動 OQ 卡。

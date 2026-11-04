@@ -24,7 +24,8 @@ description: >
 
 ## 限制
 
-- 取材只從 wiki 與 Prototype（含情境目錄與 mock），後端現況只作查證。不讀 OpenSpec。
+- 取材只從 wiki 與 Prototype（含情境目錄與 mock），後端現況只作查證。不讀 `.scratch/` 下的規劃單與票。
+- 時點：matt 流程的 `implement` 與 `code-review` 完成後才交付。
 - 寫法規則、審查標準只在 `references/規範 - Linear 交付.md`；本檔以規則短名引用。
 - 門檻值（合格條件、輪數、受測者人數與模型、驗收條數、收合門檻、免派稽核者）只在規範 § 十一。
 - 撰寫者、稽核者、受測者三方分離。受測者之間互不知道答案。撰寫者不自判完成。

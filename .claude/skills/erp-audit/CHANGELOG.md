@@ -17,3 +17,7 @@
 ## 2026-11-04 批次 6
 
 - 刪除轉介檔 `.claude/skills/plan-audit/` 與 `.claude/skills/misjudgement-record/`；`openspec/config.yaml`、`openspec/schemas/` 與 11 層卡的舊名引用改指本 skill。
+
+## 2026-11-04 OpenSpec 退場，改接 matt 流程
+
+起因：Miles 拍板 Q3、Q10、Q12，並指示稽核方式配合 matt（必含條件不變）。稽核對象由 design.md 改為 `.scratch/<主題>/spec.md`；`收件檢查.py` 改為檢查 matt `to-spec` 七節，不再比對必含段標題與 grill.md；必含內容是否齊備改由稽核者在 spec.md 全文逐條判定；audit-rN.md 落點改為 `.scratch/<主題>/`。

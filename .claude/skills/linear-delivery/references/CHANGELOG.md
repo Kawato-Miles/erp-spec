@@ -150,3 +150,7 @@ Miles 拍板：開發對著 Prototype 實作，欄位、值域、版面、操作
 ## 2026-11-04 驗證（v6.3 補）
 
 - 範例依新規範回歸不合格（做錯 2、回頭問 3、格式 5），屬範例過時，另案更新；規範 § 三重複第 8 條重編、必要區塊補範圍用詞、第 17 條補參考模型卡欄位對照。
+
+## v6.4 OpenSpec 退場（2026-11-04）
+
+起因：Miles 拍板 Q10、Q12。取材不變（wiki、Prototype、情境目錄）；改為不讀 `.scratch/` 規劃單與票；交付時點寫明在 matt `implement` 與 `code-review` 完成後；規範內 `openspec/...` 路徑與 change、delta、archive 用語改為 `.scratch/...` 與規劃單、spec、ticket、grill。

@@ -60,7 +60,7 @@ const AUDIT_SCHEMA = obj({
   openOQ: { type: 'array', items: obj({ id: STR, topic: STR }, ['id', 'topic']), description: '既有未決 OQ' },
   newOQ: { ...STRS, description: '建議新開的 OQ 議題，一句一條；編號由 oq-manage 給' },
   linkage: obj({ source: { ...STR, description: '連帶矩陣卡名；沒有寫「本領域無連帶矩陣」' }, entities: STRS }, ['source', 'entities']),
-  wikiCards: { type: 'array', description: '寫 specs 前須更新的卡', items: obj({ card: STR, change: STR }, ['card', 'change']) },
+  wikiCards: { type: 'array', description: '寫規劃單前須更新的卡', items: obj({ card: STR, change: STR }, ['card', 'change']) },
   research: obj({ recommend: { type: 'string', enum: ['要', '不要'] }, reason: STR, topic: STR, questions: STRS },
     ['recommend', 'reason', 'topic', 'questions']),
 }, ['domain', 'loadedCards', 'overviewCard', 'matrix', 'gaps', 'openOQ', 'newOQ', 'linkage', 'wikiCards', 'research'])
@@ -82,7 +82,7 @@ const auditPrompt = (domain) => `${READ}
 const missPrompt = (domain, audit) => `${READ}
 
 議題：${topic}；領域：${domain}。
-下面是第一輪盤點結果。預設它有遺漏。回卡上讀原文查證，找出漏掉的缺口、寫 specs 前須更新的卡、OQ。
+下面是第一輪盤點結果。預設它有遺漏。回卡上讀原文查證，找出漏掉的缺口、寫規劃單前須更新的卡、OQ。
 第一輪確實完整時，各陣列回空，並在 assessment 說明查過哪些卡。
 
 ${JSON.stringify(audit, null, 2)}`
@@ -112,7 +112,7 @@ const wikiCards = done.flatMap((d) => [
   ...((d.miss && d.miss.missedWikiCards) || []).map((w) => ({ ...w, domain: d.domain, from: '找漏' })),
 ])
 
-log(`完成 ${done.length} 個領域；缺口 ${gaps.length} 項；寫 specs 前須更新的卡 ${uniq(wikiCards.map((w) => w.card)).length} 張。`)
+log(`完成 ${done.length} 個領域；缺口 ${gaps.length} 項；寫規劃單前須更新的卡 ${uniq(wikiCards.map((w) => w.card)).length} 張。`)
 
 return {
   topic,

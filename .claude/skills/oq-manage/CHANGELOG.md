@@ -22,3 +22,7 @@
 ## 2026-11-04 驗證
 
 - 指名類觸發 K01～K03 兩輪全部觸發；久置起算點改回只從 raised-at 起算；見基線結果 § 十。
+
+## 2026-11-04 OpenSpec 退場
+
+起因：Miles 拍板 Q10、Q12。裁決結果不再追加 grill.md，改為 grill 中由 Miles 確認、要改正本卡的轉 `wiki-amend`；新增「grill 進行中識別到不確定項，當下開卡」一條；audit-rN.md 落點改為 `.scratch/<主題>/`。

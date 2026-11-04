@@ -33,3 +33,7 @@ plan-design 舊版沒有版本紀錄；其改動見 git 歷史。
 ## 2026-11-04 批次 6
 
 - 刪除轉介檔 `.claude/skills/erp-planning-pre-check/`（含 references/audit-framework.md；CHANGELOG 已於初版併入上方舊版歷史）與 `.claude/skills/plan-design/`；`openspec/config.yaml`、`openspec/schemas/` 與 11 層卡的舊名引用改指本 skill。
+
+## 2026-11-04 OpenSpec 退場，改接 matt 流程
+
+起因：Miles 拍板 Q2、Q3、Q10、Q12（`.scratch/matt-migration/`）。規劃資料夾由 `openspec/changes/<名稱>/` 改為 `.scratch/<主題>/`；設計檔 design.md 改為 matt `to-spec` 產出的 spec.md；grill.md 廢除，拍板落卡走 `wiki-amend`；順序第 7 至 11 步改接 `grill-with-docs`、`wiki-amend`、`to-spec`、`erp-audit`；`設計收件.md` 的必含段標題要求改為必含內容落點對照；描述欄的流程時點改寫。
