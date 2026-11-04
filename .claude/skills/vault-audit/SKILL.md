@@ -28,7 +28,7 @@ description: >
 - 矛盾並排呈報，建議開 OQ，不自行調和。
 - 機械維度的結果直接採用，不再派模型複判。判讀維度（1、12、13、14）派子代理判讀，再派懷疑者複核。
 - 建議門檻與各維度門檻只寫在 `references/稽核維度.md` § 一。
-- 判讀子代理與懷疑者的任務書 MUST 指名先讀句法兩檔：`/Users/b-f-03-029/.claude/output-styles/ste100-pm.md`、`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`。
+- 判讀子代理與懷疑者的任務書 MUST 指名先讀非商業術語對照：`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`。句法規則由 SubagentStart hook 送達子代理，不另指名。
 - 跳過任一維度，報告寫原因。判定不誇大：OK 不報成 Warning。
 - 報告與 log 都要有；長敘事只留報告。
 

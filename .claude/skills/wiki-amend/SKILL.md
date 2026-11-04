@@ -34,9 +34,9 @@ description: >
 | 該卡型的 `規範 - <單元名>` | 判斷表、前提、撰寫規則、L2 與 L3 維度、機械自檢 |
 | `memory/Sens_wiki/wiki/範本/範本 - <單元名>` | 新卡起手骨架 |
 | 該單元的 `範例 - <單元名>` | 通過樣本 |
-| `/Users/b-f-03-029/.claude/output-styles/ste100-pm.md`、`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md` | 句法規則與非商業術語 |
+| `/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md` | 非商業術語 |
 
-- 11 層卡只載共用規範與句法兩檔，只套 log 與單一本體檢查（收斂掃描）。誤判記錄 § 二由 `erp-audit` 追加，不走本 skill。
+- 11 層卡只載共用規範與非商業術語對照，只套 log 與單一本體檢查（收斂掃描）。誤判記錄 § 二由 `erp-audit` 追加，不走本 skill。
 - 不可違反：禁中英夾雜；業務語言段禁工程術語當主詞；`source` 禁指實作文件；正文零迭代史；規則只在一張卡寫本體。
 - 不確定項不寫進卡，轉 `oq-manage` 開卡，卡上只留連結。
 - 先本體後引用：每句規則句先寫進它的家卡。其他卡只能改成 `[[卡名]]` 引用，或更新該卡型允許的露出句。不用自己的話重寫規則。

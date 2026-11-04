@@ -41,7 +41,7 @@ description: >
 - 精練寫入 03～07 正本卡轉 `wiki-amend`；寫入參考模型卡走 [[審查知識路由]] § 四。本 skill 只改 raw 卡。
 - 明確未解問題改走 `oq-manage` mode B，不寫 raw。
 - raw 卡內不用 `[!question]` callout；與 oq-manage 共用此禁令。
-- 調研子代理任務書 MUST 指名先讀句法兩檔：`/Users/b-f-03-029/.claude/output-styles/ste100-pm.md`、`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`。
+- 調研子代理任務書 MUST 指名先讀非商業術語對照：`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`。句法規則由 SubagentStart hook 送達子代理，不另指名。
 - 本 skill 的門檻值只寫在 `references/掃描報告格式.md`。
 
 ## 順序

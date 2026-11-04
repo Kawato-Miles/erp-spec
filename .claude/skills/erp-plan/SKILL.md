@@ -28,7 +28,7 @@ description: >
 - 不新建 03～07 的抽象卡。法規與外部硬約束可新建，落卡仍走 `wiki-amend`。
 - 讀卡依 [[business-domain-taxonomy]] § 檢索規約：先列卡名、攤給 Miles、再載入。語意不確定時，先問 Miles 要找哪個領域。
 - 盤點交子代理；修補、存檔、開 OQ 在主對話。
-- 子代理任務書 MUST 指名先讀句法兩檔：`/Users/b-f-03-029/.claude/output-styles/ste100-pm.md`、`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`。
+- 子代理任務書 MUST 指名先讀非商業術語對照：`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`。句法規則由 SubagentStart hook 送達子代理，不另指名。
 - 設計者只讀 wiki 業務正本卡（01～07）與 change 內檔。設計者不讀 raw，也不讀參考模型卡。
 - change 內缺 precheck.md，或 grill.md 沒有拍板紀錄，不進設計。先補，不憑印象代填。
 - 設計骨幹見準則卡 § 一；必含段見 § 二；名詞溯源見 § 四 5-2；範圍紀律見 § 八。本 skill 不複寫。

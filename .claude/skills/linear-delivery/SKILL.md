@@ -31,7 +31,7 @@ description: >
 - 未合格不寫入。每面寫入前把要動的 project 與 issue 清單列給 Miles。
 - 只改本次交付的 project 描述與指定 issue 描述。既有票不動 estimate、assignee、cycle、priority、milestone、labels；例外見規範。
 - 上游互相矛盾、驗收對不到規則：停下，依規範「上游矛盾先停」「驗收對不到規則先停」，不在 Linear 補。規格缺口無法不捏造時，轉 `oq-manage` mode B，票上標「另案處理」，不算問題。
-- 撰寫、稽核、受測子代理的任務書 MUST 指名先讀句法兩檔：`/Users/b-f-03-029/.claude/output-styles/ste100-pm.md`、`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`；另附規範、範本、範例三檔路徑。
+- 撰寫、稽核、受測子代理的任務書 MUST 指名先讀非商業術語對照：`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`；另附規範、範本、範例三檔路徑。
 
 ## 順序
 

@@ -12,7 +12,7 @@ tools: WebSearch, WebFetch, Read, Grep, Glob, Write
 ## 開工先讀
 
 1. 任務書與 `.claude/skills/vault-ingest/references/調研派工單.md`。
-2. 句法兩檔：`/Users/b-f-03-029/.claude/output-styles/ste100-pm.md`、`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`。
+2. 非商業術語對照：`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`。
 
 ## 目標
 

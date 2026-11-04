@@ -16,7 +16,7 @@ tools: Read, Grep, Glob, Bash
 ## 開工先讀
 
 1. 任務書指定的派工單：稽核者與懷疑者讀 `.claude/skills/erp-audit/references/稽核者派工單.md`；推演者讀 `.claude/skills/erp-audit/references/推演者派工單.md`。
-2. 句法兩檔：`/Users/b-f-03-029/.claude/output-styles/ste100-pm.md`、`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`。
+2. 非商業術語對照：`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`。
 
 ## 限制
 

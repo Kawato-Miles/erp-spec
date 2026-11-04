@@ -5,7 +5,7 @@
 Miles 是印刷業 PM，負責 **ERP 系統**（生產排程、採購、倉儲、客戶訂單）與 **線上編輯器**（B2B SaaS 印刷稿件生成平台）。
 本 repo 是這兩個產品的規劃知識庫：商業需求正本在 `memory/Sens_wiki/wiki/`（BRD），系統行為規格在 `openspec/`（PRD）。
 非目標：本 repo 不寫實作程式碼、不放介面原型。原型在 erp repo，見 § Prototype 與測試。
-回覆風格正本是 `~/.claude/output-styles/ste100-pm.md`：主對話經輸出風格載入，子代理經使用者層 SubagentStart hook 收到全文。全域偏好（語言、文件迭代分層）正本在 `~/.claude/CLAUDE.md`，本檔不重述；子代理會載入該檔（內建 Explore、Plan 例外）。派工時仍指名讀句法兩檔（見 § 工作入口）。
+回覆風格正本是 `~/.claude/output-styles/ste100-pm.md`：主對話經輸出風格載入，子代理經使用者層 SubagentStart hook 收到全文。全域偏好（語言、文件迭代分層）正本在 `~/.claude/CLAUDE.md`，本檔不重述；子代理會載入該檔（內建 Explore、Plan 例外）。
 
 ## 正本分層（唯一正本，勿在他處重述）
 
@@ -38,7 +38,7 @@ Miles 是印刷業 PM，負責 **ERP 系統**（生產排程、採購、倉儲�
 | 商業層查詢 | [wiki/index.md](memory/Sens_wiki/wiki/index.md)，依 `business-domain-taxonomy` 檢索規約先列卡名再載入 |
 | 術語 | `memory/Sens_wiki/wiki/跨產品/印刷業共用術語表.md`、`memory/Sens_wiki/wiki/編輯器/線上編輯器術語表.md`；非商業術語 `memory/shared/non-business-terms.md` |
 | Plan mode | 雙層 plan 模板 `memory/shared/plan-template.md` |
-| 派子代理或子工作階段 | 任務書照 `memory/shared/派工任務書範本.md`；正文指名讀 `~/.claude/output-styles/ste100-pm.md` 與 `memory/shared/non-business-terms.md` |
+| 派子代理或子工作階段 | 任務書照 `memory/shared/派工任務書範本.md`；正文指名讀 `memory/shared/non-business-terms.md` |
 | 寫或改程式碼 | 載入 `andrej-karpathy-skills:karpathy-guidelines`；實作前先 `grilling` 對齊 |
 
 ERP 流程不用 `/opsx:propose`。寫 specs 的前置條件在 `openspec/config.yaml`，不在本檔。

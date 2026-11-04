@@ -31,7 +31,7 @@ Miles 指出誤判時，案例進 [[稽核誤判記錄]]（`../../../memory/Sens
 - 第二輪起只審修正處與連動處，範圍見準則卡 § 三。
 - 到輪數上限，未通過項與待裁決項一次交 Miles，不再退回。上限見準則卡 § 九。
 - 主對話轉述前抽驗：每輪至少抽一條未通過或待裁決判定，回對象卡讀原文核對。紀律見準則卡 § 八。
-- 稽核者、推演者、懷疑者的任務書 MUST 指名先讀句法兩檔：`/Users/b-f-03-029/.claude/output-styles/ste100-pm.md`、`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`。
+- 稽核者、推演者、懷疑者的任務書 MUST 指名先讀非商業術語對照：`/Users/b-f-03-029/Sens/memory/shared/non-business-terms.md`。句法規則由 SubagentStart hook 送達子代理，不另指名。
 - 誤判案例等 Miles 確認才寫；誤判記錄 § 二只追加。
 - 有效對抗情境、重複發現、偏離取捨的回寫點見準則卡 § 七。
 
