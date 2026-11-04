@@ -1,0 +1,13 @@
+觸發評測：matt 移轉後（提交 b23d1a4；已移除 openspec-* 與 opsx 的暫存工作樹；claude-opus-5-5；每輪 172 句，兩輪）
+對照基準：最終版 a6d1b8e（規劃 81、83；介面 15、15；指名 19、20；反例 20、20）
+
+類別   句數   r1正確   r2正確   兩輪不同
+規劃   105    87       89       6
+介面    16    14       14       0
+反例    20    20       20       0
+指名    20    18       17       （K14～K19 是舊 skill 名 plan-audit、plan-design、misjudgement-record，現行名 erp-audit、erp-plan，判對；K20 grilling 兩輪都未觸發）
+規格同步 10   OpenSpec 退場，此類不再計分；兩輪觸發結果：無 skill 18 次、erp-plan 2 次
+
+誤觸發：C021（介面）兩輪、C078（介面）兩輪，皆觸發 erp-plan。
+規劃類兩輪都沒觸發 14 句：C004、C007、C012、C018、C082、C086、C087、C095、C113、C114、C115、C116、C128、C131。
+備註：判分以第一個 Skill 呼叫是否為 erp-plan（嚴格）；寬鬆判分（加 grill-with-docs、grilling）結果相同，因規劃類沒有任何一句先觸發 grill 類 skill。
