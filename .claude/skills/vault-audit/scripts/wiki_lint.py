@@ -147,9 +147,9 @@ class Glossary:
                     w = w.strip()
                     if not w:
                         continue
-                    if w in self.avoid and self.avoid[w] != cur[0]:
-                        self.problems.append((no, f"避免用詞「{w}」同時列在「{self.avoid[w]}」與「{cur[0]}」"))
-                    self.avoid[w] = cur[0]
+                    targets = self.avoid.setdefault(w, [])
+                    if cur[0] not in targets:
+                        targets.append(cur[0])
                 continue
             if cur and ln.strip() and not ln.startswith("#"):
                 defs.append(ln)
@@ -159,7 +159,7 @@ class Glossary:
         close()
         for w, t in self.avoid.items():
             if w in self.terms:
-                self.problems.append((self.terms[w], f"「{w}」同時是詞條與「{t}」的避免用詞"))
+                self.problems.append((self.terms[w], f"「{w}」同時是詞條與「{'」「'.join(t)}」的避免用詞"))
 
 
 # ---------- 報告 ----------
@@ -242,11 +242,14 @@ def check_card(card, ctx, rep):
     is_gloss = card.p in (GLOSSARY, INDUSTRY)
     if g.avoid and not is_gloss and not card.spec:
         done = bool(set(card.domains) & ctx["done"])
+        masks = sorted(g.terms, key=len, reverse=True)
         for no, ln in body:
             plain = LINK.sub(lambda m: "", ln)
+            for t in masks:  # 詞條名本身含避免用詞（如「印件預計交期」含「交期」）時不算
+                plain = plain.replace(t, "\0")
             for w, t in g.avoid.items():
                 if w in plain:
-                    rep.add("S7", card, no, f"避免用詞「{w}」，改用「{t}」",
+                    rep.add("S7", card, no, f"避免用詞「{w}」，改用「{'」或「'.join(t)}」",
                             level="錯誤" if done or "S7" in rep.error_codes else "警告")
     if g.terms and not is_gloss and card.canon:
         for no, ln in body:
@@ -374,7 +377,7 @@ def check_cross(ctx, rep, changed):
         for c in cards.values():
             if c.canon and c.type in ("entity", "role") and set(c.domains) & ctx["done"] and c.name not in g.terms:
                 rep.add("X4", c, None, f"詞彙表沒有「{c.name}」詞條（詞條名要與卡名逐字相同）", level="錯誤")
-    # X5：避免用詞不重疊（詞彙表解析時已檢出）
+    # X5：避免用詞不得同時是詞條名（詞彙表解析時已檢出）
     for no, msg in g.problems:
         if "同時" in msg:
             rep.add("X5", GLOSSARY, no, msg, level="錯誤")
@@ -383,7 +386,7 @@ def check_cross(ctx, rep, changed):
         if ln.startswith("**觸發詞**"):
             for w in re.split(r"[、，,：:\s]+", ln):
                 if w in g.avoid:
-                    rep.add("X6", mc.TAXONOMY, no, f"觸發詞「{w}」是避免用詞，改「{g.avoid[w]}」", level="錯誤")
+                    rep.add("X6", mc.TAXONOMY, no, f"觸發詞「{w}」是避免用詞，改「{'」或「'.join(g.avoid[w])}」", level="錯誤")
     # X2：規則組資料夾成員與索引卡清單一致
     for c in cards.values():
         if c.type == "rule-group" and c.canon and not c.archived:
