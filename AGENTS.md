@@ -40,7 +40,6 @@ Miles 是印刷業 PM，負責 **ERP 系統**（生產排程、採購、倉儲�
 | 重構既有正本（換結構、換規範、清矛盾） | 正本重構流，審查知識路由 § 三 |
 | 商業層查詢 | [wiki/index.md](memory/Sens_wiki/wiki/index.md)，依 `business-domain-taxonomy` 檢索規約先列卡名再載入 |
 | 術語 | `memory/Sens_wiki/wiki/跨產品/印刷業共用術語表.md`、`memory/Sens_wiki/wiki/編輯器/線上編輯器術語表.md`；非商業術語 `memory/shared/non-business-terms.md` |
-| Plan mode | 雙層 plan 模板 `memory/shared/plan-template.md` |
 | 派子代理或子工作階段 | 任務書照 `memory/shared/派工任務書範本.md`；正文指名讀 `memory/shared/non-business-terms.md` |
 | 寫或改程式碼 | 載入 `andrej-karpathy-skills:karpathy-guidelines`；實作前先 `grilling` 對齊 |
 
