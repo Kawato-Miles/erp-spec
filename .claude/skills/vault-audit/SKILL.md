@@ -69,8 +69,8 @@ description: >
 | 陷阱 | 出處 |
 |------|------|
 | 孤島查成出鏈為 0：入鏈為 0 有 28 筆，出鏈為 0 有 57 筆，兩組毫無關係 | 2026-08-01 實測（舊版維度 3） |
-| obsidian-cli 省略參數時靜默改查目前開啟的檔：backlinks 少報 8 倍 | 2026-08-01；`memory/Sens_wiki/CLAUDE.md` § 五 |
-| 以 grep 當 vault 稽核手段：grep 解析不了 wiki link 與 vault 索引。腳本只查 frontmatter 與純文字，連結類一律走 CLI | `memory/Sens_wiki/CLAUDE.md` § 五 |
+| obsidian-cli 省略參數時靜默改查目前開啟的檔：backlinks 少報 8 倍 | 2026-08-01；`memory/Sens_wiki/AGENTS.md` § 五 |
+| 以 grep 當 vault 稽核手段：grep 解析不了 wiki link 與 vault 索引。腳本只查 frontmatter 與純文字，連結類一律走 CLI | `memory/Sens_wiki/AGENTS.md` § 五 |
 | 「待確認」類詞放進機械掃描：放寬版 40 筆以上命中只有 2 筆真違規 | 2026-07-30 實測（舊版維度 6） |
 | 規範卡描述禁令本身被掃成違規：舊 grep 的 `[!question]` 命中 8 筆全是描述句 | 2026-11-04 新舊腳本對照 |
 | 把業務概念詞判為欄位簡寫：7 處「收款條件」被要求正名為「收款條件備註」 | 2026-08-18 [[稽核誤判記錄]] § 二（維度 14） |

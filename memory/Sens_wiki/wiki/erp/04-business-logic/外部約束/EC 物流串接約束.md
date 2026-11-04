@@ -4,10 +4,10 @@ mutability: external
 tags:
   - 領域/履約與售後
 source:
-  - "change shipment-print-download-center grill.md § 一 已知事實：ERP 物流串接在 sens-print-core 分支 feat/logistics_carrier_integration#2489，沒有向物流商取消、沒有同步排程；EC 作廢物流單不通知物流商"
-  - "change shipment-print-download-center grill.md G2、G3：第三方物流狀態以物流商回傳為準；不做向物流商取消的串接，物流商端由人工在系統外處理"
-  - "change shipment-print-download-center grill.md § 六 裁決（SHP-027 決議 A）：物流商狀態的取得機制、頻率與貨態值對應由後端決定，wiki 不寫頻率"
-  - "change shipment-print-download-center grill.md H2：物流單於確認可出貨時產生，初始狀態為可出貨"
+  - "memory/erp/plans/_archives/2026/shipment-print-download-center/grill.md § 一 已知事實：ERP 物流串接在 sens-print-core 分支 feat/logistics_carrier_integration#2489，沒有向物流商取消、沒有同步排程；EC 作廢物流單不通知物流商"
+  - "memory/erp/plans/_archives/2026/shipment-print-download-center/grill.md G2、G3：第三方物流狀態以物流商回傳為準；不做向物流商取消的串接，物流商端由人工在系統外處理"
+  - "memory/erp/plans/_archives/2026/shipment-print-download-center/grill.md § 六 裁決（SHP-027 決議 A）：物流商狀態的取得機制、頻率與貨態值對應由後端決定，wiki 不寫頻率"
+  - "memory/erp/plans/_archives/2026/shipment-print-download-center/grill.md H2：物流單於確認可出貨時產生，初始狀態為可出貨"
   - "sensation-api `sens_admin/v1/views/logistics_views.py` L279-285、`logistics/tasks/batch_dispatch.py` L50-55、`logistics/logistics.py` L315-340：拋單成功即寫入物流商回傳的物流單號，物流狀態轉等待出貨；失敗記拋單失敗"
   - "sensation-api `logistics/sf/logistics.py` L326-339 handle_query（只以主單號查詢貨況）、`logistics/sf/actions/models/create.py` L175 包裹總件數、L200 與 L233 子單訊息與子運單號：順豐子母件"
   - "Miles 2026-10-20 拍板（出貨單裝箱資料與物流單拆分 grill，Sens memory/erp/plans/_archives/2026/shipment-logistics-split-20261020/grill.md G19）：順豐子單不回傳狀態，物流單看主單"

@@ -39,7 +39,7 @@ priority: high
 audience: internal
 raised-at: 2026-07-27
 raised-by: 序列協作 Phase 1（工單管理 change，senior-pm 既有規則枚舉）
-source-link: openspec/changes/work-order-management（序列協作 Phase 4 匯報，2026-07-27）
+source-link: 已封存的 change work-order-management（序列協作 Phase 4 匯報，2026-07-27）
 related-vault:
   - "[[工單狀態]]"
   - "[[任務狀態]]"

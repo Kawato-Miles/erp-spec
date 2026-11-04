@@ -8,7 +8,7 @@ last-reviewed: 2026-10-12
 # ERP 主題入口
 
 > ERP Vault 的唯一入口。從這裡開始查找資料、理解架構、定位卡片。
-> Vault 與 OpenSpec 的分工見專案 [CLAUDE.md](../../../../../CLAUDE.md) § wiki 與 OpenSpec 分工。
+> Vault 與規劃單、Prototype 的分工見專案 [AGENTS.md](../../../../../AGENTS.md) § 正本分層。
 
 ---
 
