@@ -46,7 +46,7 @@ rows.push(['單元測試', unitPassed, unitFailed, 0, unit.code]);
 if (unit.code !== 0) failed = true;
 
 for (const batch of batches) {
-  const r = run('npx', ['playwright', 'test', batch, '--reporter=line']);
+  const r = run('npx', ['playwright', 'test', batch, '--reporter=line,./reporters/live-progress.mjs']);
   // 每批都含登入前置步驟一項，總計時扣掉
   const passed = Math.max(count(r.out, 'passed') - 1, 0);
   rows.push([batch, passed, count(r.out, 'failed'), count(r.out, 'skipped'), r.code]);

@@ -8,7 +8,8 @@ export default defineConfig({
   retries: 0,
   // 頁內導覽輔助函式（gotoInApp）的重試預算是 40 秒，預設 30 秒的測試逾時會在重試完成前先中斷
   timeout: 90_000,
-  reporter: [['list'], ['html', { open: 'never' }]],
+  // live-progress 把即時進度與最近一次結果寫到 ~/.claude/erp-test-progress/，供 Claude 介面外掛讀取
+  reporter: [['list'], ['html', { open: 'never' }], ['./reporters/live-progress.mjs']],
   use: {
     baseURL: BASE_URL,
     locale: 'zh-TW',
