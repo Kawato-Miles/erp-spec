@@ -95,7 +95,7 @@ tags:
 > **通則一：`title` 只在檔名無法自我說明時填。** 檔名即標題，`title` 填與檔名相同的值屬冗餘（改名後變成第二個會 stale 的名字來源），故各 type 的 yaml 區塊一律不列 `title`。唯一該填的情形是檔名帶前綴而標題不含該前綴（如日期前綴檔名 `2026-06-13-生產模組架構設計`，`title` 填去掉日期的標題）。
 > **通則二：欄位無值即刪整個欄位，不留空。** `related-oq:`、`notion-url:`、`expected-resolution-at:` 這類選填欄位沒有值時刪掉整行（含空 list `[]`），需要時再加回；留空欄位在稽核時無法區分「沒有」與「漏填」。
 > **通則三：`status: deprecated` 的退役 stub 卡豁免 `source` 與 `tags`。** 退役卡不承載商業邏輯、也不該被領域 tag 撈進檢索結果（現行正本才該被撈到），正文只留一句退役宣告＋重導向連結即可。
-> **鐵則：卡片 frontmatter 禁含外部系統狀態欄位**（2026-06-10 新增）。「這張卡何時被推到哪個外部系統」是發布管線的狀態，不是商業知識——對外發布追蹤（Notion URL / 最後推送日）唯一正本在 `memory/erp/notion-publish-manifest.md`，由發布類 skill 維護，全程不回寫 wiki 卡。性質同「source 禁指 OpenSpec」：wiki 獨立維護，不與外部系統耦合。
+> **鐵則：卡片 frontmatter 禁含外部系統狀態欄位**（2026-06-10 新增）。「這張卡何時被推到哪個外部系統」是發布管線的狀態，不是商業知識——對外發布追蹤（Notion URL / 最後推送日）唯一正本在 `memory/erp/notion-publish-manifest.md`，由發布類 skill 維護，全程不回寫 wiki 卡。性質同「source 禁指實作文件」：wiki 獨立維護，不與外部系統耦合。
 
 ### 4.0 source＝正確性根據的通則（分工，非階層）
 
@@ -179,7 +179,7 @@ last-reviewed: 2026-11-04
 type: role
 tags:
   - 領域/<領域名>   # 可多值，角色沾哪幾個領域標哪幾個；判定依 [[business-domain-taxonomy]]
-source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（OpenSpec 等）；見 § 4.0
+source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（Prototype、程式碼等）；見 § 4.0
   - "[[<上層卡或最上層依據>]]"
   - "Notion 核心角色權責表：<URL>"   # 外部依據的網址一律寫在 source，正文與其他欄位不放外部網址
 status: active
@@ -194,7 +194,7 @@ last-reviewed: 2026-09-01
 type: service-blueprint
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
-source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（OpenSpec 等）；見 § 4.0
+source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（Prototype、程式碼等）；見 § 4.0
   - "[[<上層卡或最上層依據>]]"
 status: active
 last-reviewed: 2026-09-01
@@ -287,7 +287,7 @@ last-reviewed: 2026-09-01
 type: entity
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
-source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（OpenSpec 等）；見 § 4.0
+source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（Prototype、程式碼等）；見 § 4.0
   - "[[<上層卡>]]"
 status: active
 last-reviewed: 2026-09-01
@@ -317,7 +317,7 @@ last-reviewed: 2026-09-01
 type: state-machine
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
-source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（OpenSpec 等）；見 § 4.0
+source:                          # 正確性根據＝分工正本或最上層依據；禁指實作文件（Prototype、程式碼等）；見 § 4.0
   - "[[<上層卡>]]"
 status: active
 last-reviewed: 2026-09-01
@@ -332,7 +332,7 @@ type: scenario
 variant: 接力型 | 能力型 | 排程型      # 必填；判定見 07-scenarios/規範 - 業務情境.md § 二
 tags:
   - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
-source:                          # 正確性根據＝分工正本（服務藍圖 / business-logic 規則 / 拍板 OQ / 外部依據）；禁指 OpenSpec 與 Prototype；狀態機卡僅得並列為參考資料，不得為唯一來源；能力型正本在活動清單卡或實體卡時得指之並須標段名，判定見 07-scenarios/規範 - 業務情境.md § 產出格式
+source:                          # 正確性根據＝分工正本（服務藍圖 / business-logic 規則 / 拍板 OQ / 外部依據）；禁指 Prototype 與實作程式碼；狀態機卡僅得並列為參考資料，不得為唯一來源；能力型正本在活動清單卡或實體卡時得指之並須標段名，判定見 07-scenarios/規範 - 業務情境.md § 產出格式
   - "[[<藍圖或規則卡>]]"
 status: draft | active
 last-reviewed: 2026-09-01
@@ -364,7 +364,7 @@ related-vault:
   - <wiki link>
 related-oq:
   - "[[<相關 OQ 全檔名>]]"   # 禁別名、禁短名
-related-change:                     # 承接此問題的 OpenSpec change 名（可多值）；無則刪整個欄位
+related-change:                     # 承接此問題的規劃主題名（`.scratch/<主題>/`，可多值）；無則刪整個欄位
   - <change 名>
 expected-resolution-at: YYYY-MM-DD 或里程碑文字（如「上線前」「MES 設計階段」）  # 一律選填；何時確認由使用者排程，開卡時不代填時點、不硬填假日期
 answered-at: YYYY-MM-DD  # 拍板時填
@@ -527,7 +527,7 @@ ingested-to:                                           # status=ingested 時填
 ## 八、Wiki Link 規約
 
 - 內部連結：`[[節點名]]`、`[[節點名#段落]]`；**禁用別名**（`[[節點名]]` 的 `|` 會截斷表格儲存格且易斷鏈），補充說明寫在連結外
-- **禁止指向實作文件**：卡的 frontmatter 與正文皆不得連 OpenSpec spec 或 Prototype 原始碼（實作對應屬 PRD 層，且 change 會 archive 或作廢、路徑必然失效）。需要指下游時，寫下游要解決的商業問題，不寫下游的檔案位置
+- **禁止指向實作文件**：卡的 frontmatter 與正文皆不得連 Prototype 原始碼或實作程式碼（規劃單只可作為 `source` 出處）（實作對應屬 PRD 層，且 change 會 archive 或作廢、路徑必然失效）。需要指下游時，寫下游要解決的商業問題，不寫下游的檔案位置
 - **禁止 wiki link 到 vault 外**（Obsidian 不解析）；連 vault 外的非實作資源（法規、廠商規格書、外部服務文件）用相對路徑或 URL 的 markdown link
 
 ## 九、Anti-Pattern（vault-audit Error 級）
@@ -539,7 +539,7 @@ ingested-to:                                           # status=ingested 時填
 - ❌ Wiki link 連到不存在的卡（dangling）
 - ❌ 沒有任何卡連到它的孤島卡（orphan，除 README / index 性質）
 - ❌ `source` 鏈繞回自己（違反連結不繞回自己，見 § 六維度 15）
-- ❌ `source` 指向 OpenSpec spec 路徑（方向顛倒，應改指上層 Vault 卡或最上層依據）
+- ❌ `source` 指向 Prototype 或實作程式碼路徑（方向顛倒，應改指上層 Vault 卡或最上層依據）
 - ❌ 卡片 frontmatter 含外部系統狀態欄位（`notion-published-at` / `notion-page-url` 等——發布追蹤唯一正本在 `memory/erp/notion-publish-manifest.md`，見 § 四鐵則）
 
 ## 十、與其他規範的關係
@@ -566,7 +566,7 @@ ingested-to:                                           # status=ingested 時填
 | `process-architecture` | 類別與流程群組的歸屬 | 階段與階段先後（屬 service-blueprint）/ 活動（屬 activity-list）/ 值域（屬 controlled-list）|
 | `controlled-list` | 範圍用詞、動作類型、單據代碼、活動清單代碼的值域與定義 | 誰能做什麼（屬 activity-list）/ 操作定義（屬 entity）/ 規則判準（屬 business-rule）|
 | `activity-list` | 一個階段的活動（活動編號 / 活動 / 執行角色 / 範圍 / 依據欄位 / 操作）| 活動先後（屬 scenario）/ 狀態轉換（屬 state-machine）/ 操作與欄位定義（屬 entity）/ 分工理由（屬 role）/ 檢視與輸出活動（屬單據存取流程群組）|
-| `business-rule` | 規則單元表：做法（公司的選擇與理由）與底線（跨單據必須成立的關係式）/ 領域知識 / 外部約束 | 操作前提與擋下條件（屬 entity 操作段）/ 各狀態可改內容（屬 state-machine）/ 清單組成（屬 entity 具名清單段）/ 計算框架中間值（升格為 entity 欄位）/ 系統行為承諾（屬 OpenSpec）/ 主題索引（屬 structure-overview）/ 情境格式模板 / UI 措辭 / 欄位定義 / 誰能做什麼（屬 activity-list）|
+| `business-rule` | 規則單元表：做法（公司的選擇與理由）與底線（跨單據必須成立的關係式）/ 領域知識 / 外部約束 | 操作前提與擋下條件（屬 entity 操作段）/ 各狀態可改內容（屬 state-machine）/ 清單組成（屬 entity 具名清單段）/ 計算框架中間值（升格為 entity 欄位）/ 系統行為承諾（屬規劃單）/ 主題索引（屬 structure-overview）/ 情境格式模板 / UI 措辭 / 欄位定義 / 誰能做什麼（屬 activity-list）|
 | `scenario` | 跨模組端到端情境（活動先後 / 引用轉換 / 本情境才有的判斷 / 具體例子）| 行為者欄（屬 activity-list）/ 轉換條件（屬 state-machine）/ 計價公式細節（屬 business-logic）/ UI 措辭（歸 Prototype）|
 | `entity` | 實體欄位（含算式與同筆檢核）/ 操作（含前提）/ 具名清單 / 關聯 / 狀態名 | 角色名與誰能做什麼（屬 activity-list）/ 業務流程敘述（屬 scenario）/ 底線式子本體與做法（屬 business-rule）|
 | `role` | 職位定位 / 分工理由 / 關切點 / 預期阻力 | 可見範圍與逐條職責（屬 activity-list）/ 跨角色流程細節（屬 scenario）/ 實體欄位定義 |

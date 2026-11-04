@@ -11,6 +11,11 @@ last-reviewed: 2026-06-02
 下記三行：「變更」（MUST 逐卡 `[[卡名]]` + 一句話，禁粗寫）、「動機」（實質異動正本卡必填，業務理由當下自足，得連 [[OQ卡]]；健檢 / 納入類免）、「衝突」。
 完整規約見 vault 根 `CLAUDE.md` § 四。卡的歷史 = 搜 `[[卡名]]` 命中本檔條目 + git 歷史；決策脈絡見 OQ 卡。
 
+## [2026-11-05 01:00] 同步 | 規範卡與 meta 卡的 OpenSpec 落點改為新載體
+- 變更：[[scope-boundary]] 系統行為規格段改為規劃單、Prototype 情境目錄與測試、Linear 票、ADR，並改寫 ERP 定義正本在 [[ERP 詞彙表]]；[[wiki-schema]]、[[business-domain-taxonomy]]、[[規範 - 商業邏輯]]、[[規範 - 實體]]、[[規範 - 資料結構總覽]]、[[規範 - 狀態機]]、[[規範 - 業務情境]]、[[規範 - 角色]]、[[規範 - 活動清單]]、[[規範 - OQ]]、[[範本 - OQ]] 的 OpenSpec 落點與「禁指 OpenSpec」改指規劃單、Prototype 與實作程式碼；vault 根入口檔同步
+- 動機：Miles 2026-11-04 拍板以 mattpocock-skills 取代 OpenSpec，OpenSpec 已刪；現行落點規則不得指向不存在的載體
+- 衝突：無
+
 ## [2026-11-05 00:30] 同步 | 框架轉換後的 wiki 側移轉：入口檔改名、出處改指、規劃流程改寫
 - 變更：vault 根入口檔由 CLAUDE.md 改名 AGENTS.md，[[卡片撰寫共用規範]]、[[erp_index]]、[[index]]、[[審查知識路由]]、[[生產執行]] 的引用跟著改；33 張卡 54 處「change <名> grill.md」改指搬遷後的 memory/erp/plans/_archives/2026/<名>/grill.md；[[PT-069-開工後要改需轉交標記時的處置路徑]]、[[XM-018-查看類與指標類驗收條目沒有情境卡步驟可掛]] 的 OpenSpec 出處改寫成 change 名與封存日期；[[wiki-schema]] source 可指對象改為規劃單與搬遷後拍板紀錄；[[審查知識路由]] § 三規劃流改為 erp-plan、grill-with-docs、wiki-amend、to-spec、erp-audit、to-tickets、implement、linear-delivery；[[規劃品質評分準則]] 必含段改必含內容、稽核者在規劃單全文找證據、拍板改為對話確認加落卡
 - 動機：Miles 2026-11-04 拍板以 mattpocock-skills 取代 OpenSpec（框架轉換工作階段 Q5～Q12），入口檔改名 AGENTS.md；source 保留真實出處（memory/erp/wiki-normalization-20261104/grill.md G18）

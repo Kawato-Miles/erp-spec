@@ -32,7 +32,7 @@ last-reviewed: 2026-10-27
 | 已拍板的決策要記錄 | 不開 | 直接寫正本卡＋wiki/log.md |
 | 術語定義新增或更新 | 不開 | 對應術語表 |
 | 一般討論備忘、未消化觀察 | 不開 | `vault-ingest`（raw 層） |
-| 實作任務追蹤 | 不開 | OpenSpec change tasks |
+| 實作任務追蹤 | 不開 | Linear 票（`to-tickets`） |
 
 ---
 
@@ -134,7 +134,7 @@ last-reviewed: 2026-10-27
 | 已拍板決策的記錄 | 正本卡＋wiki/log.md |
 | 未消化的觀察素材 | `raw/`（vault-ingest） |
 | 術語定義 | 對應術語表 |
-| 實作任務追蹤 | OpenSpec change tasks |
+| 實作任務追蹤 | Linear 票（`to-tickets`） |
 | 他卡範圍的問題複述 | 互引＋分界句（§ 3.3） |
 | 系統性議題與下一步建議 | `vault-audit` 報告的建議段（知識庫工作流待辦歸 `memory/` project 卡） |
 
