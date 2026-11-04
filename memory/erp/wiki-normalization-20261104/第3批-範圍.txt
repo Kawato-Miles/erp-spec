@@ -1,0 +1,14 @@
+03-roles/審稿主管.md
+03-roles/審稿人員.md
+04-business-logic/外部約束/審稿討論Slack串接約束.md
+04-business-logic/服務藍圖/主檔維護流程群組/人員能力等級維護活動清單.md
+04-business-logic/服務藍圖/生產流程群組/稿件審查活動清單.md
+04-business-logic/營運規則/售前/免審決策樹.md
+04-business-logic/營運規則/售前/難易度機制.md
+04-business-logic/營運規則/訂單到交付/審稿分配規則.md
+04-business-logic/營運規則/訂單到交付/稿件管理規則.md
+05-entities/審稿輪次.md
+07-scenarios/印件審稿.md
+07-scenarios/打樣後稿件問題重審.md
+07-scenarios/維護審稿人員能力等級.md
+07-scenarios/覆寫審稿分派.md
