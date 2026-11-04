@@ -44,7 +44,7 @@ REVIEW = ERP / "11-review-knowledge"
 TODAY = dt.date.today()
 
 LINK = re.compile(r"\[\[([^\]|#\\]+)(?:[#|\\][^\]]*)?\]\]")
-CANON_TYPES = {"role", "service-blueprint", "activity-list", "controlled-list", "process-architecture",
+CANON_TYPES = {"role", "rule-group", "service-blueprint", "activity-list", "controlled-list", "process-architecture",
                "business-rule", "entity", "structure-overview", "state-machine", "scenario"}
 REMOVED_ON_CANON = ("module", "implemented-by", "related-spec")
 TAG_DIRS = ("03-roles", "04-business-logic", "05-entities", "06-state-machines", "07-scenarios")

@@ -109,24 +109,35 @@ class Glossary:
         if not path.exists():
             return
         card = Card(path)
-        cur, defs, avoid_line = None, [], None
+        cur, defs, group = None, [], None
+
+        next_is_sub = [False]
 
         def close():
             if cur is None:
                 return
             text = "".join(d.strip() for d in defs)
             n = len([s for s in re.split(r"[。！？]", text) if s.strip()])
-            if not text:
+            if not text and not next_is_sub[0]:
                 self.problems.append((cur[1], f"詞條「{cur[0]}」沒有定義"))
             elif n > 2:
                 self.problems.append((cur[1], f"詞條「{cur[0]}」定義超過兩句（{n} 句）"))
 
         for no, ln in card.body():
-            m = re.match(r"^###\s+(.+?)\s*$", ln)
+            m = re.match(r"^(###|####)\s+(.+?)\s*$", ln)
             if m:
+                next_is_sub[0] = m.group(1) == "####"
                 close()
-                cur, defs = (m.group(1).strip(), no), []
-                self.terms[cur[0]] = no
+                next_is_sub[0] = False
+                name = m.group(2).strip()
+                if m.group(1) == "###":
+                    group = name
+                    cur, defs = (name, no), []
+                    self.terms[name] = no
+                else:
+                    cur, defs = (f"{group}#{name}", no), []
+                    self.terms[cur[0]] = no
+                    self.terms.setdefault(name, no)
                 continue
             if re.match(r"^\*\*[^*]+\*\*\s*[:：]", ln):
                 self.problems.append((no, "詞條寫成粗體；依 G6 改成三級標題"))
@@ -374,7 +385,7 @@ def check_cross(ctx, rep, changed):
                     rep.add("X6", mc.TAXONOMY, no, f"觸發詞「{w}」是避免用詞，改「{g.avoid[w]}」", level="錯誤")
     # X2：規則組資料夾成員與索引卡清單一致
     for c in cards.values():
-        if c.type == "rule-group" and not c.archived:
+        if c.type == "rule-group" and c.canon and not c.archived:
             listed = {m.group(1).strip() for _, ln in c.body() for m in LINK.finditer(ln)}
             members = {p.stem for p in c.p.parent.glob("*.md") if p != c.p}
             for x in sorted(members - listed):

@@ -17,13 +17,14 @@ last-reviewed: 2026-10-29
 | `product-vision` | 產品願景 / 痛點 / 利害關係人 | `01-products/` |
 | `phase` | 產品 Phase 定義 | `01-products/phases.md` |
 | `metric` | KPI / 北極星指標 / Impact Score | `01-products/`、`01-products/kpi/` |
-| `glossary` | 術語表（行業語言：換一家同業仍成立的詞彙） | `wiki/跨產品/`、`wiki/編輯器/` |
+| `glossary` | 詞彙表與術語表（[[ERP 詞彙表]]：ERP 業務名詞的定義正本；[[印刷業共用術語表]]：ERP 用不到的純行業詞） | `wiki/erp/`、`wiki/跨產品/`、`wiki/編輯器/` |
 | `role` | 角色 R&R | `03-roles/` |
 | `service-blueprint` | 服務藍圖（公司提供什麼服務、階段與階段先後） | `04-business-logic/服務藍圖/` |
 | `activity-list` | 活動清單（服務藍圖一個階段的活動：誰在什麼範圍做哪個操作） | `04-business-logic/服務藍圖/<藍圖名>/` |
 | `controlled-list` | 受控清單（範圍用詞、動作類型、單據代碼、活動清單代碼的值域正本；全庫一張） | `04-business-logic/` |
 | `process-architecture` | 流程架構（類別與流程群組的歸屬正本；全庫一張） | `04-business-logic/` |
-| `business-rule` | 商業規則（決策邏輯、領域知識、外部約束） | `04-business-logic/` 各子目錄 |
+| `business-rule` | 商業規則（決策邏輯、領域知識、外部約束）；營運規則一條一張卡 | `04-business-logic/` 各子目錄；營運規則放在所屬規則組資料夾 |
+| `rule-group` | 規則組索引卡（列出同組規則卡、整組共用理由、跨規則例子、分組與順序） | `04-business-logic/營運規則/<分類>/<規則組名>/`，與資料夾同名 |
 | `entity` | 資料模型實體 | `05-entities/` |
 | `structure-overview` | 資料結構總覽（ER 圖＋單據流＋資料流＋關聯明細表；全系統一張為關聯唯一正本，領域各一張為領域視角） | `05-entities/`（與該領域實體卡同層） |
 | `state-machine` | 狀態機 | `06-state-machines/` |
@@ -105,7 +106,8 @@ tags:
 | `source` | 指**分工正本** | **正確性根據**（這張卡為什麼對 → 引用正本，不複寫）| 其他 Vault 卡（依分工：營運原則 / 共用規則 / 業務規則 / 流程狀態角色資料 / 操作步驟），或最上層的依據（法規 / 客戶訪談 / 產業慣例）；另可指下列現況與拍板依據：後端程式碼路徑（作為現況依據，標明檔案路徑與用途）、Sens memory 計畫工作檔路徑（拍板紀錄與矩陣定案，標明檔名與條目編號）、OpenSpec change 資料夾內的 grill.md 拍板紀錄（寫成「change <名稱> grill.md G編號」，不寫路徑；change 封存時資料夾會搬移，完整路徑會失效）| **禁指 OpenSpec spec（`openspec/specs/`）與 Prototype 檔案**（兩者是下游派生，不是正確性來源）；change 資料夾只可指 grill.md；後端程式碼、計畫工作檔與 grill.md 可指，但只作現況與拍板依據，規則本體仍寫在卡內。兩卡互為 source＝內容重複的警訊，處理方式是重分工，不是留著互指 |
 
 - `source` 的依據鏈最終追至最上層依據（法規／訪談／產業慣例）。管理層決策以計畫工作檔或 log 條目為依據寫進 source，不在卡上複述決策內容；脈絡由 log 與 OQ 承載。
-- 連結不繞回自己由 § 六維度 15 lint 把關（`source` 鏈繞回自己報 Error、`source` 含 OpenSpec 路徑報 Error（引用 change 的 grill.md 一律寫「change <名稱> grill.md G編號」，不寫路徑）、`source` 指向 Prototype 報 Error）。
+- `source` 每筆只寫出處指標：拍板日期、紀錄檔路徑、題號，例如 `Miles 2026-10-13 拍板（memory/erp/plans/_archives/2026/document-access-scope-20261013/grill.md C2）`。不抄拍板內容、不寫「同上」；寫入檢查 S15 把關（[[卡片撰寫共用規範]] § 二之四）。
+- 連結不繞回自己由 § 六維度 15 lint 把關（`source` 鏈繞回自己報 Error、`source` 含 OpenSpec 路徑報 Error（已封存 change 的拍板紀錄寫搬遷後的 `memory/erp/plans/_archives/` 路徑與題號）、`source` 指向 Prototype 報 Error）。
 
 ### type=meta
 
@@ -153,6 +155,20 @@ module:
   - <ERP|線上編輯器|跨產品>
 status: active
 last-reviewed: 2026-09-01
+---
+```
+
+### type=rule-group
+
+```yaml
+---
+type: rule-group
+tags:
+  - 領域/<領域名>   # 可多值；判定依 [[business-domain-taxonomy]]
+source:
+  - "<出處指標：拍板日期、紀錄檔路徑、題號>"
+status: active
+last-reviewed: 2026-11-04
 ---
 ```
 
@@ -410,9 +426,11 @@ ingested-to:                                           # status=ingested 時填
 | `00-meta/` | `meta` |
 | `01-products/` | `product-vision` / `phase` / `metric` |
 | `wiki/跨產品/`、`wiki/編輯器/`（vault 層，跨主題） | `glossary`（行業語言術語表）|
+| `wiki/erp/`（ERP 主題根目錄） | `glossary`（[[ERP 詞彙表]]）/ `meta`（`規範 - 詞彙表.md`） |
 | `03-roles/` | `role` / `meta`（`規範 - 角色.md`）/ `example`（`範例 - 角色.md`）|
 | `04-business-logic/` | `service-blueprint` / `business-rule` / `process-architecture` / `controlled-list`（後兩者各一張，放本目錄頂層）/ `meta`（`規範 - 商業邏輯.md`／`規範 - 活動清單.md`）/ `example`（`範例 - 服務藍圖.md`／`範例 - 商業規則.md`／`範例 - 活動清單.md`）|
 | `04-business-logic/服務藍圖/<藍圖名>/` | `activity-list`（只放該藍圖各階段的活動清單卡）|
+| `04-business-logic/營運規則/<分類>/<規則組名>/` | `rule-group`（與資料夾同名，一個資料夾一張）/ `business-rule`（mutability=internal，該組的規則卡）|
 | `05-entities/` | `entity` / `meta`（`規範 - 實體.md`）/ `example`（`範例 - 實體.md`）|
 | `06-state-machines/` | `state-machine` / `meta`（`規範 - 狀態機.md`）/ `example`（`範例 - 狀態機.md`）|
 | `wiki/範本/`（vault 層，跨主題） | 骨架檔（內容為填空 frontmatter 樣板，豁免本 schema 檢查；見 [[卡片撰寫共用規範]] § 一）|
