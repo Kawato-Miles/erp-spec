@@ -16,7 +16,7 @@ import {
 // § 印件預計交期依階段必填檢核），留空走到工單的路徑只剩線上單：線上單印件沒有本欄的來源。
 // 起點：鏈外線上單 ORD-2026-0816（等待付款，三件印件日期皆空）。前置：業務以手動推進代替電商付款回寫，
 // 推到「已付款」（訂單成立）；新增一件免審印件、不填日期，系統依線上單自動到位建立工單草稿
-//（不經待確認製作細節佇列），之後印件內部完成日與工單承接值一路同為空。
+//（不經印製派單審核佇列），之後印件內部完成日與工單承接值一路同為空。
 test('6.13 交期一路留空時工單相關畫面照實留白、不當機', async ({ page }) => {
   test.setTimeout(300_000);
 
@@ -34,8 +34,8 @@ test('6.13 交期一路留空時工單相關畫面照實留白、不當機', asy
   // 新增一件免審印件，印件預計交期留空（線上單不套用必填檢核）：系統自動到位並建立工單草稿
   await page.getByRole('button', { name: '新增印件' }).click();
   const addModal = page.locator('.ant-modal-content:visible').last();
-  await expect(addModal.getByText('印件名稱')).toBeVisible();
-  await page.getByLabel('印件名稱').fill('6.13 留空印件');
+  await expect(addModal.getByText('印件項目名稱')).toBeVisible();
+  await page.getByLabel('印件項目名稱').fill('6.13 留空印件');
   await addModal.getByText('大貨印件', { exact: true }).click();
   await page.getByLabel('購買數量').fill('2000');
   await page.locator('.ant-select:has(#unit)').click();
@@ -123,7 +123,7 @@ test('6.13 交期一路留空時工單相關畫面照實留白、不當機', asy
 
   // 六、工單列表該列的印件內部完成日欄照實留白
   await goInApp(page, '/work-orders', gotoInApp);
-  const search = page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或客戶名稱');
+  const search = page.getByPlaceholder('請輸入工單編號、印件項目名稱／編號，或客戶名稱');
   await search.fill(workOrderNo);
   await search.press('Enter');
   await expect(rowOf(page, workOrderNo)).toContainText('－');

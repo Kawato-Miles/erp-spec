@@ -41,15 +41,15 @@ async function addProductionTask(page, { bomTab, keyword, part, destination, pla
 test('6.1 一件印件從放行到上產線的六站接力（原編號 72）', async ({ page }) => {
   test.setTimeout(300_000);
 
-  // 第一站：訂單管理人在待確認製作細節佇列確認該印件
+  // 第一站：訂單管理人在印製派單審核佇列確認該印件
   await openScenario(page, '訂單管理人', '/orders/production-detail-queue', {
     openAs,
     switchRole,
   });
-  await rowOf(page, 'PI-2026-0903').getByLabel('確認製作細節').click();
+  await rowOf(page, 'PI-2026-0903').getByLabel('印製派單審核').click();
   const confirmModal = dialog(page);
   await expect(confirmModal).toContainText('確認後系統將建立一張空工單草稿');
-  await button(confirmModal, '確認製作細節').click();
+  await button(confirmModal, '印製派單審核').click();
   const toast = await page.locator('.ant-message-notice-content').last().innerText();
   expect(toast).toContain('轉為「製程已確認」');
   const workOrderNo = toast.match(/WO-\d{4}-\d{4}/)[0];
@@ -135,11 +135,11 @@ test('6.1 一件印件從放行到上產線的六站接力（原編號 72）', a
   await expect(page.locator('body')).toContainText('指派 劉阿海');
 });
 
-// 6.12 起點：鏈六 ORD-2026-0903 旗下 PI-2026-0903（待確認製作細節、沒有工單），
+// 6.12 起點：鏈六 ORD-2026-0903 旗下 PI-2026-0903（印製派單審核、沒有工單），
 // 與 6.1 同一件印件、獨立的一條測試（各條測試整頁載入即重置記憶體狀態，互不干擾）。
-// 差別在入口：本條由印件詳情頁的頁首鈕確認，6.1 由待確認製作細節佇列頁確認，
+// 差別在入口：本條由印件詳情頁的頁首鈕確認，6.1 由印製派單審核佇列頁確認，
 // 驗證兩個入口共用同一套流程（見 orders/_lib/production-detail-actions.js）。
-test('6.12 訂單管理人從印件詳情頁確認製作細節', async ({ page }) => {
+test('6.12 訂單管理人從印件詳情頁印製派單審核', async ({ page }) => {
   test.setTimeout(120_000);
 
   // 訂單管理人自訂單詳情訂單項目按「檢視印件」進印件詳情頁
@@ -151,11 +151,11 @@ test('6.12 訂單管理人從印件詳情頁確認製作細節', async ({ page }
   await itemRow.getByRole('button', { name: '檢視印件' }).click();
   await expect(page).toHaveURL(/\/print-items\/detail\/?\?id=pi-2026-0903/i, { timeout: 20000 });
 
-  // 標頭按「確認製作細節」並確認
-  await button(page, '確認製作細節').click();
+  // 標頭按「印製派單審核」並確認
+  await button(page, '印製派單審核').click();
   const confirmModal = dialog(page);
   await expect(confirmModal).toContainText('確認後系統將建立一張空工單草稿');
-  await button(confirmModal, '確認製作細節').click();
+  await button(confirmModal, '印製派單審核').click();
   const toast = await page.locator('.ant-message-notice-content').last().innerText();
   expect(toast).toContain('轉為「製程已確認」');
   const workOrderNo = toast.match(/WO-\d{4}-\d{4}/)[0];
@@ -166,7 +166,7 @@ test('6.12 訂單管理人從印件詳情頁確認製作細節', async ({ page }
   await openTab(page, '工單與生產任務');
   await expect(page.locator('body')).toContainText(workOrderNo);
 
-  // 該印件自待確認製作細節佇列消失（仍為訂單管理人身分）
+  // 該印件自印製派單審核佇列消失（仍為訂單管理人身分）
   await goInApp(page, '/orders/production-detail-queue', gotoInApp);
   await expect(rowOf(page, 'PI-2026-0903')).toHaveCount(0);
 

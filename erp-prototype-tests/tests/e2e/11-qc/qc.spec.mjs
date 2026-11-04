@@ -31,11 +31,11 @@ test.describe.configure({ timeout: 180_000 });
 const descValue = (page, label) =>
   page.locator(`xpath=//th[normalize-space(.)="${label}"]/following-sibling::td[1]`).first();
 
-// 印件列表點印件名稱開詳情（名稱為可點文字，非帶網址的連結）
+// 印件列表點印件項目名稱開詳情（名稱為可點文字，非帶網址的連結）
 const openPrintItemDetail = async (page, name) => {
   // 印件列表依建立時間新到舊、每頁固定筆數，鏈九加入後較早的印件可能不在第一頁：
   // 先用列表搜尋框篩到該印件（共用篩選元件按 Enter 才送出）
-  const search = page.getByPlaceholder('請輸入印件名稱／編號、訂單編號，或客戶名稱');
+  const search = page.getByPlaceholder('請輸入印件項目名稱／編號、訂單編號，或客戶名稱');
   await search.fill(name);
   await search.press('Enter');
   // 列表剛掛載（或剛篩選重繪）時第一次點擊偶爾落在尚未接上事件的節點上，故重試到網址真的換掉為止

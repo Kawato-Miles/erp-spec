@@ -8,7 +8,7 @@ import { addPendingReviewItem } from './_setup.mjs';
 // /prepress-review 與 /prepress-review/pending-assign 為雙層表格（訂單列展開印件子表）：
 // 外層展開容器（ant-table-expanded-row）是子表的祖先，其 accessible name／textContent 會
 // 遞迴含整張子表的文字，`tr` + hasText 或 getByRole('row', { name }) 都會連帶命中外層容器與
-// 同張訂單的其他印件列。改用「先精準命中印件名稱文字節點、再取最近的 <tr> 祖先」精準定位單一列。
+// 同張訂單的其他印件列。改用「先精準命中印件項目名稱文字節點、再取最近的 <tr> 祖先」精準定位單一列。
 // 訂單模組 ItemsTab 是單層表格，沿用 `tr` + hasText 即可。
 const reviewRow = (page, text) =>
   page.getByText(text, { exact: true }).locator('xpath=ancestor::tr[1]');
@@ -16,7 +16,7 @@ const reviewRow = (page, text) =>
 // 5.1 起點：鏈八 ORD-2026-0920 旗下 PI-2026-0921（等待審稿、負責審稿魏彣軒）。七條主鏈的印件
 // 審稿都已走完（已確認可製作），母集合 selectOrdersPendingReview 排除這個狀態，不出現在審稿清單，
 // 故本條不能沿用主鏈印件，改用仍在審稿段的鏈八印件。還在審稿段的印件尚未登記進印件列表（要等
-// 訂單管理人確認製作細節才進得去），/print-items 這個入口在本條驗不到。
+// 訂單管理人印製派單審核才進得去），/print-items 這個入口在本條驗不到。
 test('5.1 審稿清單與訂單項目兩個入口進到同一頁（原編號 56）', async ({ page }) => {
   await openAs(page, '審稿人員', '/prepress-review');
   await page.getByText('量販促銷吊卡', { exact: true }).click();
@@ -248,7 +248,7 @@ test('5.6 批次退件共用一句備註，改過的備註留得住軌跡（原�
   await page.locator('.ant-select-dropdown').last().getByText(/魏彣軒/).click();
   await assignDialog.getByRole('button', { name: /確認分派/ }).click();
 
-  // 審稿人員展開該訂單，勾兩件印件按「批次審稿」，審核結果不合格、選退件原因、填共用審稿備註
+  // 審稿人員展開該訂單，勾兩件印件按「批次審稿」，審稿結果不合格、選退件原因、填共用審稿備註
   await switchRole(page, '審稿人員');
   await gotoInApp(page, '/prepress-review');
   await reviewRow(page, '菜單摺頁批次一').locator('input[type="checkbox"]').check();
@@ -261,7 +261,7 @@ test('5.6 批次退件共用一句備註，改過的備註留得住軌跡（原�
   await page.locator('.ant-select-dropdown').last().locator('.ant-select-item').first().click();
   await dialog.locator('.ant-form-item', { hasText: '共用審稿備註' }).locator('textarea').fill('整批規格說明不足，請補齊出血線');
 
-  // 把其中一件的審稿備註個別改掉：從印件名稱文字節點往上找到含 textarea 的最近祖先（該印件卡片）
+  // 把其中一件的審稿備註個別改掉：從印件項目名稱文字節點往上找到含 textarea 的最近祖先（該印件卡片）
   const card2 = dialog
     .getByText('菜單摺頁批次二', { exact: true })
     .locator('xpath=ancestor::*[.//textarea][1]');
@@ -277,7 +277,7 @@ test('5.6 批次退件共用一句備註，改過的備註留得住軌跡（原�
   await expect(reviewRow(page, '菜單摺頁批次二').getByText('不合格', { exact: true })).toBeVisible();
 
   // 到印件詳情的審稿紀錄按「修改備註」改字（限該輪的原審稿人員本人）
-  // 判定後審稿狀態已離開可審範圍，操作欄不再有「審稿」圖示按鈕（改顯示唯讀），改點印件名稱連結進詳情頁
+  // 判定後審稿狀態已離開可審範圍，操作欄不再有「審稿」圖示按鈕（改顯示唯讀），改點印件項目名稱連結進詳情頁
   await expect(page.locator('.ant-modal-content, [role="dialog"]')).toHaveCount(0);
   // 清單剛重繪時第一次點擊可能落在尚未接上事件的節點，重試到網址換掉為止
   await expect(async () => {

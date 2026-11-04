@@ -147,7 +147,7 @@ describe('4.8 複製加開帶入內容類欄位原值，建立當下可改含印
   const SRC = 'pi-2026-0710';
   const srcItem = () => orderOf('ORD-2026-0710').print_items.find((p) => p.id === SRC);
 
-  it('未改任何欄位即存檔：帶入印件名稱（不加字樣）、購買數量、印件預計交期、出貨方式、製程說明與品檢需求；售價依帶入值算出', () => {
+  it('未改任何欄位即存檔：帶入印件項目名稱（不加字樣）、購買數量、印件預計交期、出貨方式、製程說明與品檢需求；售價依帶入值算出', () => {
     // 出貨方式取原印件的值：先把原印件改成自取（訂單仍為第三方物流）
     orders().updatePrintItem('ORD-2026-0710', SRC, { shipping_method: '自取', customer_requested_delivery_date: '2026-09-16' });
     const source = srcItem();

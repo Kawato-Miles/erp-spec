@@ -225,7 +225,7 @@ test('14.37 現場動作對話框的說明文字依 G21 三表：裝箱回報、
   await confirmShippable(page, hctNo);
   await expect(page.locator('.ant-message-notice-content').last()).toHaveText('已確認可出貨');
 
-  // 揀貨不符警示框（B 表）：「揀貨數量與出貨明細不符：印件名稱」
+  // 揀貨不符警示框（B 表）：「揀貨數量與出貨明細不符：印件項目名稱」
   const mismatchNo = await (async () => {
     await switchRoleSafe(page, '業務');
     await gotoInAppSafe(page, '/qc-shipping/shipments');

@@ -13,7 +13,7 @@ const SAMPLE_FLOW_ROUTES = [
 ];
 
 // 情境目錄第五章補件：換人分派、候選為空、打樣結果三分流、補件不設上限。
-// 雙層表格（審稿清單）的列定位同 prepress-review.spec.mjs 開頭註解：先精準命中印件名稱文字節點、
+// 雙層表格（審稿清單）的列定位同 prepress-review.spec.mjs 開頭註解：先精準命中印件項目名稱文字節點、
 // 再取最近的 <tr> 祖先，避免命中外層展開容器。
 const reviewRow = (page, text) =>
   page.getByText(text, { exact: true }).locator('xpath=ancestor::tr[1]');
@@ -123,7 +123,7 @@ test('5.11 打樣結果 NG-製程問題，系統自動在原印件下建新打�
   ).toBeVisible();
   await expect(page.locator('.ant-message-notice-content', { hasText: '打樣結果重置回「待確認」' })).toBeVisible();
 
-  // 印製狀態即刻推進「製程已確認」，不進待確認製作細節佇列
+  // 印製狀態即刻推進「製程已確認」，不進印製派單審核佇列
   await expect(page.getByText('製程已確認', { exact: true }).first()).toBeVisible();
 
   // 工單與生產任務頁籤業務與印務都看得到（只有會計看不到，見 canSeeProductionTabs）；

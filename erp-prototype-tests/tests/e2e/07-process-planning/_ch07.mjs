@@ -23,7 +23,7 @@ export async function openWorkOrder(page, workOrderNo) {
   // 工單列表依建立時間新到舊、每頁固定筆數，較早的工單可能不在第一頁：
   // 先用列表搜尋框篩到該工單（共用篩選元件按 Enter 才送出）。等列表的搜尋框出現再判斷，
   // 避免列表還沒掛載就略過搜尋；不在列表頁（詳情頁）時沒有搜尋框，直接找連結
-  const search = page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或客戶名稱');
+  const search = page.getByPlaceholder('請輸入工單編號、印件項目名稱／編號，或客戶名稱');
   if (!/\/detail/.test(page.url())) await search.waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
   if (await search.count()) {
     await search.fill(workOrderNo);

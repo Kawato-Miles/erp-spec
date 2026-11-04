@@ -14,7 +14,8 @@ test('2.3 已回簽後追加上傳回簽檔（原編號：商業需求覆蓋矩�
   expect(await orderHeader(page).innerText()).toContain('製作等待中');
 
   await button(page, '上傳回簽檔案').click();
-  await dialog(page).getByLabel('檔名').fill('青硯文具_報價單回簽_v2.pdf');
+  // 回簽檔案是真的選檔（可多檔），不再手打檔名
+  await dialog(page).locator('input[type="file"]').setInputFiles({ name: '青硯文具_報價單回簽_v2.pdf', mimeType: 'application/pdf', buffer: Buffer.from('fake') });
   await dialog(page).getByRole('button', { name: /上\s*傳/ }).click();
 
   // 訂單本已在回簽之後的階段（製作等待中），再上傳不會觸發「是否同時確認回簽」詢問視窗

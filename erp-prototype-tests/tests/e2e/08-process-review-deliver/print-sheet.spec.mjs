@@ -46,7 +46,7 @@ test('8.6 印務列印紙本工單，版式與欄位範圍固定且不含價格�
   const infoTable = page.locator('table').first();
   const pairs = [
     ['工單編號', 'WO-2026-0908', '客戶', '青硯文具股份有限公司'],
-    ['印件名稱', '名片', '印務', '周建宏'],
+    ['印件項目名稱', '名片', '印務', '周建宏'],
     // 電話取負責印務在人員資料的聯絡電話（周建宏已填）
     ['印件數量', '123', '電話', '02-2721-5588 #211'],
     // 表頭日期欄為「印件內部完成日」：PI-2026-0801 印件預計交期 2026-09-10 往前減 1 個工作天
@@ -87,7 +87,7 @@ test('8.6 印務列印紙本工單，版式與欄位範圍固定且不含價格�
   for (const [i, title] of [
     '製程',
     '廠商',
-    '印件名稱',
+    '印件項目名稱',
     '製作細節',
     '內容',
     '數量',
@@ -142,7 +142,7 @@ test('8.7 送審前可預覽紙本；列印限負責印務、編輯分享成員�
     /\/work-orders\/detail/,
   );
   await gotoWorkOrderList(page);
-  const listSearch = page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或客戶名稱');
+  const listSearch = page.getByPlaceholder('請輸入工單編號、印件項目名稱／編號，或客戶名稱');
   await listSearch.fill('WO-2026-0910');
   await listSearch.press('Enter');
   await expect(page.locator('.ant-empty-description')).toContainText('無此資料');

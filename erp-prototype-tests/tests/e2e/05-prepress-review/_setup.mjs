@@ -6,7 +6,7 @@ import { switchRole, gotoInApp, clickIntoDetail, cjkName, attachReportPhotos } f
 // 本函式不含 openAs／page.goto（同一情境內只允許第一步整頁載入）。
 //
 // 新增印件 Dialog 欄位（依 orders/_components/detail/ItemsTab.js「新增印件 Dialog」，
-// order-management spec § 新增印件欄位與必填檢核）：六項必填——印件名稱、印件屬性
+// order-management spec § 新增印件欄位與必填檢核）：六項必填——印件項目名稱、印件屬性
 // （打樣印件／大貨印件）、購買數量、單位、單價、難易度；是否急件為勾選框（預設不勾）；
 // 免審稿（Switch，預設關）。ORD-2026-0903 已離開草稿，印件預計交期存檔必填
 //（order-management spec § 印件預計交期依階段必填檢核），本函式一律填一天。
@@ -27,9 +27,9 @@ export async function addPendingReviewItem(
 ) {
   await page.getByRole('button', { name: '新增印件' }).click();
   const modal = page.locator('.ant-modal-content');
-  await expect(modal.getByText('印件名稱')).toBeVisible();
+  await expect(modal.getByText('印件項目名稱')).toBeVisible();
 
-  await page.getByLabel('印件名稱').fill(name);
+  await page.getByLabel('印件項目名稱').fill(name);
   await modal.getByText(type, { exact: true }).click();
   await page.getByLabel('購買數量').fill(String(orderedQty));
   // 可見選項用 .ant-select-item-option class 篩選：role=option 那份是畫面外隱藏複本（README 執行注意事項）
@@ -91,17 +91,17 @@ export async function buildDeliveredSampleItem(page, name) {
     .click();
   await expect(orderRow.getByText('已確認可製作', { exact: true })).toBeVisible();
 
-  // 訂單管理人確認製作細節，系統建立草稿工單
+  // 訂單管理人印製派單審核，系統建立草稿工單
   await switchRole(page, '訂單管理人');
   await gotoInApp(page, '/orders/production-detail-queue');
   await page
     .locator('tbody tr.ant-table-row')
     .filter({ hasText: name })
-    .getByLabel('確認製作細節')
+    .getByLabel('印製派單審核')
     .click();
   await page
     .locator('.ant-modal-confirm-btns')
-    .getByRole('button', { name: cjkName('確認製作細節') })
+    .getByRole('button', { name: cjkName('印製派單審核') })
     .click();
   const createToast = page.locator('.ant-message-notice-content').last();
   await expect(createToast).toContainText(/WO-\d{4}-\d{4}/, { timeout: 15000 });

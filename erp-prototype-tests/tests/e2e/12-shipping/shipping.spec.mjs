@@ -387,7 +387,7 @@ test('12.2（草稿等待期間印件被棄用）建立出貨單時自動移除�
   await confirm.getByRole('button', { name: '取消製作' }).click();
   await expect(page.getByText(/已棄用印件/).first()).toBeVisible();
 
-  // 回出貨管理編輯那張草稿：警示框只寫「已棄用印件：印件名稱」（G21 B 表）
+  // 回出貨管理編輯那張草稿：警示框只寫「已棄用印件：印件項目名稱」（G21 B 表）
   await gotoInAppSafe(page, '/qc-shipping/shipments');
   const dialog = await openShipmentEdit(page, MOCK_DRAFT_KEY);
   await dialog.getByRole('tab', { name: '出貨明細' }).click();
@@ -531,7 +531,7 @@ test('12.5 揀貨數量與明細不符時揀貨人員照實填、不自行改明
   const panel = await openShipmentPanel(page, shipmentNo);
   await expect(panel.getByRole('row', { name: new RegExp(CHAIN4.printItemNo) })).toContainText('500');
   await expect(panel.getByRole('row', { name: new RegExp(CHAIN4.printItemNo) })).toContainText('470');
-  // 警示框只寫「揀貨數量與出貨明細不符：印件名稱」（G21 B 表）
+  // 警示框只寫「揀貨數量與出貨明細不符：印件項目名稱」（G21 B 表）
   await expect(panel).toContainText(`揀貨數量與出貨明細不符：${CHAIN4.printItemName}`);
   await expect(panel).not.toContainText('異常回報');
   await closeShipmentPanel(page);

@@ -89,6 +89,15 @@ describe('2.20、2.26、1.29 側欄入口依檢視活動清單', () => {
     }
   });
 
+  it('待評估成本入口與需求單列表同一套角色規則，不另設權限', () => {
+    for (const role of ['sales', 'consultant', 'sales_manager', 'print_manager', 'supervisor']) {
+      expect(labelsOf(role), role).toContain('待評估成本');
+    }
+    for (const role of ['accountant', 'order_manager', 'print_officer', 'reviewer', 'production_planner', 'master']) {
+      expect(labelsOf(role), role).not.toContain('待評估成本');
+    }
+  });
+
   it('出貨管理：生管、品檢人員沒有；印務、印務主管、業務主管、揀貨、出貨人員有', () => {
     for (const role of ['production_planner', 'qc_inspector']) expect(labelsOf(role), role).not.toContain('出貨管理');
     for (const role of ['print_officer', 'print_manager', 'sales_manager', 'picker', 'shipper', 'sales', 'supervisor']) {
@@ -120,7 +129,7 @@ describe('2.20、2.26、1.29 側欄入口依檢視活動清單', () => {
 
   it('待辦佇列頁各只給持有核心操作的角色', () => {
     expect(labelsOf('sales_manager')).toEqual(expect.arrayContaining(['訂單審核', '訂單異動審核']));
-    expect(labelsOf('order_manager')).toEqual(expect.arrayContaining(['待確認製作細節', '待分派審稿']));
+    expect(labelsOf('order_manager')).toEqual(expect.arrayContaining(['印製派單審核', '待分派審稿']));
     expect(labelsOf('print_manager')).toEqual(expect.arrayContaining(['待分派印件', '待審核工單']));
     expect(labelsOf('sales')).not.toContain('訂單審核');
     expect(labelsOf('reviewer_supervisor')).toContain('待分派審稿');

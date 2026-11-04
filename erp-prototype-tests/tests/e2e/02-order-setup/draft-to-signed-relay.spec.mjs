@@ -44,7 +44,7 @@ test('2.1 訂單四步接力從草稿走到已回簽（原編號：商業需求�
 
   await openTab(page, '訂單附件');
   await button(page, '上傳回簽檔案').click();
-  await dialog(page).getByLabel('檔名').fill('2.1 青硯文具報價單回簽.pdf');
+  await dialog(page).locator('input[type="file"]').setInputFiles({ name: '2.1 青硯文具報價單回簽.pdf', mimeType: 'application/pdf', buffer: Buffer.from('fake') });
   await button(dialog(page), '上傳').click();
   // 首次於報價待回簽上傳回簽檔即推進為已回簽
   await dialog(page).getByRole('button', { name: '確認回簽' }).click();

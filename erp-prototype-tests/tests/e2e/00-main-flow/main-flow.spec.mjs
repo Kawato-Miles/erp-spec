@@ -55,11 +55,11 @@ import {
 //   兩處各補一站（第 14 站後加業務補件、第 28 站搬運兩動作改廠務）後，31 站全部通過。
 //
 // 已修斷點（2026-09-11）：第 17 站甲、乙兩件印件皆未填預計出貨日（合法留空），訂單管理人進
-//   「待確認製作細節」佇列頁在兩列同時留空時整頁當機。交期鏈命名定案時一併修掉——佇列頁排序
+//   「印製派單審核」佇列頁在兩列同時留空時整頁當機。交期鏈命名定案時一併修掉——佇列頁排序
 //   改為空值安全比較、欄位顯示破折號。留空全鏈的迴歸驗證見情境 6.13。
 
 // 雙層表格（審稿清單、待分派審稿）的列：外層展開容器的文字會遞迴含整張子表，
-// 故先精準命中印件名稱的文字節點，再取最近的 <tr> 祖先。
+// 故先精準命中印件項目名稱的文字節點，再取最近的 <tr> 祖先。
 const reviewRow = (page, text) =>
   page.getByText(text, { exact: true }).locator('xpath=ancestor::tr[1]');
 
@@ -497,17 +497,17 @@ test('主流程：一件印件從需求單到訂單完成', { tag: '@smoke' }, a
       await expect(rowOf(page, name).getByText('已確認可製作', { exact: true })).toBeVisible();
     }
     await expect(orderHeader(page)).toContainText('製作等待中');
-    // 球交給訂單管理人：待確認製作細節佇列出現兩件
+    // 球交給訂單管理人：印製派單審核佇列出現兩件
     await switchRole(page, '訂單管理人');
     await goInApp(page, '/orders/production-detail-queue', gotoInApp);
     await expect(rowOf(page, ITEM_A)).toBeVisible();
     await expect(rowOf(page, ITEM_B)).toBeVisible();
   });
 
-  await test.step('第 18 站 訂單管理人 兩件確認製作細節', async () => {
+  await test.step('第 18 站 訂單管理人 兩件印製派單審核', async () => {
     for (const name of [ITEM_A, ITEM_B]) {
-      await rowOf(page, name).getByLabel('確認製作細節').click();
-      await button(dialog(page), '確認製作細節').click();
+      await rowOf(page, name).getByLabel('印製派單審核').click();
+      await button(dialog(page), '印製派單審核').click();
       const text = await toastText(page, /WO-\d{4}-\d{4}/);
       const wo = text.match(/WO-\d{4}-\d{4}/)[0];
       if (name === ITEM_A) woA = wo;
@@ -638,9 +638,9 @@ test('主流程：一件印件從需求單到訂單完成', { tag: '@smoke' }, a
     // 球交給生管：待派清單出現六筆
     await switchRole(page, '生管');
     await goInApp(page, '/production-floor/dispatch', gotoInApp);
-    // 所有生產任務列出範圍內全部任務（含終態、分頁 10 筆），先以印件名稱共同字首縮到本次六筆
-    await page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或任務名稱').fill('主流程印件');
-    await page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或任務名稱').press('Enter');
+    // 所有生產任務列出範圍內全部任務（含終態、分頁 10 筆），先以印件項目名稱共同字首縮到本次六筆
+    await page.getByPlaceholder('請輸入工單編號、印件項目名稱／編號，或任務名稱').fill('主流程印件');
+    await page.getByPlaceholder('請輸入工單編號、印件項目名稱／編號，或任務名稱').press('Enter');
     for (const wo of [woA, woB1, woB2]) {
       await expect(page.locator('tbody tr.ant-table-row').filter({ hasText: wo })).toHaveCount(2);
     }

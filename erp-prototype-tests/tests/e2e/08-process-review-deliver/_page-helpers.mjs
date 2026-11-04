@@ -61,7 +61,7 @@ export async function gotoWorkOrderList(page) {
 // 由工單列表開一張工單詳情（站內導頁，工單編號為 Typography.Link 無 href，故點文字）
 export async function openWorkOrderFromList(page, workOrderNo) {
   await gotoWorkOrderList(page);
-  const search = page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或客戶名稱');
+  const search = page.getByPlaceholder('請輸入工單編號、印件項目名稱／編號，或客戶名稱');
   await search.fill(workOrderNo);
   await search.press('Enter');
   const link = page.getByText(workOrderNo, { exact: true }).first();
@@ -91,7 +91,7 @@ export async function checkTasks(page, taskNames) {
  * 第七、八、九章共用：工單詳情的生產任務列表與待審核列表的子表都是群組表頭，
  * 欄位順序會隨改版調整，只用列文字比對會把同一列其他欄的同名值（如「－」「已完成」）算進來。
  * 列以「含 rowText 的資料列、且列內沒有巢狀表格」定位，表頭取該列所屬的那一張表；
- * 同一段文字同時出現在母表與子表時（例：母表的印件名稱含子表的任務名），只取表頭有該欄的那一張表的列。
+ * 同一段文字同時出現在母表與子表時（例：母表的印件項目名稱含子表的任務名），只取表頭有該欄的那一張表的列。
  * 找不到列或欄時回 null。
  */
 export function cellText(page, rowText, header) {

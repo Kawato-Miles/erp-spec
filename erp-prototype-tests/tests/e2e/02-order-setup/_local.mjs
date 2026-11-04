@@ -227,7 +227,7 @@ export const submitButton = (page) => button(page, '送主管審核');
  * 送審缺項文字。畫面約定（tasks 4.1 實作依此）：條件不齊時「送主管審核」停用，
  * 操作列旁出現一段含「尚缺」的文字，缺項依序以頓號分隔
  * （訂單須知、交貨備註、付款備註、收款條件備註、至少一期收款項目，再逐件列出
- * 「「印件名稱」（印件編號）缺印件預計交期」；已棄用印件不列——rush-order-definition）。
+ * 「「印件項目名稱」（印件編號）缺印件預計交期」；已棄用印件不列——rush-order-definition）。
  */
 export const reviewMissing = (page) => page.getByText(/尚缺/).first();
 

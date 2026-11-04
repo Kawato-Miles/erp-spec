@@ -27,7 +27,7 @@ async function chooseOption(page, select, label) {
 }
 
 const itemRow = async (page, printItemNo) => {
-  const search = page.getByPlaceholder(/請輸入印件名稱／編號/);
+  const search = page.getByPlaceholder(/請輸入印件項目名稱／編號/);
   await search.fill(printItemNo);
   await search.press('Enter');
   const row = page.locator('tbody tr.ant-table-row').filter({ hasText: printItemNo }).first();

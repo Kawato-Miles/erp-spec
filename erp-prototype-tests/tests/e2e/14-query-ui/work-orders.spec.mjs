@@ -22,7 +22,7 @@ test('14.1 工單列表查詢與篩選（原編號 1）', async ({ page }) => {
   const table = page.locator('.ant-table-tbody').first();
 
   // 情境：任一角色輸入關鍵字搜尋（改用現行案名，原文的搜尋關鍵字已失效）
-  const searchInput = page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或客戶名稱');
+  const searchInput = page.getByPlaceholder('請輸入工單編號、印件項目名稱／編號，或客戶名稱');
   await searchInput.fill('海報');
   await searchInput.press('Enter');
   await expect(table).toContainText('WO-2026-0710');
@@ -149,7 +149,7 @@ test('14.20 工單詳情顯示接單業務、訂單類型、客戶編號與工�
   await openAs(page, '印務', '/work-orders/detail?id=wo-2026-0820');
   await expect(page.locator('body')).toContainText('WO-2026-0820');
 
-  // 標題列的案名：訂單案名、印件名稱與客戶名稱
+  // 標題列的案名：訂單案名、印件項目名稱與客戶名稱
   await expect(page.locator('body')).toContainText('《山城記事》精裝書');
   await expect(page.locator('body')).toContainText('晨光文創股份有限公司');
 

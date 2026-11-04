@@ -7,7 +7,7 @@ import { gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 // 起點資料：鏈二 PI-2026-0710 與鏈四 PI-2026-0820 都已有工單；訂單 ORD-2026-0710、ORD-2026-0820 的接單業務是洪嘉駿，
 // 業務乙陳映蓉只被以檢視層級分享 ORD-2026-0820（見 MOCK-DATA-CHAIN § 單據的分享成員）。
 
-const searchBox = (page) => page.getByPlaceholder('請輸入印件名稱／編號、訂單編號，或客戶名稱');
+const searchBox = (page) => page.getByPlaceholder('請輸入印件項目名稱／編號、訂單編號，或客戶名稱');
 
 async function search(page, keyword) {
   const box = searchBox(page);

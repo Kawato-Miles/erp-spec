@@ -21,7 +21,7 @@ test('3.8 登錄款項並核銷分配到指定期次', async ({ page }) => {
   const modal = dialog(page);
   await expect(modal).toBeVisible();
 
-  // 款項類型收款（預設）、付款方式、收款金額（含稅）47,425、款項實際完成日、第三方付款序號
+  // 款項類型收款（預設）、付款方式、收款金額（含稅）47,425、款項實際完成日、末五碼
   await pickOption(page, modal.getByLabel('付款方式'), '銀行轉帳');
   await modal.getByLabel(/收款金額（含稅）/).fill('47425');
 
@@ -32,7 +32,7 @@ test('3.8 登錄款項並核銷分配到指定期次', async ({ page }) => {
   await allocationRow.getByRole('spinbutton').fill('47425');
 
   await pickDate(modal.getByLabel('款項實際完成日'), '2026-09-15');
-  await modal.getByLabel('第三方付款序號').fill('TXN-0915-0710');
+  await modal.getByLabel('末五碼').fill('TXN-0915-0710');
   await attach(modal, '入帳憑證-TXN-0915-0710.pdf');
   await expect(modal.getByText('入帳憑證-TXN-0915-0710.pdf')).toBeVisible();
 

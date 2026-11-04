@@ -252,7 +252,7 @@ test('4.7 新增印件收齊六項必填、是否急件預設否、草稿期間�
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0911&tab=printItems');
   await page.getByRole('button', { name: '新增印件' }).click();
   const modal = page.locator('.ant-modal-content');
-  await expect(modal.getByText('印件名稱')).toBeVisible();
+  await expect(modal.getByText('印件項目名稱')).toBeVisible();
 
   // 印件預計交期無預設值：訂單層已無交期可帶，開啟當下就是空白；是否急件預設不勾、沒有急件選項下拉
   await expect(modal.locator('#expected_delivery_date')).toHaveValue('');
@@ -261,7 +261,7 @@ test('4.7 新增印件收齊六項必填、是否急件預設否、草稿期間�
   await expect(modal.locator('#urgent_option_id')).toHaveCount(0);
 
   // 六項必填任一為空擋下存檔：先只留難易度空白
-  await page.getByLabel('印件名稱').fill('海報加印版');
+  await page.getByLabel('印件項目名稱').fill('海報加印版');
   await modal.getByText('大貨印件', { exact: true }).click();
   await page.getByLabel('購買數量').fill('200');
   // 可見選項用 .ant-select-item-option class 篩選：role=option 那份是畫面外隱藏複本（README 執行注意事項）
@@ -289,9 +289,9 @@ test('4.7 新增印件收齊六項必填、是否急件預設否、草稿期間�
 });
 
 // 4.8 複製加開（OpenSpec change print-item-copy-rule，order-management § 加開印件（複製原印件規格））：
-// 內容類欄位帶入原印件的值當預設（印件名稱不加字樣、購買數量、印件預計交期），建立當下可改含印件屬性；
+// 內容類欄位帶入原印件的值當預設（印件項目名稱不加字樣、購買數量、印件預計交期），建立當下可改含印件屬性；
 // 訂單離開草稿後清空印件預計交期存檔被擋下。
-test('4.8 複製加開帶入原印件內容（印件名稱、購買數量、印件預計交期、是否急件），建立當下可改含印件屬性，清空交期擋下存檔', async ({ page }) => {
+test('4.8 複製加開帶入原印件內容（印件項目名稱、購買數量、印件預計交期、是否急件），建立當下可改含印件屬性，清空交期擋下存檔', async ({ page }) => {
   // 起點資料：鏈四 ORD-2026-0820（製作完成，非終態）／PI-2026-0820（大貨印件、500 本 (冊)、是否急件為是、
   // 印件預計交期 2026-09-07、難易度 4、包裝備註「每 20 本一箱」）
   await openAs(page, '業務', '/orders/detail?id=ORD-2026-0820&tab=printItems');
@@ -473,7 +473,7 @@ test('4.14 唯讀呈現處的印件內部完成日只印一組日期，急件不
   await gotoInApp(page, '/work-orders');
   const headers = page.locator('.ant-table-thead th');
   await expect(headers.filter({ hasText: '未扣急件內部完成日' })).toHaveCount(0);
-  const search = page.getByPlaceholder('請輸入工單編號、印件名稱／編號，或客戶名稱');
+  const search = page.getByPlaceholder('請輸入工單編號、印件項目名稱／編號，或客戶名稱');
   await search.fill('WO-2026-0820');
   await search.press('Enter');
   const urgentRow = page.locator('tr', { hasText: 'WO-2026-0820' }).first();
@@ -613,8 +613,8 @@ test('4.25 訂單離開草稿後新增印件未填印件預計交期擋下存檔
   // 一、新增印件：必填欄皆已填、印件預計交期留空 → 擋下並在該欄提示必填
   await page.getByRole('button', { name: '新增印件' }).click();
   const modal = page.locator('.ant-modal-content:visible').last();
-  await expect(modal.getByText('印件名稱')).toBeVisible();
-  await page.getByLabel('印件名稱').fill('4.25 新增印件');
+  await expect(modal.getByText('印件項目名稱')).toBeVisible();
+  await page.getByLabel('印件項目名稱').fill('4.25 新增印件');
   await modal.getByText('大貨印件', { exact: true }).click();
   await page.getByLabel('購買數量').fill('300');
   await page.locator('.ant-select:has(#unit)').click();

@@ -278,9 +278,9 @@ test('14.27 有工單但一筆生產任務都沒有時，兩個預估欄顯示�
 test('14.47 印件列表與印件詳情帶急件標注，是否急件為否與已棄用的印件不標', async ({ page }) => {
   test.setTimeout(120_000);
   await openAs(page, '印務主管', '/print-items');
-  const search = page.getByPlaceholder(/請輸入印件名稱／編號/);
+  const search = page.getByPlaceholder(/請輸入印件項目名稱／編號/);
 
-  // 鏈四 PI-2026-0820（是否急件為是）：列表的印件名稱旁帶標注
+  // 鏈四 PI-2026-0820（是否急件為是）：列表的印件項目名稱旁帶標注
   await search.fill('PI-2026-0820');
   await page.keyboard.press('Enter');
   const urgentRow = page.locator('.ant-table-row', { hasText: 'PI-2026-0820' }).first();

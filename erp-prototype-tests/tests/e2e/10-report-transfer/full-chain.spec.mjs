@@ -115,7 +115,7 @@ test('10.14 最後一筆報工把工單、印件、訂單一路推到製作完�
   await gotoInApp(page, '/orders');
   // 訂單列表依建立時間新到舊、每頁固定筆數，鏈九加入後 ORD-2026-0815 不在第一頁：
   // 先用搜尋框篩到該訂單（共用篩選元件按 Enter 才送出）
-  const orderSearch = page.getByPlaceholder('請輸入訂單編號、客戶名稱、案名，或印件名稱／編號');
+  const orderSearch = page.getByPlaceholder('請輸入訂單編號、客戶名稱、案名，或印件項目名稱／編號');
   await orderSearch.fill('ORD-2026-0815');
   await orderSearch.press('Enter');
   await page.getByText('ORD-2026-0815', { exact: true }).click();

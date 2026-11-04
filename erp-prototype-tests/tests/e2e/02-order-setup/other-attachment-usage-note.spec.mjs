@@ -2,12 +2,9 @@ import { test, expect } from '@playwright/test';
 import { openAs, switchRole } from '../_helpers.mjs';
 import { button, dialog, openByNo, openScenario, openTab } from './_local.mjs';
 
-// fixme：情境 2.9 要求「其他附件區按上傳，只選檔案不填用途說明就送出時擋下」，但上傳附件 Modal
-// （orders/_components/detail/AttachmentsTab.js）目前只有「檔名」一個文字欄，沒有真實檔案選取
-//（input type=file）、也沒有「用途說明」欄位可填——用途說明只在送出後的表格欄呈現，沒有輸入來源。
-// 與 prototype 不符，不改測試迎合、不改 prototype，回報待裁決（用途說明欄應在上傳當下就收，
-// 還是事後才補填，需業務裁決）。
-test.fixme(
+// 情境 2.9：其他附件區按上傳，選檔案並填用途說明才送得出（wiki 訂單其他附件保存 主流程第 1 步）；
+// 送出後清單帶檔名、用途說明、上傳者與上傳時間，檔名列可下載（主流程第 2 步）。
+test(
   '2.9 訂單其他附件要填用途說明才送得出（商業需求覆蓋矩陣 B）',
   async ({ page }) => {
     test.setTimeout(60_000);
@@ -24,12 +21,12 @@ test.fixme(
       buffer: Buffer.from('fake'),
     });
     // 只選檔案、不填用途說明就送出：應擋下不得送出
-    await panel.getByRole('button', { name: '上傳' }).click();
+    await panel.getByRole('button', { name: /^上\s*傳$/ }).click();
     await expect(page.getByText('請輸入用途說明')).toBeVisible();
 
     // 補填用途說明後再送一次
     await panel.getByLabel('用途說明').fill('客戶簽回合約掃描檔');
-    await panel.getByRole('button', { name: '上傳' }).click();
+    await panel.getByRole('button', { name: /^上\s*傳$/ }).click();
     await expect(page.getByText('已上傳附件').last()).toBeVisible();
 
     // 送出後清單多一列，帶檔名、用途說明、上傳者與上傳時間

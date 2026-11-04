@@ -420,7 +420,7 @@ test('10.25 已點收的轉交單不可作廢，送錯站由現場溝通後直�
   await openAs(page, '生管', '/production-floor/transfers');
 
   // 轉交單依建單時間新到舊、每頁 10 張：舊單在後頁，先以單號搜尋縮到這一張
-  const ticketSearch = page.getByPlaceholder('請輸入轉交單編號、印件名稱／編號、來源任務，或負責廠務');
+  const ticketSearch = page.getByPlaceholder('請輸入轉交單編號、印件項目名稱／編號、來源任務，或負責廠務');
   await ticketSearch.fill('TT-20260828-001');
   await ticketSearch.press('Enter');
   // 已點收的 TT-20260828-001：列上沒有作廢，也沒有建回運單的入口
@@ -545,7 +545,7 @@ test('10.40 建轉交單選負責廠務與預計轉交日，系統只通知負�
 // 起點：鏈四 TT-20260826-001（明細屬 PI-2026-0820，是否急件為是）與鏈二 TT-20260828-001（PI-2026-0710，是否急件否）。
 test('10.63 轉交單明細帶急件標注、單頭不帶', async ({ page }) => {
   await openAs(page, '生管', '/production-floor/transfers');
-  const ticketSearch = page.getByPlaceholder('請輸入轉交單編號、印件名稱／編號、來源任務，或負責廠務');
+  const ticketSearch = page.getByPlaceholder('請輸入轉交單編號、印件項目名稱／編號、來源任務，或負責廠務');
 
   await ticketSearch.fill('TT-20260826-001');
   await ticketSearch.press('Enter');
