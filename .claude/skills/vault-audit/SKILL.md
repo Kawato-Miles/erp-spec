@@ -2,7 +2,7 @@
 name: vault-audit
 description: >
   用：Miles 說「跑 vault audit」「audit vault」「Vault 健康檢查」「健檢」「全量稽核」「只查孤島」「跑維度 N」「稽核我剛 commit 的那批」「audit 並修復」；wiki 卡異動或提交數達建議門檻時主動建議；change 封存後主動建議。
-  不用：規劃設計稽核（用 erp-audit）；OpenSpec spec 稽核；Prototype 稽核（用 erp-prototype-tests）；raw 待處理掃描（用 vault-ingest）；交付文件稽核（用 linear-delivery）；寫卡或修卡（用 wiki-amend）。
+  不用：規劃設計稽核（用 erp-audit）；規劃單稽核；Prototype 稽核（用 erp-prototype-tests）；raw 待處理掃描（用 vault-ingest）；交付文件稽核（用 linear-delivery）；寫卡或修卡（用 wiki-amend）。
 ---
 
 # vault-audit
@@ -23,7 +23,7 @@ description: >
 
 ## 限制
 
-- 只讀 `memory/Sens_wiki/wiki/` 與 `memory/Sens_wiki/raw/`。frontmatter 引用的外部路徑只測存在，不讀內容。不讀 OpenSpec、Prototype、已凍結的 `00-meta/changelog.md`。
+- 只讀 `memory/Sens_wiki/wiki/` 與 `memory/Sens_wiki/raw/`。frontmatter 引用的外部路徑只測存在，不讀內容。不讀 `.scratch/` 規劃單、Prototype、已凍結的 `00-meta/changelog.md`。
 - 只報不修。修復一律轉介：03～07 與 11 層卡轉 `wiki-amend`；OQ 卡轉 `oq-manage`；raw 卡轉 `vault-ingest`；00-meta 規則正本與規範卡由主對話依 Miles 拍板改。
 - 矛盾並排呈報，建議開 OQ，不自行調和。
 - 機械維度的結果直接採用，不再派模型複判。判讀維度（1、12、13、14）派子代理判讀，再派懷疑者複核。
@@ -37,7 +37,7 @@ description: >
 | 步 | 動作 | 誰做 |
 |----|------|------|
 | 1 | 宣告模式與範圍 | 主對話 |
-| 2 | 跑機械維度：`scripts/mechanical_check.py`、`scripts/authority_check.py`；obsidian-cli 查維度 3、4；規範卡機械自檢（維度 16） | 主對話 |
+| 2 | 跑機械維度：`scripts/mechanical_check.py`、`scripts/authority_check.py`、`scripts/wiki_lint.py --all`（維度 16，寫入檢查的全庫版）；obsidian-cli 查維度 3、4 | 主對話 |
 | 3 | 派判讀子代理，各組平行 | 子代理 |
 | 4 | 懷疑者複核判讀結果的 Error 與 Warning 列 | 子代理 |
 | 5 | 寫報告 | 主對話 |
@@ -58,6 +58,7 @@ description: >
 | 要知道某維度怎麼查、怎麼判、門檻多少 | `references/稽核維度.md` |
 | 跑維度 2、5、6、7、8、9、10、11、17 | `scripts/mechanical_check.py`（在 repo 根目錄執行；`--help` 看參數） |
 | 跑維度 15 | `scripts/authority_check.py` |
+| 跑維度 16（寫入檢查 S1～S15、X1～X9） | `scripts/wiki_lint.py --all`；代號意義見 [[卡片撰寫共用規範]] § 四之四 |
 | 跑維度 3、4 | skill `obsidian-cli` |
 | 派維度 1、12、13、14 與懷疑者 | `references/判讀派工單.md` |
 | 要修卡 | 轉 `wiki-amend`（OQ 卡轉 `oq-manage`，raw 卡轉 `vault-ingest`） |
