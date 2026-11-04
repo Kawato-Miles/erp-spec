@@ -21,7 +21,6 @@ Miles 是印刷業 PM，負責 **ERP 系統**（生產排程、採購、倉儲�
 - 用語定義唯一正本是 matt 格式詞彙表，入口 `GLOSSARY-MAP.md`。
 - 欄位與狀態的新增修改是商業決策，先改 wiki 卡，再寫規劃單。
 - 引用方向：規劃單的 Problem Statement 與 Implementation Decisions 引 wiki 卡。wiki 不承載實作對應。收／不收邊界見 `memory/Sens_wiki/wiki/erp/00-meta/scope-boundary.md`。
-- 跨頁面引用一律 `[可讀名稱](URL)`；Notion URL 正本 `memory/shared/notion-index.md`。
 
 ## 工作入口
 

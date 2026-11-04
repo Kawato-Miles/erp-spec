@@ -99,5 +99,4 @@ Superpowers 預設使用 Claude Code 命名，在 Gemini CLI 中請使用對應�
 ---
 
 ## 外部資源 (Notion MCP)
-- **Notion 外部發佈內容索引：** `memory/shared/notion-index.md`
 - **MCP 伺服器：** `notion`, `figma` (配置於 `.mcp.json`)
