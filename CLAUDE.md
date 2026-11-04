@@ -137,3 +137,17 @@ Commit 格式：`{prefix}: {繁體中文描述}`，prefix 用 feat、fix、refac
 | 工作中心 | 設備、產線 | 維持現行 |
 
 品項主檔與製程類主檔不設統稱；禁用「料號主檔」「BOM 主檔」「BOM 三類」。「BOM」只指物料清單。其他 ERP 術語對照在 `memory/shared/non-business-terms.md`；實體、狀態、規則的定義讀正本卡的一句話定位段。
+
+## Agent skills
+
+### Issue tracker
+
+議題與規劃單用本機 Markdown，放在 `.scratch/<主題>/`（`spec.md` 與 `issues/<NN>-<slug>.md`）。見 `docs/agents/issue-tracker.md`。
+
+### Triage labels
+
+用預設五個分類標籤（`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`），本機模式記在議題檔的 `Status:` 行。見 `docs/agents/triage-labels.md`。
+
+### Domain docs
+
+多領域（multi-context）：根目錄 `GLOSSARY-MAP.md` 指向 ERP 與線上編輯器兩份詞彙表；系統級決策紀錄放 `docs/adr/`。見 `docs/agents/domain.md`。
