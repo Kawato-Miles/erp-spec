@@ -1,7 +1,7 @@
 # ERP 介面通則（字樣與子母表）
 
 > 定位：ERP Prototype 介面字樣與子母表樣式的通則，適用全部模組。
-> 依據：change shipment-print-download-center grill.md G19、G20、G25（Miles 2026-10-23 拍板）。
+> 依據：`memory/erp/plans/_archives/2026/shipment-print-download-center/grill.md` G19、G20、G25（Miles 2026-10-23 拍板）。
 > 與 wiki 的分工：介面字樣給使用者操作，wiki 操作名稱給規格引用，兩者目的不同、不要求字面相同。業務名詞與操作名稱的正本在 wiki 實體卡。
 > 與其他檔的分工：介面業務行為規範見 `ui-business-rules.md`；視覺規範與元件見 erp repo 的 skill `prototype-from-prompt`（本檔不動 erp skill）。
 
