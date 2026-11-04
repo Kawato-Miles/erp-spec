@@ -11,6 +11,11 @@ last-reviewed: 2026-06-02
 下記三行：「變更」（MUST 逐卡 `[[卡名]]` + 一句話，禁粗寫）、「動機」（實質異動正本卡必填，業務理由當下自足，得連 [[OQ卡]]；健檢 / 納入類免）、「衝突」。
 完整規約見 vault 根 `CLAUDE.md` § 四。卡的歷史 = 搜 `[[卡名]]` 命中本檔條目 + git 歷史；決策脈絡見 OQ 卡。
 
+## [2026-11-05 01:20] 同步 | scope-boundary 移除已刪除的通用工作原則檔列
+- 變更：[[scope-boundary]] 刪除「跨產品通用工作原則」一列（該檔已由框架轉換工作刪除，唯一仍有效的一句移入專案入口檔）
+- 動機：Miles 2026-11-04 拍板以 mattpocock-skills 取代 OpenSpec，舊通用工作原則檔廢止
+- 衝突：無
+
 ## [2026-11-05 01:00] 同步 | 規範卡與 meta 卡的 OpenSpec 落點改為新載體
 - 變更：[[scope-boundary]] 系統行為規格段改為規劃單、Prototype 情境目錄與測試、Linear 票、ADR，並改寫 ERP 定義正本在 [[ERP 詞彙表]]；[[wiki-schema]]、[[business-domain-taxonomy]]、[[規範 - 商業邏輯]]、[[規範 - 實體]]、[[規範 - 資料結構總覽]]、[[規範 - 狀態機]]、[[規範 - 業務情境]]、[[規範 - 角色]]、[[規範 - 活動清單]]、[[規範 - OQ]]、[[範本 - OQ]] 的 OpenSpec 落點與「禁指 OpenSpec」改指規劃單、Prototype 與實作程式碼；vault 根入口檔同步
 - 動機：Miles 2026-11-04 拍板以 mattpocock-skills 取代 OpenSpec，OpenSpec 已刪；現行落點規則不得指向不存在的載體
