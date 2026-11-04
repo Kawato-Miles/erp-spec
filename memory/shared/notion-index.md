@@ -8,7 +8,7 @@ type: reference
 
 > **引用規則**：BRD / Spec 內所有跨頁面引用，一律使用 `[可讀名稱](URL)` 格式。規則全文見專案 AGENTS.md § 正本分層。
 >
-> **維護原則**：Notion URL 異動時以本檔案為正本，同步更新所有引用此 URL 的 skill / agent 檔案。
+> **現況**：Notion 已不再使用，所有商業需求記錄在 wiki（`memory/Sens_wiki/wiki/`）。本檔只留歷史 URL 索引，不再維護。
 
 ---
 
@@ -16,10 +16,10 @@ type: reference
 
 | 資源名稱 | 說明 | URL | BRD 引用格式範例 |
 |---------|------|-----|----------------|
-| 商業流程 | 核心業務規則、計算邏輯、決策規則（已遷至 OpenSpec，此為發布版本）| https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a | `詳見 [商業流程](https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a) § X.X` |
-| 狀態機（上層+下層）| 需求單 / 訂單 / 工單 / 印件 / 任務 / 生產任務 / QC / 出貨單狀態轉換（已遷至 OpenSpec，此為發布版本）| https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 | `詳見 [狀態機](https://www.notion.so/32c3886511fa81539eb9d3c97630caa0) § 工單` |
-| 數量換算規則 | 數量換算計算邏輯（已遷至 OpenSpec business-processes spec，此為發布版本）| https://www.notion.so/32c3886511fa81e9a77adbd21cfc9d4a | `詳見 [數量換算規則](https://www.notion.so/32c3886511fa81e9a77adbd21cfc9d4a)` |
-| 出貨邏輯診斷 | 出貨邊界情況與常見漏洞（已遷至 OpenSpec business-processes spec，Notion 頁面已刪除）| https://www.notion.so/32c3886511fa81cfac16c4720b888ca2 | — |
+| 商業流程 | 核心業務規則、計算邏輯、決策規則（內容現記錄於 wiki，本頁已不維護）| https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a | `詳見 [商業流程](https://www.notion.so/32c3886511fa81ccaaf9fbfd3882f19a) § X.X` |
+| 狀態機（上層+下層）| 需求單 / 訂單 / 工單 / 印件 / 任務 / 生產任務 / QC / 出貨單狀態轉換（內容現記錄於 wiki，本頁已不維護）| https://www.notion.so/32c3886511fa81539eb9d3c97630caa0 | `詳見 [狀態機](https://www.notion.so/32c3886511fa81539eb9d3c97630caa0) § 工單` |
+| 數量換算規則 | 數量換算計算邏輯（內容現記錄於 wiki，本頁已不維護）| https://www.notion.so/32c3886511fa81e9a77adbd21cfc9d4a | `詳見 [數量換算規則](https://www.notion.so/32c3886511fa81e9a77adbd21cfc9d4a)` |
+| 出貨邏輯診斷 | 出貨邊界情況與常見漏洞（內容現記錄於 wiki，Notion 頁面已刪除）| https://www.notion.so/32c3886511fa81cfac16c4720b888ca2 | — |
 
 ---
 
@@ -27,10 +27,10 @@ type: reference
 
 | 資源名稱 | 說明 | URL | BRD 引用格式範例 |
 |---------|------|-----|----------------|
-| 業務情境 DB | PM 視角情境驗證與邊界案例（已遷至 OpenSpec business-scenarios spec，此為發布版本）| https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05 | `詳見 [業務情境](https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05) 的情境 XX` |
-| 使用者情境 | 各角色日常工作、職責、痛點（已遷至 OpenSpec，此為發布版本）| https://www.notion.so/32c3886511fa8144b38adc9266395d15 | `詳見 [使用者情境](https://www.notion.so/32c3886511fa8144b38adc9266395d15)` |
-| User Story DB | 業務故事集（US-001 起）（已遷至 OpenSpec，此為發布版本）| https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d | `詳見 [User Story DB](https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d) 的 US-XXX` |
-| 資料欄位 DB | 全局資料模型與欄位定義（已遷至 OpenSpec，此為發布版本）| https://www.notion.so/32c3886511fa803e9f30edbb020d10ce | `詳見 [資料欄位 DB](https://www.notion.so/32c3886511fa803e9f30edbb020d10ce) 的 [欄位名]` |
+| 業務情境 DB | PM 視角情境驗證與邊界案例（內容現記錄於 wiki，本頁已不維護）| https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05 | `詳見 [業務情境](https://www.notion.so/2b93886511fa817fbb7ff9d2b37b9e05) 的情境 XX` |
+| 使用者情境 | 各角色日常工作、職責、痛點（內容現記錄於 wiki，本頁已不維護）| https://www.notion.so/32c3886511fa8144b38adc9266395d15 | `詳見 [使用者情境](https://www.notion.so/32c3886511fa8144b38adc9266395d15)` |
+| User Story DB | 業務故事集（US-001 起）（內容現記錄於 wiki，本頁已不維護）| https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d | `詳見 [User Story DB](https://www.notion.so/32c3886511fa808d8cb7db5c7af8ce6d) 的 US-XXX` |
+| 資料欄位 DB | 全局資料模型與欄位定義（內容現記錄於 wiki，本頁已不維護）| https://www.notion.so/32c3886511fa803e9f30edbb020d10ce | `詳見 [資料欄位 DB](https://www.notion.so/32c3886511fa803e9f30edbb020d10ce) 的 [欄位名]` |
 
 ---
 

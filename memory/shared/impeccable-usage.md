@@ -1,7 +1,7 @@
 # impeccable 使用指引（ERP 場景）
 
 > **定位**：印刷業 ERP 系統與線上編輯器使用 impeccable 設計稽核 skill 的選擇決策樹。
-> **觸發時機**：(1) 開新 OpenSpec change 前，對既有頁面 / 元件做 UX 評估；(2) Prototype 完成後驗收 review；(3) 需要量化 UX 健康度（Nielsen scoring）時；(4) 設計討論時需要選對 impeccable 指令時。
+> **觸發時機**：(1) 開始規劃前（`erp-plan` 盤點之後、`grill-with-docs` 之前），對既有頁面 / 元件做 UX 評估；(2) Prototype 完成後驗收 review；(3) 需要量化 UX 健康度（Nielsen scoring）時；(4) 設計討論時需要選對 impeccable 指令時。
 > **不適用**：日常 commit-level QA（成本太高）、brand register 設計（ERP 屬 product register）。
 
 ---
@@ -27,9 +27,9 @@
 
 | ERP 階段 | 用什麼 | 怎麼用 |
 |---------|-------|-------|
-| 開新 OpenSpec change 前對既有頁面做評估 | `critique` | 結果作為 change proposal 的 background |
-| change proposal 的問題框架 | critique 結果 | 不用跑 `shape`，OpenSpec proposal 替代 |
-| Spec 撰寫 | （無對應）| 走 OpenSpec spec-driven 工作流 |
+| 開始規劃前對既有頁面做評估 | `critique` | 結果作為 grill 的背景資料 |
+| 規劃單的問題框架 | critique 結果 | 不用跑 `shape`，`grill-with-docs` 與 `to-spec` 替代 |
+| 規劃單撰寫 | （無對應）| 走 matt 規劃流程（`to-spec`） |
 | Prototype 完成後驗收 | `critique` + Lovable | 跑 critique 代替人工 UX review |
 | 設計觀念固化進規範 | reference 內容抽進 DESIGN.md | 已執行：cognitive-load / squint test / 跨 Tab 錨點（2026-05-18）|
 
@@ -37,7 +37,7 @@
 
 | 指令 | 不適用原因 |
 |------|----------|
-| `craft` | ERP 本地 `npm run dev` 與 Playwright 端對端測試（e2e）即驗證，Lovable 雲端建置同步部署；OpenSpec change 已是建置前 gate |
+| `craft` | ERP 本地 `npm run dev` 與 Playwright 端對端測試（e2e）即驗證，Lovable 雲端建置同步部署；規劃單（`.scratch/<主題>/spec.md`）已是建置前 gate |
 | `live` | 需開發伺服器跑視覺變體迭代 |
 | `bolder` / `quieter` / `delight` / `overdrive` | brand register 視覺放大器，product register 不追求驚奇 |
 | `colorize` | brand register 色彩策略；ERP 走 Figma token |
@@ -53,8 +53,8 @@
 1. **CLI `detect` 對 product register 精度差**：首次跑 11/11 false positive（Tab 底線誤判為 rounded card 邊框）→ 對 ERP 跳過 detect，只跑 LLM Design Review
 2. **Persona 選擇**：dashboard/admin → 預設用 **Alex（Power User）+ Sam（A11y）**；ERP 可加自定義 persona（印務組長 / 新進業務 / 業務主管 / 業務主管）
 3. **跑 critique 前必備**：PRODUCT.md + DESIGN.md 都已對齊
-4. **不適合每次小變更跑**：critique 一次 ~130k tokens，適合 change-level 起點，不適合 commit-level QA
-5. **跑完 critique 不直接修 code**：ERP 走 OpenSpec change 工作流，critique 結果作為 proposal 的 background；不直接 invoke `layout` / `distill` / `clarify` 改 code
+4. **不適合每次小變更跑**：critique 一次 ~130k tokens，適合規劃起點，不適合 commit-level QA
+5. **跑完 critique 不直接修 code**：ERP 走 matt 規劃流程，critique 結果作為 grill 的背景資料；不直接 invoke `layout` / `distill` / `clarify` 改 code
 6. **跳過三視角審查時**：依 Miles 指示，可跳過 senior-pm + ceo-reviewer + erp-consultant，但 critique 已部分覆蓋此角色（提供量化 + 多 persona 視角）
 
 ## 5. ERP 既有規範與 impeccable 概念對照
@@ -65,7 +65,7 @@
 | Squint Test（眯眼測試）| DESIGN.md §2.2（已採納，視覺層次須 ≥2 維度共建）|
 | 跨 Tab 上下文錨點原則 | DESIGN.md §0.1（已採納，三類錨點：A 實體識別 / B 上下文關聯 / C 戰情關鍵數字）|
 | Nielsen 10 Heuristics Scoring | 評估時用，不固化進規範（量化工具）|
-| Persona Red Flags（5 個固定 persona）| 對應 user-roles spec 角色定義；可派生 ERP 自定義 persona |
+| Persona Red Flags（5 個固定 persona）| 對應 wiki 角色卡（`03-roles/`）；可派生 ERP 自定義 persona |
 | Anti-patterns（OKLCH / fluid type / glassmorphism / nested cards / hero metric）| DESIGN.md §1 視覺規範 + §8 BAN-* 黑名單已涵蓋；ERP 規範優先 |
 | Information architecture（cards 不必要、nested cards 禁、everything in container 禁）| DESIGN.md §0.1「info row 統一格式」+「並列比較用 ErpSummaryGrid」已涵蓋 |
 | Loading / Error / Empty states 規範 | DESIGN.md §0.2 + `memory/shared/ui-business-rules.md` §3-7 已涵蓋 |
@@ -93,7 +93,7 @@
   - `align-print-item-detail-design-system-compliance`（純實作對齊，P1 級 quick win）
   - DESIGN.md 補規範（已完成）
 
-完整 critique 報告與行動清單見對應 OpenSpec change 的 proposal.md。
+完整 critique 報告與行動清單原放在已退場的 OpenSpec change proposal.md，現在只能從 git 歷史（提交 34a0772 之前）查。
 
 ## 8. 相關資源
 
