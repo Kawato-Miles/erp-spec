@@ -197,7 +197,7 @@ F_RULES = [
 ]
 CARD = re.compile(r"(?<![0-9A-Za-z])(1|N|M)\s*[:：]\s*(1|N|M)(?![0-9A-Za-z])")
 RULE_SIGNAL = re.compile(r"[≥≤≠]|>=|<=|[0-9]+ ?(天|日|%|張|份)以[上下內]")
-SOURCE_OK = re.compile(r"^(Miles |\d{4}-\d{2}-\d{2}|訪談|既有介面|後端|現行|change |Sens |memory/|\[\[)")
+SOURCE_OK = re.compile(r"^(Miles |\d{4}-\d{2}-\d{2}|訪談|既有介面|後端|現行|change |Sens |memory/|\[\[|拆自 )")
 
 
 def check_card(card, ctx, rep):
@@ -277,7 +277,8 @@ def check_card(card, ctx, rep):
     if card.canon:
         for s in src:
             bad = re.search(r"同上|如上", s) or re.search(r"[）)]\s*[：:]\s*\S", s) or len(s) > ctx["th"].get("source_max_chars", 120)
-            if bad or not SOURCE_OK.search(s):
+            short_basis = len(s) <= 30 and not re.search(r"[：:]", s)
+            if bad or not (SOURCE_OK.search(s) or short_basis):
                 rep.add("S15", card, None, f"source 不是純出處指標：{s[:50]}")
     # S9、S10：重複句
     dup_sentences(card, ctx, rep)
@@ -386,7 +387,7 @@ def check_cross(ctx, rep, changed):
     # X2：規則組資料夾成員與索引卡清單一致
     for c in cards.values():
         if c.type == "rule-group" and c.canon and not c.archived:
-            listed = {m.group(1).strip() for _, ln in c.body() for m in LINK.finditer(ln)}
+            listed = {m.group(1).strip() for ln in mc.section(c.text, "規則清單", 2) for m in LINK.finditer(ln)}
             members = {p.stem for p in c.p.parent.glob("*.md") if p != c.p}
             for x in sorted(members - listed):
                 rep.add("X2", c, None, f"資料夾內的「{x}」沒列在索引卡", level="錯誤")
