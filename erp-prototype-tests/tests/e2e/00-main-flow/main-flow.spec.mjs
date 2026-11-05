@@ -191,14 +191,13 @@ function fakeFile(name, mimeType = 'application/pdf') {
   };
 }
 
-// 審稿人員在待審清單對一件印件完成審核。
+// 審稿人員在待審清單對一件印件完成審核（列上點「審稿」直接開對話框）。
 // 合格路徑要交完稿縮圖（整批一張）與審稿後印件檔（逐件一份），缺件不可送出；
 // 不合格路徑要選退件原因。
 async function completeReview(page, name, result) {
   await goInApp(page, '/prepress-review', gotoInApp);
+  // 列上的「審稿」鈕直接開完成審核對話框（與正式前端一致；印件詳情頁另可完成審核）
   await reviewRow(page, name).getByRole('button', { name: '審稿' }).click();
-  await expect(page).toHaveURL(/print-items\/detail/, { timeout: 40_000 });
-  await page.getByRole('button', { name: '完成審核' }).first().click();
   const box = dialog(page);
   await box.getByText(result, { exact: true }).click();
   if (result === '合格') {

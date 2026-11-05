@@ -183,11 +183,10 @@ test('5.5 判不合格的印件把訂單推到待補件，補件後自動退回�
   await expect(orderListRow.getByText('等待審稿', { exact: true })).toBeVisible();
   await expect(orderListRow.getByText(/件不合格/)).toHaveCount(0);
 
-  // 審稿人員在審稿清單對 PI-2026-0921 點「審稿」（導向印件詳情頁），完成審核選不合格並選退件原因送出
+  // 審稿人員在審稿清單對 PI-2026-0921 點「審稿」（直接開完成審核對話框），選不合格並選退件原因送出
   await switchRole(page, '審稿人員');
   await gotoInApp(page, '/prepress-review');
   await reviewRow(page, '量販促銷吊卡').getByRole('button', { name: '審稿' }).click();
-  await page.getByRole('button', { name: '完成審核' }).first().click();
   const reviewDialog = page.locator('.ant-modal-content, [role="dialog"]').last();
   await reviewDialog.getByText('不合格', { exact: true }).click();
   await reviewDialog.locator('.ant-select').click();

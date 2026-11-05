@@ -2,12 +2,14 @@ import { test, expect } from '@playwright/test';
 import { gotoInApp, openAs, switchRole } from '../_helpers.mjs';
 import {
   button,
-  dialog,
+  drawer,
   openByNo,
+  openShareDrawer,
   openTab,
   orderHeader,
   panelSection,
   pickOption,
+  shareOrderTo,
   submit0814ForReview,
 } from './_local.mjs';
 
@@ -114,10 +116,11 @@ test('2.27 訂單的分享候選：業務、諮詢與全公司協助角色，不
   await openAs(page, '業務', '/orders');
   await openByNo(page, 'ORD-2026-0710');
   await openTab(page, '分享');
-  await button(page, '新增分享成員').click();
-  const addPanel = dialog(page);
-  await addPanel.locator('.ant-select').nth(0).click();
-  const titles = await dropdownTitles(page);
+  await openShareDrawer(page);
+  // 側板人員表格的姓名欄（單頁不分頁，一次讀全部列）
+  const titles = (await drawer(page).locator('tbody tr.ant-table-row td:nth-child(2)').allInnerTexts()).map((t) =>
+    t.trim(),
+  );
 
   // 審稿主管、印務主管、訂單管理人、Supervisor、業務、諮詢都在候選裡
   for (const name of ['魏彣軒', '吳國豪', '黃聖雯', '王大明', '陳映蓉', '蘇怡君', '林雅婷']) {
@@ -146,15 +149,10 @@ test('2.20 六個全公司協助角色在訂單詳情有編輯入口：業務主
   await expect(page).not.toHaveURL(/\/orders\/detail/, { timeout: 15_000 });
 });
 
-// 在分享頁籤新增一位分享成員並指定層級
-async function shareOrderTo(page, name, levelLabel) {
+// 在分享頁籤新增一位分享成員並指定層級（共用步驟見 _local.mjs shareOrderTo）
+async function shareTo(page, name, levelLabel) {
   await openTab(page, '分享');
-  await button(page, '新增分享成員').click();
-  const addPanel = dialog(page);
-  await pickOption(page, addPanel.locator('.ant-select').nth(0), name);
-  await pickOption(page, addPanel.locator('.ant-select').nth(1), levelLabel);
-  await button(addPanel, '新增').click();
-  await expect(page.getByText('已新增分享成員').last()).toBeVisible();
+  await shareOrderTo(page, name, levelLabel);
 }
 
 test('2.23 諮詢乙被分享（編輯）他人的草稿訂單後可送主管審核；業務乙被分享後直連可進', async ({ page }) => {
@@ -162,8 +160,8 @@ test('2.23 諮詢乙被分享（編輯）他人的草稿訂單後可送主管審
   // 起點：鏈八 ORD-2026-0814（草稿，接單業務洪嘉駿）。前置：接單業務把訂單以編輯（代理）分享給諮詢乙蘇怡君與業務乙陳映蓉
   await openAs(page, '業務', '/orders');
   await openByNo(page, 'ORD-2026-0814');
-  await shareOrderTo(page, '蘇怡君', '編輯（代理）');
-  await shareOrderTo(page, '陳映蓉', '編輯（代理）');
+  await shareTo(page, '蘇怡君', '編輯（代理）');
+  await shareTo(page, '陳映蓉', '編輯（代理）');
 
   // 業務乙停在這張訂單的詳情頁：被分享後可進，畫面不導回，送主管審核鈕顯示（條件不齊時停用）
   await switchRole(page, '業務（陳映蓉）');

@@ -10,6 +10,7 @@ import {
   openTab,
   panelSection,
   pickOption,
+  shareOrderTo,
 } from './_local.mjs';
 
 // 情境目錄 2.10：分享成員代為操作，活動紀錄歸實際操作者。
@@ -28,18 +29,13 @@ test('2.10 分享成員代為操作，活動紀錄歸實際操作者（商業需
   await expect(page.locator('body')).toContainText('張惠雯');
 
   // 新增一位分享成員（候選排除接單業務洪嘉駿與既有成員張惠雯）
-  await button(page, '新增分享成員').click();
-  const addPanel = dialog(page);
-  await pickOption(page, addPanel.locator('.ant-select').nth(0), '李志豪');
-  await button(addPanel, '新增').click();
-  await expect(page.getByText('已新增分享成員').last()).toBeVisible();
+  await shareOrderTo(page, '李志豪');
   await expect(page.locator('body')).toContainText('分享（2）');
 
-  // 移除剛新增的那一位：先定位含「李志豪」文字節點最近的一顆「移除」按鈕
-  const newMemberRow = page.getByText('李志豪', { exact: true }).locator('xpath=ancestor::div[contains(@class,"ant-flex")][1]');
-  await button(newMemberRow, '移除').click();
-  // Popconfirm 的確定鈕（okText 同為「移除」）浮出於觸發按鈕旁，取最新出現的那顆
-  await button(page, '移除').last().click();
+  // 移除剛新增的那一位：名單列尾端的移除鈕，確認對話框的確認鈕（okText「移除」）
+  const newMemberRow = page.locator('tbody tr.ant-table-row').filter({ hasText: '李志豪' });
+  await newMemberRow.getByRole('button').click();
+  await button(dialog(page), '移除').click();
   await expect(page.getByText('已移除分享成員').last()).toBeVisible();
   await expect(page.locator('body')).toContainText('分享（1）');
 
@@ -49,12 +45,7 @@ test('2.10 分享成員代為操作，活動紀錄歸實際操作者（商業需
 
   // 授予編輯（代理）層級：接單業務把這張訂單以編輯層級分享給諮詢乙蘇怡君（單據權責修正：代為操作要看層級）
   await openTab(page, '分享');
-  await button(page, '新增分享成員').click();
-  const editPanel = dialog(page);
-  await pickOption(page, editPanel.locator('.ant-select').nth(0), '蘇怡君');
-  await pickOption(page, editPanel.locator('.ant-select').nth(1), '編輯（代理）');
-  await button(editPanel, '新增').click();
-  await expect(page.getByText('已新增分享成員').last()).toBeVisible();
+  await shareOrderTo(page, '蘇怡君', '編輯（代理）');
   await openTab(page, '資訊');
 
   // 以編輯層級的被分享者（蘇怡君，模擬角色「諮詢乙」）身分對這張訂單做一次編輯：改交貨備註

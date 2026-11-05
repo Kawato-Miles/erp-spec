@@ -172,7 +172,6 @@ test('5.12 不合格後未補件不設上限、不設停滯提醒', async ({ pag
     await switchRole(page, '審稿人員');
     await gotoInApp(page, '/prepress-review');
     await reviewRow(page, '禮盒外盒包裝').getByRole('button', { name: '審稿' }).click();
-    await page.getByRole('button', { name: '完成審核' }).first().click();
     const reviewDialog = page.locator('.ant-modal-content, [role="dialog"]').last();
     await reviewDialog.getByText('不合格', { exact: true }).click();
     await reviewDialog.locator('.ant-select').click();

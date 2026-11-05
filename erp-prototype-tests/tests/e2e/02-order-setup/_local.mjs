@@ -51,6 +51,33 @@ export async function pickMulti(page, select, label) {
   await expect(page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')).toHaveCount(0);
 }
 
+// 訂單分享頁籤的「新增人員」側板（共用元件 AddMemberDrawer）：人員表格逐列勾選，確認鈕文字為「新增」或「新增 N」。
+// 授予一律先給預設層級（檢視），要改編輯（代理）在名單的權限欄調整。
+export async function openShareDrawer(page) {
+  await button(page, '新增分享成員').click();
+  const panel = drawer(page);
+  await expect(panel).toContainText('新增關聯人員');
+  return panel;
+}
+
+/** 在分享頁籤新增一位分享成員；levelLabel 非預設（檢視）時，新增後在名單權限欄改層級 */
+export async function shareOrderTo(page, name, levelLabel = '檢視') {
+  const panel = await openShareDrawer(page);
+  await panel
+    .locator('tbody tr.ant-table-row')
+    .filter({ has: page.getByText(name, { exact: true }) })
+    .locator('input[type="checkbox"]')
+    .check();
+  await panel.getByRole('button', { name: /^新增/ }).last().click();
+  await expect(page.getByText('已新增分享成員').last()).toBeVisible();
+  await waitModalsClosed(page);
+  if (levelLabel !== '檢視') {
+    const row = page.locator('tbody tr.ant-table-row').filter({ hasText: name });
+    await pickOption(page, row.locator('.ant-select'), levelLabel);
+    await expect(page.getByText('已更新分享層級').last()).toBeVisible();
+  }
+}
+
 export async function openTab(page, label) {
   await page.locator('.ant-tabs-tab', { hasText: label }).first().click();
 }

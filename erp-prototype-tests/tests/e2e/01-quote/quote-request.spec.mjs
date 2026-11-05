@@ -798,12 +798,13 @@ test('1.18 業務建立需求單，接單業務為本人，必填欄位未填無
   // 單頭什麼都不填就確認：逐欄提示、不建立
   const panel = drawer(page);
   await clickOpen(button(page, '新增'), panel.getByLabel('需求案名'));
+  // 接單業務預設為登入者（與正式前端一致），不會出現必填提示
+  await expect(panel.locator('.ant-select-selection-item', { hasText: '洪嘉駿' })).toBeVisible();
   await button(panel, '確認').click();
   for (const msg of [
     '請輸入需求案名',
     '請選擇客戶',
     '請選擇詢價來源',
-    '請選擇接單業務',
     '請選擇評估印務主管',
     '請選擇帳務公司',
   ]) {
@@ -815,7 +816,6 @@ test('1.18 業務建立需求單，接單業務為本人，必填欄位未填無
   await panel.getByLabel('需求案名').fill(title);
   await pickOption(page, panel.getByLabel('客戶'), '喜互惠量販股份有限公司');
   await pickOption(page, panel.getByLabel('詢價來源'), 'Line');
-  await pickOption(page, panel.getByLabel('接單業務'), '洪嘉駿');
   await pickMulti(page, panel.getByLabel('評估印務主管'), '吳國豪');
   await pickOption(page, panel.getByLabel('帳務公司'), '感官');
   await button(panel, '確認').click();
