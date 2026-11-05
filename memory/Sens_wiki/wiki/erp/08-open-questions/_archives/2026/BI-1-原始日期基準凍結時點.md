@@ -73,3 +73,5 @@ senior-pm Phase 1 為使設計可推進，先假設「凍結時點 = 期次首�
 - senior-pm Phase 1 假設 1（unify-billing-installment-and-reconciliation-csv change）
 - design.md § Open Questions OQ-BI-A
 - Miles 2026-05-28 拍板（收款項目 6 項調整需求，承接 remove-legacy-payment-plan-planned-invoice-junction change）
+
+本卡結論已由 2026-11-05 L1 測試回饋優化拍板取代：原始預計收款日與原始預計開發票日改在收款計畫核定時點凍結，異動次數改為一次儲存改多欄時每欄各計一次（見 [[帳務]] 收款項目段）（2026-11-05）
