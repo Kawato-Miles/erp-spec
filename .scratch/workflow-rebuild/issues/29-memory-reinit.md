@@ -109,3 +109,80 @@ reference 類 2 張：F3 回報卡內路徑都存在，建議保留。
 6. 之後才是：Miles 確認分類、封存、寫 `AGENTS.md` 的記憶規則句（先給 Miles 看）、結案。
 
 Miles 2026-11-12 在本對話的指示：派工一律用子代理、新對話只接續主線（已入地圖 Notes）；子代理的結論要檢核（已入地圖 Notes）；`派工任務書範本.md` 刪掉，歸票 30（已入票 30 留言）。
+
+### 2026-11-12 進行中：檢核五步做完，分類已呈報 Miles，等確認
+
+上一段「還沒做的事」第 1 至 5 項已完成。第 6 項（Miles 確認、封存、寫 `AGENTS.md` 的記憶規則句、結案）還沒做。記憶目錄、封存資料夾、`AGENTS.md` 仍未改動。
+
+第 1 項，判讀比對不到的列：
+
+- 第二輪比對指令 `research/29-verify/triage_unmatched.py`，輸出 `檢核-第二輪分類.txt`。它把比對不到的列分成：引號內的句子存在、改寫或併句、疑似無出處。
+- 判為「已有家」或「別處已有」但疑似無出處的共 47 列。逐列看過：都是子代理把說明寫進原文句欄（例：「三張皆已有決議段」「以程式現況判定」），不是引用。主對話抽查其中 20 項，全部在原始檔成立。
+- 結論：沒有發現捏造，沒有批次要退回重做。第一輪的缺點是原文句欄混了說明，所以第二輪任務書改成一格一句照抄。
+
+第 2 至 4 項，重查（project 類）：
+
+- 做法：`make_recheck_lists.py` 從第一輪抽出矛盾 112、找不到 114、部分 180 共 406 列，另從「已有家」每 8 列抽 1 列共 107 列，合計 513 列，分 14 批派 Sonnet 子代理。任務書 `00-任務書-重查.md`，清單 `重查清單-*.md`，產出 `R-*.md`。
+- 矛盾要判方向。任務書要求正面證據（wiki 的 `log.md`、OQ 卡、較晚的記憶卡、`git log -S` 找出說法第一次出現的提交），不能只看該行最後修改日，因為 wiki 在 2026-10 至 2026-11 整批改寫過。
+- 主對話檢核：`aggregate_recheck.py` 核對 513 列沒有漏列；有原文句的列逐句比對是否在所寫的檔，只有 5 列比對不到（4 列的家是操作手冊成品檔，不在比對範圍；1 列原文句只有兩個字）。另抽查 6 條「家較新」的提交日期與 wiki 原句，全部成立。子代理沒有改到產出檔以外的檔。輸出 `重查彙整-統計.txt`、`重查彙整-待裁決.md`。
+
+重查結果：
+
+| 第一輪判定 | 列數 | 重查結論 |
+|---|---|---|
+| 矛盾 | 112 | 家較新 104；不是矛盾 5；記憶卡較新 3 |
+| 找不到 | 114 | 已有家 17；家較新 7；仍缺 90 |
+| 部分 | 180 | 已有家 112；家較新 4；仍缺 64 |
+| 已有家（抽查） | 107 | 同義 101；不同義 6（都是記憶卡過期或講不同的事，沒有新缺口） |
+
+「仍缺」154 列的分類：否決 47、紀錄或待辦 48、流程環境 36、商業規則 13、介面 10。
+
+記憶卡較新 3 條：
+
+| 記憶卡 | 內容 | 去向 |
+|---|---|---|
+| production_quantity_audit_grill_20261026 C12 | 2026-10-27 拍板「補做不建新任務，對原任務填補做數量」；wiki `07-scenarios/QC不通過補生產.md:34` 仍寫「加開整串補做生產任務」。同源的 C13（整筆報廢的任務重做走加開新任務）wiki 沒有 | 該 grill 進行中，拍板記在工作資料夾的 `grill.md`；等補做設計一起落卡 |
+| production_stage_seg3_done F13 | ERP 後端是 sens-print-core，sensation-api 是 EC 後台；`AGENTS.md` 第 48、101 行寫反。兩個程式庫本機都在 | 票 30，要 Miles 裁決 |
+| erp_repo_prototype_workflow 5 | erp 的 Prototype 分支做法，記憶卡、erp skill、`AGENTS.md` 說法不一 | 票 30，要 Miles 裁決 |
+
+商業規則缺口 13 條（明細在 `重查彙整-待裁決.md`）：
+
+| 類 | 記憶卡與列 | 內容 |
+|---|---|---|
+| 兩邊說法相反 | work_order_visibility_sharing 1 | 印務的工單列表只帶自己的；wiki 的 ACT-VPRD-027 寫印務查閱全公司工單，Prototype 與情境目錄 7.47 仍收窄 |
+| 兩邊說法相反 | production_stage_seg4b_done H13 | 卡寫 B2C 生產任務由印務建；wiki `工單.md:49` 寫線上單由系統自動建工單與任務 |
+| 兩邊說法相反 | work_order_detail_company_alignment 20 | 卡寫印務看不到訂單層金額；wiki `訂單.md:133` 起的訂單層利潤欄可見範圍含印務 |
+| 兩邊說法相反 | work_order_detail_layout_done 30 | 卡寫生管列印不以異動為前提；wiki 輸出活動清單的活動名稱是「工單異動確認後重印紙本工單」 |
+| 疑似已被取代 | work_order_qty_color_costing_done 5 | 工單層目標數量不含放損；wiki 部件倍率卡寫印務常因放損多填 |
+| 疑似已被取代 | work_order_task_editing_done 10 | 材料任務放損只含開機損；wiki 材料用量卡寫材料任務與工序任務同一套填法 |
+| wiki 沒有這句 | invoice_view_drawer_done 4 | 發票「奇數月 14 日」是 ezPay 平台時限、不是法規；2026-11-11 正規化第 6 批（提交 14e0e79）時遺失 |
+| wiki 沒有這句 | production_stage_seg4b_done H4 | 取消免審稿時，已建的免審輪怎麼處理 |
+| wiki 沒有這句 | work_order_visibility_sharing 9 | 工單改派後，原負責人不自動成為分享成員 |
+| wiki 沒有這句 | mock_chain4_urgent_multipart 12 | 需求單轉訂單時出貨方式先取印件層、空白才取單頭；建需求單時窗口聯絡人預設帶主要窗口 |
+| wiki 沒有這句 | quote_to_order_gap_fix 4 | 需求單轉入訂單的參考附件可刪除 |
+| wiki 沒有這句 | after_sales_responsibility_removal 7 | 售後強制結案時，活動紀錄附未完結清單 |
+| wiki 沒有這句 | production_quantity_audit_grill C13 | 見上表 C12 |
+
+feedback 類（主對話已檢核第一輪的 `F1.md` 至 `F3.md` 總表與矛盾列）：
+
+| 結論 | 張數 | 卡 |
+|---|---|---|
+| 可封存（別處已有同義句，或前提已不存在） | 9 | advice_format_no_counterexample_section、always_traditional_chinese、contradiction_must_stop、erp_spec_merge_direct_no_pr、no_staging_before_commit、research_split_by_domain、subagent_tier_blind_test_20260915、wiki_data_governance_no_overlap、wiki_single_direction_reference |
+| 先留，等票 30 搬到對應的檔 | 38 | 見 `F1.md` 至 `F3.md` 總表「建議的家」欄 |
+| 與現行規則相反，等票 30 由 Miles 裁決 | 12 | check_sensation_api_asis、features_mece_no_rules_in_project、industry_best_practice_first、linear_comment_format、linear_fix_restructure_not_append、linear_task_prefix、model_split_opus_for_agents、oq_closure_resolve_then_archive、production_task_standardized、prototype_layout_follow_source、prototype_pr_no_linear_link、wiki_link_not_text_path |
+
+第 5 項，封存判準（呈報 Miles 的版本）：
+
+- project 類：卡內每條決策都有去向就封存。去向有四種：已在 wiki 或 Prototype；家較新（記憶卡是過期的舊結論）；屬完成紀錄，git 已有；已列入上面的缺口表。照這個判準，51 張有 48 張封存。
+- project 類留 3 張並改寫成只剩位置：`project_workflow_rebuild_map_20261111`（本地圖的接續入口）、`project_production_quantity_audit_grill_20261026`（進行中 grill 的工作資料夾入口）、`project_erp_manual_dev_verified`（操作手冊的 Artifact 網址與 Dev 環境網址，改成 reference 類）。
+- feedback 類封存 9 張，留 50 張等票 30。reference 類 2 張留著。
+- 封存後記憶目錄剩 55 張卡。
+
+等 Miles 回覆的問題：
+
+1. 上述分類與封存判準是否同意。
+2. 否決類 47 條（決定不做某事）wiki 正文不寫。要不要另外補到決策紀錄（`docs/adr/`），或維持不補。
+3. 商業規則缺口 13 條怎麼處理：開 OQ 卡由 Miles 逐條裁決，或直接在對話裡裁決後走 `wiki-amend` 落卡。這是 wiki 內容的事，不在本票範圍，要另開票。
+4. `AGENTS.md` 的記憶規則句草稿（見對話）是否同意。
+
+舊待辦：「紀錄或待辦」48 列裡有還沒做完的事（例：6 張 raw 升 reviewed、Linear 範例更新、PT-048 封存）。結案時另開一張票清點，不留在記憶。

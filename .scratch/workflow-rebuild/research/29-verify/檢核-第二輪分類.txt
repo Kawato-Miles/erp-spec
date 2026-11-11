@@ -1,0 +1,378 @@
+== P1.md：{'已有家/引號內存在': 7, '已有家/待人工': 2, '已有家/改寫': 2, '已有家/疑似無出處': 1, '部分/引號內存在': 4, '部分/待人工': 1, '部分/疑似無出處': 3}
+   ! 疑似無出處(0.00) | 部分 | project_after_sales_responsibility_removal.md | #1 | `W05-entities/售後服務單.md` 欄位表（無此欄） | 欄位表四段（基本資料、客訴與決議、結案資訊）皆無責任歸屬；全 wiki 搜不到「售後單不設責任歸屬」的明文。缺：明示不設與理由
+   ! 疑似無出處(0.33，檔名解不出) | 部分 | project_after_sales_responsibility_removal.md | #7 | 同上:67 | 有「列出清單、確認後可結案」，缺「活動紀錄附清單」。搜過：活動紀錄、附清單、強制結案、留痕（售後服務狀態、售後結案活動清單、售後受理與決議）。另註：Prototype `PT orders/_components/det
+   ! 待人工(0.58) | 已有家 | project_consultation_cancel_converge.md | #6 | `異動狀態推進不依訂單狀態.md:23`；`W06-state-machines/訂單狀態.md:253` | 「訂單異動的狀態推進…一律不看訂單當下的狀態」；終態只鎖「明細金額」「印件整筆刪除」
+   ! 待人工(0.50，檔名解不出) | 已有家 | project_consultation_cancel_converge.md | #8 | `OQ封存CR-5…:67`、`OQ封存CR-6…:63`、`OQ封存BI-15…:63` | 三張皆已 answered 並有「決議」段
+   ! 待人工(0.58) | 部分 | project_order_invoice_amount_rules.md | #31 | `W07-scenarios/收款項目開立發票.md:73` | 「預開發票之後重出並重簽報價單 → 屬訂單層的追加回簽…不在訂單帳務範圍」。缺：「由業務判斷、系統不統一規定」這個決定
+   ! 改寫(0.81，檔名解不出) | 已有家 | project_quote_prototype_sync_20260908.md | #4 | `W05-entities/需求單.md:108-110` | 「單價…（未稅，小數點後兩位）」；小計「round(印件項目.單價 × 印件項目.數量)」；成本估算列；全 wiki 已無「報價總額」
+   ! 改寫(0.75，檔名解不出) | 已有家 | project_quote_prototype_sync_20260908.md | #14 | `W05-entities/需求單.md:58,59,76` | 「單選（[[廠客]]…）」；「單選（同客戶下的聯絡人）」；需求備註列
+   ! 疑似無出處(0.20，檔名解不出) | 已有家 | project_quote_prototype_sync_20260908.md | #19 | `OQ封存QR-007…:47`、`QR-008…:47`、`QR-009…:47` | 三張皆已有「決議」段（QR-007 採 B：流失原因以後端六值為準）
+   ! 疑似無出處(0.36，檔名解不出) | 部分 | project_erp_dashboard_deferred.md | #2 | 同上:83 | 「這些成形後各自獨立為專案卡，與本卡平行」。缺：「先確認核心流程已落地且有真實資料」的檢查動作，以及「不混入單一模組 change」的明示
+== P2.md：{'已有家/句子在別檔': 2, '已有家/引號內存在': 20, '已有家/待人工': 4, '已有家/改寫': 6, '已有家/疑似無出處': 5, '部分/引號內存在': 5, '部分/待人工': 3, '部分/改寫': 1, '部分/疑似無出處': 2}
+   ! 待人工(0.50) | 已有家 | project_rush_order_definition_20261027.md | #8 | R/印件日期規則/印件預計交期依階段必填.md:29 | 「草稿｜新增印件、編輯印件｜可空」
+   ! 句子在別檔 | 已有家 | project_rush_order_definition_20261027.md | #9 | W/06-state-machines/訂單狀態.md:187 | 「旗下 有效印件 全部有印件預計交期」
+   ! 待人工(0.65) | 已有家 | project_rush_order_definition_20261027.md | #10 | R/印件日期規則/印件預計交期依階段必填.md:31 | 「新增印件（含複製加開…）｜存檔時必須有值」
+   ! 待人工(0.69) | 已有家 | project_rush_order_definition_20261027.md | #11 | R/印件日期規則/印件預計交期依階段必填.md:32 | 「編輯既有有效印件｜可改，不可清空」
+   ! 疑似無出處(0.17，檔名解不出) | 已有家 | project_rush_order_definition_20261027.md | #15 | W/08-open-questions/ORD-061-…、ORD-062-…、ORD-063-… 三卡存在 | 三卡檔名即決策主題（急件規則.md 範圍外亦點名）
+   ! 待人工(0.50，檔名解不出) | 部分 | project_rush_order_definition_20261027.md | #16 | W/05-entities/印件.md:99、100 | 是否急件的可否修改欄指向 ORD-063，符合；但「購買的急件選項」欄形態寫「文字＋整數（唯讀）」，與「不寫成唯讀規則」不完全同調
+   ! 改寫(0.89) | 已有家 | project_delivery_date_redefinition_20260921.md | #9 | W/06-state-machines/工單狀態.md:71–74 | 「送審…[工單預排完成日不晚於印件內部完成日，或兩欄任一為空]」；核可轉換同條件
+   ! 改寫(0.82，檔名解不出) | 已有家 | project_delivery_date_redefinition_20260921.md | #18 | W/05-entities/訂單.md:98 | 「min(印件.印件預計交期)；全部印件都出貨後：max(印件.印件預計交期)」「列表可依本欄排序與篩選」
+   ! 改寫(0.78) | 部分 | project_delivery_date_redefinition_20260921.md | #26 | R/印件日期規則/印件日期人工修改配套.md:33 | wiki 寫「訂單活動紀錄｜寫入操作者、時間、舊值、新值」，留痕位置是訂單活動紀錄，不是「印件層」；兩者是否同義未寫明
+   ! 待人工(0.55) | 部分 | project_delivery_date_redefinition_20260921.md | #36 | W/05-entities/急件主檔.md § 欄位 增減天數 | 只寫「天數單位見 [[ORD-061-…]]」，單位仍待 ORD-061；「既有快照不換算」未寫
+   ! 句子在別檔 | 已有家 | project_delivery_date_redefinition_20260921.md | #41 | W/07-scenarios/工單製程規劃.md:52；W/05-entities/工單.md:86 | 「送審與核可兩個時點的硬擋是另一回事」
+   ! 待人工(0.60) | 部分 | project_delivery_date_redefinition_20260921.md | #42 | R/工作天規則/工作天規則.md § 範圍外；W/08-open-questions/PT-061-工作天維護表的初始值核對與年度更新責任. | wiki 明寫「假日的逐日清單…不寫進本組」，核對責任歸 PT-061；逐日清單本身不在 wiki（在後端維護表）
+   ! 疑似無出處(0.33，檔名解不出) | 已有家 | project_print_item_delivery_date_20260908.md | #19 | W/05-entities/印件.md:98 | 欄名「包裝備註」
+   ! 待人工(0.53) | 已有家 | project_officer_files_to_print_item_20260924.md | #3 | W/04-business-logic/服務藍圖/生產流程群組/製程規劃活動清單.md:58–60 | ACT-PLAN-013（工單負責人）、014（分享編輯成員）、015（印務主管）
+   ! 疑似無出處(0.33，檔名解不出) | 已有家 | project_officer_files_to_print_item_20260924.md | #11 | W/05-entities/印件.md:94、96；W/08-open-questions/_archives/2026/QR-012-… | 欄名「檔案備註」「稿件備註」並存
+   ! 疑似無出處(0.00) | 部分 | project_process_note_qc_to_print_item_20260915.md | #4 | W/05-entities/印件.md:91、92；W/06-state-machines/工單狀態.md:71 | 兩欄標「選填」，工單送審轉換條件只列日期比較，沒列這兩欄；但「漏填不擋送審」一句沒有明寫
+   ! 改寫(0.86) | 已有家 | project_prep_spec_layer_20260907.md | #6 | R/成本計算規則/成本計算規則.md:84 | 「開料類工序如裁切供應商原料填供應商原料張數，系統不換算」
+   ! 改寫(0.72) | 已有家 | project_prep_spec_layer_20260907.md | #9 | W/05-entities/部件配方.md:60；W/05-entities/生產任務.md:106 | 「按重量材料選到備料規格」；「工單『製程審核完成』之後改選以 OP-WO-009 發起工單異動」
+   ! 改寫(0.83) | 已有家 | project_prep_spec_layer_20260907.md | #12 | R/成本計算規則/成本計算規則.md:56 | 「線上側…備料張與供應商原料張數相同（線上側不建備料）」，線上側另寫
+   ! 疑似無出處(0.00) | 部分 | project_bom_pricing_input_one_row_20261013.md | #3 | W/05-entities/生產任務.md:107 | 計價面積寫成手填輸入；「不設面積規格選項」這句沒寫，搜過「面積規格」無命中
+   ! 疑似無出處(0.00) | 已有家 | project_task_form_bom_picker_done.md | #3 | P/work-orders/_components/detail/BomPickerDialog.js:28–70 | COLUMNS 三組，含「計價大類」「計價子類」「放損率」「牌價／單價」
+   ! 疑似無出處(0.18) | 已有家 | project_task_form_bom_picker_done.md | #4 | P/work-orders/_components/detail/BomPickerDialog.js:71、174–200、213–232 | 「材料品牌」「工序廠商／裝訂廠商」篩選；側欄用 GroupedSidebar（「裝訂無側欄」一項依 `sidebarItems.length > 0` 條件，未逐項驗證）
+   ! 改寫(0.82) | 已有家 | project_task_form_bom_picker_done.md | #12 | P/work-orders/_components/detail/BomPickerDialog.js:192–195 | 「兩顆按鈕要整排隱藏須由前端在共用元件補選項…prototype 不動共用元件」
+== P3.md：{'已有家/句子在別檔': 5, '已有家/引號內存在': 9, '已有家/待人工': 13, '已有家/改寫': 6, '已有家/疑似無出處': 9, '部分/引號內存在': 10, '部分/待人工': 1, '部分/疑似無出處': 10}
+   ! 句子在別檔 | 已有家 | project_work_order_assign_dialog_done.md | #4 | P:同檔 :68-69；P:print-items/_components/PrintItemsTable.js:496；T:1305（6. | 加開預備列的守衛沿用「加開工單」既有守衛：印件印製維度終態時停用
+   ! 改寫(0.70) | 已有家 | project_work_order_assign_dialog_done.md | #5 | P:print-items/_components/PrintItemsTable.js:395-422；P:print-items/_co | iconName="person_add"／"account_tree"／"visibility"；按鈕文字「工單分派」
+   ! 改寫(0.78) | 已有家 | project_work_order_assign_dialog_done.md | #6 | P:_lib/menu-model.js:100；P:print-items/pending-assign/page.js:12-27；P: | 僅印務主管可存取待分派印件；pendingOnly；「分派狀態」這顆篩選在本頁沒有意義故不顯示
+   ! 改寫(0.90) | 已有家 | project_work_order_assign_dialog_done.md | #7 | W:04-business-logic/營運規則/訂單到交付/配方展開規則/引用一次覆蓋既有工單.md:25；P:print-items/_ | 每次引用印件配方展開，結果覆蓋這張印件底下的全部既有工單（含系統先建的空草稿），不是追加
+   ! 待人工(0.52) | 已有家 | project_work_order_assign_dialog_done.md | #12 | P:work-orders/review-queue/page.js:87-88、:136、:374；P:work-orders/_comp | 送審時間早者在前；核可後……外發任務將自動產生派單 n 張；請填寫退回原因
+   ! 改寫(0.91) | 已有家 | project_work_order_assign_dialog_done.md | #13 | P:work-orders/page.js:354-364 | expandedRowRender: ProductionTasksTable
+   ! 疑似無出處(0.28，檔名解不出) | 已有家 | project_work_order_assign_dialog_done.md | #14 | /Users/b-f-03-029/Sens/.claude/launch.json（erp 設定） | `"runtimeExecutable": "sh"`、`next dev --port "${PORT:-3000}"`、`"autoPort": true`
+   ! 疑似無出處(0.02) | 部分 | project_work_order_assign_dialog_done.md | #17 | P:work-orders/detail/page.js:659-680、:1094-1112；P:work-orders/_compone | 兩顆按鈕與兩個對話框存在；欄位位置、空值符號、按鈕尺寸三項未逐一核對（PrintItemFilesPanel 在 shared 元件，未讀）；全站無值符號已定為「－」（見卡 3 第 26 列），與「—」可能不同
+   ! 改寫(0.85) | 已有家 | project_work_order_cost_color_lines_20260916.md | #2 | W:ERP 詞彙表.md:588；W:05-entities/計價快照.md（欄位表） | 顏色費用：計價快照依色數登記凍結的色彩貢獻，分單黑、CMYK、Pantone、金屬色（合印）、獨立印各一筆
+   ! 待人工(0.59) | 已有家 | project_work_order_cost_color_lines_20260916.md | #6 | W:05-entities/計價快照.md（欄位表）、:63 | 任務小計（不含顏色）、顏色費用：單黑……預估成本合計；各欄位的計算公式正本在 成本計算規則
+   ! 疑似無出處(0.12) | 部分 | project_work_order_cost_color_lines_20260916.md | #7 | P:work-orders/review-queue/page.js:251（顏色費用合計欄）；T:3899（14.19） | 母表列有「顏色費用合計」；統計卡那一格已被卡 3 第 2 題換掉（T 14.19「摘要卡沒有任務進度格與顏色費用合計格」）；「任務金額不含顏色」未逐列核對
+   ! 改寫(0.79) | 已有家 | project_work_order_cost_color_lines_20260916.md | #11 | W:05-entities/計價快照.md:63 | 各欄位的計算公式正本在 成本計算規則 § 計價引擎計算框架，本卡不複寫
+   ! 待人工(0.65) | 已有家 | project_work_order_detail_company_alignment_20260920.md | #2 | W:04-business-logic/領域知識/生產績效指標.md:62-65 | 預估利潤＝小計−預計成本；預估利潤率＝預估利潤÷小計；實際利潤、實際利潤率同式（現行卡內搜「毛利率」零命中）
+   ! 疑似無出處(0.05) | 已有家 | project_work_order_detail_company_alignment_20260920.md | #8 | W:05-entities/廠客.md:50、:60；W:05-entities/中國供應商帳號.md | 組成＝前綴＋六碼流水號（左補零）；資料範例 MBC000006；聯絡窗口（子表）
+   ! 待人工(0.62) | 已有家 | project_work_order_detail_company_alignment_20260920.md | #11 | W:05-entities/生產任務.md:69 | 這筆任務首筆報工紀錄的時間……生管分派的日期不佔本欄
+   ! 疑似無出處(0.33，檔名解不出) | 已有家 | project_work_order_detail_company_alignment_20260920.md | #15 | W:05-entities/派單.md（欄位表無利潤欄）；W:log.md:1777 | 〔派單〕刪毛利率欄
+   ! 疑似無出處(0.00) | 已有家 | project_work_order_detail_company_alignment_20260920.md | #16 | W:05-entities/中國供應商帳號.md；W:03-roles/中國廠商.md | 兩張卡並存
+   ! 待人工(0.57，檔名解不出) | 部分 | project_work_order_detail_company_alignment_20260920.md | #20 | W:05-entities/印件.md:137；W:05-entities/訂單.md:133 | 印件層可見範圍有印務（印件.md:137）。但訂單.md:133 寫訂單預估利潤「可見範圍：印務、印務主管、Supervisor、業務、業務主管」，與「訂單層金額不可見」可能相衝（也可能卡指的是訂單總額，不是利潤）；沒有
+   ! 待人工(0.60，檔名解不出) | 已有家 | project_work_order_detail_company_alignment_20260920.md | #21 | W:05-entities/需求單.md:62 | 需求品項類別……與……印件的「印件屬性」是不同欄位
+   ! 待人工(0.64) | 已有家 | project_work_order_detail_company_alignment_20260920.md | #24 | P:print-items/_components/detail/PrintItemInfoPanels.js:299-345 | WORK_ORDER_ORDER 與 PRINT_ITEM_ORDER 兩份欄序清單
+   ! 待人工(0.50) | 已有家 | project_work_order_detail_company_alignment_20260920.md | #25 | P:work-orders/detail/page.js:1062；T:1430（7.9） | PanelBlock collapsible；生產任務清單依印件部位分群的三層表格（caption 未逐一核對）
+   ! 疑似無出處(0.37) | 已有家 | project_work_order_detail_company_alignment_20260920.md | #33 | P:print-items/_lib/profit.js:7-8；P:work-orders/_lib/permissions.js:491 | 小計或成本為空時回 null；確樣需求限本單負責印務、編輯（代理）成員與印務主管；已作廢的報工不算動工事實（四項均已修）
+   ! 疑似無出處(0.37) | 部分 | project_work_order_detail_company_alignment_20260920.md | #34 | W:05-entities/人員.md:44、:71；P:work-orders/detail/page.js:958 | 前兩項有（「工單聯絡與紙本表頭取用聯絡電話」；「案名……唯讀衍生，工單不存欄位」）；訂單類型值域未核對
+   ! 待人工(0.56) | 已有家 | project_work_order_detail_gap_round2_20260921.md | #2 | P:print-items/_components/detail/PrintItemInfoPanels.js:220-244 | label="訂單預計交貨日期"；label="客戶指定收件日"；兩份欄序清單都含這兩欄
+   ! 句子在別檔 | 已有家 | project_work_order_detail_gap_round2_20260921.md | #3 | T:1656（7.33）；P:work-orders/_components/ProductionTasksTable.js:655-676 | 主表不再有任務實際完成日這一欄……展開列的任務實際開工右邊接任務實際完成日
+   ! 待人工(0.42，檔名解不出) | 已有家 | project_work_order_detail_gap_round2_20260921.md | #4 | W:05-entities/工單.md:188；T:3899（14.19） | 工單層只看預估利潤率……實際利潤率在印件與訂單層；摘要卡……只有預估利潤率一格
+   ! 疑似無出處(0.00) | 部分 | project_work_order_detail_gap_round2_20260921.md | #8 | W:05-entities/訂單.md:98；W:06-state-machines/工單狀態.md:52；W:04-business-lo | 前五項有：印件出貨之後本欄才滾到下一筆；製作收斂即完成，品質缺口……不擋工單收尾；系統不推播、不寄信、不進待辦；ORD-057 存在。「主管看板後驗」沒有明文（只有 W:04-business-logic/領域知識/豐田
+   ! 待人工(0.59) | 已有家 | project_work_order_detail_gap_round2_20260921.md | #12 | P:print-items/_components/PrintItemsTable.js:385-390 | `<Space size={4}>` 內並排各 icon 按鈕
+   ! 待人工(0.68，檔名解不出) | 已有家 | project_work_order_detail_gap_round2_20260921.md | #14 | W:05-entities/訂單.md:133-136 | 預估利潤、預估利潤率、實際利潤、實際利潤率四欄；訂單.未稅總額 − sum(印件.預計成本)
+   ! 疑似無出處(0.00) | 部分 | project_work_order_detail_gap_round2_20260921.md | #15 | W:ERP 詞彙表.md:1369；W:05-entities/訂單.md:92-93 | 出貨單預計出貨日、審稿前預計出貨日、審稿後預計出貨日三處存在；印件卡已無別名；但沒有「不得再附別名」的明文規則句。搜過：預計出貨日、別名
+   ! 疑似無出處(0.00) | 已有家 | project_work_order_detail_gap_round2_20260921.md | #17 | W:08-open-questions/_archives/2026/PT-054-急件延後型選項使內部完成日晚於預計出貨日.md | 已封存於 _archives
+   ! 疑似無出處(0.38，檔名解不出) | 部分 | project_work_order_qty_color_costing_done.md | #11 | W:05-entities/設備.md:77 | 固定開機損載體是「最低損耗張數」（張）；沒有「不加在件層」的明文與理由。搜過：張層、件層、廢紙
+   ! 疑似無出處(0.03) | 已有家 | project_work_order_qty_color_costing_done.md | #15 | W:成本計算規則.md:105-107；W:05-entities/設備.md:113 | 三欄僅平版適用——數位的特殊色直接查階梯表特殊色欄價、不乘倍率；E3 大圖公式無色數項
+   ! 待人工(0.58，檔名解不出) | 已有家 | project_work_order_qty_color_costing_done.md | #16 | W:05-entities/設備.md:111 | 獨立印倍率 \| 只印金／銀／白／螢光（獨立印）時的相對計價倍率
+   ! 句子在別檔 | 已有家 | project_work_order_qty_color_costing_done.md | #19 | W:05-entities/生產任務.md（計畫設備欄）；W:05-entities/工序主檔.md:41；W:03-roles/印務.md | 設備於工單建立（製程規劃）時決定；工序群組；品項主檔、製程類主檔……由印務維護；加工廠的任務由印務報工
+   ! 疑似無出處(0.00) | 部分 | project_work_order_qty_color_costing_done.md | #24 | W:成本計算規則.md:41 | 八法有（工序八法 P1-P8）；七值是舊 spec，已不在工作樹；Linear project 描述屬外部系統，未查證
+   ! 句子在別檔 | 已有家 | project_work_order_task_editing_done.md | #6 | W:05-entities/生產任務.md:100-102 | 目標數量＝預計生產＋放損；唯讀衍生
+   ! 疑似無出處(0.00) | 部分 | project_work_order_task_editing_done.md | #10 | W:05-entities/生產任務.md:101 | 放損手填、固定開機損只作估算參考；沒有「材料任務放損僅開機損」的明文。搜過：運轉損、材料型 放損
+   ! 句子在別檔 | 已有家 | project_work_order_task_editing_done.md | #14 | W:05-entities/工單.md:101-106；W:04-business-logic/服務藍圖/單據存取流程群組/輸出活動清單.m | 只有一個版本：隱藏所有價格與成本；不建單據實體、不留存檔案；只含當下已生效的工單內容
+   ! 待人工(0.61，檔名解不出) | 已有家 | project_work_order_task_editing_done.md | #17 | W:08-open-questions/PT-048-…md:10；PT-049-…md:8；_archives/2026/ORD-044- | PT-048、PT-049 status: open；ORD-044、PT-047 已封存
+   ! 疑似無出處(0.32) | 部分 | project_work_order_visibility_sharing_20260907.md | #1 | P:work-orders/_lib/permissions.js:360-372；T:1790（7.47）；W:07-scenarios/ | P 有實作；T 7.47：「工單列表不含 WO-2026-0907」；W 只有「移除即時生效……列表不再帶出，詳情仍可開」（只涵蓋分享移除）。W:…/生產單據檢視活動清單.md ACT-VPRD-027 寫印務查閱「全公
+   ! 疑似無出處(0.39) | 已有家 | project_work_order_visibility_sharing_20260907.md | #2 | W:07-scenarios/單據分享與職務代理.md:33；W:…/生產單據檢視活動清單.md（ACT-VPRD-027）；P:work- | 詳情仍可開但負責人動作不開放；印務查閱全公司工單；只收窄列表：工單詳情全體印務仍開得了（直連網址亦然）
+   ! 疑似無出處(0.33) | 已有家 | project_work_order_visibility_sharing_20260907.md | #3 | W:04-business-logic/服務藍圖/生產流程群組/製程規劃活動清單.md（ACT-PLAN-001/002、008/009、0 | 範圍欄皆為「自己負責（工單 負責人）」與「被分享（編輯）」，印務主管列為協助
+   ! 疑似無出處(0.00) | 部分 | project_work_order_visibility_sharing_20260907.md | #4 | P:work-orders/_lib/permissions.js:503 | 取樣一處（確樣需求）的理由文字不含姓名；其餘停用理由未逐一核對
+== P4.md：{'已有家/句子在別檔': 8, '已有家/引號內存在': 2, '已有家/待人工': 12, '已有家/改寫': 14, '已有家/疑似無出處': 13, '部分/引號內存在': 13, '部分/待人工': 8, '部分/改寫': 2, '部分/疑似無出處': 16}
+   ! 改寫(0.80) | 已有家 | project_production_dispatch_report_transfer_grill_20261006.md | #A4 | W05-entities/生產任務.md:185 | 生產任務狀態 不在已完成、已作廢、報廢
+   ! 疑似無出處(0.00) | 部分 | project_production_dispatch_report_transfer_grill_20261006.md | #A8 | W05-entities/報工紀錄.md:43-54（欄位表無此欄） | 欄位表只有生產數量、良品、不良、不良原因、照片、備註；沒有明文寫「人工註記已取消」
+   ! 句子在別檔 | 已有家 | project_production_dispatch_report_transfer_grill_20261006.md | #A15 | W08-open-questions/PT-067-產線底下的站點清單.md（status: open） | 站點清單見 [[PT-067-產線底下的站點清單]]
+   ! 改寫(0.85，檔名解不出) | 已有家 | project_production_management_prototype_fix.md | #B2 | W03-roles/師傅.md:50 | 支援手機寬度，不另做行動版頁面，辦公角色限桌機
+   ! 疑似無出處(0.00) | 已有家 | project_production_management_prototype_fix.md | #B8 | P production-floor/dispatch/page.js、work-packages/page.js（全檔無「代」標籤，僅記提 | 以程式現況判定
+   ! 待人工(0.64) | 已有家 | project_production_management_prototype_fix.md | #B15 | W05-entities/生產任務.md:179；P production-floor/dispatch/page.js:66 | OP-TSK-004 接收工作；所有生產任務頁做接收工作
+   ! 待人工(0.68) | 已有家 | project_production_management_prototype_fix.md | #B16 | P production-floor/dispatch/page.js:386；P production-floor/_components | TooltipLabel、HelpTip 元件
+   ! 疑似無出處(0.10) | 部分 | project_production_management_prototype_fix.md | #B17 | P production-floor/dispatch/page.js:376 | help 文字存在；STE100 對欄位說明的要求，AGENTS.md 未寫（只寫回覆風格）
+   ! 待人工(0.50) | 部分 | project_production_management_prototype_fix.md | #B18 | AGENTS.md:129；P MOCK-DATA-CHAIN.md | MOCK-DATA-CHAIN.md 是 mock 唯一正本；「只做場內正流程」範圍句未寫
+   ! 改寫(0.77) | 已有家 | project_production_management_prototype_fix.md | #B19 | W08-open-questions/_archives/2026/PT-052-工作包刪上機欄後排程總覽三視角的取數口徑.md | 決議 2026-09-03 採候選 A（取數下沉到生產任務層）
+   ! 疑似無出處(0.10) | 已有家 | project_production_management_prototype_fix.md | #B22 | S生產流程群組/派工活動清單.md；P_lib/menu-model.js:117；P production-floor/dispatch/ | 對話框標題「派工」；群組「生產管理」
+   ! 句子在別檔 | 已有家 | project_production_management_prototype_fix.md | #B23 | W03-roles/生管.md:45；W03-roles/印務.md:46；W03-roles/印務主管.md:44 | 代行不移轉主責
+   ! 疑似無出處(0.00) | 已有家 | project_production_management_prototype_fix.md | #B29 | P production-floor/dispatch/page.js（無展開子表設定） | 以程式現況判定
+   ! 待人工(0.64) | 已有家 | project_production_management_prototype_fix.md | #B30 | P production-floor/dispatch/page.js:592-660 | 派工內容（N）表：工單編號、印件、印件部位、任務、預計完成、目標數量
+   ! 疑似無出處(0.17) | 已有家 | project_production_management_prototype_fix.md | #B31 | P production-floor/_components/WorkReportDialog.js:82,174-287 | 工單／印件、任務、目標數量、已報數量、生產數量、良品、不良品、不良原因、照片（另有備註欄 :314）
+   ! 疑似無出處(0.25) | 已有家 | project_production_management_prototype_fix.md | #B33 | P_lib/menu-model.js:97-170 | 群組順序：工單管理、任務管理、生產管理、品檢與出貨、配方管理、派單管理、工廠總覽
+   ! 待人工(0.67) | 已有家 | project_production_management_prototype_fix.md | #B34 | AGENTS.md:128 | 現場回報介面（師傅報工、品檢記錄、貨運單點收秤重、揀貨裝箱回報、出貨與送達確認）開放手機寬度
+   ! 疑似無出處(0.00) | 部分 | project_production_management_prototype_fix.md | #B35 | AGENTS.md:50-60,127 | 實作須經 prototype-from-prompt；模型分工表把「落卡」列在主對話；「主對話禁手寫內容」未寫
+   ! 疑似無出處(0.35，檔名解不出) | 已有家 | project_production_quantity_audit_grill_20261026.md | #C1 | W05-entities/印件.md:84-134 | 印件數量欄位表只剩購買數量等十一欄，無生產任務層欄位
+   ! 改寫(0.89) | 已有家 | project_production_quantity_audit_grill_20261026.md | #C4 | R數量換算規則/部件倍率.md:35 | 例子 1（多部件）：客戶訂 1,000 組吊牌鑰匙圈，每組吊牌 1 個＋鑰匙圈 2 個
+   ! 疑似無出處(0.22) | 已有家 | project_production_quantity_audit_grill_20261026.md | #C6 | W05-entities/規範 - 實體.md:102 | 介面欄位／定義／算式／資料範例／欄位形態／填入時點／可否修改（35 張實體卡皆符合；七張資料結構總覽不適用）
+   ! 待人工(0.69) | 已有家 | project_production_quantity_audit_grill_20261026.md | #C7 | W05-entities/規範 - 實體.md:104,199 | 彙總與取整用數學函式（min、max、sum、floor、ceil）；程式碼…屬實作程式碼
+   ! 句子在別檔 | 已有家 | project_production_quantity_audit_grill_20261026.md | #C17 | W00-meta/卡片撰寫共用規範.md § 四；W log.md:519 | 補單向引用、引用不重抄、禁相對引用三款
+   ! 待人工(0.43，檔名解不出) | 部分 | project_production_quantity_audit_grill_20261026.md | #C18 | W05-entities/印件.md:244；G:76-95 | 印件.md：「只看製作事實，不看轉交與點收」。「待驗清單是上限、接受帳上有現場沒到」與甲案否決理由只在 grill.md
+   ! 句子在別檔 | 已有家 | project_production_quantity_audit_grill_20261026.md | #C22 | W05-entities/規範 - 實體.md:102；AGENTS.md:停下與繼續段；W log.md:428 | 正本矛盾（並排呈報，不自行調和）；§ 三加矛盾呈報固定格式表
+   ! 待人工(0.69，檔名解不出) | 部分 | project_production_quantity_audit_grill_20261026.md | #C23 | G:83 | 只在 grill.md 待裁決表；08-open-questions 無對應卡
+   ! 改寫(0.72，檔名解不出) | 部分 | project_production_quantity_audit_grill_20261026.md | #C26 | G:86 | 只在 grill.md 標「另案」；08-open-questions 無卡（搜過：批、粒度、品檢粒度）
+   ! 待人工(0.40，檔名解不出) | 已有家 | project_production_quantity_audit_grill_20261026.md | #C27 | W05-entities/*.md | 35 張實體卡欄位表皆為七欄（已完成）
+   ! 疑似無出處(0.00) | 部分 | project_production_quantity_audit_grill_20261026.md | #C28 | G:228-245（落點表 G21）；R生產數量一致性/ | 落點表與新立規則卡已有；「逐卡重構」其餘部分無進度紀錄
+   ! 疑似無出處(0.11) | 部分 | project_production_quantity_audit_grill_20261026.md | #C29 | G:87；W08-open-questions/PT-074-打樣流程重構時要合併的規則.md | PT-074 只收三項待合併矛盾；打樣新需求只在 grill.md
+   ! 疑似無出處(0.33) | 部分 | project_production_quantity_audit_grill_20261026.md | #C30 | G:32（G12 列待補做設計 R2 至 R5）；W08-open-questions/PT-076-外包大貨不良的補做流程.md | grill.md 無 P8 條目；PT-076 只管外包大貨不良；無 OQ 卡
+   ! 句子在別檔 | 已有家 | project_production_stage_restructure.md | #D1 | R報工規則/報工規則.md（適用範圍）；W05-entities/印件.md:125,134 | 階段 5（製作與報工）…階段 8（入庫）；完工良品數、可出貨額度
+   ! 疑似無出處(0.30) | 部分 | project_production_stage_restructure.md | #D9 | W07-scenarios/QC不通過補生產.md:34 | 寫了工單異動加開整串補做任務；缺口量取印件「缺口」欄（購買數量減完工良品數），不是不通過數；「可刪」未寫
+   ! 疑似無出處(0.35) | 部分 | project_production_stage_restructure.md | #D11 | W05-entities/印件.md:127；W06-state-machines/生產任務狀態.md:142 | 報廢數＝缺口處置中判定報廢的累計；處置紀錄掛印件層、不另開單據。「計損耗」未直接寫
+   ! 改寫(0.81，檔名解不出) | 已有家 | project_production_stage_restructure.md | #D15 | W05-entities/出貨單.md:88 | 數量：大於 0，不超過該印件的可出貨額度
+   ! 疑似無出處(0.29，檔名解不出) | 部分 | project_production_stage_restructure.md | #D16 | W05-entities/出貨單.md:43 | 合箱已寫（同訂單多印件可合箱、不可跨訂單）；七態與送達憑證搜不到（搜過：憑證、簽收、補附）
+   ! 待人工(0.68，檔名解不出) | 已有家 | project_production_stage_restructure.md | #D18 | W05-entities/轉交單.md:48 | 通道走 Slack 表單，前提有四項：正本在系統、通知帶單預填、保留補登路徑、身分對映
+   ! 疑似無出處(0.09) | 部分 | project_production_stage_seg2_done.md | #E3 | W05-entities/印件.md:123；R齊套邏輯/已取消工單不進齊套.md:23；R齊套邏輯/打樣週期歸零.md:24 | 作廢、報廢、已取消工單已排除；「打樣不進」搜不到，打樣印件另有自己的累計與週期歸零
+   ! 改寫(0.80) | 已有家 | project_production_stage_seg2_done.md | #E4 | W05-entities/生產任務.md:118 | 轉交可申請上限＝生產任務.良品數 － 生產任務.搬運量
+   ! 疑似無出處(0.20) | 已有家 | project_production_stage_seg2_done.md | #E5 | W06-state-machines/轉交單狀態.md:39-41,79-83 | 狀態列舉與轉換表
+   ! 疑似無出處(0.11) | 部分 | project_production_stage_seg2_done.md | #E14 | W05-entities/生產任務.md:123；R成本計算規則/單位只用來顯示.md:27 | 單位取製程類主檔項目的設定、只用來顯示；「目標數量以工序產出單位計」未直接寫
+   ! 待人工(0.60) | 已有家 | project_production_stage_seg2_done.md | #E15 | W04…/領域知識/生產績效指標.md:53 | 成本達成率（估準度）＝（實際成本 − 預估成本合計）÷ 預估成本合計
+   ! 疑似無出處(0.19) | 已有家 | project_production_stage_seg2_done.md | #E17 | W05-entities/轉交單.md:75；W05-entities/生產任務.md:159 | 歷程紀錄：這張單的建單、開始搬運…各記操作人與時間
+   ! 待人工(0.62) | 已有家 | project_production_stage_seg2_done.md | #E21 | W06-state-machines/工單狀態.md:57；W08-open-questions/PT-072-工單異動副流程的實際流程.m | 離開條件見 PT-072（OQ 已開，status: open）
+   ! 疑似無出處(0.20) | 已有家 | project_production_stage_seg3_done.md | #F2 | W05-entities/印件.md:131；W08-open-questions/_archives/2026/SHP-017-累計送達數 | 取數範圍：本印件在 出貨單.狀態 = 已送達 的出貨單；單頭層
+   ! 句子在別檔 | 已有家 | project_production_stage_seg4a_done.md | #G6 | W05-entities/出貨單.md:66,88；R生產數量一致性/出貨不超過可出貨額度.md | 預設帶入…未棄用的印件；調低時不得小於本單該印件的未送達數量
+   ! 改寫(0.72) | 已有家 | project_production_stage_seg4a_done.md | #G8 | W06-state-machines/生產任務狀態.md:38-39 | 已作廢＝場內任務無任何報工、外包任務其派單…（已有實際投入事實→報廢）
+   ! 待人工(0.52) | 部分 | project_production_stage_seg4a_done.md | #G9 | W06-state-machines/訂單狀態.md:216 | 尚未確認的工單異動自待確認佇列移除；「排除標記」搜不到
+   ! 改寫(1.00) | 已有家 | project_production_stage_seg4a_done.md | #G10 | W06-state-machines/訂單狀態.md:228 | 僅「審核通過」（含）之後、「終態」以外的狀態提供
+   ! 疑似無出處(0.28) | 部分 | project_production_stage_seg4a_done.md | #G13 | W04…/帳務/訂單異動規則/訂單終態後金額異動路徑分流.md:28；W07-scenarios/訂單印件規格維護.md:30 | 終態後新生意另開新訂單；終態前改規格改印件明細。卡未限定時點
+   ! 待人工(0.50) | 部分 | project_production_stage_seg4b_done.md | #H3 | W05-entities/審稿輪次.md:40；W08-open-questions/AR-018-免審稿合格輪次送審時間的邊界時點.md | 現行算法為印件建立時（邊界時點另開 OQ）；「無審稿後檔案與縮圖」與 R稿件管理規則/線上單免審稿印件事後補傳完稿縮圖.md 並存，未見明文取捨
+   ! 疑似無出處(0.00) | 部分 | project_production_stage_seg4b_done.md | #H4 | W05-entities/印件.md:107；R審稿分派規則/每輪起始檢查.md:30 | 已分派後依新值決定下一輪是否走審稿；「帶檔輪回未判定」「純空輪留歷史」搜不到（搜過：未判定、純空、空輪）
+   ! 疑似無出處(0.18) | 部分 | project_production_stage_seg4b_done.md | #H5 | W06-state-machines/印件審稿狀態.md:80-81 | 待分派依「稿件未上傳／已上傳」分流已寫；「派生六規則」「單向守衛」及「待補件」狀態名搜不到（現行為已補件、不合格）
+   ! 待人工(0.43) | 部分 | project_production_stage_seg4b_done.md | #H6 | W06-state-machines/印件審稿狀態.md:81；R審稿分派規則/線下單.md | 線上單首次上傳時自動分派；線下單手動分派；「限線下單」未明寫
+   ! 疑似無出處(0.00) | 已有家 | project_production_stage_seg4b_done.md | #H15 | W03-roles/訂單管理人.md；W05-entities/訂單.md | 角色卡與欄位表皆有
+   ! 改寫(0.81) | 已有家 | project_production_ui_correction_grill_20261012.md | #I2 | R報工規則/修正由欄位負責角色執行.md:25 | 只有負責該欄位的角色能修正該欄位…不另設確認關卡，填寫內容與事實不符時由填寫者承擔
+   ! 改寫(0.73) | 已有家 | project_production_ui_correction_grill_20261012.md | #I3 | W04…/規範 - 活動清單.md:193 | 權限名稱、欄位級權限矩陣 → 實作規格層（不進 wiki）
+   ! 改寫(0.81) | 已有家 | project_production_ui_correction_grill_20261012.md | #I7 | W05-entities/印件.md:151；S生產流程群組/品檢活動清單.md:40 | OP-PI-022 修正缺口處置；ACT-INSP-006 修正記錯的缺口處置
+   ! 疑似無出處(0.06) | 部分 | project_production_ui_correction_grill_20261012.md | #I8 | W06-state-machines/出貨單狀態.md:162 | 揀貨數量逐條已寫；「每箱幾個」現行出貨單無此欄（現為箱規與長寬高）
+   ! 疑似無出處(0.38) | 已有家 | project_production_ui_correction_grill_20261012.md | #I10 | W06-state-machines/物流單狀態.md:35-37；W05-entities/物流單.md:57 | 只有第三方物流有拋單狀態；物流單號是物流商的追蹤碼
+   ! 疑似無出處(0.25) | 已有家 | project_production_ui_correction_grill_20261012.md | #I11 | W05-entities/轉交單.md:84；W05-entities/報工紀錄.md:55；W ERP 詞彙表.md:1073 | 欄位名「搬運數量」「報工照片」
+   ! 句子在別檔 | 已有家 | project_production_ui_correction_grill_20261012.md | #I12 | P production-floor/_components/TaskDetailDrawer.js:49-58 | 五區依序…基本資料、狀態、數量、報工紀錄、歷程
+   ! 疑似無出處(0.07) | 部分 | project_production_ui_correction_grill_20261012.md | #I13 | P production-floor/_components/ThumbImage.js；P work-orders/detail/page | 縮圖元件存在；兩欄固定最左未逐頁核對
+   ! 改寫(0.80) | 已有家 | project_production_ui_correction_grill_20261012.md | #I14 | P qc-shipping/_components/ShipmentDetailDialog.js | PanelDialog 元件
+   ! 待人工(0.56) | 部分 | project_production_ui_correction_grill_20261012.md | #I15 | P production-floor/_components/TaskDetailDrawer.js:102 | 現況 width={1184}，非 960
+   ! 待人工(0.64) | 已有家 | project_production_ui_correction_grill_20261012.md | #I16 | P production-floor/_components/TaskDetailDrawer.js:55；P production-flo | 範圍內的報工可修正與作廢；無展開子表
+   ! 待人工(0.42) | 部分 | project_production_ui_correction_grill_20261012.md | #I17 | W07-scenarios/報工與修正.md:49 | 外包任務只能在工單上報工；發現清單在 erp repo，未查
+   ! 句子在別檔 | 已有家 | project_production_ui_correction_grill_20261012.md | #I23 | S生產流程群組/製程規劃活動清單.md:51 | ACT-PLAN-041 協助指定生產任務的目的站點與產線（印務主管、全公司）
+   ! 改寫(0.73，檔名解不出) | 部分 | project_production_ui_correction_grill_20261012.md | #I26 | W05-entities/印件.md:93 | 印務印件檔案在多張工單共用一份；「任一張工單負責人或分享成員、不限終態」未逐字核對
+   ! 待人工(0.56) | 已有家 | project_production_ui_correction_grill_20261012.md | #I28 | AGENTS.md:99-103（陷阱表） | Linear 修正用補充；要刪除或重構；Linear 留言用原本／現行對照表
+   ! 改寫(0.77) | 已有家 | project_production_ui_correction_grill_20261012.md | #I31 | AGENTS.md:15 | Prototype 不放 mock 資料的值、API 形狀
+   ! 待人工(0.50，檔名解不出) | 已有家 | project_production_ui_correction_grill_20261012.md | #I34 | W05-entities/印件.md:155-156 | 缺口處置欄位表無「對應不通過紀錄」欄
+   ! 改寫(0.73) | 已有家 | project_production_ui_correction_grill_20261012.md | #I38 | W08-open-questions/XM-018-查看類與指標類驗收條目沒有情境卡步驟可掛.md；W08-open-questions/P | 兩張皆 status: open
+== P5.md：{'已有家/引號內存在': 18, '已有家/待人工': 6, '已有家/改寫': 8, '已有家/疑似無出處': 6, '部分/引號內存在': 7, '部分/待人工': 4, '部分/改寫': 2, '部分/疑似無出處': 6}
+   ! 待人工(0.69，檔名解不出) | 已有家 | project_qc_pick_ship_flow_confirm_20260922.md | #1 | wiki 05-entities/印件.md:124、:244 | 待驗量「系統即時計算」；品檢待驗清單「印件.待驗量 大於 0…」
+   ! 改寫(0.84) | 已有家 | project_qc_pick_ship_flow_confirm_20260922.md | #17 | Prototype qc-shipping/inspection/page.js:409 | `row.urgent_marked ? <StyledTag…>急件 : DASH`
+   ! 改寫(0.83) | 部分 | project_qc_pick_ship_flow_confirm_20260922.md | #19 | wiki 04-business-logic/外部約束/EC 物流串接約束.md:51-52；04-business-logic/服務藍圖/ | 「貨況回傳：回傳的取得機制、頻率與貨態值對應由後端決定」。缺：火箭、每日一次輪詢、無即時回呼未寫；wiki 現列四家（順豐、新竹、7-11 交貨便、全家），且 EC 串接已改為 ERP 自建（SHP-031 open）
+   ! 待人工(0.62，檔名解不出) | 部分 | project_shipment_batch_dispatch_box_size_grill_20261022.md | #2 | wiki 05-entities/物流單.md:94 | 「對其中拋單狀態為未拋單或拋單失敗的物流單各執行一次…其他的不送」。缺：「只有第三方物流」沒有明文（只能由「拋單狀態只有第三方物流有」推得）；wiki 的送件口徑是未拋單或失敗，不是「全部已裝箱」
+   ! 改寫(0.82) | 已有家 | project_shipment_batch_dispatch_box_size_grill_20261022.md | #3 | Prototype qc-shipping/shipments/page.js:377；orders/_components/detail/ | `emptyText: '沒有資料'`、`expandable`
+   ! 待人工(0.48，檔名解不出) | 已有家 | project_shipment_batch_dispatch_box_size_grill_20261022.md | #9 | wiki 05-entities/出貨單.md:102、:112-114 | 「選一筆箱規…不可改」「選『自訂箱規』：空白，三欄必填手填」
+   ! 疑似無出處(0.29，檔名解不出) | 已有家 | project_shipment_batch_dispatch_box_size_grill_20261022.md | #11 | wiki 05-entities/出貨單.md:152-163 | 箱規表 F12 至 1000 拼圖箱共十筆
+   ! 待人工(0.59) | 部分 | project_shipment_batch_dispatch_box_size_grill_20261022.md | #21 | wiki 05-entities/出貨單.md:97-99；06-state-machines/出貨單狀態.md:176 | 「裝箱回報修正…只在本單狀態為已裝箱時可做…整批取代、至少保留一箱」。缺：沒有單獨的「新增箱」操作，改為整批取代
+   ! 改寫(0.72) | 已有家 | project_shipment_batch_dispatch_box_size_grill_20261022.md | #22 | Prototype orders/_components/detail/ShipmentsTab.js:27；wiki 04-busines | `canOperateOrderShipments`（權限判斷）。活動清單逐列未核
+   ! 疑似無出處(0.35) | 部分 | project_shipment_batch_dispatch_box_size_grill_20261022.md | #25 | .claude/skills/linear-delivery/references/規範 - Linear 交付.md:49；範例 - Li | 「後端要支援的功能清單…Task 票」。缺：「不另開 BE 票」「進行中票可覆寫情況」「系統動作不列」「介面字樣不需等於操作名稱」未逐條找到（卡內也只列出這四條，L1～L11 全文未列）
+   ! 改寫(0.94) | 已有家 | project_shipment_batch_dispatch_box_size_grill_20261022.md | #26 | AGENTS.md § 工作入口「流程順序」 | 「erp-plan 盤點 → grill-with-docs → wiki-amend → to-spec → erp-audit → to-tickets → …」（卡內用舊名 plan-design、plan-aud
+   ! 改寫(0.86) | 已有家 | project_shipment_draft_flow_20260917.md | #1 | wiki 06-state-machines/出貨單狀態.md:42 | 「草稿｜初始；排好的出貨計畫，只有單頭與預計出貨印件」
+   ! 改寫(0.83，檔名解不出) | 已有家 | project_shipment_draft_flow_20260917.md | #6 | wiki 05-entities/出貨單.md:64、:65、:77 | 建立者、出貨單預計出貨日、備註
+   ! 待人工(0.61，檔名解不出) | 已有家 | project_shipment_draft_flow_20260917.md | #8 | wiki 05-entities/出貨單.md:72 | 「保密代寄＝否時取所屬訂單帳務公司在寄件人設定的那一組」「不可改」
+   ! 疑似無出處(0.29) | 已有家 | project_shipment_draft_flow_20260917.md | #18 | wiki 05-entities/印件.md:227；04-business-logic/營運規則/訂單到交付/生產數量一致性/待驗量不為負 | 「操作後 待驗量不為負 仍成立」「印件.待驗量 ≥ 0」
+   ! 疑似無出處(0.21) | 已有家 | project_shipment_draft_flow_20260917.md | #33 | wiki 05-entities/出貨單.md:203、:215；06-state-machines/出貨單狀態.md:131 | 「無操作的動作類型：建立（出貨單草稿在訂單上建立…）」；轉換只有「草稿 → 未處理」
+   ! 疑似無出處(0.28) | 部分 | project_shipment_draft_flow_20260917.md | #35 | wiki 04-business-logic/營運規則/訂單到交付/品檢規則/品檢修正總數不超過原筆.md；生產數量一致性/出貨不超過可出貨 | 下限以「可出貨額度 ≥ 0」「未處置品檢缺口 ≥ 0」表達。缺：「通過、不通過各不得低於 0」沒有逐字寫出
+   ! 待人工(0.44) | 已有家 | project_shipment_draft_flow_20260917.md | #44 | wiki 04-business-logic/營運規則/訂單到交付/齊套邏輯/打樣週期歸零.md:24；08-open-questions/ | 「打樣印件重打時…只算本打樣週期」；決議「用同一套算法」
+   ! 疑似無出處(0.29) | 已有家 | project_shipment_draft_flow_20260917.md | #48 | wiki 05-entities/履約與售後資料結構總覽.md:107 | 預計出貨印件已記在履約與售後總覽；生產領域總覽未補（未再需要）
+   ! 待人工(0.56) | 部分 | project_shipment_draft_flow_20260917.md | #49 | erp-prototype-tests/README.md:20 | 「已在跑則沿用；跑久出現 ChunkLoadError 就先 pkill…」。缺：「兩個 server 共用 .next」的成因與「測試前確認只有一個」未寫
+   ! 待人工(0.50，檔名解不出) | 已有家 | project_shipment_logistics_split_grill_20261020.md | #11 | wiki 08-open-questions/_archives/2026/SHP-010…md:43；SHP-020…md:70 | 兩卡皆 answered、已封存
+   ! 改寫(0.83，檔名解不出) | 已有家 | project_shipment_logistics_split_grill_20261020.md | #12 | wiki 05-entities/出貨單.md:71-72 | 「保密代寄」「寄件資訊」欄
+   ! 疑似無出處(0.17) | 已有家 | project_shipment_logistics_split_grill_20261020.md | #13 | Prototype qc-shipping/_components/LogisticsTable.js；ShipmentDetailDial | 物流單表格在出貨單視窗內，無物流單側板元件
+   ! 待人工(0.65，檔名解不出) | 已有家 | project_shipment_logistics_split_grill_20261020.md | #17 | wiki 05-entities/出貨單.md:211 | 「出貨動作…是物流單的操作，本單沒有出貨動作的操作」
+   ! 疑似無出處(0.24) | 部分 | project_shipment_logistics_split_grill_20261020.md | #19 | wiki 05-entities/物流單.md:94；Prototype qc-shipping/_components/useShipme | 「拋單狀態為未拋單或拋單失敗」才送；Prototype「已確認、異常單＝批次拋單」。缺：wiki 沒有明寫「出貨單異常時其他物流單照常可拋」
+   ! 疑似無出處(0.00，檔名解不出) | 部分 | project_shipment_logistics_split_grill_20261020.md | #21 | wiki 08-open-questions/SHP-023…md、SHP-025…md；_archives/2026/SHP-024…md | SHP-023、SHP-025 為 open 卡；SHP-024 已 answered（前提消失）。缺：「丁類 17 項」內容不在卡內，wiki 也搜不到
+   ! 疑似無出處(0.00) | 已有家 | project_shipment_logistics_split_grill_20261020.md | #23 | AGENTS.md § 工作入口「流程順序」 | 同批次卡第 26 列（舊名 plan-design、plan-audit）
+   ! 疑似無出處(0.00) | 部分 | project_shipment_row_actions_grill_20261006.md | #11 | Prototype qc-shipping/_components/useShipmentActions.js:204、:249 | 開始揀貨、刪除草稿為確認框有。缺：「模擬配達」確認框與「作廢送出鈕非紅色」未核（ShipmentActionDialog.js:320 有 `danger` 屬性，未確認對應哪顆鈕）
+   ! 待人工(0.42) | 部分 | project_prototype_batch2_destination_station_20260907.md | #6 | Prototype production-floor/pending-moves/page.js | 該檔存在建單流程，未逐項核「數量在 Dialog、主表只勾選」
+   ! 改寫(0.86) | 已有家 | project_prototype_batch2_destination_station_20260907.md | #7 | Prototype production-floor/pending-moves/page.js:296-297 | `label="已開轉交單"`、`tooltip="已開出的轉交單帶走的量…"`
+   ! 疑似無出處(0.00，檔名解不出) | 部分 | project_prototype_batch2_destination_station_20260907.md | #10 | — | 未逐頁核；「全區移除」無法用搜尋證明缺席
+   ! 改寫(0.70，檔名解不出) | 部分 | project_prototype_batch2_destination_station_20260907.md | #12 | wiki 05-entities/轉交單.md:75 | 「每一筆點收記點收數量、點收人、時間」等歷程有。缺：「單頭只留八格」是介面決定，未逐格核 Prototype
+== P6.md：{'已有家/句子在別檔': 1, '已有家/引號內存在': 7, '已有家/待人工': 6, '已有家/改寫': 9, '已有家/疑似無出處': 1, '部分/引號內存在': 5, '部分/待人工': 5, '部分/改寫': 3, '部分/疑似無出處': 2}
+   ! 待人工(0.69) | 已有家 | project_authority_matrix_grill_20261013.md | #8 | 04/流程架構.md:41 | 「管理與支援類｜支撐營運的內部工作」
+   ! 待人工(0.65) | 部分 | project_authority_matrix_grill_20261013.md | #10 | skills/wiki-amend/SKILL.md:71 | 「動到活動清單…另跑 authority_check.py。錯誤須為 0」。缺：「先只用 skill、不用 hook」這條取捨未寫；wiki-amend 另有「寫檔後與提交前掛鉤也會自動跑同一支腳本」，實況已比卡內多
+   ! 改寫(0.72) | 已有家 | project_authority_matrix_grill_20261013.md | #14 | 04/服務藍圖/單據存取流程群組/輸出活動清單.md:43 | 「ACT-OUT-011｜工單異動確認後重印紙本工單｜生管」
+   ! 改寫(0.81，檔名解不出) | 已有家 | project_authority_matrix_grill_20261013.md | #15 | 同上 ACT-OUT-004～006、012 | 「匯出對帳明細與 ezPay 逐筆比對｜會計」
+   ! 改寫(0.83) | 已有家 | project_authority_matrix_grill_20261013.md | #20 | skills/linear-delivery/SKILL.md:70 | 「wiki 活動清單卡…｜權限表每一列：執行角色、範圍、依據欄位、操作」
+   ! 待人工(0.67) | 已有家 | project_rule_card_normalization_20261027.md | #6 | 04/規範 - 商業邏輯.md:99 | 「操作的前提…｜實體卡操作段「前提」欄」
+   ! 改寫(0.80) | 已有家 | project_rule_card_normalization_20261027.md | #8 | erp/06-state-machines/規範 - 狀態機.md:163 | 「各狀態可改內容｜表格：狀態為列、可改的內容為欄」
+   ! 改寫(0.85) | 已有家 | project_rule_card_normalization_20261027.md | #9 | 04/規範 - 商業邏輯.md:107 | 「某主題的數值與規則各在哪張卡｜領域資料結構總覽卡資料流視圖」
+   ! 待人工(0.67) | 已有家 | project_rule_card_normalization_20261027.md | #10 | 04/規範 - 商業邏輯.md:97 起落點表 | 「誰在什麼範圍能做哪個操作…｜活動清單卡」；「角色接力、步驟先後｜業務情境卡、服務藍圖」
+   ! 改寫(0.86) | 已有家 | project_wiki_tag_migration.md | #1 | erp/00-meta/business-domain-taxonomy.md § 領域 tag 標注規則 | 「格式：frontmatter `tags:`，值為 `領域/<六領域之一>`」「全域哨兵：六領域全沾的極少數卡…標 `領域/全域`」
+   ! 改寫(0.90) | 已有家 | project_wiki_tag_migration.md | #2 | skills/vault-audit/references/稽核維度.md:72；scripts/mechanical_check.py:3 | 「含 `business-domain`（`_archives/` 除外）｜錯誤」
+   ! 待人工(0.65) | 部分 | project_wiki_tag_migration.md | #11 | skills/vault-audit/references/稽核維度.md:71 | 「領域 tag 必標範圍內缺 tag；tag 值不在 taxonomy 值域｜錯誤」。缺：「批次重寫 frontmatter 後必須跑全範圍終驗」這條程序未寫
+   ! 改寫(0.72) | 部分 | project_obsidian_link_stability.md | #4 | memory/Sens_wiki/AGENTS.md:21 | 「禁用別名（`[[卡名\|別名]]` 的 `\|` 會截斷表格儲存格，也容易斷鏈）」。缺：「別名不解析、不救舊連結」的事實；現有理由只寫截斷表格
+   ! 待人工(0.69) | 部分 | project_obsidian_link_stability.md | #5 | skills/wiki-amend/SKILL.md:47 | 「改卡名、搬卡、反向連結、全庫搜尋一律用 obsidian-cli」。缺：「自動更新內部連結」設定須開的前提；搜過「自動更新」「rename」，只在 Sens 外的 obsidian-cli skill 可能有
+   ! 待人工(0.47) | 已有家 | project_vault_operating_contract.md | #5 | erp/00-meta/wiki-schema.md:104（§ 4.0 表） | 「`source`｜指分工正本｜正確性根據」
+   ! 改寫(0.93) | 部分 | project_vault_operating_contract.md | #9 | memory/Sens_wiki/AGENTS.md:22 | 「外部連結：連 vault 外的非實作資源…用 markdown link。禁指向實作文件（Prototype 原始碼、實作程式碼）」。缺：「相對路徑」未寫；OpenSpec、Prototype 兩例已被禁，屬過期部分
+   ! 改寫(0.78) | 部分 | project_vault_operating_contract.md | #11 | skills/wiki-amend/SKILL.md:47 | 「改卡名、搬卡、反向連結、全庫搜尋一律用 obsidian-cli」。缺：「寫內容不走 CLI」未寫
+   ! 疑似無出處(0.11) | 部分 | project_vault_operating_contract.md | #14 | erp/00-meta/卡片撰寫共用規範.md；skills/wiki-amend/SKILL.md:27；稽核維度.md:174 | 四步的實質都已由其他物件承載，但卡內 editing-conventions 已不存在；「先不做」的決定本身已被後續工作取代，卡內未自述翻案
+   ! 待人工(0.65) | 已有家 | project_erp_mes_design_baseline.md | #10 | 05/生產任務.md:65；05/裝訂主檔.md:20 | 「廠商類別｜自有工廠／加工廠／台灣外包／中國外包」（欄名已由「生產單位類別」改為「廠商類別」）
+   ! 句子在別檔 | 已有家 | project_erp_mes_design_baseline.md | #11 | taxonomy § 檢索規約 第 2 點；05/生產領域資料結構總覽.md:113 | 「它是該領域關聯與資料流的唯一正本」
+   ! 待人工(0.54) | 部分 | project_workflow_boundary_grill_20261004.md | #2 | skills/wiki-amend/SKILL.md:43；AGENTS.md:37 | 「每筆增修先給 Miles 建議、影響、優缺點…Miles 確認後才寫」；「wiki-amend（唯一寫入入口）」。缺：否決「設計檔直接寫最終字句」未寫
+   ! 改寫(0.77) | 已有家 | project_workflow_boundary_grill_20261004.md | #3 | AGENTS.md:16；04/規範 - 商業邏輯.md:106 | 「規劃單…不放：欄位表、狀態列舉、業務規則句（改一句引用 wiki 卡）」
+   ! 疑似無出處(0.00) | 部分 | project_workflow_boundary_grill_20261004.md | #4 | AGENTS.md:17 | 「情境目錄與測試｜驗收條目：每節情境對一條測試，「依據」行指向 wiki 情境卡」。缺：驗收條目現在住在情境目錄而非規劃單；「第 N 步／分支（條件短名）」格式未寫
+   ! 疑似無出處(0.31) | 已有家 | project_workflow_boundary_grill_20261004.md | #6 | memory/erp/manual-writing-rules.md:16；skills/linear-delivery/SKILL.md: | 「情境頁的情境…｜wiki 業務情境卡」；「wiki…業務情境卡｜概述與 Use Case」
+   ! 改寫(0.76) | 已有家 | project_workflow_boundary_grill_20261004.md | #13 | erp/00-meta/scope-boundary.md:83 | 「計算公式的程式實作…｜erp repo 對應模組實作；業務計算口徑進 Vault」
+   ! 待人工(0.63) | 已有家 | project_workflow_v2_delivery.md | #1 | AGENTS.md:18；規範 - Linear 交付.md:18 | 「Prototype｜頁面結構、操作動線、元件呈現」；「介面歸 Prototype」
+   ! 待人工(0.61) | 部分 | project_workflow_v2_delivery.md | #11 | skills/linear-delivery/SKILL.md:33 | 「只改本次交付的 project 描述與指定 issue 描述」。缺：「新規則只適用新交付、不主動回補」未寫
+== P7.md：{'已有家/句子在別檔': 1, '已有家/引號內存在': 21, '已有家/待人工': 16, '已有家/改寫': 9, '已有家/疑似無出處': 3, '部分/引號內存在': 7, '部分/待人工': 9, '部分/改寫': 6, '部分/疑似無出處': 4}
+   ! 改寫(0.83) | 已有家 | project_linear_format_redesign_grill_20261012.md | #12 | wiki/03-roles/業務主管.md:39 | 「代操作不改管理權責（ACT-APV-003、ACT-APV-022；ACT-SHR-008）」
+   ! 待人工(0.54) | 已有家 | project_linear_format_redesign_grill_20261012.md | #14 | wiki/04-business-logic/服務藍圖/人力調度與職務代理流程群組/分享與職務代理活動清單.md:35 | 「ACT-SHR-008 交接或救援時管理訂單的分享｜業務主管、Supervisor｜全公司」（「視同系統管理者」字樣未見，實質權限有）
+   ! 待人工(0.59) | 已有家 | project_linear_format_redesign_grill_20261012.md | #19 | wiki/04-business-logic/服務藍圖/單據存取流程群組/售前單據檢視活動清單.md:36-37 | 「ACT-VPRE-005 業務主管 全公司」「ACT-VPRE-006 監督全公司需求單｜Supervisor」
+   ! 改寫(0.92) | 已有家 | project_linear_format_redesign_grill_20261012.md | #23 | `工作樹/memory/erp/plans/_archives/2026/linear-format-20261012/downstream | 「mock 人員清單把張惠雯列為…」。「K16」「F5」兩個編號在工作樹內搜不到，不影響前兩項
+   ! 疑似無出處(0.22) | 已有家 | project_linear_format_redesign_grill_20261012.md | #24 | 同資料夾 `execution-plan.md`、`grill-decisions.md`（已封存） | 搜到三詞，只在封存資料夾
+   ! 待人工(0.52) | 部分 | project_prototype_test_strategy_20260908.md | #10 | README 撰寫規約第 4 條 | 「要先推狀態的情境，前置步驟寫在同一條測試開頭」。缺「推不到才提補鏈逐筆問」
+   ! 待人工(0.43) | 已有家 | project_prototype_test_strategy_20260908.md | #13 | README 執行表 | 「smoke｜module｜full」
+   ! 改寫(0.82) | 部分 | project_prototype_test_strategy_20260908.md | #20 | README:27 | 家寫「就先 `pkill -f "next dev --port 3020"`」，沒有「會殺到自己」與 `302[0]` 的提醒
+   ! 改寫(0.88) | 已有家 | project_prototype_test_strategy_20260908.md | #21 | README 依據文件表 | 「`docs/main-flow.md` 主流程 smoke 站表」
+   ! 待人工(0.60) | 已有家 | project_prototype_test_strategy_20260908.md | #25 | wiki/06-state-machines/需求單狀態.md:46,91-92 | 「流失 → 待評估成本｜OP-QR-013 重新啟動」「刪除表達『任一狀態皆可刪除』」。（「以 dev 前後端為準」是一次性裁決，結果已在狀態機卡）
+   ! 疑似無出處(0.00) | 部分 | project_prototype_test_strategy_20260908.md | #30 | wiki/05-entities/帳務.md:177；收款項目規劃活動清單.md:51 | 「不設拆期與刪除兩種事件類型」。沒有「拆期在訂單付款計畫直接做」這句
+   ! 待人工(0.57) | 部分 | project_erp_repo_prototype_workflow.md | #4 | SKILL.md:39,56 | 「元件選型與拼法｜Agent（照 catalog / recipe）」「不要即興組版」。沒有禁止「自寫計畫鎖死 UI 再派子代理」這句
+   ! 改寫(0.85) | 已有家 | project_erp_repo_prototype_workflow.md | #7 | `erp/.claude/skills/prototype-publish/SKILL.md:88,97` | 「允許 `git merge origin/main`」「把 develop 併進 prototype 分支…唯一不可逆的錯誤」
+   ! 待人工(0.64) | 部分 | project_erp_repo_prototype_workflow.md | #12 | `erp-prototype-tests/README.md`「本機登入」；`erp/packages/shared/hooks/useAu | 家有「建 `.env.local` 寫入 ERP_TEST_USERNAME…Playwright 會先登入一次」。缺「agent 勿改白名單、請 Miles 登入」。程式碼現況：白名單 `['/components',
+   ! 待人工(0.41) | 已有家 | project_skill_rewrite_c5_20261029.md | #2 | erp-plan/SKILL.md:35 | 「調研（可選）｜Miles 同意調研建議時，`vault-ingest` 派調研、存 raw」
+   ! 改寫(0.85) | 已有家 | project_skill_rewrite_c5_20261029.md | #4 | 規劃品質評分準則.md:78-81；審查知識路由 | 「每個偏離列一列：公司要求、業界做法…取捨、風險、誰需要知道」
+   ! 待人工(0.59) | 部分 | project_skill_rewrite_c5_20261029.md | #5 | wiki/00-meta/卡片撰寫共用規範.md:91 | 找到「共用骨架（所有正本卡型一致）」與各類範例卡。「推理照判斷式」沒有
+   ! 待人工(0.52) | 已有家 | project_skill_rewrite_c5_20261029.md | #11 | 規劃品質評分準則.md:40,124-125 | 「稽核輪數上限｜3 輪」「重複發現回源門檻｜2 個規劃主題」
+   ! 待人工(0.69) | 已有家 | project_skill_rewrite_c5_20261029.md | #12 | 審查知識路由.md:47-48 | 「輕量｜下列全部成立：只動單一實體的單一欄位…不動狀態機…grill 題數少於 5」
+   ! 待人工(0.46) | 已有家 | project_skill_rewrite_c5_20261029.md | #13 | `.claude/skills/oq-manage/SKILL.md:32`；`references/整理報告格式.md:11` | 「`audience` 一律填 internal」「open 久置天數｜30 天；自 `raised-at` 起算」
+   ! 改寫(0.77，檔名解不出) | 已有家 | project_skill_rewrite_c5_20261029.md | #15 | 規範 § 五 第 17 條 | 「wiki 參考模型卡…公司偏離段中，出處指向本次交付對應規劃單的條目」
+   ! 句子在別檔 | 已有家 | project_erp_manual_dev_verified.md | #1 | 手冊規則:3；`.scratch/workflow-rebuild/issues/15-environment-reset.md:38` | 「範式單元：需求單管理七頁（`production-stage-seg1-manual-artifact.html`…）」
+   ! 待人工(0.48，檔名解不出) | 部分 | project_erp_manual_dev_verified.md | #2 | 手冊規則 § 一、§ 四第 4 條 | 「按鈕、頁籤、欄位…prototype 程式碼逐字」「多入口同步並列」。「做到報工」「款項發票要做」界線沒寫（且品檢出貨後來加入）
+   ! 疑似無出處(0.25，檔名解不出) | 部分 | project_erp_manual_dev_verified.md | #7 | 手冊規則 § 六 | 「禁比喻、禁『順手』『刻意』」。「刪題外話」「口語改功能性描述（提供／顯示／列出）」沒寫
+   ! 待人工(0.67，檔名解不出) | 已有家 | project_erp_manual_dev_verified.md | #8 | 手冊規則 § 三 howto 表 | 「intro｜第一句含人事時地物」
+   ! 改寫(0.71，檔名解不出) | 部分 | project_erp_manual_dev_verified.md | #9 | 手冊規則 § 三 | 「動詞用完成、把…推進到…」「動詞用理解、分辨、判斷、找到」。沒有禁用詞清單，也沒有「操作、核對」
+   ! 改寫(0.76，檔名解不出) | 部分 | project_erp_manual_dev_verified.md | #10 | 手冊規則 § 六 | 「全文不用具體單號…改寫成『這張需求單』『該印件』」。「{…}」「N 張」參數式沒寫
+   ! 疑似無出處(0.24，檔名解不出) | 部分 | project_erp_manual_dev_verified.md | #14 | `工作樹/production-stage-seg1-manual-artifact.html:100,105` | 成品有 `border-left:3px solid transparent` 的側欄項樣式。其餘（不顯示單元標題、手風琴）規則檔沒寫，成品實作未逐項核對
+   ! 待人工(0.68，檔名解不出) | 部分 | project_erp_manual_dev_verified.md | #18 | 手冊規則 § 三 overview | 「預設 SVG 流程圖箭頭上的字是業務事件」。「不必畫全部狀態」沒寫（表格反而要列例外狀態）
+   ! 待人工(0.50，檔名解不出) | 部分 | project_erp_manual_dev_verified.md | #20 | 手冊規則 § 三 fields | 「照表單實況完整列齊，不精簡」。缺「唯讀帶入欄可合併一列」
+   ! 改寫(0.88，檔名解不出) | 已有家 | project_erp_manual_dev_verified.md | #26 | 手冊規則 § 四第 10、11 條 | 「不寫介面元件實作詞（TextArea、Modal…）」「不寫測試或 prototype 專用內容」
+   ! 待人工(0.48) | 部分 | project_erp_manual_dev_verified.md | #27 | `Proto/MOCK-DATA-CHAIN.md:141` | 「鏈八是早期階段樣本，另見該節」。「每頁情境要有可操作假資料」這條規則沒寫
+   ! 改寫(0.92) | 已有家 | project_erp_manual_dev_verified.md | #30 | `Proto/quote-prototype/detail/page.js:236-258` | `if (currentStatus === QUOTE_STATUS.WON) return isLast ? 'success' : 'finish'`
+   ! 疑似無出處(0.21，檔名解不出) | 已有家 | project_erp_manual_dev_verified.md | #31 | `工作樹/production-stage-seg1-manual-artifact.html:8,20,110` | `--primary:#3C5C9C`；`"Inter","Noto Sans TC"`；`minmax(0,760px) var(--toc-w)`（家是成品本身，規則檔沒寫）
+   ! 改寫(0.70) | 部分 | project_erp_manual_dev_verified.md | #37 | `工作樹/AGENTS.md`「模型分工」 | 家：「子代理：實作、wiki 修正、稽核｜Opus high」「子代理：查找、摘錄…Sonnet」。手冊撰寫歸 Opus 還是 Sonnet，沒有明說
+   ! 改寫(0.71，檔名解不出) | 部分 | project_erp_manual_dev_verified.md | #39 | wiki/05-entities/訂單.md:80 | 「審核業務主管｜系統於草稿建立時指派」。預設者怎麼選沒寫（卡說手冊也不該寫，但 wiki 端沒有說明）
+   ! 待人工(0.66，檔名解不出) | 已有家 | project_erp_manual_dev_verified.md | #40 | 手冊規則 § 一 | 「狀態名、角色名、實體名｜wiki」「值域衝突…先照 prototype 畫面寫」
+   ! 待人工(0.56，檔名解不出) | 部分 | project_erp_manual_dev_verified.md | #49 | wiki/05-entities/需求單.md:108 | 「成本估算…由 OP-QR-003 編輯需求單填」。填入來源只列編輯，沒明寫「登錄印件時不填」
+   ! 改寫(0.71，檔名解不出) | 部分 | project_erp_manual_dev_verified.md | #50 | wiki/05-entities/需求單.md:115；wiki/08-open-questions/_archives/2026/QR-0 | 欄位列只寫「整數（1-10）」「由 OP-QR-001…填」，沒寫必填與否。QR-011 已 `status: answered`（2026-11-05），裁決內容未讀全，卡內說法是否仍成立未查證
+   ! 待人工(0.47) | 已有家 | project_erp_manual_dev_verified.md | #52 | wiki/06-state-machines/收款項目收款狀態.md:32；收款項目開發票狀態.md:31-32；發票狀態.md:19-21 | 「未收｜初始；累計已收等於 0」「未開立｜…」「開立」「作廢」
+   ! 待人工(0.57) | 已有家 | project_manual_prototype_sync_grill_20260923.md | #2 | wiki/04-business-logic/服務藍圖/線下接單流程群組/報價評估活動清單.md:35,51 | 「ACT-EST-026…業務、諮詢｜自己負責｜OP-QR-007 評估完成」「ACT-EST-011 評估並填入成本估算｜所有角色｜被分享（編輯）」
+   ! 疑似無出處(0.30，檔名解不出) | 部分 | project_manual_prototype_sync_grill_20260923.md | #3 | wiki/05-entities/轉交單.md:61 | 搜 wiki 全文已無「回運單」操作，但沒有一句寫明「取消回運單、送錯直接現場搬」
+   ! 待人工(0.45) | 已有家 | project_manual_prototype_sync_grill_20260923.md | #5 | 生產任務.md:169,190；製程規劃活動清單.md:51 | 「欄位變更｜目的站點變更…記原值與新值」「ACT-PLAN-041 協助指定生產任務的目的站點與產線｜印務主管｜全公司」
+   ! 改寫(0.77) | 已有家 | project_manual_prototype_sync_grill_20260923.md | #9 | wiki/05-entities/生產任務.md:66 | 「已有報工或存在在途的轉交單時鎖定」
+   ! 疑似無出處(0.00) | 已有家 | project_manual_prototype_sync_grill_20260923.md | #11 | wiki/08-open-questions/PT-062-計畫設備與任務預計完成日在生產中可否修改.md | 檔名即議題
+   ! 待人工(0.62) | 已有家 | project_manual_prototype_sync_grill_20260923.md | #13 | wiki/05-entities/出貨單.md:63；出貨活動清單.md:45 | 「由 [[訂單]] OP-ORD-001 建立出貨單草稿帶入」「ACT-SHP-001｜業務、諮詢｜自己負責｜OP-ORD-001」
+   ! 待人工(0.58) | 已有家 | project_manual_prototype_sync_grill_20260923.md | #17 | 出貨活動清單.md:45 | 「ACT-SHP-001｜業務、諮詢｜自己負責」
+   ! 待人工(0.45) | 已有家 | project_manual_prototype_sync_grill_20260923.md | #18 | `工作樹/memory/erp/manual-audit-20260923/followups.md`；`grill-decisions.m | 「待 Miles 確認（不擋進度）」「D10｜交付後工單異動｜B：手冊本批不寫…Prototype 補做另開工作」。vault-audit 建議沒有紀錄
+== P8.md：{'已有家/句子在別檔': 3, '已有家/引號內存在': 1, '已有家/待人工': 14, '已有家/改寫': 13, '已有家/疑似無出處': 4, '部分/引號內存在': 5, '部分/待人工': 2, '部分/疑似無出處': 7}
+   ! 待人工(0.47，檔名解不出) | 已有家 | project_invoice_view_drawer_done.md | #2 | 同上:78、:84 | 銷售額已申報｜不可作廢，只能折讓（表列 B2B／B2C）
+   ! 改寫(0.76，檔名解不出) | 已有家 | project_invoice_view_drawer_done.md | #6 | wiki/05-entities/帳務.md:84 | 開立時間｜ezPay 回傳開立成功的時間點
+   ! 待人工(0.69) | 已有家 | project_invoice_view_drawer_done.md | #10 | proto/…/billing/InvoiceSection.js:233-243 | title: '折讓衍生（含稅）'、'剩餘可折讓（含稅）'
+   ! 改寫(0.83) | 已有家 | project_invoice_view_drawer_done.md | #11 | InvoiceSection.js:277；InstallmentSection.js:175 | onClick={() => onViewInvoice?.(record.invoice_no)}
+   ! 句子在別檔 | 已有家 | project_invoice_view_drawer_done.md | #12 | InvoiceSection.js:4-5；wiki/05-entities/帳務.md:205 | 是收款項目上唯一的開發票入口
+   ! 待人工(0.50) | 已有家 | project_invoice_view_drawer_done.md | #16 | proto/…/billing/AllowanceFilesModal.js:3 | 檔案列表（檔名、上傳人、上傳時間、下載、刪除）＋ 多檔上傳
+   ! 待人工(0.69) | 已有家 | project_order_workorder_wiki_iteration_grill_20261004.md | #7 | wiki/06-state-machines/發票狀態.md:31 | 草稿｜初始…不驗證任何內容，沒有發票號碼
+   ! 待人工(0.50，檔名解不出) | 已有家 | project_order_workorder_wiki_iteration_grill_20261004.md | #9 | 轉交單.md:85 | 簽收照片｜…每條至少一張
+   ! 疑似無出處(0.25) | 已有家 | project_order_workorder_wiki_iteration_grill_20261004.md | #10 | wiki/06-state-machines/生產任務轉交狀態.md:35-39 與推導條件表 | 待轉交、轉交中、待點收、已轉交皆在；另多「不適用」（需轉交為否）；待點收須任務已完成
+   ! 改寫(0.77) | 已有家 | project_order_workorder_wiki_iteration_grill_20261004.md | #18 | wiki/05-entities/生產任務.md:134 | 可逐筆交付，也可工單 OP-WO-007 批次交付生產任務一次把旗下全部任務交付
+   ! 疑似無出處(0.14) | 部分 | project_order_workorder_wiki_iteration_grill_20261004.md | #20 | wiki/06-state-machines/訂單狀態.md:43 | 審核看的項目列舉不含交期（缺：沒有「不看交期」明文；送審條件:187 要印件預計交期）
+   ! 待人工(0.58) | 已有家 | project_order_workorder_wiki_iteration_grill_20261004.md | #21 | wiki/07-scenarios/訂單成立確認.md:55；wiki/04-business-logic/服務藍圖/出貨與交付流程群組/訂 | 沒有任何印件的訂單…手動推進到「訂單完成」；ACT-DONE-001 業務、諮詢 自己負責
+   ! 改寫(0.71，檔名解不出) | 已有家 | project_order_workorder_wiki_iteration_grill_20261004.md | #26 | 轉交單.md:63 | 負責廠務｜這趟由哪位人員去搬，必填
+   ! 改寫(0.79) | 已有家 | project_order_workorder_wiki_iteration_grill_20261004.md | #29 | proto/production-floor/transfers/page.js:84；receiving/page.js:28 | 子母表（Miles 2026-10-06 拍板）：母層一列一張單，子層列明細
+   ! 待人工(0.57) | 已有家 | project_order_workorder_wiki_iteration_grill_20261004.md | #32 | wiki/05-entities/報工紀錄.md:54、:66；製作與報工活動清單.md:45 | 良品數與不良品數不得同時為 0；師傅 自己負責 報工人員
+   ! 待人工(0.58，檔名解不出) | 已有家 | project_order_workorder_wiki_iteration_grill_20261004.md | #34 | wiki/05-entities/產線.md:31-32 | 生產產線共六條…另有品檢線；產線欄只能自六條擇一
+   ! 句子在別檔 | 已有家 | project_order_workorder_wiki_iteration_grill_20261004.md | #41 | wiki/06-state-machines/收款項目開發票狀態.md、收款項目收款狀態.md；wiki/05-entities/帳務.md | 應收總額為 0 時可填 0，本欄不設下限
+   ! 改寫(0.82) | 已有家 | project_order_workorder_wiki_iteration_grill_20261004.md | #43 | AGENTS 模型分工表與「停下與繼續」 | 子代理：實作、wiki 修正、稽核＝Opus high；正本矛盾（並排呈報，不自行調和）
+   ! 待人工(0.67，檔名解不出) | 已有家 | project_payment_worklists_delivery.md | #1 | wiki/05-entities/訂單.md:251 | 本訂單存在發票狀態為開立的發票…應收總額 － 收款淨額 大於 0
+   ! 疑似無出處(0.32) | 已有家 | project_payment_worklists_delivery.md | #2 | proto/payment/receivable/page.js:62-92 | 欄：訂單編號、案名、客戶、應收總額、收款淨額、待收
+   ! 待人工(0.60，檔名解不出) | 已有家 | project_payment_worklists_delivery.md | #4 | wiki/05-entities/帳務.md:220 | 款項類型 = 退款，且款項狀態為處理中；一筆款項一列
+   ! 待人工(0.45) | 已有家 | project_payment_worklists_delivery.md | #12 | proto/payment/_lib/derive.js:172-176 | 應收總額 X 元，收款淨額 Y 元，收款差額 Z 元，收款多於應收…（wiki 無句型）
+   ! 改寫(0.81) | 已有家 | project_payment_worklists_delivery.md | #15 | wiki/04-business-logic/營運規則/帳務/帳務清單規則/折讓造成的少開差額不進清單.md:24 | 事後折讓造成的少開差額不進任一缺口清單，只在對帳與催收的逐筆核對挑出
+   ! 疑似無出處(0.06) | 部分 | project_payment_worklists_delivery.md | #16 | wiki/04-business-logic/服務藍圖/單據存取流程群組/訂單與帳務檢視活動清單.md:73-78、:95-100 | 活動表以角色＋範圍（自己負責／被分享／全公司）表達（缺：權限碼名稱、審核業務主管範圍）
+   ! 待人工(0.58，檔名解不出) | 已有家 | project_payment_worklists_delivery.md | #19 | wiki/05-entities/帳務.md:215-220；訂單.md:251 | 具名清單表：進入條件、移出條件
+   ! 待人工(0.68) | 部分 | project_payment_worklists_delivery.md | #21 | AGENTS 模型分工表 | 子代理：實作、wiki 修正、稽核＝Opus high；查找、摘錄＝Sonnet（缺：「草稿」未列）
+   ! 改寫(0.76，檔名解不出) | 已有家 | project_payment_worklists_delivery.md | #23 | proto/payment/ 目錄 | receivable/、refund-payout/ 存在
+   ! 改寫(0.91) | 已有家 | project_quote_item_drawer_regroup_20260923.md | #4 | page.js:1547 | isItemEditing && currentItem?.item_no 才顯示
+   ! 改寫(0.89) | 已有家 | project_quote_item_drawer_regroup_20260923.md | #6 | page.js:266、:1670 | REVIEW_EXEMPT_HINT＝勾選後此印件轉訂單時自動合格，不進入審稿流程
+   ! 疑似無出處(0.18，檔名解不出) | 部分 | project_quote_item_drawer_regroup_20260923.md | #10 | wiki/05-entities/需求單.md:112 | 印件預計交期…選填、逐列填寫（缺：無否決句；現行正本是業務逐列填寫，與範例「業務改填」是否同義無法判斷）
+   ! 疑似無出處(0.20) | 部分 | project_quote_item_drawer_regroup_20260923.md | #11 | proto/quote-prototype/detail/page.js:829-836 | 列表欄有檔名連結（缺：側板唯讀版附件未見，:1744 起只有可編輯上傳）
+   ! 改寫(0.74) | 已有家 | project_quote_linear_delivery_prototype_standard_20261004.md | #8 | skill/SKILL.md:92、:144；規範 - Linear 交付.md:144 | 沿用規則的 wiki 正本卡領域標籤與本 project 不同就刪；Task 票…規則…都在 parent Feature 票
+   ! 待人工(0.65，檔名解不出) | 已有家 | project_quote_to_order_gap_fix.md | #1 | wiki/05-entities/訂單.md:74；印件.md:97；需求單.md:78 | 自取／專車配送／第三方物流；由需求單 OP-QR-011 轉訂單帶入
+   ! 待人工(0.66) | 已有家 | project_quote_to_order_gap_fix.md | #6 | wiki/04-business-logic/服務藍圖/線下接單流程群組/報價評估活動清單.md:33 | ACT-EST-001 指定或更換估成本的印務主管｜業務、諮詢｜自己負責
+   ! 疑似無出處(0.00) | 部分 | project_work_order_creation_delivery.md | #2 | 規範 - Linear 交付.md:37、:42 | 一票一個需求主題；一節裝一個動作（缺：沒有「sub 多重歸屬」判準）
+   ! 句子在別檔 | 已有家 | project_work_order_detail_layout_done.md | #8 | wiki/04-business-logic/服務藍圖/生產流程群組/製作與報工活動清單.md:42 | ACT-MFG-005 在工單上回報旗下任務的製作數量
+   ! 疑似無出處(0.30) | 部分 | project_work_order_detail_layout_done.md | #10 | wiki/05-entities/報工紀錄.md:55 | 提交管道：師傅自助／生產管理頁面代報／印務於工單詳情頁（缺：沒有排除句；PT-026 門戶為未結 OQ）
+   ! 待人工(0.41) | 部分 | project_work_order_detail_layout_done.md | #11 | 報工紀錄.md:62-66 | 數量檢核表只列生產數量必填、不得漏填產出（缺：無超量明文）
+   ! 疑似無出處(0.36) | 已有家 | project_work_order_detail_layout_done.md | #13 | proto/work-orders/_components/detail/WorkOrderSummary.js:26、:115-148 | LIFECYCLE_STEPS ＝ 草稿、製程確認、審核完成、已交付、製作中、已完成
+   ! 疑似無出處(0.34，檔名解不出) | 已有家 | project_work_order_detail_layout_done.md | #20 | proto/work-orders/ 內 | 搜 異動移除、TaskRemovalDialog 無介面元件（僅 mock-data.js:1907 內容文字）；屬以未出現佐證
+   ! 改寫(0.79，檔名解不出) | 已有家 | project_work_order_detail_layout_done.md | #24 | wiki/05-entities/印件.md:93 | 不進審稿輪次，也不改變審稿結果、當前合格輪次
+   ! 疑似無出處(0.00) | 部分 | project_work_order_detail_layout_done.md | #32 | wiki/05-entities/品項主檔.md:111-113 | 面積區間、格價（缺：「印務挑列、不填數字」未寫）
+   ! 改寫(0.78) | 已有家 | project_work_order_linear_delivery_prototype_standard_20261005.md | #5 | skill/SKILL.md:144-146 | 具名案例人名對不到 mock 的角色與指派；沿用規則整段重寫進本票
+== P9.md：{'已有家/引號內存在': 5, '已有家/待人工': 8, '已有家/改寫': 8, '已有家/疑似無出處': 2, '部分/引號內存在': 11, '部分/待人工': 2, '部分/改寫': 2, '部分/疑似無出處': 5}
+   ! 改寫(0.70) | 已有家 | project_entity_charter_gap_list.md | #1 | W05-entities/規範 - 實體.md:24、:29 | 「欄位定義…金額與數量的組成式、推導式 → 本卡欄位表」；「決策政策與動機 → 04-business-logic/ 規則卡」（OpenSpec 一層已不存在）
+   ! 疑似無出處(0.16) | 部分 | project_mes_production_stage_planning.md | #7 | W03-roles/印務.md:38；W05-entities/產線.md:37；W04-business-logic/服務藍圖/單據存取流 | 「系統不代為排程」；「產線視角以產線標籤分組彙總負荷」；「排程與工廠總覽…尚未規劃」。缺：三視角定義、交期倒推預填。搜過：三視角、倒推、手動排、工廠總覽
+   ! 改寫(0.72) | 已有家 | project_mock_chain4_urgent_multipart.md | #10 | P MOCK-DATA-CHAIN.md:152 | 「鏈六｜製作等待中｜…沒有工單。供測試『印製派單審核後系統建草稿工單』」
+   ! 改寫(0.76，檔名解不出) | 部分 | project_mock_chain4_urgent_multipart.md | #12 | W05-entities/需求單.md:78、:112、:59；W05-entities/印件.md:97 | 「自取／專車配送／第三方物流」；「包裝備註：包裝方式補充說明」；「窗口聯絡人…單選（同客戶下的聯絡人）」。缺：優先退回單頭的條件、預設主要窗口
+   ! 改寫(0.78，檔名解不出) | 已有家 | project_prompt_audit_grill_20260923.md | #8 | `S`.claude/skills/linear-delivery/references/ | 檔名：範本 - Linear 交付.md、規範 - Linear 交付.md、範例 - Linear 交付.md；SKILL.md 為流程
+   ! 待人工(0.52) | 部分 | project_prototype_ui_consistency_fix_20260907.md | #1 | P work-orders/_components/detail/InfoHint.js；`S`memory/shared/ui-wordi | 實作有 InfoHint；ui-wording 只規定「新增任何說明文字…須先經 Miles 同意」。缺：「一律標籤旁圖示」的規則句
+   ! 待人工(0.55) | 部分 | project_prototype_ui_consistency_fix_20260907.md | #3 | P work-orders/detail/page.js:952；P print-items/detail/page.js:440 | 多頁都用 arrow_back 圖示鈕；無規則句。搜過：OrderDetailHeader、DetailPageHeader
+   ! 改寫(0.89) | 已有家 | project_prototype_ui_consistency_fix_20260907.md | #4 | P prepress-review/_components/AssignReviewerDialog.js:44-45、:58 | 「選項只呈現姓名與能力等級，不加任何尾註，也不另掛能力參考警示」
+   ! 疑似無出處(0.32，檔名解不出) | 部分 | project_shipment_print_download_center_grill_20261023.md | #1 | W05-entities/物流單.md（欄位表） | 物流單、出貨單欄位表已無送達憑證欄；沒有「不附照片」的明文句。W05-entities/範例 - 實體.md:73 仍有（凍結快照）。搜過：送達憑證、補附、不附照片
+   ! 疑似無出處(0.08) | 已有家 | project_shipment_print_download_center_grill_20261023.md | #13 | W05-entities/下載檔案.md（欄位表）；P qc-shipping/download-center/page.js:139-14 | 欄位表七欄；篩選「檔案類型」「狀態」「建立人」
+   ! 待人工(0.60) | 已有家 | project_shipment_print_download_center_grill_20261023.md | #15 | W04-business-logic/服務藍圖/出貨與交付流程群組/出貨活動清單.md:65 | 「ACT-SHP-044｜批次列印物流單與托運總表｜出貨人員｜全公司」
+   ! 改寫(0.85) | 已有家 | project_shipment_print_download_center_grill_20261023.md | #22 | `S`memory/shared/ui-wording.md:二 | 「共用子母表樣式（nestedTableCss）」；五處清單同
+   ! 疑似無出處(0.00) | 已有家 | project_shipment_print_download_center_grill_20261023.md | #23 | P qc-shipping/download-center/page.js；P qc-shipping/_lib/download-file | 頁面與檔案存在
+   ! 待人工(0.44) | 已有家 | project_shipment_print_download_center_grill_20261023.md | #25 | W04-business-logic/服務藍圖/出貨與交付流程群組/出貨活動清單.md:63；W06-state-machines/出貨單狀 | 「ACT-SHP-042｜確認這一批可以出貨｜揀貨人員」；「已裝箱 → 已確認｜確認可出貨｜揀貨相符」
+   ! 待人工(0.40) | 已有家 | project_shipment_print_download_center_grill_20261023.md | #28 | W06-state-machines/出貨單狀態.md:33、:58、:64 | 「未離廠」「部分離廠」「全數離廠」集合詞；欄位表已無離廠時間
+   ! 疑似無出處(0.12，檔名解不出) | 部分 | project_shipment_print_download_center_grill_20261023.md | #28a | W05-entities/出貨單.md（欄位表） | 欄位表已無此欄，無明文刪除句；範例卡仍有（凍結快照）。搜過：實際出貨日
+   ! 待人工(0.45) | 已有家 | project_shipment_print_download_center_grill_20261023.md | #29 | W06-state-machines/出貨單狀態.md:54；W06-state-machines/物流單狀態.md:52 | 「第三方物流不經已出貨」；「已出貨｜只有專車配送與其他」
+   ! 改寫(0.88，檔名解不出) | 已有家 | project_shipment_print_download_center_grill_20261023.md | #34 | W05-entities/訂單.md:106 | 「系統日期晚於該印件的印件預計交期，且該印件尚未出貨｜逾期」
+   ! 改寫(0.71) | 已有家 | project_shipment_print_download_center_grill_20261023.md | #38 | W06-state-machines/出貨單狀態.md:64 | 「全數離廠｜…這一批全部離開公司，算已出貨」
+   ! 待人工(0.69，檔名解不出) | 已有家 | project_wiki_cleanup_by_domain.md | #9 | W05-entities/訂單.md:139-140 | 「發票差額｜訂單.應收總額 － 訂單.發票淨額」；「收款差額｜訂單.應收總額 － 訂單.收款淨額」
+   ! 待人工(0.50) | 已有家 | project_wiki_cleanup_by_domain.md | #14 | `S`memory/shared/non-business-terms.md:14、:29 | 「守衛（guard）｜改寫｜…用『轉換條件』」；「閘門（gate）｜改寫」
+   ! 待人工(0.62) | 已有家 | project_wiki_cleanup_by_domain.md | #17 | W04-business-logic/服務藍圖/生產流程群組/製程規劃活動清單.md:72-73 | 「ACT-PLAN-024｜逐筆把生產任務交付產線｜印務｜自己負責」（另含被分享編輯）
+   ! 疑似無出處(0.11，檔名解不出) | 部分 | project_wiki_cleanup_by_domain.md | #25 | W05-entities/工單.md:42 | 「建立來源」只有段落表，無欄位；無「不做欄位」的明文
+   ! 改寫(0.88) | 已有家 | project_wiki_write_entry_consolidation.md | #4 | `S`AGENTS.md § 工作入口 | 「把定案內容寫進 wiki 卡、11 層卡｜`wiki-amend`（唯一寫入入口）」
+   ! 待人工(0.68) | 已有家 | project_wiki_write_entry_consolidation.md | #5 | `S`AGENTS.md § 工作入口 | 「存 raw、調研、精練 raw｜vault-ingest」；「識別到不確定項…oq-manage」；「知識庫健檢｜vault-audit」
+   ! 改寫(0.81) | 部分 | project_wiki_write_entry_consolidation.md | #11 | `S`.claude/skills/wiki-amend/SKILL.md:47 | 「一律用 obsidian-cli，指令語法以該 skill 為準」。缺：「不列指令例子」與靜默丟參數的陷阱（後者屬外掛 skill 內容，未讀）
+   ! 疑似無出處(0.00) | 部分 | project_wiki_write_entry_consolidation.md | #16 | `S`.claude/skills/vault-audit/references/稽核維度.md:26 | 維度 14 存在（`d14_warn_max`）。缺：「預設隨異動逐步收」明文
+== F1.md：{'別處已有/句子在別檔': 4, '別處已有/待人工': 2, '別處已有/改寫': 2, '部分/句子在別檔': 1, '部分/待人工': 2, '部分/改寫': 1, '部分/疑似無出處': 3}
+   ! 疑似無出處(0.00) | 部分 | feedback_advice_format_no_counterexample_section.md | #4 | `memory/shared/派工任務書範本.md`（全檔無「反例」二字，Grep 零命中） | 無對應原文句，只有「無此要求」的缺席證據
+   ! 疑似無出處(0.28，檔名解不出) | 部分 | feedback_always_traditional_chinese.md | #2 | `.claude/skills/vault-audit/scripts/wiki_lint.py:206`；`共用規範:300` 之後的 F | 簡體字形清單（们、这、为…）只檢查 wiki 卡
+   ! 改寫(0.80) | 別處已有 | feedback_amendment_advice_and_honesty.md | #4 | `~/.claude/CLAUDE.md:6`、`:17`；`ste100-pm.md:41` | 罕見工程詞第一次出現時附一行白話解釋
+   ! 待人工(0.45) | 部分 | feedback_analogy_scaffold_plain_language.md | #2 | `共用規範:299`；`.claude/skills/erp-audit/references/誤判要素.md:35`；`~/.claude | 教訓寫具體場景…不用學術詞；工程內部 jargon 須轉譯
+   ! 句子在別檔 | 別處已有 | feedback_analogy_scaffold_plain_language.md | #3 | `共用規範:34`（商業語言判準）；`共用規範:113-128`（撰寫流程第 5 步稽核）；`共用規範:299`（L1-3 稽核維度） | 不懂系統的業務主管讀得懂嗎
+   ! 待人工(0.67) | 別處已有 | feedback_brd_methodology.md | #5 | `W/04-business-logic/規範 - 商業邏輯.md:115`、`:142`、`:193` | 前提確認；產出格式；SHOULD 標註例外情境
+   ! 待人工(0.59) | 別處已有 | feedback_brd_methodology.md | #6 | `規範 - 商業邏輯.md:140`、`:193`；`共用規範:299` | MAY 同一服務的可選子步驟；SHOULD 標註例外情境
+   ! 改寫(0.88) | 部分 | feedback_check_sensation_api_asis.md | #4 | `.claude/skills/erp-plan/references/盤點方法.md:28` | 現況錯誤…依矛盾呈報固定格式呈報
+   ! 句子在別檔 | 別處已有 | feedback_contradiction_must_stop.md | #1 | `AGENTS.md:64`、`:94`；`共用規範:248` | 正本矛盾（並排呈報，不自行調和）；停下並列出矛盾兩方，開 OQ，不自行調和
+   ! 句子在別檔 | 部分 | feedback_delete_deprecated_templates.md | #1 | `共用規範:239`（封存）；`W/00-meta/wiki-schema.md:84` | 作廢的卡改狀態為 `deprecated`，移進所屬目錄的 `_archives/`
+   ! 句子在別檔 | 別處已有 | feedback_delete_deprecated_templates.md | #2 | `共用規範:273`；`共用規範:300`（L1-4）；`~/.claude/CLAUDE.md:40` | 檔名即標題；正文零迭代史；change 歷史屬 wiki/log.md
+   ! 待人工(0.42) | 部分 | feedback_delete_deprecated_templates.md | #3 | `共用規範:128`（定案追加 log）；`.claude/skills/wiki-amend/references/下游更正表.md` | 定案 commit ＋ 追加 wiki/log.md
+   ! 句子在別檔 | 別處已有 | feedback_design_scope_discipline.md | #1 | `準則:110`（§ 八）；`erp-plan/SKILL.md:35` | 設計以公司生產流程走得通為前提…未被要求的指標、報表、警示、把關、留痕欄一律不加
+   ! 疑似無出處(0.00) | 部分 | feedback_erp_reuse_existing_flows.md | #3 | `W/04-business-logic/營運規則/帳務/訂單異動規則/訂單異動只管金額、客訴走售後服務單.md`；`.../售後服務規則/ | 規則卡名即結論
+   ! 改寫(0.78，檔名解不出) | 別處已有 | feedback_features_mece_no_rules_in_project.md | #1 | `Linear 規範:46-50`（正本層對照表） | 模組層 What、Use Case、Scope｜project 描述；驗證規則、算式、驗收條件｜Feature 票
+== F2.md：{'別處已有/引號內存在': 5, '別處已有/待人工': 1, '別處已有/改寫': 1, '部分/引號內存在': 2, '部分/疑似無出處': 1}
+   ! 改寫(0.88) | 別處已有 | feedback_invoice_reconciliation_flexibility.md | #1 | `memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/帳務/發票收款彈性.md:30` | 「由業務看客戶的實際狀況自己決定；系統不事先用硬性規定綁死」
+   ! 疑似無出處(0.33) | 部分 | feedback_no_asis_term.md | #2 | AGENTS:84 | 只有 as-is 一詞
+   ! 待人工(0.65) | 別處已有 | feedback_no_deadline_assignment.md | #2 | wiki-schema:369 | 同上；搜 `.claude/skills` 無必填檢查
+== F3.md：{'別處已有/引號內存在': 18, '別處已有/待人工': 3, '別處已有/改寫': 8, '別處已有/疑似無出處': 3, '部分/引號內存在': 8, '部分/待人工': 3, '部分/改寫': 3, '部分/疑似無出處': 1}
+   ! 改寫(0.75) | 別處已有 | 各卡明細 | #3 | AGENTS:18-19 | 「Prototype…頁面結構、操作動線、元件呈現」；「Linear｜對開發的唯一交付正本，內容自包含」
+   ! 待人工(0.65) | 別處已有 | 各卡明細 | #1 | AGENTS:104；erp-skill-A:6,27,52,111；erp-skill-B:30,89 | AGENTS:104「Prototype 動到 (prototype)/ 以外的共用元件或 app 層檔」；erp-skill-B:89「共用層…的修改屬於『元件先行 PR』」；erp-skill-B:30 有發布前檢查
+   ! 待人工(0.50) | 別處已有 | 各卡明細 | #9 | map:17；AGENTS:121,123 | map:17「每個工作階段只解一張票…解完提交」；AGENTS:121「基線的規範版本必須已在 master」
+   ! 疑似無出處(0.06) | 別處已有 | 各卡明細 | #1 | STE100:35；共用規範:327；AGENTS:85 | STE100:35「清單前寫『下列事項』，不寫死數量…規則名稱同樣不帶數量」；共用規範 F9「寫死數量的清單名與規則名」
+   ! 疑似無出處(0.00) | 別處已有 | 各卡明細 | #3 | 共用規範:58-59；AGENTS:85 | 共用規範:58「骨架…可直接插入…的填空結構」；:59「規範…該單元的規則正本」
+   ! 待人工(0.56) | 部分 | 各卡明細 | #5 | 共用規範:305；AGENTS:86 | 共用規範 L1-9「業務名詞逐字等同 ERP 詞彙表詞條名」；AGENTS:86「操作名稱不照實體卡操作段，改用同義詞」
+   ! 疑似無出處(0.33) | 部分 | 各卡明細 | #1 | 準則卡:110；AGENTS:64,91 | 準則卡:110「內容限 Miles 明示需求、流程卡住點、逆流程…缺口認為重要時開 OQ 交 Miles」；AGENTS:64 停下條件只列「分級判不準、落點判不了、拍板互相矛盾」
+   ! 改寫(0.85) | 部分 | 各卡明細 | #4 | `research/20-anthropic-setup-guidance.md`:17,33 | :17「官方明說…把目標長度訂為每檔 200 行以內；過長會降低遵循度」
+   ! 改寫(0.76，檔名解不出) | 別處已有 | 各卡明細 | #3 | `/Users/b-f-03-029/.claude/settings.json`:151 | `"outputStyle": "STE100 PM"`
+   ! 待人工(0.58) | 別處已有 | 各卡明細 | #4 | STE100:42；`memory/shared/non-business-terms.md`:5；AGENTS:44 | STE100:42「流程用語與工具詞照 `…non-business-terms.md` 對照表」
+   ! 改寫(0.72，檔名解不出) | 別處已有 | 各卡明細 | #9 | STE100:21-24,30,34 | STE100:22「說明句不超過 30 字」；:34「先用一句話講背景…再講決策與做錯的後果」
+   ! 改寫(0.82) | 別處已有 | 各卡明細 | #1 | AGENTS:56 | 「子代理：實作、wiki 修正、稽核｜Opus high」
+   ! 改寫(0.88) | 部分 | 各卡明細 | #2 | AGENTS:57 | 「子代理：查找、摘錄、規格明確的重複任務（調研、盲測受測）｜Sonnet」
+   ! 改寫(0.74) | 別處已有 | 各卡明細 | #1 | AGENTS:113,130；測試README:16,64 | 測試README:64「合併或開 PR 前｜不另跑全套…全套 `npm test` 只在 Miles 指示時跑」
+   ! 改寫(0.84) | 別處已有 | 各卡明細 | #2 | 派工範本:57-58；測試README:61 | 測試README:61「派工｜任務書帶測試影響清單與 mock 三步順序」
+   ! 待人工(0.41) | 部分 | 各卡明細 | #4 | 測試README:26；`erp-prototype-tests/docs/scenario-catalog.md`:10 | 測試README:26「測試引用的單據編號一律出自這裡」；目錄:10「單據編號｜一律用資料主鏈上的實際編號」
+   ! 改寫(0.85) | 部分 | 各卡明細 | #2 | AGENTS:89；wiki `規範 - 業務情境.md`:59 | 規範:59「同一目標已有情境卡嗎？已有 → 併入既有卡為副流程」（談的是卡的歸屬，不是這條）
+   ! 待人工(0.47) | 部分 | 各卡明細 | #4 | 全域CLAUDE:17；STE100:33 | 全域CLAUDE:17「對 PM / 非工程受眾說明時優先業務術語」；STE100:33「每個改動說明…使用者會看到什麼變化」
+   ! 改寫(0.75，檔名解不出) | 別處已有 | 各卡明細 | #4 | 共用規範:168,189 | :168「受控清單｜範圍用詞、動作類型、單據代碼」；:189「鍵」的定義
+   ! 疑似無出處(0.08) | 別處已有 | 各卡明細 | #1 | 共用規範:268,321；AGENTS:97 | 共用規範 F3「下游使用句（來源端寫誰用它）」；:268「單向引用…來源端不回頭列使用者」
+   ! 改寫(0.79，檔名解不出) | 別處已有 | 各卡明細 | #2 | 共用規範:269,322 | :269「引用不重抄：…只寫 `[[卡名]]` 或 `實體.欄位名`」
+== 合計： {'別處已有/句子在別檔': 4, '別處已有/引號內存在': 23, '別處已有/待人工': 6, '別處已有/改寫': 11, '別處已有/疑似無出處': 3, '已有家/句子在別檔': 20, '已有家/引號內存在': 90, '已有家/待人工': 81, '已有家/改寫': 75, '已有家/疑似無出處': 44, '部分/句子在別檔': 1, '部分/引號內存在': 77, '部分/待人工': 40, '部分/改寫': 20, '部分/疑似無出處': 60}
