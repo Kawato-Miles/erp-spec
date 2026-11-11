@@ -67,3 +67,8 @@ check_sensation_api_asis、features_mece_no_rules_in_project、industry_best_pra
 - 本票 Question 第三點把 `docs/adr/` 列為「引用不存在的資料夾」。matt 的 `domain-modeling` skill 原文是用到才建（Create the `docs/adr/` directory lazily: only when the first ADR is needed），`docs/agents/domain.md` 也寫資料夾不存在就照常進行。所以資料夾不存在不算錯。
 - 要不要保留這個引用，取決於 Miles 對票 29 Answer「決策紀錄」一節的裁決。裁決前不動。
 
+### 2026-11-12 Miles 裁決：決策紀錄採用，`docs/adr/` 的引用保留
+
+- Miles 採用票 29 Answer「決策紀錄」一節的做法。分工已寫進 `AGENTS.md` 正本分層表的「決策紀錄」一列。
+- 本票 Question 第三點的 `docs/adr/` 引用不用刪。資料夾用到才建，現在不存在是正常的。
+
