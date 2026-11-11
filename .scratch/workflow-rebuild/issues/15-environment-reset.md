@@ -1,7 +1,7 @@
 # 15：環境清場
 
 Type: task
-Status: claimed
+Status: resolved
 Blocked by: 14
 
 ## Question
@@ -10,6 +10,42 @@ Blocked by: 14
 範圍只含代理環境（AGENTS.md、記憶卡、skill、hook、設定、範本、散檔）；不動 wiki 內容卡與在途工作樹。
 erp 程式庫不動：不是 Miles 維護的範圍，他只用其中製作 Prototype 與部署到 dev 的 skill（Miles 2026-11-11）。
 刪除前把清單給 Miles 確認。完成後記錄刪了什麼、留了什麼。
+
+## Answer
+
+2026-11-12 Miles 確認後執行。判準：Miles 的四件工作（維護 wiki、做 Prototype、開 Linear 議題、專案管理）用不用得到。
+
+刪了什麼（repo 內 209 檔，提交訊息「環境清場」；要找回用 git 紀錄）：
+
+| 類別 | 內容 | 檔數 |
+|---|---|---|
+| 舊流程的計畫與報告 | `docs/superpowers/`、`docs/state-machine-flowcharts.md`、根目錄 7 個報告檔（factory 兩份、openspec-vault-reconcile、production-stage 的 diff-matrix、dispatch-waybill-asis、handover、openspec-cleanup-plan）、`memory/MEMORY.md`、`memory/shared/notion-mcp-guidelines.md`、`memory/erp/notion-publish-manifest.md`、`memory/erp/workflow-change-as-design-carrier-20261022.md` | 34 |
+| 已完成工作的工作稿 | `memory/erp/` 的 `linear-drafts/`、`feature-draft-20261004/`、`wiki-iteration-20261004/`、`bom-card-restructure-20261028/`、`erp-mes-standard-alignment-20261028/`、`skill-rewrite-20261029/` 的 5 個散檔、`wiki-normalization-20261104/工具/source_pointer.py` | 157 |
+| 用不到的 skill | 專案層 defuddle、frontend-design、json-canvas、obsidian-bases、obsidian-markdown；誤入版控的舊工作樹設定 | 11 |
+| skill 的改版紀錄 | 7 個專案 skill 的 CHANGELOG；`linear-delivery/SKILL.md` 與 `vault-audit/SKILL.md` 拿掉引用，改由 git 提交紀錄當操作史 | 7 |
+
+封存了什麼（repo 外，git 救不回，所以只搬不刪）。位置：`~/.claude/archive/env-reset-20261112/`，內有 README 寫明各項的原位置：
+
+- `memory-cards/`：記憶卡 36 張，加清場前的索引檔 `MEMORY.md.before`。
+- `user-level/`：`skills-gstack/`（145MB）、`skills-disabled/`（OpenSpec skill 組與 impeccable 連結）、`dev-mods/`、兩份設定備份。
+
+設定改動：專案 `.claude/settings.json` 加 `enabledPlugins`，停用 `product-management@knowledge-work-plugins`（Miles 2026-11-12 同意拿掉）。
+
+留了什麼：
+
+- 記憶卡 112 張（feedback 59、project 51、reference 2）。索引檔從 28,690 位元組降到 22,339，回到 25KB 載入上限內。
+- 專案 skill 7 個（erp-audit、erp-plan、linear-delivery、oq-manage、vault-audit、vault-ingest、wiki-amend）、子代理定義 2 個、`AGENTS.md`、`GLOSSARY-MAP.md`、`docs/agents/`、`memory/shared/` 4 檔、`.githooks/`。
+- 操作手冊相關的檔全部保留（Miles：手冊要持續維護，預計改到 GitBook）：根目錄兩個手冊 HTML、`memory/erp/manual-writing-rules.md`、`manual-audit-20260923/`、`manual-vs-prototype-audit-20260907.md`，以及兩張手冊記憶卡。
+- `memory/erp/` 的 `plans/`、`wiki-normalization-20261104/`、`production-dispatch-report-transfer-20261006/`、`production-quantity-audit-20261026/`、`skill-rewrite-20261029/評測集/`、`wiki-tag-golden-set.md`；根目錄 `order-invoice-manual-test-notes.md`、`decks/`；`memory/shared/ui-business-rules.md`。這些在 14a 是待判，本票不動。
+- `.scratch/` 下的在途規劃主題、wiki 內容卡與規範層、erp 程式庫：不在本票範圍。
+- 使用者層設定的 48 個已停用外掛條目、`.claude/settings.local.json`：不動。
+
+後面的票要知道的事實：
+
+- 已刪工作稿仍被 28 張卡的出處字串指向（wiki 卡 20 張、raw 卡 8 張）。處理方式歸票 31。
+- 封存的 36 張記憶卡中 18 張是完成紀錄，只看過摘要與標記，沒有逐字核對；其中多張含「勿重問」的決策。票 29 核對決策是否已在 wiki 時，要一併看封存的這 36 張。
+- Miles 2026-11-12 的方向：商業需求走 matt 的流程進 wiki，不該進記憶；環境的設置與去重要提前。已開票 29（記憶重新初始化）、票 30（`AGENTS.md` 與設定檔去重），並讓它們擋住票 06、07、09、10。票 11 只剩依決策票結論的重寫。
+- Miles 要的是商業分析與系統分析的能力，不是寫規格的能力。已開調研票 28，擋住票 08。
 
 ## Comments
 

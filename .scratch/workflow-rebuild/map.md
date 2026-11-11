@@ -34,6 +34,8 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
 - 調研既有做法時要讀完原始檔、完全理解後才評估，不只看簡介（Miles 2026-11-12）。
 - 派工（任務書、子代理、新對話）要用資深 PM 的角度看這件工作：資深 PM 會怎麼做、在意什麼。不確定時先去找既有做法，不自己想（Miles 2026-11-12）。
 - 調研要拆領域去找（例：議題管理、知識庫管理、BRD 撰寫），不找「整套工作流」的現成答案。每個人的工作流不同，但拆開後每一段都是已存在的領域知識（Miles 2026-11-12）。
+- 商業需求走 matt 的流程進 wiki，不進記憶；同一件事只留一個家。環境的設置與去重要提前，不等到最後重寫（Miles 2026-11-12）。
+- 操作手冊要持續維護，預計改到 GitBook；手冊相關的檔不清（Miles 2026-11-12）。
 - 調研產出放 `research/`，每筆結論附網址與原文句；查不到就標未查證。
 
 ## Decisions so far
@@ -52,6 +54,7 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
 - [20：Anthropic 對現行模型的環境設定建議](issues/20-anthropic-setup-guidance.md)：現行模型照字面遵循指令，官方建議刪減累積的告誡、絕對規則寫明範圍與理由、零例外規則改用 hook；記憶索引檔已超過載入上限
 - [19：追蹤與交接的既有 skill 與外掛](issues/19-tracking-handoff-skills.md)：沒有現成方案同時滿足條件；最接近的是已在用的 matt wayfinder 本機慣例，缺跨主題總覽與原型之後的階段
 - [05：對齊工作怎麼消除](issues/05-eliminate-alignment.md)：wiki 與 Prototype 是正本，後端契約只讀；規劃功能時與驗收之前各做一次現況同步；Linear 依專案與票的狀態決定改原票或開新的；總覽範圍從給需求到 Release
+- [15：環境清場](issues/15-environment-reset.md)：repo 內刪 209 檔，repo 外封存 36 張記憶卡與用不到的 skill（`~/.claude/archive/env-reset-20261112/`）；記憶索引回到載入上限內；操作手冊相關的檔保留；記憶重新初始化與去重提前到票 29、30
 
 ## Not yet specified
 
