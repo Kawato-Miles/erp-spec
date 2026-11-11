@@ -1,7 +1,7 @@
 # 32：Claude 的資料與白板功能能不能當議題追蹤的可視化工具
 
 Type: research
-Status: open
+Status: claimed
 
 ## Question
 
@@ -17,3 +17,15 @@ Miles 2026-11-12（睡前交辦）：評估 Claude 新出的 data 與 whiteboard
 
 調研規則照地圖 Notes：讀完原始說明才評估；每筆結論附出處與原文句；查不到標未查證。產出放 `research/32-data-whiteboard-as-tracker-view.md`。
 給 Miles 的結論寫四項：做法、建議、風險、預期結果。
+
+## Comments
+
+### 2026-11-12 進行中：已認領，確認 Miles 指的是哪兩個功能
+
+用 `Artifact` 工具查這個帳號的 Artifact 類型清單（`action: "list"`、`scope: "types"`），共 8 種：Data、Design、Design System、Docs、Motion、Sheets、Slides、Whiteboard。
+Miles 說的「data」與「whiteboard」就是其中的 Data 與 Whiteboard 兩種類型。清單的原文描述：
+
+- Data：Dashboards, metrics pages, KPI trackers, scorecards, data visualizations and recurring reports: a page or scroll story of charts, numbers and tables of data, from live queries, files or saved numbers. Every number shows where it came from.
+- Whiteboard：Whiteboards: shared infinite canvases that show ideas as blocks, arrows, sections and marker sketches, which people rearrange together, with live cursors.
+
+派兩個 Sonnet 子代理分別試做，產出寫到 `research/32-parts/`，主對話檢核後才彙整到 `research/32-data-whiteboard-as-tracker-view.md`。
