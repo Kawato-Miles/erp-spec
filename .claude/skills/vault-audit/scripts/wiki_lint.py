@@ -258,9 +258,10 @@ def check_card(card, ctx, rep):
         ex = ctx["ex"]
         # 只遮「含這個避免用詞、且比它長」的詞條名（如「印件預計交期」含「交期」）；
         # 遮全部詞條會讓含詞條名的避免用詞（如「線下補收」含「補收」）永遠抓不到
-        masks = ctx.setdefault("s7masks", {w: sorted([t for t in g.terms if w in t and t != w and "#" not in t]
-                                                      + ex["S7_context"].get(w, []), key=len, reverse=True)
-                                           for w in g.avoid})
+        if "s7masks" not in ctx:
+            ctx["s7masks"] = {w: sorted([t for t in g.terms if w in t and t != w and "#" not in t]
+                                        + ex["S7_context"].get(w, []), key=len, reverse=True) for w in g.avoid}
+        masks = ctx["s7masks"]
         line_ex = [e for e in ex["S7_lines"] if e.get("card") in (card.name, mc.rel(card.p))]
         for no, ln in body:
             base = LINK.sub(lambda m: "", ln)
@@ -278,8 +279,10 @@ def check_card(card, ctx, rep):
     if g.terms and not is_gloss and card.canon:
         for no, ln in body:
             s = re.sub(r"^\s*[-*|]\s*", "", ln)
-            for t in g.terms:
-                if re.match(re.escape(t) + r"\s*(是|指|即|為)(?!否|什麼)", s):
+            if "s8rx" not in ctx:  # 詞條數超過 re 的快取上限，逐次編譯會拖慢全庫檢查
+                ctx["s8rx"] = [(t, re.compile(re.escape(t) + r"\s*(是|指|即|為)(?!否|什麼)")) for t in g.terms]
+            for t, rx in ctx["s8rx"]:
+                if rx.match(s):
                     rep.add("S8", card, no, f"疑似「{t}」的定義句；定義只寫在詞彙表")
     # S11：基數只在全系統總覽卡
     if card.name != OVERVIEW and not card.spec and WIKI in card.p.parents and "編輯器" not in card.rel.parts:
