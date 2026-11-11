@@ -17,3 +17,13 @@ Blocked by: 29
 
 明細在 `research/14a-sens-and-global-inventory.md`（改寫列）與 `research/03-environment-inventory.md`。改 `~/.claude/` 下的檔之前先備份到 `~/.claude/archive/`。
 完成後記錄改了哪些檔、裁決了哪些矛盾。依決策票結論的重寫仍歸票 11。
+
+## Comments
+
+### 2026-11-12 Miles 拍板：刪掉派工任務書範本（由票 29 的對話記入）
+
+- 決定：`memory/shared/派工任務書範本.md` 刪掉，在本票處理。
+- 理由：官方認同任務書的內容（子代理看不到對話歷史；放手前要答五題：知道完成長怎樣、能否自檢、能碰什麼、何時停、成果交給誰簽核），但沒有要求用填空表。現行模型用簡短指令就能引導。出處見 `research/20-anthropic-setup-guidance.md` § 四、§ 七、§ 八。
+- 做法：五題濃縮成 `AGENTS.md` 的兩三行。四個附加段（寫 wiki 卡、Prototype、調研、稽核）各自搬回對應的 skill，搬之前逐段核對有沒有漏。
+- 同步要改的引用處（2026-11-12 實測）：`AGENTS.md` 第 44、121 行；`.claude/skills/vault-audit/references/判讀派工單.md`；`.claude/skills/erp-audit/references/稽核者派工單.md`、`推演者派工單.md`；`.claude/skills/vault-ingest/references/調研派工單.md`。
+- 風險：寫 wiki 卡與 Prototype 兩個附加段有實質限制（不准動規範卡、要列測試影響）。漏搬會讓子代理改到不該改的檔。
