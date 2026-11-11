@@ -39,7 +39,7 @@ last-reviewed: 2026-05-20
 ### 案例 1：NoteTemplatePopover scroll bug 沒抓到（2026-05-20）
 
 **情境**：
-- 規劃：訂單備註區與範本工具規劃（2026-05-20 封存）
+- 規劃：訂單備註與範本工具規劃（2026-05-20 封存）
 - 元件：`NoteTemplatePopover`，10 條模板列表渲染於 `max-h-[480px]` flex column 內
 - 結構：Popover 在 Dialog 內（巢狀 portal）
 
@@ -124,6 +124,6 @@ expect(scrollH).toBeGreaterThan(clientH);  // 確實 overflow，需 scroll
 
 ## 六、來源
 
-- 案例 1：訂單備註區與範本工具規劃實作階段 implementation feedback（2026-05-20）
+- 案例 1：訂單備註與範本工具規劃實作階段 implementation feedback（2026-05-20）
 - Radix Popover-in-Dialog scroll 攔截：[GitHub issue #1159](https://github.com/radix-ui/primitives/issues/1159) 等
 - Playwright wheel API：[docs.playwright.dev/.../mouse-wheel](https://playwright.dev/docs/api/class-mouse#mouse-wheel)
