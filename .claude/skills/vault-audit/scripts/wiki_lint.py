@@ -316,7 +316,15 @@ def check_card(card, ctx, rep):
     dup_sentences(card, ctx, rep)
     # S3 F6：本分支新增的守衛、提示、預設
     if card.canon:
-        diff = mc.git("diff", "-U0", "origin/master", "--", mc.rel(card.p)) or ""
+        if "renames" not in ctx:  # 搬資料夾的卡以原路徑比對，不把整張當新增
+            ctx["renames"] = {}
+            for ln in (mc.git("diff", "-M", "--name-status", "origin/master") or "").splitlines():
+                f = ln.split("\t")
+                if f[0].startswith("R") and len(f) == 3:
+                    ctx["renames"][f[2]] = f[1]
+        new = mc.rel(card.p)
+        old = ctx["renames"].get(new)
+        diff = mc.git("diff", "-U0", "-M", "origin/master", "--", *([old, new] if old else [new])) or ""
         for ln in diff.splitlines():
             if ln.startswith("+") and not ln.startswith("+++") and re.search(
                     r"擋下|阻擋|不得建立|不可建立|提示|提醒|通知|警示|預設帶入|自動帶入|上限|下限|取整|四捨五入", ln):
