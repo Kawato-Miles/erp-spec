@@ -22,6 +22,7 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
   - Linear 現行交付結構：專案 → 里程碑 → Feature 票（PM team）→ 前端與後端 Task 子票。
   - Prototype 在 erp repo，用該 repo 的 skill 實作，不做前後端分離。
   - 主檢出停在 master，代理一律在工作樹作業。
+- 以初始化整個專案的角度重構：先做「環境清場」，後面的決策票才開工，避免在舊環境上重工（Miles 2026-11-11）。
 - 調研產出放 `research/`，每筆結論附網址與原文句；查不到就標未查證。
 
 ## Decisions so far
