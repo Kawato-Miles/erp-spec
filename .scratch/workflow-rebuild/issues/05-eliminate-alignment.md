@@ -2,7 +2,7 @@
 
 Type: grilling
 Status: claimed
-Blocked by: 03, 13
+Blocked by: 03, 13, 16, 17
 
 ## Question
 

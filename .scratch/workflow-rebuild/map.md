@@ -23,6 +23,9 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
   - Prototype 在 erp repo，用該 repo 的 skill 實作，不做前後端分離。
   - 主檢出停在 master，代理一律在工作樹作業。
 - 以初始化整個專案的角度重構：先做「環境清場」，後面的決策票才開工，避免在舊環境上重工（Miles 2026-11-11）。
+- Miles 的工作只有四件：維護 wiki、做 Prototype、開 Linear 議題給前後端追蹤、專案管理。整個工作流可以重構（Miles 2026-11-11）。
+- erp 程式庫不動、不清場；Miles 只用其中製作 Prototype 與部署到 dev 的 skill。
+- Miles 回報的痛點：wiki、Prototype、開發實作的資料對不齊；開發最常問介面操作規則（欄位防呆不一致、與後端給的資料不同）；開發的提交進不了規劃釐清；Miles 只認得商業層情境（正流程、逆流程），不知道測試的顆粒度；測試一跑半天。
 - 調研產出放 `research/`，每筆結論附網址與原文句；查不到就標未查證。
 
 ## Decisions so far
