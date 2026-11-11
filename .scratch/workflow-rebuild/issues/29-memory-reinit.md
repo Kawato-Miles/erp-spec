@@ -1,7 +1,7 @@
 # 29：記憶重新初始化
 
 Type: task
-Status: claimed
+Status: resolved
 Blocked by: 15
 
 ## Question
@@ -195,3 +195,69 @@ feedback 類（主對話已檢核第一輪的 `F1.md` 至 `F3.md` 總表與矛�
 - 商業規則缺口 13 條另開票、`AGENTS.md` 記憶規則句草稿：Miles 看過，沒有反對也沒有明說同意。規則句的內容就是 Miles 2026-11-12 的原決定（地圖 Notes 第 39 行）與本票 Question，照草稿寫入，回報時標明用字可再改。
 - Miles 另外交辦一件調研，已開票 32。
 - Miles 說明早才看。處理完在對話裡完整回報。
+
+## Answer
+
+2026-11-12 完成。Miles 已同意封存分類。
+
+記憶目錄的結果：
+
+| 類 | 原本 | 封存 | 留下 | 說明 |
+|---|---|---|---|---|
+| project | 51 | 48 | 2 | 留下的 2 張改寫成只剩位置：地圖入口、進行中 grill 的工作資料夾 |
+| feedback | 59 | 9 | 50 | 留下的 50 張交票 30：38 張待搬到規範檔，12 張與現行規則相反、等 Miles 裁決 |
+| reference | 2 | 0 | 3 | 原本 2 張不動；`project_erp_manual_dev_verified` 改寫成 `reference_erp_manual`，只留手冊檔位置、Artifact 網址、Dev 環境網址 |
+| 合計 | 112 | 57 | 55 | 索引檔 `MEMORY.md` 已刪對應的 57 列，剩 63 行 |
+
+封存位置：`~/.claude/archive/memory-reinit-20261112/`。
+
+- `memory-cards/`：封存的 57 張卡。
+- `memory-backup-before/`：動手前整個記憶目錄的複本（113 檔，含索引檔）。改寫過的 3 張卡的原文在這裡。
+- `README.md`：原位置、封存理由、封存的卡名單。
+
+`AGENTS.md` 的改動：
+
+- 新增「記憶目錄」一節：記憶只放 Miles 新給的做事指示與外部資源位置；商業決策寫 wiki 卡，進度寫地圖與票，完成紀錄寫提交訊息。寫法依票 20：寫明範圍與理由，不用強調字。這段用字 Miles 沒有明說同意，可再改。
+- 陷阱表 4 列的出處原本指向已封存的記憶卡，改成日期。
+- 「停下與繼續」段刪掉「記憶卡標『勿重問』者直接沿用」。
+
+沒落到 wiki 的決策：
+
+| 類 | 條數 | 去向 |
+|---|---|---|
+| 商業規則缺口（含「補做不建新任務」） | 14 | [票 33：記憶卡清出的商業規則缺口裁決與落卡](33-business-rule-gaps-from-memory.md) |
+| 舊待辦與完成紀錄 | 48 列 | [票 34：記憶卡內舊待辦的清點](34-old-todos-from-memory.md) |
+| 流程環境（36 列）、後端名稱、erp 分支做法 | — | 票 30（留言已寫名單位置與待裁決題目） |
+| 介面細節 | 10 列 | 不處理；介面的正本是 Prototype |
+| 否決類（決定不做某事） | 47 列 | 維持不補，等 Miles 對下一節的裁決 |
+
+明細都在 `research/29-verify/`：`重查彙整-待裁決.md`、`重查彙整-統計.txt`、`R-*.md`。
+
+### 決策紀錄（`docs/adr/`）：回答 Miles 的三個問題
+
+是不是 matt 的 skill：是。`docs/adr/` 是 matt 的 `domain-modeling` skill 規定的位置，格式在同資料夾的 `ADR-FORMAT.md`。matt 的 grilling 類工作固定會呼叫它（wayfinder 原文：Always call the Skill tool twice, for "grilling" and "domain-modeling"）。
+
+matt 對決策紀錄的規定（原文）：
+
+- 門檻是三個條件同時成立：難以反悔（Hard to reverse）、沒有脈絡會讓人意外（Surprising without context）、真的有取捨（The result of a real trade-off）。缺一個就不寫（If any of the three is missing, skip the ADR）。
+- 內容只要一到三句：背景、決定了什麼、為什麼（An ADR can be a single paragraph）。
+- 用到才建資料夾（Create the `docs/adr/` directory lazily）。所以資料夾現在不存在是正常的。
+- 收的類型是架構形狀、跨領域整合方式、綁死的技術選擇、範圍邊界、刻意偏離一般做法、看不出來的限制、不明顯的否決。都是系統層，不是單一欄位或單一規則。
+
+會不會與 wiki 打架：照 matt 的門檻寫就不會，放寬就會。
+
+- Sens 現在已有兩個地方記「為什麼」：wiki 的 `log.md`（每筆有「動機」行）與 OQ 卡（決策脈絡）。`docs/adr/` 會是第三個。
+- 打架的情況有兩種：決策紀錄把規則句再寫一次，wiki 卡改了之後它變成舊說法（與這次記憶卡的問題相同）；同一個理由在 `log.md` 與決策紀錄各寫一份。
+- 否決類 47 列看過標題：多數是「某欄位不做」「某提示不加」這類容易反悔的小決定，不到 matt 的門檻。其中有多少列到門檻，沒有逐列判定。
+
+建議（四項）：
+
+| 項 | 內容 |
+|---|---|
+| 做法 | 照 matt 原樣保留 `docs/adr/`，不改 skill。分工寫成一句放進 `AGENTS.md`：決策紀錄只收三個條件都成立的系統層決定，內容寫理由與被否決的方案，用卡名指向 wiki 卡，不重寫規則句；日常的「為什麼改」仍寫 `log.md` 的動機行。否決類 47 列不回填 |
+| 建議 | 採用上述做法。理由：地圖 Notes 定了先完整照 matt 走一遍再調整；matt 的門檻本來就高，照門檻寫的量很少 |
+| 風險 | 代理日後可能重提已否決過的小功能，Miles 要再答一次。代理可能放寬門檻，把規則句寫進決策紀錄，造成第二份正本；要靠分工句與稽核擋 |
+| 預期結果 | wiki 正文不變。`docs/adr/` 在第一個到門檻的決定出現時才建立。47 列留在封存的記憶卡與 `research/29-verify/`，查得到但不載入 |
+
+Miles 裁決前，否決類 47 列維持不補，`AGENTS.md` 的「重大決策寫 ADR」一句不動。
+

@@ -61,6 +61,7 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
 - [22：商業需求文件撰寫的既有做法](issues/22-brd-writing-practice.md)：業務需求層只寫目標與成果；規則句型用 RuleSpeak；欄位防呆屬資料字典；狀態與權限歸哪層查無明文；有出處的都主張活文件
 - [23：多項工作追蹤與看板的既有做法](issues/23-multi-work-tracking-practice.md)：看板指南只要求寫出開始與完成定義並明確控制在製品；等別人的項目分原地標阻擋與停車場計時兩派；外部系統狀態要不要重記查無明文
 - [28：商業分析與系統分析的既有方法](issues/28-ba-sa-methods-practice.md)：六類方法都有標準出處；Sens 卡型已涵蓋流程、實體、狀態、規則、權限；欄位層防呆、缺口分析、跨領域影響分析、覆蓋度追溯只部分涵蓋
+- [29：記憶重新初始化](issues/29-memory-reinit.md)：112 張記憶卡封存 57 張、留 55 張（`~/.claude/archive/memory-reinit-20261112/`）；`AGENTS.md` 新增記憶目錄規則；記憶與 wiki 矛盾的 112 條有 104 條是記憶過期；商業規則缺口 14 條交票 33，舊待辦交票 34，feedback 卡搬遷交票 30；決策紀錄（`docs/adr/`）怎麼用等 Miles 裁決
 
 ## Not yet specified
 
