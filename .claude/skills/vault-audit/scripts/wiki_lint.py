@@ -32,6 +32,7 @@ OVERVIEW = "ERP 資料結構總覽"
 ERP_INDEX = ERP / "00-meta/erp_index.md"
 CANON_DIRS = ("03-roles", "04-business-logic", "05-entities", "06-state-machines", "07-scenarios")
 LINK = re.compile(r"\[\[([^\]|#\\]+)(#[^\]|\\]+)?(?:\\?\|[^\]]*)?\]\]")
+EXCEPTIONS = Path(__file__).resolve().parent / "lint_exceptions.json"
 GEN_BEGIN, GEN_END = "<!-- 卡片清單：腳本產生，勿手改 -->", "<!-- 卡片清單結束 -->"
 
 # 單卡規則的預設等級：沿用自既有規範者為錯誤；新規則先警告，經 lint_error_codes 升級
@@ -39,6 +40,17 @@ DEFAULT_ERROR = {"S1", "S2", "S4"}
 
 
 # ---------- 設定 ----------
+
+def exceptions():
+    """例外清單：另一概念、系統值、子字串誤攔、固定句。檔不存在時全部為空。"""
+    try:
+        data = json.loads(EXCEPTIONS.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        data = {}
+    return {"S7_context": data.get("S7_context", {}), "S7_lines": data.get("S7_lines", []),
+            "S9_skip": [re.compile(x) for x in data.get("S9_skip", [])],
+            "S15_ok": [re.compile(x) for x in data.get("S15_ok", [])]}
+
 
 def config():
     th = mc.thresholds_from_dims_doc()
@@ -242,12 +254,23 @@ def check_card(card, ctx, rep):
     is_gloss = card.p in (GLOSSARY, INDUSTRY)
     if g.avoid and not is_gloss and not card.spec:
         done = bool(set(card.domains) & ctx["done"])
-        masks = sorted(g.terms, key=len, reverse=True)
+        ex = ctx["ex"]
+        # 只遮「含這個避免用詞、且比它長」的詞條名（如「印件預計交期」含「交期」）；
+        # 遮全部詞條會讓含詞條名的避免用詞（如「線下補收」含「補收」）永遠抓不到
+        masks = ctx.setdefault("s7masks", {w: sorted([t for t in g.terms if w in t and t != w and "#" not in t]
+                                                      + ex["S7_context"].get(w, []), key=len, reverse=True)
+                                           for w in g.avoid})
+        line_ex = [e for e in ex["S7_lines"] if e.get("card") in (card.name, mc.rel(card.p))]
         for no, ln in body:
-            plain = LINK.sub(lambda m: "", ln)
-            for t in masks:  # 詞條名本身含避免用詞（如「印件預計交期」含「交期」）時不算
-                plain = plain.replace(t, "\0")
+            base = LINK.sub(lambda m: "", ln)
             for w, t in g.avoid.items():
+                if w not in base:
+                    continue
+                plain = base
+                for m in masks[w]:
+                    plain = plain.replace(m, "\0")
+                if any(e.get("word") == w and e.get("contains", "") in ln for e in line_ex):
+                    continue
                 if w in plain:
                     rep.add("S7", card, no, f"避免用詞「{w}」，改用「{'」或「'.join(t)}」",
                             level="錯誤" if done or "S7" in rep.error_codes else "警告")
@@ -258,7 +281,7 @@ def check_card(card, ctx, rep):
                 if re.match(re.escape(t) + r"\s*(是|指|即|為)(?!否|什麼)", s):
                     rep.add("S8", card, no, f"疑似「{t}」的定義句；定義只寫在詞彙表")
     # S11：基數只在全系統總覽卡
-    if card.name != OVERVIEW and not card.spec and WIKI in card.p.parents:
+    if card.name != OVERVIEW and not card.spec and WIKI in card.p.parents and "編輯器" not in card.rel.parts:
         for no, ln in body:
             if CARD.search(ln):
                 rep.add("S11", card, no, "關聯基數寫在全系統總覽卡以外")
@@ -281,6 +304,8 @@ def check_card(card, ctx, rep):
         for s in src:
             bad = re.search(r"同上|如上", s) or re.search(r"[）)]\s*[：:]\s*\S", s) or len(s) > ctx["th"].get("source_max_chars", 120)
             short_basis = len(s) <= 30 and not re.search(r"[：:]", s)
+            if any(rx.search(s) for rx in ctx["ex"]["S15_ok"]):
+                continue
             if bad or not (SOURCE_OK.search(s) or short_basis):
                 rep.add("S15", card, None, f"source 不是純出處指標：{s[:50]}")
     # S9、S10：重複句
@@ -337,7 +362,8 @@ def dup_sentences(card, ctx, rep):
     keys = ctx.setdefault("keyrx", re.compile("|".join(sorted((re.escape(n) for n in ctx["by_name"] if len(n) > 1),
                                                                   key=len, reverse=True))))
     for no, s in sentences(card):
-        if len(s) < minc or len(re.sub(r"[、，,/／\s]", "", keys.sub("", s))) < minc // 2:
+        if len(s) < minc or len(re.sub(r"[、，,/／\s]", "", keys.sub("", s))) < minc // 2 \
+                or any(rx.search(s) for rx in ctx["ex"]["S9_skip"]):
             continue
         gs = grams(s)
         hits = defaultdict(int)
@@ -375,7 +401,8 @@ def check_cross(ctx, rep, changed):
     # X4：已完成遷移的領域，實體與角色都有詞條
     if g.terms:
         for c in cards.values():
-            if c.canon and c.type in ("entity", "role") and set(c.domains) & ctx["done"] and c.name not in g.terms:
+            if c.canon and not c.archived and c.type in ("entity", "role") and set(c.domains) & ctx["done"] \
+                    and c.name not in g.terms:
                 rep.add("X4", c, None, f"詞彙表沒有「{c.name}」詞條（詞條名要與卡名逐字相同）", level="錯誤")
     # X5：避免用詞不得同時是詞條名（詞彙表解析時已檢出）
     for no, msg in g.problems:
@@ -468,7 +495,7 @@ def build_ctx():
     for c in cards.values():
         if c.name not in by_name or (by_name[c.name].archived and not c.archived):
             by_name[c.name] = c
-    return {"th": th, "errors": err_codes, "done": done, "cards": cards, "by_name": by_name,
+    return {"th": th, "errors": err_codes, "done": done, "cards": cards, "by_name": by_name, "ex": exceptions(),
             "glossary": Glossary(GLOSSARY), "enums": mc.schema_enums(), "tags": mc.domain_tags()}
 
 
