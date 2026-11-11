@@ -1,7 +1,7 @@
 # 22：商業需求文件（BRD）撰寫的既有做法
 
 Type: research
-Status: open
+Status: claimed
 
 ## Question
 

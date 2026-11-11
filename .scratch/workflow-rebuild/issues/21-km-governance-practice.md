@@ -1,7 +1,7 @@
 # 21：知識庫管理（KM）的既有做法
 
 Type: research
-Status: open
+Status: claimed
 
 ## Question
 

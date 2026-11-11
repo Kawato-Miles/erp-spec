@@ -1,7 +1,7 @@
 # 23：多項工作追蹤與看板的既有做法
 
 Type: research
-Status: open
+Status: claimed
 
 ## Question
 
