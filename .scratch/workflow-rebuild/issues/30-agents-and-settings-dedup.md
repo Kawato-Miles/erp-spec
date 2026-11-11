@@ -30,7 +30,7 @@ Blocked by: 29
 
 ### 2026-11-12 票 29 交來的事項
 
-票 29 已結案。記憶目錄剩 55 張卡：feedback 50、project 2、reference 3。下列事項歸本票。
+票 29 已結案。記憶目錄剩 55 張卡：feedback 50、reference 5。下列事項歸本票。
 
 待搬的 feedback 卡 38 張：
 
@@ -71,4 +71,10 @@ check_sensation_api_asis、features_mece_no_rules_in_project、industry_best_pra
 
 - Miles 採用票 29 Answer「決策紀錄」一節的做法。分工已寫進 `AGENTS.md` 正本分層表的「決策紀錄」一列。
 - 本票 Question 第三點的 `docs/adr/` 引用不用刪。資料夾用到才建，現在不存在是正常的。
+
+### 2026-11-12 `.claude/settings.json` 新增記憶目錄寫入檢查（票 29 加的，本票清設定檔時保留）
+
+- `.claude/settings.json` 的 `hooks.PreToolUse` 有一筆「記憶目錄寫入檢查」，指令稿在 `.claude/hooks/memory_write_guard.py`。它擋下寫進記憶目錄的 project 類卡。說明見票 29 Answer。
+- 記憶目錄現在是 feedback 50 張、reference 5 張，沒有 project 類。上一段留言寫的「project 2、reference 3」已改成這個數字。
+- Miles 已同意 `AGENTS.md`「記憶目錄」一節的用字。
 

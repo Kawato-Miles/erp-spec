@@ -204,10 +204,10 @@ feedback 類（主對話已檢核第一輪的 `F1.md` 至 `F3.md` 總表與矛�
 
 | 類 | 原本 | 封存 | 留下 | 說明 |
 |---|---|---|---|---|
-| project | 51 | 48 | 2 | 留下的 2 張改寫成只剩位置：地圖入口、進行中 grill 的工作資料夾 |
+| project | 51 | 48 | 0 | 另外 3 張改寫成只剩位置，並改成 reference 類 |
 | feedback | 59 | 9 | 50 | 留下的 50 張交票 30：38 張待搬到規範檔，12 張與現行規則相反、等 Miles 裁決 |
-| reference | 2 | 0 | 3 | 原本 2 張不動；`project_erp_manual_dev_verified` 改寫成 `reference_erp_manual`，只留手冊檔位置、Artifact 網址、Dev 環境網址 |
-| 合計 | 112 | 57 | 55 | 索引檔 `MEMORY.md` 已刪對應的 57 列，剩 63 行 |
+| reference | 2 | 0 | 5 | 原本 2 張不動。由 project 類改來 3 張：`reference_workflow_rebuild_map`（地圖入口）、`reference_production_quantity_audit_grill`（進行中 grill 的工作資料夾）、`reference_erp_manual`（手冊檔位置、Artifact 網址、Dev 環境網址） |
+| 合計 | 112 | 57 | 55 | 索引檔 `MEMORY.md` 已刪對應的 57 列 |
 
 封存位置：`~/.claude/archive/memory-reinit-20261112/`。
 
@@ -217,9 +217,17 @@ feedback 類（主對話已檢核第一輪的 `F1.md` 至 `F3.md` 總表與矛�
 
 `AGENTS.md` 的改動：
 
-- 新增「記憶目錄」一節：記憶只放 Miles 新給的做事指示與外部資源位置；商業決策寫 wiki 卡，進度寫地圖與票，完成紀錄寫提交訊息。寫法依票 20：寫明範圍與理由，不用強調字。這段用字 Miles 沒有明說同意，可再改。
+- 新增「記憶目錄」一節：記憶只放 Miles 新給的做事指示與外部資源位置；商業決策寫 wiki 卡，進度寫地圖與票，完成紀錄寫提交訊息。寫法依票 20：寫明範圍與理由，不用強調字。Miles 2026-11-12 同意，條件是要能確保不寫錯，所以另加寫入檢查（見下一節）。
 - 陷阱表 4 列的出處原本指向已封存的記憶卡，改成日期。
 - 「停下與繼續」段刪掉「記憶卡標『勿重問』者直接沿用」。
+
+記憶目錄的寫入檢查（Miles 2026-11-12 同意加）：
+
+- 做法：`.claude/settings.json` 加一個 PreToolUse hook，執行 `.claude/hooks/memory_write_guard.py`。代理用 Write、Edit 寫記憶目錄的卡時，卡的類型是 project、或檔名以 `project_` 開頭，就擋下，並提示改寫到 wiki 卡、地圖與票、提交訊息。feedback 類與 reference 類放行。
+- 理由：只靠 `AGENTS.md` 的文字不能保證。Claude Code 內建的記憶指示有 project 這一類，方向與本規則相反；票 20 的結論是不容許例外的規則用 hook。這次矛盾的 112 條全部來自 project 類。
+- 測試：11 種模擬輸入的擋下與放行都正確。另開兩個全新的無介面工作階段實測：寫 project 類卡被擋下、檔案沒有建立；寫 reference 類卡成功。
+- 沒擋到的情況：檢查只看類型欄與檔名，看不懂內容，商業決策標成 feedback 類就擋不住；用 Bash 指令寫檔不經過這個檢查。
+- 已開著的對話不會載入新的 hook，新開的對話才有。
 
 沒落到 wiki 的決策：
 
