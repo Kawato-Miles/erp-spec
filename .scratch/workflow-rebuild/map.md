@@ -44,6 +44,7 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
 - [14：架構面內容完整盤點](issues/14-architecture-inventory.md)：235 項已判去留，可刪 78 項加記憶卡 38 張；wiki 規範層過半要改寫；三分之一的測試追不回 wiki 情境卡
 - [16：資深產品經理怎麼規劃自己的 AI 工作流](issues/16-senior-pm-ai-workflow.md)：第一手做法是檔案即脈絡；與工程對齊的完整案例查不到；資料對齊的主流做法是機器可讀的介面契約，前提是後端配合
 - [17：開發實作、Prototype、wiki 的資料落差實測](issues/17-dev-reality-gap.md)：後端已有自動產生的介面契約與變更紀錄（api-docs），Sens 環境完全沒用到；需求單樣本的驗證 25 列有 19 列不一致
+- [18：議題管理的最佳實務](issues/18-issue-management-practice.md)：需求改變時改原票或開新票，官方都沒有明文；Linear 自己主張議題只放任務、規格放文件；票是時點紀錄不是現況正本
 
 ## Not yet specified
 
