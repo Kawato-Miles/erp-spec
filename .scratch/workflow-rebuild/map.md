@@ -39,6 +39,7 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
 - [13：資深專案經理怎麼管規格、原型、開發票的一致](issues/13-pm-delivery-workflow.md)：規格放文件、追蹤工具只放小工作並連回文件；議題不是現況；一致性靠可執行的範例；原型開發後的處置查無一手資料
 - [14：架構面內容完整盤點](issues/14-architecture-inventory.md)：235 項已判去留，可刪 78 項加記憶卡 38 張；wiki 規範層過半要改寫；三分之一的測試追不回 wiki 情境卡
 - [16：資深產品經理怎麼規劃自己的 AI 工作流](issues/16-senior-pm-ai-workflow.md)：第一手做法是檔案即脈絡；與工程對齊的完整案例查不到；資料對齊的主流做法是機器可讀的介面契約，前提是後端配合
+- [17：開發實作、Prototype、wiki 的資料落差實測](issues/17-dev-reality-gap.md)：後端已有自動產生的介面契約與變更紀錄（api-docs），Sens 環境完全沒用到；需求單樣本的驗證 25 列有 19 列不一致
 
 ## Not yet specified
 
