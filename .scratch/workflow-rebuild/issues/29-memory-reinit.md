@@ -186,3 +186,12 @@ feedback 類（主對話已檢核第一輪的 `F1.md` 至 `F3.md` 總表與矛�
 4. `AGENTS.md` 的記憶規則句草稿（見對話）是否同意。
 
 舊待辦：「紀錄或待辦」48 列裡有還沒做完的事（例：6 張 raw 升 reviewed、Linear 範例更新、PT-048 封存）。結案時另開一張票清點，不留在記憶。
+
+### 2026-11-12 Miles 回覆（睡前）：分類同意，可以封存
+
+- 第 1 題（封存分類與判準）：Miles 回「可以」。照上一段的分類封存 57 張（project 48、feedback 9），project 留 3 張改寫成只剩位置。
+- 第 2 題（否決類 47 條要不要補決策紀錄）：Miles 沒裁決，反問三件事：`docs/adr/` 是不是 matt 的 skill；會不會與 wiki 打架；怎麼避免。要先讀 matt 的 `domain-modeling` skill 原文（決策紀錄的寫法與收什麼）再回答，寫四項：做法、建議、風險、預期結果。Miles 裁決前維持不補。
+- 第 3 題：Miles 問「外部資源現在那兩筆是什麼」。已在對話回答：`reference_erp_test_map_mod`（ERP 測試進度與涵蓋地圖外掛的本機安裝位置）、`reference_claude_video_watch_plugin`（影片外掛的安裝與 ffmpeg 補丁）。
+- 商業規則缺口 13 條另開票、`AGENTS.md` 記憶規則句草稿：Miles 看過，沒有反對也沒有明說同意。規則句的內容就是 Miles 2026-11-12 的原決定（地圖 Notes 第 39 行）與本票 Question，照草稿寫入，回報時標明用字可再改。
+- Miles 另外交辦一件調研，已開票 32。
+- Miles 說明早才看。處理完在對話裡完整回報。
