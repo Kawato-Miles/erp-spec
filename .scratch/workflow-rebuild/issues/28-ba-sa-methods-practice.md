@@ -1,7 +1,7 @@
 # 28：商業分析與系統分析的既有方法
 
 Type: research
-Status: open
+Status: claimed
 
 ## Question
 
