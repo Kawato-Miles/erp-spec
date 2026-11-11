@@ -62,7 +62,6 @@ description: >
 | 跑維度 3、4 | skill `obsidian-cli` |
 | 派維度 1、12、13、14 與懷疑者 | `references/判讀派工單.md` |
 | 要修卡 | 轉 `wiki-amend`（OQ 卡轉 `oq-manage`，raw 卡轉 `vault-ingest`） |
-| 本 skill 改動 | `CHANGELOG.md` 追加 |
 
 ## 陷阱
 
