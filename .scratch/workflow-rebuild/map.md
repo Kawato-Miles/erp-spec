@@ -57,6 +57,10 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
 - [19：追蹤與交接的既有 skill 與外掛](issues/19-tracking-handoff-skills.md)：沒有現成方案同時滿足條件；最接近的是已在用的 matt wayfinder 本機慣例，缺跨主題總覽與原型之後的階段
 - [05：對齊工作怎麼消除](issues/05-eliminate-alignment.md)：wiki 與 Prototype 是正本，後端契約只讀；規劃功能時與驗收之前各做一次現況同步；Linear 依專案與票的狀態決定改原票或開新的；總覽範圍從給需求到 Release
 - [15：環境清場](issues/15-environment-reset.md)：repo 內刪 209 檔，repo 外封存 36 張記憶卡與用不到的 skill（`~/.claude/archive/env-reset-20261112/`）；記憶索引回到載入上限內；操作手冊相關的檔保留；記憶重新初始化與去重提前到票 29、30
+- [21：知識庫管理的既有做法](issues/21-km-governance-practice.md)：成熟做法分「內容怎麼切」（Diátaxis、DITA）與「誰改、怎麼過期」（KCS、文件即程式碼）；沒有文件庫正規化層級的標準；KCS 不事前禁止重複，用到才複審
+- [22：商業需求文件撰寫的既有做法](issues/22-brd-writing-practice.md)：業務需求層只寫目標與成果；規則句型用 RuleSpeak；欄位防呆屬資料字典；狀態與權限歸哪層查無明文；有出處的都主張活文件
+- [23：多項工作追蹤與看板的既有做法](issues/23-multi-work-tracking-practice.md)：看板指南只要求寫出開始與完成定義並明確控制在製品；等別人的項目分原地標阻擋與停車場計時兩派；外部系統狀態要不要重記查無明文
+- [28：商業分析與系統分析的既有方法](issues/28-ba-sa-methods-practice.md)：六類方法都有標準出處；Sens 卡型已涵蓋流程、實體、狀態、規則、權限；欄位層防呆、缺口分析、跨領域影響分析、覆蓋度追溯只部分涵蓋
 
 ## Not yet specified
 
