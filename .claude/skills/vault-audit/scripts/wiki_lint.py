@@ -252,7 +252,8 @@ def check_card(card, ctx, rep):
     # S7、S8：用詞
     g = ctx["glossary"]
     is_gloss = card.p in (GLOSSARY, INDUSTRY)
-    if g.avoid and not is_gloss and not card.spec:
+    # 編輯器目錄不在 ERP 重構範圍（G11），S7 比照 S11 豁免；第 7 批 A5 同理，主對話 2026-11-12 決定
+    if g.avoid and not is_gloss and not card.spec and "編輯器" not in card.rel.parts:
         done = bool(set(card.domains) & ctx["done"])
         ex = ctx["ex"]
         # 只遮「含這個避免用詞、且比它長」的詞條名（如「印件預計交期」含「交期」）；
