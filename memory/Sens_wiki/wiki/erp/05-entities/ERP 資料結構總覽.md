@@ -23,7 +23,7 @@ source:
   - "Miles 2026-11-05 拍板（.scratch/quote-versions/grill.md § 一 P1、P3、P6、P7；§ 二 Q1、Q3-1、Q5、Q9-1、Q9-5、Q9-7、Q11）"
   - "Miles 2026-11-05 拍板（.scratch/quote-versions/grill.md § 二 Q12、Q13）"
   - "Miles 2026-11-11 回覆（memory/erp/wiki-normalization-20261104/第5批-待裁決.md § 一 D2；§ 三 T1、T5；§ 四 R4）"
-status: draft
+status: active
 last-reviewed: 2026-11-05
 ---
 

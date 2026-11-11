@@ -2,7 +2,7 @@
 type: glossary
 module:
   - ERP
-status: draft
+status: active
 last-reviewed: 2026-11-11
 ---
 
