@@ -33,6 +33,7 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
 - [02：ERP 與 MES 的領域原則來源](issues/02-domain-principles.md)：29 條原則分三級來源；印刷業四條有一手論文；內控慣例查無標準出處
 - [03：現有環境盤點與使用證據](issues/03-environment-inventory.md)：規則大量重複且有 12 組矛盾；課程 raw 卡在暫存未進 master；多個工作樹不跑寫入檢查
 - [04：matt 流程全貌](issues/04-matt-flow.md)：每一步由使用者啟動、無自動串接；接續器與規格稽核要自己補
+- [14：架構面內容完整盤點](issues/14-architecture-inventory.md)：235 項已判去留，可刪 78 項加記憶卡 38 張；wiki 規範層過半要改寫；三分之一的測試追不回 wiki 情境卡
 
 ## Not yet specified
 
