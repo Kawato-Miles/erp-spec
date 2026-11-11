@@ -284,6 +284,8 @@ def check_card(card, ctx, rep):
             for t, rx in ctx["s8rx"]:
                 if rx.match(s):
                     rep.add("S8", card, no, f"疑似「{t}」的定義句；定義只寫在詞彙表")
+    # S16：資料夾與領域標籤一致（第 8 批，主對話 2026-11-12 核准）
+    folder_domain_check(card, rep)
     # S11：基數只在全系統總覽卡
     if card.name != OVERVIEW and not card.spec and WIKI in card.p.parents and "編輯器" not in card.rel.parts:
         for no, ln in body:
@@ -329,6 +331,37 @@ def check_card(card, ctx, rep):
             if ln.startswith("+") and not ln.startswith("+++") and re.search(
                     r"擋下|阻擋|不得建立|不可建立|提示|提醒|通知|警示|預設帶入|自動帶入|上限|下限|取整|四捨五入", ln):
                 rep.add("S3", card, None, f"新增句含守衛、提示或預設，需對應拍板：{ln[1:].strip()[:50]}")
+
+
+DOMAINS = ("售前", "訂單管理", "印前審稿", "生產執行", "履約與售後", "款項與發票", "全域")
+DOMAIN_LAYERS = ("05-entities", "06-state-machines", "07-scenarios")
+
+
+def folder_domain_check(card, rep):
+    """S16：營運規則／<領域>／與 05、06、07 的 <領域>／底下的卡，所在領域須在卡的領域標籤裡；
+    05、06、07 根目錄只放規範卡、範例卡與全系統總覽卡；營運規則下第一層只能是領域名。"""
+    p = card.rel.parts
+    if card.archived or len(p) < 3 or p[0] != "erp":
+        return
+    if p[1] == "04-business-logic" and len(p) > 3 and p[2] == "營運規則":
+        dom = p[3] if len(p) > 4 else None
+        if dom is None:
+            rep.add("S16", card, None, "營運規則的卡要放進 營運規則/<領域>/", level="錯誤")
+            return
+    elif p[1] in DOMAIN_LAYERS:
+        dom = p[2] if len(p) > 3 else None
+        if dom is None:
+            if not card.spec and card.name != OVERVIEW:
+                rep.add("S16", card, None, f"{p[1]} 根目錄只放規範卡、範例卡與全系統總覽卡，本卡要放進 <領域>/",
+                        level="錯誤")
+            return
+    else:
+        return
+    if dom not in DOMAINS:
+        rep.add("S16", card, None, f"資料夾「{dom}」不是業務領域名（{'、'.join(DOMAINS)}）", level="錯誤")
+    elif dom not in card.domains:
+        rep.add("S16", card, None, f"放在「{dom}」資料夾，但領域標籤沒有「{dom}」（現有：{'、'.join(card.domains) or '無'}）",
+                level="錯誤")
 
 
 def sentences(card):

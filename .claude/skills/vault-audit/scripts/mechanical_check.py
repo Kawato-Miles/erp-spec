@@ -319,7 +319,7 @@ def domain_tags():
 # ---------- 卡片清單 ----------
 
 def wiki_cards():
-    """wiki 全卡；排除骨架目錄與已凍結的 00-meta/changelog.md（不讀）。"""
+    """wiki 全卡；排除骨架目錄與已凍結的 00-meta/_archives/changelog.md（不讀）。"""
     return sorted(p for p in WIKI.rglob("*.md")
                   if "範本" not in p.relative_to(WIKI).parts and p.name != "changelog.md")
 
