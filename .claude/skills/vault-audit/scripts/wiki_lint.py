@@ -269,7 +269,7 @@ def check_card(card, ctx, rep):
                 plain = base
                 for m in masks[w]:
                     plain = plain.replace(m, "\0")
-                if any(e.get("word") == w and e.get("contains", "") in ln for e in line_ex):
+                if any(e.get("word") == w and e.get("contains") and e["contains"] in ln for e in line_ex):
                     continue
                 if w in plain:
                     rep.add("S7", card, no, f"避免用詞「{w}」，改用「{'」或「'.join(t)}」",
