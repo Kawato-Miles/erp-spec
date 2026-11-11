@@ -20,7 +20,7 @@ description: >
 | 封存卡 | `08-open-questions/_archives/<拍板年份>/`，檔名不改 | 主對話 |
 | 待裁決清單 | 對話；裁決結果在 grill 中由 Miles 確認，要改正本卡的轉 `wiki-amend` | 主對話 |
 | 查詢清單、整理報告 | 對話 | 主對話 |
-| log 條目 | `memory/Sens_wiki/wiki/log.md`，動作＝同步、標籤＝oq；只在動到 wiki 時記；格式見 `memory/Sens_wiki/CLAUDE.md` § 四 | 主對話 |
+| log 條目 | `memory/Sens_wiki/wiki/log.md`，動作＝同步、標籤＝oq；只在動到 wiki 時記；格式見 `memory/Sens_wiki/AGENTS.md` § 四 | 主對話 |
 
 ## 限制
 
@@ -68,4 +68,4 @@ description: >
 | 已拍板的卡留在平層，平層張數不再等於待裁決壓力 | 2026-06-11 提交 43bfc9c 封存制 |
 | 把未決 OQ 當事實寫進設計，三張未決 OQ 決定了已寫入 spec 的行為 | 2026-05-28 帳務 change（[[規劃品質評分準則]] § 三） |
 | 依賴未決 OQ 的稽核項判「部分通過」退回設計者，設計者修不動，輪數空轉 | 2026-10-26 封存的 shipment-print-download-center 第 2～5 輪 |
-| obsidian-cli 省略參數，靜默改查目前開啟的檔，回錯答案；CLI 不可用才退 grep | 2026-08-01 實測（`memory/Sens_wiki/CLAUDE.md` § 五） |
+| obsidian-cli 省略參數，靜默改查目前開啟的檔，回錯答案；CLI 不可用才退 grep | 2026-08-01 實測（`memory/Sens_wiki/AGENTS.md` § 五） |

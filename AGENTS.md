@@ -40,7 +40,7 @@ Miles 是印刷業 PM，負責 **ERP 系統**（生產排程、採購、倉儲�
 | 交付到 Linear | `linear-delivery` |
 | 重構既有正本（換結構、換規範、清矛盾） | 正本重構流，審查知識路由 § 三 |
 | 商業層查詢 | [wiki/index.md](memory/Sens_wiki/wiki/index.md)，依 `business-domain-taxonomy` 檢索規約先列卡名再載入 |
-| 術語 | `memory/Sens_wiki/wiki/跨產品/印刷業共用術語表.md`、`memory/Sens_wiki/wiki/編輯器/線上編輯器詞彙表.md`；非商業術語 `memory/shared/non-business-terms.md` |
+| 術語 | ERP 定義正本 `memory/Sens_wiki/wiki/erp/ERP 詞彙表.md`；行業詞 `memory/Sens_wiki/wiki/跨產品/印刷業共用術語表.md`；線上編輯器 `memory/Sens_wiki/wiki/編輯器/線上編輯器詞彙表.md`；非商業術語 `memory/shared/non-business-terms.md` |
 | 派子代理或子工作階段 | 任務書照 `memory/shared/派工任務書範本.md`；正文指名讀 `memory/shared/non-business-terms.md` |
 | 寫或改程式碼 | 載入 `andrej-karpathy-skills:karpathy-guidelines`；實作前先 `grilling` 對齊 |
 
@@ -140,7 +140,7 @@ Commit 格式：`{prefix}: {繁體中文描述}`，prefix 用 feat、fix、refac
 | 物料清單與製程路線 | 部件配方、印件配方 | 兩卡暫合併承載，待品項層定案後拆開；拆開前不交付 Linear |
 | 工作中心 | 設備、產線 | 維持現行 |
 
-品項主檔與製程類主檔不設統稱；禁用「料號主檔」「BOM 主檔」「BOM 三類」。「BOM」只指物料清單。其他 ERP 術語對照在 `memory/shared/non-business-terms.md`；實體、狀態、規則的定義讀正本卡的一句話定位段。
+品項主檔與製程類主檔不設統稱；禁用「料號主檔」「BOM 主檔」「BOM 三類」。「BOM」只指物料清單。其他 ERP 術語對照在 `memory/shared/non-business-terms.md`；實體、狀態、規則的定義讀 ERP 詞彙表。
 
 ## Agent skills
 

@@ -20,7 +20,6 @@ description: >
 | 正本卡、11 層卡 | `memory/Sens_wiki/wiki/erp/` 對應目錄 | 主對話；子代理寫的卡經主對話收件 |
 | 落點表、連帶清單、異動卡清單 | 對話，給 Miles 核對；異動卡清單另進提交訊息 | 主對話 |
 | log 條目 | `memory/Sens_wiki/wiki/log.md`，動作＝納入、標籤＝amend | 主對話 |
-| 總目錄 | `memory/Sens_wiki/wiki/index.md`，新增或刪除卡時 | 主對話 |
 | 下游更正清單 | 對話與提交訊息，不寫 log | 主對話 |
 
 ## 限制
