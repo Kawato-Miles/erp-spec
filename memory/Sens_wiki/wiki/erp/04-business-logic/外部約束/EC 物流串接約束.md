@@ -4,18 +4,21 @@ mutability: external
 tags:
   - 領域/履約與售後
 source:
-  - "memory/erp/plans/_archives/2026/shipment-print-download-center/grill.md § 一 已知事實：ERP 物流串接在 sens-print-core 分支 feat/logistics_carrier_integration#2489，沒有向物流商取消、沒有同步排程；EC 作廢物流單不通知物流商"
-  - "memory/erp/plans/_archives/2026/shipment-print-download-center/grill.md G2、G3：第三方物流狀態以物流商回傳為準；不做向物流商取消的串接，物流商端由人工在系統外處理"
-  - "memory/erp/plans/_archives/2026/shipment-print-download-center/grill.md § 六 裁決（SHP-027 決議 A）：物流商狀態的取得機制、頻率與貨態值對應由後端決定，wiki 不寫頻率"
-  - "memory/erp/plans/_archives/2026/shipment-print-download-center/grill.md H2：物流單於確認可出貨時產生，初始狀態為可出貨"
-  - "sensation-api `sens_admin/v1/views/logistics_views.py` L279-285、`logistics/tasks/batch_dispatch.py` L50-55、`logistics/logistics.py` L315-340：拋單成功即寫入物流商回傳的物流單號，物流狀態轉等待出貨；失敗記拋單失敗"
-  - "sensation-api `logistics/sf/logistics.py` L326-339 handle_query（只以主單號查詢貨況）、`logistics/sf/actions/models/create.py` L175 包裹總件數、L200 與 L233 子單訊息與子運單號：順豐子母件"
-  - "Miles 2026-10-20 拍板（出貨單裝箱資料與物流單拆分 grill，Sens memory/erp/plans/_archives/2026/shipment-logistics-split-20261020/grill.md G19）：順豐子單不回傳狀態，物流單看主單"
-  - "sensation-api `logistics/hct/actions/trans_data_json.py` L21 件數預設 1，`logistics/hct/logistics.py` 拋單未帶件數：新竹物流子母單未串接"
+  - "memory/erp/plans/_archives/2026/shipment-print-download-center/grill.md § 一 已知事實"
+  - "memory/erp/plans/_archives/2026/shipment-print-download-center/grill.md G2、G3"
+  - "memory/erp/plans/_archives/2026/shipment-print-download-center/grill.md § 六 裁決（SHP-027 決議 A）"
+  - "memory/erp/plans/_archives/2026/shipment-print-download-center/grill.md H2"
+  - "sensation-api `sens_admin/v1/views/logistics_views.py` L279-285、`logistics/tasks/batch_dispatch.py` L50-55、`logistics/logistics.py` L315-340"
+  - "sensation-api `logistics/sf/logistics.py` L326-339 handle_query（只以主單號查詢貨況）、`logistics/sf/actions/models/create.py` L175 包裹總件數、L200 與 L233 子單訊息與子運單號"
+  - "Miles 2026-10-20 拍板（memory/erp/plans/_archives/2026/shipment-logistics-split-20261020/grill.md G19）"
+  - "sensation-api `logistics/hct/actions/trans_data_json.py` L21 件數預設 1，`logistics/hct/logistics.py` 拋單未帶件數"
   - "sensation-api `logistics/payuni/logistics.py` L50-58（7-11 交貨便拋單不帶寄件人）、`logistics/familymart/logistics.py` L159-166（全家寄件人取設定檔）"
-  - "sensation-api `logistics/sf/logistics.py` L118-143、`logistics/hct/logistics.py` L48-64：順豐、新竹物流非保密代寄時用設定檔單一預設寄件人，保密代寄時用自訂寄件人"
-  - "sensation-api（2026-10-22 規劃抽驗，見 Sens memory/erp/plans/_archives/2026/shipment-batch-dispatch-box-size-20261022/design.md § 十）`logistics/tasks/batch_dispatch.py`、`sens_admin/v1/serializers/logistics_serializers.py` L367-389：EC 批次拋單在背景逐筆執行、單筆失敗不影響其他筆；送出前不排除已成功或處理中的物流單，一次至多 30 筆"
-  - "Miles 2026-10-27 拍板（出貨與物流對齊後端第一版實作，sens-print-core PR 180，第 7、9 題）：物流單狀態拆成拋單狀態與貨態；批次拋單可跨出貨單"
+  - "sensation-api `logistics/sf/logistics.py` L118-143、`logistics/hct/logistics.py` L48-64"
+  - "sensation-api（2026-10-22 規劃抽驗，見 memory/erp/plans/_archives/2026/shipment-batch-dispatch-box-size-20261022/design.md § 十）`logistics/tasks/batch_dispatch.py`、`sens_admin/v1/serializers/logistics_serializers.py` L367-389"
+  - "Miles 2026-10-27 拍板（出貨與物流對齊後端第一版實作，sens-print-core PR 180，第 7、9 題）"
+  - "封存 OQ SHP-026（08-open-questions/_archives/2026/）"
+  - "封存 OQ SHP-020（08-open-questions/_archives/2026/）"
+  - "Miles 2026-10-27 拍板（出貨與物流對齊後端第一版實作，sens-print-core PR 180）"
 status: draft
 last-reviewed: 2026-10-27
 ---
@@ -40,11 +43,12 @@ ERP 後端自建物流串接，對各物流商拋單、取得物流單號與貨�
 | 作廢 | 串接沒有向物流商取消托運的功能，作廢只改 ERP 這一端 | 已拋單的物流單作廢時，物流商端的托運在系統外處理（誰處理見 [[出貨人員]]，過程見 [[出貨與送達]]）；各狀態能否作廢見 [[物流單狀態]] |
 | 物流單號 | 拋單成功即寫入物流商回傳的物流單號，拋單狀態轉拋單成功；沒有人工填寫入口 | [[物流單]] 的物流單號由拋單成功寫入，不手填；物流單檔案的內容見 [[物流單]] |
 | 貨況回傳 | 第三方物流的在途、配達、例外由物流商回傳 | 第三方物流的物流單依物流商最近一次回傳推進（推進規則見 [[物流單狀態]]）；回傳的取得機制、頻率與貨態值對應由後端決定 |
-| 順豐子母單 | 順豐支援一票多件：一個主單號、每件一個子單號；查詢貨況只以主單號查，子單不回傳狀態 | 物流單一律看主單狀態；子單號掛在 [[出貨單]] 裝箱資料的每一箱，只顯示 |
-| 新竹物流子母單 | 新竹物流支援子母單，EC 拋單一律以一件送出，子母單未串接 | 新竹物流的「支援子母單」設為否，一箱一筆物流單（見 [[出貨單]] § 出貨方式（系統設定）） |
+| 順豐子母單 | 順豐支援一票多件：一個主單號、每件一個子單號；查詢貨況只以主單號查，子單不回傳狀態 | 物流單看主單貨態（[[物流單狀態]] § 與 EC 物流狀態的對映）；子單號見 [[出貨單]] 裝箱資料的子單號欄 |
+| 新竹物流子母單 | 新竹物流支援子母單，EC 拋單一律以一件送出，子母單未串接 | 新竹物流的支援子母單屬性見 [[出貨單]] § 出貨方式（系統設定），拆單見 [[出貨單]] § 裝箱資料 |
 | 寄件人：7-11 交貨便、全家 | 7-11 交貨便（EC 串接名稱 payuni）拋單不帶寄件人；全家的寄件人固定取設定檔 | 兩者都帶不上出貨單的寄件資訊，處理方式見 [[SHP-025-保密代寄在各物流商的支援範圍]] |
-| 批次拋單 | EC 批次拋單在背景逐筆執行、單筆失敗不影響其他筆，一次至多 30 筆；送出前不排除已成功或處理中的物流單，沒有防重複拋單 | 批次拋單只送拋單狀態為未拋單或拋單失敗的物流單（見 [[物流單]] § 操作）；一次筆數上限、同步或背景執行由後端定 |
-| 重複建單 | ERP 判拋單未成功（逾時，或等待回應期間單據被他人作廢），物流商端仍可能已建好托運單；再拋一次可能建出第二張，或被物流商以重複為由拒絕 | 不防重複、不向物流商取消：多出的托運單物流商到場不會收件，也不計價。重拋被物流商以重複為由拒絕、ERP 取不到物流單號時，出貨人員通知後端人員，到物流商後台查出單號後補登（系統外處理，見 [[SHP-026-拋單逾時後物流商才建單的重複建單風險]]） |
+| 批次拋單 | EC 批次拋單在背景逐筆執行、單筆失敗不影響其他筆，一次至多 30 筆；送出前不排除已成功或處理中的物流單，沒有防重複拋單 | 批次拋單送哪些物流單見 [[物流單]] § 操作；一次筆數上限、同步或背景執行由後端定 |
+| 重複建單 | ERP 判拋單未成功（逾時，或等待回應期間單據被他人作廢），物流商端仍可能已建好托運單；再拋一次可能建出第二張，或被物流商以重複為由拒絕 | 不防重複、不向物流商取消：多出的托運單物流商到場不會收件，也不計價。重拋被物流商以重複為由拒絕、ERP 取不到物流單號時，出貨人員通知後端人員，到物流商後台查出單號後補登（系統外處理） |
+| 收件人電話 | 7-11 交貨便與全家的收件人電話必須是手機；順豐與新竹物流手機或市話擇一 | 確認可出貨時檢查（[[出貨單狀態]] 已裝箱 → 已確認） |
 | 寄件人：順豐、新竹物流 | 保密代寄時帶自訂寄件人；非保密代寄時一律用設定檔的單一預設寄件人，不依帳務公司 | 非保密代寄時包裹上的寄件人可能與 [[出貨單]] 寄件資訊的帳務公司不同，見 [[SHP-025-保密代寄在各物流商的支援範圍]] |
 
 ## 為什麼這樣定
@@ -81,4 +85,4 @@ ERP 後端自建物流串接，對各物流商拋單、取得物流單號與貨�
 - 狀態機：[[物流單狀態]]、[[出貨單狀態]]
 - 規則：[[齊套邏輯]]（作廢物流單後的額度回補）
 - 角色：[[出貨人員]]
-- OQ：[[SHP-025-保密代寄在各物流商的支援範圍]]、[[SHP-023-第三方物流部分送達與誤報配達的處理路徑]]、[[SHP-020-ERP出貨單承接EC物流串接的狀態對映與拋單失敗處置]]、[[SHP-031-EC物流串接約束各列在ERP自建串接是否成立]]
+- OQ：[[SHP-025-保密代寄在各物流商的支援範圍]]、[[SHP-023-第三方物流部分送達與誤報配達的處理路徑]]、[[SHP-031-EC物流串接約束各列在ERP自建串接是否成立]]
