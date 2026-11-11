@@ -233,7 +233,9 @@ def check_card(card, ctx, rep):
     src = mc.as_list(card.fm.get("source"))
     for s in {x for x in src if src.count(x) > 1}:
         rep.add("S2", card, None, f"source 重複：{s[:40]}")
-    # S5、S6：連結
+    # 草稿卡（status: draft）只檢查格式、連結與放置位置，不檢查內容正規化（第 8 批，主對話 2026-11-12 核准）
+    draft = card.fm.get("status") == "draft"
+    # S5、S6、S17：連結
     for no, ln in body:
         for m in LINK.finditer(ln):
             tgt, anchor = m.group(1).strip(), (m.group(2) or "")[1:].strip()
@@ -249,6 +251,16 @@ def check_card(card, ctx, rep):
                     rep.add("S5", card, no, f"[[{tgt}#{anchor}]] 的標題不存在，點了只會到卡片開頭")
             if card.canon and target.archived:
                 rep.add("S6", card, no, f"正本卡連到封存卡 [[{tgt}]]")
+            if card.canon and not draft and not target.archived and target.fm.get("status") == "draft":
+                rep.add("S17", card, no, f"現行卡連到草稿卡 [[{tgt}]]（內容尚未定案）", level="警告")
+    # S16：資料夾與領域標籤一致（第 8 批，主對話 2026-11-12 核准）
+    folder_domain_check(card, rep)
+    # S14：詞彙表格式（草稿也檢查）
+    if card.p == GLOSSARY:
+        for no, msg in ctx["glossary"].problems:
+            rep.add("S14", card, no, msg)
+    if draft:
+        return
     # S7、S8：用詞
     g = ctx["glossary"]
     is_gloss = card.p in (GLOSSARY, INDUSTRY)
@@ -284,8 +296,6 @@ def check_card(card, ctx, rep):
             for t, rx in ctx["s8rx"]:
                 if rx.match(s):
                     rep.add("S8", card, no, f"疑似「{t}」的定義句；定義只寫在詞彙表")
-    # S16：資料夾與領域標籤一致（第 8 批，主對話 2026-11-12 核准）
-    folder_domain_check(card, rep)
     # S11：基數只在全系統總覽卡
     if card.name != OVERVIEW and not card.spec and WIKI in card.p.parents and "編輯器" not in card.rel.parts:
         for no, ln in body:
@@ -301,10 +311,6 @@ def check_card(card, ctx, rep):
         linked = {ctx["by_name"].get(m.group(1).strip()) for _, ln in body for m in LINK.finditer(ln)}
         if not any(c and c.type in ("entity", "state-machine") for c in linked):
             rep.add("S13", card, None, "規則卡沒有連到任何實體或狀態機，拆解後接不回去")
-    # S14：詞彙表格式
-    if card.p == GLOSSARY:
-        for no, msg in g.problems:
-            rep.add("S14", card, no, msg)
     # S15：source 只留出處指標
     if card.canon:
         for s in src:
@@ -446,7 +452,8 @@ def check_cross(ctx, rep, changed):
     # X4：已完成遷移的領域，實體與角色都有詞條
     if g.terms:
         for c in cards.values():
-            if c.canon and not c.archived and c.type in ("entity", "role") and set(c.domains) & ctx["done"] \
+            if c.canon and not c.archived and c.fm.get("status") != "draft" and c.type in ("entity", "role") \
+                    and set(c.domains) & ctx["done"] \
                     and c.name not in g.terms:
                 rep.add("X4", c, None, f"詞彙表沒有「{c.name}」詞條（詞條名要與卡名逐字相同）", level="錯誤")
     # X5：避免用詞不得同時是詞條名（詞彙表解析時已檢出）
