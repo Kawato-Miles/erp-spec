@@ -43,3 +43,13 @@ erp 程式庫不動：不是 Miles 維護的範圍，他只用其中製作 Proto
 1. A 到 E 是否照做。
 2. 操作手冊是否持續維護（決定 `memory/erp/manual-audit-20260923/` 41 檔、`manual-writing-rules.md`、根目錄 `production-stage-seg1-manual-artifact.html` 的去留）。
 3. 外掛 `product-management` 是否停用（近 60 天 Skill 呼叫 0 次、斜線指令 2 次；與 matt 的 `to-spec`、`grilling` 功能重疊）。`eli5`（近 60 天約 20 次）、`watch`（約 5 次）有在用，留。
+
+### 2026-11-12 Miles 第一輪回覆
+
+- 操作手冊要持續維護，預計改到 GitBook。手冊相關的檔本票全部不動：根目錄 `production-stage-seg1-manual-artifact.html`（已發布成品的原始檔）、`memory/erp/manual-writing-rules.md`、`memory/erp/manual-audit-20260923/`。
+- 因此記憶卡 `project_erp_manual_dev_verified`、`project_manual_prototype_sync_grill_20260923` 移出封存清單。E 類改為 36 張，清場後留 112 張（feedback 59、project 51、reference 2）。
+- 外掛 `product-management` 可以拿掉。做法：在專案 `.claude/settings.json` 的 `enabledPlugins` 設為 false。
+- Miles 要的是 BA 與 SA 的能力，不是寫規格。已開調研票 28，並擋住票 08。
+- 移動或開新對話時放進同一個側邊欄區段（已記入地圖 Notes 與記憶卡 `feedback_sessions_same_sidebar_group`）。
+- 記憶檔圖解頁：https://claude.ai/artifact/2XGJGjBaFa77Ky7YTEuPKz
+- A 到 E 是否照做，Miles 尚未明確回答。
