@@ -1,0 +1,21 @@
+memory/Sens_wiki/wiki/erp/03-roles/出貨人員.md
+memory/Sens_wiki/wiki/erp/03-roles/揀貨人員.md
+memory/Sens_wiki/wiki/erp/04-business-logic/外部約束/EC 物流串接約束.md
+memory/Sens_wiki/wiki/erp/04-business-logic/服務藍圖/出貨與交付流程群組.md
+memory/Sens_wiki/wiki/erp/04-business-logic/服務藍圖/出貨與交付流程群組/出貨活動清單.md
+memory/Sens_wiki/wiki/erp/04-business-logic/服務藍圖/售後服務流程群組.md
+memory/Sens_wiki/wiki/erp/04-business-logic/服務藍圖/售後服務流程群組/售後受理活動清單.md
+memory/Sens_wiki/wiki/erp/04-business-logic/服務藍圖/售後服務流程群組/售後結案活動清單.md
+memory/Sens_wiki/wiki/erp/04-business-logic/服務藍圖/單據存取流程群組/出貨與售後檢視活動清單.md
+memory/Sens_wiki/wiki/erp/04-business-logic/營運規則/訂單到交付/售後服務規則.md
+memory/Sens_wiki/wiki/erp/05-entities/下載檔案.md
+memory/Sens_wiki/wiki/erp/05-entities/出貨單.md
+memory/Sens_wiki/wiki/erp/05-entities/售後服務.md
+memory/Sens_wiki/wiki/erp/05-entities/履約與售後資料結構總覽.md
+memory/Sens_wiki/wiki/erp/05-entities/物流單.md
+memory/Sens_wiki/wiki/erp/06-state-machines/下載檔案狀態.md
+memory/Sens_wiki/wiki/erp/06-state-machines/出貨單狀態.md
+memory/Sens_wiki/wiki/erp/06-state-machines/售後服務狀態.md
+memory/Sens_wiki/wiki/erp/06-state-machines/物流單狀態.md
+memory/Sens_wiki/wiki/erp/07-scenarios/出貨與送達.md
+memory/Sens_wiki/wiki/erp/07-scenarios/售後受理與決議.md
