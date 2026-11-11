@@ -5,7 +5,9 @@ status: active
 last-reviewed: 2026-10-13
 source:
   - "Slack 頻道訊息與討論串回覆介面（第三方介面契約；以頻道與訊息連結定位討論串）"
-  - "後端現況查證：sens-print-core `apps/quote/tasks/notify_quote_created.py`、`apps/quote/tasks/notify_quote_re_evaluation.py`、`apps/quote/services/quote_transition_service.py`（2026-09-24 核對）"
+  - "後端 sens-print-core `apps/quote/tasks/notify_quote_created.py`（2026-09-24 核對）"
+  - "後端 sens-print-core `apps/quote/tasks/notify_quote_re_evaluation.py`（2026-09-24 核對）"
+  - "後端 sens-print-core `apps/quote/services/quote_transition_service.py`（2026-09-24 核對）"
   - "Miles 2026-09-23 拍板"
   - "Miles 2026-10-12 拍板（memory/erp/plans/_archives/2026/linear-format-20261012/grill-decisions.md J3）"
 tags:

@@ -5,11 +5,11 @@ source:
   - "ezPay 電子發票技術串接手冊標準版 EZP_INVI_1.2.2（簡單行動支付股份有限公司，2024-04-22）"
   - "財政部電子發票整合服務平台 Message Implementation Guideline（MIG）"
   - "財政部稅務問答：銷貨退回或折讓的統一發票處理（統一發票使用辦法第 20 條、第 20 條之 1）https://www.etax.nat.gov.tw/etwmain/tax-info/understanding/tax-q-and-a/national/business-tax/invoice/NELbx22"
-  - "財政部：營業稅申報期限（每 2 月為 1 期、次期開始 15 日內申報）https://www.etax.nat.gov.tw/etwmain/tax-info/innotative-tax-e-reference/filing/business-tax/V39ogDL"
+  - "財政部營業稅申報期限 https://www.etax.nat.gov.tw/etwmain/tax-info/innotative-tax-e-reference/filing/business-tax/V39ogDL"
   - "[[2026-05-26-miles-upload-ezpay-invoice-api-spec]]"
   - "Miles 2026-10-04 拍板"
   - "Miles 2026-10-06 拍板"
-  - "統一發票使用辦法第 24 條、電子發票實施作業要點第九點、營業稅法第 15 條第二項（memory/erp/wiki-normalization-20261104/第6批-稅務法條.md § 一）"
+  - "memory/erp/wiki-normalization-20261104/第6批-稅務法條.md § 一（統一發票使用辦法第 24 條、電子發票實施作業要點第九點、營業稅法第 15 條第二項）"
   - "Miles 2026-11-11 回覆（memory/erp/wiki-normalization-20261104/第6批-待裁決.md § 一 T2、T3；§ 二 D7、C1；§ 三 T1、T4；§ 六 S12）"
 status: active
 last-reviewed: 2026-10-06
@@ -92,6 +92,7 @@ tags:
 
 - 電子發票的開立、更正、作廢、銷貨退回或折讓，應經買受人同意，營業人留存同意訊息與相關證明文件至少五年（電子發票實施作業要點第九點）。
 - 因銷貨退回或折讓而退還買受人的營業稅額，於發生銷貨退回或折讓的當期銷項稅額中扣減（營業稅法第 15 條第二項），不回頭改原發票所屬期的申報。
+- 營業稅每 2 月為 1 期，於次期開始 15 日內申報（財政部營業稅申報期限）。
 - 作廢或折讓能否執行由 ezPay 判斷，被拒時系統顯示原因；ERP 只送發票資料與操作，不自行判斷銷售額是否已申報。
 
 ### 4.1 作廢發票（`invoice_invalid`）
