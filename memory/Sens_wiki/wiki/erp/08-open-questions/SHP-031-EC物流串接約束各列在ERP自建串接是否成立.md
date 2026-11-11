@@ -9,8 +9,8 @@ status: open
 priority: medium
 audience: internal
 raised-at: 2026-10-23
-raised-by: wiki-amend 落卡（change shipment-print-download-center，precheck R6）
-source-link: change shipment-print-download-center precheck.md 矛盾 R6
+raised-by: wiki-amend 落卡（出貨對話框、批次列印與下載中心規劃，規劃前盤點 R6）
+source-link: 出貨對話框、批次列印與下載中心規劃（2026-10-26 封存）規劃前盤點矛盾 R6
 related-vault:
   - "[[EC 物流串接約束]]"
   - "[[物流單]]"

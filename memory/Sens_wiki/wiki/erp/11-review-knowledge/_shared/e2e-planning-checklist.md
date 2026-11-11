@@ -9,7 +9,7 @@ last-reviewed: 2026-05-20
 
 # E2E 規劃 checklist（基於失誤案例累積）
 
-> **定位**：累積 e2e 規劃失誤案例，提煉成 checklist 供後續 change 撰寫 Playwright spec 時對齊。
+> **定位**：累積 e2e 規劃失誤案例，提煉成 checklist 供後續規劃撰寫 Playwright spec 時對齊。
 > **觸發時機**：撰寫 e2e spec 前必讀；發現 e2e 漏抓 bug 時新增案例。
 > **不適用**：unit / integration test 規劃（屬不同層）。
 
@@ -39,7 +39,7 @@ last-reviewed: 2026-05-20
 ### 案例 1：NoteTemplatePopover scroll bug 沒抓到（2026-05-20）
 
 **情境**：
-- change：`add-order-note-section-with-template-tool`
+- 規劃：訂單備註區與範本工具規劃（2026-05-20 封存）
 - 元件：`NoteTemplatePopover`，10 條模板列表渲染於 `max-h-[480px]` flex column 內
 - 結構：Popover 在 Dialog 內（巢狀 portal）
 
@@ -124,6 +124,6 @@ expect(scrollH).toBeGreaterThan(clientH);  // 確實 overflow，需 scroll
 
 ## 六、來源
 
-- 案例 1：`add-order-note-section-with-template-tool` change apply 階段 implementation feedback（2026-05-20）
+- 案例 1：訂單備註區與範本工具規劃實作階段 implementation feedback（2026-05-20）
 - Radix Popover-in-Dialog scroll 攔截：[GitHub issue #1159](https://github.com/radix-ui/primitives/issues/1159) 等
 - Playwright wheel API：[docs.playwright.dev/.../mouse-wheel](https://playwright.dev/docs/api/class-mouse#mouse-wheel)

@@ -10,7 +10,7 @@ priority: low
 audience: internal
 raised-at: 2026-10-27
 raised-by: Miles（急件新定義討論中拍板延後）
-source-link: change rush-order-definition 討論（2026-10-27）
+source-link: 急件新定義規劃（2026-10-28 封存）討論（2026-10-27）
 related-vault:
   - "[[訂單]]"
   - "[[急件規則]]"
