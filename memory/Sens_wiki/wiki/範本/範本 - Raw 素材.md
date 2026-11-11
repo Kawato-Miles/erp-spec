@@ -45,8 +45,8 @@ ingested-to:               # status=ingested 時填，列寫入的既有卡
 <!-- Mode A 寫入時保留下方註解樣板不填。Mode B 完成後以實際 wiki link 清單取代整段註解 -->
 
 <!-- Mode B 第 8 步寫入後在此列出 wiki link：
-- [[../04-business-logic/X]] — 新增 § A
-- [[../08-open-questions/Y-001-Z]] — 升級為 OQ
+- [[X]] — 新增 § A
+- [[Y-001-Z]] — 升級為 OQ
 - 取消（理由：...）
 -->
 

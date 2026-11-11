@@ -19,16 +19,16 @@ last-reviewed: 2026-10-29
 | `metric` | KPI / 北極星指標 / Impact Score | `01-products/`、`01-products/kpi/` |
 | `glossary` | 詞彙表與術語表（[[ERP 詞彙表]]：ERP 業務名詞的定義正本；[[印刷業共用術語表]]：ERP 用不到的純行業詞） | `wiki/erp/`、`wiki/跨產品/`、`wiki/編輯器/` |
 | `role` | 角色 R&R | `03-roles/` |
-| `service-blueprint` | 服務藍圖（公司提供什麼服務、階段與階段先後） | `04-business-logic/服務藍圖/` |
+| `service-blueprint` | 服務藍圖（公司提供什麼服務、階段與階段先後） | `04-business-logic/服務藍圖/<藍圖名>/`，與資料夾同名 |
 | `activity-list` | 活動清單（服務藍圖一個階段的活動：誰在什麼範圍做哪個操作） | `04-business-logic/服務藍圖/<藍圖名>/` |
 | `controlled-list` | 受控清單（範圍用詞、動作類型、單據代碼、活動清單代碼的值域正本；全庫一張） | `04-business-logic/` |
 | `process-architecture` | 流程架構（類別與流程群組的歸屬正本；全庫一張） | `04-business-logic/` |
 | `business-rule` | 商業規則（決策邏輯、領域知識、外部約束）；營運規則一條一張卡 | `04-business-logic/` 各子目錄；營運規則放在所屬規則組資料夾 |
-| `rule-group` | 規則組索引卡（列出同組規則卡、整組共用理由、跨規則例子、分組與順序） | `04-business-logic/營運規則/<分類>/<規則組名>/`，與資料夾同名 |
-| `entity` | 資料模型實體 | `05-entities/` |
-| `structure-overview` | 資料結構總覽（ER 圖＋單據流＋資料流＋關聯明細表；全系統一張為關聯唯一正本，領域各一張為領域視角） | `05-entities/`（與該領域實體卡同層） |
-| `state-machine` | 狀態機 | `06-state-machines/` |
-| `scenario` | 業務情境（目標完成過程；接力型／能力型／排程型） | `07-scenarios/` |
+| `rule-group` | 規則組索引卡（列出同組規則卡、整組共用理由、跨規則例子、分組與順序） | `04-business-logic/營運規則/<領域>/<規則組名>/`，與資料夾同名 |
+| `entity` | 資料模型實體 | `05-entities/<領域>/` |
+| `structure-overview` | 資料結構總覽（ER 圖＋單據流＋資料流＋關聯明細表；全系統一張為關聯唯一正本，領域各一張為領域視角） | 全系統一張放 `05-entities/`；領域各一張放 `05-entities/<領域>/`（與該領域實體卡同層） |
+| `state-machine` | 狀態機 | `06-state-machines/<領域>/` |
+| `scenario` | 業務情境（目標完成過程；接力型／能力型／排程型） | `07-scenarios/<領域>/` |
 | `open-question` | OQ 卡 | `08-open-questions/` |
 | `review-knowledge` | 規劃品質量尺與稽核方法論 | `11-review-knowledge/` |
 | `misjudgement-record` | 稽核誤判案例庫 | `11-review-knowledge/` |
@@ -429,16 +429,22 @@ ingested-to:                                           # status=ingested 時填
 | `wiki/erp/`（ERP 主題根目錄） | `glossary`（[[ERP 詞彙表]]）/ `meta`（`規範 - 詞彙表.md`） |
 | `03-roles/` | `role` / `meta`（`規範 - 角色.md`）/ `example`（`範例 - 角色.md`）|
 | `04-business-logic/` | `service-blueprint` / `business-rule` / `process-architecture` / `controlled-list`（後兩者各一張，放本目錄頂層）/ `meta`（`規範 - 商業邏輯.md`／`規範 - 活動清單.md`）/ `example`（`範例 - 服務藍圖.md`／`範例 - 商業規則.md`／`範例 - 活動清單.md`）|
-| `04-business-logic/服務藍圖/<藍圖名>/` | `activity-list`（只放該藍圖各階段的活動清單卡）|
-| `04-business-logic/營運規則/<分類>/<規則組名>/` | `rule-group`（與資料夾同名，一個資料夾一張）/ `business-rule`（mutability=internal，該組的規則卡）|
-| `05-entities/` | `entity` / `meta`（`規範 - 實體.md`）/ `example`（`範例 - 實體.md`）|
-| `06-state-machines/` | `state-machine` / `meta`（`規範 - 狀態機.md`）/ `example`（`範例 - 狀態機.md`）|
+| `04-business-logic/服務藍圖/<藍圖名>/` | `service-blueprint`（與資料夾同名，一個資料夾一張）/ `activity-list`（該藍圖各階段的活動清單卡）|
+| `04-business-logic/營運規則/<領域>/<規則組名>/` | `rule-group`（與資料夾同名，一個資料夾一張）/ `business-rule`（mutability=internal，該組的規則卡）|
+| `05-entities/` | `structure-overview`（[[ERP 資料結構總覽]]）/ `meta`（`規範 - 實體.md`）/ `example`（`範例 - 實體.md`）|
+| `05-entities/<領域>/` | `entity` / `structure-overview`（該領域的資料結構總覽卡）|
+| `06-state-machines/` | `meta`（`規範 - 狀態機.md`）/ `example`（`範例 - 狀態機.md`）|
+| `06-state-machines/<領域>/` | `state-machine` |
 | `wiki/範本/`（vault 層，跨主題） | 骨架檔（內容為填空 frontmatter 樣板，豁免本 schema 檢查；見 [[卡片撰寫共用規範]] § 一）|
-| `07-scenarios/` | `scenario`（業務情境）/ `meta`（`規範 - 業務情境.md` 等）/ `example`（`範例 - 業務情境.md`）|
+| `07-scenarios/` | `meta`（`規範 - 業務情境.md` 等）/ `example`（`範例 - 業務情境.md`）|
+| `07-scenarios/<領域>/` | `scenario`（業務情境）|
 | `08-open-questions/` | `open-question` / `meta`（`OQ運作總覽.md`／`規範 - OQ.md`）/ `example`（`範例 - OQ.md`）|
 | `11-review-knowledge/參考模型/` | `reference-model` |
 | `raw/` | `raw` / `meta`（`README.md`）|
 | `raw/_attachments/` | 任意檔（PDF / 圖 / docx / 訪談錄音轉文字等）；不需 frontmatter |
+| `<卡型資料夾>/_archives/` | 該卡型資料夾的封存卡；用到時才建。`08-open-questions/` 依拍板年份再分 `_archives/<年份>/`，其他不分年 |
+
+`<領域>` 資料夾名用 [[business-domain-taxonomy]] 的領域名（售前、訂單管理、印前審稿、生產執行、履約與售後、款項與發票、全域）。
 
 ## 六、Lint 規則
 

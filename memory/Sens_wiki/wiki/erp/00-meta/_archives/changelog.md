@@ -1,6 +1,6 @@
 ---
 type: meta
-status: archived
+status: deprecated
 last-reviewed: 2026-06-10
 ---
 
