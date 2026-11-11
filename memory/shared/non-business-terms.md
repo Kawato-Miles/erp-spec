@@ -34,3 +34,15 @@
 | dogfood | 改寫 | 寫「親身試用」「自用試跑」；只有 source enum 等技術 token 保留 `prototype-dogfood` |
 | 狀態快照（snapshot） | 改寫 | 寫「狀態說明」 |
 | 推演 | 保留 | 指依情境卡逐步演練設計走不走得完；稽核的對抗式推演同此 |
+
+## 產品角色縮寫
+
+| 縮寫 | 角色 |
+|------|------|
+| PM | Product Manager（即 Miles） |
+| RD / Dev | Research & Development / Developer 工程師 |
+| UX | 使用者體驗設計師 |
+| QA | 品質保證測試工程師 |
+| CS | Customer Success / Support 客服 |
+| Sales | 業務 |
+| Ops | 印廠營運人員 |
