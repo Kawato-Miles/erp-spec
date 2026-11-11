@@ -38,6 +38,7 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
 - [04：matt 流程全貌](issues/04-matt-flow.md)：每一步由使用者啟動、無自動串接；接續器與規格稽核要自己補
 - [13：資深專案經理怎麼管規格、原型、開發票的一致](issues/13-pm-delivery-workflow.md)：規格放文件、追蹤工具只放小工作並連回文件；議題不是現況；一致性靠可執行的範例；原型開發後的處置查無一手資料
 - [14：架構面內容完整盤點](issues/14-architecture-inventory.md)：235 項已判去留，可刪 78 項加記憶卡 38 張；wiki 規範層過半要改寫；三分之一的測試追不回 wiki 情境卡
+- [16：資深產品經理怎麼規劃自己的 AI 工作流](issues/16-senior-pm-ai-workflow.md)：第一手做法是檔案即脈絡；與工程對齊的完整案例查不到；資料對齊的主流做法是機器可讀的介面契約，前提是後端配合
 
 ## Not yet specified
 
