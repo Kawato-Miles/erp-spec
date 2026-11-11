@@ -23,7 +23,7 @@ description: >
 
 ## 限制
 
-- 只讀 `memory/Sens_wiki/wiki/` 與 `memory/Sens_wiki/raw/`。frontmatter 引用的外部路徑只測存在，不讀內容。不讀 `.scratch/` 規劃單、Prototype、已凍結的 `00-meta/changelog.md`。
+- 只讀 `memory/Sens_wiki/wiki/` 與 `memory/Sens_wiki/raw/`。frontmatter 引用的外部路徑只測存在，不讀內容。不讀 `.scratch/` 規劃單、Prototype、已凍結的 `00-meta/_archives/changelog.md`。
 - 只報不修。修復一律轉介：03～07 與 11 層卡轉 `wiki-amend`；OQ 卡轉 `oq-manage`；raw 卡轉 `vault-ingest`；00-meta 規則正本與規範卡由主對話依 Miles 拍板改。
 - 矛盾並排呈報，建議開 OQ，不自行調和。
 - 機械維度的結果直接採用，不再派模型複判。判讀維度（1、12、13、14）派子代理判讀，再派懷疑者複核。
