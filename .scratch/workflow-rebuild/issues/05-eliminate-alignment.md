@@ -1,7 +1,7 @@
 # 05：對齊工作怎麼消除
 
 Type: grilling
-Status: open
+Status: claimed
 Blocked by: 03
 
 ## Question
