@@ -105,10 +105,11 @@ def main():
         print(f"找不到 wiki 的 erp 目錄：{erp}")
         return 2
 
+    # 封存卡不算現行卡：依卡名取檔時現行卡優先，型別清單排除 _archives（第 8 批 D17）
     files = {}
-    for p in root.rglob("*.md"):
+    for p in sorted(root.rglob("*.md"), key=lambda q: "_archives" in q.parts):
         files.setdefault(p.stem, p)
-    texts = {p: p.read_text(encoding="utf-8") for p in erp.rglob("*.md")}
+    texts = {p: p.read_text(encoding="utf-8") for p in erp.rglob("*.md") if "_archives" not in p.parts}
 
     def rel(p):
         return str(p.relative_to(root))
