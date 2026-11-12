@@ -155,3 +155,20 @@ check_sensation_api_asis、features_mece_no_rules_in_project、industry_best_pra
 - 等票 11 的 13 列不在這輪搬；`feedback_report_in_chat_and_handoff`、`feedback_sessions_same_sidebar_group` 兩張卡這輪不刪。
 - 開工整理：本對話已命名「工作流程重置 - 票 30」、移出子對話、放進「工作流程優化」區段。上一則對話（`local_bb4959a8-c037-4d11-bbc0-5f4a81e994fb`）封存被擋，原因是它開著遠端控制；已請 Miles 處理。
 - 還沒做：Miles 回覆 16 題與清單後改規範檔、刪卡；刪派工任務書範本。
+
+### 2026-11-12 Miles 裁決（第一輪）：A、D、E、H、N、Q 定案，其餘重講後再裁決
+
+| 代號 | Miles 的裁決 |
+|---|---|
+| A | 採記憶卡。後端有兩個程式庫：ERP 後端是 sens-print-core，sensation-api 是電商後台 |
+| D | 採現行規範：Linear 留言引用其他票時直接寫識別碼 |
+| E | 採現行範本：Feature 票用 `[ Feature ] - ` 前綴 |
+| H | 封存 `feedback_prototype_layout_follow_source` |
+| N | 刪陷阱表「設計前漏讀架構正本卡」一列 |
+| Q | 刪 `.mcp.json` 的 `figma-desktop`，連同設定檔的 4 條允許項 |
+
+- B、C、F、G、I、J、L、M、O、P、R：Miles 回「看不懂」。主對話改用業務情境重講後再請 Miles 裁決。
+- G：Miles 指示去看 ERP 後端怎麼做。已派子代理查 `/Users/b-f-03-029/sens-print-core`。
+- P：Miles 問 `memory/shared/ui-business-rules.md` 在現行流程用不用得到。實測：`AGENTS.md`、Sens 的 skill、erp 的 `prototype-from-prompt` 都沒有引用它；只有 `memory/shared/ui-wording.md:6` 與 wiki `scope-boundary.md:74` 提到。票 14 盤點把它列為待判。主對話的建議改成：Prototype 類規則全放 `AGENTS.md` § Prototype 與測試。
+- R：Miles 的原話是「擴充新的 ERP 功能要和我確認，但由你設計與稽核」。記憶卡原句講的是「把 wiki 寫卡擴到新模組前先確認方向」，兩者不是同一件事，要向 Miles 釐清。
+- 搬遷清單 74 句：Miles 還沒回覆，說先確定裁決題再處理後續。
