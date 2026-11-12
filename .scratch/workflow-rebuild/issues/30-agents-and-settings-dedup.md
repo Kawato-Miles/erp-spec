@@ -181,3 +181,20 @@ check_sensation_api_asis、features_mece_no_rules_in_project、industry_best_pra
 - 子代理引的 22 行程式碼，主對話逐行對照原檔，全部相符。未查證：算不出價時預估成本存空值且不擋存檔；各計價方式吃哪些輸入（在外部套件 pricing_core）。
 - 交票 33 核對的落差：wiki 寫計價輸入必填、缺了不能存檔；後端模型檔 `:208` 註解寫「印務手填、選填」，API 欄位 `required=False, allow_null=True`。wiki 的「計價面積」「台數」在後端沒有同名欄位，由寬高與頁數推算。
 - 建議不變：題 G 採 wiki。等 Miles 裁決。
+
+### 2026-11-12 Miles 裁決（第二輪）：F、G、I、J、L、M、P 定案
+
+| 代號 | Miles 的裁決 |
+|---|---|
+| F | 採記憶卡：可封存的 OQ 不先問，封存後回報名單。Miles 另問：改用 matt 的流程後還需不需要 OQ，要用資深專案經理的角度評估重疊與移轉的差異 |
+| G | 採 wiki：計價輸入依計價方式填或選。記憶卡「只從選項挑」一句刪掉 |
+| I | Prototype 送合併請求給前端主管時不寫 Linear 票號（一律填 N/A），寫進 `AGENTS.md` |
+| J | 採現行規範：wiki 連結不帶別名 |
+| L | `AGENTS.md` 改成指向 erp 的 skill。Miles 補充現況：Prototype 只有一個分支；代理先在工作樹實作，最後合併到同一個 prototype 分支，再把這個分支合併到 dev |
+| M | 以 `AGENTS.md` § 模型分工的表為唯一正本。Miles 問 skill 裡要不要再寫。實測：skill 內文只有 `linear-delivery/references/規範 - Linear 交付.md:310`（盲測受測者用 Sonnet）寫了數值；子代理定義檔 `.claude/agents/plan-auditor.md:4`（opus）、`erp-researcher.md:4`（sonnet）的模型欄是系統設定。三處都與表一致 |
+| P | Miles：`memory/shared/ui-business-rules.md` 整個拿掉，已過時很久；介面與體驗設計之後用其他 skill 處理 |
+
+- 題 P 的連帶：刪檔時要同步改 `memory/shared/ui-wording.md:6` 與 wiki `scope-boundary.md:74` 的引用。Prototype 類 18 句的落點，主對話的理解是放 `AGENTS.md` § Prototype 與測試；其中介面行為 3 句（上傳檔案、操作鈕顯示、判不出時先問）要不要等新 skill 再收，待向 Miles 確認。
+- B、C、O：Miles 問最佳實踐與怎麼避免風險。已派子代理調研，寫入 `research/30-bco-best-practice.md`。
+- R：Miles 仍看不懂。主對話改問法。
+- OQ 與 matt 流程的重疊：已派子代理盤點事實，寫入 `research/30-oq-vs-matt-flow.md`；評估由主對話做。
