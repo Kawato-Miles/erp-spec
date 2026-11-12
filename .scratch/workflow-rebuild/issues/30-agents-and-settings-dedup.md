@@ -172,3 +172,12 @@ check_sensation_api_asis、features_mece_no_rules_in_project、industry_best_pra
 - P：Miles 問 `memory/shared/ui-business-rules.md` 在現行流程用不用得到。實測：`AGENTS.md`、Sens 的 skill、erp 的 `prototype-from-prompt` 都沒有引用它；只有 `memory/shared/ui-wording.md:6` 與 wiki `scope-boundary.md:74` 提到。票 14 盤點把它列為待判。主對話的建議改成：Prototype 類規則全放 `AGENTS.md` § Prototype 與測試。
 - R：Miles 的原話是「擴充新的 ERP 功能要和我確認，但由你設計與稽核」。記憶卡原句講的是「把 wiki 寫卡擴到新模組前先確認方向」，兩者不是同一件事，要向 Miles 釐清。
 - 搬遷清單 74 句：Miles 還沒回覆，說先確定裁決題再處理後續。
+
+### 2026-11-12 題 G 的後端查證（sens-print-core，develop 分支，最後提交 2026-10-28 `5b33d6ca`）
+
+- 後端現況是填與選並存，與 wiki `生產任務.md` 的「依計價方式填或選」相同。記憶卡「只從選項挑、不手填」與後端不符。
+- 從主檔挑：`apps/production/models/production_task.py:209` `weight_entry`、`:217` `prep_entry` 是外鍵；`apps/production/v1/admin/serializers/work_order_serializers.py:808-812` 綁主檔；`apps/production/services/production_task_service.py:279`、`:284` 檢查歸屬。
+- 手填數字：同模型檔 `:225` `raw_sheets`、`:228` `prep_sheets`、`:233` `finished_width`、`:251` `work_duration`、`:254` `pages`、`:257` `pages_per_unit`。模型檔沒有範圍驗證（搜 `validators=` 無命中）。
+- 子代理引的 22 行程式碼，主對話逐行對照原檔，全部相符。未查證：算不出價時預估成本存空值且不擋存檔；各計價方式吃哪些輸入（在外部套件 pricing_core）。
+- 交票 33 核對的落差：wiki 寫計價輸入必填、缺了不能存檔；後端模型檔 `:208` 註解寫「印務手填、選填」，API 欄位 `required=False, allow_null=True`。wiki 的「計價面積」「台數」在後端沒有同名欄位，由寬高與頁數推算。
+- 建議不變：題 G 採 wiki。等 Miles 裁決。
