@@ -209,3 +209,33 @@ check_sensation_api_asis、features_mece_no_rules_in_project、industry_best_pra
 - 題 M 的答覆：skill 內不用再寫模型數值。
 - 題 R 改問法：代理整批寫 wiki 卡時，寫完交代的範圍想接著寫別的模組，要不要先問 Miles。主對話建議要問，由搬遷清單第 22 句涵蓋。
 - 以上都等 Miles 裁決。
+
+### 2026-11-12 Miles 裁決（第三輪）與做事指示
+
+| 代號 | 結果 |
+|---|---|
+| M | Miles：ok。`AGENTS.md` § 模型分工是唯一正本；`linear-delivery/references/規範 - Linear 交付.md:310` 改成引用該表；兩個子代理定義檔的模型欄保留 |
+| R | Miles：ok。代理整批寫 wiki 卡時，寫完交代的範圍想接著寫別的模組，要先問 Miles。由搬遷清單第 22 句涵蓋，不另加句 |
+| O | Miles：這超出 PM 能判斷的範圍，要代理依軟體領域的既有做法處理，並說明不解決對他有什麼影響。主對話依此決定：不自動推送，`AGENTS.md` 刪「提交後 hook 自動推送」一句；風險由封存對話前檢查工作樹擋住 |
+| P | Miles 已定刪 `memory/shared/ui-business-rules.md`。Prototype 類 18 句是代理的做事規則，放哪個檔屬技術題，主對話決定放 `AGENTS.md` § Prototype 與測試 |
+| B | 不在本票定案。Miles 要看產品需求文件、工作分解、任務票的既有做法，並給了驗證方式。開票 40 調研，結論交票 24。定案前維持現行交付規範，`feedback_features_mece_no_rules_in_project` 先不刪 |
+| C | 不在本票定案。Miles 要看商業落地案例。開票 41 調研，結論交票 07、票 09。定案前維持現行評分準則，`feedback_industry_best_practice_first` 先不刪 |
+
+Miles 對 OQ 的提問：matt 怎麼處理「當場定不了、要等以後的問題」與「放太久的提醒」，還是這些不是正常狀況、是他的流程有錯。主對話通讀 matt 的 `grilling` 與 `wayfinder` 原文後的答覆：
+
+- 查事實是代理的工作，不問使用者（`grilling/SKILL.md`：「Finding facts is your job, never the user's.」）。
+- 需求對齊要到沒有未問的決定才結束（同檔：「The session is done when the frontier is empty」）。
+- 大題目裡當場定不了的問題要開成票，票的類型就是解法：調研、做原型、對談、先做一件前置工作（`wayfinder/SKILL.md` § Ticket Types）。被別的問題卡住的票用阻擋關係標出等什麼。
+- 還講不清楚的問題放地圖的「Not yet specified」；與目的地無關的列「Out of scope」並關票，不再回來。
+- matt 沒有久置提醒。每個工作階段從「沒被卡住、沒人認領」的票挑下一張，地圖在票清空時結束。
+- 對照：Sens 的 OQ 卡只記問題，不記下一步是什麼、在等什麼。未解 77 張的處置屬票 10（現有待裁決問題卡各自合併、續做或放棄）。
+
+Miles 的做事指示（已存記憶卡 `feedback_guide_pm_decide_technical`，並寫進地圖 Notes）：
+
+- 他是 PM。技術題由代理依既有最佳實踐決定，只告訴他決定與影響。
+- 調研要讀完原始來源、完整理解後才用。
+- 改善流程先學做得好的人怎麼做。他點名 Claude 官方產品經理的分享。開票 39 調研。
+
+已派子代理：票 39、40、41 的調研，分別寫入 `research/39-anthropic-product-team-practice.md`、`research/40-ticket-content-findable-and-sufficient.md`、`research/41-phased-delivery-future-design.md`。子代理回報後，主對話要自己讀完重要來源的全文才向 Miles 說明。
+
+本票還沒做：依已定的裁決改規範檔與 skill；搬遷清單 74 句；刪派工任務書範本；刪記憶卡。
