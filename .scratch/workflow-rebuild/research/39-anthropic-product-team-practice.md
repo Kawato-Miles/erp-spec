@@ -10,6 +10,39 @@
 - 逐字稿類來源由第三方整理（Every、Latent Space、Simon Willison）。語音轉文字的錯字保留在引文中時會註明。
 - 引文保留英文，後面一句中文說明。
 
+## 主對話查證（2026-11-12）
+
+本檔其餘各節是子代理的產出。本節是主對話自己讀原文後的查證結果。
+
+- 讀了全文的來源：S1、S2、S3、S4、S5（含附錄）、S8。主對話重新抓取網頁並從頭讀到尾。
+- 沒有讀的來源：S6、S7、S9、S10、S11、S12、S13。本檔引自這些來源的句子，主對話沒有查證。
+- 引文比對：本檔引自 S1 至 S5、S8 的英文引文共 57 句，用指令逐句比對，57 句都在原文中。中文說明逐條對照原文，沒有發現說反或說過頭的地方。
+- 一處要補的語意：「來源說法不同」表的「由下而上或找客戶」一列。S2 反轉的是先後順序（先對齊六個月、寫完規格才動工），不是不找客戶。S2 同場說產品對外前先給「some early customers who give us very honest feedback」。
+
+### 子代理漏掉、主對話認為重要的原文
+
+| 來源 | 原文 | 說明 |
+|------|------|------|
+| S2，Thariq | 「a codebase is a spec, and maybe it’s the only copy of the spec that you have, because no one knows every branching part of the codebase.」 | 能跑的程式碼就是規格，而且可能是唯一的一份。 |
+| S2，Thariq | 「If you have a good test suite — and I think the rewrite actually forces you to make sure you have a good test suite」 | 敢重寫的前提是有好的測試。 |
+| S1，Cat Wu | 「understanding the history of a decision by searching Slack」 | 決策的來龍去脈靠搜尋對話紀錄查回，不另外登記。 |
+| S2，Cat Wu | 「Because this bar is very clear, every engineer knows what they’re trying to hit.」 | 發布門檻講清楚，每個人自己知道要做到哪裡。 |
+| S1，Cat Wu | 「This works because clear strategy and goals let everyone prioritize autonomously.」 | 角色能混在一起做，前提是策略與目標清楚。 |
+| S3，Boris Cherny | 「Claude just does the thing and then I see where it messes up, and then I’ll ask it to just throw it away and do it again.」 | 還講不清楚要什麼時，先讓 AI 做一次，看它錯在哪，丟掉，再寫計畫。 |
+| S3，Cat Wu | 「here’s a first pass at the code and here are the assumptions I made. And are these correct?」 | 她描述希望 AI 做到的樣子：先交第一版，列出自己做的假設，請人確認。這是願景，不是當時的現況。 |
+| S4，Krieger | 「What we realized was we’d created this matrix of functionality that was actually quite hard to test and keep up with before launch, or even to explain to people when they arrived.」 | 第一版做太多，組合變得難測，也難向人說明。 |
+| S4，Krieger | 「if you gave a new employee a hundred instructions on day one, they’ll remember the last thing you told them and short-circuit the rest.」 | AI 出錯時一直往提示語加規則沒有用。要回頭改結構（拆工具、拆代理人）。 |
+| S2，Thariq | 「we try to have fewer hard constraints, more context, and fewer instructions overall.」 | 少寫硬性禁令，多給背景，整體少寫指示。 |
+| S2，Cat Wu | 「soften the prompt so that it’s actually 100% accurate, because you’re giving this prompt to the model 100% of the time.」 | 規則只有九成情況成立，就改寫到十成都成立。 |
+| S4，Krieger | 「It was a healthy debate, but only because I was grounded in having used a lot of those technologies before.」 | 他能和 AI 辯技術選擇，是因為自己用過那些技術。 |
+| S5 | 「effectively using Claude requires supervision, and supervising Claude requires the very coding skills that may atrophy from AI overuse」 | 監督 AI 需要該領域的能力。原文稱為監督的矛盾。 |
+| S4，Krieger | 「scaling teams too quickly is a net negative, because they end up spending all their time coordinating.」 | 點子還小時加人，時間都花在協調。 |
+
+### 兩個「找不到」的重查結果
+
+1. 規格、原型、工程票怎麼保持一致。六個來源的全文確實沒有描述工程票系統，也沒有描述三者的同步機制。主對話的判讀：他們沒有三份要同步的東西。證據是上表第一列（程式碼就是規格），加上 S1 的「That prototype anchored what the team ultimately shipped」，以及 S2 描述的流程全程在同一個討論串裡走到合併請求。規格只是做原型的輸入，原型做出來之後以原型為準。這是判讀，來源沒有明說「我們不維護規格」。
+2. 待決事項怎麼追蹤。六個來源的全文確實沒有待決清單或決策紀錄。找到的替代做法有三個：定不了就把候選做出來試（S4、S6）；決策的來龍去脈靠搜尋對話紀錄查回（S1）；Labs 每兩週檢視每個專案要加碼還是收掉（S4）。
+
 ## 來源清單（依對 Miles 的重要性排序）
 
 | 編號 | 網址 | 作者與日期 | 讀取程度 | 最值得主對話自己讀的理由 |

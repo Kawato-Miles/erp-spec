@@ -67,6 +67,7 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
 - [28：商業分析與系統分析的既有方法](issues/28-ba-sa-methods-practice.md)：六類方法都有標準出處；Sens 卡型已涵蓋流程、實體、狀態、規則、權限；欄位層防呆、缺口分析、跨領域影響分析、覆蓋度追溯只部分涵蓋
 - [29：記憶重新初始化](issues/29-memory-reinit.md)：112 張記憶卡封存 57 張、留 55 張（`~/.claude/archive/memory-reinit-20261112/`）；`AGENTS.md` 新增記憶目錄規則；記憶與 wiki 矛盾的 112 條有 104 條是記憶過期；商業規則缺口 14 條交票 33，舊待辦交票 34，feedback 卡搬遷交票 30；決策紀錄（`docs/adr/`）照 matt 原樣用，只收三個條件都成立的系統層決定，否決類 47 列不回填
 - [32：Claude 的資料與白板功能能不能當議題追蹤的可視化工具](issues/32-data-whiteboard-as-tracker-view.md)：Data 類型可當檢視，資料要代理解析後上傳、不會即時更新，一頁可放多個主題；Whiteboard 不適合畫票地圖；eli5 的成品是 HTML 頁，放進白板要重畫；是否採用併入票 10
+- [39：Anthropic 的產品團隊怎麼用 AI 迭代產品](issues/39-anthropic-product-team-practice.md)：先做原型再決定，能跑的東西就是規格；定不了的事做出來試，沒有待決清單；驗證看操作證據；ERP 的金額、庫存、狀態規則屬於不能放手的例外；主對話建議把 Prototype 提到流程前段，交票 09 裁決
 
 ## Not yet specified
 
