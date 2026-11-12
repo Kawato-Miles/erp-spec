@@ -2,10 +2,6 @@
 .DS_Store
 Thumbs.db
 
-# 覆蓋全域 ~/.gitignore_global 的 CLAUDE.md 忽略規則：
-# 本 repo 的 CLAUDE.md 是分層規則正本（全域／專案／知識庫），必須進版控
-!CLAUDE.md
-
 # Editor temp files
 *.swp
 *.swo
@@ -29,4 +25,3 @@ __pycache__/
 # Test outputs（Playwright .last-run.json 等）
 test-results/
 .fuse_hidden*
-tools/superpowers

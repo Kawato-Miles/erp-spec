@@ -1,19 +1,14 @@
 {
   "permissions": {
     "allow": [
-      "Bash(/Users/b-f-03-029/.nvm/versions/node/v22.11.0/bin/npx tsc:*)",
       "Bash(export PATH=/usr/local/bin:/opt/homebrew/bin:$PATH)",
       "Bash(export PATH=\"/usr/local/bin:/opt/homebrew/bin:$HOME/.bun/bin:$PATH\")",
       "Bash(bun run:*)",
-      "Edit(/.claude/skills/erp-spec/**)",
       "Bash(npm run:*)",
       "Bash(/usr/local/bin/npm run:*)",
-      "Read(//Users/b-f-03-029/Sens/$HOME/.nvm/versions/**)",
       "Bash(npm list:*)",
       "Bash(ls -la /Users/b-f-03-029/Sens/*.md)",
       "Bash(npm --version)",
-      "Bash(export PATH=\"/usr/local/bin:/opt/homebrew/bin:$HOME/.nvm/versions/node/v22.11.0/bin:$PATH\")",
-      "Bash(find /Users/b-f-03-029/Sens/spec -type f -name *.md)",
       "Bash(find /Users/b-f-03-029/Sens -type f -name *spec*.md)",
       "Bash(find /Users/b-f-03-029/Sens -name *quote* -o -name *order* -o -name *wo*)",
       "Bash(find /Users/b-f-03-029/Sens -name *feature* -o -name *spec* -o -name *module*)",
@@ -44,8 +39,6 @@
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:d[k] for k in ['instruction','outputPath','template','dependencies','rules']}, ensure_ascii=False, indent=2\\)\\)\")",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:d[k] for k in ['instruction','outputPath','template','rules']}, ensure_ascii=False, indent=2\\)\\)\")",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:d[k] for k in ['state','progress','tasks','contextFiles','instruction']}, ensure_ascii=False, indent=2\\)\\)\")",
-      "Bash(sed -i '' \"s/    type: '打樣',$/    type: '打樣',\\\\n    region: '台灣',/\" src/data/mockWorkOrders.ts)",
-      "Bash(sed -i '' \"s/    type: '大貨',$/    type: '大貨',\\\\n    region: '台灣',/\" src/data/mockWorkOrders.ts)",
       "Bash(./node_modules/.bin/vite build:*)",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:d[k] for k in ['outputPath','instruction','template','dependencies','unlocks']}, ensure_ascii=False, indent=2\\)\\)\")",
       "Bash(grep -E \"\\\\.tsx$\")",
