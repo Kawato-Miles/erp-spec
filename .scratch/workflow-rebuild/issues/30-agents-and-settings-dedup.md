@@ -239,3 +239,24 @@ Miles 的做事指示（已存記憶卡 `feedback_guide_pm_decide_technical`，�
 已派子代理：票 39、40、41 的調研，分別寫入 `research/39-anthropic-product-team-practice.md`、`research/40-ticket-content-findable-and-sufficient.md`、`research/41-phased-delivery-future-design.md`。子代理回報後，主對話要自己讀完重要來源的全文才向 Miles 說明。
 
 本票還沒做：依已定的裁決改規範檔與 skill；搬遷清單 74 句；刪派工任務書範本；刪記憶卡。
+
+### 2026-11-12 本票範圍縮小，換對話接續
+
+- 主對話的決定（已告知 Miles，Miles 未表示意見）：搬遷清單 74 句延到票 11（重寫環境）一起做，輸入是 `research/30-relocation-merged.md`。理由：Miles 要先學做得好的人再重新設計流程，現在搬進規範檔的句子到時要再改一次。延後期間記憶卡照常生效。
+- 本票剩下要做的只有已裁決的部分：
+  - A：`AGENTS.md` 與 `erp-plan/SKILL.md` 的後端名稱改成 sens-print-core；對應陷阱列同步。
+  - D、E、J：三張記憶卡的相反句刪掉（採現行規範）。
+  - F：`oq-manage/references/整理報告格式.md` 的「可封存」改成不先問、封存後回報名單。
+  - G：`feedback_production_task_standardized` 的「只從選項挑」一句刪掉。
+  - H：封存 `feedback_prototype_layout_follow_source`。
+  - I：`AGENTS.md` § Prototype 與測試寫入 PR 不填 Linear 票號。
+  - L：`AGENTS.md` 的分支說法改成指向 erp 的 skill；改之前對照 Miles 補充的現況與 erp skill，兩邊不同就並排回報。
+  - M：`linear-delivery/references/規範 - Linear 交付.md:310` 改成引用模型分工表；兩張記憶卡的模型段刪掉。
+  - N：刪陷阱表「設計前漏讀架構正本卡」一列。陷阱表第 19 列（暫存）已定刪。
+  - O：`AGENTS.md` 刪「提交後 hook 自動推送」一句。
+  - P：刪 `memory/shared/ui-business-rules.md`，同步改 `memory/shared/ui-wording.md:6` 與 wiki `scope-boundary.md:74`（wiki 卡走 `wiki-amend`）。
+  - Q：刪 `.mcp.json` 的 `figma-desktop` 與設定檔 4 條允許項。
+  - 刪派工任務書範本（本票第一段留言）。
+- B、C 等票 40、41；R 由搬遷清單第 22 句涵蓋，隨票 11 落地。
+- 票 39、40、41 的調研初稿都已回報並在 master。主對話都還沒讀原文查證。
+- Miles 問的 OQ 77 張分類屬票 10，還沒做。
