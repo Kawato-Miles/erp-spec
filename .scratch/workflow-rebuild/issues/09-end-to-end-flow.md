@@ -36,7 +36,7 @@ Miles 的質疑：看不出 Prototype 提前怎麼解決 wiki、規劃單、Prot
 Miles 的前提帶來的修正：
 
 - Prototype 是前端的成品，不是用完即丟的草稿。來源裡「先做一次再丟掉」不適用。第一版也照 erp 的 Prototype skill 做；「最小」指範圍小，不指品質低。
-- 介面操作規則（欄位防呆、按鈕何時出現、錯誤提示）的家是 Prototype。前端票不重述這些規則，只指向 Prototype 頁面與 wiki 卡。這對應 Miles 回報的痛點「開發最常問介面操作規則」。
+- 介面操作規則（欄位防呆、按鈕何時出現、錯誤提示）的家是 Prototype。前端票不重述這些規則，只指向 Prototype 頁面。這對應 Miles 回報的痛點「開發最常問介面操作規則」。
 - 後端看不到 Prototype 裡的規則。後端票仍要帶 wiki 的規則；wiki 與後端的一致靠現況同步（票 05）。
 
 主對話向 Miles 提出、等他確認的目標清單：
@@ -48,3 +48,25 @@ Miles 的前提帶來的修正：
 5. 環境只留用得到的內容。
 
 前四項的來源是地圖的 Destination 與 Miles 回報的痛點。Prototype 提前對應第 1、4 項，不對應第 2 項。
+
+### 2026-11-13 Miles 的第二則回應（尚未裁決）
+
+Miles 的前提：流程設計不以前後端看得到 wiki 為前提。
+
+- 影響：票文要單看就夠，不能指向 wiki 卡。前端看得到 Prototype 與票；後端只看得到票。
+- 票裡的規則因此是 wiki 的第二份。做法：票文由代理從 wiki 與 Prototype 產生，不手寫；wiki 改了之後，依票 05 的規則改原票或開新票。票文怎麼產生在票 24。
+
+Miles 問怎麼看到 Prototype。現有的方式（已查 erp 的 `prototype-from-prompt`、`prototype-publish` 與本 repo 的 `.claude/launch.json`）：
+
+- 第一輪：代理用 `launch.json` 的 `erp` 設定啟動本機頁面，開在對話旁邊的瀏覽器窗格。Miles 直接點。
+- 定案後：代理照 `prototype-publish` 發布到測試機（網址在記憶卡 `reference_erp_manual.md`），前端與同事看同一份。
+
+主對話對三個風險提出的解法：
+
+| 風險 | 解法 | 落在哪張票 |
+|------|------|-----------|
+| 畫面看起來對，規則可能是錯的 | 假設清單分兩區。看得見的：Miles 點畫面確認。看不見的（金額算式、狀態轉換、權限）：每條附一個實際數字的例子，Miles 判斷例子對不對。確認過的例子寫成 wiki 情境卡與測試 | 本票的流程設計；票 07 |
+| 程式比對 wiki 與 Prototype 還沒試做 | 用需求單模組試做一次。比不出來的部分，由代理逐欄比對並附對照表給 Miles 抽看 | 票 25、26 加入 Prototype 當比對對象 |
+| 測試沒清、沒變快之前，目標 2 達不到 | 票 27（清情境目錄落差）與票 07（測試分層與提速）排在真實需求試跑（票 12）之前。每輪只跑改到的情境，全套只在交付前跑 | 票 07、27、12 的順序 |
+
+給 Miles 的白話圖解：https://claude.ai/artifact/EKb2JfoXxbnYamZEgdvKKS （原始檔不在 repo；內容與本留言相同）。
