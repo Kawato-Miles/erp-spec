@@ -578,3 +578,29 @@ for-agents 提示詞原文：「This version may contain breaking changes. The c
 - 13px 的例子：`orders/_components/detail/billing/ReconciliationPanel.js` 有 7 處 `fontSize: 13`。
 - 長提示的例子在 `production-floor/transfers/page.js`，全文見票 42 的 Answer。
 - erp 的 `prototype-from-prompt/SKILL.md` 用關鍵字（字級、font、typograph、提示、tooltip、placeholder、文案、extra）搜尋，沒有管字級與提示文字的句子。
+
+### 字重與顏色（Miles 2026-11-13 擴大範圍後補查）
+
+Miles 的原話「是字級沒錯，字重與顏色的選用也算」由上一個對話轉達。主對話在該對話的紀錄裡搜尋到這句原文。下表 8 句原文同樣逐字比對相符。
+
+| 主題 | 結論 | 檔案 | 原文句 |
+|------|------|------|--------|
+| 字重 | interface-design：同一字級用字重分三層，用到 600 | `.claude/skills/interface-design/SKILL.md` | `value: 600 / primary`, `label: 500 / secondary`, `meta: 400 / muted` |
+| 顏色 | interface-design：文字顏色四階各有用途 | `.claude/skills/interface-design/SKILL.md` | Primary, secondary, tertiary, muted (default / supporting / metadata / disabled). |
+| 顏色 | interface-design：只用一個強調色 | `.claude/skills/interface-design/SKILL.md` | **One accent, used with intention**, beats five colors used without thought. |
+| 顏色 | interface-design：色盤要從產品的世界找（與 erp 衝突） | `.claude/skills/interface-design/SKILL.md` | Your palette should feel like it came FROM somewhere, not applied TO something. |
+| 字重 | Impeccable：至多 2 至 3 種字重 | `skill/reference/distill.md` | **Limit typography**: One font family, 3-4 sizes maximum, 2-3 weights |
+| 顏色 | Impeccable：強調色只用在主要操作、目前選取、狀態指示 | `skill/reference/operate.md` | Accent color used for primary actions, current selection, and state indicators only, not decoration. |
+| 顏色 | Impeccable：狀態用語要標準化 | `skill/reference/operate.md` | State-rich semantic vocabulary: hover, focus, active, disabled, selected, loading, error, warning, success, info. Standardize these. |
+| 顏色 | Impeccable：語意色要搭配顏色以外的提示 | `skill/reference/distill.md` | keep semantic colors (success, warning, error) and pair each with a non-color cue |
+
+| 項目 | 搜尋樣式 | 命中行數 |
+|------|---------|---------|
+| 手寫色碼 | 六碼色碼 | 25 行，24 種不同的值 |
+| 取用 erp 色彩 token | `theme.colors.` | 100 |
+| 狀態對照表裡的顏色名 | `color:` 後接色名字串 | default 51、success 24、blue 22、processing 18、green 17、gold 15、red 10、purple 10、error 10、orange 9、warning 8、cyan 8、geekblue 6、lime 3 |
+| 用元件屬性加粗 | `<Text` 帶 `strong` | 28 |
+
+- 手寫色碼的例子：`#1677ff`、`#ff4d4f`、`#fa8c16` 各 2 處，是 Ant Design 的預設色，不是 erp 的色彩 token（erp 主色是 `#2688ff`）。
+- 狀態顏色名共 14 種。語意色名（default、success、processing、error、warning）約 111 行；調色盤色名（blue、green、gold、red、purple、orange、cyan、geekblue、lime）約 100 行。
+- erp `Designs.md` 對「什麼情境用哪一個」的規定：字級沒有；字重只有「標題用 700」；顏色有用色紀律（主色只有藍、狀態色只用於狀態、紫色只作點綴）與 6.4 節（狀態用 `success` 或 `error` 的標籤），但沒有「哪個業務狀態用哪個顏色」與「文字四階各用在哪」。
