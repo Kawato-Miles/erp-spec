@@ -72,7 +72,6 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
 - [29：記憶重新初始化](issues/29-memory-reinit.md)：112 張記憶卡封存 57 張、留 55 張（`~/.claude/archive/memory-reinit-20261112/`）；`AGENTS.md` 新增記憶目錄規則；記憶與 wiki 矛盾的 112 條有 104 條是記憶過期；商業規則缺口 14 條交票 33，舊待辦交票 34，feedback 卡搬遷交票 30；決策紀錄（`docs/adr/`）照 matt 原樣用，只收三個條件都成立的系統層決定，否決類 47 列不回填
 - [32：Claude 的資料與白板功能能不能當議題追蹤的可視化工具](issues/32-data-whiteboard-as-tracker-view.md)：Data 類型可當檢視，資料要代理解析後上傳、不會即時更新，一頁可放多個主題；Whiteboard 不適合畫票地圖；eli5 的成品是 HTML 頁，放進白板要重畫；是否採用併入票 10
 - [39：Anthropic 的產品團隊怎麼用 AI 迭代產品](issues/39-anthropic-product-team-practice.md)：先做原型再決定，能跑的東西就是規格；定不了的事做出來試，沒有待決清單；驗證看操作證據；ERP 的金額、庫存、狀態規則屬於不能放手的例外；主對話建議把 Prototype 提到流程前段，交票 09 裁決
-- [43：給 Miles 的回報怎麼做到一眼看懂，成效怎麼追蹤](issues/43-reporting-to-miles.md)：不裝外部 skill，畫圖用對話內建工具；回報照固定版型、最多一題決策；研究摘要指出說明越清楚接受率越高、不論對錯，所以另記事後翻案次數；回述檢核待 Miles 決定
 
 ## Not yet specified
 
