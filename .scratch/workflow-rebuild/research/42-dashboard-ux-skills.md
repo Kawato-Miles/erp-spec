@@ -1,4 +1,13 @@
-# 票 42 調研：把關畫面組合的代理 skill（調研員初稿，主對話尚未查證）
+# 票 42 調研：把關畫面組合的代理 skill（調研員撰寫，主對話已部分查證）
+
+## 主對話查證範圍（2026-11-13）
+
+- 引文比對：用指令抽出初稿的英文引文 228 句，與下載的原始檔比對，213 句相符。15 句不符的原因：7 句是原文中間夾了網頁標籤或標題，內容相符；3 句是程式庫的一句話簡介，來自 GitHub 介面，不在下載的檔案裡；1 句是抽取誤判；其餘 4 句（第 80、88、93、94 行，都在 Impeccable 一節）沒有再查，視為未查證。
+- 主對話讀完全文：Ant Design 的 `for-agents.md` 與規範頁 `detail-page`、`data-list`、`research-list`、`buttons`、`data-entry`、`research-form`、`feedback`、`research-workbench`；`office-web-ui-system` 的 `SKILL.md`、`page-type-playbook`、`component-recipes`、`framework-adaptation`、`navigation-and-panels`。
+- 只用關鍵字抽查：ui-skills 的 Tailwind 要求、ui-craft 的工具列按鈕規則與安裝指令、Impeccable 的下載行為、Ant Design 命令列工具的版本涵蓋。
+- 其餘各節主對話沒有讀原始檔。星數、推送日期、授權都沒有重新查證。
+- 更正：第 7 節關於版本的說法不完整，官方命令列工具內建第 4、5、6 版資料並可指定版本查詢。結論見票 42 的 Answer。
+
 
 調研日期 2026-11-13。本檔只蒐集與摘錄，不給設計建議，不建議採用哪一個。
 所有英文原文句皆逐字複製自下載到本機的檔案。星數與「最後推送日期」取自 GitHub API 當日回傳值；「最後推送日期」是整個程式庫最後一次推送，不等於該 skill 檔最後修改日。

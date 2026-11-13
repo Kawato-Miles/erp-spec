@@ -73,6 +73,7 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
 - [32：Claude 的資料與白板功能能不能當議題追蹤的可視化工具](issues/32-data-whiteboard-as-tracker-view.md)：Data 類型可當檢視，資料要代理解析後上傳、不會即時更新，一頁可放多個主題；Whiteboard 不適合畫票地圖；eli5 的成品是 HTML 頁，放進白板要重畫；是否採用併入票 10
 - [39：Anthropic 的產品團隊怎麼用 AI 迭代產品](issues/39-anthropic-product-team-practice.md)：先做原型再決定，能跑的東西就是規格；定不了的事做出來試，沒有待決清單；驗證看操作證據；ERP 的金額、庫存、狀態規則屬於不能放手的例外；主對話建議把 Prototype 提到流程前段，交票 09 裁決
 - [43：給 Miles 的回報怎麼做到一眼看懂，成效怎麼追蹤](issues/43-reporting-to-miles.md)：回報照固定版型、先講定位、最多一題決策；另定「要 Miles 決定的問題領域」表，Miles 同意試行；不裝外部 skill，畫圖用對話內建工具；成效記看不懂次數與事後翻案次數
+- [42：做 Prototype 時把關畫面組合的 UX skill](issues/42-dashboard-ux-skills.md)：erp 規範管元件與兩種頁型，不管版型怎麼選與操作鈕放哪；不安裝外部 skill，取 Ant Design 官方設計規範頁做「選版型」、取 office-web-ui-system 的頁型規則做「畫面檢查」，由票 11 寫成 Sens 側的兩份檔
 
 ## Not yet specified
 
