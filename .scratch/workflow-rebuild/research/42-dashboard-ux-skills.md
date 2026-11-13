@@ -5,6 +5,7 @@
 - 引文比對：用指令抽出初稿的英文引文 228 句，與下載的原始檔比對，213 句相符。15 句不符的原因：7 句是原文中間夾了網頁標籤或標題，內容相符；3 句是程式庫的一句話簡介，來自 GitHub 介面，不在下載的檔案裡；1 句是抽取誤判；其餘 4 句（第 80、88、93、94 行，都在 Impeccable 一節）沒有再查，視為未查證。
 - 主對話讀完全文：Ant Design 的 `for-agents.md` 與規範頁 `detail-page`、`data-list`、`research-list`、`buttons`、`data-entry`、`research-form`、`feedback`、`research-workbench`；`office-web-ui-system` 的 `SKILL.md`、`page-type-playbook`、`component-recipes`、`framework-adaptation`、`navigation-and-panels`。
 - 只用關鍵字抽查：ui-skills 的 Tailwind 要求、ui-craft 的工具列按鈕規則與安裝指令、Impeccable 的下載行為、Ant Design 命令列工具的版本涵蓋。
+- 細節層（第 9 節）：interface-design 全部 7 個檔與 Impeccable 的 10 個檔讀完全文，`critique.md` 只讀部分行，範圍見票 42 的 Answer。
 - 其餘各節主對話沒有讀原始檔。星數、推送日期、授權都沒有重新查證。
 - 更正：第 7 節關於版本的說法不完整，官方命令列工具內建第 4、5、6 版資料並可指定版本查詢。結論見票 42 的 Answer。
 
@@ -513,3 +514,67 @@ for-agents 提示詞原文：「This version may contain breaking changes. The c
 3. ui-craft 中未讀的參考檔（`craft-intent.md`、`state-design.md`、`components.md` 等）可能含更多頁面層級內容。
 4. `ant.design/design.md` 與 ui-skills 內 `ant-design.md` 僅確認位元組數相同，未逐字比對。
 5. 各 skill 與 Impeccable 的星數與日期為 2026-11-13 當日 API 值，之後會變動。
+
+---
+
+## 9. 細節層：主對話讀全文的摘錄（2026-11-13）
+
+本節由主對話撰寫。讀取範圍見票 42 的 Answer。下表每一句原文都用指令與下載的原始檔逐字比對，26 句全部相符。
+
+來源檔的根目錄：`/tmp/workflow-rebuild-ticket42-src-20261113/src/`。`D/SKILL.md` 不是 interface-design，是另一個畫圖 skill（`documd-visuals`），與本票無關。
+
+### 原文句
+
+| 主題 | 結論 | 檔案 | 原文句 |
+|------|------|------|--------|
+| 字級 | interface-design：字級由代理挑比例計算 | `.claude/skills/interface-design/SKILL.md` | Don't pick sizes by feel. Pick a ratio and step it |
+| 字級 | interface-design：層級同時用字級、字重、顏色 | `.claude/skills/interface-design/SKILL.md` | Build from three levers together (size, weight, color/opacity), never size alone. |
+| 字級 | interface-design：避開預設字型 | `.claude/skills/interface-design/SKILL.md` | **Default typography** — system/Inter fonts and size-only hierarchy where a direction was set |
+| 衝突 | interface-design：每個介面都要不同 | `.claude/skills/interface-design/SKILL.md` | **no two interfaces should look the same.** |
+| 提示文字 | interface-design：唯一談到文案的句子 | `.claude/commands/design-review.md` | Read every visible string as a user would — not for typos, for truth. |
+| 衝突 | interface-design：專案設計系統已決定的事不算缺失 | `.claude/commands/design-review.md` | If the project's design system already decided it, it's a decision, not a defect. |
+| 字級 | Impeccable：後台介面用固定字級 | `skill/reference/operate.md` | **Fixed rem scale, not fluid.** |
+| 字級 | Impeccable：單一字族 | `skill/reference/operate.md` | **One family is often right.** |
+| 字級 | Impeccable：級距小 | `skill/reference/operate.md` | **Tighter scale ratio.** 1.125–1.2 between steps is typical. |
+| 字級 | Impeccable：同一種角色保持一致 | `skill/reference/typeset.md` | Keep repeated roles consistent across screens and states. |
+| 字級 | Impeccable：至多 3 至 4 個字級 | `skill/reference/distill.md` | **Limit typography**: One font family, 3-4 sizes maximum, 2-3 weights |
+| 字級 | Impeccable：不只靠字級分層級 | `skill/reference/typeset.md` | Combine size, weight, space, and tone deliberately instead of asking size alone to do all the work. |
+| 提示文字 | Impeccable：說明文字不重述控制項；少見細節收起來 | `skill/reference/clarify.md` | Helper text answers an implicit question instead of restating the control. Use progressive disclosure for uncommon detail. |
+| 提示文字 | Impeccable：灰字是範例不是標籤 | `skill/reference/clarify.md` | Use persistent labels; placeholders are examples, not labels. |
+| 提示文字 | Impeccable：每件事只說一次 | `skill/reference/clarify.md` | Say each idea once. |
+| 提示文字 | Impeccable：要求資料的理由只在不明顯時才說明 | `skill/reference/clarify.md` | Explain why information is requested only when it is not obvious. |
+| 提示文字 | Impeccable：文案盡量短，但不刪意思與補救方式 | `skill/reference/clarify.md` | The final copy is as short as it can be without removing meaning or recovery. |
+| 提示文字 | Impeccable：刪掉重複的文案 | `skill/reference/distill.md` | **Remove redundant copy**: No headers restating intros, no repeated explanations, say it once |
+| 提示文字 | Impeccable：破壞性操作要寫出對象與後果 | `skill/reference/clarify.md` | For destructive actions, name the object and consequence. |
+| 衝突 | Impeccable：內文至少 16px，附例外條件 | `skill/reference/typeset.md` | Use 1rem / 16px as the ordinary web body floor unless a dense role, platform convention, or user setting justifies otherwise. |
+| 衝突 | Impeccable：灰底加單一強調色被評為不合格 | `skill/reference/mode-operate.md` | A grey screen with one accent colour is the category default without the category's polish, not restraint. |
+| 衝突 | Impeccable：評審的說明文件一項把情境提示列為加分 | `skill/reference/critique.md` | Contextual help (tooltips, inline hints, guided tours) |
+| 程式 | Impeccable：每個對話先執行啟動腳本 | `skill/SKILL.src.md` | Run `<skill-base-dir>/scripts/impeccable context` once per session |
+| 程式 | Impeccable：啟動腳本會下載執行檔 | `skill/SKILL.src.md` | The launcher runs a self-contained binary that ships next to it or is downloaded once on first run |
+| 程式 | Impeccable：字體檢查要跑偵測程式 | `skill/reference/typeset.md` | {{scripts_path}}/impeccable detect --json --scope type [target files or dirs] |
+| 程式 | Impeccable：評審沒跑偵測程式就算失敗 | `skill/reference/critique.md` | A skipped detector is a failed critique run unless `impeccable detect` is missing or crashes after a real attempt |
+
+### Prototype 現況的統計
+
+統計日期 2026-11-13，範圍是 `/Users/b-f-03-029/erp/apps/erp/src/app/(prototype)/` 的 258 個 `.js` 與 `.jsx` 檔，讀的是主檢出當時的內容。數字是關鍵字命中的行數。
+
+| 項目 | 搜尋樣式 | 命中行數 |
+|------|---------|---------|
+| 樣式表寫法的手寫字級 | `font-size:` 後接數字與 px | 12 |
+| 行內寫法的手寫字級 | `fontSize:` 後接數字 | 88 |
+| 套用 erp 字體階層 | `typography.` 或 `theme.typo` | 17 |
+| 手寫字級的值 | 同上兩種寫法 | 11px：5、12px：68、13px：20、14px：2、16px：1、18px：1、22px：1、24px：2 |
+| 手寫字重的值 | `font-weight:` 或 `fontWeight:` 後接數字 | 500：3、600：2、700：7 |
+| 提示泡泡 | `<Tooltip` 或 `tooltip=` | 261（含引入行與 `<TooltipLabel`） |
+| 欄位標籤旁的問號說明 | `<TooltipLabel` | 63 |
+| 超過 20 個字的提示 | `title=` 或 `tooltip=` 的字串長度大於 20 | 55（`title=` 也會命中視窗標題，數字偏高） |
+| 輸入框灰字 | `placeholder=` | 323 |
+| 灰字重複欄位名稱 | `placeholder="請輸入` 或 `placeholder="請選擇` | 86 |
+| 欄位下方說明 | `extra=` | 26 |
+| 次要灰字 | `type="secondary"` | 306 |
+
+- 各模組的手寫字級行數：work-orders 26、orders 21、recipes 13、print-items 12、production-floor 11、dispatch-orders 8、_components 3、after-sales 2、prepress-review 2、payment 1、quote-prototype 1、qc-shipping 0、sample-resource 0。
+- erp 實際載入的字重是 400、500、700（`apps/erp/src/app/layout.js` 第 44 行的字型網址）。
+- 13px 的例子：`orders/_components/detail/billing/ReconciliationPanel.js` 有 7 處 `fontSize: 13`。
+- 長提示的例子在 `production-floor/transfers/page.js`，全文見票 42 的 Answer。
+- erp 的 `prototype-from-prompt/SKILL.md` 用關鍵字（字級、font、typograph、提示、tooltip、placeholder、文案、extra）搜尋，沒有管字級與提示文字的句子。
