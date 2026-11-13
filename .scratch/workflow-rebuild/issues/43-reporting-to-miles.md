@@ -40,7 +40,7 @@ Miles 2026-11-13 的原話與要點記在記憶卡 `feedback_report_executive_vi
 
 | 順序 | 內容 | 出處 |
 |------|------|------|
-| 1 | 一句結論，加狀態：順利、有風險、卡住 | `stakeholder-update` 主管版、`policy-memo` |
+| 1 | 先一句定位：這則在講哪件事、它是主線還是支線、主線現在到哪。再一句結論，加狀態：順利、有風險、卡住 | 定位句：Miles 2026-11-13 的反應（見紀錄檔）；其餘：`stakeholder-update` 主管版、`policy-memo` |
 | 2 | 一張圖，圖種照下一節 | Miles 2026-11-13 |
 | 3 | 下一步：誰做什麼 | `executive-briefing` |
 | 4 | 要 Miles 決定的事，最多一題：選項含維持現況、建議、接受的代價、預期結果 | `policy-memo`；全域偏好的四項 |
