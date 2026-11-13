@@ -82,3 +82,9 @@ Miles：「看起來可以試看看。」
 - 與 matt 的差別：matt 的 `prototype` 是用完即丟、用來回答設計問題；Sens 的 Prototype 直接交前端。其餘步驟（釐清、規劃單、拆票、交接）照 matt。
 - 用語定案（Miles 2026-11-13 同意）：Sens 的維持「Prototype」，指開發產物。matt `prototype` skill 的產物在 Sens 的文件裡叫「驗證草稿」。matt 的 skill 本身不改。Prototype 不改名為 Demo：erp 的資料夾、分支、skill 都叫 prototype 且不能動；前端也容易把 Demo 當成展示用樣品而重切畫面。定義寫在 `memory/shared/non-business-terms.md`。
 - Miles 對回報方式的要求記在地圖 Notes 與票 43。
+
+### 2026-11-13 票 43 交來的輸入
+
+- 「要 Miles 決定的問題領域」表在票 43 的 Answer，Miles 回覆「先這樣試試」。本票 grill「代理何時停下問 Miles」時把它當輸入。
+- Miles 同日問：這次的流程規劃是否都用 matt 的 skill、現在是否在 grill。查到的事實：地圖與票照 matt `wayfinder` 的慣例，換對話照 matt `handoff`；票 43 的對話沒有載入 `grilling`，決策領域表是直接提問確認的。本票正式 grill 時要載入 `mattpocock-skills:grilling`。
+- 本票的阻擋行還有票 24、票 30 未結案。開工前先判斷這兩個阻擋是否仍成立。
