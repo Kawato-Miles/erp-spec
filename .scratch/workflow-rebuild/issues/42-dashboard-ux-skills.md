@@ -1,7 +1,7 @@
 # 42：做 Prototype 時把關畫面組合的 UX skill
 
 Type: research
-Status: closed
+Status: open
 Blocked by: —
 
 ## Question
@@ -24,6 +24,19 @@ Blocked by: —
 - Miles 2026-11-13 確認並擴大：「是字級沒錯，字重與顏色的選用也算」。細節層要查的項目：字級的選用、字重的選用、顏色的選用、提示文字過多。
 - Impeccable 與 interface-design 用細節層的標準評估，不用「有沒有版型規則」評估。
 
+實測比對（Miles 2026-11-13）：
+
+- 原話：「基本上 Prototype 的製作，erp skill 都處理好了，我要針對的是稽核，實際比對安裝這兩個 skill 後的差異，其中 interface-design 應該是用在規劃與設計，把內容整理給 erp skill，Impeccable 是做完的稽核，依照稽核迭代，不限於文字，我記得他有很多模式可以用」「用這樣去評估你建議的方案兩者差異」。
+- 重點在做完之後的稽核。畫面製作本身由 erp skill 負責，不評估。
+
+| 方案 | 做畫面之前 | 做完之後 |
+|------|-----------|---------|
+| 甲：用兩個 skill | interface-design 做規劃與設計，把內容整理給 erp skill | Impeccable 稽核，依稽核結果迭代；用它的多種模式，不限於文字規則 |
+| 乙：主對話先前的建議 | 版型選擇表 | 畫面檢查清單、禁止清單、機械檢查 |
+
+- 比對要實際跑，不能只讀檔下結論。派子代理執行，主對話只當主控。
+- Impeccable 的啟動腳本會下載並執行程式。代理不執行下載來的程式，改照它主檔寫明的「啟動器不可用」流程跑；偵測程式那一半不在實測內，回報時要標明。
+
 ## 緣由
 
 Miles 2026-11-13：「我認為需要 Dashboard UX 的 Skill 納入考量，這樣用 erp skill 時，才能組合出正確的畫面，很多時候不是缺少元件，是元件的組合方式錯。」
@@ -40,7 +53,7 @@ Miles 2026-11-13：「我認為需要 Dashboard UX 的 Skill 納入考量，這�
 
 ## Answer
 
-狀態：版型層與細節層都已定案。兩層都不安裝外部 skill。細節層的禁止清單是草稿，要 Miles 看過才交票 11。
+狀態：重開。下列結論是主對話讀檔後的判斷，沒有實測。Miles 要求實測比對兩個方案（見 Question 的「實測比對」）。實測結果出來後改寫本節的採用結論。
 
 全文：[research/42-dashboard-ux-skills.md](../research/42-dashboard-ux-skills.md)。主對話於 2026-11-13 查證，查證範圍見該檔檔頭。
 

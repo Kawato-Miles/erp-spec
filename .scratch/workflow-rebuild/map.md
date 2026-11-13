@@ -43,7 +43,7 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
 - 操作手冊要持續維護，預計改到 GitBook；手冊相關的檔不清（Miles 2026-11-12）。
 - 調研產出放 `research/`，每筆結論附網址與原文句；查不到就標未查證。
 - Miles 是 PM。技術題（版本控管、hook、設定檔、規則放哪個檔）由代理依既有最佳實踐決定，只告訴他決定了什麼、不處理對他有什麼影響。要他決定的題目用商業情境呈現（Miles 2026-11-12）。
-- 調研結論要用之前，主對話自己讀完原始來源全文；只讀到摘要的要標明（Miles 2026-11-12）。
+- 調研、讀原始檔、實測都派子代理，主對話只當主控，不自己讀大量原始檔（Miles 2026-11-13）。要採用的來源由子代理讀完全文並附原文句；主對話用指令比對引文、抽查判定；沒讀全文的要標明。
 - 給 Miles 的回報要像對主管說明（Miles 2026-11-13）：先圖後文（服務藍圖、UML 等標準圖）；風險用商業案例說明衝擊與應對；只留重點與下一步，一次最多問一個決策。他說看不懂，代表方式錯，要換表達方式重做。成效要追蹤：每次事件記入 `report-feedback-log.md`，指標與版型見票 43 的 Answer。
 - Miles 於 2026-11-13 同意試行「Prototype 提前」。這比「完整照 matt 走一遍再調整」（2026-11-11）早改了一處：matt 的 `prototype` 產物是用完即丟的「驗證草稿」，Sens 的 Prototype 是開發產物、直接交前端。其餘步驟仍照 matt。兩個詞的定義在 `memory/shared/non-business-terms.md`。
 - 改善流程先學做得好的人怎麼做，再對照現行流程；不在現行流程上補洞。Miles 點名 Claude 官方產品經理的分享，見票 39（Miles 2026-11-12）。
@@ -73,7 +73,6 @@ Miles 不再花時間做對齊工作（wiki 用詞、規劃單、Prototype、Lin
 - [32：Claude 的資料與白板功能能不能當議題追蹤的可視化工具](issues/32-data-whiteboard-as-tracker-view.md)：Data 類型可當檢視，資料要代理解析後上傳、不會即時更新，一頁可放多個主題；Whiteboard 不適合畫票地圖；eli5 的成品是 HTML 頁，放進白板要重畫；是否採用併入票 10
 - [39：Anthropic 的產品團隊怎麼用 AI 迭代產品](issues/39-anthropic-product-team-practice.md)：先做原型再決定，能跑的東西就是規格；定不了的事做出來試，沒有待決清單；驗證看操作證據；ERP 的金額、庫存、狀態規則屬於不能放手的例外；主對話建議把 Prototype 提到流程前段，交票 09 裁決
 - [43：給 Miles 的回報怎麼做到一眼看懂，成效怎麼追蹤](issues/43-reporting-to-miles.md)：回報照固定版型、先講定位、最多一題決策；另定「要 Miles 決定的問題領域」表，Miles 同意試行；不裝外部 skill，畫圖用對話內建工具；成效記看不懂次數與事後翻案次數
-- [42：做 Prototype 時把關畫面組合的 UX skill](issues/42-dashboard-ux-skills.md)：版型與細節兩層都不安裝外部 skill；版型取 Ant Design 官方規範頁選版型、office-web-ui-system 的頁型規則做檢查；細節層涵蓋字級、字重、顏色、提示文字：手寫數值靠機械檢查既有規則（Prototype 現有約 100 處手寫字級），其餘寫成禁止清單，草稿待 Miles 看過；業務狀態對顏色的對照表未定；interface-design 與 erp 的設計系統方向相反，不取用
 
 ## Not yet specified
 
