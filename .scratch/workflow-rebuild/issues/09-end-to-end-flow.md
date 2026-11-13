@@ -70,3 +70,14 @@ Miles 問怎麼看到 Prototype。現有的方式（已查 erp 的 `prototype-fr
 | 測試沒清、沒變快之前，目標 2 達不到 | 票 27（清情境目錄落差）與票 07（測試分層與提速）排在真實需求試跑（票 12）之前。每輪只跑改到的情境，全套只在交付前跑 | 票 07、27、12 的順序 |
 
 給 Miles 的白話圖解：https://claude.ai/artifact/EKb2JfoXxbnYamZEgdvKKS （原始檔不在 repo；內容與本留言相同）。
+
+### 2026-11-13 Miles 同意試行，並提出下列要求
+
+Miles：「看起來可以試看看。」
+
+- 做畫面仍用 erp 的 `prototype-from-prompt`，發布用 `prototype-publish`，兩者不動。
+- Miles 要求加入把關畫面組合的 UX skill，用在 erp skill 之前（選版型）與之後（檢查畫面）。調研見票 42。
+- 做畫面的步驟（主對話提出）：Miles 給需求 → 代理讀現況並只問不能讓步的事 → 代理選頁面版型 → 代理用 erp skill 做畫面 → 自動檢查（UX 檢查、改到的情境測試）→ Miles 在瀏覽器窗格點畫面並回答假設清單 → 不對就回到做畫面；對了就寫 wiki、發布測試機、產生票。
+- 需求太大時：照 matt 的做法切成垂直切片，一片是一段 Miles 點得完的操作，一片一張票、一個對話。主題的地圖放 `.scratch/<主題>/`，換對話用 `handoff`。Miles 每一片各自確認。
+- 與 matt 的差別：matt 的 `prototype` 是用完即丟、用來回答設計問題；Sens 的 Prototype 直接交前端。其餘步驟（釐清、規劃單、拆票、交接）照 matt。
+- Miles 對回報方式的要求記在地圖 Notes 與票 43。
