@@ -1,7 +1,7 @@
 # 42：做 Prototype 時把關畫面組合的 UX skill
 
 Type: research
-Status: closed
+Status: open
 Blocked by: —
 
 ## Question
@@ -9,10 +9,20 @@ Blocked by: —
 代理用 erp 的 `prototype-from-prompt` 做畫面時，常見的問題不是缺元件，是元件的組合方式錯。
 有哪些既有的 skill 能把關後台管理介面（Dashboard）的畫面組合？
 
-- Miles 點名的兩個：`https://github.com/pbakaus/impeccable`、`https://github.com/ibelick/ui-skills`。
+- Miles 點名的兩個：`https://github.com/pbakaus/impeccable`、`https://github.com/Dammyjay93/interface-design`（Miles 2026-11-13 更正：他要看的是 interface-design，不是 ui-skills）。
 - 其他熱門的同類 skill。
 - 每一個的內容是什麼、技術前提是什麼（erp 用 Next.js、Ant Design 5.22、styled-components）、有沒有談頁面層級的組合（列表頁、詳情頁、表單、資料表）。
 - 哪些可以直接用，哪些與 erp 的元件庫或既有規範衝突。
+
+評估分兩層（Miles 2026-11-13）：
+
+| 層 | 要解決的問題 | Miles 的原話 |
+|----|-------------|-------------|
+| 版型 | 元件的組合方式錯 | 「很多時候不是缺少元件，是元件的組合方式錯」 |
+| 細節 | 代理生成的畫面在細節上不合格，Miles 要禁止並解決 | 「Impeccable 應該不是針對後台版型，是指細節的地方，你現在生成的前端畫面，字及選用、提示文字過多等，都是我要禁止與解決的」 |
+
+- 「字及選用」代理解讀為字級的選用，Miles 沒有明講，下次回報時確認。
+- Impeccable 與 interface-design 用細節層的標準評估，不用「有沒有版型規則」評估。
 
 ## 緣由
 
@@ -29,6 +39,8 @@ Miles 2026-11-13：「我認為需要 Dashboard UX 的 Skill 納入考量，這�
 - 主對話讀完要採用的 skill 檔全文，再向 Miles 說明採用哪些、用在流程的哪一步。結論交票 09 與票 11。
 
 ## Answer
+
+狀態：版型層已定案。細節層未評估，Impeccable 與 interface-design 要用細節層的標準重新評估，主對話要讀完兩者的相關檔全文。
 
 全文：[research/42-dashboard-ux-skills.md](../research/42-dashboard-ux-skills.md)。主對話於 2026-11-13 查證，查證範圍見該檔檔頭。
 
@@ -48,7 +60,7 @@ Miles 2026-11-13：「我認為需要 Dashboard UX 的 Skill 納入考量，這�
 
 Miles 說的「元件的組合方式錯」，對應到後四列。
 
-### 採用的來源與用在哪一步
+### 版型層：採用的來源與用在哪一步
 
 兩個來源都不安裝。做法是把規則摘成 Sens 這一側的兩份檔，由票 11 落實。
 
@@ -61,14 +73,22 @@ Miles 說的「元件的組合方式錯」，對應到後四列。
 - `office-web-ui-system` 只取結構規則。不取它的視覺風格（玻璃質感、藥丸頂欄），不加它的語意類別，不執行它的掃描腳本。`visual-language.md`、`locator-class-contract.md` 與掃描腳本主對話沒讀，不取用。
 - 選版型的結果寫進交給 erp skill 的需求描述。erp skill 的第 1 步本來就由 PM 決定頁型，這一步等於替 Miles 先備好選項。
 
-### 不採用的來源
+### 細節層：待評估
+
+| 來源 | 現況 |
+|------|------|
+| Impeccable | 已知事實：啟動腳本會下載執行檔（已比對腳本原文）。細節類的參考檔有 `typeset`、`clarify`、`distill`、`quieter`、`polish`、`craft-floor`、`critique`、`audit`，主對話都沒讀 |
+| interface-design | 主對話沒讀。本機有 `SKILL.md`、`design-review`、`design-deslop` 等檔 |
+
+評估要回答：兩者對字級選用與提示文字過多各有什麼規則；規則能不能只取文字、不執行它的程式；與 erp 的 `Designs.md` 有沒有衝突。
+
+### 版型層：不採用的來源
 
 | 來源 | 理由 | 查證程度 |
 |------|------|---------|
-| Impeccable | 沒有列表、詳情、表單的版型規則；啟動腳本會下載執行檔 | 下載行為已比對腳本原文；其餘只讀初稿 |
-| ui-skills | `baseline-ui` 硬性要求 Tailwind，與 erp 的 styled-components 衝突；其餘 skill 不談頁面組合 | Tailwind 要求已比對原文 |
+| ui-skills | `baseline-ui` 硬性要求 Tailwind，與 erp 的 styled-components 衝突；其餘 skill 不談頁面組合。這不是 Miles 點名的來源 | Tailwind 要求已比對原文 |
 | ui-craft | 有儀表板與表單規則，但與 erp 既有元件有衝突句（工具列禁用實心主按鈕）；安裝方式是從網址下載腳本直接執行 | 這兩點已比對原文；全檔 30 萬字元未讀完 |
-| frontend-design、interface-design | 沒有後台頁面的版型規則 | 只讀初稿 |
+| frontend-design | 沒有後台頁面的版型規則 | 只讀初稿 |
 | ui-ux-pro-max、taste-skill、open-design | 初稿沒讀內容 | 未查證 |
 
 ### 更正初稿的說法
