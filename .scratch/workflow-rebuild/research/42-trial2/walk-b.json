@@ -1,0 +1,23 @@
+{
+  "version": "乙第二版走法（稽核修正後，見 fix-B.md 第四節）",
+  "warmUp": ["/consultations", "/consultations/detail?id=CR-2026-0618"],
+  "shots": [
+    { "code": "S1", "url": "/consultations", "role": "諮詢（張惠雯）", "capture": "page",
+      "steps": [ { "waitText": "CR-2026-0620" } ] },
+    { "code": "S2", "url": "/consultations", "role": "諮詢（張惠雯）", "capture": "page",
+      "steps": [ { "waitText": "CR-2026-0620" },
+                 { "fill": { "placeholder": "搜尋諮詢單編號 / 聯絡人 / 公司抬頭", "value": "CR-2099", "enter": true } },
+                 { "waitText": "沒有符合條件的諮詢單" } ] },
+    { "code": "S3", "url": "/consultations/detail?id=CR-2026-0618", "role": "諮詢（張惠雯）", "capture": "page",
+      "steps": [ { "waitText": "撰寫諮詢人員筆記" } ] },
+    { "code": "S4", "url": "/consultations/detail?id=CR-2026-0618", "role": "諮詢（張惠雯）", "capture": "viewport",
+      "steps": [ { "waitText": "撰寫諮詢人員筆記" }, { "click": "編輯諮詢單" }, { "waitText": "預約資訊" } ] },
+    { "code": "S5", "url": "/consultations/detail?id=CR-2026-0618", "role": "諮詢（張惠雯）", "capture": "viewport",
+      "steps": [ { "waitText": "撰寫諮詢人員筆記" }, { "click": "取消諮詢" },
+                 { "select": { "label": "取消理由分類", "option": "預算問題", "scope": "dialog" } } ] },
+    { "code": "S6", "url": "/consultations/detail?id=CR-2026-0618", "role": "諮詢（張惠雯）", "capture": "viewport",
+      "steps": [ { "waitText": "撰寫諮詢人員筆記" }, { "click": "完成諮詢" }, { "waitText": "請先與客戶確認不做大貨" } ] },
+    { "code": "S7", "url": "/consultations/detail?id=CR-2026-0616", "role": "諮詢（張惠雯）", "capture": "page",
+      "steps": [ { "waitText": "ORD-2026-0530" } ] }
+  ]
+}

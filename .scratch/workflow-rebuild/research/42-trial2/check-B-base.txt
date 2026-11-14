@@ -1,0 +1,47 @@
+檢查範圍：/Users/b-f-03-029/erp/.claude/worktrees/ticket42-r2-b 相對 6e75fa07 改過或新增的 8 個檔
+  apps/erp/src/app/(prototype)/consultations/_components/ConsultationDialogs.js
+  apps/erp/src/app/(prototype)/consultations/_components/ConsultationStatusTag.js
+  apps/erp/src/app/(prototype)/consultations/_components/EditConsultationDrawer.js
+  apps/erp/src/app/(prototype)/consultations/_lib/mock-data.js
+  apps/erp/src/app/(prototype)/consultations/_lib/permissions.js
+  apps/erp/src/app/(prototype)/consultations/_lib/store.js
+  apps/erp/src/app/(prototype)/consultations/detail/page.js
+  apps/erp/src/app/(prototype)/consultations/page.js
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/_components/ConsultationDialogs.js:30 | 筆記與客戶原話分開記錄，不會覆蓋客戶原話；每次儲存會留一筆活動紀錄。    ← 本次新增；34 字
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/_components/ConsultationDialogs.js:111 | message="取消後諮詢單轉為「已取消」，系統建立諮詢訂單並辦理半額退費。離開待諮詢後不能再取消。"    ← 本次新增；42 字
+C04 狀態標籤用調色盤色名 | apps/erp/src/app/(prototype)/consultations/_components/ConsultationStatusTag.js:8 | [STATUS.TO_QUOTE]: 'purple',    ← 本次新增；色名 purple
+C10 手寫間距px | apps/erp/src/app/(prototype)/consultations/_components/EditConsultationDrawer.js:72 | <Row gutter={16}>    ← 本次新增
+C10 手寫間距px | apps/erp/src/app/(prototype)/consultations/_components/EditConsultationDrawer.js:97 | <Row gutter={16}>    ← 本次新增
+C10 手寫間距px | apps/erp/src/app/(prototype)/consultations/_components/EditConsultationDrawer.js:109 | <Row gutter={16}>    ← 本次新增
+C10 手寫間距px | apps/erp/src/app/(prototype)/consultations/_components/EditConsultationDrawer.js:127 | <Row gutter={16}>    ← 本次新增
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/_lib/mock-data.js:70 | customer_words: '想幫婚禮做一批客製喜帖與謝卡，大概 80 份，想看看有哪些紙可以選。',    ← 本次新增；32 字
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/_lib/mock-data.js:205 | note: '客戶這次只想了解做法，暫不做大貨；已提供三種紙樣的報價區間參考。',    ← 本次新增；32 字
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/_lib/mock-data.js:302 | description: '取消諮詢（預算問題）；系統建立諮詢訂單 ORD-2026-0526 與半額退費的訂單異動',    ← 本次新增；42 字
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/_lib/mock-data.js:418 | '取消諮詢（時間無法配合）；系統建立諮詢訂單 ORD-2026-0518 與半額退費的訂單異動',    ← 本次新增；44 字
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/detail/page.js:75 | subTitle="諮詢、業務主管與 Supervisor 才看得到諮詢單，請用右上角切換模擬角色。"    ← 本次新增；38 字
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/detail/page.js:108 | 系統會建立需求單並帶入客戶資料，諮詢單轉為「已轉需求單」後定格，不能再取消。諮詢費暫留在諮詢單，等需求單成交或流失再收尾。    ← 本次新增；61 字
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/detail/page.js:126 | 請先與客戶確認諮詢已結束、客戶不做大貨。完成後諮詢單轉為「完成諮詢」並定格，系統建立諮詢訂單結算諮詢費，不能再取消。    ← 本次新增；58 字
+C10 手寫間距px | apps/erp/src/app/(prototype)/consultations/detail/page.js:191 | <Row gutter={24}>    ← 本次新增
+C10 手寫間距px | apps/erp/src/app/(prototype)/consultations/detail/page.js:219 | <Row gutter={24}>    ← 本次新增
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/page.js:94 | subTitle="諮詢、業務主管與 Supervisor 才看得到諮詢單，請用右上角切換模擬角色。"    ← 本次新增；38 字
+C12 編輯類動詞多種叫法並存 | apps/erp/src/app/(prototype)/consultations/_components/EditConsultationDrawer.js:62 | title="編輯諮詢單"    ← 本次新增；叫法「編輯」；字串含操作名稱 編輯諮詢單
+C12 編輯類動詞多種叫法並存 | apps/erp/src/app/(prototype)/consultations/_lib/store.js:80 | get().update(id, patch, newActivity(actor, `編輯諮詢單：${summary}`));    ← 本次新增；叫法「編輯」；字串含操作名稱 編輯諮詢單
+C12 編輯類動詞多種叫法並存 | apps/erp/src/app/(prototype)/consultations/detail/page.js:214 | 編輯諮詢單    ← 本次新增；叫法「編輯」；字串含操作名稱 編輯諮詢單
+C12 編輯類動詞多種叫法並存 | apps/erp/src/app/(prototype)/consultations/detail/page.js:284 | else message.info('沒有變更');    ← 本次新增；叫法「變更」
+註記 | C12 叫法分布 | 編輯 3 處、變更 1 處
+---- 命中數 ----
+C01 手寫字級：0
+C02 手寫字重：0
+C03 手寫色碼：0
+C04 狀態標籤用調色盤色名：1
+C05 狀態標籤用調色盤色名（來源 META 表）：0
+C06 提示泡泡或欄位說明超過20字：0
+C07 輸入框灰字為請輸入或請選擇加欄位名：0
+C08 圖示按鈕提示超出動作名稱：0
+C09 長畫面文字超過30字：10
+C10 手寫間距px：6
+C11 emoji：0
+C12 編輯類動詞多種叫法並存：4
+C13 按鈕與對話框動詞不在操作名稱清單：0
+C14 用到詞彙表避免用詞：0
+合計：21

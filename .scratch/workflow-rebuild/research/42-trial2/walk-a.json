@@ -1,0 +1,27 @@
+{
+  "version": "甲第一版走法，依 build-A.md 第四節",
+  "warmUp": ["/consultations", "/consultations/detail?id=CR-2026-0612"],
+  "shots": [
+    { "code": "S1", "url": "/consultations", "role": "諮詢（張惠雯）", "capture": "page",
+      "steps": [ { "waitText": "CR-2026-0612" } ] },
+    { "code": "S2", "url": "/consultations", "role": "諮詢（張惠雯）", "capture": "page",
+      "steps": [ { "waitText": "CR-2026-0612" },
+                 { "select": { "label": "狀態", "option": "已取消" } },
+                 { "select": { "label": "諮詢人員", "option": "張惠雯" } },
+                 { "waitText": "沒有符合條件的諮詢單" } ] },
+    { "code": "S3", "url": "/consultations", "role": "諮詢（張惠雯）", "capture": "page",
+      "steps": [ { "clickText": "CR-2026-0612" }, { "waitText": "諮詢單 CR-2026-0612" } ] },
+    { "code": "S4", "url": "/consultations", "role": "諮詢（張惠雯）", "capture": "viewport",
+      "steps": [ { "clickText": "CR-2026-0612" }, { "waitText": "諮詢單 CR-2026-0612" },
+                 { "click": "編輯諮詢單" }, { "waitText": "修改會寫入活動紀錄" } ] },
+    { "code": "S5", "url": "/consultations", "role": "諮詢（張惠雯）", "capture": "viewport",
+      "steps": [ { "clickText": "CR-2026-0612" }, { "waitText": "諮詢單 CR-2026-0612" },
+                 { "click": "取消諮詢" }, { "waitText": "取消諮詢：CR-2026-0612" },
+                 { "select": { "placeholder": "請選擇取消理由分類", "option": "預算問題", "scope": "dialog" } } ] },
+    { "code": "S6", "url": "/consultations", "role": "諮詢（張惠雯）", "capture": "viewport",
+      "steps": [ { "clickText": "CR-2026-0612" }, { "waitText": "諮詢單 CR-2026-0612" },
+                 { "click": "完成諮詢" }, { "waitText": "確認完成" } ] },
+    { "code": "S7", "url": "/consultations", "role": "諮詢（張惠雯）", "capture": "page",
+      "steps": [ { "clickText": "CR-2026-0607" }, { "waitText": "諮詢單 CR-2026-0607" } ] }
+  ]
+}

@@ -1,0 +1,334 @@
+[
+  {
+    "code": "S1",
+    "url": "http://localhost:3142/consultations/",
+    "findings": [
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/",
+        "line": 0,
+        "snippet": "3.0:1 (need 4.5:1) — text #949699 on #ffffff (and 1 more)",
+        "selector": "div.ant-space-item:nth-of-type(1) > span.ant-typography.ant-typography-secondary"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/",
+        "line": 0,
+        "snippet": "placeholder \"請輸入諮詢單編號、客戶或聯絡人\" 1.9:1 (need 4.5:1) — text #babcbf on #ffffff",
+        "selector": "input.ant-input"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/",
+        "line": 0,
+        "snippet": "1.9:1 (need 4.5:1) — text #babcbf on #ffffff (and 1 more)",
+        "selector": "div:nth-of-type(1) > div.ant-select.ant-select-outlined > div.ant-select-selector > span.ant-select-selection-wrap > span.ant-select-selection-placeholder"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/",
+        "line": 0,
+        "snippet": "4.1:1 (need 4.5:1) — text #1677ff on #ffffff (and 8 more)",
+        "selector": "tr.ant-table-row.ant-table-row-level-0:nth-of-type(2) > td.ant-table-cell:nth-of-type(1) > a"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/",
+        "line": 0,
+        "snippet": "3.7:1 (need 4.5:1) — text #1677ff on #e6f4ff (and 3 more)",
+        "selector": "tr.ant-table-row.ant-table-row-level-0:nth-of-type(2) > td.ant-table-cell:nth-of-type(2) > span.ant-tag.ant-tag-processing"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/",
+        "line": 0,
+        "snippet": "2.0:1 (need 4.5:1) — text #eea23e on #fff8eb (and 1 more)",
+        "selector": "tr.ant-table-row.ant-table-row-level-0:nth-of-type(4) > td.ant-table-cell:nth-of-type(8) > span.ant-tag.ant-tag-warning"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/",
+        "line": 0,
+        "snippet": "3.2:1 (need 4.5:1) — text #2688ff on #eef7ff",
+        "selector": "td.ant-table-cell.ant-table-cell-fix-right > button.ant-btn.ant-btn-default > span"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/",
+        "line": 0,
+        "snippet": "3.3:1 (need 4.5:1) — text #3c9d13 on #f1fde8",
+        "selector": "span.ant-tag.ant-tag-success"
+      },
+      {
+        "antipattern": "nested-cards",
+        "name": "Nested cards",
+        "description": "Cards inside cards create visual noise and excessive depth. Flatten the hierarchy — use spacing, typography, and dividers instead of nesting containers.",
+        "severity": "warning",
+        "category": "slop",
+        "file": "http://localhost:3142/consultations/",
+        "line": 0,
+        "snippet": "Card inside card (and 3 more)",
+        "selector": "div.BorderBlock-sc-430a1384-0.StatCards__StatCard-sc-28a003c1-5:nth-of-type(1)"
+      }
+    ]
+  },
+  {
+    "code": "S3",
+    "url": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+    "findings": [
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "3.0:1 (need 4.5:1) — text #949699 on #ffffff (and 4 more)",
+        "selector": "div.ant-space-item:nth-of-type(1) > span.ant-typography.ant-typography-secondary"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "3.7:1 (need 4.5:1) — text #1677ff on #e6f4ff (and 1 more)",
+        "selector": "div.ant-flex.ant-flex-wrap-wrap > span.ant-tag.ant-tag-processing"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "3.2:1 (need 4.5:1) — text #2688ff on #eef7ff (and 2 more)",
+        "selector": "div.ant-space-item:nth-of-type(1) > button.ant-btn.ant-btn-default > span"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "3.5:1 (need 4.5:1) — text #f04438 on #fef6f6",
+        "selector": "div.ant-space-item:nth-of-type(2) > button.ant-btn.ant-btn-default > span"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "3.5:1 (need 4.5:1) — text #ffffff on #2688ff",
+        "selector": "div.ant-space-item:nth-of-type(4) > button.ant-btn.ant-btn-default > span"
+      },
+      {
+        "antipattern": "nested-cards",
+        "name": "Nested cards",
+        "description": "Cards inside cards create visual noise and excessive depth. Flatten the hierarchy — use spacing, typography, and dividers instead of nesting containers.",
+        "severity": "warning",
+        "category": "slop",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "Card inside card",
+        "selector": "div.BorderBlock-sc-430a1384-0.fXihXf:nth-of-type(2) > div:nth-of-type(3) > div.ant-descriptions.ant-descriptions-small > div.ant-descriptions-view"
+      },
+      {
+        "antipattern": "nested-cards",
+        "name": "Nested cards",
+        "description": "Cards inside cards create visual noise and excessive depth. Flatten the hierarchy — use spacing, typography, and dividers instead of nesting containers.",
+        "severity": "warning",
+        "category": "slop",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "Card inside card",
+        "selector": "div.BorderBlock-sc-430a1384-0.fXihXf:nth-of-type(4) > div:nth-of-type(3) > div.ant-descriptions.ant-descriptions-small > div.ant-descriptions-view"
+      }
+    ]
+  },
+  {
+    "code": "S5",
+    "url": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+    "findings": [
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "3.0:1 (need 4.5:1) — text #949699 on #ffffff (and 5 more)",
+        "selector": "div.ant-space-item:nth-of-type(1) > span.ant-typography.ant-typography-secondary"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "3.2:1 (need 4.5:1) — text #2688ff on #eef7ff (and 2 more)",
+        "selector": "div.ant-space-item:nth-of-type(1) > button.ant-btn.ant-btn-default > span"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "3.5:1 (need 4.5:1) — text #f04438 on #fef6f6",
+        "selector": "div.ant-space-item:nth-of-type(2) > button.ant-btn.ant-btn-default > span"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "3.5:1 (need 4.5:1) — text #ffffff on #2688ff",
+        "selector": "div.ant-space-item:nth-of-type(4) > button.ant-btn.ant-btn-default > span"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "3.7:1 (need 4.5:1) — text #1677ff on #e6f4ff",
+        "selector": "span > span.ant-tag.ant-tag-processing"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "1.9:1 (need 4.5:1) — text #babcbf on #ffffff",
+        "selector": "span.ant-select-selection-placeholder"
+      },
+      {
+        "antipattern": "nested-cards",
+        "name": "Nested cards",
+        "description": "Cards inside cards create visual noise and excessive depth. Flatten the hierarchy — use spacing, typography, and dividers instead of nesting containers.",
+        "severity": "warning",
+        "category": "slop",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "Card inside card",
+        "selector": "div.BorderBlock-sc-430a1384-0.fXihXf:nth-of-type(2) > div:nth-of-type(3) > div.ant-descriptions.ant-descriptions-small > div.ant-descriptions-view"
+      },
+      {
+        "antipattern": "nested-cards",
+        "name": "Nested cards",
+        "description": "Cards inside cards create visual noise and excessive depth. Flatten the hierarchy — use spacing, typography, and dividers instead of nesting containers.",
+        "severity": "warning",
+        "category": "slop",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0612",
+        "line": 0,
+        "snippet": "Card inside card",
+        "selector": "div.BorderBlock-sc-430a1384-0.fXihXf:nth-of-type(4) > div:nth-of-type(3) > div.ant-descriptions.ant-descriptions-small > div.ant-descriptions-view"
+      }
+    ]
+  },
+  {
+    "code": "S7",
+    "url": "http://localhost:3142/consultations/detail/?id=CR-2026-0607",
+    "findings": [
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0607",
+        "line": 0,
+        "snippet": "3.0:1 (need 4.5:1) — text #949699 on #ffffff (and 5 more)",
+        "selector": "div.ant-space-item:nth-of-type(1) > span.ant-typography.ant-typography-secondary"
+      },
+      {
+        "antipattern": "low-contrast",
+        "name": "Low contrast text",
+        "description": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+        "severity": "warning",
+        "category": "quality",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0607",
+        "line": 0,
+        "snippet": "3.3:1 (need 4.5:1) — text #3c9d13 on #f1fde8 (and 1 more)",
+        "selector": "div.ant-flex.ant-flex-wrap-wrap > span.ant-tag.ant-tag-success"
+      },
+      {
+        "antipattern": "nested-cards",
+        "name": "Nested cards",
+        "description": "Cards inside cards create visual noise and excessive depth. Flatten the hierarchy — use spacing, typography, and dividers instead of nesting containers.",
+        "severity": "warning",
+        "category": "slop",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0607",
+        "line": 0,
+        "snippet": "Card inside card",
+        "selector": "div.BorderBlock-sc-430a1384-0.fXihXf:nth-of-type(3) > div:nth-of-type(3) > div.ant-descriptions.ant-descriptions-small > div.ant-descriptions-view"
+      },
+      {
+        "antipattern": "nested-cards",
+        "name": "Nested cards",
+        "description": "Cards inside cards create visual noise and excessive depth. Flatten the hierarchy — use spacing, typography, and dividers instead of nesting containers.",
+        "severity": "warning",
+        "category": "slop",
+        "file": "http://localhost:3142/consultations/detail/?id=CR-2026-0607",
+        "line": 0,
+        "snippet": "Card inside card",
+        "selector": "div.BorderBlock-sc-430a1384-0.fXihXf:nth-of-type(5) > div:nth-of-type(3) > div.ant-descriptions.ant-descriptions-small > div.ant-descriptions-view"
+      }
+    ]
+  }
+]

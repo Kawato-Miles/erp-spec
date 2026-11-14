@@ -1,0 +1,33 @@
+檢查範圍：/Users/b-f-03-029/erp/.claude/worktrees/ticket42-r2-b 相對 6e75fa07 改過或新增的 8 個檔
+  apps/erp/src/app/(prototype)/consultations/_components/ConsultationDialogs.js
+  apps/erp/src/app/(prototype)/consultations/_components/ConsultationStatusTag.js
+  apps/erp/src/app/(prototype)/consultations/_components/EditConsultationDrawer.js
+  apps/erp/src/app/(prototype)/consultations/_lib/mock-data.js
+  apps/erp/src/app/(prototype)/consultations/_lib/permissions.js
+  apps/erp/src/app/(prototype)/consultations/_lib/store.js
+  apps/erp/src/app/(prototype)/consultations/detail/page.js
+  apps/erp/src/app/(prototype)/consultations/page.js
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/_lib/mock-data.js:70 | customer_words: '想幫婚禮做一批客製喜帖與謝卡，大概 80 份，想看看有哪些紙可以選。',    ← 本次新增；32 字
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/_lib/mock-data.js:205 | note: '客戶這次只想了解做法，暫不做大貨；已提供三種紙樣的報價區間參考。',    ← 本次新增；32 字
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/_lib/mock-data.js:302 | description: '取消諮詢（預算問題）；系統建立諮詢訂單 ORD-2026-0526 與半額退費的訂單異動',    ← 本次新增；42 字
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/_lib/mock-data.js:418 | '取消諮詢（時間無法配合）；系統建立諮詢訂單 ORD-2026-0518 與半額退費的訂單異動',    ← 本次新增；44 字
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/detail/page.js:73 | subTitle="諮詢、業務主管與 Supervisor 才看得到諮詢單，請用右上角切換模擬角色。"    ← 本次新增；38 字
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/detail/page.js:123 | {`請先與客戶確認不做大貨。系統會建立諮詢訂單結算諮詢費，諮詢單 ${consultation.id} 轉為「完成諮詢」。`}    ← 本次新增；39 字
+C09 長畫面文字超過30字 | apps/erp/src/app/(prototype)/consultations/page.js:94 | subTitle="諮詢、業務主管與 Supervisor 才看得到諮詢單，請用右上角切換模擬角色。"    ← 本次新增；38 字
+註記 | C12 叫法分布 | 編輯 6 處
+---- 命中數 ----
+C01 手寫字級：0
+C02 手寫字重：0
+C03 手寫色碼：0
+C04 狀態標籤用調色盤色名：0
+C05 狀態標籤用調色盤色名（來源 META 表）：0
+C06 提示泡泡或欄位說明超過20字：0
+C07 輸入框灰字為請輸入或請選擇加欄位名：0
+C08 圖示按鈕提示超出動作名稱：0
+C09 長畫面文字超過30字：7
+C10 手寫間距px：0
+C11 emoji：0
+C12 編輯類動詞多種叫法並存：0
+C13 按鈕與對話框動詞不在操作名稱清單：0
+C14 用到詞彙表避免用詞：0
+合計：7
