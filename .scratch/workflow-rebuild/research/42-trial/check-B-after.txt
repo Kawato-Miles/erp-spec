@@ -1,0 +1,68 @@
+C06 提示泡泡或欄位說明超過20字 | production-floor/transfers/page.js:577 | ? '回報請用 Slack 表單，本頁按鈕只供補登。'    ← 21 字
+C10 手寫間距px | production-floor/transfers/page.js:588 | <Row gutter={[16, 16]}>
+C10 手寫間距px | production-floor/transfers/page.js:593 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | production-floor/transfers/page.js:604 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | production-floor/transfers/page.js:615 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | production-floor/transfers/page.js:627 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | production-floor/transfers/page.js:666 | <Flex vertical gap={20}>
+C10 手寫間距px | orders/_components/detail/billing/ReconciliationPanel.js:27 | marginTop: 4,
+C10 手寫間距px | orders/_components/detail/billing/ReconciliationPanel.js:65 | <Row key={row.label} justify="space-between" wrap={false} style={{ marginTop: 4 }}>
+C10 手寫間距px | orders/_components/detail/billing/ReconciliationPanel.js:163 | <Flex vertical gap={20}>
+C10 手寫間距px | orders/_components/detail/billing/ReconciliationPanel.js:174 | <Row gutter={[16, 16]}>
+C10 手寫間距px | orders/_components/detail/billing/ReceivableCard.js:85 | <Row gutter={[16, 16]} align="middle">
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:81 | 部分付款: { color: 'gold' },    ← 來源 PAYMENT_SUMMARY_META，由 orders/_components/detail/billing/ReceivableCard.js:87 引用；色名 gold
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:82 | 已付款: { color: 'green' },    ← 來源 PAYMENT_SUMMARY_META，由 orders/_components/detail/billing/ReceivableCard.js:87 引用；色名 green
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:83 | 已退款: { color: 'purple' },    ← 來源 PAYMENT_SUMMARY_META，由 orders/_components/detail/billing/ReceivableCard.js:87 引用；色名 purple
+C10 手寫間距px | orders/_components/detail/billing/InstallmentSection.js:95 | <Flex gap={4} align="center">
+C10 手寫間距px | orders/_components/detail/billing/InstallmentSection.js:217 | <Flex gap={4} justify="center">
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:166 | 已開立: { color: 'green' },    ← 來源 INSTALLMENT_INVOICE_STATUS_META，由 orders/_components/detail/billing/InstallmentSection.js:138 引用；色名 green
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:157 | 部分收款: { color: 'gold' },    ← 來源 INSTALLMENT_PAYMENT_STATUS_META，由 orders/_components/detail/billing/InstallmentSection.js:130 引用；色名 gold
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:158 | 已收訖: { color: 'green' },    ← 來源 INSTALLMENT_PAYMENT_STATUS_META，由 orders/_components/detail/billing/InstallmentSection.js:130 引用；色名 green
+C10 手寫間距px | orders/_components/detail/billing/PaymentRecordSection.js:111 | <Space size={4}>
+C04 狀態標籤用調色盤色名 | orders/_components/detail/billing/PaymentRecordSection.js:112 | <StyledTag color={v === '退款' ? 'red' : 'green'}>{v}</StyledTag>    ← 色名 red
+C04 狀態標籤用調色盤色名 | orders/_components/detail/billing/PaymentRecordSection.js:112 | <StyledTag color={v === '退款' ? 'red' : 'green'}>{v}</StyledTag>    ← 色名 green
+C10 手寫間距px | orders/_components/detail/billing/PaymentRecordSection.js:122 | <Space size={4}>
+C10 手寫間距px | orders/_components/detail/billing/PaymentRecordSection.js:197 | <Flex gap={4} justify="center">
+C10 手寫間距px | orders/_components/detail/billing/PaymentRecordSection.js:224 | <Flex gap={8} align="center">
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:150 | 處理中: { color: 'gold' },    ← 來源 PAYMENT_RECORD_STATUS_META，由 orders/_components/detail/billing/PaymentRecordSection.js:123 引用；色名 gold
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:151 | 已完成: { color: 'green' },    ← 來源 PAYMENT_RECORD_STATUS_META，由 orders/_components/detail/billing/PaymentRecordSection.js:123 引用；色名 green
+C10 手寫間距px | orders/_components/detail/billing/InvoiceSection.js:114 | <Flex gap={4} justify="center">
+C06 提示泡泡或欄位說明超過20字 | orders/_components/detail/billing/InvoiceSection.js:267 | ? '作廢發票：此發票已有已確認折讓，請先作廢折讓'    ← 22 字
+C08 圖示按鈕提示超出動作名稱 | orders/_components/detail/billing/InvoiceSection.js:267 | ? '作廢發票：此發票已有已確認折讓，請先作廢折讓'
+C08 圖示按鈕提示超出動作名稱 | orders/_components/detail/billing/InvoiceSection.js:269 | ? `作廢發票：已過申報期限（${invoiceVoidDeadline(record.issue_date)}），請改開折讓單`
+C10 手寫間距px | orders/_components/detail/billing/InvoiceSection.js:272 | <Flex gap={4} justify="center">
+C08 圖示按鈕提示超出動作名稱 | orders/_components/detail/billing/InvoiceSection.js:288 | <Tooltip title={noQuota ? '開立折讓單：已無可折讓額度' : '開立折讓單'}>
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:180 | export const ALLOWANCE_STATUS_META = { 已確認: { color: 'green' }, 已作廢: { color: 'default' } };    ← 來源 ALLOWANCE_STATUS_META，由 orders/_components/detail/billing/InvoiceSection.js:86 引用；色名 green
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:173 | 草稿: { color: 'blue' },    ← 來源 INVOICE_STATUS_META，由 orders/_components/detail/billing/InvoiceSection.js:219 引用；色名 blue
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:174 | 開立: { color: 'green' },    ← 來源 INVOICE_STATUS_META，由 orders/_components/detail/billing/InvoiceSection.js:219 引用；色名 green
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:175 | 開立失敗: { color: 'red' },    ← 來源 INVOICE_STATUS_META，由 orders/_components/detail/billing/InvoiceSection.js:219 引用；色名 red
+C10 手寫間距px | after-sales/page.js:423 | <Row gutter={[16, 16]}>
+C10 手寫間距px | after-sales/page.js:428 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | after-sales/page.js:442 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | after-sales/page.js:456 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | after-sales/page.js:471 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | after-sales/page.js:485 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | after-sales/page.js:498 | <Row gutter={[16, 16]} style={{ marginTop: theme.spacing.md }}>
+C04 狀態標籤用調色盤色名 | after-sales/page.js:501 | color="red"    ← 色名 red
+C04 狀態標籤用調色盤色名 | after-sales/page.js:508 | color="gold"    ← 色名 gold
+C04 狀態標籤用調色盤色名 | after-sales/page.js:515 | color="cyan"    ← 色名 cyan
+C10 手寫間距px | after-sales/page.js:574 | <Space direction="vertical" size={4}>
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:252 | 逾期: { color: 'red' },    ← 來源 NEXT_ACTION_META，由 after-sales/page.js:35 引用；色名 red
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:253 | 待填決議: { color: 'gold' },    ← 來源 NEXT_ACTION_META，由 after-sales/page.js:35 引用；色名 gold
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:254 | 待建關聯動作: { color: 'blue' },    ← 來源 NEXT_ACTION_META，由 after-sales/page.js:35 引用；色名 blue
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:255 | 待結案: { color: 'cyan' },    ← 來源 NEXT_ACTION_META，由 after-sales/page.js:35 引用；色名 cyan
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:234 | 受理中: { color: 'gold' },    ← 來源 TICKET_STATUS_META，由 after-sales/page.js:329 引用；色名 gold
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:235 | 處理中: { color: 'blue' },    ← 來源 TICKET_STATUS_META，由 after-sales/page.js:329 引用；色名 blue
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:236 | 已結案: { color: 'green' },    ← 來源 TICKET_STATUS_META，由 after-sales/page.js:329 引用；色名 green
+---- 命中數 ----
+C01 手寫字級：0
+C02 手寫字重：0
+C03 手寫色碼：0
+C04 狀態標籤用調色盤色名：5
+C05 狀態標籤用調色盤色名（來源 META 表）：19
+C06 提示泡泡或欄位說明超過20字：2
+C07 輸入框灰字為請輸入或請選擇加欄位名：0
+C08 圖示按鈕提示超出動作名稱：3
+C09 長畫面文字超過30字：0
+C10 手寫間距px：27
+C11 emoji：0

@@ -1,0 +1,115 @@
+C06 提示泡泡或欄位說明超過20字 | production-floor/transfers/page.js:577 | ? '我的轉交單只列負責廠務是你的單。開始搬運與抵達站點實際通道為 Slack 表單（通知帶著這張單、欄位預填、Slack 帳號對映到 ERP 廠務）；本頁的兩顆按鈕是系統端的補登入口，供 Slack 回報失敗或漏報時使用。'    ← 102 字
+C09 長畫面文字超過30字 | production-floor/transfers/page.js:577 | ? '我的轉交單只列負責廠務是你的單。開始搬運與抵達站點實際通道為 Slack 表單（通知帶著這張單、欄位預填、Slack 帳號對映到 ERP 廠務）；本頁的兩顆按鈕是系統端的補登入口，供 Slack 回報失敗或漏報時使用。'    ← 102 字
+C06 提示泡泡或欄位說明超過20字 | production-floor/transfers/page.js:578 | : '負責廠務的開始搬運與抵達站點實際通道為 Slack 表單（通知帶著這張單、欄位預填、Slack 帳號對映到 ERP 廠務）；本頁的兩顆按鈕是系統端的補登入口，只對該單的負責廠務出現，供 Slack 回報失敗或漏報時使用。'    ← 103 字
+C09 長畫面文字超過30字 | production-floor/transfers/page.js:578 | : '負責廠務的開始搬運與抵達站點實際通道為 Slack 表單（通知帶著這張單、欄位預填、Slack 帳號對映到 ERP 廠務）；本頁的兩顆按鈕是系統端的補登入口，只對該單的負責廠務出現，供 Slack 回報失敗或漏報時使用。'    ← 103 字
+C07 輸入框灰字為請輸入或請選擇加欄位名 | production-floor/transfers/page.js:582 | placeholder: '請輸入轉交單編號、印件項目名稱／編號、來源任務，或負責廠務',
+C10 手寫間距px | production-floor/transfers/page.js:588 | <Row gutter={[16, 16]}>
+C10 手寫間距px | production-floor/transfers/page.js:593 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | production-floor/transfers/page.js:604 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | production-floor/transfers/page.js:615 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | production-floor/transfers/page.js:627 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | production-floor/transfers/page.js:666 | <Flex vertical gap={20}>
+C09 長畫面文字超過30字 | production-floor/transfers/page.js:671 | 處置由生管、印務或印務主管決定——實體貨已到目的地者作廢原單並依實況重建，貨還沒動者直接作廢。    ← 47 字
+C10 手寫間距px | production-floor/transfers/page.js:709 | <Typography.Text strong style={{ display: 'block', marginBottom: 8 }}>
+C10 手寫間距px | production-floor/transfers/page.js:723 | <Typography.Text strong style={{ display: 'block', marginBottom: 8 }}>
+C06 提示泡泡或欄位說明超過20字 | production-floor/transfers/page.js:894 | tooltip="待搬運的單可改負責廠務；改後系統通知新的負責廠務，改前與改後記入本單歷程。"    ← 37 字
+C09 長畫面文字超過30字 | production-floor/transfers/page.js:894 | tooltip="待搬運的單可改負責廠務；改後系統通知新的負責廠務，改前與改後記入本單歷程。"    ← 37 字
+C07 輸入框灰字為請輸入或請選擇加欄位名 | production-floor/transfers/page.js:900 | placeholder="請選擇廠務"
+C06 提示泡泡或欄位說明超過20字 | production-floor/transfers/page.js:910 | tooltip="建單時取自各條明細目的站點所屬的產線，改單不可改；之後任務改了目的站點，這張單也不跟著改。要改去處請作廢後從待轉交任務重新建單。"    ← 64 字
+C09 長畫面文字超過30字 | production-floor/transfers/page.js:910 | tooltip="建單時取自各條明細目的站點所屬的產線，改單不可改；之後任務改了目的站點，這張單也不跟著改。要改去處請作廢後從待轉交任務重新建單。"    ← 64 字
+C06 提示泡泡或欄位說明超過20字 | production-floor/transfers/page.js:986 | tooltip="重開的新單沿用原單的目的產線與各條明細的目的站點，不可改。要改去處請改從待轉交任務建單，新單取來源任務當下的目的站點。"    ← 59 字
+C09 長畫面文字超過30字 | production-floor/transfers/page.js:986 | tooltip="重開的新單沿用原單的目的產線與各條明細的目的站點，不可改。要改去處請改從待轉交任務建單，新單取來源任務當下的目的站點。"    ← 59 字
+C10 手寫間距px | orders/_components/detail/billing/ReconciliationPanel.js:27 | marginTop: 4,
+C01 手寫字級 | orders/_components/detail/billing/ReconciliationPanel.js:31 | <Text type="secondary" style={{ fontSize: 13 }}>    ← 13px 不在五級內
+C01 手寫字級 | orders/_components/detail/billing/ReconciliationPanel.js:38 | fontSize: 13,    ← 13px 不在五級內
+C01 手寫字級 | orders/_components/detail/billing/ReconciliationPanel.js:66 | <Text type="secondary" style={{ fontSize: 13 }}>    ← 13px 不在五級內
+C10 手寫間距px | orders/_components/detail/billing/ReconciliationPanel.js:70 | <Row key={row.label} justify="space-between" wrap={false} style={{ marginTop: 4 }}>
+C01 手寫字級 | orders/_components/detail/billing/ReconciliationPanel.js:72 | <Text type="secondary" style={{ fontSize: 13 }}>    ← 13px 不在五級內
+C01 手寫字級 | orders/_components/detail/billing/ReconciliationPanel.js:77 | <Text type="secondary" strong={row.strong} style={{ fontSize: 13 }}>    ← 13px 不在五級內
+C04 狀態標籤用調色盤色名 | orders/_components/detail/billing/ReconciliationPanel.js:89 | const tagColor = diff === 0 ? 'green' : diff > 0 ? 'gold' : 'red';    ← 色名 green
+C04 狀態標籤用調色盤色名 | orders/_components/detail/billing/ReconciliationPanel.js:89 | const tagColor = diff === 0 ? 'green' : diff > 0 ? 'gold' : 'red';    ← 色名 gold
+C04 狀態標籤用調色盤色名 | orders/_components/detail/billing/ReconciliationPanel.js:89 | const tagColor = diff === 0 ? 'green' : diff > 0 ? 'gold' : 'red';    ← 色名 red
+C01 手寫字級 | orders/_components/detail/billing/ReconciliationPanel.js:103 | <Text type="secondary" style={{ fontSize: 13 }}>    ← 13px 不在五級內
+C10 手寫間距px | orders/_components/detail/billing/ReconciliationPanel.js:108 | <Text strong style={{ marginRight: 8 }}>
+C01 手寫字級 | orders/_components/detail/billing/ReconciliationPanel.js:129 | <Text type="secondary" style={{ fontSize: 13 }}>    ← 13px 不在五級內
+C01 手寫字級 | orders/_components/detail/billing/ReconciliationPanel.js:132 | <div style={{ fontSize: 22, fontWeight: 600, margin: '8px 0 12px' }}>{fmt(mainValue)}</div>    ← 22px 不在五級內
+C02 手寫字重 | orders/_components/detail/billing/ReconciliationPanel.js:132 | <div style={{ fontSize: 22, fontWeight: 600, margin: '8px 0 12px' }}>{fmt(mainValue)}</div>    ← 600 不在載入範圍 400／500／700
+C10 手寫間距px | orders/_components/detail/billing/ReconciliationPanel.js:132 | <div style={{ fontSize: 22, fontWeight: 600, margin: '8px 0 12px' }}>{fmt(mainValue)}</div>
+C10 手寫間距px | orders/_components/detail/billing/ReconciliationPanel.js:166 | <Flex vertical gap={20}>
+C10 手寫間距px | orders/_components/detail/billing/ReconciliationPanel.js:177 | <Row gutter={[16, 16]}>
+C01 手寫字級 | orders/_components/detail/billing/ReceivableCard.js:24 | <Text type="secondary" style={{ fontSize: 13, display: 'block', marginBottom: 8 }}>    ← 13px 不在五級內
+C10 手寫間距px | orders/_components/detail/billing/ReceivableCard.js:24 | <Text type="secondary" style={{ fontSize: 13, display: 'block', marginBottom: 8 }}>
+C10 手寫間距px | orders/_components/detail/billing/ReceivableCard.js:85 | <Row gutter={[16, 16]} align="middle">
+C01 手寫字級 | orders/_components/detail/billing/ReceivableCard.js:96 | <Text strong style={{ fontSize: 18 }}>    ← 18px 不在五級內
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:81 | 部分付款: { color: 'gold' },    ← 來源 PAYMENT_SUMMARY_META，由 orders/_components/detail/billing/ReceivableCard.js:87 引用；色名 gold
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:82 | 已付款: { color: 'green' },    ← 來源 PAYMENT_SUMMARY_META，由 orders/_components/detail/billing/ReceivableCard.js:87 引用；色名 green
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:83 | 已退款: { color: 'purple' },    ← 來源 PAYMENT_SUMMARY_META，由 orders/_components/detail/billing/ReceivableCard.js:87 引用；色名 purple
+C10 手寫間距px | orders/_components/detail/billing/InstallmentSection.js:99 | <Flex gap={4} align="center">
+C06 提示泡泡或欄位說明超過20字 | orders/_components/detail/billing/InstallmentSection.js:213 | ? '開立發票：帶入這一期的發票草稿，可再儲存草稿或開立'    ← 25 字
+C08 圖示按鈕提示超出動作名稱 | orders/_components/detail/billing/InstallmentSection.js:213 | ? '開立發票：帶入這一期的發票草稿，可再儲存草稿或開立'
+C08 圖示按鈕提示超出動作名稱 | orders/_components/detail/billing/InstallmentSection.js:214 | : '開立發票：可先儲存草稿，或直接開立';
+C10 手寫間距px | orders/_components/detail/billing/InstallmentSection.js:227 | <Flex gap={4} justify="center">
+C06 提示泡泡或欄位說明超過20字 | orders/_components/detail/billing/InstallmentSection.js:271 | description="規劃本訂單何時收款、何時開立發票；發票從該列的開立發票圖示開立（不離開此頁）。"    ← 39 字
+C09 長畫面文字超過30字 | orders/_components/detail/billing/InstallmentSection.js:271 | description="規劃本訂單何時收款、何時開立發票；發票從該列的開立發票圖示開立（不離開此頁）。"    ← 39 字
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:166 | 已開立: { color: 'green' },    ← 來源 INSTALLMENT_INVOICE_STATUS_META，由 orders/_components/detail/billing/InstallmentSection.js:142 引用；色名 green
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:157 | 部分收款: { color: 'gold' },    ← 來源 INSTALLMENT_PAYMENT_STATUS_META，由 orders/_components/detail/billing/InstallmentSection.js:134 引用；色名 gold
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:158 | 已收訖: { color: 'green' },    ← 來源 INSTALLMENT_PAYMENT_STATUS_META，由 orders/_components/detail/billing/InstallmentSection.js:134 引用；色名 green
+C10 手寫間距px | orders/_components/detail/billing/PaymentRecordSection.js:110 | <Space size={4}>
+C04 狀態標籤用調色盤色名 | orders/_components/detail/billing/PaymentRecordSection.js:111 | <StyledTag color={v === '退款' ? 'red' : 'green'}>{v}</StyledTag>    ← 色名 red
+C04 狀態標籤用調色盤色名 | orders/_components/detail/billing/PaymentRecordSection.js:111 | <StyledTag color={v === '退款' ? 'red' : 'green'}>{v}</StyledTag>    ← 色名 green
+C10 手寫間距px | orders/_components/detail/billing/PaymentRecordSection.js:121 | <Space size={4}>
+C04 狀態標籤用調色盤色名 | orders/_components/detail/billing/PaymentRecordSection.js:133 | return days > 0 ? <StyledTag color="orange">{`${days} 天`}</StyledTag> : dash(null);    ← 色名 orange
+C01 手寫字級 | orders/_components/detail/billing/PaymentRecordSection.js:149 | <Text key={a.installment_id} style={{ fontSize: 13 }}>    ← 13px 不在五級內
+C01 手寫字級 | orders/_components/detail/billing/PaymentRecordSection.js:154 | <Text type="secondary" style={{ fontSize: 13 }}>    ← 13px 不在五級內
+C10 手寫間距px | orders/_components/detail/billing/PaymentRecordSection.js:180 | <Space size={4}>
+C04 狀態標籤用調色盤色名 | orders/_components/detail/billing/PaymentRecordSection.js:182 | <StyledTag color="gold">退款</StyledTag>    ← 色名 gold
+C10 手寫間距px | orders/_components/detail/billing/PaymentRecordSection.js:209 | <Flex gap={4} justify="center">
+C06 提示泡泡或欄位說明超過20字 | orders/_components/detail/billing/PaymentRecordSection.js:235 | description="業務記錄客戶實際入帳的收款，或退還客戶的退款。"    ← 23 字
+C10 手寫間距px | orders/_components/detail/billing/PaymentRecordSection.js:237 | <Flex gap={8} align="center">
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:150 | 處理中: { color: 'gold' },    ← 來源 PAYMENT_RECORD_STATUS_META，由 orders/_components/detail/billing/PaymentRecordSection.js:122 引用；色名 gold
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:151 | 已完成: { color: 'green' },    ← 來源 PAYMENT_RECORD_STATUS_META，由 orders/_components/detail/billing/PaymentRecordSection.js:122 引用；色名 green
+C10 手寫間距px | orders/_components/detail/billing/InvoiceSection.js:114 | <Flex gap={4} justify="center">
+C06 提示泡泡或欄位說明超過20字 | orders/_components/detail/billing/InvoiceSection.js:267 | ? '作廢發票：此發票已有已確認折讓，請先作廢折讓'    ← 22 字
+C08 圖示按鈕提示超出動作名稱 | orders/_components/detail/billing/InvoiceSection.js:267 | ? '作廢發票：此發票已有已確認折讓，請先作廢折讓'
+C08 圖示按鈕提示超出動作名稱 | orders/_components/detail/billing/InvoiceSection.js:269 | ? `作廢發票：已過申報期限（${invoiceVoidDeadline(record.issue_date)}），請改開折讓單`
+C10 手寫間距px | orders/_components/detail/billing/InvoiceSection.js:272 | <Flex gap={4} justify="center">
+C08 圖示按鈕提示超出動作名稱 | orders/_components/detail/billing/InvoiceSection.js:288 | <Tooltip title={noQuota ? '開立折讓單：已無可折讓額度' : '開立折讓單'}>
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:180 | export const ALLOWANCE_STATUS_META = { 已確認: { color: 'green' }, 已作廢: { color: 'default' } };    ← 來源 ALLOWANCE_STATUS_META，由 orders/_components/detail/billing/InvoiceSection.js:86 引用；色名 green
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:173 | 草稿: { color: 'blue' },    ← 來源 INVOICE_STATUS_META，由 orders/_components/detail/billing/InvoiceSection.js:219 引用；色名 blue
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:174 | 開立: { color: 'green' },    ← 來源 INVOICE_STATUS_META，由 orders/_components/detail/billing/InvoiceSection.js:219 引用；色名 green
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:175 | 開立失敗: { color: 'red' },    ← 來源 INVOICE_STATUS_META，由 orders/_components/detail/billing/InvoiceSection.js:219 引用；色名 red
+C01 手寫字級 | after-sales/page.js:280 | <Typography.Text type="secondary" ellipsis style={{ fontSize: 12 }}>
+C04 狀態標籤用調色盤色名 | after-sales/page.js:323 | <StyledTag color="red">{status}（逾期）</StyledTag>    ← 色名 red
+C01 手寫字級 | after-sales/page.js:399 | <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+C09 長畫面文字超過30字 | after-sales/page.js:400 | 售後服務單自訂單詳情頁的「售後服務」Tab 建立；訂單完成或取消後才建得出來    ← 37 字
+C07 輸入框灰字為請輸入或請選擇加欄位名 | after-sales/page.js:413 | placeholder: '請輸入售後單號、訂單編號、案名或客戶名稱',
+C10 手寫間距px | after-sales/page.js:419 | <Row gutter={[16, 16]}>
+C10 手寫間距px | after-sales/page.js:424 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | after-sales/page.js:438 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | after-sales/page.js:452 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | after-sales/page.js:467 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | after-sales/page.js:481 | style={{ width: '100%', marginTop: 4 }}
+C10 手寫間距px | after-sales/page.js:494 | <Row gutter={[16, 16]} style={{ marginTop: theme.spacing.md }}>
+C04 狀態標籤用調色盤色名 | after-sales/page.js:497 | color="red"    ← 色名 red
+C04 狀態標籤用調色盤色名 | after-sales/page.js:504 | color="gold"    ← 色名 gold
+C04 狀態標籤用調色盤色名 | after-sales/page.js:511 | color="cyan"    ← 色名 cyan
+C10 手寫間距px | after-sales/page.js:570 | <Space direction="vertical" size={4}>
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:252 | 逾期: { color: 'red' },    ← 來源 NEXT_ACTION_META，由 after-sales/page.js:35 引用；色名 red
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:253 | 待填決議: { color: 'gold' },    ← 來源 NEXT_ACTION_META，由 after-sales/page.js:35 引用；色名 gold
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:254 | 待建關聯動作: { color: 'blue' },    ← 來源 NEXT_ACTION_META，由 after-sales/page.js:35 引用；色名 blue
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:255 | 待結案: { color: 'cyan' },    ← 來源 NEXT_ACTION_META，由 after-sales/page.js:35 引用；色名 cyan
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:234 | 受理中: { color: 'gold' },    ← 來源 TICKET_STATUS_META，由 after-sales/page.js:325 引用；色名 gold
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:235 | 處理中: { color: 'blue' },    ← 來源 TICKET_STATUS_META，由 after-sales/page.js:325 引用；色名 blue
+C05 狀態標籤用調色盤色名（來源 META 表） | orders/mock-data.js:236 | 已結案: { color: 'green' },    ← 來源 TICKET_STATUS_META，由 after-sales/page.js:325 引用；色名 green
+---- 命中數 ----
+C01 手寫字級：14
+C02 手寫字重：1
+C03 手寫色碼：0
+C04 狀態標籤用調色盤色名：11
+C05 狀態標籤用調色盤色名（來源 META 表）：19
+C06 提示泡泡或欄位說明超過20字：9
+C07 輸入框灰字為請輸入或請選擇加欄位名：3
+C08 圖示按鈕提示超出動作名稱：5
+C09 長畫面文字超過30字：8
+C10 手寫間距px：33
+C11 emoji：0
